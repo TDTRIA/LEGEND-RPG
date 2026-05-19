@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legend - Recovered Build v0.2</title>
+  <style>
+    :root {
+      --bg: #060807;
+      --bg2: #0e1814;
+      --panel: rgba(10, 18, 15, 0.92);
+      --panel2: rgba(18, 30, 25, 0.96);
+      --panel3: rgba(4, 8, 7, 0.82);
+      --border: rgba(132, 255, 178, 0.24);
+      --border2: rgba(255, 211, 105, 0.28);
+      --text: #eaffef;
+      --muted: #93b7a3;
+      --accent: #7dffad;
+      --accent2: #46c77a;
+      --gold: #ffd369;
+      --red: #ff6b6b;
+      --blue: #8dd7ff;
+      --purple: #c08cff;
+      --shadow: rgba(0, 0, 0, 0.42);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(125, 255, 173, 0.12), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(255, 211, 105, 0.08), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(80, 144, 255, 0.07), transparent 38%),
+        linear-gradient(180deg, #0d1813, var(--bg));
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(circle at center, black, transparent 78%);
+    }
+
+    body::after {
+      content: "";
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.028),
+        rgba(255,255,255,0.028) 1px,
+        transparent 2px,
+        transparent 5px
+      );
+      opacity: .14;
+      mix-blend-mode: screen;
+    }
+
+    button, input { font: inherit; }
+
+    .app-shell {
+      width: min(1420px, 96vw);
+      margin: 22px auto;
+      min-height: calc(100vh - 44px);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .topbar, .panel, .title-card {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(16, 30, 24, .96), rgba(6, 10, 9, .94));
+      box-shadow: 0 18px 50px var(--shadow), inset 0 0 35px rgba(125, 255, 173, 0.035);
+      border-radius: 18px;
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar {
+      min-height: 86px;
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .brand h1 {
+      margin: 0;
+      color: var(--accent);
+      font-size: clamp(2rem, 5vw, 4.8rem);
+      line-height: .88;
+      letter-spacing: .18em;
+      text-shadow: 0 0 18px rgba(125, 255, 173, .35);
+    }
+
+    .brand .sub {
+      margin-top: 8px;
+      color: var(--muted);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      font-size: .8rem;
+    }
+
+    .top-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .meta-box, .stat-card, .menu-card, .quest-card, .shop-card, .skill-card {
+      background: rgba(5, 10, 8, .46);
+      border: 1px solid rgba(132, 255, 178, .14);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .label {
+      display: block;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: .72rem;
+      margin-bottom: 5px;
+    }
+
+    .value { color: var(--gold); font-weight: 800; }
+    .green { color: var(--accent); }
+    .gold { color: var(--gold); }
+    .red { color: var(--red); }
+    .blue { color: var(--blue); }
+    .purple { color: var(--purple); }
+    .muted { color: var(--muted); }
+
+    .title-wrap {
+      min-height: calc(100vh - 44px);
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .title-card {
+      width: min(980px, 100%);
+      padding: clamp(24px, 5vw, 56px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .title-card::before {
+      content: "";
+      position: absolute;
+      inset: -40%;
+      background: conic-gradient(from 30deg, transparent, rgba(125,255,173,.08), transparent, rgba(255,211,105,.07), transparent);
+      animation: spin 18s linear infinite;
+      opacity: .6;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .title-content { position: relative; z-index: 1; }
+
+    .game-title {
+      margin: 0;
+      color: var(--accent);
+      font-size: clamp(3.2rem, 13vw, 9.5rem);
+      letter-spacing: .18em;
+      line-height: .85;
+      text-shadow: 0 0 24px rgba(125,255,173,.42), 0 6px 0 rgba(0,0,0,.35);
+    }
+
+    .game-kicker {
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: .25em;
+      margin: 18px 0 8px;
+    }
+
+    .title-lore {
+      max-width: 720px;
+      color: #d7efe0;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      margin: 18px 0 26px;
+    }
+
+    .title-actions, .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      border: 1px solid rgba(132, 255, 178, .28);
+      background: linear-gradient(180deg, rgba(31, 54, 44, .96), rgba(10, 18, 15, .96));
+      color: var(--text);
+      min-height: 46px;
+      border-radius: 12px;
+      padding: 11px 15px;
+      cursor: pointer;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease, background .16s ease;
+    }
+
+    .btn:hover, .menu-card:hover, .shop-card:hover, .skill-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 211, 105, .55);
+      box-shadow: 0 0 22px rgba(255, 211, 105, .11), 0 14px 24px rgba(0,0,0,.2);
+    }
+
+    .btn.primary {
+      border-color: rgba(255, 211, 105, .46);
+      color: #231a04;
+      background: linear-gradient(180deg, #ffe29a, #d69f32);
+      font-weight: 900;
+    }
+
+    .btn.danger {
+      border-color: rgba(255, 107, 107, .5);
+      color: var(--red);
+      background: rgba(45, 9, 9, .6);
+    }
+
+    input {
+      background: rgba(0,0,0,.5);
+      color: var(--text);
+      border: 1px solid rgba(132, 255, 178, .28);
+      border-radius: 12px;
+      padding: 13px 14px;
+      min-width: min(320px, 100%);
+      outline: none;
+    }
+
+    input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(255,211,105,.08); }
+
+    .main-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(340px, .8fr);
+      gap: 14px;
+      flex: 1;
+    }
+
+    .panel { padding: 16px; }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(132,255,178,.13);
+    }
+
+    .panel-header h2, .panel-header h3 {
+      margin: 0;
+      color: var(--accent);
+      letter-spacing: .04em;
+    }
+
+    .panel-header p { margin: 4px 0 0; color: var(--muted); }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .menu-card {
+      width: 100%;
+      text-align: left;
+      color: var(--text);
+      cursor: pointer;
+      transition: .16s ease;
+      min-height: 118px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menu-card::after {
+      content: "";
+      position: absolute;
+      right: -30px;
+      bottom: -30px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(125,255,173,.06);
+      transition: .16s ease;
+    }
+
+    .menu-card:hover::after { transform: scale(1.5); background: rgba(255,211,105,.08); }
+
+    .menu-card .icon {
+      font-size: 1.55rem;
+      margin-bottom: 9px;
+      display: block;
+    }
+
+    .menu-card h3 {
+      color: var(--gold);
+      margin: 0 0 6px;
+      font-size: 1.08rem;
+    }
+
+    .menu-card p {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.35;
+      font-size: .93rem;
+    }
+
+    .side-stack { display: flex; flex-direction: column; gap: 14px; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .stat-card .num { color: var(--text); font-size: 1.02rem; font-weight: 800; }
+
+    .bar {
+      height: 9px;
+      background: rgba(255,255,255,.08);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+      border: 1px solid rgba(255,255,255,.07);
+    }
+
+    .bar > span {
+      display: block;
+      height: 100%;
+      width: 50%;
+      background: linear-gradient(90deg, var(--accent2), var(--accent));
+      border-radius: inherit;
+    }
+
+    .bar.red > span { background: linear-gradient(90deg, #b52424, var(--red)); }
+    .bar.gold > span { background: linear-gradient(90deg, #a96b12, var(--gold)); }
+
+    .world-log {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 260px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .log-entry {
+      background: rgba(255,255,255,.035);
+      border-left: 3px solid rgba(125,255,173,.44);
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #d9f1e2;
+      line-height: 1.35;
+    }
+
+    .log-entry.story { border-left-color: var(--gold); color: #fff0c2; }
+    .log-entry.danger { border-left-color: var(--red); color: #ffd3d3; }
+
+    .screen-text {
+      color: #e7f5ec;
+      line-height: 1.65;
+      font-size: 1.02rem;
+      white-space: pre-wrap;
+    }
+
+    .quest-list, .shop-list, .skill-list, .inventory-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .quest-card h3, .shop-card h3, .skill-card h3 {
+      margin: 0 0 6px;
+      color: var(--gold);
+    }
+
+    .quest-card p, .shop-card p, .skill-card p { margin: 0; color: var(--muted); line-height: 1.4; }
+
+    .quest-card.complete { border-color: rgba(125,255,173,.45); }
+    .quest-card.locked { opacity: .62; }
+
+    .shop-card, .skill-card {
+      width: 100%;
+      text-align: left;
+      color: var(--text);
+      cursor: pointer;
+      transition: .16s ease;
+    }
+
+    .battle-layout {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
+    }
+
+    .enemy-card {
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background:
+        radial-gradient(circle at center, rgba(255,107,107,.11), transparent 40%),
+        rgba(0,0,0,.24);
+      border: 1px solid rgba(255,107,107,.22);
+      border-radius: 18px;
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .enemy-card::before {
+      content: "";
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border: 1px solid rgba(255,107,107,.18);
+      border-radius: 50%;
+      box-shadow: 0 0 40px rgba(255,107,107,.08);
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(.96); opacity: .65; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+
+    .enemy-glyph {
+      font-size: clamp(4rem, 10vw, 8rem);
+      filter: drop-shadow(0 0 18px rgba(255,107,107,.38));
+      position: relative;
+      z-index: 1;
+    }
+
+    .battle-actions {
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .footer-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+
+    .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+
+    .small-note { color: var(--muted); font-size: .9rem; line-height: 1.45; }
+
+    @media (max-width: 1100px) {
+      .topbar, .main-layout, .battle-layout { grid-template-columns: 1fr; }
+      .top-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 700px) {
+      .app-shell { width: min(100vw - 16px, 1420px); margin: 8px auto; }
+      .menu-grid, .stats-grid, .two-col, .top-meta { grid-template-columns: 1fr; }
+      .brand h1 { letter-spacing: .12em; }
+      .panel-header { align-items: start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    const SAVE_KEY = "legend-recovered-build-v02";
+
+    const classes = {
+      Adventurer: { hp: 100, gold: 100, desc: "Balanced survivor of the recovered world." },
+      Warrior: { hp: 130, gold: 80, desc: "High health and strong melee instincts." },
+      Ranger: { hp: 105, gold: 90, desc: "Better scouting, cleaner fleeing, bow path later." },
+      Mage: { hp: 80, gold: 120, desc: "Runic path. Weak body, strange power." },
+      Thief: { hp: 95, gold: 140, desc: "More gold routes, smuggler affinity, risk rewards." },
+      Skiller: { hp: 90, gold: 110, desc: "Slow combat, faster gathering and crafting." }
+    };
+
+    const weapons = [
+      { id: "hand", name: "Your Hand", type: "Your", kind: "hand", attack: 50, cost: 0, level: 1 },
+      { id: "woodenSword", name: "Wooden Sword", type: "Wooden", kind: "Sword", attack: 100, cost: 100, level: 1 },
+      { id: "stoneSword", name: "Stone Sword", type: "Stone", kind: "Sword", attack: 125, cost: 250, level: 1 },
+      { id: "bronzeSword", name: "Bronze Sword", type: "Bronze", kind: "Sword", attack: 150, cost: 500, level: 1 },
+      { id: "ironSword", name: "Iron Sword", type: "Iron", kind: "Sword", attack: 175, cost: 1000, level: 5 },
+      { id: "steelSword", name: "Steel Sword", type: "Steel", kind: "Sword", attack: 200, cost: 2500, level: 10 },
+      { id: "goldSword", name: "Gold Sword", type: "Gold", kind: "Sword", attack: 225, cost: 5000, level: 10 },
+      { id: "crystalSword", name: "Crystal Sword", type: "Crystal", kind: "Sword", attack: 250, cost: 10000, level: 15 },
+      { id: "sacredBlade", name: "Sacred Blade", type: "Sacred", kind: "Blade", attack: 275, cost: 25000, level: 15 },
+      { id: "runicSword", name: "Runic Sword", type: "Runic", kind: "Sword", attack: 300, cost: 50000, level: 20 },
+      { id: "infernalRapier", name: "Infernal Rapier", type: "Infernal", kind: "Rapier", attack: 300, cost: 50000, level: 20 },
+      { id: "omegaMaul", name: "Omega Maul", type: "Omega", kind: "Maul", attack: 300, cost: 50000, level: 20 },
+      { id: "chaoticSpear", name: "Chaotic Spear", type: "Chaotic", kind: "Spear", attack: 300, cost: 50000, level: 20 },
+      { id: "mythicalGodsword", name: "Mythical Godsword", type: "Mythical", kind: "Godsword", attack: 450, cost: 50, currency: "morb", level: 25 },
+      { id: "alydrilGodsword", name: "Alydril Godsword", type: "Alydril", kind: "Godsword", attack: 600, cost: 100, currency: "morb", level: 30 }
+    ];
+
+    const armor = [
+      { id: "none", name: "No Armor", type: "No", defense: 0, cost: 0, level: 1 },
+      { id: "clothArmor", name: "Cloth Armor", type: "Cloth", defense: 10, cost: 150, level: 1 },
+      { id: "chainArmor", name: "Chain Armor", type: "Chain", defense: 20, cost: 300, level: 1 },
+      { id: "bronzeArmor", name: "Bronze Armor", type: "Bronze", defense: 40, cost: 800, level: 1 },
+      { id: "ironArmor", name: "Iron Armor", type: "Iron", defense: 65, cost: 1500, level: 5 },
+      { id: "steelArmor", name: "Steel Armor", type: "Steel", defense: 100, cost: 3000, level: 10 },
+      { id: "goldArmor", name: "Gold Armor", type: "Gold", defense: 120, cost: 5000, level: 10 },
+      { id: "crystalArmor", name: "Crystal Armor", type: "Crystal", defense: 145, cost: 10000, level: 15 },
+      { id: "sacredArmor", name: "Sacred Armor", type: "Sacred", defense: 175, cost: 15000, level: 15 },
+      { id: "runicArmor", name: "Runic Armor", type: "Runic", defense: 200, cost: 25000, level: 20 },
+      { id: "infernalArmor", name: "Infernal Armor", type: "Infernal", defense: 215, cost: 40000, level: 20 },
+      { id: "omegaArmor", name: "Omega Armor", type: "Omega", defense: 230, cost: 80000, level: 25 },
+      { id: "chaoticArmor", name: "Chaotic Armor", type: "Chaotic", defense: 250, cost: 100000, level: 25 },
+      { id: "mythicalArmor", name: "Mythical Armor", type: "Mythical", defense: 275, cost: 65, currency: "morb", level: 30 },
+      { id: "alydrilArmor", name: "Alydril Armor", type: "Alydril", defense: 300, cost: 120, currency: "morb", level: 35 }
+    ];
+
+    const enemies = [
+      { name: "Goblin", glyph: "👺", maxDamage: 30, drop: ["gmail", 1, "Goblin Mail"] },
+      { name: "Giant", glyph: "🗿", maxDamage: 60, drop: ["hbone", 3, "Huge Bones"] },
+      { name: "Dragon", glyph: "🐉", maxDamage: 90, drop: ["dhide", 3, "Dragon Hides"] },
+      { name: "Mage", glyph: "🧙", maxDamage: 120, drop: ["rtab", 2, "Runic Tablets"] },
+      { name: "Sorcerer", glyph: "🔮", maxDamage: 150, drop: ["potion", 2, "Potions"] },
+      { name: "Human", glyph: "🧍", maxDamage: 50, drop: ["food", 2, "Food"] },
+      { name: "Farmer", glyph: "🌾", maxDamage: 85, drop: ["seed", 4, "Seeds"] },
+      { name: "Bear", glyph: "🐻", maxDamage: 183, drop: ["fur", 5, "Fur"] },
+      { name: "Rockbeast", glyph: "🪨", maxDamage: 240, drop: ["ore", 6, "Ore"] },
+      { name: "Ent", glyph: "🌲", maxDamage: 300, drop: ["log", 10, "Logs"] },
+      { name: "Theif", glyph: "🗡️", maxDamage: 330, drop: ["gem", 5, "Gemstones"] },
+      { name: "Elemental", glyph: "✨", maxDamage: 360, drop: ["morb", 5, "Magic Orbs"] },
+      { name: "Rat", glyph: "🐀", maxDamage: 53, drop: ["fur", 5, "Fur"] }
+    ];
+
+    const questDefs = [
+      { id: "wake", title: "Recovered Build", objective: "Create a character and return to Varrock.", reward: "Memory: The World Was Restored", complete: p => true, lore: "The world has loaded, but not cleanly. Someone preserved enough of it to begin again." },
+      { id: "level5", title: "Reach Level 5", objective: "Train through combat until you reach level 5.", reward: "Unlocks Stronghold Door rumor", complete: p => p.level >= 5, lore: "The Quest Hall remembers a simple request from an older age." },
+      { id: "firstBlood", title: "First Hunt", objective: "Defeat 5 creatures in Gielinor.", reward: "Gold and recovered confidence", complete: p => p.stats.monstersDefeated >= 5, lore: "Every victory writes another line back into the world." },
+      { id: "orb", title: "Magic Orb", objective: "Obtain at least 5 Magic Orbs.", reward: "Legend's Store awareness", complete: p => p.inventory.morb >= 5, lore: "Magic Orbs feel less like treasure and more like pieces of a system." },
+      { id: "lacoyx", title: "The Stronghold Remembers", objective: "Face Lacoyx, War Commander of the Stronghold.", reward: "Code Fragment", complete: p => p.flags.lacoyxDefeated, lore: "The commander waits beneath the recovered build, guarding something that should not still exist." }
+    ];
+
+    const root = document.getElementById("root");
+    let player = null;
+    let enemy = null;
+    let locationName = "Varrock";
+    let log = [];
+
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const moneyName = key => key === "morb" ? "Magic Orbs" : "gold";
+    const currentWeapon = () => weapons.find(w => w.id === player.weapon) || weapons[0];
+    const currentArmor = () => armor.find(a => a.id === player.armor) || armor[0];
+
+    function newPlayer(username, className) {
+      const cls = classes[className] || classes.Adventurer;
+      const inventory = { gmail:0, hbone:0, dhide:0, rtab:0, food:0, rfood:0, bait:0, potion:0, ingot:0, seed:0, bow:0, fur:0, gem:0, log:0, ore:0, morb:0, codeFragment:0 };
+      const ownedWeapons = Object.fromEntries(weapons.map(w => [w.id, 0]));
+      const ownedArmor = Object.fromEntries(armor.map(a => [a.id, 0]));
+      ownedWeapons.hand = 1;
+      ownedArmor.none = 1;
+      return {
+        username,
+        className,
+        level: 1,
+        hp: cls.hp,
+        maxHp: cls.hp,
+        xp: 0,
+        xpUntil: 500,
+        xpBase: 500,
+        gold: cls.gold,
+        weapon: "hand",
+        armor: "none",
+        ownedWeapons,
+        ownedArmor,
+        inventory,
+        bank: [0,0,0,0,0],
+        skills: {
+          Woodcutting: { level: 1, xp: 0, xpLeft: 100, gain: className === "Skiller" ? 52 : 38, desc: "Gather logs from old forests." },
+          Cooking: { level: 1, xp: 0, xpLeft: 100, gain: className === "Skiller" ? 55 : 41, desc: "Turn raw food into healing supplies." },
+          Fishing: { level: 1, xp: 0, xpLeft: 100, gain: className === "Skiller" ? 46 : 30, desc: "Recover food from rivers and docks." },
+          Mining: { level: 1, xp: 0, xpLeft: 100, gain: className === "Skiller" ? 49 : 35, desc: "Gather ore for Smithing." },
+          Smithing: { level: 1, xp: 0, xpLeft: 100, gain: className === "Skiller" ? 48 : 33, desc: "Shape ore into ingots and gear." },
+          Thieving: { level: 1, xp: 0, xpLeft: 100, gain: className === "Thief" ? 56 : 36, desc: "Risk your luck for hidden gold." }
+        },
+        stats: { monstersDefeated: 0, timesDied: 0, strongholdRuns: 0 },
+        flags: { introSeen: false, lacoyxDefeated: false, strongholdRumor: false },
+        memories: ["The preserved file is called LegendTFC release 1.0."]
+      };
+    }
+
+    function save() {
+      if (player) localStorage.setItem(SAVE_KEY, JSON.stringify(player));
+    }
+
+    function load() {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return null;
+      try { return JSON.parse(raw); } catch { return null; }
+    }
+
+    function addLog(message, type = "") {
+      log.unshift({ message, type });
+      log = log.slice(0, 12);
+    }
+
+    function titleScreen() {
+      player = load();
+      locationName = "Recovered Menu";
+      root.innerHTML = `
+        <div class="title-wrap">
+          <section class="title-card">
+            <div class="title-content">
+              <div class="game-kicker">Recovered Build v0.2</div>
+              <h1 class="game-title">LEGEND</h1>
+              <p class="title-lore">
+                A lost batch RPG has been recovered from an older age. Varrock still stands, the Quest Hall still remembers,
+                and something beneath the Stronghold has started reading the rules of the world.
+              </p>
+              <div class="title-actions">
+                ${player ? `<button class="btn primary" id="continueBtn">Continue as ${escapeHtml(player.username)}</button>` : ""}
+                <button class="btn" id="newBtn">New Recovered Save</button>
+                ${player ? `<button class="btn danger" id="deleteBtn">Delete Browser Save</button>` : ""}
+              </div>
+              <p class="small-note" style="margin-top:18px;">Saves are stored in this browser through localStorage. This version is built to become the foundation for the full HTML5 remake.</p>
+            </div>
+          </section>
+        </div>`;
+      if (player) document.getElementById("continueBtn").onclick = () => { addLog("Welcome back to Varrock.", "story"); menu(); };
+      document.getElementById("newBtn").onclick = createAccount;
+      if (player) document.getElementById("deleteBtn").onclick = () => {
+        localStorage.removeItem(SAVE_KEY);
+        player = null;
+        log = [];
+        titleScreen();
+      };
+    }
+
+    function createAccount() {
+      root.innerHTML = `
+        <div class="title-wrap">
+          <section class="title-card">
+            <div class="title-content">
+              <div class="game-kicker">New Save</div>
+              <h1 style="margin:0;color:var(--accent);font-size:clamp(2rem,7vw,5rem);">Choose Your Legend</h1>
+              <p class="title-lore">The old account system has been restored. Name your adventurer, then choose the class that v1.0 never got to fully keep.</p>
+              <div class="row"><input id="username" placeholder="Username, no spaces" /></div>
+              <div class="shop-list" style="margin-top:18px;">
+                ${Object.entries(classes).map(([name, cls]) => `
+                  <button class="shop-card" data-class="${name}">
+                    <h3>${name}</h3>
+                    <p>${cls.desc}</p>
+                    <p class="small-note">Starting HP: ${cls.hp} / Starting gold: ${cls.gold}</p>
+                  </button>`).join("")}
+              </div>
+              <div class="footer-actions"><button class="btn" id="backBtn">Back</button></div>
+            </div>
+          </section>
+        </div>`;
+      document.querySelectorAll("[data-class]").forEach(btn => {
+        btn.onclick = () => {
+          const username = document.getElementById("username").value.trim();
+          if (!username || username.includes(" ")) return alert("Sorry, you can't use spaces in your Username.");
+          player = newPlayer(username, btn.dataset.class);
+          log = [];
+          addLog("Character created. The world accepts your name.", "story");
+          addLog(`Class selected: ${player.className}.`, "story");
+          save();
+          introSequence();
+        };
+      });
+      document.getElementById("backBtn").onclick = titleScreen;
+    }
+
+    function introSequence() {
+      player.flags.introSeen = true;
+      save();
+      layout("Varrock", "Recovered Build", `The screen clears.\n\nFor a moment, there is only green text over black.\n\nThen the world returns.\n\nVarrock loads in fragments: a bank vault, a Quest Hall, a weapon shop, and a road leading into the wilds of Gielinor. The buildings remember their functions before they remember their people.\n\nSomewhere beneath the Stronghold, a commander named Lacoyx waits with a hand around the rules of the world.`, [
+        { label: "Enter Varrock", className: "primary", fn: menu }
+      ]);
+    }
+
+    function layout(place, title, content, actions = [], mainHtml = "") {
+      locationName = place;
+      root.innerHTML = `
+        <div class="app-shell">
+          ${topbar()}
+          <div class="main-layout">
+            <section class="panel">
+              <div class="panel-header">
+                <div><h2>${title}</h2><p>${place}</p></div>
+                <span class="value">${player.className}</span>
+              </div>
+              ${mainHtml || `<div class="screen-text">${content}</div>`}
+              <div class="footer-actions">${actions.map((a, i) => `<button class="btn ${a.className || ""}" data-action="${i}">${a.label}</button>`).join("")}</div>
+            </section>
+            <aside class="side-stack">
+              ${statsPanel()}
+              ${questPanel()}
+              ${logPanel()}
+            </aside>
+          </div>
+        </div>`;
+      actions.forEach((a, i) => document.querySelector(`[data-action="${i}"]`).onclick = a.fn);
+    }
+
+    function topbar() {
+      return `
+        <header class="topbar">
+          <div class="brand"><h1>LEGEND</h1><div class="sub">Recovered Build v0.2</div></div>
+          <div class="top-meta">
+            <div class="meta-box"><span class="label">Location</span><span class="value">${locationName}</span></div>
+            <div class="meta-box"><span class="label">Adventurer</span><span class="value">${escapeHtml(player.username)}</span></div>
+          </div>
+          <div class="top-meta">
+            <div class="meta-box"><span class="label">Class</span><span class="value">${player.className}</span></div>
+            <div class="meta-box"><span class="label">Build State</span><span class="value">Stable</span></div>
+          </div>
+        </header>`;
+    }
+
+    function statsPanel() {
+      const hpPct = clamp((player.hp / player.maxHp) * 100, 0, 100);
+      const xpPct = player.level >= 37 ? 100 : clamp(100 - (player.xpUntil / player.xpBase) * 100, 0, 100);
+      const totalLevel = Object.values(player.skills).reduce((n, s) => n + s.level, 0);
+      return `
+        <section class="panel">
+          <div class="panel-header"><div><h3>Status</h3><p>${currentWeapon().name} / ${currentArmor().name}</p></div></div>
+          <div class="stats-grid">
+            <div class="stat-card"><span class="label">Health</span><span class="num">${player.hp}/${player.maxHp}</span><div class="bar red"><span style="width:${hpPct}%"></span></div></div>
+            <div class="stat-card"><span class="label">Level</span><span class="num">${player.level}</span><div class="bar"><span style="width:${xpPct}%"></span></div></div>
+            <div class="stat-card"><span class="label">Gold</span><span class="num gold">${player.gold}</span></div>
+            <div class="stat-card"><span class="label">EXP</span><span class="num">${player.xp}</span></div>
+            <div class="stat-card"><span class="label">Next Level</span><span class="num">${player.level >= 37 ? "None!" : player.xpUntil}</span></div>
+            <div class="stat-card"><span class="label">Skill Total</span><span class="num">${totalLevel}</span></div>
+            <div class="stat-card"><span class="label">Monsters</span><span class="num">${player.stats.monstersDefeated}</span></div>
+            <div class="stat-card"><span class="label">Code Fragments</span><span class="num purple">${player.inventory.codeFragment}</span></div>
+          </div>
+        </section>`;
+    }
+
+    function questPanel() {
+      const next = questDefs.find(q => !q.complete(player)) || questDefs[questDefs.length - 1];
+      return `
+        <section class="panel">
+          <div class="panel-header"><div><h3>Current Quest</h3><p>${next.title}</p></div></div>
+          <p class="screen-text" style="font-size:.95rem;">${next.objective}</p>
+        </section>`;
+    }
+
+    function logPanel() {
+      return `
+        <section class="panel">
+          <div class="panel-header"><div><h3>World Log</h3><p>Recent events</p></div></div>
+          <div class="world-log">
+            ${log.length ? log.map(l => `<div class="log-entry ${l.type || ""}">${escapeHtml(l.message)}</div>`).join("") : `<div class="log-entry story">The world waits for input.</div>`}
+          </div>
+        </section>`;
+    }
+
+    function menu() {
+      save();
+      locationName = "Varrock";
+      const cards = [
+        ["⚔️", "Wander Gielinor", "Battle creatures, earn EXP, and recover old drops.", startBattle],
+        ["🗡️", "Weapon Shop", "Buy swords, blades, rapiers, mauls, and spears.", weaponShop],
+        ["🛡️", "Armor Shop", "Upgrade defenses before the Stronghold eats you alive.", armorShop],
+        ["✨", "Legend's Store", "Trade Magic Orbs for impossible equipment.", legendsStore],
+        ["🏰", "The Stronghold", "A dangerous place. Lacoyx waits below.", strongholdWarning],
+        ["🌲", "Skill Plot", "Train Woodcutting, Cooking, Fishing, Mining, Smithing, and Thieving.", skillPlot],
+        ["🏦", "RealmBank", "Store gold in five protected accounts.", bank],
+        ["📜", "Quest Hall", "Read active quests and recovered world memories.", questHall],
+        ["🎒", "Inventory", "Check items, equipment, and recovered fragments.", inventory],
+        ["💾", "Save / Exit", "Return to the recovered title screen.", titleScreen]
+      ];
+      const html = `
+        <div class="panel-header" style="border:0;margin:0 0 14px;padding:0;">
+          <div><h2>Varrock Menu</h2><p>What would you like to do?</p></div>
+        </div>
+        <div class="menu-grid">
+          ${cards.map((c, i) => `
+            <button class="menu-card" data-menu="${i}">
+              <span class="icon">${c[0]}</span>
+              <h3>${c[1]}</h3>
+              <p>${c[2]}</p>
+            </button>`).join("")}
+        </div>`;
+      layout("Varrock", "Main Menu", "", [], html);
+      cards.forEach((c, i) => document.querySelector(`[data-menu="${i}"]`).onclick = c[3]);
+    }
+
+    function startBattle() {
+      const template = enemies[rand(0, enemies.length - 1)];
+      const tier = Math.min(7, Math.ceil(player.level / 5));
+      enemy = {
+        ...template,
+        level: rand(Math.max(1, player.level - 2), player.level + tier),
+        hp: rand(75 + tier * 75, 175 + tier * 125),
+        maxHp: 0
+      };
+      enemy.maxHp = enemy.hp;
+      addLog(`You wander Gielinor and encounter a level ${enemy.level} ${enemy.name}.`);
+      battleScreen();
+    }
+
+    function battleScreen() {
+      locationName = enemy.name === "Lacoyx" ? "Stronghold Throne Room" : "Gielinor Wilds";
+      const enemyPct = clamp((enemy.hp / enemy.maxHp) * 100, 0, 100);
+      const hpPct = clamp((player.hp / player.maxHp) * 100, 0, 100);
+      const html = `
+        <div class="battle-layout">
+          <div class="enemy-card">
+            <div>
+              <div class="enemy-glyph">${enemy.glyph || "☠️"}</div>
+              <h2 class="red" style="margin:8px 0 4px;">${enemy.name}</h2>
+              <div class="muted">Level ${enemy.level}</div>
+              <div class="bar red" style="width:min(360px,72vw);margin:14px auto 0;"><span style="width:${enemyPct}%"></span></div>
+              <div class="small-note" style="margin-top:8px;">${enemy.hp}/${enemy.maxHp} HP</div>
+            </div>
+          </div>
+          <div class="battle-actions">
+            <div class="stat-card"><span class="label">Your Health</span><span class="num">${player.hp}/${player.maxHp}</span><div class="bar red"><span style="width:${hpPct}%"></span></div></div>
+            <div class="stat-card"><span class="label">Weapon</span><span class="num gold">${currentWeapon().name}</span><p class="small-note">Attack range: 1-${currentWeapon().attack}</p></div>
+            <div class="stat-card"><span class="label">Armor</span><span class="num blue">${currentArmor().name}</span><p class="small-note">Block range: 0-${currentArmor().defense}</p></div>
+            <button class="btn primary" id="attackBtn">Attack!</button>
+            <button class="btn" id="invBtn">Battle Inventory</button>
+            ${enemy.name === "Lacoyx" ? "" : `<button class="btn" id="fleeBtn">Flee!</button>`}
+          </div>
+        </div>`;
+      layout(locationName, "Battle", "", [], html);
+      document.getElementById("attackBtn").onclick = attack;
+      document.getElementById("invBtn").onclick = battleInventory;
+      const fleeBtn = document.getElementById("fleeBtn");
+      if (fleeBtn) fleeBtn.onclick = flee;
+    }
+
+    function attack() {
+      let bonus = player.className === "Warrior" ? 1.15 : 1;
+      if (player.className === "Mage" && player.inventory.rtab > 0) {
+        bonus = 1.25;
+        player.inventory.rtab--;
+        addLog("A Runic Tablet burns away as your attack twists with magic.", "story");
+      }
+      let damage = Math.floor(rand(1, currentWeapon().attack) * bonus);
+      damage = Math.min(damage, enemy.hp);
+      enemy.hp -= damage;
+      const xpGain = Math.floor((damage / 4) * 3);
+      gainXp(xpGain);
+      addLog(`You attack and deal ${damage} damage to the ${enemy.name}. You gain ${xpGain} EXP.`);
+      if (enemy.hp <= 0) return winBattle();
+      enemyAttack();
+    }
+
+    function enemyAttack() {
+      let dmg = rand(1, enemy.maxDamage);
+      const blocked = currentArmor().defense ? rand(1, currentArmor().defense) : 0;
+      dmg = Math.max(0, dmg - blocked);
+      player.hp -= dmg;
+      addLog(`${enemy.name} attacks and deals ${dmg} damage.`);
+      if (player.hp <= 0) return die();
+      save();
+      battleScreen();
+    }
+
+    function winBattle() {
+      const [key, amount, name] = enemy.drop;
+      player.inventory[key] += amount;
+      player.stats.monstersDefeated++;
+      player.hp = player.maxHp;
+      addLog(`You won the battle against ${enemy.name}. You received ${amount} ${name}.`, "story");
+      if (enemy.name === "Lacoyx") {
+        player.flags.lacoyxDefeated = true;
+        player.inventory.codeFragment++;
+        player.memories.push("Lacoyx guarded a Code Fragment from the Lost Build.");
+        addLog("A Code Fragment falls from Lacoyx's armor. The Lost Build is real.", "story");
+      }
+      save();
+      menu();
+    }
+
+    function die() {
+      player.stats.timesDied++;
+      player.hp = player.maxHp;
+      addLog("You died. The recovered world rewinds you to Varrock.", "danger");
+      save();
+      menu();
+    }
+
+    function flee() {
+      addLog(player.className === "Ranger" ? "You vanish into the wilds with practiced speed." : "You flee from the battle.");
+      player.hp = Math.max(1, player.hp);
+      save();
+      menu();
+    }
+
+    function gainXp(amount) {
+      if (player.level >= 37) return;
+      player.xp = Math.min(1000000, player.xp + amount);
+      player.xpUntil -= amount;
+      while (player.xpUntil <= 0 && player.level < 37) {
+        player.level++;
+        player.xpBase += 500;
+        player.xpUntil += player.xpBase;
+        player.maxHp += player.className === "Warrior" ? 32 : 25;
+        player.hp = player.maxHp;
+        addLog(`Level up! You are now level ${player.level}.`, "story");
+        if (player.level >= 5) player.flags.strongholdRumor = true;
+      }
+    }
+
+    function inventory() {
+      const items = Object.entries(player.inventory).map(([k,v]) => `<div class="stat-card"><span class="label">${labelItem(k)}</span><span class="num">${v}</span></div>`).join("");
+      const gear = `
+        <div class="two-col">
+          <div class="panel"><div class="panel-header"><h3>Weapons</h3></div>${weapons.filter(w => player.ownedWeapons[w.id]).map(w => `<p>${w.name}: ${player.ownedWeapons[w.id]} ${player.weapon === w.id ? `<span class="gold">[equipped]</span>` : ""}</p>`).join("")}</div>
+          <div class="panel"><div class="panel-header"><h3>Armor</h3></div>${armor.filter(a => player.ownedArmor[a.id]).map(a => `<p>${a.name}: ${player.ownedArmor[a.id]} ${player.armor === a.id ? `<span class="gold">[equipped]</span>` : ""}</p>`).join("")}</div>
+        </div>`;
+      const html = `<div class="stats-grid">${items}</div><div style="height:12px"></div>${gear}`;
+      layout("Inventory", "Your Inventory", "", [
+        { label: "Change Weapon", fn: () => selectEquipment("weapon", false) },
+        { label: "Change Armor", fn: () => selectEquipment("armor", false) },
+        { label: "Back to Varrock", fn: menu }
+      ], html);
+    }
+
+    function battleInventory() {
+      layout("Battle Inventory", "Use Supplies", `Potions: ${player.inventory.potion}\nFood: ${player.inventory.food}\n\nUsing food or a potion lets the enemy take a turn afterward.`, [
+        { label: "Drink Potion", className: "primary", fn: drinkPotion },
+        { label: "Eat Food", fn: eatFood },
+        { label: "Change Weapon", fn: () => selectEquipment("weapon", true) },
+        { label: "Change Armor", fn: () => selectEquipment("armor", true) },
+        { label: "Return to Battle", fn: battleScreen }
+      ]);
+    }
+
+    function drinkPotion() {
+      if (player.inventory.potion <= 0) { addLog("You don't have any potions."); return battleInventory(); }
+      player.inventory.potion--;
+      const heal = rand(1, 100);
+      player.hp = Math.min(player.maxHp, player.hp + heal);
+      addLog(`You drink a potion and heal ${heal} HP.`);
+      enemyAttack();
+    }
+
+    function eatFood() {
+      if (player.inventory.food <= 0) { addLog("You don't have any food."); return battleInventory(); }
+      player.inventory.food--;
+      const heal = rand(1, 50);
+      player.hp = Math.min(player.maxHp, player.hp + heal);
+      addLog(`You eat food and heal ${heal} HP.`);
+      enemyAttack();
+    }
+
+    function selectEquipment(type, inBattle) {
+      const list = type === "weapon" ? weapons : armor;
+      const owned = type === "weapon" ? player.ownedWeapons : player.ownedArmor;
+      const html = `<div class="shop-list">${list.filter(item => owned[item.id]).map((item, i) => `
+        <button class="shop-card" data-equip="${item.id}">
+          <h3>${item.name} ${player[type] === item.id ? `<span class="green">[equipped]</span>` : ""}</h3>
+          <p>${type === "weapon" ? `Attack range 1-${item.attack}` : `Block range 0-${item.defense}`}</p>
+          <p class="small-note">Owned: ${owned[item.id]}</p>
+        </button>`).join("")}</div>`;
+      layout(type === "weapon" ? "Weapon Select" : "Armor Select", type === "weapon" ? "Choose Weapon" : "Choose Armor", "", [{ label: "Back", fn: inBattle ? battleInventory : inventory }], html);
+      document.querySelectorAll("[data-equip]").forEach(btn => {
+        btn.onclick = () => {
+          player[type] = btn.dataset.equip;
+          addLog(`Equipped ${list.find(x => x.id === btn.dataset.equip).name}.`);
+          save();
+          inBattle ? battleInventory() : inventory();
+        };
+      });
+    }
+
+    function weaponShop() { shop("Weapon Shop", weapons.filter(w => w.id !== "hand" && !w.currency)); }
+    function armorShop() { shop("Armor Shop", armor.filter(a => a.id !== "none" && !a.currency)); }
+    function legendsStore() { shop("Legend's Store", [...weapons, ...armor].filter(x => x.currency === "morb")); }
+
+    function shop(title, items) {
+      const html = `<div class="shop-list">${items.map(item => `
+        <button class="shop-card" data-buy="${item.id}">
+          <h3>${item.name}</h3>
+          <p>${item.attack ? `Attack range: 1-${item.attack}` : `Block range: 0-${item.defense}`}</p>
+          <p class="small-note">Costs ${item.cost} ${moneyName(item.currency || "gold")} / Requires level ${item.level}</p>
+        </button>`).join("")}</div>`;
+      layout(title, title, ``, [{ label: "Back to Varrock", fn: menu }], html);
+      document.querySelectorAll("[data-buy]").forEach(btn => btn.onclick = () => {
+        const item = [...weapons, ...armor].find(x => x.id === btn.dataset.buy);
+        buyItem(item);
+      });
+    }
+
+    function buyItem(item) {
+      const currency = item.currency || "gold";
+      if (player.level < item.level) { addLog(`You need level ${item.level} to buy ${item.name}.`, "danger"); return menu(); }
+      if (currency === "gold") {
+        if (player.gold < item.cost) { addLog("You don't have enough gold.", "danger"); return menu(); }
+        player.gold -= item.cost;
+      } else {
+        if (player.inventory[currency] < item.cost) { addLog(`You don't have enough ${moneyName(currency)}.`, "danger"); return menu(); }
+        player.inventory[currency] -= item.cost;
+      }
+      if (weapons.some(w => w.id === item.id)) player.ownedWeapons[item.id] = (player.ownedWeapons[item.id] || 0) + 1;
+      else player.ownedArmor[item.id] = (player.ownedArmor[item.id] || 0) + 1;
+      addLog(`You bought ${item.name}.`, "story");
+      save();
+      menu();
+    }
+
+    function questHall() {
+      const html = `<div class="quest-list">${questDefs.map(q => {
+        const complete = q.complete(player);
+        return `<div class="quest-card ${complete ? "complete" : ""}">
+          <h3>${complete ? "✓" : "•"} ${q.title}</h3>
+          <p>${q.objective}</p>
+          <p class="small-note"><span class="gold">Reward:</span> ${q.reward}</p>
+          <p class="small-note">${q.lore}</p>
+        </div>`;
+      }).join("")}</div>`;
+      layout("Quest Hall", "Recovered Quests", "", [
+        { label: "Recovered Memories", fn: memories },
+        { label: "Back to Varrock", fn: menu }
+      ], html);
+    }
+
+    function memories() {
+      layout("Quest Hall", "Recovered Memories", player.memories.map(m => `- ${m}`).join("\n"), [
+        { label: "Back to Quest Hall", fn: questHall },
+        { label: "Back to Varrock", fn: menu }
+      ]);
+    }
+
+    function bank() {
+      const html = `<div class="quest-list">${player.bank.map((g, i) => `
+        <div class="quest-card">
+          <h3>Account ${i + 1}: ${g >= 1000000000 ? "Closed" : "Open"}</h3>
+          <p>Gold stored: <span class="gold">${g}</span></p>
+          <div class="footer-actions">
+            <button class="btn" data-deposit="${i}">Deposit All</button>
+            <button class="btn" data-withdraw="${i}">Withdraw All</button>
+          </div>
+        </div>`).join("")}</div>`;
+      layout("RealmBank", "RealmBank", ``, [{ label: "Back to Varrock", fn: menu }], html);
+      document.querySelectorAll("[data-deposit]").forEach(btn => btn.onclick = () => {
+        const i = Number(btn.dataset.deposit);
+        const room = 1000000000 - player.bank[i];
+        const amount = Math.min(room, player.gold);
+        player.bank[i] += amount;
+        player.gold -= amount;
+        addLog(`Deposited ${amount} gold into Account ${i + 1}.`);
+        save(); bank();
+      });
+      document.querySelectorAll("[data-withdraw]").forEach(btn => btn.onclick = () => {
+        const i = Number(btn.dataset.withdraw);
+        const amount = player.bank[i];
+        player.gold += amount;
+        player.bank[i] = 0;
+        addLog(`Withdrew ${amount} gold from Account ${i + 1}.`);
+        save(); bank();
+      });
+    }
+
+    function skillPlot() {
+      const html = `<div class="skill-list">${Object.entries(player.skills).map(([name, s]) => `
+        <button class="skill-card" data-skill="${name}">
+          <h3>${name} - Level ${s.level}</h3>
+          <p>${s.desc}</p>
+          <p class="small-note">XP: ${s.xp} / XP left: ${s.xpLeft} / Gain: ${s.gain}</p>
+        </button>`).join("")}</div>`;
+      layout("Skill Plot", "Skill Plot", "", [{ label: "Back to Varrock", fn: menu }], html);
+      document.querySelectorAll("[data-skill]").forEach(btn => btn.onclick = () => trainSkill(btn.dataset.skill));
+    }
+
+    function trainSkill(name) {
+      const s = player.skills[name];
+      s.xp += s.gain;
+      s.xpLeft -= s.gain;
+      if (name === "Woodcutting") player.inventory.log += 1;
+      if (name === "Fishing") player.inventory.rfood += 1;
+      if (name === "Mining") player.inventory.ore += 1;
+      if (name === "Cooking" && player.inventory.rfood > 0) { player.inventory.rfood--; player.inventory.food++; }
+      if (name === "Smithing" && player.inventory.ore > 1) { player.inventory.ore -= 2; player.inventory.ingot++; }
+      if (name === "Thieving") player.gold += player.className === "Thief" ? rand(20, 85) : rand(5, 40);
+      addLog(`You train ${name} and gain ${s.gain} XP.`);
+      if (s.xpLeft <= 0) {
+        s.level++;
+        s.xpLeft += 100 + (s.level * 25);
+        addLog(`${name} leveled up to ${s.level}.`, "story");
+      }
+      save();
+      skillPlot();
+    }
+
+    function strongholdWarning() {
+      const unlocked = player.level >= 5 || player.flags.strongholdRumor;
+      layout("Stronghold Gate", "WARNING", `${unlocked ? "The Stronghold gate recognizes your level. Something behind it recognizes you too." : "The Stronghold gate is sealed. The Quest Hall says adventurers should reach level 5 before entering."}\n\nTHE STRONGHOLD IS VERY DANGEROUS.\nYou will not be able to flee from Lacoyx.`, [
+        ...(unlocked ? [{ label: "Enter the Stronghold", className: "primary", fn: bossFight }] : []),
+        { label: "Back to Varrock", fn: menu }
+      ]);
+    }
+
+    function bossFight() {
+      player.stats.strongholdRuns++;
+      enemy = { name: "Lacoyx", glyph: "♛", level: 741, hp: 2780, maxHp: 2780, maxDamage: 600, drop: ["morb", 25, "Magic Orbs"] };
+      addLog("You enter Lacoyx's throne room. The old commander lifts his weapon.", "danger");
+      addLog("Lacoyx: You are not from this build anymore.", "story");
+      battleScreen();
+    }
+
+    function labelItem(k) {
+      return ({ gmail:"Goblin Mails", hbone:"Huge Bones", dhide:"Dragon Hides", rtab:"Runic Tablets", food:"Food", rfood:"Raw Food", bait:"Bait", potion:"Potions", ingot:"Ingots", seed:"Seeds", bow:"Bows", fur:"Furs", gem:"Gemstones", log:"Logs", ore:"Ore", morb:"Magic Orbs", codeFragment:"Code Fragments" })[k] || k;
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>'"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "'":"&#39;", '"':"&quot;" }[c]));
+    }
+
+    titleScreen();
+  </script>
+</body>
+</html>
