@@ -1,44 +1,311 @@
 <!DOCTYPE html>
-      box-shadow: 0 0 22px rgba(255, 211, 105, .11);
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legend Newsletter</title>
+  <style>
+    :root {
+      --bg: #060807;
+      --bg-soft: #0d1813;
+      --panel: rgba(10, 18, 15, 0.94);
+      --panel-2: rgba(5, 10, 8, 0.58);
+      --border: rgba(132, 255, 178, 0.24);
+      --border-soft: rgba(132, 255, 178, 0.14);
+      --text: #eaffef;
+      --muted: #93b7a3;
+      --accent: #7dffad;
+      --gold: #ffd369;
+      --red: #ff6b6b;
+      --shadow: rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(125, 255, 173, 0.12), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(255, 211, 105, 0.08), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(80, 144, 255, 0.07), transparent 38%),
+        linear-gradient(180deg, var(--bg-soft), var(--bg));
+      padding: 24px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(circle at center, black, transparent 78%);
+    }
+
+    .shell {
+      width: min(980px, 100%);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    header,
+    .card {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(16, 30, 24, .96), rgba(6, 10, 9, .94));
+      box-shadow: 0 18px 50px var(--shadow), inset 0 0 35px rgba(125, 255, 173, 0.035);
+      border-radius: 18px;
+      padding: clamp(20px, 4vw, 38px);
+      margin-bottom: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .kicker {
+      margin: 0 0 10px;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      font-size: .78rem;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--accent);
+      font-size: clamp(2.35rem, 9vw, 6rem);
+      letter-spacing: .1em;
+      line-height: .88;
+      text-shadow: 0 0 22px rgba(125,255,173,.34), 0 6px 0 rgba(0,0,0,.25);
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 1.5rem;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      color: var(--gold);
+      font-size: 1.2rem;
+    }
+
+    p {
+      color: var(--text);
+      line-height: 1.65;
+      margin: 0 0 12px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .gold {
+      color: var(--gold);
+    }
+
+    .red {
+      color: var(--red);
+    }
+
+    .hero-copy {
+      max-width: 760px;
+      margin-top: 18px;
+      font-size: 1.05rem;
+    }
+
+    nav,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 1px solid rgba(132, 255, 178, .28);
+      border-radius: 12px;
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(31, 54, 44, .96), rgba(10, 18, 15, .96));
+      text-decoration: none;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 211, 105, .55);
+      box-shadow: 0 0 22px rgba(255, 211, 105, .11), 0 14px 24px rgba(0,0,0,.2);
+    }
+
+    .btn.primary {
+      border-color: rgba(255, 211, 105, .46);
+      color: #241803;
+      background: linear-gradient(180deg, #ffe29a, #d69f32);
+      font-weight: 900;
     }
 
     .signup-box {
-      margin-top: 22px;
-      border: 1px solid rgba(132, 255, 178, 0.16);
-      background: rgba(5, 10, 8, .46);
+      border: 1px solid var(--border-soft);
+      background: var(--panel-2);
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+
+    .placeholder-note {
+      border-left: 3px solid var(--gold);
+      background: rgba(255, 211, 105, 0.07);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 14px;
+      color: #fff0c2;
+    }
+
+    .update-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .update-card {
+      border: 1px solid var(--border-soft);
+      background: var(--panel-2);
       border-radius: 14px;
       padding: 16px;
+    }
+
+    .update-card strong {
+      color: var(--gold);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    footer {
+      color: var(--muted);
+      text-align: center;
+      padding: 10px 0 24px;
+      font-size: .95rem;
+    }
+
+    @media (max-width: 820px) {
+      .update-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 12px;
+      }
+
+      h1 {
+        letter-spacing: .07em;
+      }
+
+      nav,
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card">
-    <p class="muted">Recovered Build Dispatch</p>
-    <h1>FOLLOW LEGEND</h1>
-    <p>
-      Legend is a recovered HTML5 remake of an old batch RPG, now being rebuilt into a fantasy adventure
-      with exploration choices, quests, classes, bosses, and lost-build lore.
-    </p>
-
-    <p>
-      The newsletter will be used for <span class="gold">major updates, devlogs, release notes, screenshots, and playable build announcements.</span>
-    </p>
-
-    <div class="signup-box">
-      <h2 class="gold">Newsletter Signup</h2>
-      <p class="muted">
-        Replace this placeholder link with your Buttondown, Substack, Mailchimp, or other newsletter signup link.
+  <div class="shell">
+    <header>
+      <p class="kicker">Recovered Build Dispatch</p>
+      <h1>FOLLOW LEGEND</h1>
+      <p class="hero-copy">
+        Get updates for <strong>Legend - Recovered Build</strong>, an HTML5 browser remake of an old batch-file RPG
+        being rebuilt into a fantasy adventure with classes, quests, exploration, bosses, and lost-build lore.
       </p>
-      <div class="actions">
-        <a class="btn primary" href="#" target="_blank">Join the Newsletter</a>
-      </div>
-    </div>
+      <nav aria-label="Main navigation">
+        <a class="btn primary" href="index.html">Play Legend</a>
+        <a class="btn" href="blog.html">Read the Devlog</a>
+        <a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </header>
 
-    <nav>
-      <a class="btn" href="index.html">Play Legend</a>
-      <a class="btn" href="blog.html">Read the Devlog</a>
-      <a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank">GitHub</a>
-    </nav>
-  </main>
+    <main>
+      <section class="card">
+        <h2>Newsletter Signup</h2>
+        <p>
+          The newsletter will be used for major updates, devlogs, release notes, screenshots,
+          playable build announcements, and behind-the-scenes notes as Legend grows.
+        </p>
+
+        <div class="signup-box">
+          <h3>Join the Recovered Build Dispatch</h3>
+          <p class="muted">
+            This button is ready for your future newsletter link. Once you make a Buttondown,
+            Substack, Mailchimp, or other signup page, replace the <code>#</code> in the button link
+            with your real newsletter URL.
+          </p>
+          <div class="actions">
+            <a class="btn primary" href="#" target="_blank" rel="noopener">Join the Newsletter</a>
+          </div>
+        </div>
+
+        <div class="placeholder-note">
+          <strong>Setup note:</strong> Newsletter signup is not active yet. This page is ready to connect once a newsletter service is chosen.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>What You’ll Get</h2>
+        <div class="update-grid">
+          <div class="update-card">
+            <strong>Build Updates</strong>
+            <p class="muted">New version announcements, patch notes, and playable release links.</p>
+          </div>
+          <div class="update-card">
+            <strong>Devlogs</strong>
+            <p class="muted">Behind-the-scenes thoughts about systems, story, UI, and design choices.</p>
+          </div>
+          <div class="update-card">
+            <strong>Recovered Lore</strong>
+            <p class="muted">Notes about Varrock, Lacoyx, the Stronghold, the Lost Build, and old systems returning.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Current Project Status</h2>
+        <p>
+          <strong class="gold">Current build:</strong> Recovered Build v0.2
+        </p>
+        <p>
+          v0.2 adds the new title screen, class selection, improved menus, Quest Hall, Recovered Memories,
+          Stronghold prototype, and Lacoyx encounter.
+        </p>
+        <p>
+          <strong class="gold">Next planned build:</strong> v0.3 - Roads Beyond Varrock
+        </p>
+        <p>
+          v0.3 is planned to add the Trading Post, Smuggler, sellable enemy drops, D20-style exploration choices,
+          risk/reward encounters, and a less grindy adventure loop.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      Legend - Recovered Build / Recovered Build Dispatch
+    </footer>
+  </div>
 </body>
 </html>
