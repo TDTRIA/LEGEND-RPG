@@ -4,8 +4,6 @@
 
 The surviving original build, **LegendTFC release 1.0**, included account creation, saving, combat, shops, inventory, armor and weapon progression, skills, a bank system, quests, monster drops, and a boss named **Lacoyx**. This remake rebuilds that old batch RPG as a playable HTML5 game while expanding it into something bigger, cleaner, and more story-driven.
 
-This project is currently in early prototype development.
-
 ---
 
 ## Play Now
@@ -16,19 +14,9 @@ This project is currently in early prototype development.
 
 ## Current Version
 
-**Recovered Build v0.4 - Voices of Ashmere**
+**Recovered Build v0.5 - The First Road**
 
-This version gives Ashmere people, dialogue, the first real questline, a browser tab icon, enemy intent, Guard, class combat moves, Momentum, camp choices, and skill mastery tracking.
-
----
-
-## Play Style
-
-Legend is currently a **menu-driven fantasy RPG** with old-school text adventure roots.
-
-You create a character, choose an origin, choose a class, pick a keepsake, enter **Ashmere**, speak with townspeople, explore the roads of **Eldermere**, fight monsters, pass checks, collect loot, sell drops, train skills, store gold, recover memories, and prepare to face **Lacoyx** in **The Hollow Keep**.
-
-The remake leans into the idea that the game itself is a recovered lost build. Missing updates, old systems, corrupted memories, and forgotten content are being turned into part of the story.
+v0.5 is a depth patch for the first 15 minutes of play. It strengthens the opening route with Road Tokens, Ashmere Inn, Camp Supplies, steadier weapon damage, enemy traits, mastery perks, and clearer quest tracking.
 
 ---
 
@@ -36,7 +24,7 @@ The remake leans into the idea that the game itself is a recovered lost build. M
 
 - Browser-based HTML5 game
 - Browser tab favicon
-- No engine required
+- Mobile-friendly layout pass
 - Local browser saving using `localStorage`
 - Character creation
 - Character origins
@@ -45,222 +33,70 @@ The remake leans into the idea that the game itself is a recovered lost build. M
 - Character Sheet
 - Main hub: **Ashmere**
 - World setting: **Eldermere**
-- Named NPCs in Ashmere
-- Dialogue system
+- Named NPCs and dialogue
+- Quest tracker
 - First questline: **The Bell That Rang Once**
-- Quest log notes
-- Exploration beyond Ashmere
-- Random exploration events
-- Camp choices while exploring
+- Opening route: **The First Road**
+- Road Tokens objective
+- Ashmere Inn
+- Camp Supplies
+- Exploration routes and random events
 - D20-style checks
-- Combat system
-- Enemy intent text
-- Guard combat action
+- Enemy intent
+- Enemy traits
+- Guard action
 - Class-based combat moves
 - Momentum meter
-- Enemy encounters
+- Steadier weapon damage ranges
 - Weapon and armor progression
 - Inventory system
-- Weapon Shop
-- Armor Shop
-- **The Relic Market**
-- **The Trading Post** for selling drops
-- **The Backroad Dealer** for risky trades and rumors
-- **The Ledger Hall** bank system
-- **The Archive Hall** quest/memory hub
-- **The Commons** skill training area
+- Trading Post
+- Backroad Dealer
+- Ledger Hall bank system
+- Archive Hall quest/memory hub
+- Commons skill training area
 - Skill checks for leveling skills
-- Skill mastery tracking
-- Resource gathering through skills
-- **The Hollow Keep** boss encounter
+- Skill mastery tracking and early mastery perks
+- Hollow Keep boss encounter
 - Lacoyx boss fight
 - Recovered Memories system
-- Code Fragment story item
-- Bell Fragment quest item
 - ASCII art panels
-- Dark fantasy / recovered-terminal style UI
-
----
-
-## People of Ashmere
-
-v0.4 introduces named NPCs:
-
-- **Mara Vell** - Archive Keeper of The Archive Hall
-- **Old Brenn** - Ledger Keeper of The Ledger Hall
-- **Sella of the Post** - Trading Post merchant
-- **Captain Oric** - Guard Captain of Ashmere Gate
-- **Nim** - a strange roadchild who remembers things they should not
-- **Vask** - The Backroad Dealer
-
----
-
-## Character Classes
-
-The current remake includes six starter classes:
-
-- **Adventurer** - Balanced starter class
-- **Warrior** - Higher HP and better force checks
-- **Ranger** - Better survival, scouting, and road sense
-- **Mage** - Better magic and lore checks
-- **Thief** - Better thieving and risky reward checks
-- **Skiller** - Better gathering, crafting, and non-combat progression
-
-Classes now have class-based combat moves that use Momentum.
-
----
-
-## Origins and Keepsakes
-
-Origins include:
-
-- Lost Squire
-- Runaway Apprentice
-- Debt-Bound Thief
-- Archivist's Child
-- Wandering Cook
-- Failed Monster Hunter
-
-Keepsakes include:
-
-- Rusty Charm
-- Old Map
-- Bent Coin
-- Cracked Tablet
-- Dull Knife
-- Cooked Ration
-
-Origins and keepsakes provide small bonuses, starting items, and story flavor.
-
----
-
-## Skills
-
-Current skills include:
-
-- Woodcutting
-- Cooking
-- Fishing
-- Mining
-- Smithing
-- Thieving
-
-Skills use related checks while training, and v0.4 adds basic mastery tracking.
-
----
-
-## Story Direction
-
-The story of **Legend - Recovered Build** is inspired by the fact that the original project was partially lost.
-
-The surviving batch file is treated like an ancient recovered version of the world. The missing versions, forgotten features, old holiday events, classes, and unfinished systems are being reimagined as part of the game's lore.
-
-The world of Legend was once larger.
-
-Something caused it to roll back.
-
-Now **Ashmere**, **The Archive Hall**, **The Commons**, **The Ledger Hall**, and **The Hollow Keep** are slowly remembering what they used to be.
-
-At the center of the mystery is **Lacoyx**, a surviving boss from the old build who appears to know that the world runs on rules, stats, drops, levels, and old code.
 
 ---
 
 ## Development Roadmap
 
-### v0.1 - Classic Online Prototype
+### v0.5 - The First Road
 
-- Basic HTML remake
-- Character creation
-- Main menu
-- Combat
-- Inventory
-- Shops
-- Skills
-- Bank
-- Boss prototype
+- Deepened opening route
+- Added Road Tokens
+- Added Ashmere Inn
+- Added Camp Supplies
+- Added enemy traits
+- Added steadier weapon damage ranges
+- Added clearer quest tracker
+- Added mastery perks
+- Improved early progression
 
-### v0.2 - Recovered Build
+### Planned Next
 
-- Upgraded UI
-- Recovered Build identity
-- Title screen
-- Class selection
-- Better battle screen
-- Quest cards
-- Recovered Memories
-- Improved Skill Plot
-- Code Fragment item
-- Lacoyx intro flavor
-
-### v0.3 - The Roads Beyond Ashmere
-
-- Original world renames
-- Intro sequence
-- Origins and keepsakes
-- Character Sheet
-- ASCII art panels
-- Exploration routes
-- Random events
-- D20-style checks
-- Trading Post
-- Backroad Dealer
-- Skill check training
-- Early balance pass
-
-### v0.4 - Voices of Ashmere
-
-- Browser tab favicon
-- Named NPCs
-- Dialogue system
-- First true questline
-- Enemy intent
-- Guard action
-- Class combat moves
-- Momentum meter
-- Camp choices
-- Skill mastery tracking
-- More exploration events
-- Stronger Ashmere lore
-
-### Planned v0.5
-
+- More route-specific events
+- More NPC reactions after quests
+- Better crafting and resource decisions
+- Deeper Hollow Keep progression
+- More enemy trait behavior
 - More questlines
-- Expanded combat tactics
-- More NPC dialogue
-- More route-specific exploration events
-- Better crafting loops
-- More class identity
-- Stronger Hollow Keep progression
 - More UI polish
-
-### Future Ideas
-
-- Multiple towns
-- Holiday events
-- Crafting system
-- More bosses
-- More dungeons
-- Sound effects
-- Music
-- Pixel art
-- Save slots
-- Achievements
-- Mobile-friendly polish
-- Full standalone game version later
 
 ---
 
 ## Tech Stack
 
-This project currently uses:
-
 - HTML
 - CSS
 - JavaScript
 - Browser `localStorage`
-- GitHub Pages for hosting
-
-No frameworks or game engines are required for the current version.
+- GitHub Pages
 
 ---
 
@@ -269,17 +105,9 @@ No frameworks or game engines are required for the current version.
 1. Download or clone this repository.
 2. Open `index.html` in your browser.
 3. Create a character.
-4. Start exploring Ashmere and the roads beyond it.
+4. Start exploring Ashmere and The First Road.
 
 Your save data is stored in your browser.
-
----
-
-## Project Status
-
-Legend is currently in prototype development.
-
-The goal is not just to remake the original batch game one-to-one, but to preserve its spirit and build the version it could have become.
 
 ---
 
@@ -294,5 +122,3 @@ Recovered and remade as an HTML5 browser RPG.
 ## License
 
 This project does not currently have a selected license.
-
-If this project becomes public for outside reuse or contribution, a license should be added later.
