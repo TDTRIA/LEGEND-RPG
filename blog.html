@@ -6,7 +6,7 @@
   <title>Legend Devlog</title>
   <style>
     :root{--bg:#060807;--bg-soft:#0d1813;--panel:rgba(10,18,15,.94);--panel-2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border-soft:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--shadow:rgba(0,0,0,.42)}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),radial-gradient(circle at 50% 100%,rgba(80,144,255,.07),transparent 38%),linear-gradient(180deg,var(--bg-soft),var(--bg));padding:24px}body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(circle at center,black,transparent 78%)}.shell{width:min(1040px,100%);margin:0 auto;position:relative;z-index:1}header,.card{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow),inset 0 0 35px rgba(125,255,173,.035);border-radius:18px;padding:clamp(20px,4vw,34px);margin-bottom:16px;backdrop-filter:blur(8px)}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0;color:var(--accent);font-size:clamp(2.4rem,9vw,6rem);letter-spacing:.12em;line-height:.88;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:0 0 12px;color:var(--accent);font-size:1.5rem}h3{margin:0 0 8px;color:var(--gold);font-size:1.2rem}p{color:var(--text);line-height:1.65;margin:0 0 12px}.muted{color:var(--muted)}.hero-copy{max-width:780px;margin-top:18px;font-size:1.05rem}nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none;transition:.16s}.btn:hover,.post-card:hover{transform:translateY(-2px);border-color:rgba(255,211,105,.55);box-shadow:0 0 22px rgba(255,211,105,.11),0 14px 24px rgba(0,0,0,.2)}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.post-list{display:grid;gap:14px;margin-top:14px}.post-card{display:block;color:var(--text);text-decoration:none;border:1px solid var(--border-soft);background:var(--panel-2);border-radius:14px;padding:18px;transition:.16s}.post-meta{display:inline-block;color:var(--muted);font-size:.9rem;margin-bottom:8px}.roadmap-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.roadmap-item{border:1px solid var(--border-soft);background:var(--panel-2);border-radius:14px;padding:16px}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:720px){body{padding:12px}h1{letter-spacing:.08em}.roadmap-grid{grid-template-columns:1fr}nav{flex-direction:column}.btn{width:100%}}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),radial-gradient(circle at 50% 100%,rgba(80,144,255,.07),transparent 38%),linear-gradient(180deg,var(--bg-soft),var(--bg));padding:24px}.shell{width:min(1040px,100%);margin:0 auto;position:relative;z-index:1}header,.card{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow),inset 0 0 35px rgba(125,255,173,.035);border-radius:18px;padding:clamp(20px,4vw,34px);margin-bottom:16px;backdrop-filter:blur(8px)}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0;color:var(--accent);font-size:clamp(2.4rem,9vw,6rem);letter-spacing:.12em;line-height:.88;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:0 0 12px;color:var(--accent);font-size:1.5rem}h3{margin:0 0 8px;color:var(--gold);font-size:1.2rem}p{color:var(--text);line-height:1.65;margin:0 0 12px}.muted{color:var(--muted)}.hero-copy{max-width:780px;margin-top:18px;font-size:1.05rem}nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none;transition:.16s}.btn:hover,.post-card:hover{transform:translateY(-2px);border-color:rgba(255,211,105,.55);box-shadow:0 0 22px rgba(255,211,105,.11),0 14px 24px rgba(0,0,0,.2)}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.post-list{display:grid;gap:14px;margin-top:14px}.post-card{display:block;color:var(--text);text-decoration:none;border:1px solid var(--border-soft);background:var(--panel-2);border-radius:14px;padding:18px;transition:.16s}.post-meta{display:inline-block;color:var(--muted);font-size:.9rem;margin-bottom:8px}.roadmap-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.roadmap-item{border:1px solid var(--border-soft);background:var(--panel-2);border-radius:14px;padding:16px}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:720px){body{padding:12px}h1{letter-spacing:.08em}.roadmap-grid{grid-template-columns:1fr}nav{flex-direction:column}.btn{width:100%}}
   </style>
 </head>
 <body>
@@ -14,10 +14,7 @@
     <header>
       <p class="kicker">Recovered Build Archive</p>
       <h1>LEGEND DEVLOG</h1>
-      <p class="hero-copy">
-        Development notes, patch updates, design thoughts, and recovered memories from
-        <strong>Legend - Recovered Build</strong>, an HTML5 remake of an old batch-file RPG.
-      </p>
+      <p class="hero-copy">Development notes, patch updates, design thoughts, and recovered memories from <strong>Legend - Recovered Build</strong>.</p>
       <nav aria-label="Main navigation">
         <a class="btn primary" href="index.html">Play Legend</a>
         <a class="btn" href="updates.html">Newsletter</a>
@@ -25,72 +22,45 @@
         <a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </header>
-
     <main>
       <section class="card">
         <h2>Latest Posts</h2>
         <p class="muted">Follow the remake as the recovered batch RPG grows into a full browser adventure.</p>
         <div class="post-list">
+          <a class="post-card" href="posts/004-mobile-polish.html">
+            <span class="post-meta">Devlog 004 / Recovered Build v0.4.1</span>
+            <h3>Mobile Polish</h3>
+            <p>v0.4.1 improves phone play with better tap targets, sticky action buttons, compact mobile HUD behavior, safer viewport handling, and responsive ASCII.</p>
+          </a>
           <a class="post-card" href="posts/003-voices-of-ashmere.html">
             <span class="post-meta">Devlog 003 / Recovered Build v0.4</span>
             <h3>Voices of Ashmere</h3>
-            <p>
-              v0.4 gives Ashmere named NPCs, dialogue, the first true questline, enemy intent,
-              Guard, class moves, Momentum, camp choices, and a browser tab icon.
-            </p>
+            <p>v0.4 gives Ashmere named NPCs, dialogue, the first true questline, enemy intent, Guard, class moves, Momentum, camp choices, and a browser tab icon.</p>
           </a>
           <a class="post-card" href="posts/002-roads-beyond-ashmere.html">
             <span class="post-meta">Devlog 002 / Recovered Build v0.3</span>
             <h3>The Roads Beyond Ashmere</h3>
-            <p>
-              v0.3 gives Legend an original world identity, deeper character creation, ASCII scenes,
-              exploration routes, D20-style checks, the Trading Post, and the Backroad Dealer.
-            </p>
+            <p>v0.3 gives Legend an original world identity, deeper character creation, ASCII scenes, exploration routes, D20-style checks, the Trading Post, and the Backroad Dealer.</p>
           </a>
           <a class="post-card" href="posts/001-recovered-build.html">
             <span class="post-meta">Devlog 001 / Recovered Build Archive</span>
             <h3>I Recovered My First Game</h3>
-            <p>
-              The story of LegendTFC, the surviving batch file, and why this remake is becoming
-              something more than a simple port.
-            </p>
+            <p>The story of LegendTFC, the surviving batch file, and why this remake is becoming something more than a simple port.</p>
           </a>
         </div>
       </section>
-
       <section class="card">
         <h2>Roadmap</h2>
         <div class="roadmap-grid">
-          <div class="roadmap-item">
-            <h3>Current: v0.4</h3>
-            <p>
-              Voices of Ashmere adds NPCs, dialogue, the first questline, enemy intent, Guard,
-              class abilities, Momentum, camp choices, and mastery tracking.
-            </p>
-          </div>
-          <div class="roadmap-item">
-            <h3>Next: v0.5</h3>
-            <p>
-              Planned focus: more questlines, expanded combat tactics, more NPC dialogue,
-              better crafting/resource decisions, and stronger Hollow Keep progression.
-            </p>
-          </div>
+          <div class="roadmap-item"><h3>Current: v0.4.1</h3><p>Mobile Polish improves phone layout, sticky action controls, tap targets, responsive ASCII, and compact HUD behavior.</p></div>
+          <div class="roadmap-item"><h3>Next: v0.5</h3><p>Planned focus: more questlines, expanded combat tactics, more NPC dialogue, better crafting/resource decisions, and stronger Hollow Keep progression.</p></div>
         </div>
       </section>
-
       <section class="card">
         <h2>About the Project</h2>
-        <p>
-          Legend began as a Windows Batch fantasy RPG. The surviving version had accounts,
-          combat, shops, inventory, skills, banking, quests, drops, and a boss named Lacoyx.
-        </p>
-        <p>
-          The remake keeps the spirit of that original project while turning the missing versions,
-          forgotten systems, and lost updates into part of the game world itself.
-        </p>
+        <p>Legend began as a Windows Batch fantasy RPG. The remake keeps the spirit of that original project while turning the missing versions, forgotten systems, and lost updates into part of the game world itself.</p>
       </section>
     </main>
-
     <footer>Legend - Recovered Build / HTML5 Browser RPG</footer>
   </div>
 </body>
