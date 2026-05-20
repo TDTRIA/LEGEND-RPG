@@ -6,7 +6,55 @@ This project is an HTML5 browser remake of the original Windows Batch RPG **Lege
 
 ---
 
-## [Current] v0.3 - The Roads Beyond Ashmere
+## [Current] v0.4 - Voices of Ashmere
+
+### Added
+
+- Added a browser tab icon through `favicon.svg`.
+- Added named NPCs in Ashmere.
+- Added **Mara Vell**, Archive Keeper of The Archive Hall.
+- Added **Old Brenn**, Ledger Keeper of The Ledger Hall.
+- Added **Sella of the Post**, Trading Post merchant.
+- Added **Captain Oric**, guard captain of Ashmere Gate.
+- Added **Nim**, a strange roadchild who remembers version numbers.
+- Added the **People of Ashmere** menu.
+- Added a dialogue system for NPC conversations.
+- Added the first real questline: **The Bell That Rang Once**.
+- Added quest log notes to the Character Sheet.
+- Added **Bell Fragment** as a quest item.
+- Added enemy intent text during combat.
+- Added **Guard** as a combat action.
+- Added class-based combat moves.
+- Added a **Momentum** meter used for class moves.
+- Added camp choices while exploring.
+- Added route unlock conditions.
+- Added a **Hollow Approach** route.
+- Added a **Bell Shard** exploration event.
+- Added a **Nim on the Milestone** exploration event.
+- Added skill mastery tracking.
+- Added more recovered memories tied to NPC dialogue and quests.
+
+### Changed
+
+- Updated the title screen and game labels to **Recovered Build v0.4**.
+- Combat now gives the player more choices than basic attacking.
+- Exploration now has more pacing through camp decisions.
+- The Archive Hall and Ledger Hall now connect to NPCs and quest progression.
+- The Character Sheet now includes quest log and mastery progress.
+- The Backroad Dealer is now named **Vask**.
+- The first Ashmere questline now gives the intro more purpose.
+
+### Known Issues
+
+- v0.4 is still a single-file prototype and should eventually be split into separate HTML, CSS, and JavaScript files.
+- Dialogue is functional but still simple.
+- The first questline exists, but future versions need more branching and rewards.
+- Combat has more options now, but enemy behavior is still basic.
+- Favicon uses simple SVG icon art and can be replaced later with final project art.
+
+---
+
+## v0.3 - The Roads Beyond Ashmere
 
 ### Added
 
@@ -45,11 +93,11 @@ This project is an HTML5 browser remake of the original Windows Batch RPG **Lege
 
 ### Known Issues
 
-- v0.3 is still a single-file prototype, so the code will eventually need to be split into separate files.
-- Exploration event variety is still early and needs more routes, scenes, rewards, and consequences.
-- The Backroad Dealer is basic and needs more personality and unique trades.
-- The story has a stronger opening now, but the first true questline still needs to be built.
-- Combat still needs more tactical options beyond attack, supplies, flee, and equipment.
+- v0.3 was still a single-file prototype, so the code eventually needs to be split into separate files.
+- Exploration event variety was still early and needed more routes, scenes, rewards, and consequences.
+- The Backroad Dealer was basic and needed more personality and unique trades.
+- The story had a stronger opening, but the first true questline still needed to be built.
+- Combat still needed more tactical options beyond attack, supplies, flee, and equipment.
 
 ---
 
