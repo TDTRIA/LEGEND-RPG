@@ -16,9 +16,9 @@ This project is currently in early prototype development.
 
 ## Current Version
 
-**Recovered Build v0.3 - The Roads Beyond Ashmere**
+**Recovered Build v0.4 - Voices of Ashmere**
 
-This version gives Legend a more original identity and a stronger RPG loop. The old placeholder world names have been replaced with new locations, character creation has been expanded, exploration now uses random events and D20-style checks, enemy drops can be sold, and skills now require related checks to progress.
+This version gives Ashmere people, dialogue, the first real questline, a browser tab icon, enemy intent, Guard, class combat moves, Momentum, camp choices, and skill mastery tracking.
 
 ---
 
@@ -26,7 +26,7 @@ This version gives Legend a more original identity and a stronger RPG loop. The 
 
 Legend is currently a **menu-driven fantasy RPG** with old-school text adventure roots.
 
-You create a character, choose an origin, choose a class, pick a keepsake, enter **Ashmere**, explore the roads of **Eldermere**, fight monsters, pass checks, collect loot, sell drops, train skills, store gold, recover memories, and prepare to face **Lacoyx** in **The Hollow Keep**.
+You create a character, choose an origin, choose a class, pick a keepsake, enter **Ashmere**, speak with townspeople, explore the roads of **Eldermere**, fight monsters, pass checks, collect loot, sell drops, train skills, store gold, recover memories, and prepare to face **Lacoyx** in **The Hollow Keep**.
 
 The remake leans into the idea that the game itself is a recovered lost build. Missing updates, old systems, corrupted memories, and forgotten content are being turned into part of the story.
 
@@ -35,6 +35,7 @@ The remake leans into the idea that the game itself is a recovered lost build. M
 ## Current Features
 
 - Browser-based HTML5 game
+- Browser tab favicon
 - No engine required
 - Local browser saving using `localStorage`
 - Character creation
@@ -44,10 +45,19 @@ The remake leans into the idea that the game itself is a recovered lost build. M
 - Character Sheet
 - Main hub: **Ashmere**
 - World setting: **Eldermere**
+- Named NPCs in Ashmere
+- Dialogue system
+- First questline: **The Bell That Rang Once**
+- Quest log notes
 - Exploration beyond Ashmere
 - Random exploration events
+- Camp choices while exploring
 - D20-style checks
 - Combat system
+- Enemy intent text
+- Guard combat action
+- Class-based combat moves
+- Momentum meter
 - Enemy encounters
 - Weapon and armor progression
 - Inventory system
@@ -60,13 +70,28 @@ The remake leans into the idea that the game itself is a recovered lost build. M
 - **The Archive Hall** quest/memory hub
 - **The Commons** skill training area
 - Skill checks for leveling skills
+- Skill mastery tracking
 - Resource gathering through skills
 - **The Hollow Keep** boss encounter
 - Lacoyx boss fight
 - Recovered Memories system
 - Code Fragment story item
+- Bell Fragment quest item
 - ASCII art panels
 - Dark fantasy / recovered-terminal style UI
+
+---
+
+## People of Ashmere
+
+v0.4 introduces named NPCs:
+
+- **Mara Vell** - Archive Keeper of The Archive Hall
+- **Old Brenn** - Ledger Keeper of The Ledger Hall
+- **Sella of the Post** - Trading Post merchant
+- **Captain Oric** - Guard Captain of Ashmere Gate
+- **Nim** - a strange roadchild who remembers things they should not
+- **Vask** - The Backroad Dealer
 
 ---
 
@@ -81,13 +106,11 @@ The current remake includes six starter classes:
 - **Thief** - Better thieving and risky reward checks
 - **Skiller** - Better gathering, crafting, and non-combat progression
 
-These classes are early versions and will be expanded over time.
+Classes now have class-based combat moves that use Momentum.
 
 ---
 
 ## Origins and Keepsakes
-
-v0.3 adds a more personal character creation flow.
 
 Origins include:
 
@@ -122,7 +145,7 @@ Current skills include:
 - Smithing
 - Thieving
 
-Skills now use related checks while training. Instead of simply clicking to gain levels, each skill uses a different style of check tied to the action being performed.
+Skills use related checks while training, and v0.4 adds basic mastery tracking.
 
 ---
 
@@ -184,16 +207,31 @@ At the center of the mystery is **Lacoyx**, a surviving boss from the old build 
 - Skill check training
 - Early balance pass
 
-### Planned v0.4
+### v0.4 - Voices of Ashmere
 
-- Stronger first questline
-- Named NPCs in Ashmere
+- Browser tab favicon
+- Named NPCs
 - Dialogue system
+- First true questline
+- Enemy intent
+- Guard action
+- Class combat moves
+- Momentum meter
+- Camp choices
+- Skill mastery tracking
 - More exploration events
-- Better combat options
-- More Backroad Dealer content
-- More Archive Hall quest tracking
-- More lore around Lacoyx and The Lost Build
+- Stronger Ashmere lore
+
+### Planned v0.5
+
+- More questlines
+- Expanded combat tactics
+- More NPC dialogue
+- More route-specific exploration events
+- Better crafting loops
+- More class identity
+- Stronger Hollow Keep progression
+- More UI polish
 
 ### Future Ideas
 
