@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LEGEND Auto Playtest Runner</title>
+  <style>
+    :root{--bg:#060807;--panel:#0d1813;--panel2:#07100c;--border:rgba(132,255,178,.25);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--red:#ff6b6b;--green:#7dffad}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),linear-gradient(180deg,#0d1813,#060807);color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;padding:18px}.shell{width:min(1320px,100%);margin:0 auto;display:grid;grid-template-columns:420px 1fr;gap:14px}.panel{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));border-radius:18px;padding:18px;box-shadow:0 18px 50px rgba(0,0,0,.35)}h1{margin:0;color:var(--accent);font-size:2.4rem;letter-spacing:.08em}h2{margin:0 0 12px;color:var(--gold)}p{line-height:1.55;color:var(--muted)}button{border:1px solid rgba(255,211,105,.46);border-radius:12px;background:linear-gradient(180deg,#ffe29a,#d69f32);color:#241803;font-weight:900;min-height:44px;padding:10px 14px;cursor:pointer;width:100%;margin:6px 0}button.secondary{background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));color:var(--text);border-color:rgba(132,255,178,.28)}.status{display:grid;gap:8px;margin-top:12px}.entry{border:1px solid rgba(132,255,178,.14);background:rgba(0,0,0,.25);border-radius:12px;padding:10px;font-size:.95rem}.pass{border-left:4px solid var(--green)}.fail{border-left:4px solid var(--red);color:#ffd6d6}.info{border-left:4px solid var(--gold)}.frame-wrap{height:calc(100vh - 36px);overflow:hidden}.frame-wrap iframe{width:100%;height:100%;border:1px solid var(--border);border-radius:18px;background:#000}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.metric{background:rgba(0,0,0,.25);border:1px solid rgba(132,255,178,.14);border-radius:12px;padding:10px;text-align:center}.metric strong{display:block;color:var(--gold);font-size:1.5rem}.small{font-size:.88rem;color:var(--muted)}code{color:var(--gold)}@media(max-width:980px){.shell{grid-template-columns:1fr}.frame-wrap{height:70vh}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="panel">
+      <h1>LEGEND TEST</h1>
+      <p>This page runs quick automated browser playtests against <strong>index.html</strong>. It clicks through LEGEND like a player and reports what passed or failed.</p>
+      <button id="runAll">Run All Playtests</button>
+      <button class="secondary" id="runSmoke">Run Smoke Test Only</button>
+      <button class="secondary" id="openGame">Open Game Normally</button>
+      <div class="summary">
+        <div class="metric"><strong id="passes">0</strong><span>Pass</span></div>
+        <div class="metric"><strong id="fails">0</strong><span>Fail</span></div>
+        <div class="metric"><strong id="total">0</strong><span>Total</span></div>
+      </div>
+      <div id="status" class="status"><div class="entry info">Ready. Click <strong>Run All Playtests</strong>.</div></div>
+      <p class="small">Tip: this is a lightweight helper, not a replacement for real testers. It catches broken buttons, broken flows, and obvious layout failures.</p>
+    </section>
+    <section class="frame-wrap">
+      <iframe id="game" title="LEGEND test frame" src="index.html?testframe=1"></iframe>
+    </section>
+  </div>
+
+  <script>
+    const frame = document.getElementById('game');
+    const statusBox = document.getElementById('status');
+    const counters = { pass: 0, fail: 0, total: 0 };
+
+    function updateCounters(){
+      document.getElementById('passes').textContent = counters.pass;
+      document.getElementById('fails').textContent = counters.fail;
+      document.getElementById('total').textContent = counters.total;
+    }
+
+    function log(message, type='info'){
+      const div = document.createElement('div');
+      div.className = 'entry ' + type;
+      div.innerHTML = message;
+      statusBox.prepend(div);
+    }
+
+    function record(name, ok, detail=''){
+      counters.total++;
+      if(ok){ counters.pass++; log('PASS: ' + name + (detail ? '<br><span class="small">' + detail + '</span>' : ''), 'pass'); }
+      else { counters.fail++; log('FAIL: ' + name + (detail ? '<br><span class="small">' + detail + '</span>' : ''), 'fail'); }
+      updateCounters();
+    }
+
+    function doc(){ return frame.contentDocument || frame.contentWindow.document; }
+    function text(){ return doc().body ? doc().body.innerText : ''; }
+    function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+    function waitFrameLoad(){
+      return new Promise(resolve => {
+        frame.onload = () => setTimeout(resolve, 120);
+      });
+    }
+
+    async function resetGame(){
+      frame.src = 'index.html?playtest=' + Date.now();
+      await waitFrameLoad();
+      frame.contentWindow.localStorage.clear();
+      frame.src = 'index.html?playtest=' + Date.now();
+      await waitFrameLoad();
+    }
+
+    async function waitForText(pattern, timeout=4500){
+      const end = Date.now() + timeout;
+      while(Date.now() < end){
+        if(pattern.test(text())) return true;
+        await sleep(120);
+      }
+      return false;
+    }
+
+    function findClickable(pattern){
+      const items = [...doc().querySelectorAll('button,a')];
+      return items.find(el => pattern.test((el.innerText || el.textContent || '').trim()));
+    }
+
+    async function click(pattern, label){
+      const el = findClickable(pattern);
+      if(!el) throw new Error('Could not find button/link: ' + label);
+      el.click();
+      await sleep(180);
+    }
+
+    function fillInput(pattern, value){
+      const inputs = [...doc().querySelectorAll('input')];
+      const input = inputs.find(el => pattern.test(el.placeholder || el.name || el.id || '')) || inputs[0];
+      if(!input) throw new Error('Could not find input');
+      input.value = value;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    async function freshCharacter(name='BotTest'){
+      await resetGame();
+      await click(/New Recovered Save/i, 'New Recovered Save');
+      fillInput(/name/i, name);
+      await click(/^Continue$/i, 'Continue name');
+      await click(/Wandering Cook/i, 'Wandering Cook');
+      await click(/Ranger/i, 'Ranger');
+      await click(/Old Map/i, 'Old Map');
+      await click(/Enter Ashmere/i, 'Enter Ashmere');
+      if(!await waitForText(/Ashmere Menu/i)) throw new Error('Did not reach Ashmere Menu');
+    }
+
+    async function testSmoke(){
+      await freshCharacter('SmokeBot');
+      const checks = [
+        [/Explore The First Road/i, 'Explore The First Road button'],
+        [/People of Ashmere/i, 'People of Ashmere button'],
+        [/Ashmere Inn/i, 'Ashmere Inn button'],
+        [/Trading Post/i, 'Trading Post button']
+      ];
+      for(const [rx,label] of checks){
+        if(!findClickable(rx)) throw new Error('Missing ' + label);
+      }
+    }
+
+    async function testMara(){
+      await freshCharacter('MaraBot');
+      await click(/People of Ashmere/i, 'People of Ashmere');
+      await click(/Mara Vell/i, 'Mara Vell');
+      await click(/Ask about the bell/i, 'Ask about the bell');
+      if(!await waitForText(/Recovered Memory|Mara says|People of Ashmere/i)) throw new Error('Mara flow did not produce expected text');
+    }
+
+    async function testInn(){
+      await freshCharacter('InnBot');
+      await click(/Ashmere Inn/i, 'Ashmere Inn');
+      if(!await waitForText(/Rest - 35g|Buy Camp Supplies|Buy Road Meal/i)) throw new Error('Inn options not visible');
+      await click(/Buy Camp Supplies - 90g/i, 'Buy Camp Supplies');
+      if(!await waitForText(/Camp Supplies|Not enough gold|Gained 1 Camp Supplies/i)) throw new Error('Camp supply purchase did not respond');
+    }
+
+    async function testFirstRoad(){
+      await freshCharacter('RoadBot');
+      await click(/Explore The First Road/i, 'Explore The First Road');
+      if(!await waitForText(/Choose a Route/i)) throw new Error('Route screen did not load');
+      await click(/Old Road/i, 'Old Road');
+      if(!await waitForText(/Exploration Event|Roads Beyond Ashmere|Battle/i)) throw new Error('Old Road did not start an event');
+    }
+
+    async function testMobileSizing(){
+      await resetGame();
+      const overflow = doc().documentElement.scrollWidth > doc().documentElement.clientWidth + 4;
+      if(overflow) throw new Error('Game has horizontal overflow inside frame');
+      const btn = findClickable(/New Recovered Save/i);
+      if(!btn) throw new Error('New save button missing');
+      const box = btn.getBoundingClientRect();
+      if(box.height < 44) throw new Error('New save button is too small: ' + box.height + 'px');
+    }
+
+    async function runTest(name, fn){
+      try { await fn(); record(name, true); }
+      catch(err){ record(name, false, err.message); }
+    }
+
+    async function runAll(){
+      statusBox.innerHTML = '';
+      counters.pass = counters.fail = counters.total = 0;
+      updateCounters();
+      log('Running automated LEGEND playtests...', 'info');
+      await runTest('Fresh save reaches Ashmere and core buttons exist', testSmoke);
+      await runTest('Mara dialogue starts bell quest flow', testMara);
+      await runTest('Ashmere Inn opens and responds', testInn);
+      await runTest('First Road route screen opens', testFirstRoad);
+      await runTest('Basic layout sanity check', testMobileSizing);
+      log('Finished. Pass: ' + counters.pass + ' / Fail: ' + counters.fail, counters.fail ? 'fail' : 'pass');
+    }
+
+    document.getElementById('runAll').onclick = runAll;
+    document.getElementById('runSmoke').onclick = async () => {
+      statusBox.innerHTML = '';
+      counters.pass = counters.fail = counters.total = 0;
+      updateCounters();
+      await runTest('Fresh save reaches Ashmere and core buttons exist', testSmoke);
+    };
+    document.getElementById('openGame').onclick = () => window.open('index.html', '_blank');
+  </script>
+</body>
+</html>
