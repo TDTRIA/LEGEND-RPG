@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Roads Beyond Ashmere - Legend Devlog</title>
+  <style>
+    :root{--bg:#060807;--soft:#0d1813;--panel:rgba(10,18,15,.94);--panel2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border2:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--shadow:rgba(0,0,0,.42)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--soft),var(--bg));padding:24px}body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(circle at center,black,transparent 78%)}.shell{width:min(940px,100%);margin:0 auto;position:relative;z-index:1}article{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow),inset 0 0 35px rgba(125,255,173,.035);border-radius:18px;padding:clamp(20px,4vw,42px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0 0 18px;color:var(--accent);font-size:clamp(2.35rem,8vw,5.4rem);letter-spacing:.06em;line-height:.95;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:34px 0 12px;color:var(--gold);font-size:1.55rem}h3{color:var(--accent);margin:0 0 8px}p{color:var(--text);line-height:1.78;font-size:1.05rem;margin:0 0 16px}strong{color:var(--gold)}.muted{color:var(--muted)}.intro{font-size:1.12rem;color:#f0fff4}.callout{border-left:3px solid var(--gold);background:rgba(255,211,105,.07);border-radius:10px;padding:14px 16px;margin:22px 0;color:#fff0c2}.callout p{margin:0;color:#fff0c2}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0 24px}.tile{border:1px solid var(--border2);background:var(--panel2);border-radius:14px;padding:16px}.tile h3{color:var(--gold)}.tile p{color:var(--muted);font-size:.98rem;margin:0;line-height:1.55}pre{font-family:Consolas,"Courier New",monospace;color:var(--accent);background:rgba(0,0,0,.25);border:1px solid rgba(125,255,173,.18);border-radius:14px;padding:14px;overflow:auto;line-height:1.15}nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;padding-top:22px;border-top:1px solid var(--border2)}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none;transition:.16s}.btn:hover{transform:translateY(-2px);border-color:rgba(255,211,105,.55);box-shadow:0 0 22px rgba(255,211,105,.11),0 14px 24px rgba(0,0,0,.2)}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:760px){body{padding:12px}h1{letter-spacing:.035em}.grid{grid-template-columns:1fr}nav{flex-direction:column}.btn{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <article>
+      <p class="kicker">Devlog 002 / Recovered Build v0.3</p>
+      <h1>The Roads Beyond Ashmere</h1>
+
+      <p class="intro">
+        v0.3 is the update where Legend starts becoming its own world. The old placeholder names have been replaced,
+        the player now has a real arrival scene, and the game loop is shifting away from simple grinding toward exploration,
+        choices, and tabletop-style checks.
+      </p>
+
+      <pre>        /\                 /\
+       /  \____ ASHMERE ____/  \
+      /___________________________\
+      | []   []   []   []   []   |
+      |      THE FIRST TOWN       |
+      |___________________________|</pre>
+
+      <h2>A New World Identity</h2>
+
+      <p>
+        One of the biggest changes in v0.3 is that Legend now has its own place names. The starting town is now
+        <strong>Ashmere</strong>, the wider world is <strong>Eldermere</strong>, and the old hub locations have been rebuilt into
+        places like <strong>The Ledger Hall</strong>, <strong>The Archive Hall</strong>, <strong>The Commons</strong>, and <strong>The Hollow Keep</strong>.
+      </p>
+
+      <p>
+        Lacoyx remains. His name survived from the old batch RPG, so he now feels like a recovered artifact from the original build.
+      </p>
+
+      <div class="callout">
+        <p>
+          The goal of v0.3 was simple: make Legend feel less like a placeholder menu game and more like the beginning of a real RPG world.
+        </p>
+      </div>
+
+      <h2>Character Creation Feels More Personal</h2>
+
+      <p>
+        Character creation now has a stronger opening. Instead of appearing in town immediately, the player wakes beneath a dead lantern on a road
+        they do not remember walking. Behind them, the path has collapsed into static. Ahead, a sign points toward Ashmere.
+      </p>
+
+      <p>
+        The player now chooses a name, origin, class, and keepsake. Origins and keepsakes add small bonuses, starting items, and story flavor.
+      </p>
+
+      <div class="grid">
+        <div class="tile"><h3>Origins</h3><p>Lost Squire, Runaway Apprentice, Debt-Bound Thief, Archivist's Child, Wandering Cook, and Failed Monster Hunter.</p></div>
+        <div class="tile"><h3>Keepsakes</h3><p>Rusty Charm, Old Map, Bent Coin, Cracked Tablet, Dull Knife, and Cooked Ration.</p></div>
+      </div>
+
+      <h2>Exploration Replaces Pure Grinding</h2>
+
+      <p>
+        The old “wander and instantly fight” loop has been replaced with a new exploration system. The player chooses a route beyond Ashmere,
+        runs into random events, makes choices, rolls checks, earns rewards, takes risks, and decides whether to push deeper or return to town.
+      </p>
+
+      <p>
+        This makes the game feel closer to a tabletop RPG. A ruined campsite, a dark stream, a cracked stone vein, a distracted merchant, or a strange
+        old sign can all become moments where the player makes a decision instead of just clicking attack again.
+      </p>
+
+      <h2>D20-Style Checks and Skill Training</h2>
+
+      <p>
+        v0.3 introduces D20-style checks. Choices can test survival, strength, thieving, magic, lore, luck, agility, or crafting. Classes, origins,
+        and keepsakes can all affect these checks.
+      </p>
+
+      <p>
+        Skills also changed. Training is no longer just a button that hands out experience. When a skill is ready to level, the player must pass a related
+        check. Woodcutting and Fishing lean into survival, Mining uses strength, Cooking and Smithing use crafting, and Thieving uses thieving.
+      </p>
+
+      <h2>Trading Post and Backroad Dealer</h2>
+
+      <p>
+        Enemy drops finally have a clear purpose. The Trading Post lets players sell monster drops and gathered resources for gold, which should make the early
+        game less grindy and make exploration feel more rewarding.
+      </p>
+
+      <p>
+        The Backroad Dealer also appears as a risky trader who can sell rumors and strange trades. He is still basic for now, but he gives the world a new kind of
+        shady flavor and opens the door for better NPC interactions later.
+      </p>
+
+      <h2>What Comes Next</h2>
+
+      <p>
+        v0.4 should probably focus on the first real questline, named NPCs in Ashmere, better dialogue, more event variety, and stronger combat choices.
+        v0.3 built the roads. v0.4 should start putting people, secrets, and story on them.
+      </p>
+
+      <nav aria-label="Post navigation">
+        <a class="btn primary" href="../index.html">Play Legend</a>
+        <a class="btn" href="../blog.html">Back to Devlog</a>
+        <a class="btn" href="../updates.html">Newsletter</a>
+        <a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </article>
+
+    <footer>Legend - Recovered Build / Devlog 002</footer>
+  </div>
+</body>
+</html>
