@@ -1,78 +1,346 @@
-</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>I Recovered My First Game - Legend Devlog</title>
+  <style>
+    :root {
+      --bg: #060807;
+      --bg-soft: #0d1813;
+      --panel: rgba(10, 18, 15, 0.94);
+      --panel-2: rgba(5, 10, 8, 0.58);
+      --border: rgba(132, 255, 178, 0.24);
+      --border-soft: rgba(132, 255, 178, 0.14);
+      --text: #eaffef;
+      --muted: #93b7a3;
+      --accent: #7dffad;
+      --gold: #ffd369;
+      --red: #ff6b6b;
+      --shadow: rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(125, 255, 173, 0.12), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(255, 211, 105, 0.08), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(80, 144, 255, 0.07), transparent 38%),
+        linear-gradient(180deg, var(--bg-soft), var(--bg));
+      padding: 24px;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(circle at center, black, transparent 78%);
+    }
+
+    .shell {
+      width: min(940px, 100%);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    article,
+    .card {
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(16, 30, 24, .96), rgba(6, 10, 9, .94));
+      box-shadow: 0 18px 50px var(--shadow), inset 0 0 35px rgba(125, 255, 173, 0.035);
+      border-radius: 18px;
+      padding: clamp(20px, 4vw, 42px);
+      margin-bottom: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .kicker {
+      margin: 0 0 10px;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      font-size: .78rem;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      color: var(--accent);
+      font-size: clamp(2.35rem, 8vw, 5.4rem);
+      letter-spacing: .06em;
+      line-height: .95;
+      text-shadow: 0 0 22px rgba(125,255,173,.34), 0 6px 0 rgba(0,0,0,.25);
+    }
+
+    h2 {
+      margin: 34px 0 12px;
+      color: var(--gold);
+      font-size: 1.55rem;
+    }
+
+    h3 {
+      color: var(--accent);
+      margin: 0 0 8px;
+    }
+
+    p {
+      color: var(--text);
+      line-height: 1.78;
+      font-size: 1.05rem;
+      margin: 0 0 16px;
+    }
+
+    strong {
+      color: var(--gold);
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .gold {
+      color: var(--gold);
+    }
+
+    .intro {
+      font-size: 1.12rem;
+      color: #f0fff4;
+    }
+
+    .callout {
+      border-left: 3px solid var(--gold);
+      background: rgba(255, 211, 105, 0.07);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin: 22px 0;
+      color: #fff0c2;
+    }
+
+    .callout p {
+      margin: 0;
+      color: #fff0c2;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0 24px;
+    }
+
+    .feature-card {
+      border: 1px solid var(--border-soft);
+      background: var(--panel-2);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .feature-card h3 {
+      color: var(--gold);
+    }
+
+    .feature-card p {
+      color: var(--muted);
+      font-size: .98rem;
+      margin: 0;
+      line-height: 1.55;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 30px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
       padding: 10px 14px;
-      transition: .16s ease;
+      border: 1px solid rgba(132, 255, 178, .28);
+      border-radius: 12px;
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(31, 54, 44, .96), rgba(10, 18, 15, .96));
+      text-decoration: none;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
     }
 
     .btn:hover {
       transform: translateY(-2px);
       border-color: rgba(255, 211, 105, .55);
-      box-shadow: 0 0 22px rgba(255, 211, 105, .11);
+      box-shadow: 0 0 22px rgba(255, 211, 105, .11), 0 14px 24px rgba(0,0,0,.2);
+    }
+
+    .btn.primary {
+      border-color: rgba(255, 211, 105, .46);
+      color: #241803;
+      background: linear-gradient(180deg, #ffe29a, #d69f32);
+      font-weight: 900;
+    }
+
+    footer {
+      color: var(--muted);
+      text-align: center;
+      padding: 10px 0 24px;
+      font-size: .95rem;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 12px;
+      }
+
+      h1 {
+        letter-spacing: .035em;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <article>
-    <p class="muted">Devlog 001 / Recovered Build Archive</p>
-    <h1>I Recovered My First Game</h1>
+  <div class="shell">
+    <article>
+      <p class="kicker">Devlog 001 / Recovered Build Archive</p>
+      <h1>I Recovered My First Game</h1>
 
-    <p>
-      Legend started as the first game I ever came up with: a fantasy RPG written entirely in Windows Batch.
-      It was rough, strange, menu-driven, and full of placeholder ideas, but it already had the bones of a real RPG.
-    </p>
+      <p class="intro">
+        Legend started as the first game I ever came up with: a fantasy RPG written entirely in Windows Batch.
+        It was rough, strange, menu-driven, and full of placeholder ideas, but it already had the bones of a real RPG.
+      </p>
 
-    <p>
-      The surviving file appears to be <strong>LegendTFC release 1.0</strong>. It had account creation, saving,
-      combat, shops, inventory, armor, weapons, a bank, skills, quests, monster drops, and a Stronghold boss named
-      <strong>Lacoyx</strong>.
-    </p>
+      <p>
+        The surviving file appears to be <strong>LegendTFC release 1.0</strong>. It had account creation,
+        saving, combat, shops, inventory, armor, weapons, a bank, skills, quests, monster drops,
+        and a Stronghold boss named <strong>Lacoyx</strong>.
+      </p>
 
-    <p>
-      I remember later versions existing. I remember classes, new skills, and even holiday events. Those versions
-      seem to be gone now, but that ended up giving the remake its identity.
-    </p>
+      <p>
+        I remember later versions existing. I remember classes, new skills, and even holiday events.
+        Those versions seem to be gone now, but that ended up giving the remake its identity.
+      </p>
 
-    <h2>The Remake Idea</h2>
+      <div class="callout">
+        <p>
+          The goal is not just to remake the original batch game one-to-one. The goal is to preserve its spirit
+          and build the version it could have become.
+        </p>
+      </div>
 
-    <p>
-      Instead of pretending the missing versions never existed, the remake treats them as part of the story.
-      Legend is now a recovered world. Some systems survived. Some were lost. Some are slowly being restored.
-    </p>
+      <h2>The Original Build</h2>
 
-    <p>
-      Varrock, RealmBank, the Quest Hall, the Skill Plot, and the Stronghold are no longer just menus. They are
-      pieces of an old game world trying to remember what they used to be.
-    </p>
+      <p>
+        The original Legend was not just a tiny test. It already had systems layered on top of systems.
+        There was a main town menu, combat, equipment progression, shops, drops, skill training,
+        a bank, and a dangerous Stronghold. It was clearly inspired by old-school RPGs and browser-era fantasy games,
+        but it was made out of batch commands, labels, variables, and a lot of determination.
+      </p>
 
-    <h2>Recovered Build v0.2</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Surviving Systems</h3>
+          <p>Combat, inventory, shops, skills, banking, enemy drops, quests, and boss encounters survived in v1.0.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Missing History</h3>
+          <p>Later versions are remembered but currently lost, including classes, more skills, and holiday events.</p>
+        </div>
+      </div>
 
-    <p>
-      The current browser version rebuilds Legend as an HTML5 game with a new interface, class selection,
-      a Quest Hall, recovered memories, a better battle screen, and the first version of the Stronghold encounter.
-    </p>
+      <h2>The Remake Idea</h2>
 
-    <p>
-      It is still early, but the goal is clear: preserve the spirit of the original batch game and build the version
-      it could have become.
-    </p>
+      <p>
+        Instead of pretending the missing versions never existed, the remake treats them as part of the story.
+        Legend is now a recovered world. Some systems survived. Some were lost. Some are slowly being restored.
+      </p>
 
-    <h2>What Comes Next</h2>
+      <p>
+        Varrock, RealmBank, the Quest Hall, the Skill Plot, and the Stronghold are no longer just menus.
+        They are pieces of an old game world trying to remember what they used to be.
+      </p>
 
-    <p>
-      The next major update is planned around exploration. Instead of simply grinding battles, the player will be
-      able to explore roads, ruins, campsites, forests, and strange events outside Varrock. Choices will matter.
-      Random encounters will feel closer to a tabletop RPG, with risk, reward, and class-based checks.
-    </p>
+      <p>
+        That means the real-life history of the project becomes part of the game’s fiction.
+        Missing updates become lost lore. Old placeholder systems become ancient ruins. Forgotten features become things the player can recover.
+      </p>
 
-    <p>
-      The Trading Post and Smuggler are also planned so players can sell enemy drops, make money, and interact
-      with the world in more interesting ways.
-    </p>
+      <h2>Recovered Build v0.2</h2>
 
-    <nav>
-      <a class="btn" href="../index.html">Play Legend</a>
-      <a class="btn" href="../blog.html">Back to Devlog</a>
-      <a class="btn" href="../updates.html">Newsletter</a>
-    </nav>
-  </article>
+      <p>
+        The current browser version rebuilds Legend as an HTML5 game with a new interface, class selection,
+        a Quest Hall, recovered memories, a better battle screen, and the first version of the Stronghold encounter.
+      </p>
+
+      <p>
+        It is still early, but it already feels like the beginning of something real. The old batch-game structure is still there,
+        but now it has room to become a proper browser RPG.
+      </p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>Current Build</h3>
+          <p>Recovered Build v0.2 adds the title screen, classes, improved menus, Quest Hall, memories, and Lacoyx.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Next Build</h3>
+          <p>v0.3 will focus on exploration, selling enemy drops, the Trading Post, Smuggler, and D20-style choices.</p>
+        </div>
+      </div>
+
+      <h2>What Comes Next</h2>
+
+      <p>
+        The next major update is planned around exploration. Instead of simply grinding battles,
+        the player will be able to explore roads, ruins, campsites, forests, and strange events outside Varrock.
+      </p>
+
+      <p>
+        Choices will matter. Random encounters will feel closer to a tabletop RPG, with risk, reward,
+        class-based checks, and better reasons to return to town.
+      </p>
+
+      <p>
+        The Trading Post and Smuggler are also planned so players can sell enemy drops, make money,
+        hear rumors, and interact with the world in more interesting ways.
+      </p>
+
+      <nav aria-label="Post navigation">
+        <a class="btn primary" href="../index.html">Play Legend</a>
+        <a class="btn" href="../blog.html">Back to Devlog</a>
+        <a class="btn" href="../updates.html">Newsletter</a>
+        <a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </article>
+
+    <footer>
+      Legend - Recovered Build / Devlog 001
+    </footer>
+  </div>
 </body>
 </html>
