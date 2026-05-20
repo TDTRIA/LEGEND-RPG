@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voices of Ashmere - Legend Devlog</title>
+  <style>
+    :root{--bg:#060807;--soft:#0d1813;--panel:rgba(10,18,15,.94);--panel2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border2:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--shadow:rgba(0,0,0,.42)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--soft),var(--bg));padding:24px}body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(circle at center,black,transparent 78%)}.shell{width:min(940px,100%);margin:0 auto;position:relative;z-index:1}article{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow),inset 0 0 35px rgba(125,255,173,.035);border-radius:18px;padding:clamp(20px,4vw,42px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0 0 18px;color:var(--accent);font-size:clamp(2.35rem,8vw,5.4rem);letter-spacing:.06em;line-height:.95;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:34px 0 12px;color:var(--gold);font-size:1.55rem}h3{color:var(--accent);margin:0 0 8px}p{color:var(--text);line-height:1.78;font-size:1.05rem;margin:0 0 16px}strong{color:var(--gold)}.muted{color:var(--muted)}.intro{font-size:1.12rem;color:#f0fff4}.callout{border-left:3px solid var(--gold);background:rgba(255,211,105,.07);border-radius:10px;padding:14px 16px;margin:22px 0;color:#fff0c2}.callout p{margin:0;color:#fff0c2}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:18px 0 24px}.tile{border:1px solid var(--border2);background:var(--panel2);border-radius:14px;padding:16px}.tile h3{color:var(--gold)}.tile p{color:var(--muted);font-size:.98rem;margin:0;line-height:1.55}pre{font-family:Consolas,"Courier New",monospace;color:var(--accent);background:rgba(0,0,0,.25);border:1px solid rgba(125,255,173,.18);border-radius:14px;padding:14px;overflow:auto;line-height:1.15}nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;padding-top:22px;border-top:1px solid var(--border2)}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none;transition:.16s}.btn:hover{transform:translateY(-2px);border-color:rgba(255,211,105,.55);box-shadow:0 0 22px rgba(255,211,105,.11),0 14px 24px rgba(0,0,0,.2)}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:760px){body{padding:12px}h1{letter-spacing:.035em}.grid{grid-template-columns:1fr}nav{flex-direction:column}.btn{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <article>
+      <p class="kicker">Devlog 003 / Recovered Build v0.4</p>
+      <h1>Voices of Ashmere</h1>
+
+      <p class="intro">
+        v0.4 is the update where Ashmere starts to feel inhabited. The town now has named people, conversations,
+        a first true questline, better combat decisions, enemy intent, camp choices, and a small browser tab icon for the project.
+      </p>
+
+      <pre>        .-"""-.
+       /  o o  \
+       |   ^   |
+       |  '-'  |
+       '-------'
+      PEOPLE OF ASHMERE</pre>
+
+      <h2>Ashmere Has People Now</h2>
+
+      <p>
+        The biggest goal of v0.4 was to give the world voices. Ashmere now has a People of Ashmere menu where you can speak with
+        Mara Vell, Old Brenn, Sella of the Post, Captain Oric, Nim, and Vask the Backroad Dealer.
+      </p>
+
+      <div class="grid">
+        <div class="tile"><h3>Mara Vell</h3><p>The Archive Keeper who knows the bell should not have rung.</p></div>
+        <div class="tile"><h3>Old Brenn</h3><p>The Ledger Keeper who claims your name was written down before you arrived.</p></div>
+        <div class="tile"><h3>Sella of the Post</h3><p>A practical trader who knows when items should be sold and when they should be kept.</p></div>
+        <div class="tile"><h3>Captain Oric</h3><p>A guard captain who teaches the value of reading enemy intent.</p></div>
+      </div>
+
+      <h2>The Bell That Rang Once</h2>
+
+      <p>
+        v0.4 adds the first real questline: <strong>The Bell That Rang Once</strong>. The intro now matters more because the bell that rang when the player entered
+        Ashmere has become a mystery. Mara says the bell has not worked since the rollback. Brenn says your name was written in the ledger before you arrived.
+      </p>
+
+      <p>
+        The player can search the road, recover a Bell Fragment, and bring it back to The Ledger Hall to push the mystery forward.
+      </p>
+
+      <div class="callout">
+        <p>
+          v0.3 built the roads. v0.4 starts putting people, secrets, and reasons to care on those roads.
+        </p>
+      </div>
+
+      <h2>Combat Has More Decisions</h2>
+
+      <p>
+        Battles now show enemy intent, giving the player a clue about what the enemy is preparing to do. Combat also gained Guard, class-based moves,
+        and a Momentum meter. Momentum builds through action and can be spent on class abilities.
+      </p>
+
+      <p>
+        This is the first step toward making combat feel less like a damage lottery and more like a real RPG encounter.
+      </p>
+
+      <h2>Exploration Improvements</h2>
+
+      <p>
+        Exploration now includes camp choices, route unlocks, and new events like Bell Shard and Nim on the Milestone. Camp choices give players a way
+        to manage danger instead of only pushing forward or leaving.
+      </p>
+
+      <h2>Project Identity</h2>
+
+      <p>
+        v0.4 also adds a small favicon, so Legend now has a browser tab icon. It is still simple placeholder icon art, but it makes the live site feel
+        more like an actual game page.
+      </p>
+
+      <h2>What Comes Next</h2>
+
+      <p>
+        v0.5 should probably focus on expanding the new systems: more NPC dialogue, more quests, deeper combat tactics, more route-specific events,
+        and better crafting/resource decisions.
+      </p>
+
+      <nav aria-label="Post navigation">
+        <a class="btn primary" href="../index.html">Play Legend</a>
+        <a class="btn" href="../blog.html">Back to Devlog</a>
+        <a class="btn" href="../updates.html">Newsletter</a>
+        <a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </article>
+
+    <footer>Legend - Recovered Build / Devlog 003</footer>
+  </div>
+</body>
+</html>
