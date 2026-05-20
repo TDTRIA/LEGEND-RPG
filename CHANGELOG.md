@@ -6,148 +6,107 @@ This project is an HTML5 browser remake of the original Windows Batch RPG **Lege
 
 ---
 
-## [Current] v0.4.1 - Mobile Polish
+## [Current] v0.5 - The First Road
 
 ### Added
 
-- Added a dedicated mobile polish patch.
-- Added safer mobile viewport behavior.
-- Added sticky mobile action controls.
-- Added more compact mobile HUD behavior.
-- Added Devlog 004 for the mobile polish update.
+- Added **The First Road** depth patch for the opening route.
+- Added **Road Tokens** as an early route objective.
+- Added a new quest objective to bring 3 Road Tokens to Old Brenn.
+- Added **Ashmere Inn** for resting and preparation.
+- Added **Camp Supplies** as a survival item and economy sink.
+- Added steadier weapon damage ranges.
+- Added enemy traits: Sneaky, Skittish, Charge, Drain, Stonehide, Unstable, Heavy, Rooted, and Boss.
+- Added clearer quest tracker text.
+- Added mastery perk text for each skill.
+- Added mastery-based bonus reward chances.
+- Added more Old Road-focused event filtering.
+- Added Devlog 005.
 
 ### Changed
 
-- Updated the game label to **Recovered Build v0.4.1**.
-- Improved tap target sizes for phones.
-- Reduced mobile spacing and panel size.
-- Made ASCII panels scale better on narrow screens.
-- Made the top HUD more compact on phones.
-- Improved battle action reach on mobile.
-- Reduced excess scrolling where possible.
-- Updated the Devlog and newsletter/status pages for v0.4.1.
+- Updated game label to **Recovered Build v0.5**.
+- Rebalanced early enemy damage and HP.
+- Improved early combat readability by showing weapon damage ranges.
+- Made Old Road safer and more focused as the beginner route.
+- Made camp supplies more important during exploration.
+- Made sell-all avoid important items like food, potions, tablets, camp supplies, gems, Magic Orbs, Road Tokens, and quest items.
+- Updated blog and status pages for v0.5.
 
 ### Known Issues
 
-- v0.4.1 is still a single-file prototype.
-- Mobile support is improved, but real-device testing is still needed.
-- Some long screens can still require scrolling on smaller phones.
+- v0.5 is still a single-file prototype.
+- The new enemy traits are early versions and need more unique behavior.
+- Mastery perks are present but still basic.
+- Crafting/resource decisions need more depth in a future update.
+
+---
+
+## v0.4.1 - Mobile Polish
+
+- Improved mobile viewport behavior.
+- Added sticky mobile action controls.
+- Improved tap target sizes.
+- Reduced mobile spacing and panel size.
+- Made ASCII panels scale better on narrow screens.
+- Updated Devlog and newsletter/status pages for v0.4.1.
 
 ---
 
 ## v0.4 - Voices of Ashmere
 
-### Added
-
-- Added a browser tab icon through `favicon.svg`.
 - Added named NPCs in Ashmere.
-- Added **Mara Vell**, **Old Brenn**, **Sella of the Post**, **Captain Oric**, **Nim**, and **Vask**.
-- Added the **People of Ashmere** menu.
-- Added a dialogue system for NPC conversations.
-- Added the first real questline: **The Bell That Rang Once**.
-- Added quest log notes to the Character Sheet.
-- Added **Bell Fragment** as a quest item.
-- Added enemy intent text during combat.
-- Added **Guard** as a combat action.
+- Added the People of Ashmere menu.
+- Added a dialogue system.
+- Added first real questline: **The Bell That Rang Once**.
+- Added Bell Fragment quest item.
+- Added enemy intent text.
+- Added Guard action.
 - Added class-based combat moves.
-- Added a **Momentum** meter used for class moves.
-- Added camp choices while exploring.
+- Added Momentum meter.
+- Added camp choices.
 - Added route unlock conditions.
-- Added a **Hollow Approach** route.
-- Added a **Bell Shard** exploration event.
-- Added a **Nim on the Milestone** exploration event.
 - Added skill mastery tracking.
-- Added more recovered memories tied to NPC dialogue and quests.
-
-### Changed
-
-- Updated the title screen and game labels to **Recovered Build v0.4**.
-- Combat now gives the player more choices than basic attacking.
-- Exploration now has more pacing through camp decisions.
-- The Archive Hall and Ledger Hall now connect to NPCs and quest progression.
-- The Character Sheet now includes quest log and mastery progress.
-- The first Ashmere questline now gives the intro more purpose.
+- Added browser tab icon through `favicon.svg`.
 
 ---
 
 ## v0.3 - The Roads Beyond Ashmere
 
-### Added
-
 - Renamed the starting town to **Ashmere**.
 - Renamed the wider world to **Eldermere**.
-- Added **The Ledger Hall**, **The Archive Hall**, **The Hollow Keep**, **The Commons**, and **The Relic Market**.
-- Added a proper intro sequence where the player wakes on the road to Ashmere.
-- Added deeper character creation.
-- Added character origins.
-- Added starting keepsakes.
-- Added a Character Sheet screen.
-- Added ASCII art panels for major scenes.
-- Replaced direct random combat with an exploration system.
-- Added route choices outside Ashmere.
-- Added random exploration events.
+- Added The Ledger Hall, The Archive Hall, The Hollow Keep, The Commons, and The Relic Market.
+- Added intro sequence.
+- Added deeper character creation, origins, and keepsakes.
+- Added Character Sheet.
+- Added ASCII art panels.
+- Added exploration routes and random events.
 - Added D20-style skill checks.
-- Added skill-specific training checks.
-- Added The Trading Post for selling enemy drops and gathered materials.
-- Added The Backroad Dealer.
-- Added basic traits from choices.
-- Added new recovered memories tied to exploration and lore events.
-
-### Changed
-
-- The game now has a more original world identity.
-- Early shop prices were reduced to make the opening less grindy.
-- Early enemy HP and damage were rebalanced.
-- Skill training is now tied to related checks.
-- Enemy drops now have a clear purpose through Trading Post selling.
-- The main menu now reflects the new Ashmere/Eldermere setting.
+- Added Trading Post and Backroad Dealer.
+- Rebalanced early progression.
 
 ---
 
 ## v0.2 - Recovered Build
 
-### Added
-
-- New animated title screen.
-- Recovered Build identity and presentation.
-- Character creation.
-- Class selection.
-- Classes: Adventurer, Warrior, Ranger, Mage, Thief, and Skiller.
-- Improved main menu with fantasy menu cards.
-- Improved status panels.
-- World Log panel.
-- Better battle screen with enemy display and HP bars.
-- Quest Hall with quest cards.
-- Recovered Memories menu.
-- Skill Plot with resource-generating skill training.
-- Bank account interface.
-- Stronghold gate warning.
-- Lacoyx boss encounter.
-- Code Fragment story item.
-- Browser saving with localStorage.
-- Devlog button on title screen.
-- Newsletter button on title screen.
-- GitHub button on title screen.
+- Added animated title screen.
+- Added class selection.
+- Added improved menu and battle screens.
+- Added Quest Hall cards.
+- Added Recovered Memories.
+- Added Skill Plot.
+- Added RealmBank interface.
+- Added Lacoyx boss encounter.
+- Added Code Fragment story item.
+- Added devlog, newsletter, and GitHub title buttons.
 
 ---
 
 ## v0.1 - Classic Online Prototype
 
-### Added
-
 - First HTML5 remake prototype.
-- Create/load character flow.
-- Browser save support with localStorage.
-- Main menu based on the original batch RPG structure.
-- Basic combat.
-- Basic inventory.
-- Weapon progression.
-- Armor progression.
-- Shops.
-- Bank prototype.
-- Quest prototype.
-- Skill prototype.
-- Boss prototype.
+- Added character creation and browser save support.
+- Added basic combat, inventory, shops, bank, quests, skills, and boss prototype.
 
 ---
 
