@@ -6,47 +6,54 @@ This project is an HTML5 browser remake of the original Windows Batch RPG **Lege
 
 ---
 
-## [Planned] v0.3 - The Roads Beyond Ashmere
+## [Current] v0.3 - The Roads Beyond Ashmere
 
-### Planned Additions
+### Added
 
-- Rename the starting town from Varrock to **Ashmere**.
-- Rename the wider world from Gielinor to **Eldermere**.
-- Rename RealmBank to **The Ledger Hall**.
-- Rename Quest Hall to **The Archive Hall**.
-- Rename Stronghold to **The Hollow Keep**.
-- Rename Skill Plot to **The Commons**.
-- Rename Legend's Store to **The Relic Market**.
-- Add a proper intro sequence explaining how the player arrives.
-- Add deeper character creation.
-- Add character origins.
-- Add starting keepsakes.
-- Add a Character Sheet screen.
-- Add ASCII art for locations, enemies, and major scenes.
-- Replace direct random combat with an exploration system.
-- Add exploration routes outside Ashmere.
-- Add random events with choices.
-- Add D20-style skill checks.
-- Add skill-specific training events.
-- Add the Trading Post for selling enemy drops.
-- Add the Backroad Dealer as a risky Smuggler replacement.
-- Rebalance early enemies.
-- Rebalance early gold gain.
-- Rebalance early shop prices.
-- Make the opening game less grindy and more choice-driven.
+- Renamed the starting town from Varrock to **Ashmere**.
+- Renamed the wider world from Gielinor to **Eldermere**.
+- Renamed RealmBank to **The Ledger Hall**.
+- Renamed Quest Hall to **The Archive Hall**.
+- Renamed Stronghold to **The Hollow Keep**.
+- Renamed Skill Plot to **The Commons**.
+- Renamed Legend's Store to **The Relic Market**.
+- Added a proper intro sequence where the player wakes on the road to Ashmere.
+- Added deeper character creation.
+- Added character origins.
+- Added starting keepsakes.
+- Added a Character Sheet screen.
+- Added ASCII art panels for the title screen, Ashmere, roads, The Hollow Keep, The Ledger Hall, and The Commons.
+- Replaced direct random combat with an exploration system.
+- Added route choices outside Ashmere.
+- Added random exploration events.
+- Added D20-style skill checks.
+- Added skill-specific training checks.
+- Added The Trading Post for selling enemy drops and gathered materials.
+- Added The Backroad Dealer as a risky trader character.
+- Added basic traits from choices, such as Helpful, Shady, Cautious, and Caught.
+- Added new recovered memories tied to exploration and lore events.
 
-### Planned Design Goals
+### Changed
 
-- Make the world feel original instead of placeholder-based.
-- Make the player character feel personal.
-- Make exploration feel closer to a tabletop RPG.
-- Make skills more interactive instead of simple click-to-train actions.
-- Give enemy drops an actual purpose through selling and trading.
-- Preserve the recovered old-game identity while building stronger original lore.
+- The game now has a more original world identity.
+- Early shop prices were reduced to make the opening less grindy.
+- Early enemy HP and damage were rebalanced.
+- Skill training is now tied to related checks instead of being purely click-to-train.
+- Enemy drops now have a clear purpose through Trading Post selling.
+- The opening flow now makes the character feel more personal through name, origin, class, and keepsake choices.
+- The main menu now reflects the new Ashmere/Eldermere setting.
+
+### Known Issues
+
+- v0.3 is still a single-file prototype, so the code will eventually need to be split into separate files.
+- Exploration event variety is still early and needs more routes, scenes, rewards, and consequences.
+- The Backroad Dealer is basic and needs more personality and unique trades.
+- The story has a stronger opening now, but the first true questline still needs to be built.
+- Combat still needs more tactical options beyond attack, supplies, flee, and equipment.
 
 ---
 
-## [Current] v0.2 - Recovered Build
+## v0.2 - Recovered Build
 
 ### Added
 
@@ -79,12 +86,12 @@ This project is an HTML5 browser remake of the original Windows Batch RPG **Lege
 
 ### Known Issues
 
-- Gameplay is still too grindy.
-- The world names are still placeholder-inspired and need to become original.
-- Character creation needs more personality and story context.
-- Enemy drops currently need better uses.
-- Skills need interactive checks and more meaningful progression.
-- The intro does not yet fully explain how the player arrived in the world.
+- Gameplay was still too grindy.
+- The world names were still placeholder-inspired and needed to become original.
+- Character creation needed more personality and story context.
+- Enemy drops needed better uses.
+- Skills needed interactive checks and more meaningful progression.
+- The intro did not yet fully explain how the player arrived in the world.
 
 ---
 
@@ -131,7 +138,6 @@ The recovered batch version included:
 - Armor shop.
 - Legend's Store.
 - Trading Post.
-- Smuggler.
 - Stronghold.
 - Skill Plot.
 - RealmBank.
