@@ -2,17 +2,23 @@
 
 **Legend - Recovered Build** is a browser-based remake of my first-ever game project: a fantasy text RPG originally written entirely in Windows Batch.
 
-The original surviving version, **LegendTFC release 1.0**, included account creation, saving, combat, shops, inventory, armor and weapon progression, skills, a bank system, quests, monster drops, and a Stronghold boss named **Lacoyx**. This remake rebuilds that old batch RPG as a playable HTML5 game while expanding it into something bigger, cleaner, and more story-driven.
+The surviving original build, **LegendTFC release 1.0**, included account creation, saving, combat, shops, inventory, armor and weapon progression, skills, a bank system, quests, monster drops, and a boss named **Lacoyx**. This remake rebuilds that old batch RPG as a playable HTML5 game while expanding it into something bigger, cleaner, and more story-driven.
 
-This project is currently in early development.
+This project is currently in early prototype development.
+
+---
+
+## Play Now
+
+**Live build:** https://tdtria.github.io/LEGEND-RPG/
 
 ---
 
 ## Current Version
 
-**Recovered Build v0.2**
+**Recovered Build v0.3 - The Roads Beyond Ashmere**
 
-The goal of this version is to preserve the spirit of the original batch game while turning it into a modern browser-playable RPG.
+This version gives Legend a more original identity and a stronger RPG loop. The old placeholder world names have been replaced with new locations, character creation has been expanded, exploration now uses random events and D20-style checks, enemy drops can be sold, and skills now require related checks to progress.
 
 ---
 
@@ -20,37 +26,46 @@ The goal of this version is to preserve the spirit of the original batch game wh
 
 Legend is currently a **menu-driven fantasy RPG** with old-school text adventure roots.
 
-You create a character, enter Varrock, wander Gielinor, fight monsters, train skills, buy gear, store gold, complete quests, and prepare to face the Stronghold.
+You create a character, choose an origin, choose a class, pick a keepsake, enter **Ashmere**, explore the roads of **Eldermere**, fight monsters, pass checks, collect loot, sell drops, train skills, store gold, recover memories, and prepare to face **Lacoyx** in **The Hollow Keep**.
 
 The remake leans into the idea that the game itself is a recovered lost build. Missing updates, old systems, corrupted memories, and forgotten content are being turned into part of the story.
 
 ---
 
-## Features
-
-### Current Features
+## Current Features
 
 - Browser-based HTML5 game
 - No engine required
 - Local browser saving using `localStorage`
 - Character creation
+- Character origins
+- Starting keepsakes
 - Class selection
-- Main hub menu
+- Character Sheet
+- Main hub: **Ashmere**
+- World setting: **Eldermere**
+- Exploration beyond Ashmere
+- Random exploration events
+- D20-style checks
 - Combat system
 - Enemy encounters
 - Weapon and armor progression
 - Inventory system
 - Weapon Shop
 - Armor Shop
-- Legend's Store
-- RealmBank system
-- Quest Hall
-- Skill Plot
+- **The Relic Market**
+- **The Trading Post** for selling drops
+- **The Backroad Dealer** for risky trades and rumors
+- **The Ledger Hall** bank system
+- **The Archive Hall** quest/memory hub
+- **The Commons** skill training area
+- Skill checks for leveling skills
 - Resource gathering through skills
-- Stronghold boss encounter
+- **The Hollow Keep** boss encounter
 - Lacoyx boss fight
 - Recovered Memories system
 - Code Fragment story item
+- ASCII art panels
 - Dark fantasy / recovered-terminal style UI
 
 ---
@@ -60,13 +75,39 @@ The remake leans into the idea that the game itself is a recovered lost build. M
 The current remake includes six starter classes:
 
 - **Adventurer** - Balanced starter class
-- **Warrior** - Higher HP and stronger melee growth
-- **Ranger** - Better survival and scouting flavor
-- **Mage** - Uses Runic Tablets for magical power
-- **Thief** - Better gold and thieving potential
-- **Skiller** - Better gathering and crafting progression
+- **Warrior** - Higher HP and better force checks
+- **Ranger** - Better survival, scouting, and road sense
+- **Mage** - Better magic and lore checks
+- **Thief** - Better thieving and risky reward checks
+- **Skiller** - Better gathering, crafting, and non-combat progression
 
 These classes are early versions and will be expanded over time.
+
+---
+
+## Origins and Keepsakes
+
+v0.3 adds a more personal character creation flow.
+
+Origins include:
+
+- Lost Squire
+- Runaway Apprentice
+- Debt-Bound Thief
+- Archivist's Child
+- Wandering Cook
+- Failed Monster Hunter
+
+Keepsakes include:
+
+- Rusty Charm
+- Old Map
+- Bent Coin
+- Cracked Tablet
+- Dull Knife
+- Cooked Ration
+
+Origins and keepsakes provide small bonuses, starting items, and story flavor.
 
 ---
 
@@ -81,7 +122,7 @@ Current skills include:
 - Smithing
 - Thieving
 
-Skills generate resources, support progression, and will eventually unlock quests, crafting, upgrades, and alternate ways to play.
+Skills now use related checks while training. Instead of simply clicking to gain levels, each skill uses a different style of check tied to the action being performed.
 
 ---
 
@@ -95,15 +136,15 @@ The world of Legend was once larger.
 
 Something caused it to roll back.
 
-Now Varrock, the Quest Hall, the Skill Plot, RealmBank, and the Stronghold are slowly remembering what they used to be.
+Now **Ashmere**, **The Archive Hall**, **The Commons**, **The Ledger Hall**, and **The Hollow Keep** are slowly remembering what they used to be.
 
-At the center of the mystery is **Lacoyx**, War Commander of the Stronghold, who appears to know that the world runs on rules, stats, drops, levels, and old code.
+At the center of the mystery is **Lacoyx**, a surviving boss from the old build who appears to know that the world runs on rules, stats, drops, levels, and old code.
 
 ---
 
 ## Development Roadmap
 
-### v0.1
+### v0.1 - Classic Online Prototype
 
 - Basic HTML remake
 - Character creation
@@ -113,9 +154,9 @@ At the center of the mystery is **Lacoyx**, War Commander of the Stronghold, who
 - Shops
 - Skills
 - Bank
-- Stronghold prototype
+- Boss prototype
 
-### v0.2
+### v0.2 - Recovered Build
 
 - Upgraded UI
 - Recovered Build identity
@@ -128,16 +169,31 @@ At the center of the mystery is **Lacoyx**, War Commander of the Stronghold, who
 - Code Fragment item
 - Lacoyx intro flavor
 
-### Planned v0.3
+### v0.3 - The Roads Beyond Ashmere
 
-- Named NPCs in Varrock
+- Original world renames
+- Intro sequence
+- Origins and keepsakes
+- Character Sheet
+- ASCII art panels
+- Exploration routes
+- Random events
+- D20-style checks
+- Trading Post
+- Backroad Dealer
+- Skill check training
+- Early balance pass
+
+### Planned v0.4
+
+- Stronger first questline
+- Named NPCs in Ashmere
 - Dialogue system
-- First real story questline: **The Lost Build**
-- Better quest tracking
-- More Stronghold lore
-- More class-specific mechanics
-- Expanded shops
-- Better inventory display
+- More exploration events
+- Better combat options
+- More Backroad Dealer content
+- More Archive Hall quest tracking
+- More lore around Lacoyx and The Lost Build
 
 ### Future Ideas
 
@@ -175,23 +231,9 @@ No frameworks or game engines are required for the current version.
 1. Download or clone this repository.
 2. Open `index.html` in your browser.
 3. Create a character.
-4. Start exploring Varrock.
+4. Start exploring Ashmere and the roads beyond it.
 
 Your save data is stored in your browser.
-
----
-
-## GitHub Pages
-
-This game can be hosted for free using GitHub Pages.
-
-Recommended setup:
-
-1. Upload the project files to a GitHub repository.
-2. Go to the repository settings.
-3. Open the **Pages** section.
-4. Set the source to the main branch.
-5. Open the generated GitHub Pages link.
 
 ---
 
@@ -215,4 +257,4 @@ Recovered and remade as an HTML5 browser RPG.
 
 This project does not currently have a selected license.
 
-If this project becomes public and others may use or contribute to the code, a license should be added later.
+If this project becomes public for outside reuse or contribution, a license should be added later.
