@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mobile Polish - Legend Devlog</title>
+  <style>
+    :root{--bg:#060807;--soft:#0d1813;--panel:rgba(10,18,15,.94);--panel2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border2:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--shadow:rgba(0,0,0,.42)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--soft),var(--bg));padding:24px}body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(circle at center,black,transparent 78%)}.shell{width:min(940px,100%);margin:0 auto;position:relative;z-index:1}article{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow),inset 0 0 35px rgba(125,255,173,.035);border-radius:18px;padding:clamp(20px,4vw,42px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0 0 18px;color:var(--accent);font-size:clamp(2.35rem,8vw,5.4rem);letter-spacing:.06em;line-height:.95;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:34px 0 12px;color:var(--gold);font-size:1.55rem}p,li{color:var(--text);line-height:1.78;font-size:1.05rem}strong{color:var(--gold)}.callout{border-left:3px solid var(--gold);background:rgba(255,211,105,.07);border-radius:10px;padding:14px 16px;margin:22px 0;color:#fff0c2}.callout p{margin:0;color:#fff0c2}nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;padding-top:22px;border-top:1px solid var(--border2)}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none;transition:.16s}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}@media(max-width:760px){body{padding:12px}nav{flex-direction:column}.btn{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <article>
+      <p class="kicker">Devlog 004 / Recovered Build v0.4.1</p>
+      <h1>Mobile Polish</h1>
+      <p><strong>v0.4.1</strong> is a small quality-of-life patch focused on making Legend feel better on phones and smaller screens.</p>
+      <div class="callout"><p>This is not a big content update. It is a playability patch so the game can be smoother across desktop, tablet, and mobile.</p></div>
+      <h2>What changed</h2>
+      <ul>
+        <li>Updated the viewport for safer mobile scaling.</li>
+        <li>Improved tap target sizes for buttons.</li>
+        <li>Added sticky mobile action controls.</li>
+        <li>Reduced mobile spacing and panel size.</li>
+        <li>Made ASCII panels scale better on narrow screens.</li>
+        <li>Made the top HUD more compact on phones.</li>
+        <li>Kept battle actions easier to reach on mobile.</li>
+        <li>Reduced excess scrolling where possible.</li>
+      </ul>
+      <h2>Why this matters</h2>
+      <p>Legend is a browser RPG, so it should feel playable wherever someone opens it. This patch moves the project closer to that goal before bigger v0.5 systems are added.</p>
+      <nav><a class="btn primary" href="../index.html">Play Legend</a><a class="btn" href="../blog.html">Back to Devlog</a><a class="btn" href="../updates.html">Newsletter</a></nav>
+    </article>
+  </div>
+</body>
+</html>
