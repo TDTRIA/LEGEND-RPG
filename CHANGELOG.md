@@ -6,9 +6,36 @@ This project is an HTML5 browser remake of the original Windows Batch RPG **Lege
 
 ---
 
-## [Current] v0.5 - The First Road
+## [Current] v0.5.1 - First Road Balance
 
 ### Added
+
+- Added the first balance patch for the v0.5 public playtest loop.
+- Added guaranteed Old Road progress toward Road Tokens.
+- Added a feedback link directly to the main menu.
+- Added Devlog 006.
+
+### Changed
+
+- Updated game label to **Recovered Build v0.5.1**.
+- Road Token progression is now less dependent on random event luck.
+- Every two successful Old Road events can now reward a Road Token.
+- More Old Road events can contribute to Road Token progress.
+- Bell Shard pacing is more intentional after talking to Mara.
+- Quest tracker now shows clearer Road Token progress.
+- Early Old Road enemy balance was tightened for public playtest pacing.
+- Important survival and quest items are better protected from quick selling.
+- Updated blog and status pages for v0.5.1.
+
+### Known Issues
+
+- v0.5.1 is still a single-file prototype.
+- The First Road loop is improved but still needs real public feedback.
+- Some systems from v0.5 were simplified while tightening the playtest loop and may need to be re-expanded in future builds.
+
+---
+
+## v0.5 - The First Road
 
 - Added **The First Road** depth patch for the opening route.
 - Added **Road Tokens** as an early route objective.
@@ -16,29 +43,12 @@ This project is an HTML5 browser remake of the original Windows Batch RPG **Lege
 - Added **Ashmere Inn** for resting and preparation.
 - Added **Camp Supplies** as a survival item and economy sink.
 - Added steadier weapon damage ranges.
-- Added enemy traits: Sneaky, Skittish, Charge, Drain, Stonehide, Unstable, Heavy, Rooted, and Boss.
+- Added enemy traits.
 - Added clearer quest tracker text.
 - Added mastery perk text for each skill.
 - Added mastery-based bonus reward chances.
 - Added more Old Road-focused event filtering.
 - Added Devlog 005.
-
-### Changed
-
-- Updated game label to **Recovered Build v0.5**.
-- Rebalanced early enemy damage and HP.
-- Improved early combat readability by showing weapon damage ranges.
-- Made Old Road safer and more focused as the beginner route.
-- Made camp supplies more important during exploration.
-- Made sell-all avoid important items like food, potions, tablets, camp supplies, gems, Magic Orbs, Road Tokens, and quest items.
-- Updated blog and status pages for v0.5.
-
-### Known Issues
-
-- v0.5 is still a single-file prototype.
-- The new enemy traits are early versions and need more unique behavior.
-- Mastery perks are present but still basic.
-- Crafting/resource decisions need more depth in a future update.
 
 ---
 
