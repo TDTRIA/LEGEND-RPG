@@ -10,13 +10,15 @@ The surviving original build, **LegendTFC release 1.0**, included account creati
 
 **Live build:** https://tdtria.github.io/LEGEND-RPG/
 
+**Playtest feedback page:** https://tdtria.github.io/LEGEND-RPG/feedback.html
+
 ---
 
 ## Current Version
 
-**Recovered Build v0.5 - The First Road**
+**Recovered Build v0.5.1 - First Road Balance**
 
-v0.5 is a depth patch for the first 15 minutes of play. It strengthens the opening route with Road Tokens, Ashmere Inn, Camp Supplies, steadier weapon damage, enemy traits, mastery perks, and clearer quest tracking.
+v0.5.1 is the first balance patch for the public playtest loop. It improves the first 10–15 minutes by making Road Token progress faster, Bell Shard pacing clearer, Old Road rewards more reliable, and feedback easier to submit from the main menu.
 
 ---
 
@@ -38,6 +40,7 @@ v0.5 is a depth patch for the first 15 minutes of play. It strengthens the openi
 - First questline: **The Bell That Rang Once**
 - Opening route: **The First Road**
 - Road Tokens objective
+- Guaranteed Old Road progress toward Road Tokens
 - Ashmere Inn
 - Camp Supplies
 - Exploration routes and random events
@@ -51,42 +54,41 @@ v0.5 is a depth patch for the first 15 minutes of play. It strengthens the openi
 - Weapon and armor progression
 - Inventory system
 - Trading Post
-- Backroad Dealer
 - Ledger Hall bank system
 - Archive Hall quest/memory hub
 - Commons skill training area
-- Skill checks for leveling skills
-- Skill mastery tracking and early mastery perks
+- Skill checks and skill mastery tracking
 - Hollow Keep boss encounter
 - Lacoyx boss fight
 - Recovered Memories system
 - ASCII art panels
+- Human playtest feedback page
+- Browser auto playtest runner
+- Buttondown newsletter signup
 
 ---
 
 ## Development Roadmap
 
-### v0.5 - The First Road
+### v0.5.1 - First Road Balance
 
-- Deepened opening route
-- Added Road Tokens
-- Added Ashmere Inn
-- Added Camp Supplies
-- Added enemy traits
-- Added steadier weapon damage ranges
-- Added clearer quest tracker
-- Added mastery perks
-- Improved early progression
+- Improved Road Token pacing
+- Added guaranteed Old Road progress
+- Made Bell Shard timing clearer after talking to Mara
+- Added a Feedback link to the main game menu
+- Tightened early Old Road balance for public playtesting
+- Updated support pages and changelog
 
 ### Planned Next
 
-- More route-specific events
-- More NPC reactions after quests
-- Better crafting and resource decisions
-- Deeper Hollow Keep progression
-- More enemy trait behavior
-- More questlines
-- More UI polish
+- Collect public playtest feedback
+- Tune confusion points from testers
+- Improve mobile readability based on real-device feedback
+- Expand route-specific events
+- Restore and deepen broader v0.5 systems where needed
+- Add more NPC reactions after quests
+- Improve combat clarity and enemy behavior
+- Deepen Hollow Keep progression
 
 ---
 
@@ -97,6 +99,9 @@ v0.5 is a depth patch for the first 15 minutes of play. It strengthens the openi
 - JavaScript
 - Browser `localStorage`
 - GitHub Pages
+- Buttondown newsletter
+- Google Forms feedback
+- Optional Playwright setup
 
 ---
 
