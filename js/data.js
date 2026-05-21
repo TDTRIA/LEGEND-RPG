@@ -7,7 +7,7 @@ window.LEGEND_DATA = {
     Warrior:{hp:140,gold:90,mod:{strength:3},move:'Cleave',desc:'High HP and better force checks.'},
     Ranger:{hp:115,gold:100,mod:{survival:3,agility:1},move:'Trap Shot',desc:'Better road sense, scouting, and fleeing.'},
     Mage:{hp:90,gold:130,mod:{magic:3,lore:1},move:'Rune Bolt',desc:'Runic power and better strange-event checks.'},
-    Thief:{hp:98,gold:160,mod:{thieving:3,agility:1},move:'Swipe',desc:'Better stealing, locks, and risky rewards.'},
+    Thief:{hp:98,gold:160,mod:{thieving:3},move:'Swipe',desc:'Better stealing, locks, and risky rewards.'},
     Skiller:{hp:95,gold:125,mod:{craft:2,survival:1},move:'Improvised Tool',desc:'Better gathering, crafting, and non-combat play.'}
   },
   origins: {
@@ -45,5 +45,94 @@ window.LEGEND_DATA = {
     road:'      ___|___ .   . ___|___\n  ____/   |   \\_____/   |   \\____\n      THE FIRST ROAD',
     npc:'        .-"""-.\n       /  o o  \\\n       |   ^   |\n       |  \'-\'  |\n       \'-------\'',
     keep:'        ______________________\n       /     THE HOLLOW KEEP    \\\n     /__________________________\\\n        ||  ||  ||  ||  ||'
+  },
+  portraits: {
+    mara: `
+        .-"""""-.
+      .'  .--.  '.
+     /   /    \\   \\
+    |   |  ..  |   |
+    |   |  __  |   |
+    |   |/ __\\ |   |
+    |    \\____/    |
+     \\   .____.   /
+      '.  \\__/  .'
+        '-.__.-'
+         /|  |\\
+    ____/ |  | \\____
+   /____  |  |  ____\\
+        | |  | |
+        | |__| |   ____
+        |  __  |  / __ \\
+        | |  | |  ||  ||
+        |_|  |_|  ||__||
+`,
+    brenn: `
+        .-''''-.
+      .'  .--.  '.
+     /   / oo \\   \\
+    |   |  --  |   |
+    |   | .__. |   |
+    |   | \\__/ |   |
+    |    \\____/    |
+     \\   /____\\   /
+      '._\\____/_.
+          |  |
+       ___|  |___
+     .'   ____   '.
+    /   .\` __ \`.   \\
+   |   /  /  \\  \\   |
+   |   | | [] | |   |
+   |   |  \\__/  |   |
+   |   \\   __   /   |
+    \\   '.___.'   _/
+     '.___||____.'
+         _||_
+        /_||_\\   o-o
+          ||      |
+          ||     / \\
+`,
+    oric: `
+           /^\\
+      ____/###\\____
+     /____  _  ____\\
+          |/ \\|
+         /|   |\\
+        /_|___|_\\
+       |  |===|  |
+       |  |===|  |
+       |  |___|  |
+       |   .-.   |
+       |  /   \\  |
+       |  \\___/  |
+       |    |    |
+      /|____|____|\\
+     /_/_/  |  \\_\\_\\
+            |
+            |
+            |
+           / \\
+          /___\\
+`,
+    sella: `
+         .-~~~~-.
+       .'  .--.  '.
+      /   ( oo )   \\
+     |    \\ -- /    |
+     |   .-.__.-.   |
+     |  /  ____  \\  |
+      \\ | / __ \\ | /
+       \\| \\____/ |/
+        '.______.'
+         /| || |\\
+    ____/_|_||_|_\\____
+   /____   _  _   ____\\
+        | / \\/ \\ |
+        | \\_/\\_/ |   __
+        |  /  \\  |  /__\\
+        | |====| |  \\__/
+        |_|____|_|
+          /_||_\\
+`
   }
 };
