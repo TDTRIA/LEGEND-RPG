@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Refactor and Accessibility - Legend Devlog</title>
+  <style>
+    :root{--bg:#060807;--soft:#0d1813;--panel:rgba(10,18,15,.94);--border:rgba(132,255,178,.24);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--shadow:rgba(0,0,0,.42)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--soft),var(--bg));padding:24px}.shell{width:min(940px,100%);margin:0 auto}article{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow);border-radius:18px;padding:clamp(20px,4vw,42px)}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0 0 18px;color:var(--accent);font-size:clamp(2.35rem,8vw,5.4rem);letter-spacing:.06em;line-height:.95;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:34px 0 12px;color:var(--gold);font-size:1.55rem}p,li{color:var(--text);line-height:1.78;font-size:1.05rem}strong{color:var(--gold)}pre{font-family:Consolas,"Courier New",monospace;color:var(--accent);background:rgba(0,0,0,.25);border:1px solid rgba(125,255,173,.18);border-radius:14px;padding:14px;overflow:auto;line-height:1.15}.callout{border-left:3px solid var(--gold);background:rgba(255,211,105,.07);border-radius:10px;padding:14px 16px;margin:22px 0}.callout p{margin:0;color:#fff0c2}nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;padding-top:22px;border-top:1px solid rgba(132,255,178,.14)}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}@media(max-width:760px){body{padding:12px}nav{flex-direction:column}.btn{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <article>
+      <p class="kicker">Devlog 007 / Recovered Build v0.6</p>
+      <h1>Refactor and Accessibility</h1>
+      <p><strong>v0.6</strong> is a structural patch. The goal was to make LEGEND easier to grow, less overwhelming for first-time players, and more readable for more people.</p>
+      <pre>index.html
+css/style.css
+js/data.js
+js/storage.js
+js/ui.js
+js/game.js</pre>
+      <div class="callout"><p>The biggest change is invisible: LEGEND is no longer one giant HTML file. The game now has separate files for style, data, storage, UI rendering, and game flow.</p></div>
+      <h2>What changed</h2>
+      <ul>
+        <li>Split the game out of the single-file build into a modular v0.6 structure.</li>
+        <li>Added progressive Ashmere menu unlocks so new players see fewer options at first.</li>
+        <li>Added Settings / Accessibility from the title screen and Ashmere menu.</li>
+        <li>Added larger text, bolder text, high contrast, reduced motion, simplified ASCII, spacious UI, and readable font toggles.</li>
+        <li>Added persistent accessibility settings using local browser storage.</li>
+        <li>Kept Save Vault as the bridge toward future cloud or account saves.</li>
+      </ul>
+      <h2>Why it matters</h2>
+      <p>LEGEND was starting to grow faster than one file could safely handle. This refactor gives the project a better foundation before more quests, systems, enemies, routes, and eventual account/cloud save experiments are added.</p>
+      <h2>Known tradeoff</h2>
+      <p>Because v0.6 is a rebuild/refactor pass, some v0.5.1 systems may feel leaner for the moment. The next patches should restore depth piece by piece while keeping the cleaner file structure.</p>
+      <h2>Next</h2>
+      <p>The immediate next step is testing the v0.6 QA runner, patching any broken flow, and then updating the playtest/public pages around the new first-time player experience.</p>
+      <nav><a class="btn primary" href="../index.html">Play v0.6</a><a class="btn" href="../playtest.html">Run QA</a><a class="btn" href="../feedback.html">Leave Feedback</a><a class="btn" href="../blog.html">Back to Devlog</a></nav>
+    </article>
+  </div>
+</body>
+</html>
