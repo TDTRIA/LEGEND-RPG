@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>First Road Balance - Legend Devlog</title>
+  <style>
+    :root{--bg:#060807;--soft:#0d1813;--panel:rgba(10,18,15,.94);--border:rgba(132,255,178,.24);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--shadow:rgba(0,0,0,.42)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--soft),var(--bg));padding:24px}.shell{width:min(940px,100%);margin:0 auto}article{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow);border-radius:18px;padding:clamp(20px,4vw,42px)}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0 0 18px;color:var(--accent);font-size:clamp(2.35rem,8vw,5.4rem);letter-spacing:.06em;line-height:.95;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:34px 0 12px;color:var(--gold);font-size:1.55rem}p,li{color:var(--text);line-height:1.78;font-size:1.05rem}strong{color:var(--gold)}pre{font-family:Consolas,"Courier New",monospace;color:var(--accent);background:rgba(0,0,0,.25);border:1px solid rgba(125,255,173,.18);border-radius:14px;padding:14px;overflow:auto;line-height:1.15}.callout{border-left:3px solid var(--gold);background:rgba(255,211,105,.07);border-radius:10px;padding:14px 16px;margin:22px 0}.callout p{margin:0;color:#fff0c2}nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px;padding-top:22px;border-top:1px solid rgba(132,255,178,.14)}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}@media(max-width:760px){body{padding:12px}nav{flex-direction:column}.btn{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <article>
+      <p class="kicker">Devlog 006 / Recovered Build v0.5.1</p>
+      <h1>First Road Balance</h1>
+      <p><strong>v0.5.1</strong> is the first balance patch after the v0.5 depth update. The goal is simple: make the first 10–15 minutes smoother for public playtesters.</p>
+      <pre>      ___|___ .   . ___|___
+  ____/   |   \_____/   |   \____
+      THE FIRST ROAD BALANCE</pre>
+      <div class="callout"><p>The biggest fix is Road Token pacing. The First Road should now move faster and feel less dependent on random event luck.</p></div>
+      <h2>What changed</h2>
+      <ul>
+        <li>Updated the game to <strong>Recovered Build v0.5.1</strong>.</li>
+        <li>Added guaranteed Old Road progress toward Road Tokens.</li>
+        <li>Every two successful Old Road events can now reward a Road Token.</li>
+        <li>More Old Road events can contribute to Road Token progress.</li>
+        <li>Bell Shard pacing is more intentional after talking to Mara.</li>
+        <li>Quest tracker now shows clearer Road Token progress.</li>
+        <li>Added a Feedback link directly to the main menu.</li>
+        <li>Protected important survival and quest items from quick selling.</li>
+      </ul>
+      <h2>Why it matters</h2>
+      <p>The First Road is becoming the public playtest loop. Testers need to reach meaningful progress quickly enough to know what the game is trying to be.</p>
+      <h2>Next</h2>
+      <p>The next pass should focus on public feedback: what confuses testers, which buttons they ignore, and whether The First Road makes them want to keep playing.</p>
+      <nav><a class="btn primary" href="../index.html">Play Legend</a><a class="btn" href="../feedback.html">Leave Feedback</a><a class="btn" href="../blog.html">Back to Devlog</a></nav>
+    </article>
+  </div>
+</body>
+</html>
