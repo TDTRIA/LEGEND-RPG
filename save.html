@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LEGEND Save Vault</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <style>
+    :root{--bg:#060807;--soft:#0d1813;--panel:rgba(10,18,15,.94);--panel2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border2:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--red:#ff6b6b;--shadow:rgba(0,0,0,.42)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--soft),var(--bg));padding:24px}.shell{width:min(1050px,100%);margin:0 auto}header,.card{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow);border-radius:18px;padding:clamp(20px,4vw,38px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0;color:var(--accent);font-size:clamp(2.35rem,9vw,6rem);letter-spacing:.1em;line-height:.88;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:0 0 12px;color:var(--accent);font-size:1.5rem}h3{margin:0 0 8px;color:var(--gold);font-size:1.18rem}p,li{color:var(--text);line-height:1.65}.muted{color:var(--muted)}strong{color:var(--gold)}nav,.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn,button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none;cursor:pointer;font:inherit}.btn.primary,button.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.btn.danger,button.danger{border-color:rgba(255,107,107,.46);color:#ffdddd;background:linear-gradient(180deg,rgba(85,20,20,.96),rgba(35,8,8,.96))}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.box{border:1px solid var(--border2);background:var(--panel2);border-radius:16px;padding:18px}.stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.stat{border:1px solid var(--border2);background:rgba(0,0,0,.25);border-radius:14px;padding:12px}.label{display:block;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;font-size:.72rem;margin-bottom:5px}.value{font-weight:900;color:var(--gold)}textarea{width:100%;min-height:190px;border:1px solid rgba(132,255,178,.24);border-radius:14px;background:rgba(0,0,0,.38);color:var(--text);padding:12px;font:12px Consolas,"Courier New",monospace;resize:vertical;outline:none}input[type="file"]{width:100%;border:1px dashed rgba(255,211,105,.42);background:rgba(255,211,105,.06);border-radius:14px;padding:14px;color:var(--text)}.notice{border-left:3px solid var(--gold);background:rgba(255,211,105,.07);border-radius:10px;padding:12px 14px;margin-top:14px;color:#fff0c2}.notice.danger{border-left-color:var(--red);background:rgba(255,107,107,.08);color:#ffd6d6}.small{font-size:.9rem;color:var(--muted)}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:820px){body{padding:12px}.grid,.stat-grid{grid-template-columns:1fr}nav,.actions{flex-direction:column}.btn,button{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <p class="kicker">Portable Save System</p>
+      <h1>SAVE VAULT</h1>
+      <p><strong>LEGEND Save Vault</strong> lets you export your save out of browser storage and bring it to another browser/device later. This is not a cloud account system, but it means your save is no longer trapped in one browser.</p>
+      <nav><a class="btn primary" href="index.html">Back to LEGEND</a><a class="btn" href="feedback.html">Playtest Feedback</a><a class="btn" href="blog.html">Devlog</a></nav>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Current Browser Save</h2>
+        <p class="muted">This reads the current LEGEND save from this website's local browser storage.</p>
+        <div id="saveSummary" class="stat-grid"></div>
+        <div class="actions">
+          <button class="primary" id="refreshSave">Refresh Save Info</button>
+          <button id="downloadSave">Download .legend Save File</button>
+          <button id="copySave">Copy Save Code</button>
+          <button class="danger" id="deleteLocal">Delete Browser Save</button>
+        </div>
+        <div id="currentStatus" class="notice">Checking for save data...</div>
+      </section>
+
+      <section class="card">
+        <h2>Exported Save Code</h2>
+        <p class="muted">You can copy this code into a text file, email it to yourself, or paste it back into the Import box later.</p>
+        <textarea id="exportBox" readonly placeholder="No save loaded yet."></textarea>
+      </section>
+
+      <section class="card">
+        <h2>Import Save</h2>
+        <div class="grid">
+          <div class="box">
+            <h3>Paste Save Code</h3>
+            <p class="muted">Paste a LEGEND save code here, then import it.</p>
+            <textarea id="importBox" placeholder="Paste LEGEND save code here..."></textarea>
+            <div class="actions"><button class="primary" id="importText">Import Pasted Save</button></div>
+          </div>
+          <div class="box">
+            <h3>Upload Save File</h3>
+            <p class="muted">Upload a downloaded <strong>.legend</strong> save file.</p>
+            <input id="fileInput" type="file" accept=".legend,.json,.txt,application/json,text/plain">
+            <div class="actions"><button class="primary" id="importFile">Import Uploaded File</button></div>
+          </div>
+        </div>
+        <div id="importStatus" class="notice">Importing will replace the current browser save for this site.</div>
+      </section>
+
+      <section class="card">
+        <h2>How This Works</h2>
+        <ul>
+          <li><strong>Browser save:</strong> the normal game still autosaves locally so it works instantly.</li>
+          <li><strong>Portable save:</strong> this page turns that save into a file/code you control.</li>
+          <li><strong>Import:</strong> paste or upload the save on another device/browser, then return to LEGEND and continue.</li>
+          <li><strong>True cloud saves:</strong> will require a backend service, login system, or a platform API later.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>Legend - Recovered Build / Save Vault</footer>
+  </div>
+
+  <script>
+    const SAVE_KEYS = ['legend-recovered-build-v051','legend-recovered-build-v05','legend-recovered-build-v041','legend-recovered-build-v04','legend-recovered-build-v03','legend-recovered-build-v02'];
+    const ACTIVE_KEY = 'legend-recovered-build-v051';
+    const exportBox = document.getElementById('exportBox');
+    const importBox = document.getElementById('importBox');
+    const fileInput = document.getElementById('fileInput');
+    const currentStatus = document.getElementById('currentStatus');
+    const importStatus = document.getElementById('importStatus');
+    const saveSummary = document.getElementById('saveSummary');
+
+    function findSave(){
+      for(const key of SAVE_KEYS){
+        const raw = localStorage.getItem(key);
+        if(raw) return { key, raw };
+      }
+      return null;
+    }
+
+    function makePayload(raw, key){
+      const parsed = JSON.parse(raw);
+      return { format:'LEGEND_SAVE_V1', game:'Legend - Recovered Build', exportedAt:new Date().toISOString(), sourceKey:key, targetKey:ACTIVE_KEY, save:parsed };
+    }
+
+    function encodePayload(payload){
+      const json = JSON.stringify(payload);
+      return 'LEGEND-SAVE-V1:' + btoa(unescape(encodeURIComponent(json)));
+    }
+
+    function decodePayload(text){
+      const trimmed = String(text || '').trim();
+      if(!trimmed) throw new Error('No save code provided.');
+      if(trimmed.startsWith('LEGEND-SAVE-V1:')){
+        const encoded = trimmed.replace('LEGEND-SAVE-V1:', '').trim();
+        return JSON.parse(decodeURIComponent(escape(atob(encoded))));
+      }
+      const parsed = JSON.parse(trimmed);
+      if(parsed.format === 'LEGEND_SAVE_V1') return parsed;
+      if(parsed.username && parsed.inventory) return { format:'LEGEND_SAVE_V1', save:parsed };
+      throw new Error('This does not look like a LEGEND save.');
+    }
+
+    function summarizeSave(save){
+      if(!save){
+        saveSummary.innerHTML = '<div class="stat"><span class="label">Status</span><span class="value">No Save Found</span></div>';
+        return;
+      }
+      const p = save.save || save;
+      saveSummary.innerHTML = `
+        <div class="stat"><span class="label">Hero</span><span class="value">${escapeHtml(p.username || 'Unknown')}</span></div>
+        <div class="stat"><span class="label">Class</span><span class="value">${escapeHtml(p.className || 'Unknown')}</span></div>
+        <div class="stat"><span class="label">Level</span><span class="value">${p.level || 1}</span></div>
+        <div class="stat"><span class="label">Gold</span><span class="value">${p.gold || 0}</span></div>
+        <div class="stat"><span class="label">Road Tokens</span><span class="value">${p.inventory?.roadToken || 0}</span></div>
+        <div class="stat"><span class="label">Version Key</span><span class="value">${escapeHtml(save.sourceKey || ACTIVE_KEY)}</span></div>
+      `;
+    }
+
+    function escapeHtml(s){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+
+    function refresh(){
+      const found = findSave();
+      if(!found){
+        exportBox.value = '';
+        summarizeSave(null);
+        currentStatus.className = 'notice danger';
+        currentStatus.textContent = 'No LEGEND save found in this browser. Create a character in the game first, then return here.';
+        return null;
+      }
+      try{
+        const payload = makePayload(found.raw, found.key);
+        const code = encodePayload(payload);
+        exportBox.value = code;
+        summarizeSave(payload);
+        currentStatus.className = 'notice';
+        currentStatus.textContent = 'Save found. You can download it, copy it, or import it on another browser later.';
+        return payload;
+      }catch(err){
+        currentStatus.className = 'notice danger';
+        currentStatus.textContent = 'Save found, but it could not be read: ' + err.message;
+        return null;
+      }
+    }
+
+    function importPayload(payload){
+      if(!payload || !payload.save) throw new Error('Invalid LEGEND save payload.');
+      const p = payload.save;
+      if(!p.username || !p.inventory || !p.className) throw new Error('Save is missing required LEGEND character data.');
+      localStorage.setItem(ACTIVE_KEY, JSON.stringify(p));
+      importStatus.className = 'notice';
+      importStatus.textContent = 'Imported save for ' + p.username + '. Return to LEGEND and choose Continue.';
+      refresh();
+    }
+
+    document.getElementById('refreshSave').onclick = refresh;
+    document.getElementById('copySave').onclick = async () => {
+      if(!exportBox.value) refresh();
+      if(!exportBox.value) return;
+      await navigator.clipboard.writeText(exportBox.value);
+      currentStatus.className = 'notice';
+      currentStatus.textContent = 'Save code copied to clipboard.';
+    };
+    document.getElementById('downloadSave').onclick = () => {
+      const payload = refresh();
+      if(!payload) return;
+      const name = (payload.save.username || 'legend').replace(/[^a-z0-9_-]/gi,'_').toLowerCase();
+      const blob = new Blob([encodePayload(payload)], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${name}-legend-save.legend`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    };
+    document.getElementById('deleteLocal').onclick = () => {
+      if(!confirm('Delete all LEGEND browser saves on this device? Export first if you want to keep your save.')) return;
+      SAVE_KEYS.forEach(k => localStorage.removeItem(k));
+      refresh();
+    };
+    document.getElementById('importText').onclick = () => {
+      try{ importPayload(decodePayload(importBox.value)); }
+      catch(err){ importStatus.className = 'notice danger'; importStatus.textContent = 'Import failed: ' + err.message; }
+    };
+    document.getElementById('importFile').onclick = async () => {
+      const file = fileInput.files?.[0];
+      if(!file){ importStatus.className = 'notice danger'; importStatus.textContent = 'Choose a save file first.'; return; }
+      try{ importPayload(decodePayload(await file.text())); }
+      catch(err){ importStatus.className = 'notice danger'; importStatus.textContent = 'Import failed: ' + err.message; }
+    };
+
+    refresh();
+  </script>
+</body>
+</html>
