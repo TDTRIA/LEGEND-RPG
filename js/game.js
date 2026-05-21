@@ -36,6 +36,10 @@
     UI.renderLayout({player, version:D.VERSION, locationName, title, content, actions, extra, log, weapon:weapon(), armor:armor()});
   }
 
+  function portrait(id){
+    return `<pre class="ascii">${D.portraits?.[id] || D.ascii.npc}</pre>`;
+  }
+
   function newPlayer(username, origin, className, keepsake){
     const cls = D.classes[className], org = D.origins[origin], keep = D.keepsakes[keepsake];
     const inv = {gmail:0,hbone:0,rtab:0,food:2,rfood:0,bait:0,potion:1,camp:1,fur:0,gem:0,log:0,ore:0,morb:0,codeFragment:0,bellFragment:0,roadToken:0};
@@ -89,34 +93,36 @@
     locationName = 'Ashmere';
     save();
     const cards = [
-      ['road','🛤️','Explore The First Road','Start here. The road teaches the first systems.',exploreStart,''],
-      ['people','👥','People of Ashmere','Speak with Mara and learn what the town remembers.',people,''],
-      ['archive','📜','The Archive Hall','Unlocks after speaking with Mara.',archive,'Talk to Mara first.'],
-      ['ledger','🏛️','The Ledger Hall','Turn in quest items and use the ledger.',ledger,'Talk to Mara first.'],
-      ['inn','🛏️','Ashmere Inn','Rest and buy camp supplies.',inn,'Complete one road event first.'],
-      ['trade','⚖️','Trading Post','Sell common drops and resources.',tradingPost,'Complete one road event first.'],
-      ['weapon','🗡️','Weapon Shop','Buy stronger weapons.',weaponShop,'Find a Road Token or win a fight first.'],
-      ['armor','🛡️','Armor Shop','Buy armor.',armorShop,'Find a Road Token or win a fight first.'],
-      ['commons','🌿','The Commons','Train skills and mastery.',commons,'Find a resource event first.'],
-      ['keep','🏰','The Hollow Keep','A later threat waits below.',keepWarn,'Complete The First Road first.'],
-      ['sheet','👤','Character Sheet','Review character and inventory.',sheet,''],
-      ['settings','⚙️','Settings / Accessibility','Text size, bold text, contrast, motion, ASCII settings.',settings,''],
-      ['saveVault','💾','Save Vault','Export/import portable saves.',()=>location.href='save.html','Talk to Mara first.'],
-      ['saveExit','🚪','Save / Exit','Return to title.',title,'']
+      ['road','🛤️','Explore The First Road','Start here. The road teaches the first systems.',exploreStart],
+      ['people','👥','People of Ashmere','Speak with Mara and learn what the town remembers.',people],
+      ['archive','📜','The Archive Hall','Recovered memories, quest notes, and old records.',archive],
+      ['ledger','🏛️','The Ledger Hall','Turn in quest items and use the ledger.',ledger],
+      ['inn','🛏️','Ashmere Inn','Rest and buy camp supplies.',inn],
+      ['trade','⚖️','Trading Post','Sell common drops and resources.',tradingPost],
+      ['weapon','🗡️','Weapon Shop','Buy stronger weapons.',weaponShop],
+      ['armor','🛡️','Armor Shop','Buy armor.',armorShop],
+      ['commons','🌿','The Commons','Train skills and mastery.',commons],
+      ['keep','🏰','The Hollow Keep','A later threat waits below.',keepWarn],
+      ['sheet','👤','Character Sheet','Review character and inventory.',sheet],
+      ['settings','⚙️','Settings / Accessibility','Text size, bold text, contrast, motion, ASCII settings.',settings],
+      ['saveVault','💾','Save Vault','Export/import portable saves.',()=>location.href='save.html'],
+      ['saveExit','🚪','Save / Exit','Return to title.',title]
     ];
-    const visible = cards.filter(c => unlocked(c[0]) || ['archive','ledger','inn','trade','weapon','armor','commons','keep','saveVault'].includes(c[0]));
-    const html = `<pre class="ascii">${D.ascii.ashmere}</pre><div class="grid">${visible.map((c,i)=>`<button class="card ${unlocked(c[0])?'':'locked'}" data-menu="${i}"><h3>${c[1]} ${c[2]}</h3><p>${unlocked(c[0]) ? c[3] : 'Locked: ' + c[5]}</p></button>`).join('')}</div>`;
+    const visible = cards.filter(c => unlocked(c[0]));
+    const hiddenCount = cards.length - visible.length;
+    const hint = hiddenCount > 0 ? `<div class="quest"><h3>More of Ashmere is still closed.</h3><p>Meet people, survive the road, and bring proof back to town to open new places.</p></div>` : '';
+    const html = `<pre class="ascii">${D.ascii.ashmere}</pre><div class="grid">${visible.map((c,i)=>`<button class="card" data-menu="${i}"><h3>${c[1]} ${c[2]}</h3><p>${c[3]}</p></button>`).join('')}</div>${hint}`;
     layout('Ashmere Menu', '', [], html);
-    visible.forEach((c,i)=>document.querySelector(`[data-menu="${i}"]`).onclick = () => unlocked(c[0]) ? c[4]() : addLog(c[5], 'danger') || menu());
+    visible.forEach((c,i)=>document.querySelector(`[data-menu="${i}"]`).onclick = c[4]);
   }
 
   function people(){
-    const html = `<pre class="ascii">${D.ascii.npc}</pre><div class="list"><button class="npc-card" id="mara"><h3>Mara Vell</h3><p>Archive Keeper - The first person you should speak to.</p></button><button class="npc-card" id="brenn"><h3>Old Brenn</h3><p>Ledger Keeper - Handles Bell Fragments and Road Tokens.</p></button><button class="npc-card" id="oric"><h3>Captain Oric</h3><p>Guard Captain - Explains combat survival.</p></button></div>`;
+    const html = `<div class="list"><button class="npc-card" id="mara"><h3>Mara Vell</h3><p>Archive Keeper - the first person you should speak to.</p></button><button class="npc-card" id="brenn"><h3>Old Brenn</h3><p>Ledger Keeper - handles Bell Fragments and Road Tokens.</p></button><button class="npc-card" id="oric"><h3>Captain Oric</h3><p>Guard Captain - teaches combat survival.</p></button></div>`;
     locationName = 'Ashmere';
     layout('People of Ashmere','The town has voices. Talk to people to unlock quests, rumors, and memories.',[{label:'Back to Ashmere',fn:menu}],html);
     document.getElementById('mara').onclick = talkMara;
     document.getElementById('brenn').onclick = talkBrenn;
-    document.getElementById('oric').onclick = () => { addLog('Oric teaches you to guard before heavy enemy attacks.', 'story'); people(); };
+    document.getElementById('oric').onclick = talkOric;
   }
 
   function talkMara(){
@@ -124,14 +130,23 @@
     player.flags.bellQuestStarted = true;
     if(!player.memories.includes('Mara says the Ashmere bell has not worked since the rollback.')) player.memories.push('Mara says the Ashmere bell has not worked since the rollback.');
     addLog('Mara points you toward Old Road and the missing Bell Shard.', 'story');
-    save(); people();
+    save();
+    const text = `Mara Vell keeps the Ashmere records in careful stacks, as if the town might fall apart without her hands holding it together.\n\n“The bell rang once again when you arrived. That should not be possible.\n\nIf the road truly woke for you, then Old Road may still hide the missing Bell Fragment. Find it, and bring it back. If the records are wrong, I need to know why.”`;
+    layout('Mara Vell', text, [{label:'Back to People',fn:people},{label:'Back to Ashmere',fn:menu}], portrait('mara'));
   }
 
   function talkBrenn(){
+    const text = `Old Brenn keeps Ashmere's ledger with iron patience. Every debt, promise, and recovered fragment ends up in his book.\n\n“If you've got proof from the road, show me. Road Tokens matter. Bell Fragments matter more. The road forgets. I don't.”`;
     const actions = [{label:'Back to People',fn:people},{label:'Back to Ashmere',fn:menu}];
-    if(player.inventory.bellFragment > 0) actions.unshift({label:'Show Bell Fragment',className:'primary',fn:()=>{player.inventory.bellFragment--;player.flags.bellQuestComplete=true;gainGold(350);gainXP(160);addLog('Brenn records the Bell Fragment in the ledger.','story');save();people();}});
-    if(player.inventory.roadToken >= 3) actions.unshift({label:'Turn in 3 Road Tokens',className:'primary',fn:()=>{player.inventory.roadToken-=3;player.flags.firstRoadComplete=true;gainGold(260);gainItem('camp',2);addLog('The First Road is complete. The Hollow Keep stirs.','story');save();people();}});
-    layout('Old Brenn','Brenn checks the ledger. He needs a Bell Fragment and 3 Road Tokens before the road can be marked complete.',actions,`<pre class="ascii">${D.ascii.npc}</pre>`);
+    if(player.inventory.bellFragment > 0) actions.unshift({label:'Show Bell Fragment',className:'primary',fn:()=>{player.inventory.bellFragment--;player.flags.bellQuestComplete=true;gainGold(350);gainXP(160);addLog('Brenn records the Bell Fragment in the ledger.','story');save();talkBrenn();}});
+    if(player.inventory.roadToken >= 3) actions.unshift({label:'Turn in 3 Road Tokens',className:'primary',fn:()=>{player.inventory.roadToken-=3;player.flags.firstRoadComplete=true;gainGold(260);gainItem('camp',2);addLog('The First Road is complete. The Hollow Keep stirs.','story');save();talkBrenn();}});
+    layout('Old Brenn', text, actions, portrait('brenn'));
+  }
+
+  function talkOric(){
+    addLog('Oric teaches you to read enemy intent and survive heavy attacks.', 'story');
+    const text = `Captain Oric stands near the gate in battered guard gear. He watches the road like it owes him something.\n\n“Out there, hesitation gets people buried. Watch what your enemy means to do, not just what they are doing. Guard when the hit looks heavy. Strike when the road gives you the opening.”`;
+    layout('Captain Oric', text, [{label:'Back to People',fn:people},{label:'Back to Ashmere',fn:menu}], portrait('oric'));
   }
 
   function exploreStart(){
@@ -165,17 +180,49 @@
   function startBattle(fromRoad=false){
     const base = D.enemies[rand(0,D.enemies.length-1)];
     currentEnemy = {...base, hp:rand(base.hp[0],base.hp[1]), maxHp:0}; currentEnemy.maxHp = currentEnemy.hp;
+    currentEnemy.intentText = currentEnemy.intent?.[rand(0,currentEnemy.intent.length-1)] || 'watches you carefully';
     locationName = 'Road Encounter';
     addLog(`A ${currentEnemy.name} appears. Trait: ${currentEnemy.trait}.`, 'danger');
     battle(fromRoad);
   }
 
   function battle(fromRoad=false){
-    const html = `<div class="enemy"><div><div class="glyph">${currentEnemy.glyph}</div><h2 class="red">${currentEnemy.name}</h2><p class="muted">${currentEnemy.hp}/${currentEnemy.maxHp} HP / ${currentEnemy.trait}</p></div></div>`;
-    layout('Battle','', [{label:'Attack',className:'primary',fn:()=>{const dmg=rand(weapon().min,weapon().max); currentEnemy.hp-=dmg; gainXP(Math.floor(dmg*.75)); addLog(`You hit for ${dmg}.`); if(currentEnemy.hp<=0) return winBattle(fromRoad); enemyHit(fromRoad); }},{label:'Guard',fn:()=>{addLog('You guard and brace yourself.','story'); enemyHit(fromRoad, true);}},{label:'Flee',fn:menu}], html);
+    const html = `<div class="enemy"><div><div class="glyph">${currentEnemy.glyph}</div><h2 class="red">${currentEnemy.name}</h2><p class="muted">${currentEnemy.hp}/${currentEnemy.maxHp} HP / ${currentEnemy.trait}</p><p class="gold">Intent: ${currentEnemy.intentText}</p><p class="muted">Momentum: ${player.momentum || 0}/5</p></div></div>`;
+    const moveName = D.classes[player.className]?.move || 'Class Move';
+    layout('Battle','', [
+      {label:'Attack',className:'primary',fn:()=>{const dmg=rand(weapon().min,weapon().max); currentEnemy.hp-=dmg; player.momentum=clamp((player.momentum||0)+1,0,5); gainXP(Math.floor(dmg*.75)); addLog(`You hit for ${dmg}. Momentum +1.`); if(currentEnemy.hp<=0) return winBattle(fromRoad); enemyHit(fromRoad);}},
+      {label:'Guard',fn:()=>{player.momentum=clamp((player.momentum||0)+1,0,5); addLog('You guard, brace yourself, and gain Momentum.','story'); enemyHit(fromRoad,true);}},
+      {label:`${moveName} ${player.momentum>=2?'':'(needs 2 Momentum)'}`,fn:()=>classMove(fromRoad)},
+      {label:'Flee',fn:menu}
+    ], html);
   }
-  function enemyHit(fromRoad, guarded=false){ const dmg=Math.max(0,rand(1,currentEnemy.maxDamage)-rand(0,armor().defense))*(guarded?.5:1); player.hp-=Math.floor(dmg); addLog(`${currentEnemy.name} hits for ${Math.floor(dmg)}.`, 'danger'); if(player.hp<=0){player.stats.timesDied++; player.hp=player.maxHp; addLog('Ashmere drags your save back from the dark.','danger'); save(); return menu();} save(); battle(fromRoad); }
-  function winBattle(fromRoad){ const [k,a] = currentEnemy.drop; gainItem(k,a); player.stats.monstersDefeated++; player.flags.firstToken = true; if(fromRoad) gainItem('roadToken',1); player.hp=clamp(player.hp+20,1,player.maxHp); save(); menu(); }
+
+  function classMove(fromRoad){
+    if((player.momentum||0) < 2){ addLog('Not enough Momentum for your class move.', 'danger'); return battle(fromRoad); }
+    player.momentum -= 2;
+    let dmg = Math.floor(rand(weapon().min, weapon().max) * 1.45);
+    if(player.className === 'Warrior') dmg += 10;
+    if(player.className === 'Mage') dmg += 14;
+    if(player.className === 'Ranger') currentEnemy.maxDamage = Math.max(8, currentEnemy.maxDamage - 6);
+    if(player.className === 'Thief') gainGold(rand(10,45));
+    if(player.className === 'Skiller') player.hp = clamp(player.hp + rand(8,24), 1, player.maxHp);
+    currentEnemy.hp -= dmg;
+    gainXP(Math.floor(dmg*.8));
+    addLog(`${D.classes[player.className].move} hits for ${dmg}.`, 'story');
+    if(currentEnemy.hp <= 0) return winBattle(fromRoad);
+    enemyHit(fromRoad);
+  }
+
+  function enemyHit(fromRoad, guarded=false){
+    const dmg=Math.floor(Math.max(0,rand(1,currentEnemy.maxDamage)-rand(0,armor().defense))*(guarded?.5:1));
+    player.hp-=dmg;
+    addLog(`${currentEnemy.name} hits for ${dmg}.`, 'danger');
+    const base = D.enemies.find(e=>e.name===currentEnemy.name);
+    currentEnemy.intentText = base?.intent?.[rand(0,base.intent.length-1)] || 'watches you carefully';
+    if(player.hp<=0){player.stats.timesDied++; player.hp=player.maxHp; player.momentum=0; addLog('Ashmere drags your save back from the dark.','danger'); save(); return menu();}
+    save(); battle(fromRoad);
+  }
+  function winBattle(fromRoad){ const [k,a] = currentEnemy.drop; gainItem(k,a); player.stats.monstersDefeated++; player.flags.firstToken = true; if(fromRoad) gainItem('roadToken',1); player.momentum=clamp((player.momentum||0)+1,0,5); player.hp=clamp(player.hp+20,1,player.maxHp); save(); menu(); }
 
   function inn(){ locationName='Ashmere Inn'; layout('Ashmere Inn','Rest or prepare for the next road trip.',[{label:'Rest - 35g',className:'primary',fn:()=>{if(player.gold>=35){player.gold-=35;player.hp=player.maxHp;addLog('You rest at the inn.','story');}else addLog('Not enough gold.','danger');save();inn();}},{label:'Buy Camp Supplies - 90g',fn:()=>{if(player.gold>=90){player.gold-=90;gainItem('camp',1);}else addLog('Not enough gold.','danger');save();inn();}},{label:'Back',fn:menu}],`<pre class="ascii">${D.ascii.ashmere}</pre>`); }
   function tradingPost(){ locationName='Trading Post'; const sellables=Object.keys(D.prices).filter(k=>D.prices[k]>0&&player.inventory[k]>0&&!['food','camp','potion','rtab','gem'].includes(k)); const html=`<div class="list">${sellables.length?sellables.map(k=>`<button class="shop" data-sell="${k}"><h3>${D.itemNames[k]} x${player.inventory[k]}</h3><p>Sell all for ${D.prices[k]*player.inventory[k]} gold.</p></button>`).join(''):'<div class="quest"><h3>Nothing safe to sell</h3><p>Explore first.</p></div>'}</div>`; layout('Trading Post','Sell common drops. Important survival and quest items are protected.',[{label:'Back',fn:menu}],html); document.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const k=b.dataset.sell; const total=D.prices[k]*player.inventory[k]; player.inventory[k]=0; player.gold+=total; addLog(`Sold items for ${total} gold.`,'story'); save(); tradingPost();}); }
