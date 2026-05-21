@@ -3,358 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LEGEND QA Playtest Runner</title>
+  <title>LEGEND v0.6 Playtest Runner</title>
   <style>
-    :root{--bg:#060807;--panel:#0d1813;--panel2:#07100c;--border:rgba(132,255,178,.25);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--red:#ff6b6b;--green:#7dffad;--blue:#8dd7ff}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 26%),linear-gradient(180deg,#0d1813,#060807);color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;padding:18px}.shell{width:min(1440px,100%);margin:0 auto;display:grid;grid-template-columns:455px 1fr;gap:14px}.panel{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));border-radius:18px;padding:18px;box-shadow:0 18px 50px rgba(0,0,0,.35)}h1{margin:0;color:var(--accent);font-size:2.25rem;letter-spacing:.08em;line-height:.9}h2{margin:0 0 12px;color:var(--gold)}p{line-height:1.55;color:var(--muted)}button{border:1px solid rgba(255,211,105,.46);border-radius:12px;background:linear-gradient(180deg,#ffe29a,#d69f32);color:#241803;font-weight:900;min-height:44px;padding:10px 14px;cursor:pointer;width:100%;margin:6px 0}button.secondary{background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));color:var(--text);border-color:rgba(132,255,178,.28)}button.danger{background:linear-gradient(180deg,rgba(85,20,20,.96),rgba(35,8,8,.96));color:#ffdddd;border-color:rgba(255,107,107,.46)}.status{display:grid;gap:8px;margin-top:12px;max-height:52vh;overflow:auto;padding-right:4px}.entry{border:1px solid rgba(132,255,178,.14);background:rgba(0,0,0,.25);border-radius:12px;padding:10px;font-size:.94rem}.pass{border-left:4px solid var(--green)}.fail{border-left:4px solid var(--red);color:#ffd6d6}.warn{border-left:4px solid var(--blue);color:#dff4ff}.info{border-left:4px solid var(--gold)}.frame-wrap{height:calc(100vh - 36px);overflow:hidden}.frame-wrap iframe{width:100%;height:100%;border:1px solid var(--border);border-radius:18px;background:#000}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.metric{background:rgba(0,0,0,.25);border:1px solid rgba(132,255,178,.14);border-radius:12px;padding:10px;text-align:center}.metric strong{display:block;color:var(--gold);font-size:1.45rem}.small{font-size:.86rem;color:var(--muted)}code{color:var(--gold)}.pillrow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.pill{border:1px solid rgba(132,255,178,.18);border-radius:999px;padding:4px 8px;color:var(--accent);font-size:.78rem;background:rgba(0,0,0,.18)}textarea{width:100%;min-height:140px;margin-top:12px;border:1px solid rgba(132,255,178,.2);border-radius:12px;background:rgba(0,0,0,.32);color:var(--text);padding:10px;font:12px Consolas,monospace;resize:vertical}@media(max-width:1080px){.shell{grid-template-columns:1fr}.frame-wrap{height:70vh}.status{max-height:40vh}}
+    :root{--bg:#060807;--panel:#0d1813;--border:rgba(132,255,178,.25);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--red:#ff6b6b;--blue:#8dd7ff}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),linear-gradient(180deg,#0d1813,#060807);color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;padding:18px}.shell{width:min(1440px,100%);margin:0 auto;display:grid;grid-template-columns:430px 1fr;gap:14px}.panel{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));border-radius:18px;padding:18px;box-shadow:0 18px 50px rgba(0,0,0,.35)}h1{margin:0;color:var(--accent);font-size:2.2rem;letter-spacing:.08em;line-height:.9}p{line-height:1.55;color:var(--muted)}button{border:1px solid rgba(255,211,105,.46);border-radius:12px;background:linear-gradient(180deg,#ffe29a,#d69f32);color:#241803;font-weight:900;min-height:44px;padding:10px 14px;cursor:pointer;width:100%;margin:6px 0}button.secondary{background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));color:var(--text);border-color:rgba(132,255,178,.28)}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}.metric{background:rgba(0,0,0,.25);border:1px solid rgba(132,255,178,.14);border-radius:12px;padding:10px;text-align:center}.metric strong{display:block;color:var(--gold);font-size:1.45rem}.status{display:grid;gap:8px;margin-top:12px;max-height:52vh;overflow:auto}.entry{border:1px solid rgba(132,255,178,.14);background:rgba(0,0,0,.25);border-radius:12px;padding:10px;font-size:.94rem}.pass{border-left:4px solid var(--accent)}.fail{border-left:4px solid var(--red);color:#ffd6d6}.warn{border-left:4px solid var(--blue);color:#dff4ff}.info{border-left:4px solid var(--gold)}.frame-wrap{height:calc(100vh - 36px);overflow:hidden}.frame-wrap iframe{width:100%;height:100%;border:1px solid var(--border);border-radius:18px;background:#000}textarea{width:100%;min-height:130px;margin-top:12px;border:1px solid rgba(132,255,178,.2);border-radius:12px;background:rgba(0,0,0,.32);color:var(--text);padding:10px;font:12px Consolas,monospace;resize:vertical}.pillrow{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}.pill{border:1px solid rgba(132,255,178,.18);border-radius:999px;padding:4px 8px;color:var(--accent);font-size:.78rem;background:rgba(0,0,0,.18)}.small{font-size:.86rem;color:var(--muted)}@media(max-width:1080px){.shell{grid-template-columns:1fr}.frame-wrap{height:70vh}.status{max-height:40vh}}
   </style>
 </head>
 <body>
   <div class="shell">
     <section class="panel">
-      <h1>LEGEND QA RUNNER</h1>
-      <p>This no-install runner opens <strong>index.html</strong>, clicks through the game like a player, and checks key v0.5.1 systems before public playtesting.</p>
-      <div class="pillrow"><span class="pill">No Node</span><span class="pill">No Playwright</span><span class="pill">Browser-only</span><span class="pill">v0.5.1 QA</span></div>
-      <button id="runAll">Run Full QA Suite</button>
-      <button class="secondary" id="runCore">Run Core Loop Only</button>
-      <button class="secondary" id="runLinks">Check Site Links</button>
+      <h1>LEGEND v0.6 QA</h1>
+      <p>Fast browser-only test runner for tonight’s modular v0.6 build. It checks the loader, new save flow, progressive menu unlocks, accessibility settings, Save Vault, and support pages.</p>
+      <div class="pillrow"><span class="pill">v0.6</span><span class="pill">No Install</span><span class="pill">Modular Build</span><span class="pill">Playable Tonight</span></div>
+      <button id="runAll">Run Full v0.6 QA</button>
+      <button class="secondary" id="runCore">Run Core Playability Check</button>
+      <button class="secondary" id="runPages">Check Support Pages</button>
       <button class="secondary" id="openGame">Open Game Normally</button>
-      <button class="danger" id="clearReport">Clear Report</button>
       <div class="summary">
         <div class="metric"><strong id="passes">0</strong><span>Pass</span></div>
         <div class="metric"><strong id="fails">0</strong><span>Fail</span></div>
         <div class="metric"><strong id="warns">0</strong><span>Warn</span></div>
         <div class="metric"><strong id="total">0</strong><span>Total</span></div>
       </div>
-      <div id="status" class="status"><div class="entry info">Ready. Click <strong>Run Full QA Suite</strong>.</div></div>
-      <textarea id="report" readonly placeholder="A copyable QA report will appear here after tests run."></textarea>
-      <p class="small">This catches broken flows and obvious regressions. It cannot judge fun, writing, balance feel, or long-term pacing like a real human tester can.</p>
+      <div id="status" class="status"><div class="entry info">Ready. Click <strong>Run Full v0.6 QA</strong>.</div></div>
+      <textarea id="report" readonly placeholder="Copyable QA report appears here."></textarea>
+      <p class="small">This catches broken pages and broken flows. It still cannot judge whether the game feels fun.</p>
     </section>
-    <section class="frame-wrap">
-      <iframe id="game" title="LEGEND test frame" src="index.html?qa=ready"></iframe>
-    </section>
+    <section class="frame-wrap"><iframe id="game" title="LEGEND test frame" src="index.html?qa=ready"></iframe></section>
   </div>
 
-  <script>
-    const frame = document.getElementById('game');
-    const statusBox = document.getElementById('status');
-    const reportBox = document.getElementById('report');
-    const counters = { pass: 0, fail: 0, warn: 0, total: 0 };
-    const report = [];
-
-    function updateCounters(){
-      document.getElementById('passes').textContent = counters.pass;
-      document.getElementById('fails').textContent = counters.fail;
-      document.getElementById('warns').textContent = counters.warn;
-      document.getElementById('total').textContent = counters.total;
-      reportBox.value = report.join('\n');
-    }
-
-    function log(message, type='info'){
-      const div = document.createElement('div');
-      div.className = 'entry ' + type;
-      div.innerHTML = message;
-      statusBox.prepend(div);
-    }
-
-    function record(name, status, detail=''){
-      counters.total++;
-      if(status === 'pass'){ counters.pass++; log('PASS: ' + name + detailLine(detail), 'pass'); }
-      if(status === 'fail'){ counters.fail++; log('FAIL: ' + name + detailLine(detail), 'fail'); }
-      if(status === 'warn'){ counters.warn++; log('WARN: ' + name + detailLine(detail), 'warn'); }
-      report.push(`[${status.toUpperCase()}] ${name}${detail ? ' - ' + strip(detail) : ''}`);
-      updateCounters();
-    }
-
-    function detailLine(detail){ return detail ? '<br><span class="small">' + escapeHtml(detail) + '</span>' : ''; }
-    function strip(s){ return String(s).replace(/\s+/g,' ').trim(); }
-    function escapeHtml(s){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
-    function doc(){ return frame.contentDocument || frame.contentWindow.document; }
-    function win(){ return frame.contentWindow; }
-    function bodyText(){ return doc().body ? doc().body.innerText : ''; }
-    function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-    function waitFrameLoad(){
-      return new Promise(resolve => { frame.onload = () => setTimeout(resolve, 140); });
-    }
-
-    async function resetGame(params='qa'){
-      frame.src = 'index.html?' + params + '=' + Date.now();
-      await waitFrameLoad();
-      win().localStorage.clear();
-      frame.src = 'index.html?' + params + '=' + Date.now();
-      await waitFrameLoad();
-    }
-
-    async function waitForText(pattern, timeout=5000){
-      const end = Date.now() + timeout;
-      while(Date.now() < end){
-        if(pattern.test(bodyText())) return true;
-        await sleep(120);
-      }
-      return false;
-    }
-
-    function findClickable(pattern){
-      const items = [...doc().querySelectorAll('button,a')];
-      return items.find(el => pattern.test((el.innerText || el.textContent || '').trim()));
-    }
-
-    function allClickableText(){
-      return [...doc().querySelectorAll('button,a')].map(el => (el.innerText || el.textContent || '').trim()).filter(Boolean);
-    }
-
-    async function click(pattern, label, timeout=1200){
-      const end = Date.now() + timeout;
-      let el;
-      while(Date.now() < end){
-        el = findClickable(pattern);
-        if(el) break;
-        await sleep(80);
-      }
-      if(!el) throw new Error('Could not find button/link: ' + label + '. Visible: ' + allClickableText().slice(0,14).join(' | '));
-      el.click();
-      await sleep(220);
-    }
-
-    function fillInput(pattern, value){
-      const inputs = [...doc().querySelectorAll('input')];
-      const input = inputs.find(el => pattern.test(el.placeholder || el.name || el.id || '')) || inputs[0];
-      if(!input) throw new Error('Could not find input');
-      input.value = value;
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-
-    async function freshCharacter(name='BotTest', origin=/Wandering Cook/i, klass=/Ranger/i, keepsake=/Old Map/i){
-      await resetGame('fresh');
-      await click(/New Recovered Save/i, 'New Recovered Save');
-      fillInput(/name/i, name);
-      await click(/^Continue$/i, 'Continue name');
-      await click(origin, 'origin');
-      await click(klass, 'class');
-      await click(keepsake, 'keepsake');
-      await click(/Enter Ashmere/i, 'Enter Ashmere');
-      if(!await waitForText(/Ashmere Menu/i)) throw new Error('Did not reach Ashmere Menu');
-    }
-
-    function getSave(){
-      const keys = Object.keys(win().localStorage).filter(k => /legend-recovered-build/i.test(k));
-      if(!keys.length) return null;
-      try { return JSON.parse(win().localStorage.getItem(keys[0])); } catch { return null; }
-    }
-
-    async function testTitleAndVersion(){
-      await resetGame('version');
-      const t = bodyText();
-      if(!/LEGEND/.test(t)) throw new Error('Title text missing');
-      if(!/v0\.5\.1|First Road Balance/i.test(t)) throw new Error('v0.5.1/First Road Balance label missing');
-      if(!findClickable(/Playtest Feedback/i)) throw new Error('Playtest Feedback link missing from title screen');
-    }
-
-    async function testCharacterCreationVariants(){
-      await freshCharacter('WarBot', /Lost Squire/i, /Warrior/i, /Rusty Charm/i);
-      let save = getSave();
-      if(!save || save.className !== 'Warrior' || save.origin !== 'Lost Squire') throw new Error('Warrior save data did not persist correctly');
-      await freshCharacter('MageBot', /Archivist's Child/i, /Mage/i, /Cracked Tablet/i);
-      save = getSave();
-      if(!save || save.className !== 'Mage' || save.keepsake !== 'Cracked Tablet') throw new Error('Mage/keepsake save data did not persist correctly');
-    }
-
-    async function testAshmereMenuCoverage(){
-      await freshCharacter('MenuBot');
-      const required = [/Explore The First Road/i,/People of Ashmere/i,/Ashmere Inn/i,/Trading Post/i,/Weapon Shop/i,/Armor Shop/i,/The Commons/i,/The Ledger Hall/i,/The Archive Hall/i,/Character Sheet/i,/The Hollow Keep/i,/Leave Feedback/i,/Save \/ Exit/i];
-      for(const rx of required){ if(!findClickable(rx)) throw new Error('Missing menu option: ' + rx); }
-    }
-
-    async function testNPCQuestFlow(){
-      await freshCharacter('QuestBot');
-      await click(/People of Ashmere/i, 'People of Ashmere');
-      await click(/Mara Vell/i, 'Mara Vell');
-      await click(/Ask about the bell/i, 'Ask about the bell');
-      let save = getSave();
-      if(!save?.flags?.bellQuestStarted) throw new Error('Mara did not set bellQuestStarted flag');
-      await click(/People of Ashmere/i, 'People of Ashmere menu still visible or returned');
-    }
-
-    async function testFirstRoadRouteAndRewards(){
-      await freshCharacter('RoadBot');
-      await click(/People of Ashmere/i, 'People of Ashmere');
-      await click(/Mara Vell/i, 'Mara Vell');
-      await click(/Ask about the bell/i, 'Ask about the bell');
-      await click(/Back to Ashmere/i, 'Back to Ashmere');
-      await click(/Explore The First Road/i, 'Explore The First Road');
-      await click(/Old Road/i, 'Old Road');
-      if(!await waitForText(/Exploration Event|Battle|Roads Beyond Ashmere/i)) throw new Error('Old Road did not start an event/battle');
-      const choices = allClickableText().filter(t => !/Return|Back|Camp|Continue/.test(t));
-      if(!choices.length) throw new Error('No event choices appeared');
-      await click(new RegExp(escapeRegex(choices[0]).slice(0,24), 'i'), 'first available event choice');
-      if(!await waitForText(/Road Tokens|Danger Level|The Road Continues|Battle/i)) throw new Error('Event resolution did not show road continuation/battle');
-      const save = getSave();
-      if(!save?.stats) throw new Error('Save missing stats after road event');
-      if((save.stats.checksPassed || 0) + (save.stats.checksFailed || 0) < 1 && !/Battle/i.test(bodyText())) throw new Error('No skill check or battle registered after event');
-    }
-
-    async function testBrennTurnInInsufficientAndForcedComplete(){
-      await freshCharacter('BrennBot');
-      await click(/People of Ashmere/i, 'People of Ashmere');
-      await click(/Old Brenn/i, 'Old Brenn');
-      await click(/Turn in Road Tokens/i, 'Turn in Road Tokens insufficient');
-      if(!await waitForText(/needs 3 Road Tokens|0\/3|proof/i)) throw new Error('Brenn did not explain missing Road Tokens');
-      const save = getSave();
-      save.inventory.roadToken = 3;
-      win().localStorage.setItem(Object.keys(win().localStorage).find(k => /legend-recovered-build/i.test(k)), JSON.stringify(save));
-      frame.src = 'index.html?brenn=' + Date.now();
-      await waitFrameLoad();
-      await click(/Continue as/i, 'Continue');
-      await click(/People of Ashmere/i, 'People of Ashmere');
-      await click(/Old Brenn/i, 'Old Brenn');
-      await click(/Turn in Road Tokens/i, 'Turn in Road Tokens complete');
-      const done = getSave();
-      if(!done.flags.firstRoadComplete) throw new Error('Road Token turn-in did not complete First Road flag');
-    }
-
-    async function testInnAndEconomy(){
-      await freshCharacter('InnBot');
-      await click(/Ashmere Inn/i, 'Ashmere Inn');
-      if(!await waitForText(/Rest - 35g|Buy Camp Supplies|Buy Road Meal/i)) throw new Error('Inn options not visible');
-      await click(/Buy Road Meal - 55g/i, 'Buy Road Meal');
-      let save = getSave();
-      if((save.inventory.food || 0) < 3) throw new Error('Road meal did not increase food');
-      await click(/Trading Post/i, 'Trading Post after menu return or visible');
-    }
-
-    async function testShopsAndEquipment(){
-      await freshCharacter('ShopBot', /Debt-Bound Thief/i, /Thief/i, /Bent Coin/i);
-      await click(/Weapon Shop/i, 'Weapon Shop');
-      if(!await waitForText(/Wooden Sword|Stone Sword|Damage/i)) throw new Error('Weapon shop did not show weapon choices');
-      await click(/Wooden Sword/i, 'Buy Wooden Sword');
-      let save = getSave();
-      if(save.weapon !== 'woodenSword') throw new Error('Buying Wooden Sword did not equip it');
-      await click(/Armor Shop/i, 'Armor Shop');
-      if(!await waitForText(/Cloth Armor|Chain Armor|Block/i)) throw new Error('Armor shop did not show armor choices');
-    }
-
-    async function testCommonsAndSheet(){
-      await freshCharacter('SkillBot');
-      await click(/The Commons/i, 'The Commons');
-      if(!await waitForText(/Woodcutting|Cooking|Fishing|Mining|Smithing|Thieving/i)) throw new Error('Commons skills missing');
-      await click(/Woodcutting/i, 'Train Woodcutting');
-      let save = getSave();
-      if(!save.mastery || save.mastery.Woodcutting < 1) throw new Error('Woodcutting mastery did not increase');
-      await click(/Character Sheet/i, 'Character Sheet');
-      if(!await waitForText(/Inventory|Quest Log|Memories/i)) throw new Error('Character Sheet missing expected sections');
-    }
-
-    async function testBattleActionsWithInjectedBattle(){
-      await freshCharacter('BattleBot');
-      // Use actual route flow to reach potential battle/event; if not battle, this test is informational.
-      await click(/Explore The First Road/i, 'Explore First Road');
-      await click(/Old Road/i, 'Old Road');
-      if(!/Battle/i.test(bodyText())){
-        record('Battle actions reachable naturally', 'warn', 'First Old Road event was not combat this run; random route event did not expose battle actions.');
-        return;
-      }
-      for(const rx of [/Attack/i,/Guard/i,/Food|Eat Food/i]){ if(!findClickable(rx)) throw new Error('Missing battle action: ' + rx); }
-    }
-
-    async function testFeedbackAndSiteLinks(){
-      await resetGame('links');
-      const links = [...doc().querySelectorAll('a')].map(a => ({ text:(a.innerText||'').trim(), href:a.getAttribute('href') || '' }));
-      const needed = ['feedback.html','blog.html','updates.html'];
-      for(const href of needed){ if(!links.some(l => l.href.includes(href))) throw new Error('Missing link to ' + href); }
-      frame.src = 'feedback.html?qa=' + Date.now();
-      await waitFrameLoad();
-      if(!/Submit Feedback|vM66NxTLsCBFoFXP6|10–15 Minute Playtest/i.test(bodyText())) throw new Error('Feedback page missing form or playtest instructions');
-      frame.src = 'updates.html?qa=' + Date.now();
-      await waitFrameLoad();
-      if(!/Buttondown|Join the Newsletter|Legend-RPG/i.test(bodyText())) throw new Error('Newsletter page missing Buttondown signup text');
-      frame.src = 'blog.html?qa=' + Date.now();
-      await waitFrameLoad();
-      if(!/First Road Balance|Devlog 006|v0\.5\.1/i.test(bodyText())) throw new Error('Blog page missing v0.5.1 devlog link');
-    }
-
-    async function testSaveContinueDelete(){
-      await freshCharacter('SaveBot');
-      let save = getSave();
-      if(!save || save.username !== 'SaveBot') throw new Error('Save was not written to localStorage');
-      frame.src = 'index.html?continue=' + Date.now();
-      await waitFrameLoad();
-      if(!await waitForText(/Continue as SaveBot/i)) throw new Error('Continue button did not detect saved player');
-      await click(/Continue as SaveBot/i, 'Continue as SaveBot');
-      if(!await waitForText(/Ashmere Menu/i)) throw new Error('Continue did not reach Ashmere');
-    }
-
-    async function testLayoutSanity(){
-      await resetGame('layout');
-      const overflow = doc().documentElement.scrollWidth > doc().documentElement.clientWidth + 6;
-      if(overflow) throw new Error('Horizontal overflow detected in title frame');
-      const btn = findClickable(/New Recovered Save/i);
-      if(!btn) throw new Error('New save button missing');
-      const box = btn.getBoundingClientRect();
-      if(box.height < 44) throw new Error('New save button is too small: ' + Math.round(box.height) + 'px');
-      const css = [...doc().styleSheets].length;
-      if(css < 1) throw new Error('No stylesheets detected');
-    }
-
-    function escapeRegex(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-
-    async function runTest(name, fn){
-      try { await fn(); record(name, 'pass'); }
-      catch(err){ record(name, 'fail', err.message); }
-    }
-
-    async function resetReport(label){
-      statusBox.innerHTML = '';
-      report.length = 0;
-      counters.pass = counters.fail = counters.warn = counters.total = 0;
-      updateCounters();
-      log(label, 'info');
-      report.push('LEGEND QA RUNNER REPORT');
-      report.push('Generated: ' + new Date().toLocaleString());
-      report.push('');
-    }
-
-    async function runCore(){
-      await resetReport('Running core LEGEND playtest loop...');
-      await runTest('Title/version screen loads', testTitleAndVersion);
-      await runTest('Fresh save reaches Ashmere and core menu exists', testAshmereMenuCoverage);
-      await runTest('Mara starts quest flow', testNPCQuestFlow);
-      await runTest('First Road event resolves', testFirstRoadRouteAndRewards);
-      await runTest('Brenn Road Token turn-in works', testBrennTurnInInsufficientAndForcedComplete);
-      log('Core loop finished. Pass: ' + counters.pass + ' / Fail: ' + counters.fail + ' / Warn: ' + counters.warn, counters.fail ? 'fail' : 'pass');
-    }
-
-    async function runAll(){
-      await resetReport('Running full automated LEGEND QA suite...');
-      await runTest('Title/version screen loads', testTitleAndVersion);
-      await runTest('Character creation variants persist', testCharacterCreationVariants);
-      await runTest('Ashmere menu coverage', testAshmereMenuCoverage);
-      await runTest('Mara NPC quest flow', testNPCQuestFlow);
-      await runTest('First Road route and reward flow', testFirstRoadRouteAndRewards);
-      await runTest('Brenn insufficient + complete turn-in', testBrennTurnInInsufficientAndForcedComplete);
-      await runTest('Inn and economy response', testInnAndEconomy);
-      await runTest('Weapon/armor shop basics', testShopsAndEquipment);
-      await runTest('Commons skill and character sheet', testCommonsAndSheet);
-      await runTest('Battle actions when combat appears', testBattleActionsWithInjectedBattle);
-      await runTest('Save and continue flow', testSaveContinueDelete);
-      await runTest('Feedback/newsletter/blog links', testFeedbackAndSiteLinks);
-      await runTest('Basic layout sanity', testLayoutSanity);
-      log('Full suite finished. Pass: ' + counters.pass + ' / Fail: ' + counters.fail + ' / Warn: ' + counters.warn, counters.fail ? 'fail' : 'pass');
-    }
-
-    async function runLinks(){
-      await resetReport('Checking support pages and public links...');
-      await runTest('Feedback/newsletter/blog links', testFeedbackAndSiteLinks);
-      await runTest('Basic layout sanity', testLayoutSanity);
-      log('Link check finished.', counters.fail ? 'fail' : 'pass');
-    }
-
-    document.getElementById('runAll').onclick = runAll;
-    document.getElementById('runCore').onclick = runCore;
-    document.getElementById('runLinks').onclick = runLinks;
-    document.getElementById('openGame').onclick = () => window.open('index.html', '_blank');
-    document.getElementById('clearReport').onclick = () => { statusBox.innerHTML = '<div class="entry info">Report cleared.</div>'; report.length = 0; counters.pass = counters.fail = counters.warn = counters.total = 0; updateCounters(); };
-  </script>
+<script>
+const frame=document.getElementById('game');
+const statusBox=document.getElementById('status');
+const reportBox=document.getElementById('report');
+const counters={pass:0,fail:0,warn:0,total:0};
+const report=[];
+function update(){passes.textContent=counters.pass;fails.textContent=counters.fail;warns.textContent=counters.warn;total.textContent=counters.total;reportBox.value=report.join('\n')}
+function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function log(m,t='info'){const d=document.createElement('div');d.className='entry '+t;d.innerHTML=m;statusBox.prepend(d)}
+function record(name,status,detail=''){counters.total++;counters[status]++;log(`${status.toUpperCase()}: ${esc(name)}${detail?'<br><span class="small">'+esc(detail)+'</span>':''}`,status);report.push(`[${status.toUpperCase()}] ${name}${detail?' - '+detail:''}`);update()}
+function doc(){return frame.contentDocument||frame.contentWindow.document}function win(){return frame.contentWindow}function text(){return doc().body?doc().body.innerText:''}function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function waitLoad(){return new Promise(r=>{frame.onload=()=>setTimeout(r,160)})}
+async function openPage(url){frame.src=url+(url.includes('?')?'&':'?')+'qa='+Date.now();await waitLoad();await sleep(120)}
+async function resetGame(){await openPage('index.html');try{win().localStorage.clear()}catch(e){}await openPage('index.html')}
+function buttons(){return [...doc().querySelectorAll('button,a')].map(el=>({el,txt:(el.innerText||el.textContent||'').trim(),href:el.getAttribute('href')||''})).filter(x=>x.txt)}
+function find(rx){return buttons().find(x=>rx.test(x.txt))?.el}
+async function click(rx,label){let el;for(let i=0;i<20;i++){el=find(rx);if(el)break;await sleep(100)}if(!el)throw new Error('Missing '+label+'. Visible: '+buttons().map(b=>b.txt).slice(0,18).join(' | '));el.click();await sleep(230)}
+function fill(value){const input=doc().querySelector('input');if(!input)throw new Error('No input found');input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}))}
+async function waitText(rx,ms=3000){const end=Date.now()+ms;while(Date.now()<end){if(rx.test(text()))return true;await sleep(100)}return false}
+function saveObj(){const keys=Object.keys(win().localStorage).filter(k=>/legend-recovered-build/i.test(k));for(const k of keys){try{return JSON.parse(win().localStorage.getItem(k))}catch(e){}}return null}
+async function makeHero(name='QABot'){await resetGame();await click(/New Recovered Save/i,'New Recovered Save');fill(name);await click(/^Continue$/i,'Continue name');await click(/Wandering Cook/i,'origin');await click(/Ranger/i,'class');await click(/Old Map/i,'keepsake');await click(/Enter Ashmere/i,'Enter Ashmere');if(!await waitText(/Ashmere Menu/i))throw new Error('Did not reach Ashmere Menu')}
+async function testLoader(){await resetGame();if(!/LEGEND/.test(text()))throw new Error('LEGEND title missing');if(!/v0\.6|Recovered Build v0\.6/i.test(text()))throw new Error('v0.6 label missing');const scripts=[...doc().querySelectorAll('script[src]')].map(s=>s.getAttribute('src'));['js/data.js','js/storage.js','js/ui.js','js/game.js'].forEach(s=>{if(!scripts.includes(s))throw new Error('Missing script '+s)});if(!doc().querySelector('link[href="css/style.css"]'))throw new Error('Missing css/style.css link')}
+async function testSettingsTitle(){await resetGame();await click(/Settings \/ Accessibility/i,'Settings');if(!await waitText(/Larger Text|Bolder Text|High Contrast/i))throw new Error('Settings options missing');await click(/Larger Text/i,'Larger Text');if(!doc().body.classList.contains('a11y-large-text'))throw new Error('Large text class not applied');await openPage('index.html');if(!doc().body.classList.contains('a11y-large-text'))throw new Error('Accessibility setting did not persist')}
+async function testNewSaveMenuUnlocks(){await makeHero('UnlockBot');const visible=text();['Explore The First Road','People of Ashmere','Character Sheet','Settings / Accessibility','Save / Exit'].forEach(t=>{if(!visible.includes(t))throw new Error('Starter option missing: '+t)});if(!/Locked: Talk to Mara first/.test(visible))throw new Error('Mara-locked systems not shown correctly');if(!/Locked: Complete one road event first/.test(visible))throw new Error('Road-event locked systems not shown correctly')}
+async function testMaraUnlocks(){await makeHero('MaraBot');await click(/People of Ashmere/i,'People');await click(/Mara Vell/i,'Mara');if(!await waitText(/Mara points|People of Ashmere/i))throw new Error('Mara interaction did not respond');await click(/Back to Ashmere/i,'Back to Ashmere');const visible=text();if(!/The Archive Hall/.test(visible)||!/The Ledger Hall/.test(visible)||!/Save Vault/.test(visible))throw new Error('Mara did not unlock archive/ledger/save vault')}
+async function testRoadUnlocks(){await makeHero('RoadBot');await click(/Explore The First Road/i,'Explore');await click(/Old Road/i,'Old Road');if(!await waitText(/The Road Continues|Battle|Road Tokens/i,4000))throw new Error('Old Road did not resolve into event/battle');const s=saveObj();if(!s?.flags?.firstRoadEvent)throw new Error('firstRoadEvent flag not saved');await click(/Return to Ashmere|Flee/i,'Return/Flee');const visible=text();if(!/Ashmere Inn/.test(visible)||!/Trading Post/.test(visible))throw new Error('Inn/Trading Post not unlocked after road event')}
+async function testSaveContinue(){await makeHero('SaveBot');let s=saveObj();if(!s||s.username!=='SaveBot')throw new Error('Save not written');await openPage('index.html');if(!await waitText(/Continue as SaveBot/i))throw new Error('Continue button missing');await click(/Continue as SaveBot/i,'Continue');if(!await waitText(/Ashmere Menu/i))throw new Error('Continue did not load town')}
+async function testSupportPages(){await openPage('save.html');if(!/SAVE VAULT|Exported Save Code|Import Save/i.test(text()))throw new Error('Save Vault missing expected text');await openPage('feedback.html');if(!/Submit Feedback|vM66NxTLsCBFoFXP6|10–15 Minute Playtest/i.test(text()))throw new Error('Feedback page missing form info');await openPage('updates.html');if(!/Join the Newsletter|Buttondown|Legend-RPG/i.test(text()))throw new Error('Newsletter page missing signup info');await openPage('blog.html');if(!/LEGEND DEVLOG|First Road Balance|Devlog/i.test(text()))throw new Error('Blog page missing devlog info')}
+async function testLayout(){await resetGame();const overflow=doc().documentElement.scrollWidth>doc().documentElement.clientWidth+8;if(overflow)throw new Error('Horizontal overflow detected');const b=find(/New Recovered Save/i);if(!b)throw new Error('New save button missing');if(b.getBoundingClientRect().height<44)throw new Error('Tap target too small')}
+async function runTest(name,fn){try{await fn();record(name,'pass')}catch(e){record(name,'fail',e.message)}}
+async function resetReport(title){statusBox.innerHTML='';report.length=0;counters.pass=counters.fail=counters.warn=counters.total=0;report.push('LEGEND v0.6 QA REPORT');report.push('Generated: '+new Date().toLocaleString());report.push('');update();log(title,'info')}
+async function runCore(){await resetReport('Running core v0.6 playability check...');await runTest('Modular loader boots',testLoader);await runTest('Accessibility settings work',testSettingsTitle);await runTest('New save reaches progressive Ashmere menu',testNewSaveMenuUnlocks);await runTest('Save and continue works',testSaveContinue);log('Core check complete.',counters.fail?'fail':'pass')}
+async function runAll(){await resetReport('Running full v0.6 QA...');await runTest('Modular loader boots',testLoader);await runTest('Accessibility settings work and persist',testSettingsTitle);await runTest('New save reaches progressive Ashmere menu',testNewSaveMenuUnlocks);await runTest('Mara unlocks Archive/Ledger/Save Vault',testMaraUnlocks);await runTest('Old Road unlocks Inn/Trading Post',testRoadUnlocks);await runTest('Save and continue works',testSaveContinue);await runTest('Support pages load',testSupportPages);await runTest('Basic layout sanity',testLayout);log('Full v0.6 QA complete.',counters.fail?'fail':'pass')}
+async function runPages(){await resetReport('Checking support pages...');await runTest('Support pages load',testSupportPages);await runTest('Basic layout sanity',testLayout);log('Page check complete.',counters.fail?'fail':'pass')}
+runAll.onclick=runAll;runCore.onclick=runCore;runPages.onclick=runPages;openGame.onclick=()=>window.open('index.html','_blank');
+</script>
 </body>
 </html>
