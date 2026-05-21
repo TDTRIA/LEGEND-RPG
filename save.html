@@ -13,10 +13,10 @@
 <body>
   <div class="shell">
     <header>
-      <p class="kicker">Portable Save System</p>
+      <p class="kicker">Portable Save System / Hotfix v0.6.2</p>
       <h1>SAVE VAULT</h1>
       <p><strong>LEGEND Save Vault</strong> lets you export your save out of browser storage and bring it to another browser/device later. This is not a cloud account system, but it means your save is no longer trapped in one browser.</p>
-      <nav><a class="btn primary" href="index.html">Back to LEGEND</a><a class="btn" href="feedback.html">Playtest Feedback</a><a class="btn" href="blog.html">Devlog</a></nav>
+      <nav><a class="btn primary" href="index.html?v=0.6.2-visual">Back to LEGEND</a><a class="btn" href="feedback.html">Playtest Feedback</a><a class="btn" href="blog.html">Devlog</a></nav>
     </header>
 
     <main>
@@ -73,8 +73,16 @@
   </div>
 
   <script>
-    const SAVE_KEYS = ['legend-recovered-build-v051','legend-recovered-build-v05','legend-recovered-build-v041','legend-recovered-build-v04','legend-recovered-build-v03','legend-recovered-build-v02'];
-    const ACTIVE_KEY = 'legend-recovered-build-v051';
+    const ACTIVE_KEY = 'legend-recovered-build-v06';
+    const SAVE_KEYS = [
+      'legend-recovered-build-v06',
+      'legend-recovered-build-v051',
+      'legend-recovered-build-v05',
+      'legend-recovered-build-v041',
+      'legend-recovered-build-v04',
+      'legend-recovered-build-v03',
+      'legend-recovered-build-v02'
+    ];
     const exportBox = document.getElementById('exportBox');
     const importBox = document.getElementById('importBox');
     const fileInput = document.getElementById('fileInput');
@@ -92,12 +100,22 @@
 
     function makePayload(raw, key){
       const parsed = JSON.parse(raw);
-      return { format:'LEGEND_SAVE_V1', game:'Legend - Recovered Build', exportedAt:new Date().toISOString(), sourceKey:key, targetKey:ACTIVE_KEY, save:parsed };
+      return {
+        format:'LEGEND_SAVE_V1',
+        game:'Legend - Recovered Build',
+        exportedAt:new Date().toISOString(),
+        sourceKey:key,
+        targetKey:ACTIVE_KEY,
+        save:parsed
+      };
     }
 
     function encodePayload(payload){
       const json = JSON.stringify(payload);
-      return 'LEGEND-SAVE-V1:' + btoa(unescape(encodeURIComponent(json)));
+      const bytes = new TextEncoder().encode(json);
+      let binary = '';
+      bytes.forEach(byte => binary += String.fromCharCode(byte));
+      return 'LEGEND-SAVE-V1:' + btoa(binary);
     }
 
     function decodePayload(text){
@@ -105,7 +123,9 @@
       if(!trimmed) throw new Error('No save code provided.');
       if(trimmed.startsWith('LEGEND-SAVE-V1:')){
         const encoded = trimmed.replace('LEGEND-SAVE-V1:', '').trim();
-        return JSON.parse(decodeURIComponent(escape(atob(encoded))));
+        const binary = atob(encoded);
+        const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+        return JSON.parse(new TextDecoder().decode(bytes));
       }
       const parsed = JSON.parse(trimmed);
       if(parsed.format === 'LEGEND_SAVE_V1') return parsed;
@@ -125,7 +145,7 @@
         <div class="stat"><span class="label">Level</span><span class="value">${p.level || 1}</span></div>
         <div class="stat"><span class="label">Gold</span><span class="value">${p.gold || 0}</span></div>
         <div class="stat"><span class="label">Road Tokens</span><span class="value">${p.inventory?.roadToken || 0}</span></div>
-        <div class="stat"><span class="label">Version Key</span><span class="value">${escapeHtml(save.sourceKey || ACTIVE_KEY)}</span></div>
+        <div class="stat"><span class="label">Save Key</span><span class="value">${escapeHtml(save.sourceKey || ACTIVE_KEY)}</span></div>
       `;
     }
 
@@ -149,6 +169,8 @@
         currentStatus.textContent = 'Save found. You can download it, copy it, or import it on another browser later.';
         return payload;
       }catch(err){
+        exportBox.value = '';
+        summarizeSave(null);
         currentStatus.className = 'notice danger';
         currentStatus.textContent = 'Save found, but it could not be read: ' + err.message;
         return null;
@@ -159,6 +181,7 @@
       if(!payload || !payload.save) throw new Error('Invalid LEGEND save payload.');
       const p = payload.save;
       if(!p.username || !p.inventory || !p.className) throw new Error('Save is missing required LEGEND character data.');
+      p.version = p.version || 'v0.6.2';
       localStorage.setItem(ACTIVE_KEY, JSON.stringify(p));
       importStatus.className = 'notice';
       importStatus.textContent = 'Imported save for ' + p.username + '. Return to LEGEND and choose Continue.';
@@ -169,22 +192,33 @@
     document.getElementById('copySave').onclick = async () => {
       if(!exportBox.value) refresh();
       if(!exportBox.value) return;
-      await navigator.clipboard.writeText(exportBox.value);
-      currentStatus.className = 'notice';
-      currentStatus.textContent = 'Save code copied to clipboard.';
+      try{
+        await navigator.clipboard.writeText(exportBox.value);
+        currentStatus.className = 'notice';
+        currentStatus.textContent = 'Save code copied to clipboard.';
+      }catch(err){
+        exportBox.focus();
+        exportBox.select();
+        currentStatus.className = 'notice danger';
+        currentStatus.textContent = 'Clipboard blocked by browser. The save code is selected; press Ctrl+C to copy it.';
+      }
     };
     document.getElementById('downloadSave').onclick = () => {
       const payload = refresh();
       if(!payload) return;
       const name = (payload.save.username || 'legend').replace(/[^a-z0-9_-]/gi,'_').toLowerCase();
-      const blob = new Blob([encodePayload(payload)], { type: 'text/plain' });
+      const code = encodePayload(payload);
+      const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
+      a.href = url;
       a.download = `${name}-legend-save.legend`;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      URL.revokeObjectURL(a.href);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      currentStatus.className = 'notice';
+      currentStatus.textContent = 'Downloaded .legend save file.';
     };
     document.getElementById('deleteLocal').onclick = () => {
       if(!confirm('Delete all LEGEND browser saves on this device? Export first if you want to keep your save.')) return;
