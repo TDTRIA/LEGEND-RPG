@@ -10,6 +10,8 @@ The surviving original build, **LegendTFC release 1.0**, included account creati
 
 **Live build:** https://tdtria.github.io/LEGEND-RPG/
 
+**Save Vault:** https://tdtria.github.io/LEGEND-RPG/save.html
+
 **Playtest feedback page:** https://tdtria.github.io/LEGEND-RPG/feedback.html
 
 ---
@@ -28,6 +30,9 @@ v0.5.1 is the first balance patch for the public playtest loop. It improves the 
 - Browser tab favicon
 - Mobile-friendly layout pass
 - Local browser saving using `localStorage`
+- Portable Save Vault export/import page
+- Downloadable `.legend` save files
+- Copy/paste save codes for moving saves between browsers/devices
 - Character creation
 - Character origins
 - Starting keepsakes
@@ -70,20 +75,20 @@ v0.5.1 is the first balance patch for the public playtest loop. It improves the 
 
 ## Development Roadmap
 
-### v0.5.1 - First Road Balance
+### v0.5.2 - Save Vault / Portability
 
-- Improved Road Token pacing
-- Added guaranteed Old Road progress
-- Made Bell Shard timing clearer after talking to Mara
-- Added a Feedback link to the main game menu
-- Tightened early Old Road balance for public playtesting
-- Updated support pages and changelog
+- Added Save Vault page
+- Added portable save code export
+- Added downloadable `.legend` save files
+- Added save import by paste or upload
+- Prepared the project for a future cloud/account save system
 
 ### Planned Next
 
 - Collect public playtest feedback
 - Tune confusion points from testers
 - Improve mobile readability based on real-device feedback
+- Begin v0.6 file refactor into `css/` and `js/` folders
 - Expand route-specific events
 - Restore and deepen broader v0.5 systems where needed
 - Add more NPC reactions after quests
@@ -98,6 +103,7 @@ v0.5.1 is the first balance patch for the public playtest loop. It improves the 
 - CSS
 - JavaScript
 - Browser `localStorage`
+- Portable save export/import
 - GitHub Pages
 - Buttondown newsletter
 - Google Forms feedback
@@ -112,7 +118,7 @@ v0.5.1 is the first balance patch for the public playtest loop. It improves the 
 3. Create a character.
 4. Start exploring Ashmere and The First Road.
 
-Your save data is stored in your browser.
+Your active save data is stored in your browser. Use `save.html` to export a portable `.legend` save file or import a save from another browser/device.
 
 ---
 
