@@ -18,15 +18,30 @@ The surviving original build, **LegendTFC release 1.0**, included account creati
 
 ## Current Version
 
-**Recovered Build v0.5.1 - First Road Balance**
+**Recovered Build v0.6 - Refactor and Accessibility**
 
-v0.5.1 is the first balance patch for the public playtest loop. It improves the first 10–15 minutes by making Road Token progress faster, Bell Shard pacing clearer, Old Road rewards more reliable, and feedback easier to submit from the main menu.
+v0.6 moves LEGEND out of one giant HTML file and into a modular structure with separate CSS, data, storage, UI, and game-flow files. It also adds progressive Ashmere menu unlocks and accessibility settings so new players are less overwhelmed and can make the game easier to read.
 
 ---
 
 ## Current Features
 
 - Browser-based HTML5 game
+- Modular v0.6 file structure
+- Shared stylesheet in `css/style.css`
+- Game data module in `js/data.js`
+- Save/settings module in `js/storage.js`
+- UI rendering module in `js/ui.js`
+- Game flow module in `js/game.js`
+- Progressive Ashmere menu unlocks
+- Accessibility settings:
+  - Larger text
+  - Bolder text
+  - High contrast
+  - Reduced motion
+  - Simplified ASCII
+  - Spacious UI
+  - Readable font
 - Browser tab favicon
 - Mobile-friendly layout pass
 - Local browser saving using `localStorage`
@@ -45,26 +60,17 @@ v0.5.1 is the first balance patch for the public playtest loop. It improves the 
 - First questline: **The Bell That Rang Once**
 - Opening route: **The First Road**
 - Road Tokens objective
-- Guaranteed Old Road progress toward Road Tokens
 - Ashmere Inn
-- Camp Supplies
-- Exploration routes and random events
+- Exploration events
 - D20-style checks
-- Enemy intent
-- Enemy traits
-- Guard action
-- Class-based combat moves
-- Momentum meter
-- Steadier weapon damage ranges
+- Basic combat
 - Weapon and armor progression
 - Inventory system
 - Trading Post
-- Ledger Hall bank system
-- Archive Hall quest/memory hub
+- Ledger Hall
+- Archive Hall
 - Commons skill training area
-- Skill checks and skill mastery tracking
-- Hollow Keep boss encounter
-- Lacoyx boss fight
+- Hollow Keep teaser
 - Recovered Memories system
 - ASCII art panels
 - Human playtest feedback page
@@ -75,22 +81,22 @@ v0.5.1 is the first balance patch for the public playtest loop. It improves the 
 
 ## Development Roadmap
 
-### v0.5.2 - Save Vault / Portability
+### v0.6 - Refactor and Accessibility
 
-- Added Save Vault page
-- Added portable save code export
-- Added downloadable `.legend` save files
-- Added save import by paste or upload
-- Prepared the project for a future cloud/account save system
+- Split the game into `css/` and `js/` files
+- Added progressive unlocks to reduce early menu overwhelm
+- Added accessibility settings
+- Added persistent settings via `legend-settings-v1`
+- Kept Save Vault as the bridge toward future cloud/account saves
 
 ### Planned Next
 
+- Run the browser QA runner against v0.6
+- Patch any regressions from the refactor
+- Update `playtest.html` for v0.6-specific menu unlock tests
 - Collect public playtest feedback
-- Tune confusion points from testers
-- Improve mobile readability based on real-device feedback
-- Begin v0.6 file refactor into `css/` and `js/` folders
+- Restore and deepen any v0.5.1 systems that were simplified during refactor
 - Expand route-specific events
-- Restore and deepen broader v0.5 systems where needed
 - Add more NPC reactions after quests
 - Improve combat clarity and enemy behavior
 - Deepen Hollow Keep progression
