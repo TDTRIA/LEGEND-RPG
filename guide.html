@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LEGEND Playtester Guide</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <style>
+    :root{--bg:#060807;--soft:#0d1813;--panel:rgba(10,18,15,.94);--panel2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border2:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--red:#ff6b6b;--shadow:rgba(0,0,0,.42)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--soft),var(--bg));padding:24px}.shell{width:min(1050px,100%);margin:0 auto}header,.card{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow);border-radius:18px;padding:clamp(20px,4vw,38px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0;color:var(--accent);font-size:clamp(2.35rem,9vw,6rem);letter-spacing:.1em;line-height:.88;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:0 0 12px;color:var(--accent);font-size:1.5rem}h3{margin:0 0 8px;color:var(--gold);font-size:1.18rem}p,li{color:var(--text);line-height:1.65}.muted{color:var(--muted)}strong{color:var(--gold)}nav,.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.step,.note{border:1px solid var(--border2);background:var(--panel2);border-radius:16px;padding:16px}.step-number{display:inline-flex;width:32px;height:32px;border-radius:999px;background:linear-gradient(180deg,#ffe29a,#d69f32);color:#241803;align-items:center;justify-content:center;font-weight:900;margin-bottom:10px}.tag{display:inline-block;border:1px solid rgba(132,255,178,.22);border-radius:999px;padding:4px 9px;color:var(--accent);font-size:.82rem;margin:4px 4px 0 0}.callout{border-left:3px solid var(--gold);background:rgba(255,211,105,.07);border-radius:10px;padding:14px 16px;margin-top:14px}.callout p{margin:0;color:#fff0c2}.danger{border-left-color:var(--red);background:rgba(255,107,107,.08)}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:820px){.grid{grid-template-columns:1fr}}@media(max-width:720px){body{padding:12px}nav,.actions{flex-direction:column}.btn{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <p class="kicker">Recovered Build v0.6</p>
+      <h1>PLAYTEST GUIDE</h1>
+      <p>This guide tells testers exactly what to try in <strong>LEGEND v0.6</strong> so feedback is focused, useful, and easy to compare.</p>
+      <nav><a class="btn primary" href="index.html">Play LEGEND</a><a class="btn" href="feedback.html">Submit Feedback</a><a class="btn" href="playtest.html">Run QA</a><a class="btn" href="save.html">Save Vault</a><a class="btn" href="blog.html">Devlog</a></nav>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>The 10-Minute Route</h2>
+        <p class="muted">This is the main route we want people to test first.</p>
+        <div class="grid">
+          <div class="step"><span class="step-number">1</span><h3>Create a character</h3><p>Pick any origin, class, and keepsake. Notice whether the choices feel interesting or confusing.</p></div>
+          <div class="step"><span class="step-number">2</span><h3>Enter Ashmere</h3><p>Check whether the first town menu feels manageable instead of overwhelming.</p></div>
+          <div class="step"><span class="step-number">3</span><h3>Open Settings</h3><p>Try larger text, bolder text, high contrast, simplified ASCII, or reduced motion if anything feels hard to read.</p></div>
+          <div class="step"><span class="step-number">4</span><h3>Talk to Mara</h3><p>Go to People of Ashmere and speak with Mara Vell. Then return to town and see what unlocked.</p></div>
+          <div class="step"><span class="step-number">5</span><h3>Explore Old Road</h3><p>Start The First Road and complete one event or battle. Return to Ashmere afterward.</p></div>
+          <div class="step"><span class="step-number">6</span><h3>Check the town again</h3><p>Look for new options such as the Inn, Trading Post, Ledger Hall, Archive Hall, or Save Vault.</p></div>
+        </div>
+        <div class="actions"><a class="btn primary" href="index.html">Start the Route</a><a class="btn" href="feedback.html">Send Feedback</a></div>
+      </section>
+
+      <section class="card">
+        <h2>What We Actually Need To Know</h2>
+        <div class="note"><span class="tag">Confusion</span><span class="tag">Readability</span><span class="tag">Pacing</span><span class="tag">Unlocks</span><span class="tag">Bugs</span></div>
+        <ul>
+          <li>Did you know what to do first?</li>
+          <li>Did the locked menu options make sense?</li>
+          <li>Did the town feel less overwhelming than a giant menu?</li>
+          <li>Did accessibility settings help?</li>
+          <li>Did anything fail to click, save, load, or respond?</li>
+          <li>Did The First Road make you want to keep playing?</li>
+        </ul>
+        <div class="callout"><p>One clear complaint is more useful than ten vague compliments. “I got confused after talking to Mara” is great feedback.</p></div>
+      </section>
+
+      <section class="card">
+        <h2>Known v0.6 Tradeoff</h2>
+        <div class="callout danger"><p>v0.6 is a refactor build. Some v0.5.1 depth may feel leaner while the project moves into modular files. That is expected, but still worth reporting if something feels missing.</p></div>
+      </section>
+    </main>
+    <footer>Legend - Recovered Build / Playtester Guide</footer>
+  </div>
+</body>
+</html>
