@@ -32,7 +32,10 @@ window.LegendStorage = (() => {
       oldRoadClears:p.stats.oldRoadClears || 0,
       oldRoadSuccesses:p.stats.oldRoadSuccesses || 0,
       roadEvents:p.stats.roadEvents || 0,
-      resourcesFound:p.stats.resourcesFound || 0
+      resourcesFound:p.stats.resourcesFound || 0,
+      townErrands:p.stats.townErrands || 0,
+      campsMade:p.stats.campsMade || 0,
+      routesDiscovered:p.stats.routesDiscovered || 0
     });
     p.flags = p.flags || {};
     Object.assign(p.flags, {
@@ -41,18 +44,37 @@ window.LegendStorage = (() => {
       bellQuestComplete:!!p.flags.bellQuestComplete,
       firstRoadComplete:!!p.flags.firstRoadComplete,
       talkedToMara:!!p.flags.talkedToMara,
+      talkedToSella:!!p.flags.talkedToSella,
+      sellaErrandStarted:!!p.flags.sellaErrandStarted,
+      sellaErrandComplete:!!p.flags.sellaErrandComplete,
       firstRoadEvent:!!p.flags.firstRoadEvent,
       firstToken:!!p.flags.firstToken,
-      firstResource:!!p.flags.firstResource
+      firstResource:!!p.flags.firstResource,
+      hiddenTurnoffFound:!!p.flags.hiddenTurnoffFound
     });
     p.skills = p.skills || baseSkills();
     p.mastery = p.mastery || {};
     Object.keys(p.skills).forEach(k => p.mastery[k] ??= 0);
     p.memories = p.memories || ['You woke beneath a dead lantern outside Ashmere.'];
-    p.questLog = p.questLog || ['The Bell That Rang Once: Speak to Mara in The Archive Hall.','The First Road: Explore Old Road and return with 3 Road Tokens.'];
+    p.questLog = p.questLog || ['The Bell That Rang Once: Speak to Mara in People of Ashmere.','The First Road: Explore Old Road and return with 3 Road Tokens.'];
+    p.quests = p.quests || {
+      bellThatRangOnce:{status:'active',step:1,title:'The Bell That Rang Once'},
+      firstRoad:{status:'active',step:1,title:'The First Road'},
+      sellaRoadMeal:{status:'hidden',step:0,title:'A Meal Before The Road'}
+    };
     p.traits = p.traits || [];
     p.momentum = p.momentum || 0;
     p.bank = p.bank || [0,0,0,0,0];
+    p.day = p.day || 1;
+    p.timeOfDay = p.timeOfDay || 'Morning';
+    p.fatigue = p.fatigue || 0;
+    p.roadDanger = p.roadDanger || 1;
+    p.townTrust = p.townTrust || {};
+    p.townTrust.Ashmere ??= 0;
+    p.npcTalk = p.npcTalk || {};
+    ['mara','brenn','oric','sella'].forEach(k => p.npcTalk[k] ??= 0);
+    p.discoveredRoutes = p.discoveredRoutes || ['Old Road'];
+    p.discoveredTowns = p.discoveredTowns || ['Ashmere'];
     return p;
   }
 
