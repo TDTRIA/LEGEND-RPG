@@ -6,7 +6,55 @@ This project is an HTML5 browser remake of the original Windows Batch RPG **Lege
 
 ---
 
-## [Current] v0.5.1 - First Road Balance
+## [Current] v0.6 - Refactor and Accessibility
+
+### Added
+
+- Split the game out of the giant `index.html` file into modular files.
+- Added `css/style.css` for shared styling.
+- Added `js/data.js` for game data.
+- Added `js/storage.js` for saves and accessibility settings.
+- Added `js/ui.js` for rendering helpers.
+- Added `js/game.js` for the v0.6 game flow.
+- Added accessibility settings:
+  - Larger text
+  - Bolder text
+  - High contrast
+  - Reduced motion
+  - Simplified ASCII
+  - Spacious UI
+  - Readable font
+- Added progressive Ashmere menu unlocks.
+- Added Save Vault support as part of the v0.6 path.
+- Added a v0.6 refactor plan in `docs/v0.6-refactor-plan.md`.
+
+### Changed
+
+- `index.html` is now a small loader that imports CSS and JavaScript modules.
+- The starting Ashmere menu now shows fewer choices at first.
+- Town systems unlock over time based on early player progress.
+- New players are guided toward The First Road, People of Ashmere, Character Sheet, Settings, and Save/Exit first.
+- Archive Hall, Ledger Hall, Inn, Trading Post, shops, Commons, Save Vault, and Hollow Keep now unlock progressively.
+
+### Known Issues
+
+- v0.6 is a structural refactor and may temporarily be leaner than v0.5.1 in some systems.
+- The QA runner still needs a full v0.6-specific pass.
+- The Save Vault exists as a separate page and is not yet deeply integrated into every in-game menu flow.
+
+---
+
+## v0.5.2 - Save Vault / Portability
+
+- Added `save.html` Save Vault page.
+- Added portable save code export.
+- Added downloadable `.legend` save files.
+- Added save import by paste or upload.
+- Documented Save Vault in the README.
+
+---
+
+## v0.5.1 - First Road Balance
 
 ### Added
 
@@ -26,12 +74,6 @@ This project is an HTML5 browser remake of the original Windows Batch RPG **Lege
 - Early Old Road enemy balance was tightened for public playtest pacing.
 - Important survival and quest items are better protected from quick selling.
 - Updated blog and status pages for v0.5.1.
-
-### Known Issues
-
-- v0.5.1 is still a single-file prototype.
-- The First Road loop is improved but still needs real public feedback.
-- Some systems from v0.5 were simplified while tightening the playtest loop and may need to be re-expanded in future builds.
 
 ---
 
