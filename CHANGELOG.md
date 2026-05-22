@@ -6,7 +6,97 @@ This project is an HTML5 browser remake of the original Windows Batch RPG **Lege
 
 ---
 
-## [Current] v0.6 - Refactor and Accessibility
+## [Current] v0.7.0 - Interface & Encounter Update
+
+### Added
+
+- Added `css/ui-v070.css`, a living UI skin with stronger presentation, animated background glow, polished panels, button shine, improved cards, enhanced battle visuals, and reduced-motion support.
+- Added `js/version-v070.js` so the live build reports **v0.7.0**.
+- Added `js/systems/creation-v070.js`, a deeper **Traveler Interview** after origin/class/keepsake selection.
+- Added Traveler Interview traits, memories, starting item effects, small HP/gold/XP/mastery changes, town trust changes, and saved background bonuses.
+- Added `js/systems/intro-v070.js`, a short cinematic intro between character creation and Ashmere.
+- Added `js/systems/combat-v070.js`, an additive interactive combat layer with Encounter Read, Exploit Opening, Use Item, class-flavored social actions, and Risky Flee.
+- Added `js/systems/defeat-v070.js`, a road defeat screen with early mercy, momentum reset, and light gold/supply loss after the player has learned the basics.
+- Added `js/systems/playtest-v070.js`, including a title-screen **What’s New in v0.7.0** modal, weekend playtest goals, and first-time Ashmere guidance.
+- Added Devlog 009: `posts/009-interface-encounter-update.html`.
+- Added v0.7.0-focused manual checklist and file checks to `playtest.html`.
+
+### Changed
+
+- Better Inventory is now treated as the main character inventory experience through the v0.6.5 inventory layer.
+- Character Sheet now hides the old raw inventory dump and shows a cleaner character/inventory summary.
+- Old Road choice mode is now promoted as **Travel the Old Road**.
+- The old random Old Road route is still available as **Old Road — Classic Fallback**.
+- Choice-based Old Road checks now include Traveler Interview background bonuses.
+- Title screen copy now describes v0.7.0 as the Interface & Encounter Update.
+- Blog/devlog page now points to v0.7.0 and Devlog 009.
+- Playtest page now targets v0.7.0 instead of v0.6.4.
+
+### Playtest Focus
+
+- Create a new traveler and test the full character creation flow.
+- Try the Traveler Interview and see whether the choices feel meaningful.
+- Watch the cinematic intro and check whether it clarifies the world setup.
+- Use the Ashmere Start Here guide.
+- Speak with Mara, then travel the Old Road.
+- Test Old Road choice checks and rewards.
+- Try combat options besides Attack.
+- Open the improved inventory from Character Sheet and after defeat.
+- Test defeat consequences and whether the road-loss penalty feels fair.
+- Report anything confusing, unfair, broken, or awkward on mobile.
+
+### Known Notes
+
+- v0.7.0 is still layered safely over the restored v0.6.4 core in several places.
+- After the weekend playtest, the next development focus should be stabilization, bug fixes, and consolidating the additive v0.7.0 systems into cleaner long-term modules.
+- The live project should avoid replacing `js/game.js` unless absolutely necessary.
+
+---
+
+## v0.6.5 - Menu, Inventory, and Choice Checks Cleanup
+
+### Added
+
+- Added `js/version-v065.js` as a lightweight build label patch.
+- Added `js/systems/inventory-v065.js`, a non-destructive Better Inventory overlay with categories, item descriptions, equipment summary, gold, trade value, item-use buttons, and copyable inventory summary.
+- Added `js/systems/road-choices-v065.js`, a choice-based Old Road event layer with visible skills, DCs, and outcomes.
+
+### Changed
+
+- Wired v0.6.5 additive systems into `index.html` without replacing the restored `game.js`.
+- Better Inventory became available from the Character Sheet.
+- Old Road gained a choice-based path while preserving the older route as a fallback.
+
+---
+
+## v0.6.4 - Restored Stable Baseline
+
+### Added
+
+- Restored the live game after `js/game.js` was accidentally overwritten with a stub.
+- Confirmed the full game file from commit `913bca8195620512cb477ff504c32fffe093f772`.
+- Added restored Old Road descriptions/tutorial data in `js/content/road-events.js`.
+- Updated Save Vault, blog, and playtest support pages for v0.6.4.
+
+### Changed
+
+- `index.html` loads the restored stable file sequence:
+  - `js/data.js`
+  - `js/storage.js`
+  - `js/ui.js`
+  - `js/game.js`
+  - `js/systems/tutorial.js`
+  - `js/systems/sella.js`
+- `js/data.js` reports VERSION `v0.6.4` as the protected baseline.
+
+### Notes
+
+- Refactor files exist, but modular travel was not fully active in the main loader at this stage.
+- Safe additive files are preferred before touching `js/game.js`.
+
+---
+
+## v0.6 - Refactor and Accessibility
 
 ### Added
 
