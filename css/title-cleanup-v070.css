@@ -1,0 +1,169 @@
+/* LEGEND v0.7.0 — Title/Layout Cleanup Pass
+   Loaded last. Fixes first-page alignment and makes the title screen feel intentional. */
+
+body.legend-scene-title .title-wrap{
+  min-height:100svh!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:clamp(12px,3vw,32px)!important;
+}
+
+body.legend-scene-title .title-card{
+  width:min(1120px,calc(100vw - 24px))!important;
+  max-width:1120px!important;
+  margin:0 auto!important;
+  padding:clamp(24px,5vw,58px)!important;
+  display:grid!important;
+  place-items:center!important;
+  text-align:center!important;
+}
+
+body.legend-scene-title .title-card > div{
+  width:min(900px,100%)!important;
+  margin:0 auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  text-align:center!important;
+}
+
+/* The JS inserts this where old ASCII was. On title it should be a compact hero art strip, not a huge off-center block. */
+body.legend-scene-title .legend-visual-scene{
+  width:min(760px,100%)!important;
+  min-height:clamp(120px,22vw,220px)!important;
+  margin:0 auto 20px!important;
+  border:1px solid rgba(255,211,105,.34)!important;
+  border-radius:24px!important;
+  background:
+    radial-gradient(circle at 18% 70%,rgba(255,211,105,.26),transparent 12%),
+    radial-gradient(circle at 56% 28%,rgba(125,255,173,.24),transparent 24%),
+    linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.62)),
+    linear-gradient(135deg,#17291f 0%,#08110d 55%,#020403 100%)!important;
+  box-shadow:inset 0 0 48px rgba(0,0,0,.42),0 18px 48px rgba(0,0,0,.34),0 0 32px rgba(125,255,173,.08)!important;
+  position:relative!important;
+  overflow:hidden!important;
+}
+
+body.legend-scene-title .legend-visual-scene:before{
+  content:"THE ROAD REMEMBERS";
+  position:absolute;
+  left:50%;
+  top:18px;
+  transform:translateX(-50%);
+  width:max-content;
+  max-width:calc(100% - 24px);
+  color:#ffd369;
+  font-weight:900;
+  letter-spacing:.22em;
+  font-size:.72rem;
+  text-transform:uppercase;
+  text-shadow:0 0 18px rgba(255,211,105,.28);
+}
+
+body.legend-scene-title .legend-visual-scene:after{
+  content:"";
+  position:absolute;
+  left:12%;
+  right:12%;
+  bottom:26px;
+  height:3px;
+  border-radius:999px;
+  background:linear-gradient(90deg,transparent,rgba(255,211,105,.45),rgba(125,255,173,.55),transparent);
+  box-shadow:0 0 18px rgba(125,255,173,.24);
+}
+
+body.legend-scene-title .kicker{
+  margin:0 0 10px!important;
+  text-align:center!important;
+}
+
+body.legend-scene-title .game-title,
+body.legend-scene-title .legend-logo-theme{
+  margin:0 auto 16px!important;
+  text-align:center!important;
+  width:100%!important;
+}
+
+body.legend-scene-title .title-lore,
+body.legend-scene-title .v070-title-goals,
+body.legend-scene-title .small{
+  width:min(760px,100%)!important;
+  margin:12px auto!important;
+  text-align:center!important;
+}
+
+body.legend-scene-title .title-lore,
+body.legend-scene-title .v070-title-goals{
+  border-left:1px solid rgba(255,211,105,.22)!important;
+  border-top:1px solid rgba(255,211,105,.22)!important;
+  padding:14px 18px!important;
+}
+
+body.legend-scene-title .actions,
+body.legend-scene-title .legend-actions-theme{
+  width:min(780px,100%)!important;
+  margin:18px auto 8px!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  justify-content:center!important;
+  align-items:stretch!important;
+}
+
+body.legend-scene-title .actions .btn,
+body.legend-scene-title .actions button,
+body.legend-scene-title .actions a{
+  width:100%!important;
+  margin:0!important;
+  min-height:52px!important;
+}
+
+body.legend-scene-title .actions .primary,
+body.legend-scene-title #v070WhatsNewBtn{
+  grid-column:1 / -1!important;
+}
+
+/* Clean regular screens without disturbing game logic. */
+.legend-visual-scene{
+  display:block;
+  width:100%;
+  min-height:clamp(120px,20vw,240px);
+  border:1px solid rgba(255,211,105,.26);
+  border-radius:22px;
+  margin:0 0 16px;
+  background:
+    radial-gradient(circle at 20% 60%,rgba(255,211,105,.20),transparent 14%),
+    radial-gradient(circle at 70% 22%,rgba(125,255,173,.18),transparent 22%),
+    linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.60)),
+    linear-gradient(135deg,#13231b,#07100c 60%,#020403);
+  box-shadow:inset 0 0 44px rgba(0,0,0,.42),0 14px 34px rgba(0,0,0,.26);
+}
+
+/* Prevent empty generated text boxes from leaving weird gaps. */
+.title-card .text:empty,
+.panel .text:empty{display:none!important;}
+
+@media(max-width:720px){
+  body.legend-scene-title .title-card{
+    width:calc(100vw - 16px)!important;
+    padding:18px!important;
+    border-radius:22px!important;
+  }
+  body.legend-scene-title .title-card > div{width:100%!important;}
+  body.legend-scene-title .legend-visual-scene{
+    min-height:130px!important;
+    margin-bottom:14px!important;
+  }
+  body.legend-scene-title .game-title,
+  body.legend-scene-title .legend-logo-theme{
+    font-size:clamp(3rem,17vw,5.4rem)!important;
+    letter-spacing:.08em!important;
+  }
+  body.legend-scene-title .actions,
+  body.legend-scene-title .legend-actions-theme{
+    grid-template-columns:1fr!important;
+    position:relative!important;
+    padding:0!important;
+    background:transparent!important;
+  }
+}
