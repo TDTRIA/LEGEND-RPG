@@ -1,0 +1,52 @@
+/* LEGEND v0.7.0 release fixes — mobile/title/overlay safety */
+
+/* Keep injected intro/creation background layers decorative only. */
+.creation-v070-wrap:before,
+.intro-v070-wrap:before{
+  pointer-events:none!important;
+  z-index:0!important;
+}
+.creation-v070-card,
+.intro-v070-card{
+  z-index:1!important;
+}
+
+/* The title screen should not inherit the mobile sticky in-game action bar. */
+@media(max-width:720px){
+  .title-card .actions{
+    position:relative!important;
+    bottom:auto!important;
+    z-index:auto!important;
+    background:transparent!important;
+    padding:0!important;
+  }
+  .title-card .actions .btn,
+  .title-card .actions a,
+  .title-card .actions button{
+    width:100%!important;
+  }
+  .v070-title-info{
+    margin-bottom:12px!important;
+  }
+}
+
+/* Modal/overlay panels should fit short phone screens. */
+#legendCreationV070Overlay,
+#legendIntroV070Overlay,
+#legendDefeatOverlay,
+#legendV070WhatsNew{
+  overscroll-behavior:contain;
+}
+.creation-v070-wrap,
+.intro-v070-wrap{
+  max-height:100svh;
+  overflow:auto!important;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* Avoid hidden empty text blocks creating dead space. */
+.text:empty,
+.title-card .text:empty,
+.panel .text:empty{
+  display:none!important;
+}
