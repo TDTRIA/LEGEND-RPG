@@ -1,0 +1,42 @@
+// LEGEND v0.6.3 — Tutorial / Prologue Implementation
+
+(() => {
+  const root = () => document.getElementById('root');
+  const D = window.LEGEND_DATA;
+  const S = window.LegendStorage;
+  const UI = window.LegendUI;
+
+  function startTutorial(){
+    if(localStorage.getItem('legendTutorial') === 'false') return;
+    localStorage.setItem('legendTutorial','true');
+    tutorialStep = 0;
+    showTutorialStep();
+  }
+
+  let tutorialStep = 0;
+
+  function showTutorialStep(){
+    setScene('title');
+    const steps = [
+      { title:'Welcome to LEGEND', text:'You are about to enter Ashmere, the first town. This tutorial will guide you through the basics.', next:'Next' },
+      { title:'Character Creation', text:'Choose your Name, Origin, Class, and Keepsake. These determine your abilities and starting items.', next:'Next' },
+      { title:'Ashmere Hub', text:'This is your hub. The main panel shows available actions. Side panels show stats and quest progress.', next:'Next' },
+      { title:'Inventory & Equipment', text:'Weapons, armor, and items you collect are stored here. Learn to manage them carefully.', next:'Next' },
+      { title:'Exploring the Road', text:'Travel the Old Road. Fatigue, events, and choices affect your survival. Keep an eye on your resources.', next:'Next' },
+      { title:'Combat Basics', text:'In battle you can Attack, Guard, or use your Class Move. Watch enemy intent and momentum.', next:'Next' },
+      { title:'Save Vault', text:'Export your save to a .legend file or copy a save code to bring your character to another browser.', next:'Finish' }
+    ];
+
+    const step = steps[tutorialStep];
+    root().innerHTML = `<div class="scene-inner"><section class="ornate-panel hero-panel"><div class="hero-kicker">Tutorial</div><h1 class="hero-title">${step.title}</h1><p class="hero-lore">${step.text}</p><div class="actions"><button class="btn primary" id="nextStep">${step.next}</button><button class="btn" id="skipTutorial">Skip Tutorial</button></div></section></div>`;
+    document.getElementById('nextStep').onclick = () => { tutorialStep++; if(tutorialStep < steps.length) showTutorialStep(); else endTutorial(); };
+    document.getElementById('skipTutorial').onclick = endTutorial;
+  }
+
+  function endTutorial(){
+    localStorage.setItem('legendTutorial','false');
+    if(window.player) menu(); else title();
+  }
+
+  window.addEventListener('DOMContentLoaded', startTutorial);
+})();
