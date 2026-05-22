@@ -1,5 +1,5 @@
-// LEGEND v0.6.5 — Choice-Based Road Checks
-// Adds an optional, safer Old Road choice layer without rewriting restored game.js.
+// LEGEND v0.7.0 — Choice-Based Old Road
+// Adds the intended Old Road choice layer without rewriting restored game.js.
 (() => {
   const SAVE_KEY = 'legend-recovered-build-v06';
   const OLD_KEYS = ['legend-recovered-build-v051','legend-recovered-build-v05','legend-recovered-build-v041','legend-recovered-build-v04','legend-recovered-build-v03','legend-recovered-build-v02'];
@@ -53,7 +53,8 @@
   function mod(p,skill){
     if(!skill) return 0;
     const D = window.LEGEND_DATA || {};
-    return (D.classes?.[p.className]?.mod?.[skill]||0) + (D.origins?.[p.origin]?.bonus?.[skill]||0) + (D.keepsakes?.[p.keepsake]?.bonus?.[skill]||0);
+    const creation = p.creationV070?.bonuses?.[skill] || 0;
+    return (D.classes?.[p.className]?.mod?.[skill]||0) + (D.origins?.[p.origin]?.bonus?.[skill]||0) + (D.keepsakes?.[p.keepsake]?.bonus?.[skill]||0) + creation;
   }
   function rollCheck(p, skill, dc){
     const roll = Math.floor(Math.random()*20)+1;
@@ -97,8 +98,8 @@
     const root = document.getElementById('root');
     root.innerHTML = `
       <div class="shell road-choice-shell">
-        <header class="topbar"><div class="brand"><h1>LEGEND</h1><div class="sub">Old Road Choices v0.6.5</div></div><div class="meta-grid"><div class="box"><span class="label">Hero</span><span class="value">${esc(p.username)}</span></div><div class="box"><span class="label">Fatigue</span><span class="value">${Number(p.fatigue||0)}</span></div></div></header>
-        <div class="layout"><section class="panel"><div class="panel-head"><div><h2>${esc(ev.title)}</h2><p>Choose how to handle the road. The check matters because your class, origin, and keepsake bonuses change the odds.</p></div></div><div class="text">${esc(ev.text)}</div><div class="choice-list">${ev.choices.map((c,i)=>{
+        <header class="topbar"><div class="brand"><h1>LEGEND</h1><div class="sub">Old Road — v0.7.0</div></div><div class="meta-grid"><div class="box"><span class="label">Hero</span><span class="value">${esc(p.username)}</span></div><div class="box"><span class="label">Fatigue</span><span class="value">${Number(p.fatigue||0)}</span></div></div></header>
+        <div class="layout"><section class="panel"><div class="panel-head"><div><h2>${esc(ev.title)}</h2><p>Choose your approach. Your origin, class, keepsake, and traveler interview bonuses all shape the roll.</p></div></div><div class="text">${esc(ev.text)}</div><div class="choice-list">${ev.choices.map((c,i)=>{
           const locked = !canChoose(p,c);
           const detail = c.skill ? `${c.skill.toUpperCase()} DC ${c.dc} / Your bonus: +${mod(p,c.skill)}` : 'No check / guaranteed outcome';
           const req = c.requires ? ` Requires: ${Object.entries(c.requires).map(([k,v])=>`${v} ${k}`).join(', ')}` : '';
@@ -134,9 +135,11 @@
     const btn = document.createElement('button');
     btn.className='btn primary';
     btn.id='choiceRoadBtn';
-    btn.textContent='Old Road — Choice Mode v0.6.5';
+    btn.textContent='Travel the Old Road';
     btn.onclick=renderRoadChoice;
     actions.prepend(btn);
+    const old = [...actions.querySelectorAll('button')].find(b => b !== btn && b.textContent.trim() === 'Old Road');
+    if(old){ old.textContent = 'Old Road — Classic Fallback'; old.classList.remove('primary'); }
   }
   const css=document.createElement('style');
   css.textContent=`.choice-list{display:grid;gap:10px;margin-top:14px}.choice-card{width:100%;text-align:left;border:1px solid rgba(132,255,178,.22);background:rgba(0,0,0,.28);border-radius:16px;color:#eaffef;padding:14px;cursor:pointer}.choice-card:hover{border-color:rgba(255,211,105,.5);transform:translateY(-1px)}.choice-card:disabled{opacity:.42;cursor:not-allowed}.choice-card h3{margin:0 0 6px;color:#ffd369}.choice-card p{margin:0;color:#93b7a3}.road-choice-shell .text{white-space:pre-wrap}`;
