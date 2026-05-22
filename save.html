@@ -13,10 +13,10 @@
 <body>
   <div class="shell">
     <header>
-      <p class="kicker">Portable Save System / Hotfix v0.6.2</p>
+      <p class="kicker">Portable Save System / Stability v0.6.4</p>
       <h1>SAVE VAULT</h1>
       <p><strong>LEGEND Save Vault</strong> lets you export your save out of browser storage and bring it to another browser/device later. This is not a cloud account system, but it means your save is no longer trapped in one browser.</p>
-      <nav><a class="btn primary" href="index.html?v=0.6.2-visual">Back to LEGEND</a><a class="btn" href="feedback.html">Playtest Feedback</a><a class="btn" href="blog.html">Devlog</a></nav>
+      <nav><a class="btn primary" href="index.html?v=0.6.4">Back to LEGEND</a><a class="btn" href="feedback.html">Playtest Feedback</a><a class="btn" href="blog.html">Devlog</a></nav>
     </header>
 
     <main>
@@ -181,7 +181,7 @@
       if(!payload || !payload.save) throw new Error('Invalid LEGEND save payload.');
       const p = payload.save;
       if(!p.username || !p.inventory || !p.className) throw new Error('Save is missing required LEGEND character data.');
-      p.version = p.version || 'v0.6.2';
+      p.version = p.version || 'v0.6.4';
       localStorage.setItem(ACTIVE_KEY, JSON.stringify(p));
       importStatus.className = 'notice';
       importStatus.textContent = 'Imported save for ' + p.username + '. Return to LEGEND and choose Continue.';
