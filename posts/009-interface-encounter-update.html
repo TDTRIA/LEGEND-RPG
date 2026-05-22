@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Devlog 009 - Interface & Encounter Update</title>
+  <style>
+    :root{--bg:#060807;--soft:#0d1813;--panel:rgba(10,18,15,.94);--border:rgba(132,255,178,.25);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--red:#ff6b6b;--shadow:rgba(0,0,0,.42)}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.14),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.1),transparent 24%),linear-gradient(180deg,var(--soft),var(--bg));padding:24px}.shell{width:min(920px,100%);margin:0 auto}.card,header{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow);border-radius:18px;padding:clamp(20px,4vw,34px);margin-bottom:16px}.kicker{color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem;margin:0 0 10px}h1{margin:0;color:var(--accent);font-size:clamp(2.2rem,8vw,5.4rem);line-height:.9;letter-spacing:.08em;text-shadow:0 0 22px rgba(125,255,173,.28)}h2{color:var(--accent);margin:0 0 12px}h3{color:var(--gold);margin:18px 0 8px}p,li{line-height:1.68;color:var(--text)}.muted{color:var(--muted)}ul{padding-left:22px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none;margin:6px 6px 0 0}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.callout{border:1px solid rgba(255,211,105,.26);background:rgba(255,211,105,.07);border-radius:14px;padding:14px;margin:16px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.tile{border:1px solid rgba(132,255,178,.14);background:rgba(0,0,0,.22);border-radius:14px;padding:14px}.tile strong{display:block;color:var(--gold);margin-bottom:6px}@media(max-width:720px){body{padding:12px}.grid{grid-template-columns:1fr}.btn{width:100%;margin-right:0}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <p class="kicker">Devlog 009 / Recovered Build v0.7.0</p>
+      <h1>Interface & Encounter Update</h1>
+      <p class="muted">LEGEND is now in its Memorial Weekend playtest build. This update is about making the game feel more like a real RPG: better presentation, deeper character creation, meaningful road choices, interactive combat, and actual risk when the road wins.</p>
+      <a class="btn primary" href="../index.html?v=0.7.0">Play v0.7.0</a>
+      <a class="btn" href="../playtest.html?v=0.7.0">Open Playtest Runner</a>
+      <a class="btn" href="../feedback.html">Send Feedback</a>
+      <a class="btn" href="../blog.html">Back to Devlog</a>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Why this update matters</h2>
+        <p>The earlier recovered builds proved the browser version could work. v0.7.0 is about making the first session feel intentional. The game now gives players a stronger opening, a better sense of who their traveler is, clearer choices on the Old Road, and more polished screens across the board.</p>
+        <div class="callout"><strong>Playtest focus:</strong> create a new traveler, go through the intro, reach Ashmere, speak with Mara, travel the Old Road, test combat choices, open inventory, and report anything confusing or broken.</div>
+      </section>
+
+      <section class="card">
+        <h2>Major additions</h2>
+        <div class="grid">
+          <div class="tile"><strong>Living UI Skin</strong><span>Every screen now has stronger presentation: animated background glow, panel polish, button shine, better cards, and a more game-like HUD.</span></div>
+          <div class="tile"><strong>Traveler Interview</strong><span>After origin/class/keepsake, players answer three deeper questions that add traits, memories, supplies, mastery, and small bonuses.</span></div>
+          <div class="tile"><strong>Cinematic Intro</strong><span>New characters get a short mood-setting intro before entering Ashmere, tying together the dead lantern, the bell, the static, and the recovered save identity.</span></div>
+          <div class="tile"><strong>Better Inventory</strong><span>The improved inventory is now the main character inventory experience instead of the old raw item dump.</span></div>
+          <div class="tile"><strong>Choice-Based Old Road</strong><span>The main Old Road route now uses visible choices, skill checks, DCs, and outcomes affected by character creation.</span></div>
+          <div class="tile"><strong>Interactive Combat</strong><span>Battle now has extra options layered in: Exploit Opening, Use Item, social/class-flavored actions, and Risky Flee.</span></div>
+          <div class="tile"><strong>Defeat Screen</strong><span>Road death now shows a proper defeat scene. After early mercy, the road can take gold or loose supplies.</span></div>
+          <div class="tile"><strong>Playtest Packaging</strong><span>The title screen now includes What’s New in v0.7.0, playtest goals, and first-time Ashmere guidance.</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>What needs feedback</h2>
+        <ul>
+          <li>Does the new intro make the world easier to understand?</li>
+          <li>Does the Traveler Interview make your character feel more personal?</li>
+          <li>Do Old Road choices feel meaningful, or are the rewards/punishments too light?</li>
+          <li>Does combat feel more interactive than before?</li>
+          <li>Is the defeat penalty fair, annoying, or too soft?</li>
+          <li>Does the new UI help the game feel more presentable?</li>
+          <li>Does anything break on mobile?</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Known notes</h2>
+        <p>v0.7.0 is still an HTML5 browser early-access build. Some systems are layered safely over the restored v0.6.4 core so we can keep the live game stable while improving it. The next big pass after the weekend should be cleanup and consolidation: moving the best additive systems into cleaner long-term modules.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
