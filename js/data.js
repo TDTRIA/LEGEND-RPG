@@ -1,5 +1,5 @@
 window.LEGEND_DATA = {
-  VERSION: 'v0.6.1',
+  VERSION: 'v0.6.4',
   SAVE_KEY: 'legend-recovered-build-v06',
   OLD_KEYS: ['legend-recovered-build-v051','legend-recovered-build-v05','legend-recovered-build-v041','legend-recovered-build-v04','legend-recovered-build-v03','legend-recovered-build-v02'],
   classes: {
