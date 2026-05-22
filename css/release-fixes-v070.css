@@ -1,5 +1,20 @@
 /* LEGEND v0.7.0 release fixes — mobile/title/overlay safety */
 
+/* Hide legacy ASCII presentation for the public v0.7.0 build.
+   This is CSS-only and does not touch game logic, saves, or button handlers. */
+.ascii,
+pre.ascii,
+body:not(.a11y-show-ascii) .ascii,
+body:not(.a11y-show-ascii) pre.ascii{
+  display:none!important;
+  visibility:hidden!important;
+  max-height:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  overflow:hidden!important;
+}
+
 /* Keep injected intro/creation background layers decorative only. */
 .creation-v070-wrap:before,
 .intro-v070-wrap:before{
