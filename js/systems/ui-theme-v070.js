@@ -12,24 +12,44 @@
     }
   }
 
+  function isTitleScreen(){
+    return !!(document.querySelector('.title-card') && document.querySelector('.game-title'));
+  }
+
+  function removeTitleSceneSlabs(){
+    var title = document.querySelector('.title-card');
+    if(!title) return;
+    var slabs = title.querySelectorAll('.legend-visual-scene');
+    for(var i = 0; i < slabs.length; i++) slabs[i].remove();
+  }
+
   function removeAscii(){
+    var titleScreen = isTitleScreen();
     var nodes = document.querySelectorAll('pre.ascii, .ascii');
     for(var i = 0; i < nodes.length; i++){
       var node = nodes[i];
+      var parent = node.parentNode;
+      if(!parent) continue;
+      var insideTitle = !!(node.closest && node.closest('.title-card'));
+      if(titleScreen || insideTitle){
+        node.remove();
+        continue;
+      }
       if(node.dataset && node.dataset.themeRemoved === '1') continue;
       var scene = document.createElement('div');
       scene.className = 'legend-visual-scene';
       scene.setAttribute('aria-hidden','true');
-      node.parentNode.insertBefore(scene, node);
+      parent.insertBefore(scene, node);
       node.dataset.themeRemoved = '1';
       node.remove();
     }
+    if(titleScreen) removeTitleSceneSlabs();
   }
 
   function setScene(){
     var text = (document.body && document.body.innerText || '').toLowerCase();
     document.body.classList.remove.apply(document.body.classList, sceneClasses);
-    if(document.querySelector('.title-card') && document.querySelector('.game-title')) document.body.classList.add('legend-scene-title');
+    if(isTitleScreen()) document.body.classList.add('legend-scene-title');
     else if(text.indexOf('battle') >= 0 || text.indexOf('intent:') >= 0 || document.querySelector('.enemy')) document.body.classList.add('legend-scene-battle');
     else if(text.indexOf('old road') >= 0 || text.indexOf('road continues') >= 0 || text.indexOf('choose a route') >= 0 || text.indexOf('ashmere road') >= 0) document.body.classList.add('legend-scene-road');
     else if(text.indexOf('people of ashmere') >= 0 || text.indexOf('mara vell') >= 0 || text.indexOf('old brenn') >= 0 || text.indexOf('captain oric') >= 0) document.body.classList.add('legend-scene-people');
@@ -47,6 +67,7 @@
   }
 
   function enhance(){
+    setScene();
     removeAscii();
     tag('.panel', 'legend-panel-theme');
     tag('.card', 'legend-card-theme');
