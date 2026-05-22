@@ -1,0 +1,77 @@
+/* LEGEND v0.7.0 Universal Theme Overlay */
+:root {
+  --legend-bg: #0c0b0a;
+  --legend-accent: #7dffad;
+  --legend-gold: #ffd369;
+  --legend-panel-bg: rgba(12,11,10,0.84);
+  --legend-panel-shadow: 0 8px 24px rgba(0,0,0,0.48);
+  --legend-text: #f1ead1;
+  --legend-header: #7dffad;
+  --legend-button-bg: rgba(125,255,173,0.16);
+  --legend-button-hover: rgba(125,255,173,0.36);
+  --legend-glow: 0 0 12px rgba(125,255,173,0.28);
+}
+
+body, html {
+  background-color: var(--legend-bg);
+  color: var(--legend-text);
+  font-family: 'Cinzel', serif;
+}
+
+.panel, .card, .title-card {
+  background: var(--legend-panel-bg);
+  border-radius: 18px;
+  box-shadow: var(--legend-panel-shadow);
+  padding: 18px;
+  margin: 12px auto;
+  max-width: 960px;
+  transition: all 0.28s ease;
+}
+
+.panel h1, .card h1, .title-card h1 {
+  color: var(--legend-header);
+  text-shadow: 0 0 24px rgba(125,255,173,0.24);
+  font-size: clamp(2rem, 6vw, 4rem);
+  margin-bottom: 12px;
+}
+
+.panel p, .card p {
+  line-height: 1.65;
+  font-size: clamp(1rem, 2vw, 1.18rem);
+  border-left: 3px solid rgba(255,211,105,0.42);
+  padding-left: 14px;
+  margin-bottom: 12px;
+}
+
+button, .btn {
+  background: var(--legend-button-bg);
+  border: none;
+  border-radius: 12px;
+  padding: 10px 18px;
+  color: var(--legend-text);
+  font-weight: bold;
+  cursor: pointer;
+  margin: 6px;
+  transition: all 0.18s ease;
+}
+
+button:hover, .btn:hover {
+  background: var(--legend-button-hover);
+  box-shadow: var(--legend-glow);
+}
+
+.progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+  margin: 10px 0 16px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.progress-bar span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--legend-gold), var(--legend-accent));
+  box-shadow: var(--legend-glow);
+}
