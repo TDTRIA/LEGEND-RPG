@@ -1,77 +1,235 @@
-/* LEGEND v0.7.0 Universal Theme Overlay */
-:root {
-  --legend-bg: #0c0b0a;
-  --legend-accent: #7dffad;
-  --legend-gold: #ffd369;
-  --legend-panel-bg: rgba(12,11,10,0.84);
-  --legend-panel-shadow: 0 8px 24px rgba(0,0,0,0.48);
-  --legend-text: #f1ead1;
-  --legend-header: #7dffad;
-  --legend-button-bg: rgba(125,255,173,0.16);
-  --legend-button-hover: rgba(125,255,173,0.36);
-  --legend-glow: 0 0 12px rgba(125,255,173,0.28);
+/* LEGEND v0.7.0 — Universal Fantasy UI Theme
+   Purpose: move the live game away from visible ASCII and toward the Ashmere menu mockup style.
+   Safe layer: CSS only. Does not alter save data or game logic. */
+:root{
+  --legend-bg:#050706;
+  --legend-ink:#f1ead1;
+  --legend-muted:#a7b9a9;
+  --legend-emerald:#7dffad;
+  --legend-emerald-soft:rgba(125,255,173,.18);
+  --legend-gold:#ffd369;
+  --legend-gold-soft:rgba(255,211,105,.16);
+  --legend-red:#ff6b6b;
+  --legend-panel:rgba(8,15,12,.82);
+  --legend-panel-strong:rgba(12,24,18,.94);
+  --legend-border:rgba(255,211,105,.28);
+  --legend-border-green:rgba(125,255,173,.24);
+  --legend-shadow:0 28px 90px rgba(0,0,0,.58);
+  --legend-glow:0 0 28px rgba(125,255,173,.16);
 }
 
-body, html {
-  background-color: var(--legend-bg);
-  color: var(--legend-text);
-  font-family: 'Cinzel', serif;
+html,body{min-height:100%;background:var(--legend-bg);color:var(--legend-ink);}
+body{
+  background:
+    radial-gradient(circle at 22% 12%,rgba(125,255,173,.14),transparent 30%),
+    radial-gradient(circle at 78% 18%,rgba(255,211,105,.10),transparent 26%),
+    radial-gradient(circle at 50% 100%,rgba(45,124,82,.16),transparent 34%),
+    linear-gradient(180deg,#111c16 0%,#050706 62%,#020302 100%)!important;
+  overflow-x:hidden;
+}
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background:
+    linear-gradient(115deg,transparent 0 32%,rgba(125,255,173,.05) 42%,transparent 53% 100%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.018) 0 1px,transparent 1px 82px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.014) 0 1px,transparent 1px 58px);
+  animation:legendThemeDrift 24s ease-in-out infinite alternate;
+}
+body:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:radial-gradient(circle at center,transparent 0 46%,rgba(0,0,0,.72) 100%);
 }
 
-.panel, .card, .title-card {
-  background: var(--legend-panel-bg);
-  border-radius: 18px;
-  box-shadow: var(--legend-panel-shadow);
-  padding: 18px;
-  margin: 12px auto;
-  max-width: 960px;
-  transition: all 0.28s ease;
+/* Stop clipping: old panels used overflow hidden for sheen effects. That clipped large themed scenes. */
+.panel,.title-card,.topbar,.card,.shop,.npc-card,.event-card,.setting-card,.choice-card{
+  overflow:visible!important;
+}
+.shell,.title-wrap,.layout,.scene,.scene-inner{overflow:visible!important;}
+
+/* Hide ASCII art while keeping the old DOM untouched for stability. */
+.ascii{
+  display:none!important;
+}
+body.a11y-simple-ascii .ascii{display:none!important;}
+
+/* Replace ASCII blocks with real visual scene cards based on nearby panels. */
+.panel:has(.ascii),.title-card:has(.ascii){position:relative;}
+.panel:has(.ascii)::before,.title-card:has(.ascii)::before{
+  content:"";
+  display:block;
+  min-height:clamp(140px,24vw,270px);
+  border:1px solid var(--legend-border);
+  border-radius:22px;
+  margin:0 0 16px;
+  background:
+    radial-gradient(circle at 18% 65%,rgba(255,211,105,.22),transparent 16%),
+    radial-gradient(circle at 60% 30%,rgba(125,255,173,.22),transparent 22%),
+    linear-gradient(180deg,rgba(6,11,9,.08),rgba(0,0,0,.58)),
+    linear-gradient(115deg,#13231b,#07100c 62%,#020403);
+  box-shadow:inset 0 0 52px rgba(0,0,0,.45),0 18px 44px rgba(0,0,0,.32),0 0 28px rgba(125,255,173,.08);
+}
+.panel:has(.ascii)::after,.title-card:has(.ascii)::after{
+  content:"ASHMERE ROAD";
+  position:absolute;
+  left:clamp(18px,4vw,42px);
+  top:clamp(18px,4vw,42px);
+  z-index:2;
+  color:var(--legend-gold);
+  font-weight:900;
+  letter-spacing:.22em;
+  font-size:.78rem;
+  text-transform:uppercase;
+  text-shadow:0 0 18px rgba(255,211,105,.28);
+  pointer-events:none;
 }
 
-.panel h1, .card h1, .title-card h1 {
-  color: var(--legend-header);
-  text-shadow: 0 0 24px rgba(125,255,173,0.24);
-  font-size: clamp(2rem, 6vw, 4rem);
-  margin-bottom: 12px;
+/* Title should feel like the mockup: no ASCII, real logo card, lore block, menu stack. */
+.title-wrap{
+  min-height:100svh!important;
+  padding:clamp(14px,3vw,34px)!important;
+  display:grid!important;
+  place-items:center!important;
+}
+.title-card{
+  width:min(1120px,100%)!important;
+  max-width:1120px!important;
+  border:1px solid rgba(255,211,105,.34)!important;
+  border-radius:30px!important;
+  padding:clamp(24px,5vw,56px)!important;
+  background:
+    radial-gradient(circle at 12% 16%,rgba(125,255,173,.16),transparent 24%),
+    radial-gradient(circle at 86% 82%,rgba(255,211,105,.12),transparent 28%),
+    linear-gradient(180deg,rgba(18,34,26,.94),rgba(4,8,6,.98))!important;
+  box-shadow:var(--legend-shadow),0 0 70px rgba(125,255,173,.09)!important;
+}
+.title-card:has(.ascii)::before{
+  min-height:clamp(180px,32vw,360px);
+  background:
+    radial-gradient(circle at 16% 62%,rgba(255,211,105,.24),transparent 10%),
+    radial-gradient(circle at 52% 18%,rgba(125,255,173,.22),transparent 24%),
+    linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.68)),
+    linear-gradient(135deg,#15271e 0%,#08110d 52%,#020403 100%);
+}
+.title-card:has(.ascii)::after{content:"THE ROAD REMEMBERS";}
+.game-title,.legend-logo-theme{
+  color:var(--legend-gold)!important;
+  font-size:clamp(3.8rem,13vw,10rem)!important;
+  letter-spacing:.14em!important;
+  line-height:.82!important;
+  text-shadow:0 0 18px rgba(255,211,105,.22),0 0 54px rgba(125,255,173,.20),0 8px 0 rgba(0,0,0,.42)!important;
+  margin:8px 0 14px!important;
+}
+.title-lore,.v070-title-goals{
+  max-width:780px!important;
+  border:1px solid rgba(255,211,105,.20)!important;
+  border-left:4px solid rgba(255,211,105,.52)!important;
+  border-radius:16px!important;
+  background:rgba(0,0,0,.22)!important;
+  padding:14px 16px!important;
+  color:var(--legend-ink)!important;
+  line-height:1.7!important;
 }
 
-.panel p, .card p {
-  line-height: 1.65;
-  font-size: clamp(1rem, 2vw, 1.18rem);
-  border-left: 3px solid rgba(255,211,105,0.42);
-  padding-left: 14px;
-  margin-bottom: 12px;
+/* Main screen panels */
+.panel,.legend-panel-theme,.legend-card-theme,.card,.quest,.stat,.box,.shop,.npc-card,.event-card,.setting-card,.choice-card{
+  border-color:var(--legend-border-green)!important;
+  background:
+    linear-gradient(180deg,rgba(18,32,25,.90),rgba(2,5,4,.72)),
+    radial-gradient(circle at 0 0,rgba(125,255,173,.08),transparent 36%)!important;
+  box-shadow:0 16px 48px rgba(0,0,0,.36),inset 0 0 28px rgba(125,255,173,.025)!important;
+}
+.panel,.legend-panel-theme{
+  border-radius:24px!important;
+  padding:clamp(16px,2.4vw,26px)!important;
+}
+.panel-head{
+  border-bottom:1px solid rgba(255,211,105,.22)!important;
+}
+.panel-head h2,.panel-head h3{
+  color:var(--legend-gold)!important;
+  text-shadow:0 0 18px rgba(255,211,105,.14)!important;
+}
+.panel-head p,.muted,.label{color:var(--legend-muted)!important;}
+.value,.gold{color:var(--legend-gold)!important;}
+.text,.legend-text-theme{
+  color:var(--legend-ink)!important;
+  line-height:1.72!important;
+  white-space:pre-wrap;
+  background:rgba(0,0,0,.16)!important;
+  border:1px solid rgba(255,211,105,.10)!important;
+  border-radius:16px!important;
+  padding:14px!important;
+}
+.text:empty{display:none!important;}
+
+.topbar,.legend-topbar-theme{
+  border:1px solid rgba(255,211,105,.30)!important;
+  border-radius:22px!important;
+  background:
+    linear-gradient(180deg,rgba(19,36,28,.96),rgba(4,8,6,.96)),
+    radial-gradient(circle at 14% 0,rgba(255,211,105,.15),transparent 34%)!important;
+  box-shadow:0 18px 54px rgba(0,0,0,.40)!important;
+}
+.brand h1{color:var(--legend-gold)!important;text-shadow:0 0 22px rgba(255,211,105,.18),0 0 42px rgba(125,255,173,.12)!important;}
+.brand .sub{color:var(--legend-emerald)!important;}
+
+/* Buttons/cards: make menus look like proper game UI. */
+.btn,button,.shop,.card,.npc-card,.event-card,.setting-card,.choice-card{
+  border:1px solid rgba(255,211,105,.24)!important;
+  border-radius:16px!important;
+  color:var(--legend-ink)!important;
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background .16s ease!important;
+}
+.btn,button.btn{
+  background:linear-gradient(180deg,rgba(38,70,53,.96),rgba(8,15,12,.96))!important;
+  box-shadow:0 10px 22px rgba(0,0,0,.24),inset 0 0 18px rgba(255,255,255,.025)!important;
+}
+.btn.primary,button.primary,.actions .primary{
+  color:#271902!important;
+  border-color:rgba(255,211,105,.68)!important;
+  background:linear-gradient(180deg,#ffe7a8,#d7a035 58%,#ae7417)!important;
+  font-weight:900!important;
+}
+.btn:hover,button:hover,.shop:hover,.card:hover,.npc-card:hover,.event-card:hover,.setting-card:hover,.choice-card:hover{
+  transform:translateY(-2px)!important;
+  border-color:rgba(255,211,105,.62)!important;
+  box-shadow:0 0 28px rgba(125,255,173,.12),0 18px 36px rgba(0,0,0,.32)!important;
+}
+.card h3,.shop h3,.npc-card h3,.event-card h3,.setting-card h3,.choice-card h3,.quest h3{color:var(--legend-gold)!important;}
+.card p,.shop p,.npc-card p,.event-card p,.setting-card p,.choice-card p,.quest p{color:var(--legend-muted)!important;}
+
+/* Unique scene vibes based on location/title text through the enhancer classes. */
+body.legend-scene-title .title-card{isolation:isolate;}
+body.legend-scene-ashmere .layout > .panel:before{background:radial-gradient(circle at 20% 55%,rgba(255,211,105,.26),transparent 12%),radial-gradient(circle at 75% 22%,rgba(125,255,173,.18),transparent 22%),linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.56)),linear-gradient(135deg,#18291f,#08110d 58%,#020403)!important;}
+body.legend-scene-road .layout > .panel:before{background:radial-gradient(circle at 14% 70%,rgba(255,211,105,.24),transparent 12%),radial-gradient(circle at 54% 36%,rgba(125,255,173,.22),transparent 20%),linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.66)),linear-gradient(135deg,#1b2018,#09110d 48%,#020403)!important;}
+body.legend-scene-battle .layout > .panel:before{background:radial-gradient(circle at 50% 44%,rgba(255,107,107,.22),transparent 18%),radial-gradient(circle at 72% 18%,rgba(125,255,173,.16),transparent 18%),linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.68)),linear-gradient(135deg,#241313,#090605 58%,#020202)!important;}
+body.legend-scene-people .layout > .panel:before{background:radial-gradient(circle at 20% 62%,rgba(255,211,105,.22),transparent 12%),radial-gradient(circle at 65% 26%,rgba(125,255,173,.16),transparent 18%),linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.60)),linear-gradient(135deg,#17241d,#090f0c 60%,#020403)!important;}
+
+/* Enemy/combat */
+.enemy{
+  border:1px solid rgba(255,107,107,.30)!important;
+  background:radial-gradient(circle at 50% 0,rgba(255,107,107,.18),transparent 36%),rgba(0,0,0,.24)!important;
+  border-radius:22px!important;
+  padding:18px!important;
+}
+.enemy .glyph{font-size:clamp(3rem,10vw,6rem)!important;filter:drop-shadow(0 0 20px rgba(255,107,107,.28));}
+
+/* Mobile and scroll safety */
+@media(max-width:720px){
+  .title-card,.panel{border-radius:20px!important;}
+  .panel:has(.ascii)::before,.title-card:has(.ascii)::before{min-height:160px!important;}
+  .game-title,.legend-logo-theme{font-size:clamp(3rem,18vw,6rem)!important;letter-spacing:.08em!important;}
+  .layout{gap:10px!important;}
+  .actions{position:relative!important;background:transparent!important;}
 }
 
-button, .btn {
-  background: var(--legend-button-bg);
-  border: none;
-  border-radius: 12px;
-  padding: 10px 18px;
-  color: var(--legend-text);
-  font-weight: bold;
-  cursor: pointer;
-  margin: 6px;
-  transition: all 0.18s ease;
-}
-
-button:hover, .btn:hover {
-  background: var(--legend-button-hover);
-  box-shadow: var(--legend-glow);
-}
-
-.progress-bar {
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.08);
-  overflow: hidden;
-  margin: 10px 0 16px;
-  border: 1px solid rgba(255,255,255,0.06);
-}
-
-.progress-bar span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--legend-gold), var(--legend-accent));
-  box-shadow: var(--legend-glow);
-}
+body.a11y-reduced-motion:before,.a11y-reduced-motion *{animation:none!important;transition:none!important;}
+@keyframes legendThemeDrift{from{transform:translate3d(-1%,0,0) scale(1.02)}to{transform:translate3d(1%,-1%,0) scale(1.04)}}
