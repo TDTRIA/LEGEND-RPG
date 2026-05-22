@@ -1,5 +1,5 @@
 // LEGEND v0.7.0 — Universal UI Theme Enhancer
-// Safe additive layer: adds classes only. It does not move DOM nodes or replace game markup.
+// Safe additive layer: adds classes and removes legacy ASCII nodes after render.
 (function(){
   var MARK = 'ui-theme-v070-ready';
   var sceneClasses = ['legend-scene-title','legend-scene-ashmere','legend-scene-road','legend-scene-battle','legend-scene-people','legend-scene-inventory','legend-scene-defeat'];
@@ -9,6 +9,20 @@
     for(var i = 0; i < nodes.length; i++){
       nodes[i].classList.add(className);
       nodes[i].classList.add(MARK);
+    }
+  }
+
+  function removeAscii(){
+    var nodes = document.querySelectorAll('pre.ascii, .ascii');
+    for(var i = 0; i < nodes.length; i++){
+      var node = nodes[i];
+      if(node.dataset && node.dataset.themeRemoved === '1') continue;
+      var scene = document.createElement('div');
+      scene.className = 'legend-visual-scene';
+      scene.setAttribute('aria-hidden','true');
+      node.parentNode.insertBefore(scene, node);
+      node.dataset.themeRemoved = '1';
+      node.remove();
     }
   }
 
@@ -33,6 +47,7 @@
   }
 
   function enhance(){
+    removeAscii();
     tag('.panel', 'legend-panel-theme');
     tag('.card', 'legend-card-theme');
     tag('.title-card', 'legend-panel-theme');
@@ -47,6 +62,7 @@
     tag('.quest', 'legend-card-theme');
     tag('.stat', 'legend-card-theme');
     tag('.box', 'legend-card-theme');
+    tag('.legend-visual-scene', 'legend-scene-card');
     enhanceTitle();
     setScene();
   }
