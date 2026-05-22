@@ -1,0 +1,251 @@
+/* LEGEND v0.7.0 — Living Interface Skin
+   Additive polish layer for the weekend playtest. Keeps the restored core CSS intact. */
+:root{
+  --v070-ink:#eaffef;
+  --v070-emerald:#7dffad;
+  --v070-gold:#ffd369;
+  --v070-red:#ff6b6b;
+  --v070-panel:rgba(7,14,11,.84);
+  --v070-panel-strong:rgba(12,24,18,.94);
+}
+
+body{
+  position:relative;
+  background:
+    radial-gradient(circle at 18% 12%,rgba(125,255,173,.14),transparent 28%),
+    radial-gradient(circle at 82% 18%,rgba(255,211,105,.10),transparent 24%),
+    radial-gradient(circle at 48% 100%,rgba(34,103,67,.18),transparent 34%),
+    linear-gradient(180deg,#0a1410 0%,#050706 60%,#020403 100%);
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  pointer-events:none;
+  background:
+    linear-gradient(115deg,transparent 0 35%,rgba(125,255,173,.045) 42%,transparent 50% 100%),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 74px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 54px);
+  opacity:.72;
+  animation:legendDrift 18s ease-in-out infinite alternate;
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:radial-gradient(circle at center,transparent 0 54%,rgba(0,0,0,.54) 100%);
+}
+
+.shell,.title-card,.panel,.topbar{animation:legendScreenIn .34s ease both;}
+.shell{gap:16px;}
+.topbar{
+  position:relative;
+  overflow:hidden;
+  border-color:rgba(255,211,105,.28);
+  background:
+    linear-gradient(180deg,rgba(20,37,29,.96),rgba(5,10,8,.94)),
+    radial-gradient(circle at 16% 0%,rgba(255,211,105,.12),transparent 34%);
+}
+.topbar::after{
+  content:"";
+  position:absolute;
+  inset:auto 18px 0 18px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,211,105,.76),rgba(125,255,173,.62),transparent);
+}
+.brand h1,.game-title{
+  filter:drop-shadow(0 0 14px rgba(125,255,173,.18));
+}
+.brand .sub::before{content:"◆ ";color:var(--v070-gold);}
+.brand .sub::after{content:" ◆";color:var(--v070-gold);}
+
+.panel,.title-card{
+  position:relative;
+  overflow:hidden;
+  border-color:rgba(132,255,178,.22);
+  background:
+    linear-gradient(180deg,rgba(17,31,24,.94),rgba(5,9,7,.92)),
+    radial-gradient(circle at 18% 0%,rgba(125,255,173,.10),transparent 32%);
+}
+.panel::before,.title-card::before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border:1px solid rgba(255,211,105,.10);
+  border-radius:14px;
+  pointer-events:none;
+}
+.panel::after,.title-card::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-30%;
+  width:32%;
+  height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.035),transparent);
+  transform:skewX(-12deg);
+  animation:legendPanelSheen 9s ease-in-out infinite;
+  pointer-events:none;
+}
+
+.panel-head{
+  align-items:center;
+  border-bottom-color:rgba(255,211,105,.18);
+}
+.panel-head h2{
+  font-size:clamp(1.8rem,4.4vw,3.8rem);
+  letter-spacing:.05em;
+  color:var(--v070-gold);
+  text-shadow:0 0 16px rgba(255,211,105,.15);
+}
+.panel-head h3{color:var(--v070-gold);}
+.panel-head p{letter-spacing:.08em;text-transform:uppercase;font-size:.76rem;}
+.panel-head .value{
+  border:1px solid rgba(255,211,105,.22);
+  background:rgba(255,211,105,.07);
+  border-radius:999px;
+  padding:6px 10px;
+}
+
+.text{
+  background:linear-gradient(180deg,rgba(0,0,0,.14),rgba(0,0,0,.04));
+  border-radius:14px;
+  padding:10px 12px;
+}
+.text:empty{display:none;}
+.ascii{
+  border-color:rgba(255,211,105,.18);
+  background:
+    radial-gradient(circle at 50% 0%,rgba(125,255,173,.10),transparent 38%),
+    rgba(0,0,0,.25);
+}
+
+.card,.shop,.npc-card,.event-card,.setting-card,.box,.stat,.quest{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(180deg,rgba(12,24,18,.78),rgba(0,0,0,.22)),
+    radial-gradient(circle at 0 0,rgba(125,255,173,.08),transparent 34%);
+  border-color:rgba(132,255,178,.16);
+}
+.card::before,.shop::before,.npc-card::before,.event-card::before,.setting-card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:3px;
+  background:linear-gradient(180deg,var(--v070-gold),var(--v070-emerald));
+  opacity:.75;
+}
+.card:hover,.shop:hover,.npc-card:hover,.event-card:hover,.setting-card:hover{
+  transform:translateY(-3px) scale(1.008);
+  background:
+    linear-gradient(180deg,rgba(20,39,29,.90),rgba(0,0,0,.26)),
+    radial-gradient(circle at 0 0,rgba(255,211,105,.12),transparent 38%);
+}
+.card h3,.shop h3,.npc-card h3,.event-card h3,.quest h3,.setting-card h3{color:var(--v070-gold);}
+
+.btn{
+  position:relative;
+  overflow:hidden;
+  border-radius:14px;
+  text-transform:none;
+  box-shadow:inset 0 0 18px rgba(255,255,255,.025),0 10px 22px rgba(0,0,0,.20);
+}
+.btn::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
+  transform:translateX(-120%);
+  transition:transform .35s ease;
+}
+.btn:hover::after{transform:translateX(120%);}
+.btn.primary{
+  color:#241803;
+  background:linear-gradient(180deg,#ffe7a8,#d7a035 56%,#b87a19);
+  box-shadow:0 0 20px rgba(255,211,105,.16),0 12px 22px rgba(0,0,0,.26);
+}
+.btn.danger{box-shadow:0 0 18px rgba(255,107,107,.10);}
+
+.log-entry{
+  animation:legendLogIn .22s ease both;
+  border-radius:12px;
+}
+.log-entry:first-child{box-shadow:0 0 18px rgba(255,211,105,.07);}
+.bar{height:11px;}
+.bar>span{box-shadow:0 0 14px rgba(125,255,173,.35);}
+.bar.red>span{box-shadow:0 0 14px rgba(255,107,107,.35);}
+.enemy{
+  border:1px solid rgba(255,107,107,.22);
+  background:radial-gradient(circle at 50% 0%,rgba(255,107,107,.16),transparent 35%),rgba(0,0,0,.18);
+  border-radius:18px;
+  padding:14px;
+}
+.enemy .glyph{
+  animation:legendEnemyPulse 1.8s ease-in-out infinite;
+}
+
+.title-card{
+  border-color:rgba(255,211,105,.32);
+  box-shadow:0 30px 90px rgba(0,0,0,.60),0 0 44px rgba(125,255,173,.08),inset 0 0 50px rgba(255,211,105,.035);
+}
+.kicker{font-weight:900;}
+.game-title{
+  animation:legendTitleGlow 3.8s ease-in-out infinite alternate;
+}
+.title-lore{
+  border-left:3px solid rgba(255,211,105,.42);
+  padding-left:14px;
+}
+
+@keyframes legendScreenIn{
+  from{opacity:0;transform:translateY(10px);filter:blur(4px)}
+  to{opacity:1;transform:translateY(0);filter:blur(0)}
+}
+@keyframes legendPanelSheen{
+  0%,62%{left:-34%;opacity:0}
+  72%{opacity:1}
+  100%{left:116%;opacity:0}
+}
+@keyframes legendDrift{
+  from{transform:translate3d(-1.5%,0,0) scale(1.02)}
+  to{transform:translate3d(1.5%,-1%,0) scale(1.04)}
+}
+@keyframes legendLogIn{
+  from{opacity:0;transform:translateX(8px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@keyframes legendEnemyPulse{
+  0%,100%{transform:scale(1);filter:drop-shadow(0 0 8px rgba(255,107,107,.20))}
+  50%{transform:scale(1.05);filter:drop-shadow(0 0 18px rgba(255,107,107,.34))}
+}
+@keyframes legendTitleGlow{
+  from{text-shadow:0 0 24px rgba(125,255,173,.28),0 6px 0 rgba(0,0,0,.35)}
+  to{text-shadow:0 0 34px rgba(255,211,105,.24),0 0 54px rgba(125,255,173,.22),0 6px 0 rgba(0,0,0,.35)}
+}
+
+body.a11y-reduced-motion::before,
+body.a11y-reduced-motion .shell,
+body.a11y-reduced-motion .title-card,
+body.a11y-reduced-motion .panel,
+body.a11y-reduced-motion .topbar,
+body.a11y-reduced-motion .panel::after,
+body.a11y-reduced-motion .title-card::after,
+body.a11y-reduced-motion .game-title,
+body.a11y-reduced-motion .enemy .glyph,
+body.a11y-reduced-motion .log-entry{
+  animation:none!important;
+}
+body.a11y-reduced-motion .btn::after{display:none!important;}
+
+@media(max-width:720px){
+  .panel::before,.title-card::before{inset:5px;}
+  .text{padding:8px 9px;}
+  .panel-head h2{font-size:clamp(1.55rem,8vw,2.4rem);}
+  .topbar::after{inset:auto 10px 0 10px;}
+}
