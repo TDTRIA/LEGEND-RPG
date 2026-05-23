@@ -1,20 +1,20 @@
 // LEGEND v0.8 - Road flow polish
-// Makes Choice Road the main route and fixes Return to Ashmere without rewriting game.js.
+// Uses LegendRuntimeV080 bridge so new systems do not each invent their own game.js hacks.
 (() => {
-  const RETURN_KEY = 'legend-v080-return-ashmere';
+  function runtime(){ return window.LegendRuntimeV080 || null; }
 
-  function markReturn(){
-    sessionStorage.setItem(RETURN_KEY, '1');
-    location.reload();
+  function returnToAshmere(){
+    const rt = runtime();
+    if(rt && typeof rt.returnToAshmere === 'function') rt.returnToAshmere();
+    else {
+      sessionStorage.setItem('legend-v080-return-ashmere','1');
+      location.reload();
+    }
   }
 
   function autoReturnFromTitle(){
-    if(sessionStorage.getItem(RETURN_KEY) !== '1') return;
-    const btn = document.getElementById('continue');
-    if(btn){
-      sessionStorage.removeItem(RETURN_KEY);
-      btn.click();
-    }
+    const rt = runtime();
+    if(rt && typeof rt.handlePendingReturn === 'function') rt.handlePendingReturn();
   }
 
   function cleanRouteScreen(){
@@ -26,7 +26,7 @@
       [...actions.querySelectorAll('button')].forEach(btn => {
         const text = (btn.textContent || '').trim();
         if(text === 'Old Road' || /Classic Fallback/i.test(text)) btn.remove();
-        if(text === 'Return to Ashmere') btn.onclick = markReturn;
+        if(text === 'Return to Ashmere') btn.onclick = returnToAshmere;
       });
     }
 
@@ -45,7 +45,7 @@
   function fixRoadReturnButtons(){
     ['backAshmere','returnAshmere'].forEach(id => {
       const btn = document.getElementById(id);
-      if(btn) btn.onclick = markReturn;
+      if(btn) btn.onclick = returnToAshmere;
     });
   }
 
@@ -55,7 +55,9 @@
     fixRoadReturnButtons();
   }
 
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => {
+  const rt = runtime();
+  if(rt && typeof rt.onRender === 'function') rt.onRender(tick);
+  else if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => {
     const observer = new MutationObserver(() => requestAnimationFrame(tick));
     observer.observe(document.body,{childList:true,subtree:true});
     tick();
