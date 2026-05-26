@@ -3,57 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LEGEND v0.7.0 Playtest Runner</title>
+  <title>LEGEND: Roads of Ashmere Playtest Runner</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/legend-site-v090.css?v=0.9.0">
   <style>
-    :root{--bg:#060807;--soft:#0d1813;--panel:rgba(10,18,15,.94);--border:rgba(132,255,178,.25);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--red:#ff6b6b}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 80% 10%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--soft),var(--bg));color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;padding:18px}.shell{width:min(1180px,100%);margin:0 auto;display:grid;grid-template-columns:400px 1fr;gap:14px}.panel{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));border-radius:18px;padding:18px;box-shadow:0 18px 50px rgba(0,0,0,.35)}h1{margin:0;color:var(--accent);font-size:2.2rem;letter-spacing:.08em;line-height:.9}h2{margin:0 0 10px;color:var(--accent)}h3{margin:14px 0 6px;color:var(--gold)}p,li{line-height:1.55;color:var(--muted)}button,a.btn{border:1px solid rgba(255,211,105,.46);border-radius:12px;background:linear-gradient(180deg,#ffe29a,#d69f32);color:#241803;font-weight:900;min-height:44px;padding:10px 14px;cursor:pointer;width:100%;margin:6px 0;text-decoration:none;display:flex;align-items:center;justify-content:center}button.secondary,a.btn.secondary{background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));color:var(--text);border-color:rgba(132,255,178,.28)}.status{display:grid;gap:8px;margin-top:12px;max-height:42vh;overflow:auto}.entry{border:1px solid rgba(132,255,178,.14);background:rgba(0,0,0,.25);border-radius:12px;padding:10px;font-size:.94rem}.pass{border-left:4px solid var(--accent)}.fail{border-left:4px solid var(--red)}.info{border-left:4px solid var(--gold)}.manual{border:1px solid rgba(255,211,105,.22);background:rgba(255,211,105,.06);border-radius:14px;padding:12px;margin:12px 0}.manual label{display:flex;gap:8px;align-items:flex-start;color:var(--text);line-height:1.4;margin:8px 0}.manual input{margin-top:3px}.frame-wrap{height:calc(100vh - 36px);overflow:hidden}.frame-wrap iframe{width:100%;height:100%;border:1px solid var(--border);border-radius:18px;background:#000}textarea{width:100%;min-height:150px;margin-top:12px;border:1px solid rgba(132,255,178,.2);border-radius:12px;background:rgba(0,0,0,.32);color:var(--text);padding:10px;font:12px Consolas,monospace;resize:vertical}.small{font-size:.86rem;color:var(--muted)}@media(max-width:980px){.shell{grid-template-columns:1fr}.frame-wrap{height:70vh}}
+    .runner-shell{width:min(1240px,100%);margin:0 auto;position:relative;z-index:1;display:grid;grid-template-columns:400px 1fr;gap:14px}.status{display:grid;gap:8px;margin-top:12px;max-height:42vh;overflow:auto}.entry.pass{border-left:4px solid var(--green)}.entry.fail{border-left:4px solid var(--red)}.entry.info{border-left:4px solid var(--gold)}.manual label{display:flex;gap:8px;align-items:flex-start;color:var(--text);line-height:1.4;margin:8px 0}.manual input{margin-top:3px}.frame-wrap{height:calc(100vh - 48px);overflow:hidden}.frame-wrap iframe{width:100%;height:100%;border:1px solid var(--line);border-radius:24px;background:#000;box-shadow:0 24px 70px var(--shadow)}button,a.btn{width:100%;margin:6px 0}@media(max-width:980px){.runner-shell{grid-template-columns:1fr}.frame-wrap{height:70vh}}
   </style>
 </head>
 <body>
-  <div class="shell">
+  <div class="runner-shell">
     <section class="panel">
-      <h1>LEGEND v0.7.0 PLAYTEST</h1>
-      <p>Weekend playtest runner for the Interface & Encounter Update. This checks the live build loads and gives testers a focused manual checklist.</p>
-      <a class="btn" href="index.html?v=0.7.0" target="_blank" rel="noopener">Open Game Normally</a>
-      <a class="btn secondary" href="posts/009-interface-encounter-update.html" target="_blank" rel="noopener">Read Devlog 009</a>
-      <a class="btn secondary" href="feedback.html" target="_blank" rel="noopener">Send Feedback</a>
-      <button id="runCore">Run v0.7.0 Smoke Test</button>
-      <button class="secondary" id="runPages">Check Support Pages</button>
-      <button class="secondary" id="runSystems">Check v0.7.0 Systems</button>
+      <p class="kicker">QA Runner</p>
+      <h2>LEGEND PLAYTEST</h2>
+      <p>Playtest runner for <strong>LEGEND: Roads of Ashmere</strong>. This checks the live build loads and gives testers a focused manual checklist for the current town-and-road direction.</p>
+      <a class="btn primary" href="index.html?v=0.9.0-site-theme" target="_blank" rel="noopener">Open Game Normally</a>
+      <a class="btn" href="blog.html?v=0.9.0-site-theme" target="_blank" rel="noopener">Read Devlog</a>
+      <a class="btn" href="feedback.html?v=0.9.0-site-theme" target="_blank" rel="noopener">Send Feedback</a>
+      <button id="runCore" class="primary">Run Smoke Test</button>
+      <button id="runPages">Check Support Pages</button>
+      <button id="runSystems">Check Active Systems</button>
 
       <div class="manual">
         <h3>Manual Playtest Checklist</h3>
+        <label><input type="checkbox"> Title screen uses the Ashmere road art and feels like a game menu.</label>
         <label><input type="checkbox"> New save reaches name/origin/class/keepsake flow.</label>
-        <label><input type="checkbox"> Traveler Interview appears and choices feel clear.</label>
-        <label><input type="checkbox"> Cinematic intro plays once and leads to Ashmere.</label>
-        <label><input type="checkbox"> Ashmere Start Here guide appears and buttons work.</label>
-        <label><input type="checkbox"> What’s New in v0.7.0 button works on title.</label>
-        <label><input type="checkbox"> Character Sheet uses improved inventory, not raw item dump.</label>
-        <label><input type="checkbox"> Choose Route shows Travel the Old Road as the main route.</label>
-        <label><input type="checkbox"> Old Road choices show skill/DC/bonus and update save.</label>
-        <label><input type="checkbox"> Combat shows v0.7.0 options beyond Attack.</label>
-        <label><input type="checkbox"> Defeat screen appears on death and loss feels fair.</label>
+        <label><input type="checkbox"> Character creation does not loop or dump back into the intro.</label>
+        <label><input type="checkbox"> Intro feels clear and atmospheric.</label>
+        <label><input type="checkbox"> Ashmere objective guidance appears and buttons work.</label>
+        <label><input type="checkbox"> Town framework displays locations clearly.</label>
+        <label><input type="checkbox"> Travel the Old Road opens the new road controller.</label>
+        <label><input type="checkbox"> Road travel produces checks, finds, and battles.</label>
+        <label><input type="checkbox"> Character Sheet and inventory are readable.</label>
+        <label><input type="checkbox"> No visible Recovered Build / v0.7.0 labels remain.</label>
       </div>
 
       <div id="status" class="status"><div class="entry info">Ready. Use Smoke Test first, then play manually.</div></div>
       <textarea id="report" readonly placeholder="Copyable QA report appears here."></textarea>
       <p class="small">Automated checks only verify loading/wiring. Game feel still needs manual testing.</p>
     </section>
-    <section class="frame-wrap"><iframe id="game" title="LEGEND test frame" src="index.html?v=0.7.0-qa"></iframe></section>
+    <section class="frame-wrap"><iframe id="game" title="LEGEND test frame" src="index.html?v=0.9.0-qa"></iframe></section>
   </div>
 <script>
 const frame=document.getElementById('game'),statusBox=document.getElementById('status'),reportBox=document.getElementById('report');
 const report=[];
 function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function log(name,type='info',detail=''){const d=document.createElement('div');d.className='entry '+type;d.innerHTML='<strong>'+type.toUpperCase()+': '+esc(name)+'</strong>'+(detail?'<br><span class="small">'+esc(detail)+'</span>':'');statusBox.prepend(d);report.push('['+type.toUpperCase()+'] '+name+(detail?' - '+detail:''));reportBox.value=report.join('\n')}
-function waitLoad(){return new Promise(resolve=>{frame.onload=()=>setTimeout(resolve,220)})}
+function waitLoad(){return new Promise(resolve=>{frame.onload=()=>setTimeout(resolve,260)})}
 async function openPage(path){frame.src=path+(path.includes('?')?'&':'?')+'qa='+Date.now();await waitLoad()}
 function bodyText(){return frame.contentDocument?.body?.innerText||''}
 async function checkPage(path,rx,label){await openPage(path);const t=bodyText();if(rx.test(t)){log(label,'pass')}else{log(label,'fail','Expected text missing on '+path)}}
+async function checkNotPage(path,rx,label){await openPage(path);const t=bodyText();if(!rx.test(t)){log(label,'pass')}else{log(label,'fail','Old text still present on '+path)}}
 async function checkFile(path,label){try{const res=await fetch(path+'?qa='+Date.now(),{cache:'no-store'});if(res.ok){log(label,'pass',path)}else{log(label,'fail',path+' returned '+res.status)}}catch(e){log(label,'fail',e.message)}}
-async function runCore(){report.length=0;statusBox.innerHTML='';report.push('LEGEND v0.7.0 PLAYTEST REPORT');report.push('Generated: '+new Date().toLocaleString());await checkPage('index.html?v=0.7.0',/LEGEND|Recovered Build|v0\.7\.0|New Recovered Save|Continue as/i,'Game title loads as v0.7.0');await checkFile('js/game.js?v=0.6.4','Protected full game.js reachable');await checkFile('css/ui-v070.css?v=0.7.0','v0.7.0 UI skin reachable');await checkFile('js/version-v070.js?v=0.7.0','v0.7.0 version label reachable')}
-async function runPages(){await checkPage('save.html?v=0.7.0',/SAVE VAULT|Exported Save Code|Import Save/i,'Save Vault page');await checkPage('feedback.html?v=0.7.0',/feedback|playtest|forms\.gle|Submit/i,'Feedback page');await checkPage('updates.html?v=0.7.0',/Newsletter|Recovered Build Dispatch|v0/i,'Updates/newsletter page');await checkPage('blog.html?v=0.7.0',/v0\.7\.0|Interface & Encounter|LEGEND DEVLOG/i,'Blog/devlog page');await checkPage('posts/009-interface-encounter-update.html?v=0.7.0',/Interface & Encounter Update|Traveler Interview|Defeat/i,'Devlog 009 page')}
-async function runSystems(){await checkFile('js/systems/creation-v070.js?v=0.7.0','Traveler Interview system');await checkFile('js/systems/intro-v070.js?v=0.7.0','Cinematic intro system');await checkFile('js/systems/combat-v070.js?v=0.7.0','Interactive combat layer');await checkFile('js/systems/defeat-v070.js?v=0.7.0','Defeat consequence layer');await checkFile('js/systems/playtest-v070.js?v=0.7.0','Playtest packaging layer');await checkFile('js/systems/road-choices-v065.js?v=0.7.0','Promoted Old Road choice layer');await checkFile('js/systems/inventory-v065.js?v=0.7.0','Better inventory layer')}
+async function runCore(){report.length=0;statusBox.innerHTML='';report.push('LEGEND ROADS OF ASHMERE PLAYTEST REPORT');report.push('Generated: '+new Date().toLocaleString());await checkPage('index.html?v=0.9.0',/LEGEND|Roads of Ashmere|Begin the Road|What.?s New/i,'Game title loads current identity');await checkFile('assets/title/title_bg_ashmere_road_v089.jpg','Title background asset reachable');await checkFile('js/game.js?v=0.6.4','Protected full game.js reachable');await checkFile('js/systems/title-bg-v089.js?v=0.8.9','Fullscreen title system reachable');await checkFile('js/systems/road-controller-v087.js?v=0.8.7','Road controller reachable')}
+async function runPages(){await checkPage('feedback.html?v=0.9.0',/Roads of Ashmere|Playtest Feedback|Submit Feedback/i,'Feedback page');await checkPage('blog.html?v=0.9.0',/Roads of Ashmere|LEGEND DEVLOG|Fantasy Identity/i,'Blog/devlog page');await checkPage('updates.html?v=0.9.0',/Newsletter|LEGEND|Dispatch|v0/i,'Updates/newsletter page');await checkNotPage('feedback.html?v=0.9.0',/Recovered Build v0\.7\.0/i,'Feedback no old identity');await checkNotPage('blog.html?v=0.9.0',/Recovered Build Archive/i,'Blog no old header')}
+async function runSystems(){await checkFile('js/systems/creation-v070.js','Traveler creation system');await checkFile('js/systems/intro-scene-v086.js','Living intro scene');await checkFile('js/systems/combat-v070.js','Interactive combat layer');await checkFile('js/systems/defeat-v070.js','Defeat consequence layer');await checkFile('js/systems/road-controller-v087.js','Road controller');await checkFile('js/systems/sheet-inventory-v080.js','Sheet/inventory layer');await checkFile('css/legend-site-v090.css','Shared site theme')}
 document.getElementById('runCore').onclick=runCore;document.getElementById('runPages').onclick=runPages;document.getElementById('runSystems').onclick=runSystems;
 </script>
 </body>
