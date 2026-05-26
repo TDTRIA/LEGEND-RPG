@@ -3,38 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Legend Devlog</title>
-  <style>
-    :root{--bg:#060807;--bg-soft:#0d1813;--panel:rgba(10,18,15,.94);--panel-2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border-soft:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--shadow:rgba(0,0,0,.42)}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--bg-soft),var(--bg));padding:24px}.shell{width:min(1040px,100%);margin:0 auto}header,.card{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow);border-radius:18px;padding:clamp(20px,4vw,34px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0;color:var(--accent);font-size:clamp(2.4rem,9vw,6rem);letter-spacing:.12em;line-height:.88;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:0 0 12px;color:var(--accent);font-size:1.5rem}h3{margin:0 0 8px;color:var(--gold);font-size:1.2rem}p,li{color:var(--text);line-height:1.65;margin:0 0 12px}.muted{color:var(--muted)}code{color:var(--gold)}nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.post-list{display:grid;gap:14px;margin-top:14px}.post-card{display:block;color:var(--text);text-decoration:none;border:1px solid var(--border-soft);background:var(--panel-2);border-radius:14px;padding:18px}.post-card.featured{border-color:rgba(255,211,105,.34);background:linear-gradient(180deg,rgba(255,211,105,.08),rgba(5,10,8,.58))}.post-meta{display:inline-block;color:var(--muted);font-size:.9rem;margin-bottom:8px}.roadmap-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}.roadmap-item{border:1px solid var(--border-soft);background:var(--panel-2);border-radius:14px;padding:16px}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:720px){body{padding:12px}.roadmap-grid{grid-template-columns:1fr}nav{flex-direction:column}.btn{width:100%}}
-  </style>
+  <title>LEGEND: Roads of Ashmere Devlog</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/legend-site-v090.css?v=0.9.0">
 </head>
 <body>
   <div class="shell">
-    <header>
-      <p class="kicker">Recovered Build Archive</p>
-      <h1>LEGEND DEVLOG</h1>
-      <p>Development notes, patch updates, design thoughts, and recovered memories from <strong>Legend - Recovered Build</strong>.</p>
-      <nav><a class="btn primary" href="index.html?v=0.7.0">Play Legend v0.7.0</a><a class="btn" href="playtest.html?v=0.7.0">Run Playtest</a><a class="btn" href="feedback.html">Playtest Feedback</a><a class="btn" href="updates.html">Newsletter</a><a class="btn" href="CHANGELOG.md">Changelog</a><a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a></nav>
+    <header class="legend-hero">
+      <div>
+        <p class="legend-kicker">Roads of Ashmere Chronicle</p>
+        <h1>LEGEND DEVLOG</h1>
+        <p>Development notes, patch updates, design thoughts, and worldbuilding for <strong>LEGEND: Roads of Ashmere</strong>, a medieval fantasy road RPG about towns, travel, monsters, supplies, and the choices you carry between settlements.</p>
+        <nav aria-label="Main navigation">
+          <a class="btn primary" href="index.html?v=0.9.0-site-theme">Play LEGEND</a>
+          <a class="btn" href="playtest.html?v=0.9.0-site-theme">Run Playtest</a>
+          <a class="btn" href="feedback.html?v=0.9.0-site-theme">Feedback</a>
+          <a class="btn" href="updates.html">Newsletter</a>
+          <a class="btn" href="CHANGELOG.md">Changelog</a>
+          <a class="btn" href="https://discord.gg/htbBvvY9N" target="_blank" rel="noopener">Discord</a>
+          <a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+        </nav>
+      </div>
+      <aside class="legend-sidebox">
+        <p class="kicker">Current Direction</p>
+        <h3>Fantasy Identity Pivot</h3>
+        <p class="muted">LEGEND is moving away from recovered-build framing and toward a living town-and-road fantasy RPG.</p>
+      </aside>
     </header>
+
     <main>
       <section class="card">
         <h2>Latest Posts</h2>
-        <p class="muted">Follow the remake as the recovered batch RPG grows into a full browser adventure.</p>
+        <p class="muted">Follow the game as Ashmere becomes a true first town, the Old Road becomes a real adventure route, and the early game grows into a stronger 1.0 foundation.</p>
         <div class="post-list">
-          <a class="post-card featured" href="posts/009-interface-encounter-update.html"><span class="post-meta">Devlog 009 / Recovered Build v0.7.0</span><h3>Interface & Encounter Update</h3><p>The Memorial Weekend playtest build adds a visual UI refresh, deeper Traveler Interview character creation, a cinematic intro, better inventory, choice-based Old Road travel, interactive combat options, road defeat consequences, and playtest guidance.</p></a>
-          <article class="post-card"><span class="post-meta">Devlog 008 / Recovered Build v0.6.4</span><h3>Stability Refactor and Road Systems</h3><p>v0.6.4 was the safety pass after the public build push. The main game file was restored after an accidental stub overwrite, shared version labels reported v0.6.4, Save Vault caught up, and new refactor files were checked before being activated.</p><p>The goal was stability first: keep LEGEND playable while preparing modular systems for tutorial, Sella, NPC metadata, Old Road events, and future travel expansion.</p></article>
-          <article class="post-card"><span class="post-meta">Devlog 007 / Recovered Build v0.6</span><h3>Refactor and Accessibility</h3><p>v0.6 moved LEGEND out of one giant file, added progressive menu unlocks, and introduced accessibility settings for readability, contrast, motion, spacing, and ASCII display.</p></article>
-          <a class="post-card" href="posts/006-first-road-balance.html"><span class="post-meta">Devlog 006 / Recovered Build v0.5.1</span><h3>First Road Balance</h3><p>v0.5.1 tightened public playtest pacing with faster Road Token progress, clearer Bell Shard timing, better Old Road rewards, and a feedback-ready main menu link.</p></a>
-          <a class="post-card" href="posts/005-the-first-road.html"><span class="post-meta">Devlog 005 / Recovered Build v0.5</span><h3>The First Road</h3><p>v0.5 deepened the first route with Road Tokens, Ashmere Inn, camp supplies, steadier weapon damage, enemy traits, mastery perks, and clearer quest tracking.</p></a>
-          <a class="post-card" href="posts/004-mobile-polish.html"><span class="post-meta">Devlog 004 / Recovered Build v0.4.1</span><h3>Mobile Polish</h3><p>v0.4.1 improved phone play with better tap targets, sticky action buttons, compact mobile HUD behavior, safer viewport handling, and responsive ASCII.</p></a>
-          <a class="post-card" href="posts/003-voices-of-ashmere.html"><span class="post-meta">Devlog 003 / Recovered Build v0.4</span><h3>Voices of Ashmere</h3><p>v0.4 gave Ashmere named NPCs, dialogue, the first true questline, enemy intent, Guard, class moves, Momentum, camp choices, and a browser tab icon.</p></a>
-          <a class="post-card" href="posts/002-roads-beyond-ashmere.html"><span class="post-meta">Devlog 002 / Recovered Build v0.3</span><h3>The Roads Beyond Ashmere</h3><p>v0.3 gave Legend an original world identity, deeper character creation, ASCII scenes, exploration routes, D20-style checks, the Trading Post, and the Backroad Dealer.</p></a>
-          <a class="post-card" href="posts/001-recovered-build.html"><span class="post-meta">Devlog 001 / Recovered Build Archive</span><h3>I Recovered My First Game</h3><p>The story of LegendTFC, the surviving batch file, and why this remake is becoming something more than a simple port.</p></a>
+          <a class="post-card featured" href="posts/009-interface-encounter-update.html"><span class="post-meta">Devlog 009 / Interface & Encounter Update</span><h3>Interface & Encounter Update</h3><p>The Memorial Weekend playtest build added a visual UI refresh, deeper Traveler Interview character creation, a cinematic intro, better inventory, choice-based Old Road travel, interactive combat options, road defeat consequences, and playtest guidance.</p></a>
+          <article class="post-card featured"><span class="post-meta">Current Work / Roads of Ashmere v0.8.x</span><h3>Town, Road, and Identity Refactor</h3><p>The current direction shifts LEGEND toward a medieval fantasy road RPG. Ashmere now has a town framework, the Old Road has a dedicated controller, the title screen uses Ashmere road artwork, and the support pages are being redesigned around the new visual identity.</p></article>
+          <article class="post-card"><span class="post-meta">Devlog 008 / Stability Refactor and Road Systems</span><h3>Stability Refactor and Road Systems</h3><p>v0.6.4 was the safety pass after the public build push. The main game file was restored after an accidental stub overwrite, shared version labels reported correctly, Save Vault caught up, and new refactor files were checked before being activated.</p><p>The goal was stability first: keep LEGEND playable while preparing modular systems for tutorial, Sella, NPC metadata, Old Road events, and future travel expansion.</p></article>
+          <article class="post-card"><span class="post-meta">Devlog 007 / Refactor and Accessibility</span><h3>Refactor and Accessibility</h3><p>v0.6 moved LEGEND out of one giant file, added progressive menu unlocks, and introduced accessibility settings for readability, contrast, motion, spacing, and ASCII display.</p></article>
+          <a class="post-card" href="posts/006-first-road-balance.html"><span class="post-meta">Devlog 006 / First Road Balance</span><h3>First Road Balance</h3><p>v0.5.1 tightened public playtest pacing with faster Road Token progress, clearer Bell Shard timing, better Old Road rewards, and a feedback-ready main menu link.</p></a>
+          <a class="post-card" href="posts/005-the-first-road.html"><span class="post-meta">Devlog 005 / The First Road</span><h3>The First Road</h3><p>v0.5 deepened the first route with Road Tokens, Ashmere Inn, camp supplies, steadier weapon damage, enemy traits, mastery perks, and clearer quest tracking.</p></a>
+          <a class="post-card" href="posts/004-mobile-polish.html"><span class="post-meta">Devlog 004 / Mobile Polish</span><h3>Mobile Polish</h3><p>v0.4.1 improved phone play with better tap targets, sticky action buttons, compact mobile HUD behavior, safer viewport handling, and responsive ASCII.</p></a>
+          <a class="post-card" href="posts/003-voices-of-ashmere.html"><span class="post-meta">Devlog 003 / Voices of Ashmere</span><h3>Voices of Ashmere</h3><p>v0.4 gave Ashmere named NPCs, dialogue, the first true questline, enemy intent, Guard, class moves, Momentum, camp choices, and a browser tab icon.</p></a>
+          <a class="post-card" href="posts/002-roads-beyond-ashmere.html"><span class="post-meta">Devlog 002 / Roads Beyond Ashmere</span><h3>The Roads Beyond Ashmere</h3><p>v0.3 gave Legend an original world identity, deeper character creation, ASCII scenes, exploration routes, D20-style checks, the Trading Post, and the Backroad Dealer.</p></a>
+          <a class="post-card" href="posts/001-recovered-build.html"><span class="post-meta">Devlog 001 / Project Origin</span><h3>I Recovered My First Game</h3><p>The origin story of LegendTFC, the surviving batch file, and why this remake became the starting point for a larger fantasy road RPG.</p></a>
         </div>
       </section>
-      <section class="card"><h2>Roadmap</h2><div class="roadmap-grid"><div class="roadmap-item"><h3>Current: v0.7.0</h3><p>Memorial Weekend playtest candidate. Focus: presentation, intro, deeper creation, choice checks, interactive combat, better inventory, and road defeat risk.</p></div><div class="roadmap-item"><h3>Next: Stabilize & Consolidate</h3><p>Smoke test hard, collect feedback, fix bugs, then fold the best additive v0.7.0 systems into cleaner long-term modules without breaking the restored live build.</p></div></div></section>
-    </main><footer>Legend - Recovered Build / HTML5 Browser RPG</footer>
+
+      <section class="card"><h2>Roadmap</h2><div class="roadmap-grid"><div class="roadmap-item"><h3>Current: v0.8.x Foundation</h3><p>Focus: fantasy identity, title/menu redesign, Ashmere town framework, Old Road controller, objective clarity, and early-game polish.</p></div><div class="roadmap-item"><h3>Next: Ashmere Early Game Overhaul</h3><p>Make the first session feel alive: better intro, stronger character creation, meaningful town actions, NPC dialogue, pub/shop depth, and a cleaner first road loop.</p></div></div></section>
+    </main>
+    <footer>LEGEND: Roads of Ashmere / HTML5 Fantasy Road RPG</footer>
   </div>
 </body>
 </html>
