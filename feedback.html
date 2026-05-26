@@ -5,28 +5,181 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LEGEND: Roads of Ashmere Feedback</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/legend-site-v090.css?v=0.9.0">
+  <link rel="stylesheet" href="css/legend-site-v090.css?v=0.9.1">
+  <style>
+    .feedback-page p,
+    .feedback-page li {
+      max-width: 78ch;
+      overflow-wrap: break-word;
+      word-break: normal;
+    }
+    .feedback-page .legend-hero > div,
+    .feedback-page .card,
+    .feedback-page .step,
+    .feedback-page .note,
+    .feedback-page .feedback-box {
+      min-width: 0;
+    }
+    .feedback-page .question-list {
+      columns: 1;
+      max-width: 900px;
+    }
+    .feedback-page .form-url {
+      display: inline-block;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .feedback-page .intro-copy {
+      font-size: 1.05rem;
+    }
+    @media (min-width: 900px) {
+      .feedback-page .question-list.two-column {
+        columns: 2;
+        column-gap: 34px;
+      }
+      .feedback-page .question-list.two-column li {
+        break-inside: avoid;
+      }
+    }
+  </style>
 </head>
-<body>
+<body class="feedback-page">
   <div class="shell">
     <header class="legend-hero">
       <div>
         <p class="legend-kicker">Playtest Feedback</p>
         <h1>TEST LEGEND</h1>
-        <p><strong>LEGEND: Roads of Ashmere</strong> is becoming a medieval fantasy road RPG. The most useful feedback right now is whether the first session feels clear, alive, readable, and worth continuing.</p>
-        <nav aria-label="Main navigation"><a class="btn primary" href="index.html?v=0.9.0-site-theme">Play LEGEND</a><a class="btn" href="playtest.html?v=0.9.0-site-theme">Run Playtest Runner</a><a class="btn" href="blog.html?v=0.9.0-site-theme">Devlog</a><a class="btn" href="save.html">Save Vault</a><a class="btn" href="https://discord.gg/htbBvvY9N" target="_blank" rel="noopener">Join Discord</a><a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a></nav>
+        <p class="intro-copy">
+          <strong>LEGEND: Roads of Ashmere</strong> is becoming a medieval fantasy road RPG.
+          The most useful feedback right now is whether the first session feels clear, alive,
+          readable, and worth continuing.
+        </p>
+        <nav aria-label="Main navigation">
+          <a class="btn primary" href="index.html?v=0.9.1-feedback-fix">Play LEGEND</a>
+          <a class="btn" href="playtest.html?v=0.9.1-feedback-fix">Run Playtest Runner</a>
+          <a class="btn" href="blog.html?v=0.9.1-feedback-fix">Devlog</a>
+          <a class="btn" href="save.html">Save Vault</a>
+          <a class="btn" href="https://discord.gg/htbBvvY9N" target="_blank" rel="noopener">Join Discord</a>
+          <a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+        </nav>
       </div>
-      <aside class="legend-sidebox"><p class="kicker">Current Focus</p><h3>First 10 Minutes</h3><p class="muted">Title screen, intro, Ashmere, road travel, inventory, combat, and whether the game feels alive instead of barebones.</p></aside>
+      <aside class="legend-sidebox">
+        <p class="kicker">Current Focus</p>
+        <h3>First 10 Minutes</h3>
+        <p class="muted">
+          Title screen, intro, Ashmere, road travel, inventory, combat, and whether the game
+          feels alive instead of barebones.
+        </p>
+      </aside>
     </header>
 
     <main>
-      <section class="card"><h2>10–15 Minute Playtest Goal</h2><p class="muted">You do not need to finish everything. Play until you reach Ashmere, talk to someone, travel the Old Road, and decide whether you would keep going.</p><div class="grid"><div class="step"><span class="step-number">1</span><h3>Create a traveler</h3><p>Start a new save. Try origin, class, keepsake, and opening choices. Tell us whether your traveler feels personal or generic.</p></div><div class="step"><span class="step-number">2</span><h3>Watch the intro</h3><p>Check whether the intro feels alive, atmospheric, and clear. If it feels like clicking through text, say that.</p></div><div class="step"><span class="step-number">3</span><h3>Reach Ashmere</h3><p>Use the objective guide. Speak with Mara or explore town. Tell us whether Ashmere feels like a real place yet.</p></div><div class="step"><span class="step-number">4</span><h3>Travel and fight</h3><p>Use Travel the Old Road. Try careful, normal, and bold travel. Test combat, rewards, and returning to town.</p></div></div><div class="actions"><a class="btn primary" href="index.html?v=0.9.0-site-theme">Start Playtest</a><a class="btn" href="#feedback-form">Leave Feedback</a><a class="btn" href="https://discord.gg/htbBvvY9N" target="_blank" rel="noopener">Join Discord</a></div></section>
+      <section class="card">
+        <h2>10–15 Minute Playtest Goal</h2>
+        <p class="muted">
+          You do not need to finish everything. Play until you reach Ashmere, talk to someone,
+          travel the Old Road, and decide whether you would keep going.
+        </p>
 
-      <section class="card"><h2>What We Need Feedback On</h2><div class="note"><span class="tag">Title Screen</span><span class="tag">Mobile</span><span class="tag">Character Creation</span><span class="tag">Intro</span><span class="tag">Ashmere</span><span class="tag">Old Road</span><span class="tag">Combat</span><span class="tag">Inventory</span><span class="tag">Bugs</span></div><ul class="question-list"><li>Does the title screen feel like a real game home screen?</li><li>Does the new fantasy identity make sense?</li><li>Did character creation bug out, loop, or feel boring?</li><li>Did the intro feel immersive or too text-box heavy?</li><li>Did the objective card tell you what to do next?</li><li>Did Ashmere feel like a town, or just a menu?</li><li>Did Old Road travel feel like an adventure?</li><li>Did combat feel interactive enough?</li><li>Did inventory and character sheet feel readable?</li><li>Did anything clip, overlap, vanish, or break on mobile?</li><li>Would you keep playing after the first 10 minutes?</li></ul><div class="callout"><p>Brutally honest feedback helps more than praise. If something is boring, confusing, ugly, unfair, inaccessible, or broken, say it.</p></div></section>
+        <div class="grid">
+          <div class="step">
+            <span class="step-number">1</span>
+            <h3>Create a traveler</h3>
+            <p>Start a new save. Try origin, class, keepsake, and opening choices. Tell us whether your traveler feels personal or generic.</p>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <h3>Watch the intro</h3>
+            <p>Check whether the intro feels alive, atmospheric, and clear. If it feels like clicking through text, say that.</p>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <h3>Reach Ashmere</h3>
+            <p>Use the objective guide. Speak with Mara or explore town. Tell us whether Ashmere feels like a real place yet.</p>
+          </div>
+          <div class="step">
+            <span class="step-number">4</span>
+            <h3>Travel and fight</h3>
+            <p>Use Travel the Old Road. Try careful, normal, and bold travel. Test combat, rewards, and returning to town.</p>
+          </div>
+        </div>
 
-      <section class="card" id="feedback-form"><h2>Leave Feedback</h2><p>After playing for a few minutes, use the form below. The most helpful notes are about first impressions, phone layout, confusing buttons, pacing, bugs, combat, Old Road choices, inventory, and whether the game feels ready for more public testing.</p><div class="feedback-box"><h3>LEGEND Playtest Feedback Form</h3><p class="muted">The form opens in a new tab so you can keep the game page open while answering.</p><div class="actions"><a class="btn primary" href="https://forms.gle/vM66NxTLsCBFoFXP6" target="_blank" rel="noopener">Submit Feedback</a><a class="btn" href="https://discord.gg/htbBvvY9N" target="_blank" rel="noopener">Join Discord</a><a class="btn" href="https://github.com/tdtria/LEGEND-RPG/issues" target="_blank" rel="noopener">Report on GitHub</a></div><p class="muted" style="margin-top:12px">Direct form link: <span class="form-url">https://forms.gle/vM66NxTLsCBFoFXP6</span></p></div></section>
+        <div class="actions">
+          <a class="btn primary" href="index.html?v=0.9.1-feedback-fix">Start Playtest</a>
+          <a class="btn" href="#feedback-form">Leave Feedback</a>
+          <a class="btn" href="https://discord.gg/htbBvvY9N" target="_blank" rel="noopener">Join Discord</a>
+        </div>
+      </section>
 
-      <section class="card"><h2>Known Early-Build Notes</h2><ul class="question-list"><li>This is still an early HTML5 browser RPG build.</li><li>Some systems are additive layers over the restored core for safety.</li><li>The game is pivoting away from recovered-build framing toward a fantasy road RPG identity.</li><li>Legacy ASCII and old labels are being removed, but report any that still appears.</li><li>Balance is still changing quickly.</li><li>Mobile feedback is especially important.</li><li>The game saves in your browser, and Save Vault can export/import portable saves.</li></ul></section>
+      <section class="card">
+        <h2>What We Need Feedback On</h2>
+        <div class="note">
+          <span class="tag">Title Screen</span>
+          <span class="tag">Mobile</span>
+          <span class="tag">Character Creation</span>
+          <span class="tag">Intro</span>
+          <span class="tag">Ashmere</span>
+          <span class="tag">Old Road</span>
+          <span class="tag">Combat</span>
+          <span class="tag">Inventory</span>
+          <span class="tag">Bugs</span>
+        </div>
+
+        <ul class="question-list two-column">
+          <li>Does the title screen feel like a real game home screen?</li>
+          <li>Does the new fantasy identity make sense?</li>
+          <li>Did character creation bug out, loop, or feel boring?</li>
+          <li>Did the intro feel immersive or too text-box heavy?</li>
+          <li>Did the objective card tell you what to do next?</li>
+          <li>Did Ashmere feel like a town, or just a menu?</li>
+          <li>Did Old Road travel feel like an adventure?</li>
+          <li>Did combat feel interactive enough?</li>
+          <li>Did inventory and character sheet feel readable?</li>
+          <li>Did anything clip, overlap, vanish, or break on mobile?</li>
+          <li>Would you keep playing after the first 10 minutes?</li>
+        </ul>
+
+        <div class="callout">
+          <p>Brutally honest feedback helps more than praise. If something is boring, confusing, ugly, unfair, inaccessible, or broken, say it.</p>
+        </div>
+      </section>
+
+      <section class="card" id="feedback-form">
+        <h2>Leave Feedback</h2>
+        <p>
+          After playing for a few minutes, use the form below. The most helpful notes are about first impressions,
+          phone layout, confusing buttons, pacing, bugs, combat, Old Road choices, inventory, and whether the game
+          feels ready for more public testing.
+        </p>
+
+        <div class="feedback-box">
+          <h3>LEGEND Playtest Feedback Form</h3>
+          <p class="muted">The form opens in a new tab so you can keep the game page open while answering.</p>
+          <div class="actions">
+            <a class="btn primary" href="https://forms.gle/vM66NxTLsCBFoFXP6" target="_blank" rel="noopener">Submit Feedback</a>
+            <a class="btn" href="https://discord.gg/htbBvvY9N" target="_blank" rel="noopener">Join Discord</a>
+            <a class="btn" href="https://github.com/tdtria/LEGEND-RPG/issues" target="_blank" rel="noopener">Report on GitHub</a>
+          </div>
+          <p class="muted" style="margin-top:12px">
+            Direct form link:
+            <span class="form-url">https://forms.gle/vM66NxTLsCBFoFXP6</span>
+          </p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Known Early-Build Notes</h2>
+        <ul class="question-list">
+          <li>This is still an early HTML5 browser RPG build.</li>
+          <li>Some systems are additive layers over the restored core for safety.</li>
+          <li>The game is pivoting away from recovered-build framing toward a fantasy road RPG identity.</li>
+          <li>Legacy ASCII and old labels are being removed, but report any that still appears.</li>
+          <li>Balance is still changing quickly.</li>
+          <li>Mobile feedback is especially important.</li>
+          <li>The game saves in your browser, and Save Vault can export/import portable saves.</li>
+        </ul>
+      </section>
     </main>
 
     <footer>LEGEND: Roads of Ashmere / Playtest Feedback</footer>
