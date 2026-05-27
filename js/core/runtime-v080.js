@@ -1,5 +1,5 @@
-// LEGEND v0.9.4 - Runtime Bridge
-// Safe bridge for loading saves, returning to Ashmere, and surviving title-screen replacement layers.
+// LEGEND v0.9.9 - Runtime Bridge
+// Safe bridge for loading saves, returning to Ashmere, and avoiding title-loop reloads.
 (() => {
   const SAVE_KEY = 'legend-recovered-build-v06';
   const OLD_KEYS = ['legend-recovered-build-v051','legend-recovered-build-v05','legend-recovered-build-v041','legend-recovered-build-v04','legend-recovered-build-v03','legend-recovered-build-v02'];
@@ -26,13 +26,11 @@
     const txt = String(el.textContent || '').trim().toLowerCase();
     return txt.startsWith('continue') || txt.includes('continue as');
   }
-
   function findContinueButton(){
     const direct = document.getElementById('continue');
     if(direct) return direct;
     return [...document.querySelectorAll('button,a,.v089-menu-btn')].find(isContinueButton) || null;
   }
-
   function continueFromTitle(){
     const btn = findContinueButton();
     if(btn && !btn.disabled && btn.getAttribute('aria-disabled') !== 'true'){
@@ -42,13 +40,33 @@
     return false;
   }
 
+  function renderAshmereDirect(){
+    const player = loadPlayer();
+    if(!player) return false;
+    player.town = 'Ashmere';
+    savePlayer(player);
+    if(window.LegendAshmereV099?.renderAshmere){
+      window.LegendAshmereV099.renderAshmere();
+      sessionStorage.removeItem(RETURN_KEY);
+      return true;
+    }
+    if(window.LegendTownControllerV080?.renderTown){
+      window.LegendTownControllerV080.renderTown('ashmere');
+      sessionStorage.removeItem(RETURN_KEY);
+      return true;
+    }
+    return false;
+  }
+
   function returnToAshmere(){
     sessionStorage.setItem(RETURN_KEY, '1');
+    if(renderAshmereDirect()) return;
     location.reload();
   }
 
   function handlePendingReturn(){
     if(sessionStorage.getItem(RETURN_KEY) !== '1') return false;
+    if(renderAshmereDirect()) return true;
     const didContinue = continueFromTitle();
     if(didContinue) sessionStorage.removeItem(RETURN_KEY);
     return didContinue;
@@ -59,9 +77,7 @@
     let tries = 0;
     const attempt = () => {
       tries += 1;
-      if(handlePendingReturn() || tries >= 60){
-        clearInterval(timer);
-      }
+      if(handlePendingReturn() || tries >= 60) clearInterval(timer);
     };
     const timer = setInterval(attempt, 100);
     setTimeout(attempt, 0);
@@ -90,13 +106,5 @@
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoResumePendingReturn);
   else autoResumePendingReturn();
 
-  window.LegendRuntimeV080 = {
-    SAVE_KEY,
-    loadPlayer,
-    savePlayer,
-    returnToAshmere,
-    continueFromTitle,
-    handlePendingReturn,
-    onRender
-  };
+  window.LegendRuntimeV080 = { SAVE_KEY, loadPlayer, savePlayer, returnToAshmere, continueFromTitle, handlePendingReturn, onRender };
 })();
