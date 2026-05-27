@@ -1,23 +1,45 @@
-// LEGEND v0.8.9 - Fullscreen Title Replacement
-// Readable, safe-area main menu using uploaded Ashmere title art.
+// LEGEND v0.9.1 - Fullscreen Title Replacement
+// Readable main menu using Ashmere title art, with unavailable buttons disabled.
 (() => {
-  const BG = './assets/title/title_bg_ashmere_road_v089.jpg?v=0.8.9-imgtag';
+  const BG = './assets/title/title_bg_ashmere_road_v089.jpg?v=0.9.1-menu-state';
   const DISCORD = 'https://discord.gg/htbBvvY9N';
   const TITLE_ID = 'legendFullscreenTitleV089';
   let installed = false;
 
+  function hasSave(){
+    try{
+      const key = window.LEGEND_DATA?.SAVE_KEY || 'legend-roads-of-ashmere-v09';
+      const old = window.LEGEND_DATA?.OLD_KEYS || [];
+      return !!localStorage.getItem(key) || old.some(k => !!localStorage.getItem(k));
+    }catch(e){ return false; }
+  }
+
+  function inferUnavailable(el, text){
+    const t = String(text || '').toLowerCase();
+    const disabled = el.disabled || el.getAttribute('aria-disabled') === 'true' || el.classList.contains('disabled');
+    if(disabled) return true;
+    if((t.includes('continue') || t.includes('load')) && !hasSave()) return true;
+    return false;
+  }
+
   function getOriginalButtons(card){
     const actions = card?.querySelector('.actions');
     if(!actions) return [];
-    return [...actions.querySelectorAll('button,a')].map((el, index) => ({
-      text: (el.textContent || `Option ${index + 1}`).trim(),
-      primary: el.classList.contains('primary') || index === 0,
-      click: () => el.click()
-    }));
+    return [...actions.querySelectorAll('button,a')].map((el, index) => {
+      const text = (el.textContent || `Option ${index + 1}`).trim();
+      const unavailable = inferUnavailable(el, text);
+      return {
+        text,
+        primary: el.classList.contains('primary') || index === 0,
+        unavailable,
+        reason: unavailable ? 'No save found yet' : '',
+        click: () => el.click()
+      };
+    });
   }
 
   function buildButtonHTML(buttons){
-    return buttons.map((b,i)=>`<button class="v089-menu-btn ${b.primary?'primary':''}" data-v089-action="${i}"><span>${b.text}</span></button>`).join('');
+    return buttons.map((b,i)=>`<button class="v089-menu-btn ${b.primary?'primary':''} ${b.unavailable?'is-disabled':''}" data-v089-action="${i}" ${b.unavailable?'disabled aria-disabled="true"':''}><span>${b.text}</span>${b.unavailable?`<em>${b.reason}</em>`:''}</button>`).join('');
   }
 
   function install(card){
@@ -25,8 +47,8 @@
     const buttons = getOriginalButtons(card);
     if(!buttons.length) return;
     installed = true;
-    document.title = 'LEGEND: Roads of Ashmere v0.8.9';
-    if(window.LEGEND_DATA) window.LEGEND_DATA.VERSION = 'v0.8.9';
+    document.title = 'LEGEND: Roads of Ashmere v0.9.1';
+    if(window.LEGEND_DATA) window.LEGEND_DATA.VERSION = 'v0.9.1';
 
     const root = document.getElementById('root');
     if(!root) return;
@@ -36,7 +58,7 @@
       <div class="v089-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
       <div class="v089-shade" aria-hidden="true"></div>
       <section class="v089-title-block">
-        <div class="v089-kicker">v0.8.9 • Roads of Ashmere</div>
+        <div class="v089-kicker">v0.9.1 • Roads of Ashmere</div>
         <h1>LEGEND</h1>
         <p><strong>Roads of Ashmere</strong><span>Prepare in town. Travel the Old Road. Return with proof.</span></p>
       </section>
@@ -46,12 +68,12 @@
         <small>Start with Mara, gather supplies, and survive your first road journey.</small>
       </nav>
       <aside class="v089-whats-new">
-        <div class="v089-panel-head"><span>What's New</span><strong>v0.8.9</strong></div>
+        <div class="v089-panel-head"><span>What's New</span><strong>v0.9.1</strong></div>
         <ul>
-          <li>Fullscreen Ashmere title art</li>
-          <li>Town framework is active</li>
-          <li>Old Road controller is active</li>
-          <li>Main objective guidance added</li>
+          <li>Unavailable menu buttons disabled</li>
+          <li>Interactive dice checks added</li>
+          <li>Old Road menu pass started</li>
+          <li>New asset pipeline active</li>
         </ul>
         <div class="v089-links"><a href="feedback.html">Feedback</a><a href="${DISCORD}" target="_blank" rel="noopener">Discord</a></div>
       </aside>
@@ -61,6 +83,7 @@
     screen.querySelector('.v089-bg-fallback').style.backgroundImage = `url("${BG}")`;
     screen.querySelectorAll('[data-v089-action]').forEach(btn => {
       btn.onclick = () => {
+        if(btn.disabled || btn.classList.contains('is-disabled')) return;
         const action = buttons[Number(btn.dataset.v089Action)];
         if(action?.click) action.click();
       };
@@ -96,6 +119,8 @@
       #${TITLE_ID} .v089-menu-btn:hover{transform:translateX(5px);border-color:rgba(255,211,105,.66);background:linear-gradient(90deg,rgba(39,28,12,.86),rgba(10,16,12,.58));}
       #${TITLE_ID} .v089-menu-btn.primary{background:linear-gradient(180deg,#ffe29a,#bf7f2a);color:#241803;border-color:rgba(255,211,105,.72);}
       #${TITLE_ID} .v089-menu-btn.primary span:before{color:#503407;}
+      #${TITLE_ID} .v089-menu-btn.is-disabled,#${TITLE_ID} .v089-menu-btn:disabled{opacity:.48;filter:grayscale(.65);cursor:not-allowed;transform:none!important;background:rgba(7,12,9,.50)!important;border-color:rgba(185,211,193,.14)!important;color:#9eb4a6!important;box-shadow:none!important;}
+      #${TITLE_ID} .v089-menu-btn em{display:block;font-style:normal;font-size:.72rem;color:#b9d3c1;margin-top:3px;font-weight:600;}
       #${TITLE_ID} small{color:#d8e6dc;text-align:left;text-shadow:0 2px 5px rgba(0,0,0,.9);background:rgba(0,0,0,.36);border:1px solid rgba(125,255,173,.16);border-radius:14px;padding:10px 12px;backdrop-filter:blur(5px);line-height:1.38;}
       #${TITLE_ID} .v089-whats-new{position:absolute;right:var(--pad);bottom:var(--pad);width:min(290px,28vw);border:1px solid rgba(255,211,105,.28);border-radius:20px;background:rgba(4,8,6,.62);backdrop-filter:blur(8px);padding:14px;text-align:left;box-shadow:0 18px 50px rgba(0,0,0,.38);z-index:4;}
       #${TITLE_ID} .v089-panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px;}
@@ -106,25 +131,8 @@
       #${TITLE_ID} .v089-links a{border:1px solid rgba(125,255,173,.22);border-radius:999px;background:rgba(0,0,0,.24);color:#eaffef;text-decoration:none;padding:7px 10px;font-size:.88rem;}
       @keyframes v089Drift{from{transform:scale(1.012) translate3d(0,0,0)}to{transform:scale(1.04) translate3d(-8px,-4px,0)}}
       @keyframes v089Ember{0%{opacity:0;transform:translateY(0) scale(.6)}15%{opacity:.75}100%{opacity:0;transform:translateY(-95vh) scale(1.3)}}
-      @media(max-width:1100px){
-        #${TITLE_ID}{--pad:clamp(14px,3vw,30px)}
-        #${TITLE_ID} .v089-title-block{width:min(470px,48vw)}
-        #${TITLE_ID} .v089-menu-block{width:min(300px,34vw)}
-        #${TITLE_ID} .v089-whats-new{width:min(270px,30vw)}
-      }
-      @media(max-width:820px){
-        html:has(#${TITLE_ID}), body:has(#${TITLE_ID}){overflow:auto!important;}
-        body:has(#${TITLE_ID}) #root,#${TITLE_ID}{position:relative!important;min-height:100svh!important;height:auto!important;overflow:auto!important;}
-        #${TITLE_ID}{padding:14px;display:grid;align-content:start;gap:12px;}
-        #${TITLE_ID} .v089-bg-img,#${TITLE_ID} .v089-bg-fallback{background-position:center center;position:fixed;}
-        #${TITLE_ID} .v089-shade{position:fixed;background:linear-gradient(180deg,rgba(2,4,3,.24),rgba(2,4,3,.90));}
-        #${TITLE_ID} .v089-title-block,#${TITLE_ID} .v089-menu-block,#${TITLE_ID} .v089-whats-new{position:relative;top:auto;right:auto;left:auto;bottom:auto;width:auto;margin:0;}
-        #${TITLE_ID} .v089-title-block{padding-top:8px;text-align:center;justify-items:center;}
-        #${TITLE_ID} .v089-title-block p{text-align:center;max-width:520px;}
-        #${TITLE_ID} .v089-menu-block{margin-top:30svh;}
-        #${TITLE_ID} h1{font-size:clamp(4rem,22vw,7rem);}
-        #${TITLE_ID} .v089-whats-new{margin-bottom:12px;}
-      }
+      @media(max-width:1100px){#${TITLE_ID}{--pad:clamp(14px,3vw,30px)}#${TITLE_ID} .v089-title-block{width:min(470px,48vw)}#${TITLE_ID} .v089-menu-block{width:min(300px,34vw)}#${TITLE_ID} .v089-whats-new{width:min(270px,30vw)}}
+      @media(max-width:820px){html:has(#${TITLE_ID}), body:has(#${TITLE_ID}){overflow:auto!important;}body:has(#${TITLE_ID}) #root,#${TITLE_ID}{position:relative!important;min-height:100svh!important;height:auto!important;overflow:auto!important;}#${TITLE_ID}{padding:14px;display:grid;align-content:start;gap:12px;}#${TITLE_ID} .v089-bg-img,#${TITLE_ID} .v089-bg-fallback{background-position:center center;position:fixed;}#${TITLE_ID} .v089-shade{position:fixed;background:linear-gradient(180deg,rgba(2,4,3,.24),rgba(2,4,3,.90));}#${TITLE_ID} .v089-title-block,#${TITLE_ID} .v089-menu-block,#${TITLE_ID} .v089-whats-new{position:relative;top:auto;right:auto;left:auto;bottom:auto;width:auto;margin:0;}#${TITLE_ID} .v089-title-block{padding-top:8px;text-align:center;justify-items:center;}#${TITLE_ID} .v089-title-block p{text-align:center;max-width:520px;}#${TITLE_ID} .v089-menu-block{margin-top:30svh;}#${TITLE_ID} h1{font-size:clamp(4rem,22vw,7rem);}#${TITLE_ID} .v089-whats-new{margin-bottom:12px;}}
     `;
     document.head.appendChild(css);
   }
