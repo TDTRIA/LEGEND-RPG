@@ -1,155 +1,30 @@
-// LEGEND v0.9.1 - Road Controller
-// Old Road travel with paced menu flow, interactive dice checks, finds, battles, progress, and clean town return.
-(() => {
-  const RT = () => window.LegendRuntimeV080 || null;
-  const ROADS = () => window.LegendRoadsV087 || {};
-  const ASSETS = () => window.LegendAssetsV090 || {};
-  let enemy = null;
-  let currentRoad = 'oldRoad';
-
-  function esc(s){return String(s == null ? '' : s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-  function p(){return RT()?.loadPlayer?.() || null;}
-  function save(pl){RT()?.savePlayer?.(pl);}
-  function ret(){RT()?.returnToAshmere?.();}
-  function road(){return ROADS()[currentRoad] || ROADS().oldRoad;}
-  function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-  function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
-  function inv(pl,k,a){pl.inventory=pl.inventory||{};pl.inventory[k]=Number(pl.inventory[k]||0)+a;}
-  function clamp(n,a,b){return Math.max(a,Math.min(b,n));}
-  function weapon(pl){return (window.LEGEND_DATA?.weapons||[]).find(w=>w.id===pl.weapon)||{name:pl.weapon||'Hands',min:0,max:1};}
-  function armor(pl){return (window.LEGEND_DATA?.armors||[]).find(a=>a.id===pl.armor)||{name:pl.armor||'None',defense:0};}
-  function itemName(k){return window.LEGEND_DATA?.itemNames?.[k]||k;}
-
-  function state(pl){
-    pl.flags = pl.flags || {};
-    pl.flags.roadV087 = pl.flags.roadV087 || {progress:0, trips:0};
-    return pl.flags.roadV087;
-  }
-  function addXP(pl,n){
-    pl.xp=Number(pl.xp||0)+n; pl.xpUntil=Number(pl.xpUntil||420)-n;
-    if(pl.xpUntil<=0){pl.level=Number(pl.level||1)+1;pl.xpUntil=420+pl.level*110;pl.maxHp=Number(pl.maxHp||30)+22;pl.hp=pl.maxHp;return true;}
-    return false;
-  }
-  function score(pl,skill){
-    const cls=window.LEGEND_DATA?.classes?.[pl.className]?.mod||{};
-    const org=window.LEGEND_DATA?.origins?.[pl.origin]?.bonus||{};
-    const keep=window.LEGEND_DATA?.keepsakes?.[pl.keepsake]?.bonus||{};
-    const bg90=pl.creationV090?.bonuses||{};
-    const bg70=pl.creationV070?.bonuses||{};
-    return Number(cls[skill]||0)+Number(org[skill]||0)+Number(keep[skill]||0)+Number(bg90[skill]||0)+Number(bg70[skill]||0);
-  }
-
-  function roadBg(){ return ASSETS().locations?.oldRoad || 'assets/locations/roads/location_old_road_main_v1.jpg'; }
-  function sceneHTML(){return `<div class="v091-road-scene"><img src="${esc(roadBg())}" alt="" onerror="this.style.display='none'"><div class="v091-road-fade"></div><div class="v091-road-lantern"></div></div>`;}
-  function progressHTML(n){let out='<div class="v087-progress">';for(let i=0;i<5;i++)out+=`<span class="v087-step ${i<n?'done':''}"></span>`;return out+'</div>';}
-  function statusHTML(pl){const st=state(pl);return `<div class="v087-status"><div class="v087-stat"><span>HP</span><strong>${Number(pl.hp||0)}/${Number(pl.maxHp||0)}</strong></div><div class="v087-stat"><span>Gold</span><strong>${Number(pl.gold||0)}g</strong></div><div class="v087-stat"><span>Road</span><strong>${Number(st.progress||0)}/5</strong></div><div class="v087-stat"><span>Proof</span><strong>${Number(pl.inventory?.roadToken||0)} Tokens</strong></div></div>`;}
-
-  function start(){
-    const pl=p(); if(!pl) return;
-    const st=state(pl); st.trips=Number(st.trips||0)+1; save(pl);
-    renderHub('The gate closes behind you. Ashmere becomes lantern light in the fog, and the Old Road waits for your pace.');
-  }
-
-  function renderHub(note=''){
-    const pl=p(); if(!pl)return;
-    const r=road(); const st=state(pl);
-    document.getElementById('root').innerHTML = `<div class="shell"><section class="panel v087-road v091-road-menu"><div class="v087-road-hero">${sceneHTML()}<div class="v080-kicker">Old Road Route</div><h2>${esc(r.name)}</h2><p>${esc(note||r.description)}</p>${progressHTML(Number(st.progress||0))}</div>${statusHTML(pl)}<div class="v091-route-board"><article><span>Careful</span><strong>More checks, safer pacing.</strong></article><article><span>Standard</span><strong>Balanced travel and danger.</strong></article><article><span>Bold</span><strong>Faster progress, more fights.</strong></article></div><div class="v087-options"><button class="v087-card" id="careful"><strong>Travel Carefully</strong><span>Scout the mud, listen for movement, and take fewer risks.</span><em>Check / Find focused</em></button><button class="v087-card" id="normal"><strong>Follow the Road</strong><span>Keep a steady pace through choices, discoveries, and danger.</span><em>Mixed events</em></button><button class="v087-card" id="bold"><strong>Press Ahead</strong><span>Push through the fog. More danger, but faster proof.</span><em>Battle / reward focused</em></button></div><div class="actions"><button class="btn" id="returnTown">Return to Ashmere</button></div></section></div>`;
-    document.getElementById('careful').onclick=()=>roll('careful');
-    document.getElementById('normal').onclick=()=>roll('normal');
-    document.getElementById('bold').onclick=()=>roll('bold');
-    document.getElementById('returnTown').onclick=ret;
-  }
-
-  function roll(mode){
-    const n=Math.random();
-    if(mode==='bold' && n<0.58) return battle();
-    if(mode==='careful' && n<0.50) return checkEvent(mode);
-    if(n<0.35) return checkEvent(mode);
-    if(n<0.62) return findEvent(mode);
-    return battle();
-  }
-
-  function checkEvent(mode){
-    const pl=p(); if(!pl)return;
-    const ev=pick(road().checks);
-    const bonus=score(pl,ev.skill);
-    const target=mode==='careful'?9:11;
-    renderDiceCheck({ev,bonus,target,mode});
-  }
-
-  function renderDiceCheck(ctx){
-    const pl=p(); if(!pl)return;
-    document.getElementById('root').innerHTML = `<div class="shell"><section class="panel v087-road v091-check"><div class="v087-outcome"><div class="v080-kicker">Road Check</div><h2>${esc(ctx.ev.title)}</h2><p>${esc(ctx.ev.text)}</p><div class="v091-check-grid"><div class="v091-die-wrap"><button class="v091-die" id="rollDie" aria-label="Roll the road die"><span>?</span></button><small>Click the die to roll</small></div><div class="v091-check-card"><span>Skill</span><strong>${esc(ctx.ev.skill.toUpperCase())}</strong><span>Bonus</span><strong>+${ctx.bonus}</strong><span>Target</span><strong>${ctx.target}</strong><span>Risk</span><strong>${esc(ctx.ev.risk||'Road Risk')}</strong></div></div><div class="v091-roll-text" id="rollText">The road waits for the die to fall.</div><div class="v087-actions"><button class="btn" id="backRoad">Back to Route</button><button class="btn" id="town">Return to Ashmere</button></div></div></section></div>`;
-    document.getElementById('backRoad').onclick=()=>renderHub();
-    document.getElementById('town').onclick=ret;
-    document.getElementById('rollDie').onclick=()=>animateDie(ctx);
-  }
-
-  function animateDie(ctx){
-    const die=document.getElementById('rollDie');
-    const text=document.getElementById('rollText');
-    if(!die || die.dataset.rolling==='1') return;
-    die.dataset.rolling='1';
-    die.classList.add('rolling');
-    let ticks=0;
-    const timer=setInterval(()=>{
-      ticks++;
-      die.querySelector('span').textContent=rand(1,12);
-      text.textContent = ticks < 8 ? 'The die clatters across the wet stone...' : 'The die slows.';
-      if(ticks>=12){
-        clearInterval(timer);
-        const natural=rand(1,12);
-        const total=natural+ctx.bonus;
-        die.querySelector('span').textContent=natural;
-        die.classList.remove('rolling');
-        resolveCheck(ctx,natural,total);
-      }
-    },90);
-  }
-
-  function resolveCheck(ctx,natural,total){
-    const pl=p(); if(!pl)return;
-    const ok=total>=ctx.target;
-    if(ok){state(pl).progress=clamp(Number(state(pl).progress||0)+1,0,5); if(Math.random()<0.24) inv(pl,'roadToken',1); addXP(pl,25);} else {pl.hp=Math.max(1,Number(pl.hp||1)-rand(2,7));}
-    save(pl);
-    setTimeout(()=>{
-      outcome(ctx.ev.title, `${ctx.ev.text}\n\nDie: ${natural} + ${ctx.bonus} = ${total} vs ${ctx.target}\n\n${ok?ctx.ev.success:ctx.ev.fail}`, ok?'Success':'Mixed Result');
-    },450);
-  }
-
-  function findEvent(mode){
-    const pl=p(); const f=pick(road().finds); inv(pl,f.item,f.amount); state(pl).progress=clamp(Number(state(pl).progress||0)+1,0,5); addXP(pl,15); save(pl);
-    outcome(f.title, `${f.text}\n\nRecovered: ${itemName(f.item)} x${f.amount}.`, 'Discovery');
-  }
-
-  function battle(){
-    const pl=p(); const base=pick(road().enemies); enemy={...base,hp:rand(base.hp[0],base.hp[1])}; enemy.maxHp=enemy.hp;
-    renderBattle(base.text);
-  }
-  function sprite(name){return window.LegendEnemySpritesV080?.spriteFor?.(name)||'<svg viewBox="0 0 160 160"><path d="M24 93c12-38 35-57 70-54 31 3 44 28 43 61-13 23-41 34-75 28-16-3-29-14-38-35Z" fill="#17241d" stroke="#7dffad" stroke-width="4"/><circle cx="65" cy="82" r="6" fill="#ff6b6b"/><circle cx="101" cy="82" r="6" fill="#ff6b6b"/></svg>';}
-  function renderBattle(note){
-    const pl=p(); if(!pl||!enemy)return; const w=weapon(pl); const a=armor(pl);
-    document.getElementById('root').innerHTML=`<div class="shell"><section class="panel v087-road"><div class="v087-outcome v087-battle"><div><div class="v080-kicker">Road Battle</div><h2>${esc(enemy.name)}</h2><p>${esc(note)}</p><div class="v087-status"><div class="v087-stat"><span>Your HP</span><strong>${Number(pl.hp||0)}/${Number(pl.maxHp||0)}</strong></div><div class="v087-stat"><span>Enemy HP</span><strong>${enemy.hp}/${enemy.maxHp}</strong></div><div class="v087-stat"><span>Weapon</span><strong>${esc(w.name)}</strong></div><div class="v087-stat"><span>Armor</span><strong>${esc(a.name)}</strong></div></div><div class="v087-actions"><button class="btn primary" id="atk">Attack</button><button class="btn" id="guard">Guard</button><button class="btn" id="potion">Potion</button><button class="btn" id="flee">Fall Back</button></div></div><div class="v087-enemy">${sprite(enemy.name)}</div></div></section></div>`;
-    document.getElementById('atk').onclick=attack; document.getElementById('guard').onclick=()=>enemyTurn('You guard and take the hit carefully.',.45); document.getElementById('potion').onclick=potion; document.getElementById('flee').onclick=()=>{if(Math.random()<.62) outcome('You Fall Back','You break away and return to a safer stretch of the road.','Escaped'); else enemyTurn('You try to fall back, but the road gives you no room.',1);};
-  }
-  function attack(){const pl=p();const w=weapon(pl);const dmg=rand(w.min||0,w.max||1)+rand(0,3);enemy.hp-=dmg;if(enemy.hp<=0)return win(`You hit for ${dmg}. The ${enemy.name} collapses into the mud.`);enemyTurn(`You hit for ${dmg}.`,1);}
-  function potion(){const pl=p();if(Number(pl.inventory?.potion||0)<=0)return renderBattle('No potion left.');pl.inventory.potion-=1;pl.hp=Math.min(Number(pl.maxHp||pl.hp||1),Number(pl.hp||1)+35);save(pl);enemyTurn('You drink a potion and steady your hands.',1);}
-  function enemyTurn(note,mult){const pl=p();const a=armor(pl);const raw=rand(enemy.damage[0],enemy.damage[1]);const dmg=Math.max(0,Math.floor((raw-Number(a.defense||0))*mult));pl.hp-=dmg;if(pl.hp<=0){pl.hp=Math.max(1,Math.floor(Number(pl.maxHp||20)*.45));save(pl);return outcome('Thrown Back to Ashmere',`${enemy.name} overwhelms you. You wake near Ashmere wounded, alive, and angry.`, 'Defeat');}save(pl);renderBattle(`${note} ${enemy.name} deals ${dmg} damage.`);}
-  function win(text){const pl=p();inv(pl,enemy.reward,1);if(Math.random()<.5)inv(pl,'roadToken',1);state(pl).progress=clamp(Number(state(pl).progress||0)+1,0,5);const lvl=addXP(pl,55);save(pl);outcome(`${enemy.name} Defeated`,`${text}\n\nRecovered: ${itemName(enemy.reward)} x1.${lvl?'\n\nLevel up!':''}`,'Victory');}
-
-  function outcome(title,text,kicker){
-    document.getElementById('root').innerHTML=`<div class="shell"><section class="panel v087-road"><div class="v087-outcome"><div class="v080-kicker">${esc(kicker)}</div><h2>${esc(title)}</h2><p>${esc(text)}</p><div class="v087-actions"><button class="btn primary" id="continueRoad">Continue the Road</button><button class="btn" id="roadHub">Choose Pace</button><button class="btn" id="town">Return to Ashmere</button></div></div></section></div>`;
-    document.getElementById('continueRoad').onclick=()=>roll('normal'); document.getElementById('roadHub').onclick=()=>renderHub(); document.getElementById('town').onclick=ret;
-  }
-
-  function intercept(){
-    const btns=[...document.querySelectorAll('button,.v080-town-card,.v080-town-action')];
-    btns.forEach(btn=>{
-      const txt=(btn.textContent||'').toLowerCase();
-      if(btn.dataset.v087Road==='1')return;
-      if(txt.includes('travel the old road')||txt.includes('explore the first road')){btn.dataset.v087Road='1';btn.onclick=(e)=>{e.preventDefault?.();e.stopPropagation?.();start();};}
-    });
-  }
-  window.LegendRoadControllerV087={start,renderHub};
-  const rt=RT(); if(rt?.onRender)rt.onRender(intercept); else if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',intercept); else intercept();
+// LEGEND v0.9.3 - Road Controller
+// Old Road travel with D20 checks, encounter art, HP bars, action log, and clean Ashmere return.
+(()=>{
+const RT=()=>window.LegendRuntimeV080||null,ROADS=()=>window.LegendRoadsV087||{},ASSETS=()=>window.LegendAssetsV090||{};let enemy=null,currentRoad='oldRoad',combatLog=[],guarded=false;
+function esc(s){return String(s==null?'':s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function p(){return RT()?.loadPlayer?.()||null;}function save(pl){RT()?.savePlayer?.(pl);}function ret(){RT()?.returnToAshmere?.();}function road(){return ROADS()[currentRoad]||ROADS().oldRoad||{checks:[],finds:[],enemies:[]};}function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a;}function d20(){return rand(1,20);}function pick(a){return a&&a.length?a[Math.floor(Math.random()*a.length)]:null;}function inv(pl,k,a){pl.inventory=pl.inventory||{};pl.inventory[k]=Number(pl.inventory[k]||0)+a;}function clamp(n,a,b){return Math.max(a,Math.min(b,n));}function weapon(pl){return (window.LEGEND_DATA?.weapons||[]).find(w=>w.id===pl.weapon)||{name:pl.weapon||'Hands',min:1,max:3};}function armor(pl){return (window.LEGEND_DATA?.armors||[]).find(a=>a.id===pl.armor)||{name:pl.armor||'None',defense:0};}function itemName(k){return window.LEGEND_DATA?.itemNames?.[k]||k;}function roadBg(){return ASSETS().locations?.oldRoad||'assets/locations/roads/location_old_road_main_v1.jpg';}function enemyArt(n){return ASSETS().byName?.(n)||'';}function hpPct(h,m){return clamp(Math.round((Number(h||0)/Math.max(1,Number(m||1)))*100),0,100);}
+function state(pl){pl.flags=pl.flags||{};pl.flags.roadV087=pl.flags.roadV087||{progress:0,trips:0};return pl.flags.roadV087;}
+function addXP(pl,n){pl.xp=Number(pl.xp||0)+n;pl.xpUntil=Number(pl.xpUntil||420)-n;if(pl.xpUntil<=0){pl.level=Number(pl.level||1)+1;pl.xpUntil=420+pl.level*110;pl.maxHp=Number(pl.maxHp||30)+22;pl.hp=pl.maxHp;return true;}return false;}
+function score(pl,skill){const cls=window.LEGEND_DATA?.classes?.[pl.className]?.mod||{},org=window.LEGEND_DATA?.origins?.[pl.origin]?.bonus||{},keep=window.LEGEND_DATA?.keepsakes?.[pl.keepsake]?.bonus||{},bg90=pl.creationV090?.bonuses||{},bg70=pl.creationV070?.bonuses||{};return Number(cls[skill]||0)+Number(org[skill]||0)+Number(keep[skill]||0)+Number(bg90[skill]||0)+Number(bg70[skill]||0);}
+function attackBonus(pl){return Math.max(1,Number(pl.level||1)+score(pl,'strength')+Math.floor(score(pl,'survival')/2));}function playerAC(pl){return 10+Number(armor(pl).defense||0)+Math.max(0,Math.floor(score(pl,'survival')/2));}function enemyBonus(e){const n=String(e?.name||'').toLowerCase();if(n.includes('wisp'))return 5;if(n.includes('wolf'))return 4;if(n.includes('goblin'))return 3;return 3;}function enemyDC(e){return 10+enemyBonus(e)+Math.floor(Number(e?.maxHp||24)/18);}function damageRoll(pl,nat){const w=weapon(pl),base=rand(Number(w.min||1),Number(w.max||3)),bonus=Math.max(0,Math.floor(score(pl,'strength')/2));return nat===20?base+bonus+rand(4,8):base+bonus;}function pushLog(line){combatLog.unshift(line);combatLog=combatLog.slice(0,6);}
+function sceneHTML(){return `<div class="v091-road-scene"><img src="${esc(roadBg())}" alt="" onerror="this.style.display='none'"><div class="v091-road-fade"></div><div class="v091-road-lantern"></div></div>`;}function progressHTML(n){let out='<div class="v087-progress">';for(let i=0;i<5;i++)out+=`<span class="v087-step ${i<n?'done':''}"></span>`;return out+'</div>';}function statusHTML(pl){const st=state(pl);return `<div class="v087-status"><div class="v087-stat"><span>HP</span><strong>${Number(pl.hp||0)}/${Number(pl.maxHp||0)}</strong></div><div class="v087-stat"><span>Gold</span><strong>${Number(pl.gold||0)}g</strong></div><div class="v087-stat"><span>Road</span><strong>${Number(st.progress||0)}/5</strong></div><div class="v087-stat"><span>Proof</span><strong>${Number(pl.inventory?.roadToken||0)} Tokens</strong></div></div>`;}
+function start(){const pl=p();if(!pl)return;const st=state(pl);st.trips=Number(st.trips||0)+1;save(pl);renderHub('The gate closes behind you. Ashmere becomes lantern light in the fog, and the Old Road waits for your pace.');}
+function renderHub(note=''){const pl=p();if(!pl)return;const r=road(),st=state(pl);document.getElementById('root').innerHTML=`<div class="shell"><section class="panel v087-road v091-road-menu"><div class="v087-road-hero">${sceneHTML()}<div class="v080-kicker">Old Road Route</div><h2>${esc(r.name)}</h2><p>${esc(note||r.description)}</p>${progressHTML(Number(st.progress||0))}</div>${statusHTML(pl)}<div class="v091-route-board"><article><span>Careful</span><strong>Lower DCs, more checks.</strong></article><article><span>Standard</span><strong>Balanced road events.</strong></article><article><span>Bold</span><strong>Higher risk, faster proof.</strong></article></div><div class="v087-options"><button class="v087-card" id="careful"><strong>Travel Carefully</strong><span>Scout the mud, listen for movement, and take fewer risks.</span><em>Check / Find focused</em></button><button class="v087-card" id="normal"><strong>Follow the Road</strong><span>Keep a steady pace through choices, discoveries, and danger.</span><em>Mixed events</em></button><button class="v087-card" id="bold"><strong>Press Ahead</strong><span>Push through the fog. More danger, but faster proof.</span><em>Battle / reward focused</em></button></div><div class="actions"><button class="btn" id="returnTown">Return to Ashmere</button></div></section></div>`;document.getElementById('careful').onclick=()=>roll('careful');document.getElementById('normal').onclick=()=>roll('normal');document.getElementById('bold').onclick=()=>roll('bold');document.getElementById('returnTown').onclick=ret;}
+function roll(mode){const n=Math.random();if(mode==='bold'&&n<.58)return battle();if(mode==='careful'&&n<.50)return checkEvent(mode);if(n<.35)return checkEvent(mode);if(n<.62)return findEvent(mode);return battle();}function checkDC(mode,ev){const base=Number(ev?.dc||12);if(mode==='careful')return Math.max(8,base-2);if(mode==='bold')return base+2;return base;}
+function checkEvent(mode){const pl=p();if(!pl)return;const ev=pick(road().checks);if(!ev)return findEvent(mode);const modifier=score(pl,ev.skill),dc=checkDC(mode,ev);renderDiceCheck({ev,modifier,dc,mode});}
+function renderDiceCheck(ctx){const failRisk=ctx.mode==='bold'?'Hard failure may cost HP and supplies.':(ctx.ev.risk||'Road danger');document.getElementById('root').innerHTML=`<div class="shell"><section class="panel v087-road v093-d20-check"><div class="v087-outcome"><div class="v080-kicker">D20 Road Check</div><h2>${esc(ctx.ev.title)}</h2><p>${esc(ctx.ev.text)}</p><div class="v091-check-grid"><div class="v091-die-wrap"><button class="v091-die v093-d20" id="rollDie" aria-label="Roll the D20 road check"><span>d20</span></button><small>Click the die to roll</small></div><div class="v091-check-card"><span>Skill</span><strong>${esc(ctx.ev.skill.toUpperCase())}</strong><span>Modifier</span><strong>${ctx.modifier>=0?'+':''}${ctx.modifier}</strong><span>DC</span><strong>${ctx.dc}</strong><span>Failure Risk</span><strong>${esc(failRisk)}</strong></div></div><div class="v091-roll-text" id="rollText">The road waits for the die to fall.</div><div class="v087-actions"><button class="btn" id="backRoad">Back to Route</button><button class="btn" id="town">Return to Ashmere</button></div></div></section></div>`;document.getElementById('backRoad').onclick=()=>renderHub();document.getElementById('town').onclick=ret;document.getElementById('rollDie').onclick=()=>animateDie(ctx);}
+function animateDie(ctx){const die=document.getElementById('rollDie'),text=document.getElementById('rollText');if(!die||die.dataset.rolling==='1')return;die.dataset.rolling='1';die.classList.add('rolling');let ticks=0;const timer=setInterval(()=>{ticks++;die.querySelector('span').textContent=rand(1,20);text.textContent=ticks<8?'The d20 clatters across wet stone...':'The die slows.';if(ticks>=12){clearInterval(timer);const natural=d20(),total=natural+ctx.modifier;die.querySelector('span').textContent=natural;die.classList.remove('rolling');resolveCheck(ctx,natural,total);}},90);}
+function resolveCheck(ctx,natural,total){const pl=p();if(!pl)return;let result='',kicker='Mixed Result';if(natural===20){state(pl).progress=clamp(Number(state(pl).progress||0)+2,0,5);inv(pl,'roadToken',1);addXP(pl,45);kicker='Critical Success';result=`Natural 20! ${ctx.ev.success} You also mark extra progress and recover a Road Token.`;}else if(natural===1){const loss=rand(5,11);pl.hp=Math.max(1,Number(pl.hp||1)-loss);if(Number(pl.inventory?.food||0)>0)pl.inventory.food-=1;kicker='Botch';result=`Natural 1. ${ctx.ev.fail} You lose ${loss} HP and the road burns a supply if you had one.`;}else if(total>=ctx.dc){state(pl).progress=clamp(Number(state(pl).progress||0)+1,0,5);if(Math.random()<.24)inv(pl,'roadToken',1);addXP(pl,25);kicker='Success';result=ctx.ev.success;}else{const loss=rand(2,7);pl.hp=Math.max(1,Number(pl.hp||1)-loss);result=`${ctx.ev.fail} You lose ${loss} HP.`;}save(pl);setTimeout(()=>outcome(ctx.ev.title,`${ctx.ev.text}\n\nD20: ${natural} ${ctx.modifier>=0?'+':'-'} ${Math.abs(ctx.modifier)} = ${total} vs DC ${ctx.dc}\n\n${result}`,kicker),450);}
+function findEvent(mode){const pl=p();if(!pl)return;const f=pick(road().finds);if(!f)return battle();inv(pl,f.item,f.amount);state(pl).progress=clamp(Number(state(pl).progress||0)+1,0,5);addXP(pl,15);save(pl);outcome(f.title,`${f.text}\n\nRecovered: ${itemName(f.item)} x${f.amount}.`,'Discovery');}
+function battle(){const pl=p(),base=pick(road().enemies);if(!pl||!base)return renderHub('The road is quiet for now.');enemy={...base,hp:rand(base.hp[0],base.hp[1])};enemy.maxHp=enemy.hp;enemy.ac=enemyDC(enemy);combatLog=[base.text];guarded=false;renderBattle();}
+function hpBar(label,hp,max){const pct=hpPct(hp,max);return `<div class="v093-hp"><div><span>${esc(label)}</span><strong>${Number(hp||0)}/${Number(max||0)}</strong></div><i style="width:${pct}%"></i></div>`;}
+function renderBattle(){const pl=p();if(!pl||!enemy)return;const w=weapon(pl),a=armor(pl),art=enemyArt(enemy.name),logHTML=combatLog.map(line=>`<li>${esc(line)}</li>`).join('');document.getElementById('root').innerHTML=`<div class="shell"><section class="panel v087-road v093-encounter"><div class="v080-kicker">D20 Road Encounter</div><div class="v093-battle-grid"><aside class="v093-enemy-frame"><div class="v093-enemy-name">${esc(enemy.name)}</div>${art?`<img class="v093-enemy-art" src="${esc(art)}" alt="${esc(enemy.name)}" onerror="this.style.display='none'">`:`<div class="v087-enemy">${window.LegendEnemySpritesV080?.spriteFor?.(enemy.name)||''}</div>`}${hpBar('Enemy HP',enemy.hp,enemy.maxHp)}</aside><main class="v093-combat-panel"><h2>${esc(enemy.name)} blocks the road.</h2><p>Roll attacks against the enemy DC. Guard to soften the next hit, drink a potion, or fall back toward Ashmere.</p><div class="v093-sheet-row"><div class="v093-mini-stat"><span>Your HP</span><strong>${Number(pl.hp||0)}/${Number(pl.maxHp||0)}</strong></div><div class="v093-mini-stat"><span>AC</span><strong>${playerAC(pl)}</strong></div><div class="v093-mini-stat"><span>Attack</span><strong>+${attackBonus(pl)}</strong></div><div class="v093-mini-stat"><span>Enemy DC</span><strong>${enemy.ac}</strong></div><div class="v093-mini-stat"><span>Weapon</span><strong>${esc(w.name)}</strong></div><div class="v093-mini-stat"><span>Armor</span><strong>${esc(a.name)}</strong></div></div>${hpBar('Your HP',pl.hp,pl.maxHp)}<div class="v093-actions"><button class="btn primary" id="atk">Roll Attack</button><button class="btn" id="guard">Guard</button><button class="btn" id="potion">Potion</button><button class="btn" id="flee">Fall Back</button></div><ol class="v093-combat-log">${logHTML}</ol></main></div></section></div>`;document.getElementById('atk').onclick=attack;document.getElementById('guard').onclick=guard;document.getElementById('potion').onclick=potion;document.getElementById('flee').onclick=flee;}
+function attack(){const pl=p();if(!pl||!enemy)return;const natural=d20(),bonus=attackBonus(pl),total=natural+bonus;if(natural===1){pushLog('Attack roll: natural 1. Your swing goes wide and leaves you exposed.');return enemyTurn(1.25);}if(natural===20||total>=enemy.ac){const dmg=damageRoll(pl,natural);enemy.hp-=dmg;pushLog(`Attack roll: ${natural} + ${bonus} = ${total} vs DC ${enemy.ac}. ${natural===20?'Critical hit! ':''}You deal ${dmg} damage.`);if(enemy.hp<=0)return win(`${natural===20?'A perfect strike ends it.':'Your strike lands true.'} The ${enemy.name} collapses into the mud.`);return enemyTurn(1);}pushLog(`Attack roll: ${natural} + ${bonus} = ${total} vs DC ${enemy.ac}. Miss.`);enemyTurn(1);}
+function guard(){guarded=true;pushLog('You raise your guard and brace for the next hit.');enemyTurn(.45);}function potion(){const pl=p();if(!pl)return;if(Number(pl.inventory?.potion||0)<=0){pushLog('No potion left.');return renderBattle();}pl.inventory.potion-=1;pl.hp=Math.min(Number(pl.maxHp||pl.hp||1),Number(pl.hp||1)+35);save(pl);pushLog('You drink a potion and recover 35 HP.');enemyTurn(1);}function flee(){const pl=p(),natural=d20(),total=natural+score(pl||{},'survival');if(natural===20||total>=12)return outcome('You Fall Back',`Retreat roll: ${natural}. You break away and return to a safer stretch of the road.`,'Escaped');pushLog(`Retreat roll: ${natural}. The road gives you no room.`);enemyTurn(1.1);}
+function enemyTurn(mult){const pl=p();if(!pl||!enemy)return;const bonus=enemyBonus(enemy),natural=d20(),total=natural+bonus,ac=playerAC(pl);if(natural===1){guarded=false;pushLog(`${enemy.name} attack: natural 1. It stumbles and misses.`);save(pl);return renderBattle();}if(natural===20||total>=ac){const raw=rand(enemy.damage[0],enemy.damage[1])+(natural===20?rand(3,7):0),reduction=Number(armor(pl).defense||0)+(guarded?4:0),dmg=Math.max(0,Math.floor((raw-reduction)*mult));pl.hp-=dmg;guarded=false;pushLog(`${enemy.name} attack: ${natural} + ${bonus} = ${total} vs AC ${ac}. ${natural===20?'Critical hit. ':''}${dmg} damage.`);if(pl.hp<=0){pl.hp=Math.max(1,Math.floor(Number(pl.maxHp||20)*.45));save(pl);return outcome('Thrown Back to Ashmere',`${enemy.name} overwhelms you. You wake near Ashmere wounded, alive, and angry.`,'Defeat');}save(pl);return renderBattle();}guarded=false;pushLog(`${enemy.name} attack: ${natural} + ${bonus} = ${total} vs AC ${ac}. Miss.`);save(pl);renderBattle();}
+function win(text){const pl=p();if(!pl||!enemy)return;inv(pl,enemy.reward,1);if(Math.random()<.5)inv(pl,'roadToken',1);state(pl).progress=clamp(Number(state(pl).progress||0)+1,0,5);const lvl=addXP(pl,55);save(pl);outcome(`${enemy.name} Defeated`,`${text}\n\nRecovered: ${itemName(enemy.reward)} x1.${lvl?'\n\nLevel up!':''}`,'Victory');}
+function outcome(title,text,kicker){document.getElementById('root').innerHTML=`<div class="shell"><section class="panel v087-road"><div class="v087-outcome"><div class="v080-kicker">${esc(kicker)}</div><h2>${esc(title)}</h2><p>${esc(text)}</p><div class="v087-actions"><button class="btn primary" id="continueRoad">Continue the Road</button><button class="btn" id="roadHub">Choose Pace</button><button class="btn" id="town">Return to Ashmere</button></div></div></section></div>`;document.getElementById('continueRoad').onclick=()=>roll('normal');document.getElementById('roadHub').onclick=()=>renderHub();document.getElementById('town').onclick=ret;}
+function intercept(){[...document.querySelectorAll('button,.v080-town-card,.v080-town-action')].forEach(btn=>{const txt=(btn.textContent||'').toLowerCase();if(btn.dataset.v087Road==='1')return;if(txt.includes('travel the old road')||txt.includes('explore the first road')){btn.dataset.v087Road='1';btn.onclick=e=>{e.preventDefault?.();e.stopPropagation?.();start();};}});}
+window.LegendRoadControllerV087={start,renderHub};const rt=RT();if(rt?.onRender)rt.onRender(intercept);else if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',intercept);else intercept();
 })();
