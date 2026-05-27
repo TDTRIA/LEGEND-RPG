@@ -1,33 +1,17 @@
 // LEGEND: Roads of Ashmere v0.9.x - Slim Game Bootstrap
 // Owns only title/start/settings. Ashmere is owned by ashmere-controller-v099.js.
 (() => {
-  const D = () => window.LEGEND_DATA || {};
   const S = () => window.LegendStorage || {};
-  const UI = () => window.LegendUI || {};
 
   function esc(s){
     return String(s == null ? '' : s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   }
 
-  function root(){
-    return document.getElementById('root');
-  }
-
-  function loadPlayer(){
-    return S().loadPlayer ? S().loadPlayer() : null;
-  }
-
-  function saveSettings(settings){
-    if(S().saveSettings) S().saveSettings(settings);
-  }
-
-  function loadSettings(){
-    return S().loadSettings ? S().loadSettings() : { largeText:false, boldText:false, highContrast:false, reducedMotion:false, simpleAscii:false, spacious:false, readableFont:false };
-  }
-
-  function applySettings(){
-    if(S().applySettings) S().applySettings();
-  }
+  function root(){ return document.getElementById('root'); }
+  function loadPlayer(){ return S().loadPlayer ? S().loadPlayer() : null; }
+  function saveSettings(settings){ if(S().saveSettings) S().saveSettings(settings); }
+  function loadSettings(){ return S().loadSettings ? S().loadSettings() : { largeText:false, boldText:false, highContrast:false, reducedMotion:false, simpleAscii:false, spacious:false, readableFont:false }; }
+  function applySettings(){ if(S().applySettings) S().applySettings(); }
 
   function title(){
     applySettings();
@@ -56,12 +40,7 @@
     document.getElementById('new').onclick = newTraveler;
     document.getElementById('settings').onclick = settings;
     const del = document.getElementById('delete');
-    if(del) del.onclick = () => {
-      if(confirm('Delete browser save?')){
-        S().deleteSaves?.();
-        title();
-      }
-    };
+    if(del) del.onclick = () => { if(confirm('Delete browser save?')){ S().deleteSaves?.(); title(); } };
   }
 
   function continueGame(){
@@ -70,7 +49,6 @@
     player.town = 'Ashmere';
     S().savePlayer?.(player);
     if(window.LegendAshmereV099?.renderAshmere) return window.LegendAshmereV099.renderAshmere();
-    if(window.LegendTownControllerV080?.renderTown) return window.LegendTownControllerV080.renderTown('ashmere');
     root().innerHTML = `<div class="shell"><section class="panel"><h2>Ashmere is loading...</h2><p>Try a hard refresh if this screen does not change.</p><div class="actions"><button class="btn primary" id="backTitle">Back to Title</button></div></section></div>`;
     document.getElementById('backTitle').onclick = title;
   }
@@ -82,34 +60,39 @@
   }
 
   function settings(){
-    const settings = loadSettings();
+    const current = loadSettings();
     const rows = [
-      ['largeText','Large Text'],
-      ['boldText','Bold Text'],
-      ['highContrast','High Contrast'],
-      ['reducedMotion','Reduced Motion'],
-      ['spacious','Spacious Layout'],
-      ['readableFont','Readable Font']
+      ['largeText','Large Text','Increases base UI text size for easier reading.'],
+      ['boldText','Bold Text','Adds stronger text weight across menus and panels.'],
+      ['highContrast','High Contrast','Boosts contrast for darker rooms and bright text.'],
+      ['reducedMotion','Reduced Motion','Reduces animation and motion effects where supported.'],
+      ['spacious','Spacious Layout','Adds breathing room for touch and mobile play.'],
+      ['readableFont','Readable Font','Uses a simpler font treatment for long reading sessions.']
     ];
     root().innerHTML = `
-      <div class="shell">
-        <section class="panel">
-          <div class="kicker">Settings</div>
-          <h2>Accessibility</h2>
-          <p>These settings apply to the current browser.</p>
-          <div class="list">
-            ${rows.map(([key,label]) => `<label class="shop"><input type="checkbox" data-setting="${key}" ${settings[key] ? 'checked' : ''}> <strong>${label}</strong></label>`).join('')}
-          </div>
-          <div class="actions"><button class="btn primary" id="saveSettings">Save Settings</button><button class="btn" id="backTitle">Back to Title</button></div>
-        </section>
-      </div>`;
+      <main class="settings09x">
+        <div class="settings09x-wrap">
+          <section class="settings09x-hero">
+            <div class="settings09x-kicker">LEGEND v0.9.x</div>
+            <h1>Settings</h1>
+            <p>Adjust readability and comfort for the current browser. These settings are saved locally and apply immediately after saving.</p>
+          </section>
+          <section class="settings09x-grid">
+            ${rows.map(([key,label,desc]) => `<label class="settings09x-toggle"><input type="checkbox" data-setting="${key}" ${current[key] ? 'checked' : ''}><i class="settings09x-switch"></i><span><strong>${label}</strong><span>${desc}</span></span></label>`).join('')}
+          </section>
+          <p class="settings09x-note"><strong>Note:</strong> Accessibility settings do not change your save file, stats, or progress. They only affect presentation on this device.</p>
+          <div class="settings09x-actions"><button class="settings09x-btn primary" id="saveSettings">Save Settings</button><button class="settings09x-btn" id="backTitle">Back to Title</button>${loadPlayer()?'<button class="settings09x-btn" id="backGame">Back to Ashmere</button>':''}</div>
+        </div>
+      </main>`;
     document.getElementById('saveSettings').onclick = () => {
-      const next = {...settings};
+      const next = {...current};
       document.querySelectorAll('[data-setting]').forEach(input => next[input.dataset.setting] = input.checked);
       saveSettings(next);
-      title();
+      settings();
     };
     document.getElementById('backTitle').onclick = title;
+    const backGame = document.getElementById('backGame');
+    if(backGame) backGame.onclick = continueGame;
   }
 
   window.LegendGameBootstrap = { title, continueGame, newTraveler, settings };
