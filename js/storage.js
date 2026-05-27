@@ -26,6 +26,8 @@ window.LegendStorage = (() => {
     p.personalityLabel = p.personalityLabel || 'Kind-Hearted';
     p.creationV094 = p.creationV094 || { bonuses:{} };
     p.creationV094.bonuses = p.creationV094.bonuses || {};
+    p.creationV090 = p.creationV090 || {};
+    p.creationV090.bonuses = {...(p.creationV090.bonuses || {}), ...(p.creationV094.bonuses || {})};
     p.inventory = p.inventory || {};
     Object.keys(D.itemNames).forEach(k => p.inventory[k] ??= 0);
     p.ownedWeapons = p.ownedWeapons || { hand:1 };
