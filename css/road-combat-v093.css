@@ -1,0 +1,200 @@
+/* LEGEND: Roads of Ashmere - D20 road encounter support v0.9.3 */
+.v093-d20-check .v087-outcome,
+.v093-encounter{
+  border-color:rgba(255,211,105,.34)!important;
+  background:linear-gradient(180deg,rgba(9,18,13,.90),rgba(0,0,0,.40))!important;
+}
+.v093-d20-check .v091-check-card strong{
+  font-size:1.05rem;
+}
+.v093-d20{
+  position:relative;
+  isolation:isolate;
+  letter-spacing:-.08em;
+  text-transform:uppercase;
+}
+.v093-d20:after{
+  content:"";
+  position:absolute;
+  inset:12px;
+  border:1px solid rgba(36,24,3,.32);
+  border-radius:20px;
+  pointer-events:none;
+}
+.v093-battle-grid{
+  display:grid;
+  grid-template-columns:minmax(260px,42%) minmax(0,1fr);
+  gap:18px;
+  align-items:stretch;
+  margin-top:12px;
+}
+.v093-enemy-frame,
+.v093-combat-panel{
+  border:1px solid rgba(255,211,105,.22);
+  border-radius:24px;
+  background:linear-gradient(180deg,rgba(11,18,13,.78),rgba(0,0,0,.34));
+  box-shadow:inset 0 0 26px rgba(255,211,105,.035),0 16px 34px rgba(0,0,0,.24);
+  overflow:hidden;
+}
+.v093-enemy-frame{
+  position:relative;
+  min-height:430px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+}
+.v093-enemy-name{
+  position:absolute;
+  z-index:2;
+  top:14px;
+  left:14px;
+  right:14px;
+  padding:10px 12px;
+  border:1px solid rgba(255,211,105,.26);
+  border-radius:16px;
+  background:rgba(0,0,0,.46);
+  color:var(--legend-gold,#ffd369);
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  text-shadow:0 2px 12px rgba(0,0,0,.65);
+}
+.v093-enemy-art{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  filter:saturate(.96) contrast(1.08) brightness(.82);
+  transform:scale(1.02);
+}
+.v093-enemy-frame:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(2,4,3,.12),rgba(2,4,3,.28) 48%,rgba(2,4,3,.88));
+  pointer-events:none;
+}
+.v093-enemy-frame .v093-hp{
+  position:relative;
+  z-index:3;
+  margin:0 14px 14px;
+}
+.v093-combat-panel{
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.v093-combat-panel h2{
+  margin:.1rem 0 0;
+}
+.v093-combat-panel p{
+  margin:0;
+  line-height:1.5;
+}
+.v093-sheet-row{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+}
+.v093-mini-stat{
+  border:1px solid rgba(125,255,173,.16);
+  border-radius:16px;
+  background:rgba(0,0,0,.28);
+  padding:10px;
+  min-height:66px;
+}
+.v093-mini-stat span{
+  display:block;
+  color:#9eb7a7;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  font-size:.68rem;
+}
+.v093-mini-stat strong{
+  display:block;
+  color:var(--legend-gold,#ffd369);
+  margin-top:4px;
+  font-size:1rem;
+}
+.v093-actions{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+}
+.v093-actions .btn{
+  min-height:44px;
+}
+.v093-combat-log{
+  list-style:none;
+  margin:0;
+  padding:12px;
+  border:1px solid rgba(255,211,105,.18);
+  border-radius:18px;
+  background:rgba(0,0,0,.30);
+  color:#eaffef;
+  display:grid;
+  gap:8px;
+  max-height:220px;
+  overflow:auto;
+}
+.v093-combat-log li{
+  padding:8px 9px;
+  border-radius:12px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(125,255,173,.08);
+  line-height:1.35;
+}
+.v093-hp{
+  border:1px solid rgba(255,211,105,.22);
+  border-radius:999px;
+  background:rgba(0,0,0,.46);
+  padding:4px;
+  overflow:hidden;
+  position:relative;
+  min-height:34px;
+}
+.v093-hp div{
+  position:relative;
+  z-index:2;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:4px 10px;
+  color:#eaffef;
+  font-size:.82rem;
+  font-weight:800;
+  text-shadow:0 2px 8px rgba(0,0,0,.8);
+}
+.v093-hp span{
+  color:#d9efe1;
+  text-transform:uppercase;
+  letter-spacing:.10em;
+  font-size:.68rem;
+}
+.v093-hp strong{
+  color:var(--legend-gold,#ffd369);
+}
+.v093-hp i{
+  position:absolute;
+  inset:4px auto 4px 4px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#64221f,#bf7f2a,#ffd369);
+  box-shadow:0 0 18px rgba(255,211,105,.24);
+  transition:width .22s ease;
+}
+@media (max-width:820px){
+  .v093-battle-grid{grid-template-columns:1fr;}
+  .v093-enemy-frame{min-height:300px;}
+  .v093-sheet-row{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .v093-actions{grid-template-columns:repeat(2,minmax(0,1fr));}
+}
+@media (max-width:520px){
+  .v093-combat-panel{padding:14px;}
+  .v093-sheet-row{grid-template-columns:1fr;}
+  .v093-actions{grid-template-columns:1fr;}
+  .v093-enemy-frame{min-height:260px;}
+  .v093-d20{width:112px;height:112px;font-size:3.3rem;}
+}
