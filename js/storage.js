@@ -19,6 +19,13 @@ window.LegendStorage = (() => {
     p.version = D.VERSION;
     p.origin = p.origin || 'Lost Squire';
     p.keepsake = p.keepsake || 'Rusty Charm';
+    p.gender = p.gender || 'unspoken';
+    p.genderLabel = p.genderLabel || 'Unspoken';
+    p.pronouns = p.pronouns || 'they/them';
+    p.personality = p.personality || 'kind';
+    p.personalityLabel = p.personalityLabel || 'Kind-Hearted';
+    p.creationV094 = p.creationV094 || { bonuses:{} };
+    p.creationV094.bonuses = p.creationV094.bonuses || {};
     p.inventory = p.inventory || {};
     Object.keys(D.itemNames).forEach(k => p.inventory[k] ??= 0);
     p.ownedWeapons = p.ownedWeapons || { hand:1 };
@@ -50,8 +57,10 @@ window.LegendStorage = (() => {
       firstRoadEvent:!!p.flags.firstRoadEvent,
       firstToken:!!p.flags.firstToken,
       firstResource:!!p.flags.firstResource,
-      hiddenTurnoffFound:!!p.flags.hiddenTurnoffFound
+      hiddenTurnoffFound:!!p.flags.hiddenTurnoffFound,
+      introV094Complete:!!p.flags.introV094Complete
     });
+    p.flags.tutorialStep = p.flags.tutorialStep || (p.flags.talkedToMara ? 'prepare' : 'people');
     p.skills = p.skills || baseSkills();
     p.mastery = p.mastery || {};
     Object.keys(p.skills).forEach(k => p.mastery[k] ??= 0);
