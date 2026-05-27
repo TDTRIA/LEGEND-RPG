@@ -9,41 +9,78 @@
   function saveSettings(settings){ if(S().saveSettings) S().saveSettings(settings); }
   function loadSettings(){ return S().loadSettings ? S().loadSettings() : { largeText:false, boldText:false, highContrast:false, reducedMotion:false, simpleAscii:false, spacious:false, readableFont:false }; }
   function applySettings(){ if(S().applySettings) S().applySettings(); }
+  function profile(){ return window.LegendAccountV09x?.getProfile?.() || null; }
 
   const paths={continue:'M5 12h12M13 6l6 6-6 6',new:'M12 5v14M5 12h14',settings:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0-5v3m0 12v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M3 12h3m12 0h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1',account:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c1.4-4.2 4.5-6.5 8-6.5s6.6 2.3 8 6.5',feedback:'M4 5h16v11H8l-4 4V5z',delete:'M6 7h12M9 7V5h6v2m-7 3v9m4-9v9m4-9v9',text:'M5 7h14M5 12h14M5 17h10',bold:'M8 5h5a4 4 0 0 1 0 8H8zM8 13h6a4 4 0 0 1 0 8H8z',contrast:'M12 3a9 9 0 1 0 0 18V3z',motion:'M4 12h10M10 6l6 6-6 6',space:'M4 8h16M4 16h16M8 4v16M16 4v16',font:'M4 19l6-14h4l6 14M8 14h8'};
   const icon=k=>`<span class="game-menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[k]||paths.continue}"/></svg></span>`;
   const menuButton=(id,kind,label,desc,ic)=>`<button class="btn ${kind||''} game-menu-btn" id="${id}">${icon(ic)}<span><strong>${label}</strong><small>${desc}</small></span></button>`;
   const menuLink=(href,label,desc,ic)=>`<a class="btn game-menu-btn" href="${href}">${icon(ic)}<span><strong>${label}</strong><small>${desc}</small></span></a>`;
+  const stat=(label,value)=>`<div class="title-status-stat"><span>${label}</span><strong>${value}</strong></div>`;
+
+  function travelerSummary(player){
+    if(!player) return `<div class="title-active-empty"><strong>No active traveler</strong><span>Create a traveler to begin the Ashmere vertical slice.</span></div>`;
+    const cls = player.className || player.class || 'Traveler';
+    const day = player.day || 1;
+    const tokens = Number(player.inventory?.roadToken || 0);
+    const town = player.town || 'Ashmere';
+    return `
+      <div class="title-active-traveler">
+        <span class="title-active-label">Active Traveler</span>
+        <strong>${esc(player.username || 'Unnamed Traveler')}</strong>
+        <small>${esc(cls)} • ${esc(town)} • Day ${day}</small>
+        <div class="title-mini-stats">
+          ${stat('Road Tokens', tokens)}
+          ${stat('Town Trust', Number(player.townTrust?.Ashmere || 0))}
+          ${stat('Road Danger', Number(player.roadDanger || 1))}
+        </div>
+      </div>`;
+  }
+
+  function accountSummary(profileData){
+    const connected = !!window.LegendSupabaseV09x?.client;
+    if(profileData){
+      return `<strong>${esc(profileData.displayName || 'Local Profile')}</strong><span>${connected ? 'Supabase connected' : 'Local profile ready • cloud hook pending'}</span>`;
+    }
+    return `<strong>${connected ? 'Supabase Ready' : 'Local Play Ready'}</strong><span>Open Account / Profile to reserve a profile name.</span>`;
+  }
 
   function title(){
     applySettings();
     const player = loadPlayer();
+    const prof = profile();
     root().innerHTML = `
-      <div class="title-wrap">
+      <div class="title-wrap title-v09x-final">
         <div class="title-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-        <section class="title-card">
-          <div>
+        <section class="title-card title-card-final">
+          <div class="title-hero-panel">
             <div class="title-brand-mark">
               <img src="assets/ui/logos/logo_legend_emblem_v1.png" alt="LEGEND emblem" onerror="this.style.display='none'">
-              <span class="title-brand-text"><strong>Roads of Ashmere</strong><span>v0.9.x live build</span></span>
+              <span class="title-brand-text"><strong>Roads of Ashmere</strong><span>v0.9.x Ashmere vertical slice</span></span>
             </div>
-            <div>
-              <div class="kicker">LEGEND • Dark Fantasy RPG</div>
+            <div class="title-copy">
+              <div class="kicker">LEGEND • Dark Medieval Fantasy RPG</div>
               <h1 class="game-title">LEGEND</h1>
+              <p class="title-subtitle">Roads of Ashmere</p>
               <p class="title-lore">Ashmere waits at the edge of the Old Road. Choose a traveler, gather proof, and return before the fog remembers your name.</p>
             </div>
+            <div class="title-status-grid">
+              <article class="title-status-card title-status-account"><span>Account</span>${accountSummary(prof)}</article>
+              <article class="title-status-card"><span>Hub</span><strong>Ashmere</strong><em>Lantern Town of the Old Road</em></article>
+              <article class="title-status-card"><span>Build</span><strong>v0.9.x</strong><em>Polish pass, not 1.0</em></article>
+            </div>
+            ${travelerSummary(player)}
           </div>
-          <aside class="title-menu-panel">
+          <aside class="title-menu-panel title-menu-final">
             <h2>Main Menu</h2>
             <div class="actions">
               ${player ? menuButton('continue','primary',`Continue as ${esc(player.username)}`,'Return to Ashmere and resume the first-town loop.','continue') : ''}
-              ${menuButton('account','', 'Account / Profile','Sign in, create an account, and prepare cloud travelers.','account')}
+              ${menuButton('account','', 'Account / Profile', prof ? 'Manage your profile, active traveler, and cloud-save readiness.' : 'Create a local profile and prepare cloud travelers.', 'account')}
               ${menuButton('new','', 'New Traveler','Create a new traveler for Roads of Ashmere.','new')}
               ${menuButton('settings','', 'Settings / Accessibility','Adjust readability, contrast, spacing, and motion.','settings')}
               ${menuLink('feedback.html','Playtest Feedback','Send bugs, balance notes, and first-town impressions.','feedback')}
               ${player ? menuButton('delete','danger','Delete Local Save','Clear the local browser traveler save.','delete') : ''}
             </div>
-            <p class="small title-footer">Accounts and traveler slots are entering v0.9.x testing.</p>
+            <p class="small title-footer">Cloud saves remain in v0.9.x wiring; local traveler progress stays playable.</p>
           </aside>
         </section>
       </div>`;
