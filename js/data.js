@@ -1,7 +1,7 @@
 window.LEGEND_DATA = {
-  VERSION: 'v0.6.4',
-  SAVE_KEY: 'legend-recovered-build-v06',
-  OLD_KEYS: ['legend-recovered-build-v051','legend-recovered-build-v05','legend-recovered-build-v041','legend-recovered-build-v04','legend-recovered-build-v03','legend-recovered-build-v02'],
+  VERSION: 'v0.9.0',
+  SAVE_KEY: 'legend-roads-of-ashmere-v09',
+  OLD_KEYS: ['legend-recovered-build-v06','legend-recovered-build-v051','legend-recovered-build-v05','legend-recovered-build-v041','legend-recovered-build-v04','legend-recovered-build-v03','legend-recovered-build-v02'],
   classes: {
     Adventurer:{hp:110,gold:120,mod:{survival:1,luck:1},move:'Lucky Strike',desc:'Balanced survivor. Good for a first run.'},
     Warrior:{hp:140,gold:90,mod:{strength:3},move:'Cleave',desc:'High HP and better force checks.'},
@@ -12,7 +12,7 @@ window.LEGEND_DATA = {
   },
   origins: {
     'Lost Squire':{bonus:{strength:1},text:'You once carried a blade for someone braver than you.'},
-    'Runaway Apprentice':{bonus:{magic:1,lore:1},text:'You fled a teacher who knew too much about the Lost Build.'},
+    'Runaway Apprentice':{bonus:{magic:1,lore:1},text:'You fled a teacher who knew too much about the Old Road.'},
     'Debt-Bound Thief':{bonus:{thieving:1},gold:40,text:'Someone in Ashmere thinks you still owe them.'},
     "Archivist's Child":{bonus:{lore:2},text:'You learned to read records before you learned to swing a weapon.'},
     'Wandering Cook':{items:{food:3},bonus:{survival:1},text:'You know a road meal can save a life.'},
@@ -24,7 +24,7 @@ window.LEGEND_DATA = {
     'Bent Coin':{sellBonus:.12,text:'A coin no shopkeeper likes to refuse.'},
     'Cracked Tablet':{items:{rtab:2},bonus:{magic:1},text:'A runic shard from a lesson you forgot.'},
     'Dull Knife':{bonus:{thieving:2},text:'Bad steel, good enough for a lock.'},
-    'Cooked Ration':{items:{food:5},text:'A small meal from before the road collapsed.'}
+    'Cooked Ration':{items:{food:5},text:'A small meal from before the road darkened.'}
   },
   itemNames: {gmail:'Goblin Mail',hbone:'Huge Bones',rtab:'Runic Tablets',food:'Food',rfood:'Raw Food',bait:'Bait',potion:'Potions',camp:'Camp Supplies',fur:'Furs',gem:'Gemstones',log:'Logs',ore:'Ore',morb:'Magic Orbs',codeFragment:'Code Fragments',bellFragment:'Bell Fragments',roadToken:'Road Tokens'},
   prices: {gmail:300,hbone:550,rtab:250,food:100,rfood:60,bait:2,potion:200,camp:90,fur:200,gem:1000,log:275,ore:500,morb:15000,codeFragment:0,bellFragment:0,roadToken:0},
@@ -40,89 +40,16 @@ window.LEGEND_DATA = {
     {name:'Giant',glyph:'🗿',maxDamage:38,hp:[105,165],drop:['hbone',2,'Huge Bones'],trait:'Heavy',intent:['winds up a heavy blow','stomps the road','raises both fists']}
   ],
   ascii: {
-    title:'        /\\                 /\\\n       /  \\___ LEGEND ____/  \\\n      /_________________________\\\n      |       RECOVERED BUILD    |\n      |__________________________|',
-    ashmere:'        /\\____ ASHMERE ____/\\\n      /___________________________\\\n      | []   []   []   []   []   |\n      |      THE FIRST TOWN       |\n      |___________________________|',
-    road:'      ___|___ .   . ___|___\n  ____/   |   \\_____/   |   \\____\n      THE FIRST ROAD',
-    npc:'        .-"""-.\n       /  o o  \\\n       |   ^   |\n       |  \'-\'  |\n       \'-------\'',
-    keep:'        ______________________\n       /     THE HOLLOW KEEP    \\\n     /__________________________\\\n        ||  ||  ||  ||  ||'
+    title:'LEGEND: Roads of Ashmere',
+    ashmere:'ASHMERE - Lantern Town of the Old Road',
+    road:'THE OLD ROAD',
+    npc:'Traveler of Ashmere',
+    keep:'The Hollow Keep'
   },
   portraits: {
-    mara: [
-      '        .-"""""-.',
-      "      .'  .--.  ' .".replace(' ."','.'),
-      '     /   /    \\   \\',
-      '    |   |  ..  |   |',
-      '    |   |  __  |   |',
-      '    |   | /__\\ |   |',
-      '    |    \\____/    |',
-      '     \\   .____.   /',
-      "      '.  \\__/  .'",
-      "        '-.__.-'",
-      '         /|  |\\',
-      '    ____/ |  | \\____',
-      '   /____  |  |  ____\\',
-      '        | |__| |   ____',
-      '        |  __  |  / __ \\',
-      '        | |  | |  ||__||'
-    ].join('\n'),
-    brenn: [
-      "        .-''''-.",
-      "      .'  .--.  ' .".replace(' ."','.'),
-      '     /   / oo \\   \\',
-      '    |   |  --  |   |',
-      '    |   | .__. |   |',
-      '    |   | \\__/ |   |',
-      '    |    \\____/    |',
-      '     \\   /____\\   /',
-      "      '._.____._.'",
-      '          |  |',
-      '       ___|  |___',
-      "     .'   ____   '.",
-      '    /   /  __  \\   \\',
-      '   |   |  /  \\  |   |',
-      '   |   | | [] | |   |',
-      '    \\   \\____/   _/',
-      "     '.___||____.'",
-      '         _||_    o-o',
-      '        /_||_\\    |'
-    ].join('\n'),
-    oric: [
-      '           /^\\',
-      '      ____/###\\____',
-      '     /____  _  ____\\',
-      '          |/ \\|',
-      '         /|   |\\',
-      '        /_|___|_\\',
-      '       |  |===|  |',
-      '       |  |===|  |',
-      '       |  |___|  |',
-      '       |   .-.   |',
-      '       |  /   \\  |',
-      '       |  \\___/  |',
-      '       |    |    |',
-      '      /|____|____|\\',
-      '     /_/_/  |  \\_\\_\\',
-      '            |',
-      '           / \\',
-      '          /___\\'
-    ].join('\n'),
-    sella: [
-      '         .-~~~~-.',
-      "       .'  .--.  '.",
-      '      /   ( oo )   \\',
-      '     |    \\ -- /    |',
-      '     |   .-.__.-.   |',
-      '     |  /  ____  \\  |',
-      '      \\ | / __ \\ | /',
-      '       \\| \\____/ |/',
-      "        '.______.'",
-      '         /| || |\\',
-      '    ____/_|_||_|_\\____',
-      '   /____   _  _   ____\\',
-      '        | / \\/ \\ |',
-      '        | \\_/\\_/ |   __',
-      '        | |====| |  /__\\',
-      '        |_|____|_|'
-    ].join('\n')
+    mara:'Mara',
+    brenn:'Brenn',
+    oric:'Oric',
+    sella:'Sella'
   }
 };
