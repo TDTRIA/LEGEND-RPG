@@ -1,5 +1,5 @@
 // LEGEND v0.9.x - Art Integration Layer
-// Applies uploaded portraits/backgrounds/enemy art without forcing a 1.0 version jump.
+// Applies uploaded art to older screens only. v0.9.5 town screens own their own layout/art.
 (() => {
   const RT = () => window.LegendRuntimeV080 || null;
   const A = () => window.LegendAssetsV090 || {};
@@ -11,32 +11,22 @@
     return `<img class="${esc(cls)}" src="${esc(path)}?v=0.9-art" alt="${esc(alt)}" loading="lazy" onerror="this.remove()">`;
   }
   function findAsset(text){ return A().byName ? A().byName(text) : ''; }
+  function isManagedTownScreen(){ return !!document.querySelector('.v094-town-polish,#legendTownV080'); }
 
   function enhanceTown(){
     const town = document.getElementById('legendTownV080');
     if(!town || town.dataset.artV092 === '1') return;
+    if(town.closest('.v094-town-polish')) return;
     town.dataset.artV092 = '1';
     const hero = town.querySelector('.v080-town-hero');
     if(hero && A().locations?.ashmereMain){
       hero.classList.add('v092-art-hero');
       hero.insertAdjacentHTML('afterbegin', `${img(A().locations.ashmereMain,'v092-hero-bg','Ashmere')}`);
-      if(A().logo?.emblemFull || A().logo?.main){
-        hero.insertAdjacentHTML('beforeend', `<div class="v092-town-mark">${img(A().logo.emblemFull || A().logo.main,'v092-town-logo','LEGEND')}</div>`);
-      }
     }
-    town.querySelectorAll('[data-town-location]').forEach(card => {
-      if(card.dataset.artV092 === '1') return;
-      card.dataset.artV092 = '1';
-      const id = card.dataset.townLocation || '';
-      const text = card.textContent || '';
-      const portrait = findAsset(id + ' ' + text);
-      if(portrait && /(people|archive|ledger|inn|market|smith|armorer)/i.test(id + ' ' + text)){
-        card.insertAdjacentHTML('afterbegin', img(portrait,'v092-card-portrait',text.trim()));
-      }
-    });
   }
 
   function enhanceLocation(){
+    if(isManagedTownScreen()) return;
     const panel = document.querySelector('.v080-location-panel');
     if(!panel || panel.dataset.artV092 === '1') return;
     const text = panel.textContent || '';
@@ -60,12 +50,11 @@
     battle.dataset.artV092 = '1';
     battle.classList.add('v092-battle-art');
     const enemyBox = battle.querySelector('.v087-enemy');
-    if(enemyBox){
-      enemyBox.innerHTML = img(enemyArt,'v092-enemy-art',name);
-    }
+    if(enemyBox){ enemyBox.innerHTML = img(enemyArt,'v092-enemy-art',name); }
   }
 
   function enhanceDialogueLikeCards(){
+    if(isManagedTownScreen()) return;
     document.querySelectorAll('.card,.panel,.v087-outcome').forEach(el => {
       if(seen.has(el)) return;
       const text = el.textContent || '';
