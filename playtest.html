@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LEGEND: Roads of Ashmere v0.9.4 Playtest Runner</title>
+  <title>LEGEND: Roads of Ashmere v0.9.x Playtest Runner</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="css/legend-site-v090.css?v=0.9.0">
   <style>
@@ -14,11 +14,11 @@
   <div class="runner-shell">
     <section class="panel">
       <p class="kicker">QA Runner</p>
-      <h2>LEGEND v0.9.4 PLAYTEST</h2>
-      <p>Checks the current Ashmere overhaul, new traveler creation, guided intro, first-town tutorial, Old Road loop, and art wiring.</p>
-      <a class="btn primary" href="index.html?v=0.9.4-qa-open" target="_blank" rel="noopener">Open Game Normally</a>
-      <a class="btn" href="blog.html?v=0.9.4-qa-open" target="_blank" rel="noopener">Read Devlog</a>
-      <a class="btn" href="feedback.html?v=0.9.4-qa-open" target="_blank" rel="noopener">Send Feedback</a>
+      <h2>LEGEND v0.9.x PLAYTEST</h2>
+      <p>Checks the cleaned v0.9.x load order: slim title/bootstrap, direct traveler creation, Ashmere shell, Old Road, and current art assets.</p>
+      <a class="btn primary" href="index.html?v=0.9x-qa-open" target="_blank" rel="noopener">Open Game Normally</a>
+      <a class="btn" href="blog.html?v=0.9x-qa-open" target="_blank" rel="noopener">Read Devlog</a>
+      <a class="btn" href="feedback.html?v=0.9x-qa-open" target="_blank" rel="noopener">Send Feedback</a>
       <button id="runCore" class="primary">Run Smoke Test</button>
       <button id="runPages">Check Support Pages</button>
       <button id="runSystems">Check Active Systems</button>
@@ -26,25 +26,23 @@
 
       <div class="manual">
         <h3>Manual Playtest Checklist</h3>
-        <label><input type="checkbox"> Title screen still uses Ashmere road art and shows New Traveler instead of New Recovered Save.</label>
-        <label><input type="checkbox"> New Traveler flow asks for name, gender/identity, personality, origin, class, and keepsake.</label>
-        <label><input type="checkbox"> Gender choice is flavor-only and does not feel awkward or stat-gated.</label>
-        <label><input type="checkbox"> Personality choice gives the traveler more flavor and saves onto the character.</label>
-        <label><input type="checkbox"> Intro sequence explains: talk first, prepare, then travel the Old Road.</label>
-        <label><input type="checkbox"> Enter Ashmere continues into the town without dumping back to title.</label>
-        <label><input type="checkbox"> Ashmere hub has town art, grouped sections, status, and a tutorial/recommended highlight.</label>
-        <label><input type="checkbox"> Recommended tutorial button sends the player to the correct next location.</label>
-        <label><input type="checkbox"> Town Square, Inn, Trader, Smith/Armor, Ledger, and Old Road handoffs still work.</label>
-        <label><input type="checkbox"> Road checks and battles still work after the new beginning flow.</label>
-        <label><input type="checkbox"> Character sheet/inventory are still reachable.</label>
-        <label><input type="checkbox"> No visible Recovered Build / v0.6 / v0.7-only labels remain in the main flow.</label>
+        <label><input type="checkbox"> Title screen uses the current icon-based v0.9.x menu and does not show the old fullscreen v089 replacement.</label>
+        <label><input type="checkbox"> Menu subtitles are readable and separated from button labels.</label>
+        <label><input type="checkbox"> Settings / Accessibility uses polished toggle cards and saves correctly.</label>
+        <label><input type="checkbox"> New Traveler flow asks for name, identity, personality, origin, class, and keepsake.</label>
+        <label><input type="checkbox"> Enter Ashmere renders Ashmere directly without kicking back to title.</label>
+        <label><input type="checkbox"> Ashmere hub uses the v099 RPG menu with town art, icons, and traveler panel.</label>
+        <label><input type="checkbox"> Town Square, Mara, Brenn, Oric, Inn, Trader, Blacksmith, Sheet, and Archive work.</label>
+        <label><input type="checkbox"> Travel the Old Road works from Ashmere.</label>
+        <label><input type="checkbox"> Old Road Return to Ashmere goes directly back to Ashmere, not title.</label>
+        <label><input type="checkbox"> No visible Recovered Build / v0.6 / v0.7 labels appear in the main flow.</label>
       </div>
 
       <div id="status" class="status"><div class="entry info">Ready. Run Smoke Test first, then use the manual checklist.</div></div>
       <textarea id="report" readonly placeholder="Copyable QA report appears here."></textarea>
-      <p class="small">Automated checks verify loading, asset reachability, and basic wiring. Game feel still needs manual testing.</p>
+      <p class="small">Automated checks verify loading, asset reachability, and core wiring. Game feel still needs manual testing.</p>
     </section>
-    <section class="frame-wrap"><iframe id="game" title="LEGEND test frame" src="index.html?v=0.9.4-qa"></iframe></section>
+    <section class="frame-wrap"><iframe id="game" title="LEGEND test frame" src="index.html?v=0.9x-qa"></iframe></section>
   </div>
 <script>
 const frame=document.getElementById('game'),statusBox=document.getElementById('status'),reportBox=document.getElementById('report');
@@ -58,9 +56,9 @@ async function checkPage(path,rx,label){await openPage(path);const t=bodyText();
 async function checkNotPage(path,rx,label){await openPage(path);const t=bodyText();if(!rx.test(t)){log(label,'pass')}else{log(label,'fail','Old text still present on '+path)}}
 async function checkFile(path,label,rx){try{const res=await fetch(path+(path.includes('?')?'&':'?')+'qa='+Date.now(),{cache:'no-store'});if(!res.ok){log(label,'fail',path+' returned '+res.status);return}if(rx){const text=await res.text();if(rx.test(text))log(label,'pass',path);else log(label,'fail','Expected marker missing in '+path)}else{log(label,'pass',path)}}catch(e){log(label,'fail',e.message)}}
 function beginReport(title){report.length=0;statusBox.innerHTML='';report.push(title);report.push('Generated: '+new Date().toLocaleString())}
-async function runCore(){beginReport('LEGEND ROADS OF ASHMERE v0.9.4 SMOKE REPORT');await checkPage('index.html?v=0.9.4',/LEGEND|Roads of Ashmere|Ashmere|Begin|Continue|New Traveler/i,'Game shell loads current identity');await checkFile('index.html','Index loads v094 beginning CSS',/beginning-v094\.css\?v=0\.9\.4/);await checkFile('index.html','Index loads v094 beginning JS',/beginning-v094\.js\?v=0\.9\.4/);await checkFile('index.html','Index loads v094 town controller',/town-controller-v080\.js\?v=0\.9\.4/);await checkFile('index.html','Index loads v093 road controller',/road-controller-v087\.js\?v=0\.9\.3/);await checkFile('js/game.js?v=0.6.4','Protected full game.js reachable')}
-async function runPages(){beginReport('LEGEND SUPPORT PAGE REPORT');await checkPage('feedback.html?v=0.9.4',/Roads of Ashmere|Playtest Feedback|Submit Feedback/i,'Feedback page');await checkPage('blog.html?v=0.9.4',/Roads of Ashmere|LEGEND DEVLOG|Fantasy Identity|Ashmere/i,'Blog/devlog page');await checkPage('updates.html?v=0.9.4',/Newsletter|LEGEND|Dispatch|v0/i,'Updates/newsletter page');await checkNotPage('feedback.html?v=0.9.4',/Recovered Build v0\.7\.0/i,'Feedback no old v0.7 identity');await checkNotPage('blog.html?v=0.9.4',/Recovered Build Archive/i,'Blog no old archive header')}
-async function runSystems(){beginReport('LEGEND ACTIVE SYSTEMS REPORT');await checkFile('js/systems/beginning-v094.js?v=0.9.4','v094 beginning flow',/genderOptions|personalityOptions|New Traveler|Enter Ashmere/);await checkFile('css/beginning-v094.css?v=0.9.4','v094 beginning/town CSS',/v094-beginning|v094-town-guide|v094-town-polish/);await checkFile('js/storage.js?v=0.9.4','v094 save normalization',/genderLabel|personalityLabel|creationV094|tutorialStep/);await checkFile('js/systems/town-controller-v080.js?v=0.9.4','v094 Ashmere town controller',/v0\.9\.4|v094-town-guide|recommended|tutorial/);await checkFile('js/systems/assets-v090.js?v=0.9.2','Asset manifest',/LegendAssetsV090|oldRoad|roadGoblin/);await checkFile('js/systems/art-integration-v092.js?v=0.9.2','Art integration layer',/art|portrait|battle|v092/i);await checkFile('js/systems/road-controller-v087.js?v=0.9.3','D20 road controller',/D20|playerAC|enemyDC|v093/i);await checkFile('css/road-combat-v093.css?v=0.9.3','D20 combat CSS',/v093-actions|v093-hp|v093-enemy-art/)}
+async function runCore(){beginReport('LEGEND ROADS OF ASHMERE v0.9.x SMOKE REPORT');await checkPage('index.html?v=0.9x',/LEGEND|Roads of Ashmere|New Traveler|Settings/i,'Game shell loads current title');await checkFile('index.html','Index loads Ashmere shell CSS',/ashmere-v099\.css/);await checkFile('index.html','Index loads game polish CSS',/game-polish-v09x\.css/);await checkFile('index.html','Index loads settings CSS',/settings-v09x\.css/);await checkFile('index.html','Index loads direct beginning JS',/beginning-v094\.js\?v=0\.9\.x-direct/);await checkFile('index.html','Index loads v099 Ashmere controller',/ashmere-controller-v099\.js/);await checkFile('index.html','Index does not load old title replacement',/^((?!title-bg-v089\.js).)*$/s);await checkFile('index.html','Index does not load old town patches',/^((?!town-controller-v080|objectives-v080|inventory-v065|arrival-v090|sheet-inventory-v080|defeat-v070).)*$/s)}
+async function runPages(){beginReport('LEGEND SUPPORT PAGE REPORT');await checkPage('feedback.html?v=0.9x',/Roads of Ashmere|Playtest Feedback|Submit Feedback/i,'Feedback page');await checkPage('blog.html?v=0.9x',/Roads of Ashmere|LEGEND DEVLOG|Fantasy Identity|Ashmere/i,'Blog/devlog page');await checkPage('updates.html?v=0.9x',/Newsletter|LEGEND|Dispatch|v0/i,'Updates/newsletter page');await checkNotPage('feedback.html?v=0.9x',/Recovered Build v0\.7\.0/i,'Feedback no old v0.7 identity');await checkNotPage('blog.html?v=0.9x',/Recovered Build Archive/i,'Blog no old archive header')}
+async function runSystems(){beginReport('LEGEND ACTIVE SYSTEMS REPORT');await checkFile('js/game.js?v=0.9x','Slim bootstrap',/Slim Game Bootstrap|LegendGameBootstrap|Settings/);await checkFile('js/systems/beginning-v094.js?v=0.9x','Direct beginning flow',/genderOptions|personalityOptions|enterAshmere|LegendAshmereV099/);await checkFile('js/systems/ashmere-controller-v099.js?v=0.9x','Ashmere v099 shell',/Clean Ashmere Controller|renderAshmere|data-ash-view|ash099/);await checkFile('js/core/runtime-v080.js?v=0.9x','Direct Ashmere return bridge',/renderAshmereDirect|returnToAshmere|LegendAshmereV099/);await checkFile('js/systems/road-controller-v087.js?v=0.9x','D20 road controller',/D20|playerAC|enemyDC|returnToAshmere/);await checkFile('css/game-polish-v09x.css?v=0.9x','Subtitle separation CSS',/Separate|game-menu-btn small|ash099-action small|settings09x-toggle/)}
 async function runAssets(){beginReport('LEGEND ASHMERE ART ASSET REPORT');await checkFile('assets/title/title_bg_ashmere_road_v089.jpg','Title background');await checkFile('assets/ui/logos/logo_legend_main_v1.png','Main logo');await checkFile('assets/ui/logos/logo_legend_emblem_v1.png','Emblem logo');await checkFile('assets/locations/ashmere/location_ashmere_mainstreet_v1.jpg','Ashmere main street art');await checkFile('assets/locations/roads/location_old_road_main_v1.jpg','Old Road art');await checkFile('assets/npcs/ashmere/npc_mara_portrait_v1.jpg','Mara portrait');await checkFile('assets/npcs/ashmere/npc_brenn_portrait_v1.jpg','Brenn portrait');await checkFile('assets/npcs/ashmere/npc_oric_portrait_v1.jpg','Oric portrait');await checkFile('assets/npcs/vendors/npc_innkeeper_portrait_v1.jpg','Innkeeper portrait');await checkFile('assets/npcs/vendors/npc_blacksmith_portrait_v1.jpg','Blacksmith portrait');await checkFile('assets/npcs/vendors/npc_trader_portrait_v1.jpg','Trader portrait');await checkFile('assets/enemies/road/enemy_road_goblin_v1.jpg','Road Goblin art');await checkFile('assets/enemies/road/enemy_blackroot_wolf_v1.jpg','Blackroot Wolf art');await checkFile('assets/enemies/road/enemy_lantern_wisp_v1.jpg','Lantern Wisp art')}
 document.getElementById('runCore').onclick=runCore;document.getElementById('runPages').onclick=runPages;document.getElementById('runSystems').onclick=runSystems;document.getElementById('runAssets').onclick=runAssets;
 </script>
