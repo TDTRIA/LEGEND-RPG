@@ -17,31 +17,27 @@
   const menuLink=(href,label,desc,ic)=>`<a class="btn game-menu-btn" href="${href}">${icon(ic)}<span><strong>${label}</strong><small>${desc}</small></span></a>`;
   const stat=(label,value)=>`<div class="title-status-stat"><span>${label}</span><strong>${value}</strong></div>`;
 
+  function accountSummary(profileData){
+    const connected = !!window.LegendSupabaseV09x?.client;
+    if(profileData){
+      return `<strong>${esc(profileData.displayName || 'Local Profile')}</strong><em>${connected ? 'Supabase connected' : 'Local profile ready - cloud hook pending'}</em>`;
+    }
+    return `<strong>${connected ? 'Supabase Ready' : 'Local Play Ready'}</strong><em>Open Account / Profile to claim a profile name and prep traveler sync.</em>`;
+  }
+
   function travelerSummary(player){
-    if(!player) return `<div class="title-active-empty"><strong>No active traveler</strong><span>Create a traveler to begin the Ashmere vertical slice.</span></div>`;
+    if(!player){
+      return `<article class="title-feature-card title-active-card"><div class="title-feature-head"><span>Active Traveler</span><strong>No active traveler</strong></div><p class="title-feature-copy">Create a traveler to begin the Ashmere vertical slice and start the first Old Road loop.</p><div class="title-mini-stats">${stat('Hub','Ashmere')}${stat('Route','Old Road')}${stat('Stage','Prologue')}</div></article>`;
+    }
     const cls = player.className || player.class || 'Traveler';
     const day = player.day || 1;
     const tokens = Number(player.inventory?.roadToken || 0);
     const town = player.town || 'Ashmere';
-    return `
-      <div class="title-active-traveler">
-        <span class="title-active-label">Active Traveler</span>
-        <strong>${esc(player.username || 'Unnamed Traveler')}</strong>
-        <small>${esc(cls)} • ${esc(town)} • Day ${day}</small>
-        <div class="title-mini-stats">
-          ${stat('Road Tokens', tokens)}
-          ${stat('Town Trust', Number(player.townTrust?.Ashmere || 0))}
-          ${stat('Road Danger', Number(player.roadDanger || 1))}
-        </div>
-      </div>`;
+    return `<article class="title-feature-card title-active-card"><div class="title-feature-head"><span>Active Traveler</span><strong>${esc(player.username || 'Unnamed Traveler')}</strong></div><p class="title-feature-copy">${esc(cls)} - ${esc(town)} - Day ${day}</p><div class="title-mini-stats">${stat('Road Tokens',tokens)}${stat('Town Trust',Number(player.townTrust?.Ashmere || 0))}${stat('Road Danger',Number(player.roadDanger || 1))}</div></article>`;
   }
 
-  function accountSummary(profileData){
-    const connected = !!window.LegendSupabaseV09x?.client;
-    if(profileData){
-      return `<strong>${esc(profileData.displayName || 'Local Profile')}</strong><span>${connected ? 'Supabase connected' : 'Local profile ready • cloud hook pending'}</span>`;
-    }
-    return `<strong>${connected ? 'Supabase Ready' : 'Local Play Ready'}</strong><span>Open Account / Profile to reserve a profile name.</span>`;
+  function whatsNewPanel(){
+    return `<article class="title-feature-card title-news-card"><div class="title-feature-head"><span>What's New</span><strong>Ashmere Early Access</strong></div><ul class="title-feature-list"><li><strong>Title/Menu Pass:</strong> finished RPG-style front end with active traveler status.</li><li><strong>Ashmere Hub:</strong> first-town loop, NPC interactions, and hub polish continue in v0.9.x.</li><li><strong>Road + Combat:</strong> Old Road events and combat updates remain part of the vertical slice focus.</li><li><strong>Accounts:</strong> local profiles and traveler linking are in place while cloud save wiring is prepared.</li></ul><p class="title-news-note">This is still a v0.9.x build - polished Ashmere slice first, 1.0 later.</p></article>`;
   }
 
   function title(){
@@ -51,26 +47,35 @@
     root().innerHTML = `
       <div class="title-wrap title-v09x-final">
         <div class="title-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="title-fog" aria-hidden="true"><i></i><i></i><i></i></div>
         <section class="title-card title-card-final">
           <div class="title-hero-panel">
             <div class="title-brand-mark">
               <img src="assets/ui/logos/logo_legend_emblem_v1.png" alt="LEGEND emblem" onerror="this.style.display='none'">
               <span class="title-brand-text"><strong>Roads of Ashmere</strong><span>v0.9.x Ashmere vertical slice</span></span>
             </div>
-            <div class="title-copy">
-              <div class="kicker">LEGEND • Dark Medieval Fantasy RPG</div>
-              <h1 class="game-title">LEGEND</h1>
-              <p class="title-subtitle">Roads of Ashmere</p>
-              <p class="title-lore">Ashmere waits at the edge of the Old Road. Choose a traveler, gather proof, and return before the fog remembers your name.</p>
+            <div class="title-hero-grid">
+              <div class="title-copy">
+                <div class="kicker">LEGEND - Dark Medieval Fantasy RPG</div>
+                <h1 class="game-title">LEGEND</h1>
+                <p class="title-subtitle">Roads of Ashmere</p>
+                <p class="title-lore">Ashmere waits at the edge of the Old Road. Choose a traveler, gather proof, and return before the fog remembers your name.</p>
+                <div class="title-pill-row"><span class="title-pill">Ashmere Main Hub</span><span class="title-pill">Old Road Loop</span><span class="title-pill">v0.9.x Polish</span></div>
+              </div>
+              <div class="title-keyart">
+                <img src="assets/title/title_keyart_ashmere_v1.png" alt="Roads of Ashmere key art" onerror="this.parentElement.classList.add('is-missing')">
+                <div class="title-keyart-fallback"><div class="title-keyart-fallback-mark">ASHMERE</div><p>Optional title key art slot. Add a traveler, road, or lantern-town illustration here when the asset is ready.</p></div>
+              </div>
             </div>
             <div class="title-status-grid">
               <article class="title-status-card title-status-account"><span>Account</span>${accountSummary(prof)}</article>
               <article class="title-status-card"><span>Hub</span><strong>Ashmere</strong><em>Lantern Town of the Old Road</em></article>
-              <article class="title-status-card"><span>Build</span><strong>v0.9.x</strong><em>Polish pass, not 1.0</em></article>
+              <article class="title-status-card"><span>Build</span><strong>v0.9.x</strong><em>Polish pass - not 1.0</em></article>
             </div>
-            ${travelerSummary(player)}
+            <div class="title-bottom-grid">${travelerSummary(player)}${whatsNewPanel()}</div>
           </div>
           <aside class="title-menu-panel title-menu-final">
+            <div class="title-menu-stamp">Early Access</div>
             <h2>Main Menu</h2>
             <div class="actions">
               ${player ? menuButton('continue','primary',`Continue as ${esc(player.username)}`,'Return to Ashmere and resume the first-town loop.','continue') : ''}
@@ -80,7 +85,7 @@
               ${menuLink('feedback.html','Playtest Feedback','Send bugs, balance notes, and first-town impressions.','feedback')}
               ${player ? menuButton('delete','danger','Delete Local Save','Clear the local browser traveler save.','delete') : ''}
             </div>
-            <p class="small title-footer">Cloud saves remain in v0.9.x wiring; local traveler progress stays playable.</p>
+            <p class="small title-footer">Cloud saves remain in v0.9.x wiring; local traveler progress stays fully playable.</p>
           </aside>
         </section>
       </div>`;
@@ -125,21 +130,7 @@
       ['spacious','Spacious Layout','Adds breathing room for touch and mobile play.','space'],
       ['readableFont','Readable Font','Uses a simpler font treatment for long reading sessions.','font']
     ];
-    root().innerHTML = `
-      <main class="settings09x">
-        <div class="settings09x-wrap">
-          <section class="settings09x-hero">
-            <div class="settings09x-kicker">LEGEND v0.9.x</div>
-            <h1>Settings</h1>
-            <p>Adjust readability and comfort for this device. These options should feel like part of the game, not a browser form.</p>
-          </section>
-          <section class="settings09x-grid">
-            ${rows.map(([key,label,desc,ic]) => `<label class="settings09x-toggle"><input type="checkbox" data-setting="${key}" ${current[key] ? 'checked' : ''}><span class="settings09x-setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[ic]}"/></svg></span><span><strong>${label}</strong><span>${desc}</span></span><i class="settings09x-switch"></i></label>`).join('')}
-          </section>
-          <p class="settings09x-note"><strong>Note:</strong> Accessibility settings do not change your save file, stats, or progress. They only affect presentation on this device.</p>
-          <div class="settings09x-actions"><button class="settings09x-btn primary" id="saveSettings">Save Settings</button><button class="settings09x-btn" id="backTitle">Back to Title</button>${loadPlayer()?'<button class="settings09x-btn" id="backGame">Back to Ashmere</button>':''}</div>
-        </div>
-      </main>`;
+    root().innerHTML = `<main class="settings09x"><div class="settings09x-wrap"><section class="settings09x-hero"><div class="settings09x-kicker">LEGEND v0.9.x</div><h1>Settings</h1><p>Adjust readability and comfort for this device. These options should feel like part of the game, not a browser form.</p></section><section class="settings09x-grid">${rows.map(([key,label,desc,ic]) => `<label class="settings09x-toggle"><input type="checkbox" data-setting="${key}" ${current[key] ? 'checked' : ''}><span class="settings09x-setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[ic]}"/></svg></span><span><strong>${label}</strong><span>${desc}</span></span><i class="settings09x-switch"></i></label>`).join('')}</section><p class="settings09x-note"><strong>Note:</strong> Accessibility settings do not change your save file, stats, or progress. They only affect presentation on this device.</p><div class="settings09x-actions"><button class="settings09x-btn primary" id="saveSettings">Save Settings</button><button class="settings09x-btn" id="backTitle">Back to Title</button>${loadPlayer()?'<button class="settings09x-btn" id="backGame">Back to Ashmere</button>':''}</div></div></main>`;
     document.getElementById('saveSettings').onclick = () => {
       const next = {...current};
       document.querySelectorAll('[data-setting]').forEach(input => next[input.dataset.setting] = input.checked);
