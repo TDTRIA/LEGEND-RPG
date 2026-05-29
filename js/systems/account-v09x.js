@@ -2,14 +2,16 @@
 (() => {
   const PROFILE_KEY = 'legend-roads-of-ashmere-profile-v09x';
   const root = () => document.getElementById('root');
+  const S = () => window.LegendStorage || {};
   const esc = s => String(s == null ? '' : s).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const local = () => S().loadPlayer?.() || null;
 
-  function getProfile() {
+  function getProfile(){
     try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null'); }
     catch { return null; }
   }
 
-  function saveProfile(profile) {
+  function saveProfile(profile){
     localStorage.setItem(PROFILE_KEY, JSON.stringify({
       ...profile,
       version: 'v0.9.x',
@@ -17,11 +19,9 @@
     }));
   }
 
-  function deleteProfile() {
-    localStorage.removeItem(PROFILE_KEY);
-  }
+  function deleteProfile(){ localStorage.removeItem(PROFILE_KEY); }
 
-  function snapshotTraveler(pl) {
+  function snapshotTraveler(pl){
     if(!pl) return null;
     return {
       username: pl.username || 'Unnamed Traveler',
@@ -35,21 +35,18 @@
     };
   }
 
-  function fmtDate(value) {
+  function fmtDate(value){
     if(!value) return 'Not synced yet';
     try { return new Date(value).toLocaleString([], { dateStyle:'medium', timeStyle:'short' }); }
     catch { return 'Recently'; }
   }
 
-  function connected() {
-    return !!window.LegendSupabaseV09x?.client;
-  }
+  function connected(){ return !!window.LegendSupabaseV09x?.client; }
 
-  function renderAccount(message = '') {
-    const pl = getProfile() || snapshotTraveler({});
+  function renderAccount(message = ''){
+    const pl = local();
     const prof = getProfile();
     const snap = prof?.activeTraveler || snapshotTraveler(pl);
-
     root().innerHTML = `
       <main class="account09x account09x-finished">
         <div class="account09x-wrap">
@@ -57,7 +54,7 @@
             <div class="account09x-hero-content">
               <div class="account09x-kicker">LEGEND Account</div>
               <h1>Profile</h1>
-              <p>Claim a local profile, track the active traveler, and prepare this save for cloud traveler slots.</p>
+              <p>Claim a local profile, track the active traveler, and prepare this save for cloud traveler slots. Supabase hooks can plug in here without replacing local play.</p>
             </div>
           </section>
 
@@ -69,7 +66,7 @@
               <div class="account09x-status account09x-status-grid">
                 <div class="account09x-stat"><strong>${connected() ? 'Connected' : 'Not Connected'}</strong><span>Supabase</span></div>
                 <div class="account09x-stat"><strong>${prof ? 'Profile Ready' : 'No Profile'}</strong><span>Local Account</span></div>
-                <div class="account09x-stat"><strong>${snap ? 'Linked' : 'No Traveler'}</strong><span>Active Traveler</span></div>
+                <div class="account09x-stat"><strong>${pl ? 'Linked' : 'No Traveler'}</strong><span>Active Traveler</span></div>
                 <div class="account09x-stat"><strong>v0.9.x</strong><span>Account Layer</span></div>
               </div>
 
@@ -82,6 +79,7 @@
                   <label for="profileEmail">Email / Login Handle</label>
                   <input id="profileEmail" maxlength="72" value="${esc(prof?.email || '')}" placeholder="Optional for now">
                 </div>
+                <p class="account09x-note"><strong>v0.9.x note:</strong> This saves a local profile shell now. Real authentication and cloud sync are intentionally gated until Supabase credentials and tables are wired.</p>
                 <div class="account09x-actions">
                   <button class="account09x-btn primary" id="saveProfile" type="submit">Save Profile</button>
                   <button class="account09x-btn" id="syncTraveler" type="button" ${pl ? '' : 'disabled'}>Link Active Traveler</button>
@@ -118,30 +116,36 @@
         </div>
       </main>`;
 
-    // Button hooks
-    document.getElementById('backTitle')?.addEventListener('click', () => window.LegendGameBootstrap?.title?.());
-    document.getElementById('backAshmere')?.addEventListener('click', () => window.LegendGameBootstrap?.continueGame?.());
-    document.getElementById('newTraveler')?.addEventListener('click', () => window.LegendGameBootstrap?.newTraveler?.());
-    document.getElementById('profileForm')?.addEventListener('submit', e => {
+    const back = document.getElementById('backTitle');
+    if(back) back.onclick = () => window.LegendGameBootstrap?.title?.();
+    const ash = document.getElementById('backAshmere');
+    if(ash) ash.onclick = () => window.LegendGameBootstrap?.continueGame?.();
+    const newTraveler = document.getElementById('newTraveler');
+    if(newTraveler) newTraveler.onclick = () => window.LegendGameBootstrap?.newTraveler?.();
+    const form = document.getElementById('profileForm');
+    if(form) form.onsubmit = e => {
       e.preventDefault();
       const displayName = document.getElementById('displayName').value.trim() || pl?.username || 'Ashmere Traveler';
       const email = document.getElementById('profileEmail').value.trim();
       saveProfile({ ...(prof || {}), displayName, email, activeTraveler: prof?.activeTraveler || snapshotTraveler(pl) });
       renderAccount('Profile saved.');
-    });
-    document.getElementById('syncTraveler')?.addEventListener('click', () => {
+    };
+    const sync = document.getElementById('syncTraveler');
+    if(sync) sync.onclick = () => {
       const current = getProfile() || { displayName: pl?.username || 'Ashmere Traveler', email: '' };
       saveProfile({ ...current, activeTraveler: snapshotTraveler(pl) });
       renderAccount('Active traveler linked to profile.');
-    });
-    document.getElementById('clearProfile')?.addEventListener('click', () => {
+    };
+    const clear = document.getElementById('clearProfile');
+    if(clear) clear.onclick = () => {
       if(confirm('Clear local profile shell? Your traveler save will not be deleted.')){
         deleteProfile();
         renderAccount('Profile cleared. Traveler save kept.');
       }
-    });
-    document.getElementById('localSlot')?.addEventListener('click', () => window.LegendGameBootstrap?.continueGame?.());
+    };
+    const localSlot = document.getElementById('localSlot');
+    if(localSlot && pl) localSlot.onclick = () => window.LegendGameBootstrap?.continueGame?.();
   }
 
-  window.LegendAccountV09x = { renderAccount, getProfile, saveProfile, deleteProfile, snapshotTraveler, fmtDate, connected };
+  window.LegendAccountV09x = { renderAccount, getProfile, saveProfile, deleteProfile };
 })();
