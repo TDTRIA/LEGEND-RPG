@@ -3,7 +3,6 @@
 // Owns title/start/settings/account entry. Ashmere is owned by ashmere-controller-v099.js.
 (() => {
   const TITLE_ASSETS = {
-@@ -7,16 +7,7 @@
     emblem: 'assets/ui/logos/logo_legend_emblem_v1.png'
   };
 
