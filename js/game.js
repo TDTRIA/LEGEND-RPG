@@ -86,9 +86,7 @@
           <div class="title-gate-emblem"><img src="assets/ui/logos/logo_legend_emblem_v1.png" alt="" onerror="this.style.display='none'"></div>
           <p class="title-gate-kicker">Roads of Ashmere</p>
           <h1 class="game-title">LEGEND</h1>
-          <p class="title-gate-copy">Beyond the lantern gate, the Old Road waits.</p>
           <button class="title-gate-prompt" id="enterRealm" type="button">Press Any Key / Click to Enter Ashmere</button>
-          <p class="title-rumor">${esc(titleRumor())}</p>
         </section>
       </div>`;
     const card = document.querySelector('.title-gate-card');
