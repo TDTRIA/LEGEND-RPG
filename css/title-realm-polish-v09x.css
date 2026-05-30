@@ -1,0 +1,114 @@
+/* LEGEND: Roads of Ashmere v0.9.x - Realm Portal title polish
+   CSS-only visual layer. No save data, routing, or gameplay logic changes. */
+
+.title-card,
+.title-menu-panel,
+.game-menu-btn{
+  transform-style:preserve-3d;
+}
+
+.title-card:after{
+  content:"";
+  position:absolute;
+  inset:1px;
+  z-index:0;
+  pointer-events:none;
+  border-radius:26px;
+  background:
+    linear-gradient(135deg,rgba(255,211,105,.10),transparent 28%,rgba(125,255,173,.045) 62%,transparent),
+    radial-gradient(circle at 78% 16%,rgba(255,211,105,.10),transparent 24%);
+  opacity:.75;
+  mix-blend-mode:screen;
+}
+
+.title-menu-panel:before{
+  content:"";
+  position:absolute;
+  inset:10px;
+  z-index:0;
+  pointer-events:none;
+  border-radius:20px;
+  border:1px solid rgba(255,211,105,.08);
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,211,105,.12),transparent 38%),
+    linear-gradient(180deg,rgba(255,211,105,.035),transparent 42%);
+  opacity:.85;
+}
+
+.title-menu-panel > *{
+  position:relative;
+  z-index:1;
+}
+
+.game-menu-btn{
+  overflow:hidden;
+  isolation:isolate;
+  transition:
+    transform .16s ease,
+    border-color .16s ease,
+    box-shadow .16s ease,
+    background .16s ease,
+    filter .16s ease;
+}
+
+.game-menu-btn:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,transparent,rgba(255,211,105,.11),transparent),
+    radial-gradient(circle at 12% 50%,rgba(255,211,105,.12),transparent 34%);
+  opacity:0;
+  transform:translateX(-18%);
+  transition:opacity .18s ease,transform .18s ease;
+}
+
+.game-menu-btn:hover:before,
+.game-menu-btn:focus-visible:before{
+  opacity:1;
+  transform:translateX(0);
+}
+
+.game-menu-btn:hover .game-menu-icon,
+.game-menu-btn:focus-visible .game-menu-icon{
+  border-color:rgba(255,211,105,.52);
+  box-shadow:0 0 18px rgba(255,211,105,.14), inset 0 0 18px rgba(255,211,105,.06);
+}
+
+.game-menu-btn.primary{
+  box-shadow:0 16px 34px rgba(120,76,20,.24), inset 0 1px 0 rgba(255,255,255,.28)!important;
+}
+
+.game-menu-btn.primary:hover,
+.game-menu-btn.primary:focus-visible{
+  filter:saturate(1.04) brightness(1.03);
+  box-shadow:0 0 0 3px rgba(255,211,105,.16),0 20px 44px rgba(120,76,20,.32),inset 0 1px 0 rgba(255,255,255,.32)!important;
+}
+
+.game-menu-btn:active{
+  transform:translateY(1px) scale(.992);
+}
+
+.title-status-card,
+.title-feature-card,
+.title-status-stat{
+  transition:border-color .16s ease,box-shadow .16s ease,background .16s ease;
+}
+
+.title-status-card:hover,
+.title-feature-card:hover{
+  border-color:rgba(255,211,105,.24);
+  box-shadow:0 14px 36px rgba(0,0,0,.22),inset 0 0 24px rgba(255,211,105,.04);
+}
+
+@media(prefers-reduced-motion:reduce){
+  .game-menu-btn,
+  .game-menu-btn:before,
+  .title-status-card,
+  .title-feature-card,
+  .title-status-stat{
+    transition:none!important;
+  }
+}
