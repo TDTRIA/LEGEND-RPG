@@ -103,6 +103,160 @@
   box-shadow:0 14px 36px rgba(0,0,0,.22),inset 0 0 24px rgba(255,211,105,.04);
 }
 
+/* Opening gate screen */
+.title-gate-wrap{
+  min-height:100svh;
+  place-items:center;
+  cursor:pointer;
+}
+
+.title-gate-wrap:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(255,211,105,.15),transparent 28%),
+    linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.76)),
+    var(--title-bg-image);
+  background-size:cover;
+  background-position:center;
+  filter:saturate(.92) contrast(1.05);
+}
+
+.title-gate-card{
+  position:relative;
+  z-index:2;
+  width:min(760px,calc(100% - 28px));
+  min-height:520px;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  gap:12px;
+  text-align:center;
+  color:var(--legend-text);
+  border:1px solid rgba(255,211,105,.30);
+  border-radius:32px;
+  background:linear-gradient(180deg,rgba(5,8,6,.72),rgba(0,0,0,.48));
+  box-shadow:0 46px 110px rgba(0,0,0,.72),inset 0 0 70px rgba(255,211,105,.045);
+  padding:clamp(24px,5vw,52px);
+  overflow:hidden;
+  backdrop-filter:blur(8px);
+}
+
+.title-gate-card:before{
+  content:"";
+  position:absolute;
+  inset:14px;
+  z-index:0;
+  pointer-events:none;
+  border:1px solid rgba(255,211,105,.12);
+  border-radius:24px;
+  background:radial-gradient(circle at 50% 18%,rgba(255,211,105,.11),transparent 34%);
+}
+
+.title-gate-card > *{
+  position:relative;
+  z-index:1;
+}
+
+.title-gate-emblem{
+  width:88px;
+  height:88px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,211,105,.25);
+  border-radius:28px;
+  background:rgba(0,0,0,.30);
+  box-shadow:0 18px 42px rgba(0,0,0,.46),inset 0 0 30px rgba(255,211,105,.05);
+}
+
+.title-gate-emblem img{
+  width:72px;
+  height:72px;
+  object-fit:contain;
+  filter:drop-shadow(0 10px 22px rgba(0,0,0,.68));
+}
+
+.title-gate-kicker{
+  margin:8px 0 0;
+  color:var(--legend-gold);
+  text-transform:uppercase;
+  letter-spacing:.22em;
+  font-size:.76rem;
+  font-weight:1000;
+}
+
+.title-gate-copy{
+  max-width:560px;
+  margin:0;
+  color:#dcebe1;
+  line-height:1.55;
+  font-size:1.05rem;
+}
+
+.title-gate-prompt{
+  margin-top:18px;
+  border:1px solid rgba(255,211,105,.42);
+  border-radius:999px;
+  background:rgba(255,211,105,.10);
+  color:#fff2c2;
+  padding:12px 18px;
+  font-weight:1000;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  animation:titlePromptPulse 1.9s ease-in-out infinite;
+}
+
+.title-gate-prompt:hover,
+.title-gate-prompt:focus-visible{
+  outline:none;
+  border-color:rgba(255,211,105,.72);
+  box-shadow:0 0 0 3px rgba(255,211,105,.12),0 0 28px rgba(255,211,105,.12);
+}
+
+.title-rumor{
+  margin:12px 0 0;
+  color:#c8d7ce;
+  font-style:italic;
+  line-height:1.45;
+}
+
+@keyframes titlePromptPulse{
+  0%,100%{opacity:.72;transform:translateY(0)}
+  50%{opacity:1;transform:translateY(-1px)}
+}
+
+.title-is-opening{
+  pointer-events:none;
+  animation:titleOpenFade .36s ease forwards;
+}
+
+.title-transition-notice{
+  position:fixed;
+  inset:auto 18px 26px;
+  z-index:20;
+  width:max-content;
+  max-width:calc(100% - 36px);
+  margin:auto;
+  border:1px solid rgba(255,211,105,.34);
+  border-radius:999px;
+  background:rgba(3,6,4,.86);
+  color:#fff2c2;
+  box-shadow:0 18px 44px rgba(0,0,0,.45),inset 0 0 24px rgba(255,211,105,.04);
+  padding:12px 18px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  font-size:.72rem;
+  font-weight:1000;
+}
+
+@keyframes titleOpenFade{
+  to{filter:brightness(.72);opacity:.72;transform:scale(.995)}
+}
+
 /* Account/Profile v0.9.x polish - keeps local traveler/profile logic untouched. */
 .account09x{
   background:
@@ -207,6 +361,11 @@ button.account09x-slot:focus-visible:not(.account09x-disabled){
   box-shadow:0 14px 34px rgba(0,0,0,.22),inset 0 0 22px rgba(125,255,173,.04);
 }
 
+@media(max-width:620px){
+  .title-gate-card{min-height:430px;border-radius:24px}
+  .title-gate-prompt{font-size:.68rem;line-height:1.35}
+}
+
 @media(prefers-reduced-motion:reduce){
   .game-menu-btn,
   .game-menu-btn:before,
@@ -219,5 +378,9 @@ button.account09x-slot:focus-visible:not(.account09x-disabled){
   .account09x-field input,
   .account09x-btn{
     transition:none!important;
+  }
+  .title-gate-prompt,
+  .title-is-opening{
+    animation:none!important;
   }
 }
