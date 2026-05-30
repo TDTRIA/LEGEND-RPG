@@ -20,24 +20,24 @@
   function accountSummary(profileData){
     const connected = !!window.LegendSupabaseV09x?.client;
     if(profileData){
-      return `<strong>${esc(profileData.displayName || 'Local Profile')}</strong><em>${connected ? 'Supabase connected' : 'Local profile ready - cloud hook pending'}</em>`;
+      return `<strong>${esc(profileData.displayName || 'Local Profile')}</strong><em>${connected ? 'Cloud gateway detected' : 'Local profile bound - cloud gate pending'}</em>`;
     }
-    return `<strong>${connected ? 'Supabase Ready' : 'Local Play Ready'}</strong><em>Open Account / Profile to claim a profile name and prep traveler sync.</em>`;
+    return `<strong>${connected ? 'Cloud Gateway Ready' : 'Local Realm Ready'}</strong><em>Open Profile / Travelers to claim a name and prepare future traveler sync.</em>`;
   }
 
   function travelerSummary(player){
     if(!player){
-      return `<article class="title-feature-card title-active-card"><div class="title-feature-head"><span>Active Traveler</span><strong>No active traveler</strong></div><p class="title-feature-copy">Create a traveler to begin the Ashmere vertical slice and start the first Old Road loop.</p><div class="title-mini-stats">${stat('Hub','Ashmere')}${stat('Route','Old Road')}${stat('Stage','Prologue')}</div></article>`;
+      return `<article class="title-feature-card title-active-card"><div class="title-feature-head"><span>Traveler Slot</span><strong>No traveler selected</strong></div><p class="title-feature-copy">Create a traveler to step through the Ashmere gate, learn the town, and begin the first Old Road loop.</p><div class="title-mini-stats">${stat('Hub','Ashmere')}${stat('Route','Old Road')}${stat('Stage','Arrival')}</div></article>`;
     }
     const cls = player.className || player.class || 'Traveler';
     const day = player.day || 1;
     const tokens = Number(player.inventory?.roadToken || 0);
     const town = player.town || 'Ashmere';
-    return `<article class="title-feature-card title-active-card"><div class="title-feature-head"><span>Active Traveler</span><strong>${esc(player.username || 'Unnamed Traveler')}</strong></div><p class="title-feature-copy">${esc(cls)} - ${esc(town)} - Day ${day}</p><div class="title-mini-stats">${stat('Road Tokens',tokens)}${stat('Town Trust',Number(player.townTrust?.Ashmere || 0))}${stat('Road Danger',Number(player.roadDanger || 1))}</div></article>`;
+    return `<article class="title-feature-card title-active-card"><div class="title-feature-head"><span>Active Traveler</span><strong>${esc(player.username || 'Unnamed Traveler')}</strong></div><p class="title-feature-copy">${esc(cls)} - ${esc(town)} - Day ${day}</p><div class="title-mini-stats">${stat('Road Tokens',tokens)}${stat('Town Trust',Number(player.townTrust?.Ashmere || 0))}${stat('Road Pressure',Number(player.roadDanger || 1))}</div></article>`;
   }
 
   function whatsNewPanel(){
-    return `<article class="title-feature-card title-news-card"><div class="title-feature-head"><span>What's New</span><strong>Ashmere Early Access</strong></div><ul class="title-feature-list"><li><strong>Title/Menu Pass:</strong> finished RPG-style front end with active traveler status.</li><li><strong>Ashmere Hub:</strong> first-town loop, NPC interactions, and hub polish continue in v0.9.x.</li><li><strong>Road + Combat:</strong> Old Road events and combat updates remain part of the vertical slice focus.</li><li><strong>Accounts:</strong> local profiles and traveler linking are in place while cloud save wiring is prepared.</li></ul><p class="title-news-note">This is still a v0.9.x build - polished Ashmere slice first, 1.0 later.</p></article>`;
+    return `<article class="title-feature-card title-news-card"><div class="title-feature-head"><span>Realm Notice</span><strong>Ashmere v0.9.x</strong></div><ul class="title-feature-list"><li><strong>Realm Portal:</strong> title, traveler select, and profile entry are being polished into a game-first front end.</li><li><strong>Ashmere Hub:</strong> the first town is the base camp for talk, trade, rest, proof, and preparation.</li><li><strong>Old Road:</strong> events, danger, loot, and combat remain the core repeatable expedition loop.</li><li><strong>Travelers:</strong> local profiles are safe while cloud slots and future social systems are staged carefully.</li></ul><p class="title-news-note">Current path: complete Ashmere vertical slice first. Full 1.0 comes later.</p></article>`;
   }
 
   function title(){
@@ -56,11 +56,11 @@
             </div>
             <div class="title-hero-grid">
               <div class="title-copy">
-                <div class="kicker">LEGEND - Dark Medieval Fantasy RPG</div>
+                <div class="kicker">Ashmere Realm Portal</div>
                 <h1 class="game-title">LEGEND</h1>
                 <p class="title-subtitle">Roads of Ashmere</p>
-                <p class="title-lore">Ashmere waits at the edge of the Old Road. Choose a traveler, gather proof, and return before the fog remembers your name.</p>
-                <div class="title-pill-row"><span class="title-pill">Ashmere Main Hub</span><span class="title-pill">Old Road Loop</span><span class="title-pill">v0.9.x Polish</span></div>
+                <p class="title-lore">Ashmere waits beyond the lantern gate. Select a traveler, prepare in town, and return from the Old Road before the fog learns your name.</p>
+                <div class="title-pill-row"><span class="title-pill">Traveler Select</span><span class="title-pill">Ashmere Base Camp</span><span class="title-pill">Old Road Loop</span></div>
               </div>
               <div class="title-keyart">
                 <img src="assets/title/title_keyart_ashmere_v1.png" alt="Roads of Ashmere key art" onerror="this.parentElement.classList.add('is-missing')">
@@ -68,24 +68,24 @@
               </div>
             </div>
             <div class="title-status-grid">
-              <article class="title-status-card title-status-account"><span>Account</span>${accountSummary(prof)}</article>
-              <article class="title-status-card"><span>Hub</span><strong>Ashmere</strong><em>Lantern Town of the Old Road</em></article>
-              <article class="title-status-card"><span>Build</span><strong>v0.9.x</strong><em>Polish pass - not 1.0</em></article>
+              <article class="title-status-card title-status-account"><span>Profile</span>${accountSummary(prof)}</article>
+              <article class="title-status-card"><span>Hub</span><strong>Ashmere</strong><em>Base camp of the Old Road</em></article>
+              <article class="title-status-card"><span>Build</span><strong>v0.9.x</strong><em>Vertical slice polish - not 1.0</em></article>
             </div>
             <div class="title-bottom-grid">${travelerSummary(player)}${whatsNewPanel()}</div>
           </div>
           <aside class="title-menu-panel title-menu-final">
-            <div class="title-menu-stamp">Early Access</div>
-            <h2>Main Menu</h2>
+            <div class="title-menu-stamp">Realm Portal</div>
+            <h2>Traveler Select</h2>
             <div class="actions">
-              ${player ? menuButton('continue','primary',`Continue as ${esc(player.username)}`,'Return to Ashmere and resume the first-town loop.','continue') : ''}
-              ${menuButton('account','', 'Account / Profile', prof ? 'Manage your profile, active traveler, and cloud-save readiness.' : 'Create a local profile and prepare cloud travelers.', 'account')}
-              ${menuButton('new','', 'New Traveler','Create a new traveler for Roads of Ashmere.','new')}
-              ${menuButton('settings','', 'Settings / Accessibility','Adjust readability, contrast, spacing, and motion.','settings')}
-              ${menuLink('feedback.html','Playtest Feedback','Send bugs, balance notes, and first-town impressions.','feedback')}
-              ${player ? menuButton('delete','danger','Delete Local Save','Clear the local browser traveler save.','delete') : ''}
+              ${player ? menuButton('continue','primary',`Enter as ${esc(player.username)}`,'Return to Ashmere and resume the first-town loop.','continue') : ''}
+              ${menuButton('account','', 'Profile / Travelers', prof ? 'Manage your profile, active traveler, and cloud-save readiness.' : 'Claim a local profile and prepare future cloud traveler slots.', 'account')}
+              ${menuButton('new','', 'Create Traveler','Begin a new Roads of Ashmere traveler.','new')}
+              ${menuButton('settings','', 'Options / Accessibility','Tune readability, contrast, spacing, and motion.','settings')}
+              ${menuLink('feedback.html','Send Playtest Report','Send bugs, balance notes, and first-town impressions.','feedback')}
+              ${player ? menuButton('delete','danger','Delete Local Traveler','Clear the local browser traveler save.','delete') : ''}
             </div>
-            <p class="small title-footer">Cloud saves remain in v0.9.x wiring; local traveler progress stays fully playable.</p>
+            <p class="small title-footer">Local traveler progress is playable now. Cloud slots, friends, and social systems remain staged for future v0.9.x work.</p>
           </aside>
         </section>
       </div>`;
@@ -116,7 +116,7 @@
 
   function account(){
     if(window.LegendAccountV09x?.renderAccount) return window.LegendAccountV09x.renderAccount();
-    root().innerHTML = `<main class="account09x"><div class="account09x-wrap"><section class="account09x-hero"><div class="account09x-hero-content"><div class="account09x-kicker">Account System</div><h1>Profile</h1><p>Account screens are loading. Try a hard refresh if this screen does not change.</p></div></section><div class="account09x-actions"><button class="account09x-btn primary" id="backTitle">Back to Title</button></div></div></main>`;
+    root().innerHTML = `<main class="account09x"><div class="account09x-wrap"><section class="account09x-hero"><div class="account09x-hero-content"><div class="account09x-kicker">Profile / Travelers</div><h1>Traveler Profile</h1><p>Profile screens are loading. Try a hard refresh if this screen does not change.</p></div></section><div class="account09x-actions"><button class="account09x-btn primary" id="backTitle">Back to Title</button></div></div></main>`;
     document.getElementById('backTitle').onclick = title;
   }
 
