@@ -1,0 +1,16 @@
+/* LEGEND: Roads of Ashmere v0.9.x - title menu cleanup
+   Keeps the post-gate Realm Portal title clean and removes stray-looking hero text. */
+
+.title-v09x-final .title-copy .title-pill-row,
+.title-v09x-final .title-copy > .title-rumor{
+  display:none!important;
+}
+
+.title-v09x-final .title-copy{
+  gap:8px;
+}
+
+.title-v09x-final .title-lore{
+  max-width:620px;
+  margin-top:4px;
+}
