@@ -2,6 +2,13 @@
 // Owns title/start/settings/account entry. Ashmere is owned by ashmere-controller-v099.js.
 (() => {
   const S = () => window.LegendStorage || {};
+  const TITLE_GATE_KEY = 'legend-roads-of-ashmere-title-gate-v09x';
+  const AUDIO = {
+    ambience:'assets/audio/title/ashmere_ambience_loop.mp3',
+    hover:'assets/audio/ui/ui_hover_soft.ogg',
+    confirm:'assets/audio/ui/ui_confirm_gate.ogg'
+  };
+  let titleAmbience = null;
 
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
   function root(){ return document.getElementById('root'); }
@@ -10,6 +17,35 @@
   function loadSettings(){ return S().loadSettings ? S().loadSettings() : { largeText:false, boldText:false, highContrast:false, reducedMotion:false, simpleAscii:false, spacious:false, readableFont:false }; }
   function applySettings(){ if(S().applySettings) S().applySettings(); }
   function profile(){ return window.LegendAccountV09x?.getProfile?.() || null; }
+
+  function playUi(kind){
+    const src = AUDIO[kind];
+    if(!src) return;
+    try {
+      const audio = new Audio(src);
+      audio.volume = kind === 'hover' ? 0.16 : 0.26;
+      audio.play().catch(() => {});
+    } catch {}
+  }
+
+  function startAmbience(){
+    if(titleAmbience || !AUDIO.ambience) return;
+    try {
+      titleAmbience = new Audio(AUDIO.ambience);
+      titleAmbience.loop = true;
+      titleAmbience.volume = 0.28;
+      titleAmbience.play().catch(() => { titleAmbience = null; });
+    } catch { titleAmbience = null; }
+  }
+
+  const titleRumors = [
+    'The fog remembers names better than men do.',
+    'Road Tokens prove you returned. Not why.',
+    'Mara says the Old Road keeps its own ledger.',
+    'Three tokens buys trust. A fourth asks what trust costs.',
+    'The lantern gate opens for travelers, not heroes.'
+  ];
+  function titleRumor(){ return titleRumors[Math.floor(Date.now() / 7000) % titleRumors.length]; }
 
   const paths={continue:'M5 12h12M13 6l6 6-6 6',new:'M12 5v14M5 12h14',settings:'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm0-5v3m0 12v3M4.2 4.2l2.1 2.1m11.4 11.4 2.1 2.1M3 12h3m12 0h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1',account:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c1.4-4.2 4.5-6.5 8-6.5s6.6 2.3 8 6.5',feedback:'M4 5h16v11H8l-4 4V5z',delete:'M6 7h12M9 7V5h6v2m-7 3v9m4-9v9m4-9v9',text:'M5 7h14M5 12h14M5 17h10',bold:'M8 5h5a4 4 0 0 1 0 8H8zM8 13h6a4 4 0 0 1 0 8H8z',contrast:'M12 3a9 9 0 1 0 0 18V3z',motion:'M4 12h10M10 6l6 6-6 6',space:'M4 8h16M4 16h16M8 4v16M16 4v16',font:'M4 19l6-14h4l6 14M8 14h8'};
   const icon=k=>`<span class="game-menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[k]||paths.continue}"/></svg></span>`;
@@ -40,6 +76,55 @@
     return `<article class="title-feature-card title-news-card"><div class="title-feature-head"><span>Realm Notice</span><strong>Ashmere v0.9.x</strong></div><ul class="title-feature-list"><li><strong>Realm Portal:</strong> title, traveler select, and profile entry are being polished into a game-first front end.</li><li><strong>Ashmere Hub:</strong> the first town is the base camp for talk, trade, rest, proof, and preparation.</li><li><strong>Old Road:</strong> events, danger, loot, and combat remain the core repeatable expedition loop.</li><li><strong>Travelers:</strong> local profiles are safe while cloud slots and future social systems are staged carefully.</li></ul><p class="title-news-note">Current path: complete Ashmere vertical slice first. Full 1.0 comes later.</p></article>`;
   }
 
+  function titleGate(){
+    applySettings();
+    root().innerHTML = `
+      <div class="title-wrap title-gate-wrap">
+        <div class="title-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="title-fog" aria-hidden="true"><i></i><i></i><i></i></div>
+        <section class="title-gate-card" role="button" tabindex="0" aria-label="Enter Ashmere">
+          <div class="title-gate-emblem"><img src="assets/ui/logos/logo_legend_emblem_v1.png" alt="" onerror="this.style.display='none'"></div>
+          <p class="title-gate-kicker">Roads of Ashmere</p>
+          <h1 class="game-title">LEGEND</h1>
+          <p class="title-gate-copy">Beyond the lantern gate, the Old Road waits.</p>
+          <button class="title-gate-prompt" id="enterRealm" type="button">Press Any Key / Click to Enter Ashmere</button>
+          <p class="title-rumor">${esc(titleRumor())}</p>
+        </section>
+      </div>`;
+    const card = document.querySelector('.title-gate-card');
+    const enter = document.getElementById('enterRealm');
+    const activate = () => {
+      document.removeEventListener('keydown', onKey);
+      try { sessionStorage.setItem(TITLE_GATE_KEY, 'opened'); } catch {}
+      startAmbience();
+      playUi('confirm');
+      title();
+    };
+    const onKey = e => { if(e.key !== 'Tab') activate(); };
+    document.addEventListener('keydown', onKey);
+    if(card) card.onclick = activate;
+    if(enter) enter.onclick = e => { e.stopPropagation(); activate(); };
+  }
+
+  function titleTransition(message, action){
+    playUi('confirm');
+    const wrap = document.querySelector('.title-wrap');
+    if(!wrap) return action();
+    wrap.classList.add('title-is-opening');
+    const notice = document.createElement('div');
+    notice.className = 'title-transition-notice';
+    notice.textContent = message;
+    wrap.appendChild(notice);
+    setTimeout(action, 340);
+  }
+
+  function bindTitleAudio(){
+    document.querySelectorAll('.game-menu-btn').forEach(btn => {
+      btn.addEventListener('pointerenter', () => playUi('hover'));
+      btn.addEventListener('focus', () => playUi('hover'));
+    });
+  }
+
   function title(){
     applySettings();
     const player = loadPlayer();
@@ -61,6 +146,7 @@
                 <p class="title-subtitle">Roads of Ashmere</p>
                 <p class="title-lore">Ashmere waits beyond the lantern gate. Select a traveler, prepare in town, and return from the Old Road before the fog learns your name.</p>
                 <div class="title-pill-row"><span class="title-pill">Traveler Select</span><span class="title-pill">Ashmere Base Camp</span><span class="title-pill">Old Road Loop</span></div>
+                <p class="title-rumor">${esc(titleRumor())}</p>
               </div>
               <div class="title-keyart">
                 <img src="assets/title/title_keyart_ashmere_v1.png" alt="Roads of Ashmere key art" onerror="this.parentElement.classList.add('is-missing')">
@@ -89,11 +175,13 @@
           </aside>
         </section>
       </div>`;
+    startAmbience();
+    bindTitleAudio();
     const cont = document.getElementById('continue');
-    if(cont) cont.onclick = continueGame;
-    document.getElementById('account').onclick = account;
-    document.getElementById('new').onclick = newTraveler;
-    document.getElementById('settings').onclick = settings;
+    if(cont) cont.onclick = () => titleTransition('Opening Ashmere Gate...', continueGame);
+    document.getElementById('account').onclick = () => titleTransition('Opening Traveler Registry...', account);
+    document.getElementById('new').onclick = () => titleTransition('Preparing New Traveler...', newTraveler);
+    document.getElementById('settings').onclick = () => titleTransition('Opening Options...', settings);
     const del = document.getElementById('delete');
     if(del) del.onclick = () => { if(confirm('Delete local browser save?')){ S().deleteSaves?.(); title(); } };
   }
@@ -142,7 +230,11 @@
     if(backGame) backGame.onclick = continueGame;
   }
 
-  window.LegendGameBootstrap = { title, continueGame, newTraveler, settings, account };
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', title);
-  else title();
+  window.LegendGameBootstrap = { title, titleGate, continueGame, newTraveler, settings, account };
+  const boot = () => {
+    try { if(sessionStorage.getItem(TITLE_GATE_KEY) === 'opened') return title(); } catch {}
+    titleGate();
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();
