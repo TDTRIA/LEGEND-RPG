@@ -1,0 +1,259 @@
+/* LEGEND: Roads of Ashmere v0.9.x - Realm Portal comfort pass
+   Softens the MMO menu, fixes footer overlap, and improves readability. */
+
+.portal-shell{
+  gap:12px!important;
+  padding:clamp(10px,1.25vw,18px)!important;
+}
+
+.portal-header,
+.portal-main-grid,
+.portal-footer{
+  width:min(1500px,100%)!important;
+}
+
+.portal-header{
+  border-radius:18px!important;
+  padding:10px 14px!important;
+  background:linear-gradient(180deg,rgba(7,11,8,.78),rgba(0,0,0,.50))!important;
+  box-shadow:0 16px 38px rgba(0,0,0,.34),inset 0 0 24px rgba(255,211,105,.025)!important;
+}
+
+.portal-brand img{
+  width:58px!important;
+  height:58px!important;
+}
+
+.portal-brand h1{
+  font-size:clamp(1.9rem,3.2vw,3.2rem)!important;
+  letter-spacing:.12em!important;
+}
+
+.portal-brand p,
+.portal-brand span{
+  font-size:.68rem!important;
+  letter-spacing:.11em!important;
+}
+
+.portal-profile-card{
+  font-size:.9rem;
+  gap:10px!important;
+}
+
+.portal-crest,
+.portal-gear{
+  width:40px!important;
+  height:40px!important;
+  border-radius:12px!important;
+}
+
+.portal-main-grid{
+  grid-template-columns:minmax(240px,.82fr) minmax(420px,1.42fr) minmax(250px,.86fr)!important;
+  gap:clamp(10px,1vw,16px)!important;
+}
+
+.portal-panel{
+  border-color:rgba(255,211,105,.14)!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,rgba(8,14,10,.76),rgba(2,5,3,.54))!important;
+  box-shadow:0 18px 44px rgba(0,0,0,.34),inset 0 0 24px rgba(255,211,105,.022)!important;
+  padding:clamp(12px,1vw,18px)!important;
+}
+
+.portal-panel h2{
+  margin-bottom:12px!important;
+  font-size:clamp(1.15rem,1.55vw,1.65rem)!important;
+  letter-spacing:.065em!important;
+  color:#e8cc86!important;
+}
+
+.portal-status-list{
+  gap:6px!important;
+  margin-bottom:12px!important;
+}
+
+.portal-status-row{
+  padding:5px 0!important;
+  font-size:.92rem;
+  color:#cbd9cf!important;
+}
+
+.portal-icon{
+  width:22px!important;
+  height:22px!important;
+}
+
+.portal-icon svg,
+.portal-icon path{
+  width:18px!important;
+  height:18px!important;
+  stroke-width:1.55!important;
+}
+
+.portal-side-actions,
+.portal-roster-actions{
+  gap:8px!important;
+}
+
+.portal-action{
+  min-height:58px!important;
+  border-radius:14px!important;
+}
+
+.portal-action strong,
+.game-menu-btn strong{
+  letter-spacing:.02em!important;
+}
+
+.portal-action small,
+.game-menu-btn small{
+  color:#aebdb3!important;
+  line-height:1.28!important;
+}
+
+.portal-traveler-card{
+  grid-template-columns:118px minmax(0,1fr)!important;
+  gap:14px!important;
+  padding:12px!important;
+  margin-bottom:10px!important;
+  border-radius:16px!important;
+  background:rgba(0,0,0,.18)!important;
+}
+
+.portal-portrait{
+  width:108px!important;
+  height:108px!important;
+  box-shadow:inset 0 0 22px rgba(255,211,105,.045),0 14px 26px rgba(0,0,0,.30)!important;
+}
+
+.portal-portrait span{
+  font-size:3rem!important;
+}
+
+.portal-traveler-info h3{
+  font-size:clamp(1.35rem,1.75vw,1.9rem)!important;
+  margin-bottom:7px!important;
+}
+
+.portal-traveler-info dl{
+  gap:4px!important;
+}
+
+.portal-traveler-info dl div{
+  font-size:.94rem;
+}
+
+.portal-slot-list{
+  gap:6px!important;
+  margin-bottom:10px!important;
+}
+
+.portal-slot{
+  min-height:38px!important;
+  grid-template-columns:36px minmax(0,1fr) auto!important;
+  border-radius:10px!important;
+  padding:5px 8px!important;
+  font-size:.9rem;
+}
+
+.portal-slot b{
+  height:26px!important;
+  border-radius:8px!important;
+}
+
+.portal-slot em{
+  font-size:.66rem!important;
+}
+
+.portal-enter-btn{
+  min-height:52px!important;
+  border-radius:14px!important;
+  font-size:clamp(1.15rem,1.55vw,1.55rem)!important;
+  box-shadow:0 14px 26px rgba(0,0,0,.26),inset 0 0 18px rgba(255,211,105,.055)!important;
+}
+
+.portal-secondary-btn{
+  min-height:44px!important;
+  border-radius:12px!important;
+  font-size:.88rem;
+}
+
+.portal-parchment{
+  padding:12px!important;
+  margin-bottom:10px!important;
+  border-radius:13px!important;
+  background:linear-gradient(180deg,rgba(219,196,151,.88),rgba(166,130,78,.82))!important;
+}
+
+.portal-parchment h3{
+  margin-bottom:7px!important;
+  font-size:1rem;
+}
+
+.portal-parchment ul{
+  line-height:1.38!important;
+  font-size:.9rem;
+}
+
+.portal-parchment.small p{
+  font-size:.93rem;
+}
+
+.portal-footer{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:8px 18px!important;
+  border-radius:16px!important;
+  padding:10px 14px!important;
+  min-height:auto!important;
+  background:rgba(0,0,0,.50)!important;
+  box-shadow:0 14px 30px rgba(0,0,0,.28),inset 0 0 20px rgba(255,211,105,.018)!important;
+  font-size:.88rem!important;
+  text-align:center;
+}
+
+.portal-footer p{
+  margin:0!important;
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+.portal-footer p:first-child{
+  flex:1 1 420px;
+}
+
+.portal-footer p:last-child{
+  flex:0 1 auto;
+  white-space:normal;
+}
+
+@media(min-width:1180px){
+  .portal-shell{
+    height:100svh;
+  }
+  .portal-main-grid{
+    max-height:calc(100svh - 154px)!important;
+  }
+}
+
+@media(max-width:1320px) and (min-width:1180px){
+  .portal-main-grid{
+    grid-template-columns:minmax(220px,.78fr) minmax(390px,1.34fr) minmax(235px,.82fr)!important;
+  }
+  .portal-action small,
+  .game-menu-btn small{
+    display:none!important;
+  }
+  .portal-profile-card{
+    font-size:.82rem;
+  }
+}
+
+@media(max-width:1179px){
+  .portal-footer p:first-child,
+  .portal-footer p:last-child{
+    flex:1 1 100%;
+  }
+}
