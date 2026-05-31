@@ -14,7 +14,8 @@
     woodScrap:'Wood Scrap', clothScrap:'Cloth Scrap', roadHerb:'Road Herb', wolfFang:'Wolf Fang',
     tornHide:'Torn Hide', ore:'Ore', wispAsh:'Wisp Ash', oil:'Lamp Oil', goblinTrinket:'Goblin Trinket',
     blackrootThorn:'Blackroot Thorn', brokenBellShard:'Broken Bell Shard', roadPoultice:'Road Poultice',
-    huntersCharm:'Hunter\'s Charm', tradeBundle:'Trade Bundle'
+    blackrootTonic:'Blackroot Tonic', huntersCharm:'Hunter\'s Charm', reinforcedBuckle:'Reinforced Buckle',
+    wispLanternWick:'Wisp Lantern Wick', tradeBundle:'Trade Bundle'
   }[k] || k);
   const gold = n => `${Number(n || 0)}g`;
   const bg = () => A().locations?.ashmereMain || 'assets/locations/ashmere/location_ashmere_mainstreet_v1.jpg';
@@ -43,6 +44,11 @@
   function shell(html){ root().innerHTML = `<main class="ash099 ash099-terminal"><div class="ash099-wrap">${html}</div></main>`; }
   function stat(label, value){ return `<div class="ash099-stat"><strong>${esc(value)}</strong><span>${esc(label)}</span></div>`; }
   function hpPct(pl){ return Math.max(0, Math.min(100, Math.round((Number(pl.hp || 0) / Math.max(1, Number(pl.maxHp || 1))) * 100))); }
+  function owned(pl, k){ return Number(pl.inventory?.[k] || 0); }
+  function canAfford(pl, cost){ return Number(pl.gold || 0) >= Number(cost || 0); }
+  function canCraft(pl, needs){ return needs.every(([k,v]) => owned(pl,k) >= Number(v || 0)); }
+  function needsText(pl, needs){ return needs.map(([k,v]) => `${v} ${itemName(k)} (${owned(pl,k)})`).join(', '); }
+  function note(msg){ const n = document.getElementById('ashNote'); if(n){ n.style.display='block'; n.textContent=msg; } }
 
   function goal(pl){
     const t = Number(pl?.inventory?.roadToken || 0);
@@ -55,59 +61,28 @@
   function actionCard(view, title, desc, label = 'Open', featured = false, ic = view){
     return `<button class="ash099-btn ash099-action ${featured ? 'featured' : ''}" data-ash-view="${esc(view)}">${icon(ic)}<span><strong>${esc(title)}</strong><small>${esc(desc)}</small></span><em>${esc(label)}</em></button>`;
   }
-
   function actionGroup(title, text, body, kind = ''){
     return `<section class="ash099-action-group ${kind}"><header><h3>${esc(title)}</h3><p>${esc(text)}</p></header><div class="ash099-group-grid">${body}</div></section>`;
   }
-
-  function miniMeter(pl){
-    return `<div class="ash099-meter"><span>Health</span><strong>${Number(pl.hp || 0)}/${Number(pl.maxHp || 0)}</strong><i style="width:${hpPct(pl)}%"></i></div>`;
-  }
-
+  function miniMeter(pl){ return `<div class="ash099-meter"><span>Health</span><strong>${Number(pl.hp || 0)}/${Number(pl.maxHp || 0)}</strong><i style="width:${hpPct(pl)}%"></i></div>`; }
   function currentRouteCard(g){
     return `<aside class="ash099-route-card"><h2>Current Route</h2><div class="ash099-route-title">${icon(g.icon)}<div><strong>${esc(g.title)}</strong><p>${esc(g.text)}</p></div></div><ul>${(g.tasks || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul><button class="ash099-btn primary" data-ash-view="${esc(g.view)}">${esc(g.cta)}</button></aside>`;
   }
-
   function travelerTerminal(pl){
     const name = pl.username || 'Traveler';
     return `<aside class="ash099-panel ash099-traveler-panel ash099-terminal-card"><h3>Traveler Terminal</h3><div class="ash099-traveler-identity"><div class="ash099-avatar"><span>${esc(String(name).slice(0,1)).toUpperCase()}</span></div><div><strong>${esc(name)}</strong><small>${esc(pl.className || 'Wanderer')}</small></div></div>${miniMeter(pl)}<div class="ash099-stats">${stat('Class', pl.className || 'Wanderer')}${stat('Gold', gold(pl.gold))}${stat('Road Tokens', `${Number(pl.inventory?.roadToken || 0)}/3`)}${stat('Weapon', weaponName(pl.weapon))}${stat('Armor', armorName(pl.armor))}${stat('Jobs Done', Number(pl.flags?.ashmereJobs || 0))}</div><p class="ash099-trait"><strong>Origin & Nature</strong><br>${esc(pl.personalityLabel || 'Unknown traveler')} • ${esc(pl.origin || 'Unknown origin')}</p></aside>`;
   }
-
   function terminalNav(){
     return `<nav class="ash099-footer ash099-topnav" aria-label="Ashmere terminal navigation"><button class="ash099-footer-item active" data-ash-view="home">${icon('inn')}<span>Town</span></button><button class="ash099-footer-item" data-ash-view="road">${icon('road')}<span>Routes</span></button><button class="ash099-footer-item" data-ash-view="archive">${icon('archive')}<span>Journal</span></button><button class="ash099-footer-item" data-ash-view="profile">${icon('profile')}<span>Profile</span></button><button class="ash099-footer-item" data-ash-view="sheet">${icon('sheet')}<span>Sheet</span></button></nav>`;
   }
 
   function renderAshmere(){
-    const pl = p();
-    if(!pl) return;
+    const pl = p(); if(!pl) return;
     const g = goal(pl);
     const townLife = actionCard('people','Town Square','News, rumors, and conversations with Ashmere\'s guides.','Talk',!pl.flags?.talkedToMara,'people') + actionCard('inn','Ashmere Inn','Rest, recover, buy camp supplies, and hear road rumors.','Rest',false,'inn') + actionCard('trader','Trading Post','Buy, sell, and trade supplies, road loot, and valuables.','Shop',false,'trader') + actionCard('smith','Blacksmith','Upgrade gear, buy weapons, and reinforce armor.','Gear',false,'smith');
     const roadPrep = actionCard('work','Work Board','Contracts, bounties, low-risk jobs, and town needs.','Jobs',false,'work') + actionCard('craft','Crafting Bench','Convert road drops into healing, utility, and trade goods.','Craft',false,'craft') + actionCard('road','Town Gate','Leave the lantern line and begin an Old Road expedition.','Travel',Number(pl.flags?.talkedToMara),'road');
     const records = actionCard('brenn','Ledger Hall','Track proof, turn in Road Tokens, and claim rewards.','Ledger',false,'brenn') + actionCard('archive','Archive Hall','Lore, memories, discovered notes, and road records.','Archive',false,'archive') + actionCard('profile','Profile / Travelers','Account, registry binding, cloud slots, and tester rewards.','Registry',false,'profile') + actionCard('sheet','Character Sheet','Stats, inventory, gear, identity, and traits.','Sheet',false,'sheet');
-    shell(`
-      <section class="ash099-hero ash099-hero-mockup">
-        ${img(bg(), 'Ashmere')}
-        <div class="ash099-hero-content">
-          <div class="ash099-title">
-            <div class="ash099-kicker">LEGEND • Roads of Ashmere</div>
-            <h1>Ashmere</h1>
-            <div class="ash099-terminal-plaque">Ashmere Town Terminal</div>
-            <p>A rain-dark base camp at the edge of the Old Road. The terminal organizes town life, road preparation, records, and traveler identity without losing the feeling of being in Ashmere.</p>
-          </div>
-          ${currentRouteCard(g)}
-        </div>
-      </section>
-      ${terminalNav()}
-      <section class="ash099-hub-layout ash099-hub-grouped">
-        <div class="ash099-panel ash099-menu-panel ash099-town-access">
-          <h2>Town Access</h2>
-          ${actionGroup('Town Life','People, rest, trade, and equipment — the everyday loop that makes Ashmere feel alive.',townLife,'town-life')}
-          ${actionGroup('Road Prep','Jobs, crafting, and the gate — the practical loop before an expedition.',roadPrep,'road-prep')}
-          ${actionGroup('Records & Registry','Progress, lore, account binding, and character details.',records,'records')}
-        </div>
-        ${travelerTerminal(pl)}
-      </section>
-    `);
+    shell(`<section class="ash099-hero ash099-hero-mockup">${img(bg(), 'Ashmere')}<div class="ash099-hero-content"><div class="ash099-title"><div class="ash099-kicker">LEGEND • Roads of Ashmere</div><h1>Ashmere</h1><div class="ash099-terminal-plaque">Ashmere Town Terminal</div><p>A rain-dark base camp at the edge of the Old Road. The terminal organizes town life, road preparation, records, and traveler identity without losing the feeling of being in Ashmere.</p></div>${currentRouteCard(g)}</div></section>${terminalNav()}<section class="ash099-hub-layout ash099-hub-grouped"><div class="ash099-panel ash099-menu-panel ash099-town-access"><h2>Town Access</h2>${actionGroup('Town Life','People, rest, trade, and equipment — the everyday loop that makes Ashmere feel alive.',townLife,'town-life')}${actionGroup('Road Prep','Jobs, crafting, and the gate — the practical loop before an expedition.',roadPrep,'road-prep')}${actionGroup('Records & Registry','Progress, lore, account binding, and character details.',records,'records')}</div>${travelerTerminal(pl)}</section>`);
     bind();
   }
 
@@ -159,45 +134,56 @@
     document.getElementById('camp').onclick=()=>buyService(90,pl=>{pl.inventory.camp=Number(pl.inventory.camp||0)+1},'Bought camp supplies.');
     document.getElementById('rumor').onclick=()=>note(['A broken shrine showed itself in the fog last night.','Blackroot wolves hate firelight.','Brenn pays extra for proof that still bleeds.'][Math.floor(Math.random()*3)]);
   }
-  function note(msg){const n=document.getElementById('ashNote');if(n){n.style.display='block';n.textContent=msg;}}
   function buyService(cost,fn,msg){const pl=p();if(Number(pl.gold||0)<cost)return note('Not enough gold.');pl.gold-=cost;fn(pl);save(pl);note(msg);}
 
   function renderWorkBoard(){
-    const jobs=[['wood','Split Firewood','Strength work behind the inn.','strength',38,'woodScrap',1],['gate','Watch the Gate','Stand a short watch with Oric.','survival',42,'food',1],['records','Sort Archive Records','Help Mara find a misplaced road note.','lore',45,'roadHerb',1],['crates','Carry Market Crates','Move trader stock before the rain spoils it.','strength',34,'camp',1]];
+    const jobs=[['wood','Split Firewood','Strength work behind the inn.','strength',38,'woodScrap',1],['gate','Watch the Gate','Stand a short watch with Oric.','survival',42,'food',1],['records','Sort Archive Records','Help Mara find a misplaced road note.','lore',45,'roadHerb',1],['crates','Carry Market Crates','Move trader stock before the rain spoils it.','strength',34,'camp',1],['yard','Clean Stable Yard','Low-risk work for steady pay.','luck',30,'clothScrap',1],['message','Run a Message','Carry sealed word between town posts.','survival',46,'goblinTrinket',1]];
     screen(head('Town Work','Work Board','Short jobs give Ashmere everyday life and give you low-risk ways to earn gold, supplies, and favor.','','work'),`<div class="ash099-cards">${jobs.map(([id,title,desc,skill,pay,item,amount])=>`<button class="ash099-btn ash099-card" data-job="${id}" data-skill="${skill}" data-pay="${pay}" data-item="${item}" data-amount="${amount}">${icon('work')}<strong>${title}</strong><small>${desc} Check: ${skill.toUpperCase()}.</small><em>${pay}g</em></button>`).join('')}</div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
     document.querySelectorAll('[data-job]').forEach(b=>b.onclick=()=>runJob(b));
   }
-  function runJob(b){const pl=p();pl.flags=pl.flags||{};pl.flags.ashmereJobs=Number(pl.flags.ashmereJobs||0)+1;const pay=Number(b.dataset.pay||0),item=b.dataset.item,amount=Number(b.dataset.amount||0);pl.gold=Number(pl.gold||0)+pay;pl.inventory=pl.inventory||{};let bonus='';if(item&&amount>0&&Math.random()<.55){pl.inventory[item]=Number(pl.inventory[item]||0)+amount;bonus=` and ${amount} ${itemName(item)}`;}save(pl);note(`${b.querySelector('strong')?.textContent||'Job'} complete. Earned ${pay}g${bonus}.`);}
+  function runJob(b){const pl=p();pl.flags=pl.flags||{};pl.flags.ashmereJobs=Number(pl.flags.ashmereJobs||0)+1;pl.flags.ashmereFavor=Number(pl.flags.ashmereFavor||0)+1;const pay=Number(b.dataset.pay||0),item=b.dataset.item,amount=Number(b.dataset.amount||0);pl.gold=Number(pl.gold||0)+pay;pl.inventory=pl.inventory||{};let bonus='';if(item&&amount>0&&Math.random()<.58){pl.inventory[item]=Number(pl.inventory[item]||0)+amount;bonus=` and ${amount} ${itemName(item)}`;}save(pl);note(`${b.querySelector('strong')?.textContent||'Job'} complete. Earned ${pay}g${bonus}. Ashmere favor increased.`);}
 
   function renderTrader(){
     const pl=p();
-    const goods=[['food','Rations',60,'Keeps the road loop readable.'],['potion','Healing Potion',120,'Emergency healing during fights.'],['camp','Camp Supplies',90,'Travel prep for longer routes.']];
-    const sellables=[['wolfFang',12],['tornHide',8],['roadHerb',10],['wispAsh',22],['goblinTrinket',16],['blackrootThorn',14],['brokenBellShard',60]];
-    screen(head('Shop','Trading Post','Supplies, patched crates, and scales nobody fully trusts.',npc('trader'),'trader'),`<h2>Buy Supplies</h2><div class="ash099-cards">${goods.map(([k,n,c,d])=>`<button class="ash099-btn ash099-card" data-buy="${k}" data-cost="${c}">${icon('trader')}<strong>${n}</strong><small>${esc(d)} You own ${Number(pl.inventory?.[k]||0)}.</small><em>${c}g</em></button>`).join('')}</div><h2>Sell Road Loot</h2><div class="ash099-cards">${sellables.map(([k,v])=>`<button class="ash099-btn ash099-card" data-sell="${k}" data-value="${v}" ${Number(pl.inventory?.[k]||0)>0?'':'disabled'}>${icon('trader')}<strong>${itemName(k)}</strong><small>You own ${Number(pl.inventory?.[k]||0)}. Raw sell value.</small><em>${v}g</em></button>`).join('')}</div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
+    const goods=[['food','Rations',60,'Keeps the road loop readable.'],['potion','Healing Potion',120,'Emergency healing during fights.'],['camp','Camp Supplies',90,'Travel prep for longer routes.'],['clothScrap','Cloth Scrap',34,'Crafting material for poultices.'],['oil','Lamp Oil',70,'Crafting material for strange lantern work.']];
+    const sellables=[['wolfFang',12],['tornHide',8],['roadHerb',10],['wispAsh',22],['goblinTrinket',16],['blackrootThorn',14],['woodScrap',7],['clothScrap',9],['ore',24],['tradeBundle',72],['brokenBellShard',60]];
+    const sellAllValue=sellables.reduce((sum,[k,v])=>sum+(owned(pl,k)*v),0);
+    const buyCards=goods.map(([k,n,c,d])=>`<button class="ash099-btn ash099-card" data-buy="${k}" data-cost="${c}" ${canAfford(pl,c)?'':'disabled'}>${icon('trader')}<strong>${n}</strong><small>${esc(d)} You own ${owned(pl,k)}.</small><em>${c}g</em></button>`).join('');
+    const sellCards=sellables.map(([k,v])=>`<button class="ash099-btn ash099-card" data-sell="${k}" data-value="${v}" ${owned(pl,k)>0?'':'disabled'}>${icon('trader')}<strong>${itemName(k)}</strong><small>You own ${owned(pl,k)}. Raw sell value.</small><em>${v}g each</em></button>`).join('');
+    screen(head('Shop','Trading Post','Supplies, road loot, and the ugly math that keeps Ashmere alive.',npc('trader'),'trader'),`<div class="ash099-market-summary"><strong>Your Gold: ${gold(pl.gold)}</strong><span>Sellable road loot value: ${gold(sellAllValue)}</span><button class="ash099-btn" id="sellAllLoot" ${sellAllValue>0?'':'disabled'}>Sell All Road Loot</button></div><h2>Buy Supplies</h2><div class="ash099-cards">${buyCards}</div><h2>Sell Road Loot</h2><div class="ash099-cards">${sellCards}</div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
     document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>buyItem(b.dataset.buy,Number(b.dataset.cost)));
     document.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>sellItem(b.dataset.sell,Number(b.dataset.value)));
+    const sellAll=document.getElementById('sellAllLoot');
+    if(sellAll) sellAll.onclick=()=>sellAllLoot(sellables);
   }
-  function buyItem(k,cost){const pl=p();if(Number(pl.gold||0)<cost)return note('Not enough gold.');pl.gold-=cost;pl.inventory[k]=Number(pl.inventory[k]||0)+1;save(pl);note(`Bought ${itemName(k)}.`);}
-  function sellItem(k,value){const pl=p();if(Number(pl.inventory?.[k]||0)<=0)return note('Nothing to sell.');pl.inventory[k]-=1;pl.gold=Number(pl.gold||0)+value;save(pl);note(`Sold ${itemName(k)} for ${value}g.`);renderTrader();}
+  function buyItem(k,cost){const pl=p();if(Number(pl.gold||0)<cost)return note('Not enough gold.');pl.gold-=cost;pl.inventory[k]=Number(pl.inventory[k]||0)+1;save(pl);renderTrader();}
+  function sellItem(k,value){const pl=p();if(owned(pl,k)<=0)return note('Nothing to sell.');pl.inventory[k]-=1;pl.gold=Number(pl.gold||0)+value;save(pl);renderTrader();}
+  function sellAllLoot(sellables){const pl=p();let total=0;sellables.forEach(([k,v])=>{const qty=owned(pl,k);if(qty>0){total+=qty*v;pl.inventory[k]=0;}});if(total<=0)return note('No sellable road loot.');pl.gold=Number(pl.gold||0)+total;save(pl);renderTrader();}
 
   function renderCrafting(){
     const pl=p();
     const recipes=[
       ['roadPoultice','Road Poultice',[['roadHerb',2],['clothScrap',1]],'Healing item for rough travel.'],
+      ['blackrootTonic','Blackroot Tonic',[['blackrootThorn',1],['wolfFang',1]],'Prepared for fear, bleed, and cursed road events later.'],
       ['huntersCharm','Hunter\'s Charm',[['wolfFang',2],['camp',1]],'+1 survival flavor for next road trip later.'],
-      ['tradeBundle','Trade Bundle',[['goblinTrinket',2],['tornHide',1]],'Sellable bundle worth more than raw scraps.']
+      ['reinforcedBuckle','Reinforced Buckle',[['ore',1],['tornHide',1]],'Minor armor improvement material for the blacksmith later.'],
+      ['wispLanternWick','Wisp Lantern Wick',[['wispAsh',1],['oil',1]],'Prepared to reveal hidden road events later.'],
+      ['tradeBundle','Trade Bundle',[['goblinTrinket',2],['tornHide',1],['woodScrap',1]],'Sellable bundle worth more than raw scraps.']
     ];
-    screen(head('Crafting','Crafting Bench','Road drops should matter. Convert herbs, fangs, hides, ash, and scraps into useful items or better sellables.','','craft'),`<div class="ash099-cards">${recipes.map(([id,name,needs,desc])=>`<button class="ash099-btn ash099-card" data-craft="${id}" data-needs="${needs.map(n=>n.join(':')).join(',')}">${icon('craft')}<strong>${name}</strong><small>${desc}<br>Needs ${needs.map(([k,v])=>`${v} ${itemName(k)} (${Number(pl.inventory?.[k]||0)})`).join(', ')}.</small><em>Craft</em></button>`).join('')}</div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
+    const cards=recipes.map(([id,name,needs,desc])=>`<button class="ash099-btn ash099-card" data-craft="${id}" data-needs="${needs.map(n=>n.join(':')).join(',')}" ${canCraft(pl,needs)?'':'disabled'}>${icon('craft')}<strong>${name}</strong><small>${desc}<br>Needs ${needsText(pl,needs)}.</small><em>${canCraft(pl,needs)?'Craft':'Missing'}</em></button>`).join('');
+    screen(head('Crafting','Crafting Bench','Road drops should matter. Convert herbs, fangs, hides, ash, and scraps into useful items or better sellables.','','craft'),`<div class="ash099-market-summary"><strong>Bench Stock</strong><span>Use road drops here before selling raw loot.</span><button class="ash099-btn" id="openTrader">Open Trading Post</button></div><div class="ash099-cards">${cards}</div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
     document.querySelectorAll('[data-craft]').forEach(b=>b.onclick=()=>craftItem(b.dataset.craft,b.dataset.needs));
+    const openTrader=document.getElementById('openTrader');
+    if(openTrader) openTrader.onclick=renderTrader;
   }
-  function craftItem(id,needsText){const pl=p();const needs=String(needsText||'').split(',').filter(Boolean).map(x=>{const [k,v]=x.split(':');return [k,Number(v||0)];});if(needs.some(([k,v])=>Number(pl.inventory?.[k]||0)<v))return note('Missing ingredients.');needs.forEach(([k,v])=>pl.inventory[k]-=v);pl.inventory[id]=Number(pl.inventory[id]||0)+1;save(pl);note(`Crafted ${itemName(id)}.`);}
+  function craftItem(id,needsTextRaw){const pl=p();const needs=String(needsTextRaw||'').split(',').filter(Boolean).map(x=>{const [k,v]=x.split(':');return [k,Number(v||0)];});if(!canCraft(pl,needs))return note('Missing ingredients.');needs.forEach(([k,v])=>pl.inventory[k]-=v);pl.inventory[id]=Number(pl.inventory[id]||0)+1;save(pl);renderCrafting();}
 
   function renderSmith(){
     const weapons=(D().weapons||[]).filter(w=>w.id!=='hand').slice(0,4),armors=(D().armors||[]).filter(a=>a.id!=='none').slice(0,4);
     screen(head('Gear','Blacksmith','Blades, chain, leather, and practical warnings.',npc('blacksmith'),'smith'),`<h2>Weapons</h2><div class="ash099-cards">${weapons.map(w=>gearCard(w,'weapon')).join('')}</div><h2>Armor</h2><div class="ash099-cards">${armors.map(a=>gearCard(a,'armor')).join('')}</div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
     document.querySelectorAll('[data-gear]').forEach(b=>b.onclick=()=>buyGear(b.dataset.gear,b.dataset.kind,Number(b.dataset.cost)));
   }
-  function gearCard(x,kind){const owned=kind==='weapon'?p().ownedWeapons?.[x.id]:p().ownedArmor?.[x.id];return `<button class="ash099-btn ash099-card" data-gear="${esc(x.id)}" data-kind="${kind}" data-cost="${Number(x.cost||0)}">${icon(kind==='weapon'?'smith':'mara')}<strong>${esc(x.name)}</strong><small>${kind==='weapon'?`Damage ${x.min}-${x.max}`:`Defense ${x.defense}`}${owned?' • Owned':''}</small><em>${gold(x.cost)}</em></button>`;}
+  function gearCard(x,kind){const ownedGear=kind==='weapon'?p().ownedWeapons?.[x.id]:p().ownedArmor?.[x.id];return `<button class="ash099-btn ash099-card" data-gear="${esc(x.id)}" data-kind="${kind}" data-cost="${Number(x.cost||0)}">${icon(kind==='weapon'?'smith':'mara')}<strong>${esc(x.name)}</strong><small>${kind==='weapon'?`Damage ${x.min}-${x.max}`:`Defense ${x.defense}`}${ownedGear?' • Owned':''}</small><em>${gold(x.cost)}</em></button>`;}
   function buyGear(id,kind,cost){const pl=p();if(Number(pl.gold||0)<cost)return note('Not enough gold.');pl.gold-=cost;if(kind==='weapon'){pl.weapon=id;pl.ownedWeapons=pl.ownedWeapons||{};pl.ownedWeapons[id]=1;}else{pl.armor=id;pl.ownedArmor=pl.ownedArmor||{};pl.ownedArmor[id]=1;}save(pl);note('Equipped new '+kind+'.');}
 
   function renderSheet(){const pl=p();const inv=Object.entries(pl.inventory||{}).filter(([,v])=>Number(v)>0).map(([k,v])=>`<div class="ash099-stat"><strong>${esc(itemName(k))}</strong><span>x${Number(v)}</span></div>`).join('')||'<p>No notable items.</p>';screen(head('Character',pl.username,`${pl.personalityLabel||'Traveler'} • ${pl.origin} • ${pl.className}`,'','sheet'),`<div class="ash099-stats">${stat('HP',`${pl.hp}/${pl.maxHp}`)}${stat('Gold',gold(pl.gold))}${stat('Weapon',weaponName(pl.weapon))}${stat('Armor',armorName(pl.armor))}${stat('Pronouns',pl.pronouns||'they/them')}${stat('Road Tokens',Number(pl.inventory?.roadToken||0))}</div><h2>Inventory</h2><div class="ash099-stats">${inv}</div>`);}
