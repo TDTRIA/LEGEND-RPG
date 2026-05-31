@@ -159,7 +159,6 @@
         <div class="title-fog" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="title-gate-border" aria-hidden="true"></div>
         <section class="title-gate-card" role="button" tabindex="0" aria-label="Enter Ashmere">
-          <div class="title-gate-emblem"><img src="assets/ui/logos/logo_legend_emblem_v1.png" alt="" onerror="this.style.display='none'"></div>
           <h1 class="game-title">LEGEND</h1>
           <p class="title-gate-subtitle">Roads of Ashmere</p>
           <p class="title-gate-kicker">✧ Ashmere Gate ✧</p>
