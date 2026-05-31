@@ -41,9 +41,30 @@
     catch { return 'Recently'; }
   }
 
-  function connected(){ return !!window.LegendSupabaseV09x?.client; }
+  function client(){ return window.LegendSupabaseV09x?.client || null; }
+  function connected(){ return !!client(); }
 
-  function renderAccount(message = ''){
+  async function getSession(){
+    const c = client();
+    if(!c?.auth?.getSession) return null;
+    try {
+      const result = await c.auth.getSession();
+      return result?.data?.session || null;
+    } catch(err){
+      console.warn('LEGEND account session check failed:', err);
+      return null;
+    }
+  }
+
+  function sessionLabel(session){
+    if(!connected()) return 'Offline';
+    return session?.user ? 'Signed In' : 'Ready';
+  }
+
+  function sessionEmail(session){ return session?.user?.email || ''; }
+
+  async function renderAccount(message = ''){
+    const session = await getSession();
     const pl = local();
     const prof = getProfile();
     const snap = prof?.activeTraveler || snapshotTraveler(pl);
@@ -54,7 +75,7 @@
             <div class="account09x-hero-content">
               <div class="account09x-kicker">LEGEND Account</div>
               <h1>Profile</h1>
-              <p>Claim a local profile, track the active traveler, and prepare this save for cloud traveler slots. Supabase hooks can plug in here without replacing local play.</p>
+              <p>Claim a local profile, track the active traveler, and prepare this save for cloud traveler slots. Supabase identity is now detected when available.</p>
             </div>
           </section>
 
@@ -64,11 +85,13 @@
             <div class="account09x-panel">
               <h2>Account Status</h2>
               <div class="account09x-status account09x-status-grid">
-                <div class="account09x-stat"><strong>${connected() ? 'Connected' : 'Not Connected'}</strong><span>Supabase</span></div>
+                <div class="account09x-stat"><strong>${sessionLabel(session)}</strong><span>Supabase Auth</span></div>
                 <div class="account09x-stat"><strong>${prof ? 'Profile Ready' : 'No Profile'}</strong><span>Local Account</span></div>
                 <div class="account09x-stat"><strong>${pl ? 'Linked' : 'No Traveler'}</strong><span>Active Traveler</span></div>
-                <div class="account09x-stat"><strong>v0.9.x</strong><span>Account Layer</span></div>
+                <div class="account09x-stat"><strong>${session?.user ? 'Unlocked' : 'Staged'}</strong><span>Account Rewards</span></div>
               </div>
+
+              ${session?.user ? `<p class="account09x-success account09x-session-card">Signed in as ${esc(sessionEmail(session))}</p>` : `<p class="account09x-note"><strong>Sign-in staged:</strong> Supabase is ${connected() ? 'loaded and ready' : 'offline or not loaded'}. The next patch will add the sign-in button flow.</p>`}
 
               <form class="account09x-form" id="profileForm">
                 <div class="account09x-field">
@@ -77,9 +100,9 @@
                 </div>
                 <div class="account09x-field">
                   <label for="profileEmail">Email / Login Handle</label>
-                  <input id="profileEmail" maxlength="72" value="${esc(prof?.email || '')}" placeholder="Optional for now">
+                  <input id="profileEmail" maxlength="72" value="${esc(prof?.email || sessionEmail(session) || '')}" placeholder="Optional for now">
                 </div>
-                <p class="account09x-note"><strong>v0.9.x note:</strong> This saves a local profile shell now. Real authentication and cloud sync are intentionally gated until Supabase credentials and tables are wired.</p>
+                <p class="account09x-note"><strong>v0.9.x note:</strong> This still saves a local profile shell. Cloud saves and tester rewards stay staged until the account flow is complete.</p>
                 <div class="account09x-actions">
                   <button class="account09x-btn primary" id="saveProfile" type="submit">Save Profile</button>
                   <button class="account09x-btn" id="syncTraveler" type="button" ${pl ? '' : 'disabled'}>Link Active Traveler</button>
@@ -88,7 +111,7 @@
               </form>
 
               <div class="account09x-actions account09x-nav-actions">
-                <button class="account09x-btn primary" id="backTitle">Back to Title</button>
+                <button class="account09x-btn primary" id="backTitle">Back to Realm Portal</button>
                 ${pl ? '<button class="account09x-btn" id="backAshmere">Back to Ashmere</button>' : '<button class="account09x-btn" id="newTraveler">New Traveler</button>'}
               </div>
             </div>
@@ -107,6 +130,7 @@
               <h3 class="account09x-subhead">Save Readiness</h3>
               <div class="account09x-readiness">
                 <div><span>Local Profile</span><strong>${prof ? 'Ready' : 'Missing'}</strong></div>
+                <div><span>Supabase Session</span><strong>${session?.user ? 'Signed In' : connected() ? 'Ready' : 'Offline'}</strong></div>
                 <div><span>Traveler Snapshot</span><strong>${snap ? 'Ready' : 'Missing'}</strong></div>
                 <div><span>Last Profile Update</span><strong>${fmtDate(prof?.updatedAt)}</strong></div>
                 <div><span>Last Traveler Link</span><strong>${fmtDate(snap?.updatedAt)}</strong></div>
@@ -126,14 +150,14 @@
     if(form) form.onsubmit = e => {
       e.preventDefault();
       const displayName = document.getElementById('displayName').value.trim() || pl?.username || 'Ashmere Traveler';
-      const email = document.getElementById('profileEmail').value.trim();
-      saveProfile({ ...(prof || {}), displayName, email, activeTraveler: prof?.activeTraveler || snapshotTraveler(pl) });
+      const email = document.getElementById('profileEmail').value.trim() || sessionEmail(session);
+      saveProfile({ ...(prof || {}), displayName, email, authUserId: session?.user?.id || null, activeTraveler: prof?.activeTraveler || snapshotTraveler(pl) });
       renderAccount('Profile saved.');
     };
     const sync = document.getElementById('syncTraveler');
     if(sync) sync.onclick = () => {
-      const current = getProfile() || { displayName: pl?.username || 'Ashmere Traveler', email: '' };
-      saveProfile({ ...current, activeTraveler: snapshotTraveler(pl) });
+      const current = getProfile() || { displayName: pl?.username || 'Ashmere Traveler', email: sessionEmail(session) || '' };
+      saveProfile({ ...current, authUserId: session?.user?.id || null, activeTraveler: snapshotTraveler(pl) });
       renderAccount('Active traveler linked to profile.');
     };
     const clear = document.getElementById('clearProfile');
@@ -147,5 +171,5 @@
     if(localSlot && pl) localSlot.onclick = () => window.LegendGameBootstrap?.continueGame?.();
   }
 
-  window.LegendAccountV09x = { renderAccount, getProfile, saveProfile, deleteProfile };
+  window.LegendAccountV09x = { renderAccount, getProfile, saveProfile, deleteProfile, getSession };
 })();
