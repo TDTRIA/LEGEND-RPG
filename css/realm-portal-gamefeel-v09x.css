@@ -1,0 +1,119 @@
+/* LEGEND: Roads of Ashmere v0.9.x - game-feel title pass
+   Turns the Realm Portal from a dashboard into an in-world character gate. */
+
+.portal-gamefeel .portal-main-grid{
+  grid-template-columns:minmax(230px,.72fr) minmax(500px,1.58fr) minmax(250px,.82fr)!important;
+}
+
+.portal-gamefeel .portal-world-panel,
+.portal-gamefeel .portal-notice-panel{
+  opacity:.92;
+}
+
+.portal-gamefeel .portal-roster-panel{
+  border-color:rgba(255,211,105,.28)!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,211,105,.08),transparent 34%),
+    linear-gradient(180deg,rgba(11,18,13,.84),rgba(1,4,2,.62))!important;
+  box-shadow:0 28px 78px rgba(0,0,0,.42),inset 0 0 40px rgba(255,211,105,.04)!important;
+}
+
+.portal-gamefeel .portal-roster-panel h2{
+  font-size:clamp(1.38rem,2vw,2.15rem)!important;
+  color:#f3d894!important;
+  text-shadow:0 8px 24px rgba(0,0,0,.65);
+}
+
+.portal-gamefeel .portal-traveler-card{
+  position:relative;
+  overflow:hidden;
+  border-color:rgba(255,211,105,.26)!important;
+  background:
+    linear-gradient(135deg,rgba(255,211,105,.07),transparent 32%),
+    rgba(0,0,0,.22)!important;
+}
+
+.portal-gamefeel .portal-traveler-card:before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  pointer-events:none;
+  border:1px solid rgba(255,211,105,.08);
+  border-radius:12px;
+}
+
+.portal-traveler-line{
+  margin:.15rem 0 .65rem;
+  color:#c7d6cc;
+  line-height:1.42;
+  font-size:.95rem;
+}
+
+.portal-gamefeel .portal-portrait{
+  border-radius:28px!important;
+  background:
+    radial-gradient(circle at 50% 42%,rgba(255,211,105,.22),rgba(0,0,0,.22) 54%,rgba(0,0,0,.46)),
+    linear-gradient(180deg,rgba(37,52,31,.5),rgba(0,0,0,.25))!important;
+}
+
+.portal-gamefeel .portal-enter-btn{
+  min-height:64px!important;
+  border-radius:18px!important;
+  background:
+    linear-gradient(180deg,rgba(255,219,133,.96),rgba(178,110,35,.96))!important;
+  color:#231504!important;
+  box-shadow:0 22px 44px rgba(121,74,20,.28),0 0 0 4px rgba(255,211,105,.08),inset 0 1px 0 rgba(255,255,255,.32)!important;
+}
+
+.portal-gamefeel .portal-enter-btn:hover,
+.portal-gamefeel .portal-enter-btn:focus-visible{
+  filter:brightness(1.05) saturate(1.04);
+  box-shadow:0 26px 56px rgba(121,74,20,.34),0 0 0 4px rgba(255,211,105,.14),inset 0 1px 0 rgba(255,255,255,.36)!important;
+}
+
+.portal-gamefeel .portal-slot-list{
+  margin-top:2px!important;
+}
+
+.portal-gamefeel .portal-slot{
+  background:rgba(0,0,0,.14)!important;
+}
+
+.portal-gamefeel .portal-slot.active{
+  border-color:rgba(255,211,105,.30)!important;
+  box-shadow:inset 0 0 18px rgba(255,211,105,.035)!important;
+}
+
+.portal-gamefeel .portal-side-actions .portal-action{
+  min-height:54px!important;
+}
+
+.portal-gamefeel .portal-action small{
+  opacity:.82;
+}
+
+.portal-gamefeel .portal-parchment{
+  background:linear-gradient(180deg,rgba(238,218,177,.95),rgba(204,173,114,.92))!important;
+}
+
+.portal-gamefeel .portal-footer{
+  background:rgba(0,0,0,.42)!important;
+  border-color:rgba(255,211,105,.11)!important;
+  color:#bdc9c0!important;
+}
+
+.portal-gamefeel .portal-footer strong{
+  color:#dfc278!important;
+}
+
+@media(max-width:1320px) and (min-width:1180px){
+  .portal-gamefeel .portal-main-grid{
+    grid-template-columns:minmax(215px,.72fr) minmax(430px,1.48fr) minmax(225px,.8fr)!important;
+  }
+}
+
+@media(max-width:1179px){
+  .portal-gamefeel .portal-main-grid{
+    grid-template-columns:1fr!important;
+  }
+}
