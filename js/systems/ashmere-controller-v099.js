@@ -56,6 +56,10 @@
     return `<button class="ash099-btn ash099-action ${featured ? 'featured' : ''}" data-ash-view="${esc(view)}">${icon(ic)}<span><strong>${esc(title)}</strong><small>${esc(desc)}</small></span><em>${esc(label)}</em></button>`;
   }
 
+  function actionGroup(title, text, body, kind = ''){
+    return `<section class="ash099-action-group ${kind}"><header><h3>${esc(title)}</h3><p>${esc(text)}</p></header><div class="ash099-group-grid">${body}</div></section>`;
+  }
+
   function miniMeter(pl){
     return `<div class="ash099-meter"><span>Health</span><strong>${Number(pl.hp || 0)}/${Number(pl.maxHp || 0)}</strong><i style="width:${hpPct(pl)}%"></i></div>`;
   }
@@ -69,14 +73,17 @@
     return `<aside class="ash099-panel ash099-traveler-panel ash099-terminal-card"><h3>Traveler Terminal</h3><div class="ash099-traveler-identity"><div class="ash099-avatar"><span>${esc(String(name).slice(0,1)).toUpperCase()}</span></div><div><strong>${esc(name)}</strong><small>${esc(pl.className || 'Wanderer')}</small></div></div>${miniMeter(pl)}<div class="ash099-stats">${stat('Class', pl.className || 'Wanderer')}${stat('Gold', gold(pl.gold))}${stat('Road Tokens', `${Number(pl.inventory?.roadToken || 0)}/3`)}${stat('Weapon', weaponName(pl.weapon))}${stat('Armor', armorName(pl.armor))}${stat('Jobs Done', Number(pl.flags?.ashmereJobs || 0))}</div><p class="ash099-trait"><strong>Origin & Nature</strong><br>${esc(pl.personalityLabel || 'Unknown traveler')} • ${esc(pl.origin || 'Unknown origin')}</p></aside>`;
   }
 
-  function footerNav(){
-    return `<footer class="ash099-footer"><button class="ash099-footer-item active" data-ash-view="home">${icon('inn')}<span>Town</span></button><button class="ash099-footer-item" data-ash-view="road">${icon('road')}<span>Routes</span></button><button class="ash099-footer-item" data-ash-view="archive">${icon('archive')}<span>Journal</span></button><button class="ash099-footer-item" data-ash-view="profile">${icon('profile')}<span>Profile</span></button><button class="ash099-footer-item" data-ash-view="sheet">${icon('sheet')}<span>Sheet</span></button></footer>`;
+  function terminalNav(){
+    return `<nav class="ash099-footer ash099-topnav" aria-label="Ashmere terminal navigation"><button class="ash099-footer-item active" data-ash-view="home">${icon('inn')}<span>Town</span></button><button class="ash099-footer-item" data-ash-view="road">${icon('road')}<span>Routes</span></button><button class="ash099-footer-item" data-ash-view="archive">${icon('archive')}<span>Journal</span></button><button class="ash099-footer-item" data-ash-view="profile">${icon('profile')}<span>Profile</span></button><button class="ash099-footer-item" data-ash-view="sheet">${icon('sheet')}<span>Sheet</span></button></nav>`;
   }
 
   function renderAshmere(){
     const pl = p();
     if(!pl) return;
     const g = goal(pl);
+    const townLife = actionCard('people','Town Square','News, rumors, and conversations with Ashmere\'s guides.','Talk',!pl.flags?.talkedToMara,'people') + actionCard('inn','Ashmere Inn','Rest, recover, buy camp supplies, and hear road rumors.','Rest',false,'inn') + actionCard('trader','Trading Post','Buy, sell, and trade supplies, road loot, and valuables.','Shop',false,'trader') + actionCard('smith','Blacksmith','Upgrade gear, buy weapons, and reinforce armor.','Gear',false,'smith');
+    const roadPrep = actionCard('work','Work Board','Contracts, bounties, low-risk jobs, and town needs.','Jobs',false,'work') + actionCard('craft','Crafting Bench','Convert road drops into healing, utility, and trade goods.','Craft',false,'craft') + actionCard('road','Town Gate','Leave the lantern line and begin an Old Road expedition.','Travel',Number(pl.flags?.talkedToMara),'road');
+    const records = actionCard('brenn','Ledger Hall','Track proof, turn in Road Tokens, and claim rewards.','Ledger',false,'brenn') + actionCard('archive','Archive Hall','Lore, memories, discovered notes, and road records.','Archive',false,'archive') + actionCard('profile','Profile / Travelers','Account, registry binding, cloud slots, and tester rewards.','Registry',false,'profile') + actionCard('sheet','Character Sheet','Stats, inventory, gear, identity, and traits.','Sheet',false,'sheet');
     shell(`
       <section class="ash099-hero ash099-hero-mockup">
         ${img(bg(), 'Ashmere')}
@@ -85,34 +92,21 @@
             <div class="ash099-kicker">LEGEND • Roads of Ashmere</div>
             <h1>Ashmere</h1>
             <div class="ash099-terminal-plaque">Ashmere Town Terminal</div>
-            <p>A rain-dark base camp at the edge of the Old Road. Use the terminal to reach the square, market, ledger, work board, crafting bench, registry, and gate.</p>
+            <p>A rain-dark base camp at the edge of the Old Road. The terminal organizes town life, road preparation, records, and traveler identity without losing the feeling of being in Ashmere.</p>
           </div>
           ${currentRouteCard(g)}
         </div>
       </section>
-      <section class="ash099-hub-layout">
+      ${terminalNav()}
+      <section class="ash099-hub-layout ash099-hub-grouped">
         <div class="ash099-panel ash099-menu-panel ash099-town-access">
           <h2>Town Access</h2>
-          <div class="ash099-actions">
-            ${actionCard('people','Town Square','News, rumors, and conversations with Ashmere\'s guides.','Talk',!pl.flags?.talkedToMara,'people')}
-            ${actionCard('inn','Ashmere Inn','Rest, recover, buy camp supplies, and hear road rumors.','Rest',false,'inn')}
-            ${actionCard('trader','Trading Post','Buy, sell, and trade supplies, road loot, and valuables.','Shop',false,'trader')}
-            ${actionCard('smith','Blacksmith','Upgrade gear, buy weapons, and reinforce armor.','Gear',false,'smith')}
-            ${actionCard('work','Work Board','Contracts, bounties, low-risk jobs, and town needs.','Jobs',false,'work')}
-            ${actionCard('craft','Crafting Bench','Convert road drops into healing, utility, and trade goods.','Craft',false,'craft')}
-            ${actionCard('road','Town Gate','Leave the lantern line and begin an Old Road expedition.','Travel',Number(pl.flags?.talkedToMara),'road')}
-            ${actionCard('profile','Profile / Travelers','Account, registry binding, cloud slots, and tester rewards.','Registry',false,'profile')}
-          </div>
-          <h3 class="ash099-quick-title">Quick Access</h3>
-          <div class="ash099-quick-row">
-            ${actionCard('brenn','Ledger Hall','Track proof, turn in Road Tokens, and claim rewards.','Ledger',false,'brenn')}
-            ${actionCard('archive','Archive Hall','Lore, memories, discovered notes, and road records.','Archive',false,'archive')}
-            ${actionCard('sheet','Character Sheet','Stats, inventory, gear, identity, and traits.','Sheet',false,'sheet')}
-          </div>
+          ${actionGroup('Town Life','People, rest, trade, and equipment — the everyday loop that makes Ashmere feel alive.',townLife,'town-life')}
+          ${actionGroup('Road Prep','Jobs, crafting, and the gate — the practical loop before an expedition.',roadPrep,'road-prep')}
+          ${actionGroup('Records & Registry','Progress, lore, account binding, and character details.',records,'records')}
         </div>
         ${travelerTerminal(pl)}
       </section>
-      ${footerNav()}
     `);
     bind();
   }
