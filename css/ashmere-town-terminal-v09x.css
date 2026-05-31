@@ -1,35 +1,40 @@
-/* LEGEND: Roads of Ashmere v0.9.x - Ashmere Town Terminal pass
-   Makes the town hub feel like an in-world RPG hub instead of a plain menu. */
+/* LEGEND: Roads of Ashmere v0.9.x - Ashmere Town Terminal / 1.0 hub target
+   Mockup-driven hub styling: Current Route, Town Access, Traveler Terminal, footer nav. */
 
 .ash099{
   background:
-    radial-gradient(circle at 18% 4%,rgba(255,211,105,.10),transparent 24%),
+    radial-gradient(circle at 12% 4%,rgba(255,211,105,.12),transparent 25%),
     radial-gradient(circle at 82% 72%,rgba(83,144,91,.08),transparent 30%),
     linear-gradient(180deg,#020403,#050806 58%,#020302)!important;
 }
 
+.ash099-terminal{
+  min-height:100svh;
+}
+
 .ash099-wrap{
-  width:min(1360px,100%)!important;
+  width:min(1520px,100%)!important;
   gap:14px!important;
 }
 
 .ash099-hero{
-  min-height:360px!important;
-  border-radius:24px!important;
-  border-color:rgba(255,211,105,.20)!important;
-  box-shadow:0 24px 68px rgba(0,0,0,.38),inset 0 0 46px rgba(255,211,105,.035)!important;
+  min-height:380px!important;
+  border-radius:26px!important;
+  border-color:rgba(255,211,105,.22)!important;
+  box-shadow:0 28px 78px rgba(0,0,0,.42),inset 0 0 54px rgba(255,211,105,.04)!important;
 }
 
+.ash099-hero-mockup:before,
 .ash099-hero:before{
   content:"ASHMERE TOWN TERMINAL";
   position:absolute;
   top:16px;
   left:18px;
   z-index:2;
-  padding:7px 11px;
-  border:1px solid rgba(255,211,105,.22);
+  padding:7px 12px;
+  border:1px solid rgba(255,211,105,.26);
   border-radius:999px;
-  background:rgba(0,0,0,.42);
+  background:rgba(0,0,0,.46);
   color:#ffd369;
   font-size:.66rem;
   font-weight:1000;
@@ -40,16 +45,17 @@
 
 .ash099-hero:after{
   background:
-    radial-gradient(circle at 28% 22%,rgba(255,211,105,.16),transparent 24%),
-    linear-gradient(90deg,rgba(2,4,3,.93),rgba(2,4,3,.48) 54%,rgba(2,4,3,.82)),
-    linear-gradient(180deg,rgba(2,4,3,.02),rgba(2,4,3,.90))!important;
+    radial-gradient(circle at 25% 20%,rgba(255,211,105,.18),transparent 25%),
+    linear-gradient(90deg,rgba(2,4,3,.94),rgba(2,4,3,.48) 54%,rgba(2,4,3,.86)),
+    linear-gradient(180deg,rgba(2,4,3,.02),rgba(2,4,3,.92))!important;
 }
 
 .ash099-hero-content{
-  min-height:360px!important;
-  grid-template-columns:minmax(0,1fr) minmax(310px,420px);
+  min-height:380px!important;
+  grid-template-columns:minmax(0,1fr) minmax(330px,450px)!important;
   grid-template-rows:1fr;
   align-items:end;
+  gap:18px!important;
 }
 
 .ash099-title{
@@ -58,50 +64,115 @@
 
 .ash099-title h1{
   font-family:Georgia,serif;
-  font-size:clamp(3.2rem,7vw,6.5rem)!important;
-  letter-spacing:.03em;
+  font-size:clamp(3.5rem,7.2vw,7.1rem)!important;
+  letter-spacing:.025em;
+  text-shadow:0 12px 34px rgba(0,0,0,.82),0 0 24px rgba(255,211,105,.12);
 }
 
 .ash099-title p{
-  max-width:650px!important;
+  max-width:760px!important;
+  color:#dce6dd!important;
 }
 
-.ash099-goal{
-  align-self:end;
-  grid-template-columns:1fr!important;
-  background:linear-gradient(180deg,rgba(6,11,8,.76),rgba(0,0,0,.46))!important;
-  border-color:rgba(255,211,105,.22)!important;
-  border-radius:18px!important;
-  box-shadow:0 16px 34px rgba(0,0,0,.30),inset 0 0 24px rgba(255,211,105,.025);
-}
-
-.ash099-goal:before{
-  content:"Current Route";
-  color:#9eb7a7;
-  text-transform:uppercase;
-  letter-spacing:.14em;
-  font-size:.62rem;
+.ash099-terminal-plaque{
+  width:max-content;
+  max-width:100%;
+  margin:0 0 12px;
+  padding:7px 12px;
+  border:1px solid rgba(255,211,105,.28);
+  border-radius:999px;
+  background:linear-gradient(180deg,rgba(77,48,15,.78),rgba(18,12,5,.64));
+  color:#ffdc8a;
+  font-size:.72rem;
   font-weight:1000;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  box-shadow:0 10px 24px rgba(0,0,0,.24),inset 0 0 18px rgba(255,211,105,.035);
 }
 
-.ash099-goal-copy{
-  grid-template-columns:44px minmax(0,1fr)!important;
+.ash099-route-card{
+  position:relative;
+  z-index:3;
+  align-self:end;
+  border:1px solid rgba(255,211,105,.24);
+  border-radius:22px;
+  background:linear-gradient(180deg,rgba(8,14,10,.84),rgba(0,0,0,.56));
+  box-shadow:0 20px 50px rgba(0,0,0,.38),inset 0 0 28px rgba(255,211,105,.025);
+  padding:16px;
+  backdrop-filter:blur(7px);
 }
 
-.ash099-goal-copy > div > span{
-  display:none!important;
+.ash099-route-card h2{
+  margin:0 0 10px;
+  color:#9eb7a7;
+  font-size:.68rem;
+  font-weight:1000;
+  letter-spacing:.16em;
+  text-transform:uppercase;
 }
 
-.ash099-grid{
-  grid-template-columns:minmax(0,1.2fr) minmax(320px,.58fr)!important;
-  gap:14px!important;
+.ash099-route-title{
+  display:grid;
+  grid-template-columns:46px minmax(0,1fr);
+  gap:12px;
+  align-items:start;
+}
+
+.ash099-route-title strong{
+  display:block;
+  margin-bottom:5px;
+  color:#f5d88f;
+  font-family:Georgia,serif;
+  font-size:1.35rem;
+}
+
+.ash099-route-title p{
+  margin:0;
+  color:#dce6dd;
+  line-height:1.42;
+}
+
+.ash099-route-card ul{
+  margin:12px 0 14px;
+  padding:0;
+  display:grid;
+  gap:6px;
+  list-style:none;
+}
+
+.ash099-route-card li{
+  position:relative;
+  padding-left:1rem;
+  color:#c2d0c6;
+  line-height:1.35;
+  font-size:.92rem;
+}
+
+.ash099-route-card li:before{
+  content:"◆";
+  position:absolute;
+  left:0;
+  top:.05rem;
+  color:#d7b963;
+  font-size:.62rem;
+}
+
+.ash099-route-card .ash099-btn.primary{
+  width:100%;
+}
+
+.ash099-hub-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.36fr) minmax(320px,.54fr);
+  gap:14px;
+  align-items:stretch;
 }
 
 .ash099-panel{
-  border-radius:20px!important;
-  border-color:rgba(255,211,105,.14)!important;
-  background:linear-gradient(180deg,rgba(8,14,10,.78),rgba(0,0,0,.36))!important;
-  box-shadow:0 18px 46px rgba(0,0,0,.30),inset 0 0 24px rgba(255,211,105,.02)!important;
+  border-radius:22px!important;
+  border-color:rgba(255,211,105,.15)!important;
+  background:linear-gradient(180deg,rgba(8,14,10,.80),rgba(0,0,0,.38))!important;
+  box-shadow:0 20px 52px rgba(0,0,0,.32),inset 0 0 26px rgba(255,211,105,.02)!important;
 }
 
 .ash099-menu-panel{
@@ -109,114 +180,203 @@
   overflow:hidden;
 }
 
-.ash099-menu-panel:before{
-  content:"Town Access";
-  display:block;
-  margin:0 0 12px;
-  color:#ffd369;
-  font-family:Georgia,serif;
-  font-size:clamp(1.28rem,2.3vw,2rem);
-  font-weight:900;
-  letter-spacing:.04em;
-}
-
+.ash099-menu-panel:before,
 .ash099-menu-panel:after{
-  content:"Choose where to go in Ashmere. This is your base camp, ledger, market, and road terminal.";
-  display:block;
-  margin:10px 0 0;
-  color:#aebfb4;
-  line-height:1.45;
-  font-size:.94rem;
+  display:none!important;
 }
 
 .ash099-menu-panel > h2{
-  position:absolute!important;
-  width:1px!important;
-  height:1px!important;
-  overflow:hidden!important;
-  clip:rect(0 0 0 0)!important;
-  white-space:nowrap!important;
+  margin:0 0 12px!important;
+  color:#ffd369!important;
+  font-family:Georgia,serif!important;
+  font-size:clamp(1.35rem,2.3vw,2.25rem)!important;
+  font-weight:900!important;
+  letter-spacing:.04em!important;
+  text-transform:none!important;
+}
+
+.ash099-town-access > h2:after{
+  content:"Choose where to go in Ashmere. Every route begins and ends here.";
+  display:block;
+  margin-top:5px;
+  color:#aebfb4;
+  font-family:inherit;
+  font-size:.94rem;
+  font-weight:500;
+  letter-spacing:0;
+  line-height:1.45;
 }
 
 .ash099-actions{
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  gap:9px!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:10px!important;
 }
 
 .ash099-action{
-  min-height:122px!important;
+  position:relative;
+  min-height:132px!important;
   grid-template-columns:1fr!important;
   align-content:space-between;
-  gap:8px!important;
-  padding:13px!important;
+  gap:9px!important;
+  padding:14px!important;
+  border-radius:17px!important;
   background:
-    linear-gradient(135deg,rgba(255,211,105,.045),transparent 38%),
-    linear-gradient(180deg,rgba(9,16,12,.78),rgba(0,0,0,.32))!important;
+    linear-gradient(135deg,rgba(255,211,105,.06),transparent 42%),
+    linear-gradient(180deg,rgba(9,16,12,.82),rgba(0,0,0,.34))!important;
+  overflow:hidden;
+}
+
+.ash099-action:before{
+  content:"";
+  position:absolute;
+  inset:1px;
+  border-radius:16px;
+  pointer-events:none;
+  background:radial-gradient(circle at 50% 0%,rgba(255,211,105,.06),transparent 42%);
+}
+
+.ash099-action > *{
+  position:relative;
+  z-index:1;
+}
+
+.ash099-action:hover,
+.ash099-action:focus-visible{
+  transform:translateY(-1px);
+  border-color:rgba(255,211,105,.38)!important;
+  box-shadow:0 18px 38px rgba(0,0,0,.32),inset 0 0 24px rgba(255,211,105,.035)!important;
 }
 
 .ash099-action .ash099-icon{
-  width:40px!important;
-  height:40px!important;
+  width:42px!important;
+  height:42px!important;
+  border-radius:14px!important;
 }
 
 .ash099-action .ash099-icon svg{
-  width:22px!important;
-  height:22px!important;
+  width:23px!important;
+  height:23px!important;
 }
 
 .ash099-action strong{
   font-family:Georgia,serif;
   font-size:1.04rem!important;
+  color:#f3d991!important;
 }
 
 .ash099-action small{
   font-size:.86rem!important;
   color:#cbd9cf!important;
+  line-height:1.35!important;
 }
 
 .ash099-action em{
   justify-self:start;
   align-self:end!important;
-  padding:4px 8px;
-  border:1px solid rgba(255,211,105,.16);
+  padding:4px 9px;
+  border:1px solid rgba(255,211,105,.17);
   border-radius:999px;
-  background:rgba(0,0,0,.22);
+  background:rgba(0,0,0,.24);
   color:#d6c487!important;
 }
 
 .ash099-action.featured{
-  border-color:rgba(255,211,105,.42)!important;
-  box-shadow:0 0 0 1px rgba(255,211,105,.08),0 16px 34px rgba(0,0,0,.24),inset 0 0 22px rgba(255,211,105,.035)!important;
+  border-color:rgba(255,211,105,.46)!important;
+  box-shadow:0 0 0 1px rgba(255,211,105,.10),0 16px 34px rgba(0,0,0,.26),inset 0 0 24px rgba(255,211,105,.045)!important;
+}
+
+.ash099-quick-title{
+  margin:18px 0 8px!important;
+  color:#9eb7a7!important;
+  font-size:.76rem!important;
+  font-weight:1000!important;
+  letter-spacing:.16em!important;
+  text-transform:uppercase!important;
 }
 
 .ash099-quick-row{
   grid-template-columns:repeat(3,minmax(0,1fr))!important;
-  gap:9px!important;
+  gap:10px!important;
 }
 
 .ash099-quick-row .ash099-action{
   min-height:96px!important;
 }
 
+.ash099-terminal-card,
 .ash099-traveler-panel{
-  border-color:rgba(255,211,105,.20)!important;
+  border-color:rgba(255,211,105,.24)!important;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(255,211,105,.08),transparent 36%),
+    linear-gradient(180deg,rgba(8,14,10,.84),rgba(0,0,0,.42))!important;
 }
 
 .ash099-traveler-panel h3{
+  margin-bottom:12px!important;
   font-family:Georgia,serif;
-  font-size:1.25rem!important;
-  letter-spacing:.05em!important;
+  font-size:1.35rem!important;
+  letter-spacing:.04em!important;
   text-transform:none!important;
   color:#f2d898!important;
 }
 
+.ash099-traveler-identity{
+  display:grid;
+  grid-template-columns:72px minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+  margin-bottom:12px;
+  padding:11px;
+  border:1px solid rgba(255,211,105,.14);
+  border-radius:16px;
+  background:rgba(0,0,0,.22);
+}
+
+.ash099-avatar{
+  width:66px;
+  height:66px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,211,105,.34);
+  border-radius:18px;
+  background:radial-gradient(circle,rgba(255,211,105,.20),rgba(0,0,0,.34) 62%);
+  box-shadow:inset 0 0 22px rgba(255,211,105,.06),0 12px 22px rgba(0,0,0,.28);
+}
+
+.ash099-avatar span{
+  color:#ffe0a1;
+  font-family:Georgia,serif;
+  font-size:2.35rem;
+  font-weight:1000;
+  text-shadow:0 8px 20px rgba(0,0,0,.7);
+}
+
+.ash099-traveler-identity strong{
+  display:block;
+  color:#f6e4b7;
+  font-family:Georgia,serif;
+  font-size:1.3rem;
+}
+
+.ash099-traveler-identity small{
+  color:#9bd19a;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
 .ash099-stats{
-  gap:7px!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
 }
 
 .ash099-stat{
-  border-radius:12px!important;
-  background:rgba(0,0,0,.20)!important;
+  border-radius:13px!important;
+  background:rgba(0,0,0,.22)!important;
+}
+
+.ash099-stat strong{
+  overflow-wrap:anywhere;
 }
 
 .ash099-trait{
@@ -225,8 +385,73 @@
   color:#cbd9cf!important;
 }
 
+.ash099-trait strong{
+  color:#d9bd72;
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+}
+
+.ash099-footer{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+  border:1px solid rgba(255,211,105,.14);
+  border-radius:20px;
+  background:rgba(0,0,0,.52);
+  padding:9px;
+  box-shadow:0 16px 38px rgba(0,0,0,.30),inset 0 0 22px rgba(255,211,105,.02);
+}
+
+.ash099-footer-item{
+  min-height:52px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:1px solid rgba(255,211,105,.10);
+  border-radius:14px;
+  background:rgba(7,13,9,.70);
+  color:#d9c487;
+  font-weight:1000;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+}
+
+.ash099-footer-item .ash099-icon{
+  width:28px!important;
+  height:28px!important;
+}
+
+.ash099-footer-item .ash099-icon svg{
+  width:17px!important;
+  height:17px!important;
+}
+
+.ash099-footer-item.active,
+.ash099-footer-item:hover,
+.ash099-footer-item:focus-visible{
+  border-color:rgba(255,211,105,.34);
+  color:#ffe0a1;
+  box-shadow:inset 0 0 20px rgba(255,211,105,.035);
+}
+
+.ash099-card[disabled],
+.ash099-action[disabled]{
+  opacity:.48;
+  cursor:not-allowed;
+}
+
+@media(max-width:1280px){
+  .ash099-actions{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+}
+
 @media(max-width:1120px){
   .ash099-hero-content,
+  .ash099-hub-layout,
   .ash099-grid{
     grid-template-columns:1fr!important;
   }
@@ -238,13 +463,28 @@
 @media(max-width:720px){
   .ash099-actions,
   .ash099-quick-row,
-  .ash099-stats{
+  .ash099-stats,
+  .ash099-footer{
     grid-template-columns:1fr!important;
   }
   .ash099-hero{
-    min-height:500px!important;
+    min-height:560px!important;
   }
   .ash099-hero-content{
-    min-height:500px!important;
+    min-height:560px!important;
+  }
+  .ash099-route-card{
+    padding:13px;
+  }
+  .ash099-footer-item{
+    justify-content:flex-start;
+    padding:0 12px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .ash099-action,
+  .ash099-footer-item{
+    transition:none!important;
   }
 }
