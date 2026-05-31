@@ -136,12 +136,57 @@
   }
   function buyService(cost,fn,msg){const pl=p();if(Number(pl.gold||0)<cost)return note('Not enough gold.');pl.gold-=cost;fn(pl);save(pl);note(msg);}
 
+  const workJobs = {
+    wood:{title:'Split Firewood',desc:'Line up the axe strike and split clean through wet ash logs.',skill:'strength',pay:38,item:'woodScrap',amount:1,verb:'Strike',hint:'Hit the gold band for a clean split.'},
+    gate:{title:'Watch the Gate',desc:'Spot movement beyond the lantern line before Oric has to shout.',skill:'survival',pay:42,item:'food',amount:1,verb:'Signal',hint:'Signal when the marker crosses the watchlight.'},
+    records:{title:'Sort Archive Records',desc:'Find the right ledger tab before Mara loses patience.',skill:'lore',pay:45,item:'roadHerb',amount:1,verb:'File',hint:'Click when the marker reaches the stamped section.'},
+    crates:{title:'Carry Market Crates',desc:'Move heavy crates without dropping trader stock into the mud.',skill:'strength',pay:34,item:'camp',amount:1,verb:'Lift',hint:'Click in the steady zone to keep your grip.'},
+    yard:{title:'Clean Stable Yard',desc:'Unpleasant work, steady coin, and no monsters.',skill:'luck',pay:30,item:'clothScrap',amount:1,verb:'Shovel',hint:'Time the shovel when the rhythm lines up.'},
+    message:{title:'Run a Message',desc:'Carry sealed word through rain-heavy alleys before the ink runs.',skill:'survival',pay:46,item:'goblinTrinket',amount:1,verb:'Deliver',hint:'Click as the marker crosses the seal.'}
+  };
   function renderWorkBoard(){
-    const jobs=[['wood','Split Firewood','Strength work behind the inn.','strength',38,'woodScrap',1],['gate','Watch the Gate','Stand a short watch with Oric.','survival',42,'food',1],['records','Sort Archive Records','Help Mara find a misplaced road note.','lore',45,'roadHerb',1],['crates','Carry Market Crates','Move trader stock before the rain spoils it.','strength',34,'camp',1],['yard','Clean Stable Yard','Low-risk work for steady pay.','luck',30,'clothScrap',1],['message','Run a Message','Carry sealed word between town posts.','survival',46,'goblinTrinket',1]];
-    screen(head('Town Work','Work Board','Short jobs give Ashmere everyday life and give you low-risk ways to earn gold, supplies, and favor.','','work'),`<div class="ash099-cards">${jobs.map(([id,title,desc,skill,pay,item,amount])=>`<button class="ash099-btn ash099-card" data-job="${id}" data-skill="${skill}" data-pay="${pay}" data-item="${item}" data-amount="${amount}">${icon('work')}<strong>${title}</strong><small>${desc} Check: ${skill.toUpperCase()}.</small><em>${pay}g</em></button>`).join('')}</div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
-    document.querySelectorAll('[data-job]').forEach(b=>b.onclick=()=>runJob(b));
+    screen(head('Town Work','Work Board','Pick a job, then complete a quick timing check. Better timing means better pay and better odds at bonus supplies.','','work'),`<div class="ash099-cards">${Object.entries(workJobs).map(([id,j])=>`<button class="ash099-btn ash099-card" data-job-open="${id}">${icon('work')}<strong>${j.title}</strong><small>${j.desc} Check: ${j.skill.toUpperCase()}.</small><em>${j.pay}g</em></button>`).join('')}</div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
+    document.querySelectorAll('[data-job-open]').forEach(b=>b.onclick=()=>renderJobActivity(b.dataset.jobOpen));
   }
-  function runJob(b){const pl=p();pl.flags=pl.flags||{};pl.flags.ashmereJobs=Number(pl.flags.ashmereJobs||0)+1;pl.flags.ashmereFavor=Number(pl.flags.ashmereFavor||0)+1;const pay=Number(b.dataset.pay||0),item=b.dataset.item,amount=Number(b.dataset.amount||0);pl.gold=Number(pl.gold||0)+pay;pl.inventory=pl.inventory||{};let bonus='';if(item&&amount>0&&Math.random()<.58){pl.inventory[item]=Number(pl.inventory[item]||0)+amount;bonus=` and ${amount} ${itemName(item)}`;}save(pl);note(`${b.querySelector('strong')?.textContent||'Job'} complete. Earned ${pay}g${bonus}. Ashmere favor increased.`);}
+  function renderJobActivity(id){
+    const j=workJobs[id]||workJobs.wood;
+    const zoneStart=34+Math.floor(Math.random()*16);
+    const zoneWidth=18;
+    screen(head('Town Work',j.title,j.desc,'','work'),`<section class="ash099-job-game"><p>${esc(j.hint)}</p><div class="ash099-job-track" id="jobTrack"><i class="ash099-job-zone" style="left:${zoneStart}%;width:${zoneWidth}%"></i><b class="ash099-job-marker" id="jobMarker"></b></div><div class="ash099-job-meta"><span>Skill: ${esc(j.skill.toUpperCase())}</span><span>Base Pay: ${gold(j.pay)}</span><span>Bonus: ${esc(itemName(j.item))}</span></div><button class="ash099-btn primary" id="jobStrike">${esc(j.verb)}</button><p class="ash099-note" id="jobResult" style="display:none"></p><p class="ash099-note">Keyboard: press Space or Enter to complete the action.</p></section>`, `<button class="ash099-btn" id="backJobs">Choose Another Job</button>`);
+    const marker=document.getElementById('jobMarker');
+    const strike=document.getElementById('jobStrike');
+    const result=document.getElementById('jobResult');
+    let pos=0,dir=1,done=false;
+    const timer=setInterval(()=>{ if(done) return; pos+=dir*2.35; if(pos>=100){pos=100;dir=-1;} if(pos<=0){pos=0;dir=1;} if(marker) marker.style.left=pos+'%'; },24);
+    function finish(){
+      if(done) return;
+      done=true;
+      clearInterval(timer);
+      const center=zoneStart+(zoneWidth/2);
+      const dist=Math.abs(pos-center);
+      const grade=dist<=4?'Perfect':dist<=9?'Good':dist<=17?'Messy':'Miss';
+      const mult=grade==='Perfect'?1.45:grade==='Good'?1.12:grade==='Messy'?.72:.38;
+      const pay=Math.max(5,Math.round(j.pay*mult));
+      const bonusChance=grade==='Perfect'?.95:grade==='Good'?.62:grade==='Messy'?.24:.05;
+      const pl=p();
+      pl.flags=pl.flags||{}; pl.inventory=pl.inventory||{};
+      pl.flags.ashmereJobs=Number(pl.flags.ashmereJobs||0)+1;
+      pl.flags.ashmereFavor=Number(pl.flags.ashmereFavor||0)+(grade==='Perfect'?2:1);
+      pl.gold=Number(pl.gold||0)+pay;
+      let bonus='';
+      if(Math.random()<bonusChance){ pl.inventory[j.item]=Number(pl.inventory[j.item]||0)+j.amount; bonus=` Bonus gained: ${j.amount} ${itemName(j.item)}.`; }
+      if(grade==='Miss'&&Number(pl.hp||0)>1){ pl.hp=Math.max(1,Number(pl.hp||0)-1); bonus+=' You lose 1 HP from the rough work.'; }
+      save(pl);
+      if(result){ result.style.display='block'; result.textContent=`${grade}! Earned ${pay}g.${bonus} Ashmere favor increased.`; }
+      if(strike){ strike.disabled=true; strike.textContent='Job Complete'; }
+      setTimeout(()=>renderWorkBoard(),1600);
+    }
+    if(strike) strike.onclick=finish;
+    const onKey=e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); document.removeEventListener('keydown',onKey); finish(); } };
+    document.addEventListener('keydown',onKey);
+    const backJobs=document.getElementById('backJobs');
+    if(backJobs) backJobs.onclick=()=>{ done=true; clearInterval(timer); document.removeEventListener('keydown',onKey); renderWorkBoard(); };
+  }
 
   function renderTrader(){
     const pl=p();
