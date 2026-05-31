@@ -50,6 +50,23 @@
     return 'Client ready';
   }
 
+  function authRedirectUrl(){
+    const fallback = 'https://tdtria.github.io/LEGEND-RPG/';
+    try {
+      const url = new URL(window.location.href);
+      url.hash = '';
+      url.search = '';
+      if(!url.pathname.endsWith('/')){
+        const parts = url.pathname.split('/');
+        parts.pop();
+        url.pathname = parts.join('/') + '/';
+      }
+      return url.toString();
+    } catch {
+      return fallback;
+    }
+  }
+
   async function getSession(){
     const c = client();
     if(!c?.auth?.getSession) return null;
@@ -68,8 +85,15 @@
     if(!email || !password) return { ok:false, message:'Enter an email and password.' };
     if(password.length < 6) return { ok:false, message:'Password must be at least 6 characters.' };
     try {
-      console.info('LEGEND auth: creating account for', email);
-      const result = await c.auth.signUp({ email, password, options:{ data:{ display_name:displayName || 'Ashmere Traveler' } } });
+      console.info('LEGEND auth: creating account for', email, 'redirect:', authRedirectUrl());
+      const result = await c.auth.signUp({
+        email,
+        password,
+        options:{
+          emailRedirectTo: authRedirectUrl(),
+          data:{ display_name:displayName || 'Ashmere Traveler' }
+        }
+      });
       if(result.error) throw result.error;
       return { ok:true, session:result.data?.session || null, user:result.data?.user || null, message: result.data?.session ? 'Account created and signed in.' : 'Account created. Check your email if confirmation is required.' };
     } catch(err){
