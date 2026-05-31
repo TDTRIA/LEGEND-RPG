@@ -154,14 +154,17 @@
   function titleGate(){
     applySettings();
     root().innerHTML = `
-      <div class="title-wrap title-gate-wrap">
+      <div class="title-wrap title-gate-wrap title-gate-cinematic">
         <div class="title-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
         <div class="title-fog" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="title-gate-border" aria-hidden="true"></div>
         <section class="title-gate-card" role="button" tabindex="0" aria-label="Enter Ashmere">
           <div class="title-gate-emblem"><img src="assets/ui/logos/logo_legend_emblem_v1.png" alt="" onerror="this.style.display='none'"></div>
-          <p class="title-gate-kicker">Roads of Ashmere</p>
           <h1 class="game-title">LEGEND</h1>
-          <button class="title-gate-prompt" id="enterRealm" type="button">Press Any Key / Click to Enter Ashmere</button>
+          <p class="title-gate-subtitle">Roads of Ashmere</p>
+          <p class="title-gate-kicker">✧ Ashmere Gate ✧</p>
+          <button class="title-gate-prompt" id="enterRealm" type="button">Press Any Key to Enter Ashmere</button>
+          <p class="title-gate-quote">The lantern gate opens for travelers, not heroes.</p>
         </section>
       </div>`;
     const card = document.querySelector('.title-gate-card');
