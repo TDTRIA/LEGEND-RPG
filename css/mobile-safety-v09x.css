@@ -1,0 +1,211 @@
+/* LEGEND: Roads of Ashmere v0.9.x - mobile safety guardrails
+   Conservative small-screen fixes only. Desktop layout is untouched. */
+
+@media(max-width:860px){
+  html,body{
+    overflow-x:hidden;
+  }
+
+  #root{
+    min-width:0;
+  }
+
+  .title-wrap,
+  .portal-shell,
+  .ash099,
+  .account09x,
+  .settings09x{
+    min-width:0!important;
+  }
+
+  .portal-header,
+  .portal-main-grid,
+  .portal-profile-card,
+  .ash099-hero-content,
+  .ash099-hub-layout,
+  .ash099-grid,
+  .account09x-grid,
+  .account09x-grid-wide,
+  .settings09x-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  .portal-header,
+  .portal-profile-card{
+    align-items:stretch!important;
+  }
+
+  .portal-brand,
+  .portal-profile-card,
+  .ash099-traveler-identity{
+    min-width:0;
+  }
+
+  .portal-brand h1,
+  .ash099-title h1,
+  .account09x-hero h1,
+  .settings09x-hero h1{
+    word-break:normal;
+    overflow-wrap:anywhere;
+  }
+
+  .portal-main-grid,
+  .ash099-hub-layout,
+  .account09x-grid-wide{
+    gap:12px!important;
+  }
+
+  .portal-panel,
+  .ash099-panel,
+  .account09x-panel,
+  .settings09x-toggle{
+    max-width:100%;
+  }
+
+  .portal-action,
+  .portal-enter-btn,
+  .portal-secondary-btn,
+  .ash099-action,
+  .ash099-card,
+  .account09x-btn,
+  .settings09x-btn{
+    min-height:48px;
+    touch-action:manipulation;
+  }
+}
+
+@media(max-width:720px){
+  .title-wrap,
+  .portal-shell,
+  .ash099,
+  .account09x,
+  .settings09x{
+    padding:10px!important;
+  }
+
+  .portal-brand{
+    grid-template-columns:48px 1fr!important;
+  }
+
+  .portal-brand img{
+    width:48px!important;
+    height:48px!important;
+  }
+
+  .portal-brand h1{
+    font-size:clamp(2rem,14vw,3.4rem)!important;
+  }
+
+  .portal-profile-card{
+    padding:10px!important;
+  }
+
+  .portal-main-grid,
+  .ash099-hub-layout,
+  .ash099-group-grid,
+  .ash099-action-group.road-prep .ash099-group-grid,
+  .ash099-actions,
+  .ash099-quick-row,
+  .account09x-status-grid,
+  .account09x-slots,
+  .account09x-readiness,
+  .settings09x-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  .ash099-hero,
+  .ash099-hero-content{
+    min-height:auto!important;
+  }
+
+  .ash099-hero-content{
+    padding-top:72px!important;
+  }
+
+  .ash099-title h1{
+    font-size:clamp(3rem,18vw,4.8rem)!important;
+  }
+
+  .ash099-title p,
+  .ash099-route-title p,
+  .ash099-action small,
+  .portal-action small,
+  .account09x-note{
+    font-size:.92rem!important;
+    line-height:1.42!important;
+  }
+
+  .ash099-route-card,
+  .ash099-panel,
+  .portal-panel,
+  .account09x-panel{
+    padding:12px!important;
+    border-radius:18px!important;
+  }
+
+  .ash099-topnav,
+  .ash099-footer{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  .ash099-footer-item{
+    justify-content:flex-start!important;
+    padding:0 10px!important;
+  }
+
+  .ash099-action-group header{
+    display:block!important;
+  }
+
+  .ash099-action-group p{
+    margin-top:4px!important;
+    text-align:left!important;
+  }
+
+  .portal-footer{
+    display:block!important;
+  }
+}
+
+@media(max-width:430px){
+  .title-wrap,
+  .portal-shell,
+  .ash099,
+  .account09x,
+  .settings09x{
+    padding:8px!important;
+  }
+
+  .portal-brand{
+    grid-template-columns:1fr!important;
+    text-align:center;
+  }
+
+  .portal-brand img{
+    margin:0 auto;
+  }
+
+  .portal-profile-card,
+  .ash099-traveler-identity{
+    grid-template-columns:1fr!important;
+    text-align:center;
+  }
+
+  .ash099-avatar{
+    margin:0 auto;
+  }
+
+  .ash099-topnav,
+  .ash099-footer{
+    grid-template-columns:1fr!important;
+  }
+
+  .ash099-action,
+  .portal-action{
+    min-height:auto!important;
+  }
+
+  .ash099-route-title{
+    grid-template-columns:1fr!important;
+  }
+}
