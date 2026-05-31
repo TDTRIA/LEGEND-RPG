@@ -51,28 +51,19 @@
   const icon=k=>`<span class="game-menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[k]||paths.continue}"/></svg></span>`;
   const portalIcon=k=>`<span class="portal-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[k]||paths.slot}"/></svg></span>`;
   const portalAction=(id,kind,label,desc,ic)=>`<button class="btn ${kind||''} game-menu-btn portal-action" id="${id}">${icon(ic)}<span><strong>${label}</strong><small>${desc}</small></span></button>`;
-  const stat=(label,value)=>`<div class="title-status-stat"><span>${label}</span><strong>${value}</strong></div>`;
 
-  function accountSummary(profileData){
-    const connected = !!window.LegendSupabaseV09x?.client;
-    if(profileData){
-      return `<strong>${esc(profileData.displayName || 'Local Profile')}</strong><em>${connected ? 'Cloud gateway detected' : 'Local profile bound - cloud gate pending'}</em>`;
-    }
-    return `<strong>${connected ? 'Cloud Gateway Ready' : 'Local Realm Ready'}</strong><em>Open Profile / Travelers to claim a name and prepare future traveler sync.</em>`;
-  }
-
-  function profileName(profileData){ return esc(profileData?.displayName || 'Local Traveler'); }
-  function cloudStatus(){ return window.LegendSupabaseV09x?.client ? 'Cloud Ready' : 'Local Ready'; }
+  function profileName(profileData){ return esc(profileData?.displayName || 'Wandering Traveler'); }
+  function registryStatus(profileData){ return profileData?.authUserId ? 'Bound' : window.LegendSupabaseV09x?.client ? 'Ready' : 'Local'; }
 
   function portalHeader(profileData){
     return `<header class="portal-header">
       <div class="portal-brand">
         <img src="assets/ui/logos/logo_legend_emblem_v1.png" alt="LEGEND emblem" onerror="this.style.display='none'">
-        <div><h1>LEGEND</h1><p>Roads of Ashmere</p><span>✧ Ashmere Realm Portal</span></div>
+        <div><h1>LEGEND</h1><p>Roads of Ashmere</p><span>✧ Lantern Gate of Ashmere ✧</span></div>
       </div>
       <div class="portal-profile-card">
         <span class="portal-crest" aria-hidden="true">◆</span>
-        <div><p>Traveler Profile: <strong>${profileName(profileData)}</strong></p><p>Cloud Sync: <strong>${cloudStatus()}</strong></p><p>Build: <strong>v0.9.x</strong></p></div>
+        <div><p>Traveler: <strong>${profileName(profileData)}</strong></p><p>Registry: <strong>${registryStatus(profileData)}</strong></p><p>Road: <strong>Open</strong></p></div>
         <button class="portal-gear" id="settingsTop" type="button" aria-label="Open settings">⚙</button>
       </div>
     </header>`;
@@ -82,73 +73,73 @@
     return `<div class="portal-status-row"><span>${portalIcon(iconKey)}${label}</span><strong class="${tone||''}">${value}</strong></div>`;
   }
 
-  function worldStatusPanel(){
-    return `<aside class="portal-panel portal-world-panel"><h2>World Status</h2>
+  function worldStatusPanel(profileData){
+    return `<aside class="portal-panel portal-world-panel"><h2>Ashmere Gate</h2>
       <div class="portal-status-list">
-        ${statusRow('world','Realm','Ashmere','gold')}
-        ${statusRow('notice','Region','Frontier Build')}
-        ${statusRow('gate','Gate','Open','good')}
-        ${statusRow('road','Old Road','Unstable','warn')}
-        ${statusRow('cloud','Traveler Sync',cloudStatus(),'good')}
-        ${statusRow('people','Social Systems','Staged','gold')}
+        ${statusRow('gate','Lantern Gate','Open','good')}
+        ${statusRow('world','Settlement','Ashmere','gold')}
+        ${statusRow('road','Old Road','Restless','warn')}
+        ${statusRow('notice','Notice Board','Posted')}
+        ${statusRow('cloud','Traveler Registry',registryStatus(profileData),'good')}
+        ${statusRow('people','Companions','Not Yet Gathered','gold')}
       </div>
       <div class="portal-side-actions">
-        ${portalAction('account','', 'Profile / Travelers','Manage profile, active traveler, and future cloud slots.','account')}
-        ${portalAction('settings','', 'Settings','Tune readability, contrast, spacing, and motion.','settings')}
-        <a class="btn game-menu-btn portal-action" href="feedback.html">${icon('feedback')}<span><strong>Playtest Report</strong><small>Send bugs, balance notes, and first-town impressions.</small></span></a>
+        ${portalAction('account','', 'Traveler Registry','Sign in, bind your profile, and manage traveler slots.','account')}
+        ${portalAction('settings','', 'Options','Adjust readability, contrast, spacing, and motion.','settings')}
+        <a class="btn game-menu-btn portal-action" href="feedback.html">${icon('feedback')}<span><strong>Leave a Report</strong><small>Send word back from the road.</small></span></a>
       </div>
     </aside>`;
   }
 
   function travelerSlots(player){
-    const activeName = player ? 'Slot 1 - Active Traveler' : 'Slot 1 - Empty Slot';
     return `<div class="portal-slot-list">
-      <div class="portal-slot active"><b>1</b><span>${activeName}</span><em>${player ? 'selected' : 'open'}</em></div>
-      <div class="portal-slot"><b>2</b><span>Slot 2 - Empty Slot</span><em>local</em></div>
-      <div class="portal-slot locked"><b>3</b><span>Slot 3 - Cloud Slot Locked</span><em>locked</em></div>
-      <div class="portal-slot locked"><b>4</b><span>Slot 4 - Future Slot</span><em>staged</em></div>
+      <div class="portal-slot active"><b>1</b><span>${player ? 'Current Traveler' : 'Empty Bed'}</span><em>${player ? 'ready' : 'open'}</em></div>
+      <div class="portal-slot"><b>2</b><span>Empty Bed</span><em>local</em></div>
+      <div class="portal-slot locked"><b>3</b><span>Reserved Room</span><em>sealed</em></div>
+      <div class="portal-slot locked"><b>4</b><span>Reserved Room</span><em>later</em></div>
     </div>`;
   }
 
   function travelerRosterPanel(player){
     const cls = player?.className || player?.class || 'Wayfarer';
-    const name = player?.username || 'No Traveler Selected';
+    const name = player?.username || 'No Traveler Chosen';
     const day = player?.day || 1;
     const tokens = Number(player?.inventory?.roadToken || 0);
     const town = player?.town || 'Ashmere';
     const trust = Number(player?.townTrust?.Ashmere || 0);
-    return `<main class="portal-panel portal-roster-panel"><h2>Traveler Roster</h2>
+    const status = player ? `${esc(cls)} last seen in ${esc(town)}. The Old Road still knows your footsteps.` : 'Choose a name and step through the lantern gate for the first time.';
+    return `<main class="portal-panel portal-roster-panel"><h2>Choose Your Traveler</h2>
       <section class="portal-traveler-card ${player ? '' : 'empty'}">
         <div class="portal-portrait" aria-hidden="true"><span>${player ? esc(String(name).slice(0,1)).toUpperCase() : '?'}</span></div>
-        <div class="portal-traveler-info"><h3>${esc(name)}</h3>
+        <div class="portal-traveler-info"><h3>${esc(name)}</h3><p class="portal-traveler-line">${status}</p>
           <dl>
-            <div><dt>Class</dt><dd>${esc(cls)}</dd></div>
-            <div><dt>Town</dt><dd>${esc(town)}</dd></div>
+            <div><dt>Calling</dt><dd>${esc(cls)}</dd></div>
+            <div><dt>Resting At</dt><dd>${esc(town)}</dd></div>
             <div><dt>Day</dt><dd>${day}</dd></div>
-            <div><dt>Town Trust</dt><dd>${trust}</dd></div>
+            <div><dt>Ashmere Trust</dt><dd>${trust}</dd></div>
             <div><dt>Road Tokens</dt><dd>${tokens}</dd></div>
           </dl>
         </div>
       </section>
       ${travelerSlots(player)}
       <div class="portal-roster-actions">
-        ${player ? `<button class="portal-enter-btn" id="continue" type="button">Enter Ashmere</button>` : `<button class="portal-enter-btn" id="newPrimary" type="button">Create First Traveler</button>`}
-        <button class="portal-secondary-btn" id="new" type="button">Create Traveler</button>
-        <button class="portal-secondary-btn" id="registry" type="button">Traveler Registry</button>
+        ${player ? `<button class="portal-enter-btn" id="continue" type="button">Enter Ashmere</button>` : `<button class="portal-enter-btn" id="newPrimary" type="button">Begin the Road</button>`}
+        <button class="portal-secondary-btn" id="new" type="button">New Traveler</button>
+        <button class="portal-secondary-btn" id="registry" type="button">Registry</button>
       </div>
     </main>`;
   }
 
   function noticeBoardPanel(){
-    return `<aside class="portal-panel portal-notice-panel"><h2>Notice Board</h2>
-      <article class="portal-parchment"><h3>Ashmere v0.9.x</h3><ul><li>Hub polish continues</li><li>Old Road events under tuning</li><li>Traveler profiles stable locally</li><li>Cloud traveler sync staged</li></ul></article>
+    return `<aside class="portal-panel portal-notice-panel"><h2>Town Notices</h2>
+      <article class="portal-parchment"><h3>Posted at the Gate</h3><ul><li>The Old Road is unsafe beyond the lantern line.</li><li>Returning travelers should bring Road Tokens to Mara.</li><li>Rooms remain open for newly named travelers.</li><li>The registry clerk is accepting account bindings.</li></ul></article>
       <article class="portal-parchment small"><h3>Town Rumor</h3><p>${esc(titleRumor())}</p></article>
-      <a class="portal-secondary-btn portal-patch-link" href="feedback.html">Send Playtest Report</a>
+      <a class="portal-secondary-btn portal-patch-link" href="feedback.html">Send Word</a>
     </aside>`;
   }
 
   function portalFooter(){
-    return `<footer class="portal-footer"><p><strong>Future Systems:</strong> Friends • Chat • Parties • Guilds • Cloud Travelers</p><p><strong>Status:</strong> Staged for future release</p></footer>`;
+    return `<footer class="portal-footer"><p><strong>Ashmere Services:</strong> Traveler Registry • Account Rewards • Cloud Lodging • Companions Later</p><p><strong>Build:</strong> v0.9.x roadbound slice</p></footer>`;
   }
 
   function titleGate(){
@@ -205,12 +196,12 @@
     const player = loadPlayer();
     const prof = profile();
     root().innerHTML = `
-      <div class="title-wrap title-v09x-final portal-shell">
+      <div class="title-wrap title-v09x-final portal-shell portal-gamefeel">
         <div class="title-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
         <div class="title-fog" aria-hidden="true"><i></i><i></i><i></i></div>
         ${portalHeader(prof)}
         <section class="portal-main-grid">
-          ${worldStatusPanel()}
+          ${worldStatusPanel(prof)}
           ${travelerRosterPanel(player)}
           ${noticeBoardPanel()}
         </section>
