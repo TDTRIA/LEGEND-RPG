@@ -1,0 +1,236 @@
+/* LEGEND: Roads of Ashmere v0.9.x - Ashmere 1.0 Terminal target layer
+   Mockup translation layer. This keeps the existing hub logic but pushes presentation toward the full 1.0 town terminal. */
+
+.ash099-v1-terminal,
+.ash099-terminal{
+  background:
+    radial-gradient(circle at 10% 0%,rgba(205,151,62,.13),transparent 22%),
+    radial-gradient(circle at 92% 12%,rgba(79,119,78,.09),transparent 24%),
+    linear-gradient(180deg,#010302,#050807 42%,#020302)!important;
+}
+
+.ash099-wrap{
+  width:min(1680px,100%)!important;
+}
+
+.ash099-hero{
+  min-height:330px!important;
+  border-radius:18px!important;
+  border-color:rgba(196,139,55,.26)!important;
+  box-shadow:0 28px 80px rgba(0,0,0,.52),inset 0 0 64px rgba(205,151,62,.045)!important;
+}
+
+.ash099-hero:before{
+  top:14px!important;
+  left:18px!important;
+  border-radius:4px!important;
+  background:linear-gradient(180deg,rgba(39,27,12,.82),rgba(5,7,5,.66))!important;
+  color:#d9b96d!important;
+}
+
+.ash099-hero:after{
+  background:
+    linear-gradient(90deg,rgba(1,3,2,.94),rgba(1,3,2,.43) 56%,rgba(1,3,2,.88)),
+    radial-gradient(circle at 36% 28%,rgba(255,185,82,.17),transparent 28%),
+    linear-gradient(180deg,transparent,rgba(1,3,2,.92))!important;
+}
+
+.ash099-hero-content{
+  min-height:330px!important;
+  grid-template-columns:minmax(0,1fr) minmax(360px,460px)!important;
+  padding:54px 22px 18px!important;
+}
+
+.ash099-title h1{
+  font-size:clamp(4.4rem,8vw,7.8rem)!important;
+  color:#d8c099!important;
+  letter-spacing:.05em!important;
+  text-shadow:0 14px 36px rgba(0,0,0,.9),0 0 22px rgba(214,166,72,.20)!important;
+}
+
+.ash099-terminal-plaque{
+  border-radius:4px!important;
+  padding:9px 18px!important;
+  background:linear-gradient(180deg,rgba(75,49,19,.92),rgba(18,15,10,.82))!important;
+  color:#d8b96e!important;
+  box-shadow:0 12px 26px rgba(0,0,0,.34),inset 0 0 20px rgba(255,211,105,.05)!important;
+}
+
+.ash099-title p{
+  max-width:590px!important;
+  color:#d7d0bf!important;
+  font-size:1.02rem!important;
+  line-height:1.5!important;
+}
+
+.ash099-route-card{
+  border-radius:12px!important;
+  background:linear-gradient(180deg,rgba(8,12,10,.90),rgba(0,0,0,.64))!important;
+  border-color:rgba(196,139,55,.30)!important;
+}
+
+.ash099-route-card h2,
+.ash099-route-title strong{
+  color:#d8b96e!important;
+}
+
+.ash099-route-card li{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.ash099-topnav,
+.ash099-footer{
+  border-radius:10px!important;
+  background:linear-gradient(180deg,rgba(7,10,8,.94),rgba(0,0,0,.72))!important;
+  border-color:rgba(196,139,55,.21)!important;
+}
+
+.ash099-footer-item{
+  border-radius:6px!important;
+  background:rgba(5,8,7,.72)!important;
+  color:#bfa96f!important;
+}
+
+.ash099-footer-item.active{
+  color:#ffd78b!important;
+  background:linear-gradient(180deg,rgba(62,39,14,.76),rgba(8,9,7,.72))!important;
+}
+
+.ash099-hub-layout{
+  grid-template-columns:minmax(0,1fr) minmax(360px,420px)!important;
+}
+
+.ash099-menu-panel,
+.ash099-traveler-panel,
+.ash099-action-group,
+.ash099-route-card,
+.ash099-screen{
+  border-radius:10px!important;
+  border-color:rgba(196,139,55,.18)!important;
+}
+
+.ash099-menu-panel{
+  background:linear-gradient(180deg,rgba(5,9,8,.88),rgba(0,0,0,.42))!important;
+}
+
+.ash099-menu-panel > h2{
+  display:none!important;
+}
+
+.ash099-action-group{
+  background:linear-gradient(180deg,rgba(3,8,8,.72),rgba(0,0,0,.32))!important;
+  padding:10px!important;
+}
+
+.ash099-action-group header{
+  justify-content:center!important;
+  text-align:center!important;
+  border-bottom-color:rgba(196,139,55,.16)!important;
+}
+
+.ash099-action-group header h3{
+  color:#d8b96e!important;
+  font-size:1.16rem!important;
+  text-transform:uppercase!important;
+  letter-spacing:.12em!important;
+}
+
+.ash099-action-group header p{
+  display:none!important;
+}
+
+.ash099-group-grid{
+  gap:8px!important;
+}
+
+.ash099-action{
+  min-height:118px!important;
+  border-radius:9px!important;
+  border-color:rgba(196,139,55,.16)!important;
+  background:
+    radial-gradient(circle at 0% 0%,rgba(210,154,69,.08),transparent 40%),
+    linear-gradient(180deg,rgba(9,17,15,.86),rgba(0,0,0,.42))!important;
+}
+
+.ash099-action:hover,
+.ash099-action:focus-visible,
+.ash099-action.featured{
+  border-color:rgba(219,174,84,.48)!important;
+  box-shadow:0 0 0 1px rgba(219,174,84,.10),0 14px 34px rgba(0,0,0,.34),inset 0 0 24px rgba(219,174,84,.045)!important;
+}
+
+.ash099-action strong{
+  color:#d9bc76!important;
+  text-transform:uppercase!important;
+  letter-spacing:.06em!important;
+  font-size:.96rem!important;
+}
+
+.ash099-action small{
+  color:#c9c1a7!important;
+}
+
+.ash099-action em{
+  color:#c8aa61!important;
+  border-color:rgba(196,139,55,.20)!important;
+  border-radius:4px!important;
+}
+
+.ash099-icon{
+  border-radius:50%!important;
+  background:radial-gradient(circle,rgba(214,166,72,.16),rgba(0,0,0,.34))!important;
+}
+
+.ash099-traveler-panel{
+  background:linear-gradient(180deg,rgba(4,10,9,.91),rgba(0,0,0,.52))!important;
+}
+
+.ash099-traveler-panel h3{
+  color:#d8b96e!important;
+  text-transform:uppercase!important;
+  letter-spacing:.16em!important;
+}
+
+.ash099-avatar{
+  border-radius:50%!important;
+  width:78px!important;
+  height:78px!important;
+}
+
+.ash099-meter,
+.ash100-hp{
+  border:1px solid rgba(196,139,55,.18);
+  border-radius:999px;
+  background:rgba(0,0,0,.42);
+  overflow:hidden;
+}
+
+.ash099-market-summary,
+.ash099-job-game{
+  border-radius:10px!important;
+  border-color:rgba(196,139,55,.18)!important;
+  background:linear-gradient(180deg,rgba(6,10,8,.86),rgba(0,0,0,.38))!important;
+}
+
+@media(min-width:1180px){
+  .ash099-hub-layout .ash099-menu-panel{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+  }
+  .ash099-action-group{
+    margin-top:0!important;
+  }
+  .ash099-action-group .ash099-group-grid,
+  .ash099-action-group.road-prep .ash099-group-grid{
+    grid-template-columns:1fr 1fr!important;
+  }
+}
+
+@media(max-width:1120px){
+  .ash099-hub-layout{
+    grid-template-columns:1fr!important;
+  }
+}
