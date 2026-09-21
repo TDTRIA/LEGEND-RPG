@@ -220,11 +220,26 @@
   function sessionEmail(session){ return session?.user?.email || ''; }
 
   function authBox(session, prof){
-    const debug = `<p class="account09x-note"><strong>Connection:</strong> ${esc(supabaseReadyText())}${window.LegendSupabaseV09x?.url ? ` • ${esc(window.LegendSupabaseV09x.url)}` : ''}</p>`;
-    if(!connected()) return `<section class="account09x-panel account09x-auth-box"><h2>Realm Sign-In</h2>${debug}<p class="account09x-note"><strong>Offline:</strong> Supabase did not load. Local profile and traveler saves still work.</p></section>`;
-    if(session?.user) return `<section class="account09x-panel account09x-auth-box"><h2>Realm Sign-In</h2>${debug}<p class="account09x-success account09x-session-card">Signed in as ${esc(sessionEmail(session))}</p><div class="account09x-actions"><button class="account09x-btn danger" id="signOutBtn" type="button">Sign Out</button></div><p class="account09x-note"><strong>Next:</strong> Cloud traveler slots and tester rewards will use this signed-in account.</p></section>`;
-    return `<section class="account09x-panel account09x-auth-box"><h2>Realm Sign-In</h2>${debug}<form class="account09x-form" id="authForm"><div class="account09x-field"><label for="authEmail">Email</label><input id="authEmail" type="email" maxlength="72" value="${esc(prof?.email || '')}" placeholder="you@example.com" autocomplete="email"></div><div class="account09x-field"><label for="authPassword">Password</label><input id="authPassword" type="password" minlength="6" placeholder="Minimum 6 characters" autocomplete="current-password"></div><div class="account09x-actions"><button class="account09x-btn primary" id="signInBtn" type="submit">Sign In</button><button class="account09x-btn" id="createAccountBtn" type="button">Create Account</button></div><p class="account09x-note"><strong>Debug:</strong> If nothing happens, open DevTools Console and look for messages starting with <code>LEGEND auth</code>.</p></form></section>`;
+    const debug = `<p class="account09x-note account09x-debug"><strong>Connection:</strong> ${esc(supabaseReadyText())}</p>`;
+    if(!connected()) return `<section class="account09x-panel account09x-auth-box"><div class="account09x-auth-head"><div class="account09x-kicker">Ashmere Account</div><h2>Sign In</h2><p>Sign in to access your account and cloud traveler saves.</p></div>${debug}<p class="account09x-note"><strong>Offline:</strong> Supabase did not load. Local profile and traveler saves still work.</p></section>`;
+    if(session?.user) return `<section class="account09x-panel account09x-auth-box"><div class="account09x-auth-head"><div class="account09x-kicker">Ashmere Account</div><h2>Signed In</h2><p class="account09x-session-email">${esc(sessionEmail(session))}</p></div>${debug}<div class="account09x-actions"><button class="account09x-btn danger" id="signOutBtn" type="button">Sign Out</button></div></section>`;
+    return `<section class="account09x-panel account09x-auth-box">
+      <div class="account09x-auth-head"><div class="account09x-kicker">Ashmere Account</div><h2 id="authTitle">Sign In</h2><p id="authIntro">Sign in to continue your journey.</p></div>
+      <div class="account09x-auth-tabs" role="tablist" aria-label="Account access">
+        <button class="account09x-auth-tab active" id="authSignInTab" type="button">Sign In</button>
+        <button class="account09x-auth-tab" id="authSignUpTab" type="button">Sign Up</button>
+      </div>
+      <form class="account09x-form account09x-auth-form" id="authForm">
+        <div class="account09x-field"><label for="authEmail">Email</label><input id="authEmail" type="email" maxlength="72" value="${esc(prof?.email || '')}" placeholder="you@example.com" autocomplete="email" required></div>
+        <div class="account09x-field account09x-signup-only" hidden><label for="authDisplayName">Traveler Name</label><input id="authDisplayName" type="text" maxlength="28" placeholder="Ashmere Traveler" autocomplete="nickname"></div>
+        <div class="account09x-field"><label for="authPassword">Password</label><input id="authPassword" type="password" minlength="6" placeholder="Minimum 6 characters" autocomplete="current-password" required></div>
+        <button class="account09x-btn primary account09x-auth-submit" id="authSubmitBtn" type="submit">Sign In</button>
+        <p class="account09x-auth-switch" id="authSwitchText">New to Ashmere? <button id="authSwitchBtn" type="button">Create an account</button></p>
+      </form>
+      ${debug}
+    </section>`;
   }
+
 
   async function renderAccount(message = ''){
     await refreshHealth();
@@ -311,25 +326,47 @@
       }
     };
     const authForm = document.getElementById('authForm');
+    let authMode = 'signin';
+    const setAuthMode = mode => {
+      authMode = mode === 'signup' ? 'signup' : 'signin';
+      const signup = authMode === 'signup';
+      const title = document.getElementById('authTitle');
+      const intro = document.getElementById('authIntro');
+      const submit = document.getElementById('authSubmitBtn');
+      const switchText = document.getElementById('authSwitchText');
+      const display = document.querySelector('.account09x-signup-only');
+      const signInTab = document.getElementById('authSignInTab');
+      const signUpTab = document.getElementById('authSignUpTab');
+      if(title) title.textContent = signup ? 'Create Account' : 'Sign In';
+      if(intro) intro.textContent = signup ? 'Create your Ashmere account.' : 'Sign in to continue your journey.';
+      if(submit) submit.textContent = signup ? 'Create Account' : 'Sign In';
+      if(switchText) switchText.innerHTML = signup ? 'Already have an account? <button id="authSwitchBtn" type="button">Sign in</button>' : 'New to Ashmere? <button id="authSwitchBtn" type="button">Create an account</button>';
+      if(display) display.hidden = !signup;
+      if(signInTab) signInTab.classList.toggle('active', !signup);
+      if(signUpTab) signUpTab.classList.toggle('active', signup);
+      const switchBtn = document.getElementById('authSwitchBtn');
+      if(switchBtn) switchBtn.onclick = () => setAuthMode(signup ? 'signin' : 'signup');
+    };
+    const signInTab = document.getElementById('authSignInTab');
+    const signUpTab = document.getElementById('authSignUpTab');
+    if(signInTab) signInTab.onclick = () => setAuthMode('signin');
+    if(signUpTab) signUpTab.onclick = () => setAuthMode('signup');
+    setAuthMode('signin');
     if(authForm) authForm.onsubmit = async e => {
       e.preventDefault();
-      const signInBtn = document.getElementById('signInBtn');
-      if(signInBtn){ signInBtn.disabled = true; signInBtn.textContent = 'Signing In...'; }
+      const submit = document.getElementById('authSubmitBtn');
+      if(submit){ submit.disabled = true; submit.textContent = authMode === 'signup' ? 'Creating...' : 'Signing In...'; }
       const email = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value;
-      const result = await signIn(email, password);
-      if(result.ok) saveProfile({ ...(getProfile() || {}), email, authUserId: result.user?.id || result.session?.user?.id || null });
-      renderAccount(result.message);
-    };
-    const createBtn = document.getElementById('createAccountBtn');
-    if(createBtn) createBtn.onclick = async () => {
-      createBtn.disabled = true;
-      createBtn.textContent = 'Creating...';
-      const email = document.getElementById('authEmail').value.trim();
-      const password = document.getElementById('authPassword').value;
-      const displayName = document.getElementById('displayName')?.value.trim() || pl?.username || 'Ashmere Traveler';
-      const result = await createAccount(email, password, displayName);
-      if(result.ok) saveProfile({ ...(getProfile() || {}), displayName, email, authUserId: result.user?.id || result.session?.user?.id || null });
+      let result;
+      if(authMode === 'signup'){
+        const displayName = document.getElementById('authDisplayName').value.trim() || pl?.username || 'Ashmere Traveler';
+        result = await createAccount(email, password, displayName);
+        if(result.ok) saveProfile({ ...(getProfile() || {}), displayName, email, authUserId: result.user?.id || result.session?.user?.id || null });
+      } else {
+        result = await signIn(email, password);
+        if(result.ok) saveProfile({ ...(getProfile() || {}), email, authUserId: result.user?.id || result.session?.user?.id || null });
+      }
       renderAccount(result.message);
     };
     const signOutBtn = document.getElementById('signOutBtn');
