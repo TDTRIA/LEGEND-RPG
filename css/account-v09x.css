@@ -249,3 +249,21 @@ button.account09x-slot:hover:not(.account09x-disabled){
   .account09x-hero,.account09x-panel{border-radius:22px}
   .account09x-status-grid{grid-template-columns:1fr}
 }
+
+/* Simple account access pass */
+.account09x-auth-box{padding:24px;}
+.account09x-auth-head{margin-bottom:18px;}
+.account09x-auth-head .account09x-kicker{margin-bottom:7px;}
+.account09x-auth-head h2{font-size:1.55rem;margin:0 0 7px!important;letter-spacing:.03em;}
+.account09x-auth-head p{margin:0;color:#b9c9bf;line-height:1.45;}
+.account09x-session-email{color:#fff2c2!important;font-weight:800;word-break:break-word;}
+.account09x-auth-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 16px;border:1px solid rgba(255,211,105,.14);border-radius:14px;background:rgba(0,0,0,.25);}
+.account09x-auth-tab{border:0;border-radius:10px;background:transparent;color:#aebfb4;padding:10px;font:inherit;font-weight:900;cursor:pointer;}
+.account09x-auth-tab.active{background:rgba(255,211,105,.12);color:#fff2c2;box-shadow:inset 0 0 18px rgba(255,211,105,.04);}
+.account09x-auth-form{gap:12px;margin-top:0;}
+.account09x-signup-only[hidden]{display:none;}
+.account09x-auth-submit{width:100%;margin-top:3px;min-height:46px;}
+.account09x-auth-switch{text-align:center;color:#91a39a;font-size:.84rem;margin:2px 0 0;}
+.account09x-auth-switch button{border:0;background:none;color:#ffd369;font:inherit;font-weight:900;cursor:pointer;padding:0;}
+.account09x-auth-switch button:hover{text-decoration:underline;}
+.account09x-debug{margin-top:8px;font-size:.78rem;opacity:.72;}
