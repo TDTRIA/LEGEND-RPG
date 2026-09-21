@@ -209,3 +209,123 @@
     grid-template-columns:1fr!important;
   }
 }
+
+
+/* v0.9.x Mobile Pass 2 — full-game responsive layer
+   Keeps the desktop presentation intact while making the playable UI comfortable
+   on phones and narrow tablets. This file loads last on purpose. */
+@media (max-width: 860px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden;}
+  body{font-size:16px;-webkit-text-size-adjust:100%;}
+  #root{width:100%;max-width:100%;overflow-x:clip;}
+  button,.btn,input,textarea,select{font-size:16px;}
+  button,.btn{min-height:48px;touch-action:manipulation;}
+  input,textarea,select{max-width:100%;min-width:0;}
+  img,svg{max-width:100%;}
+  .panel,.card,.modal,.overlay-card,.ornate-panel{max-width:100%;min-width:0;}
+  .actions{gap:8px;}
+}
+
+@media (max-width: 720px){
+  .shell{width:100%!important;margin:0!important;padding:8px 8px calc(82px + env(safe-area-inset-bottom))!important;}
+  .scene,.scene-inner,.title-wrap,.portal-shell,.ash099,.account09x,.settings09x{width:100%;max-width:100%;min-width:0;}
+  .scene-inner{padding:10px!important;min-height:auto!important;}
+  .title-wrap{min-height:100svh;padding:8px!important;}
+  .title-card{width:100%!important;padding:18px!important;}
+  .game-title{font-size:clamp(3rem,18vw,6rem)!important;letter-spacing:.02em!important;overflow-wrap:anywhere;}
+  .hero-title{font-size:clamp(3.3rem,18vw,7rem)!important;letter-spacing:.04em!important;overflow-wrap:anywhere;}
+  .hero-subtitle{font-size:1rem!important;line-height:1.3;}
+  .hero-lore,.title-lore{font-size:.98rem!important;line-height:1.55!important;}
+
+  /* Game HUD / classic screens */
+  .topbar{position:relative!important;top:auto!important;grid-template-columns:1fr!important;padding:10px!important;border-radius:14px!important;}
+  .topbar>*{min-width:0;}
+  .brand h1{font-size:clamp(1.8rem,10vw,2.6rem)!important;overflow-wrap:anywhere;}
+  .layout,.ashmere-wrap{grid-template-columns:1fr!important;}
+  .meta-grid,.stat-grid,.grid,.action-grid,.support-grid,.hub-grid{grid-template-columns:1fr!important;}
+  .panel-head{display:block!important;}
+  .panel-head>*+*{margin-top:6px;}
+  .text{font-size:1rem;line-height:1.58;}
+  .log{max-height:260px;}
+  .ascii{font-size:clamp(.55rem,2.7vw,.8rem);white-space:pre;overflow-x:auto;}
+
+  /* Touch-first actions: no hover is required for any important control. */
+  .actions,.v087-actions,.v093-actions,.v094-actions,.v094-town-bottom-actions,.settings09x-actions{display:grid!important;grid-template-columns:1fr!important;align-items:stretch!important;}
+  .actions .btn,.v087-actions .btn,.v093-actions .btn,.v094-actions .btn,.v094-town-bottom-actions .btn,.settings09x-btn{width:100%!important;}
+  .card,.shop,.npc-card,.event-card,.setting-card,.hub-card,.v080-town-card,.v080-town-action,.v087-card,.v087-town-action,.v094-btn{min-height:64px;}
+
+  /* Town / Ashmere terminal */
+  .ash099-wrap{padding:10px!important;}
+  .ash099-hero,.ash099-hero-content{min-height:520px!important;}
+  .ash099-hero-content{padding:72px 14px 14px!important;}
+  .ash099-title h1{font-size:clamp(3rem,16vw,5rem)!important;overflow-wrap:anywhere;}
+  .ash099-goal,.ash099-market-summary{grid-template-columns:1fr!important;}
+  .ash099-topnav,.ash099-footer{grid-template-columns:1fr!important;}
+  .ash099-footer-item{justify-content:flex-start!important;min-height:50px;}
+  .ash099-group-grid,.ash099-action-group.road-prep .ash099-group-grid,.ash099-actions,.ash099-quick-row,.ash099-stats,.ash099-job-meta{grid-template-columns:1fr!important;}
+  .ash099-action{min-height:104px!important;}
+  .ash099-route-title{grid-template-columns:42px minmax(0,1fr)!important;}
+  .ash099-route-card{padding:13px!important;}
+  .ash099-terminal-card,.ash099-traveler-panel{position:relative!important;top:auto!important;}
+  .ash099-head{grid-template-columns:1fr!important;}
+  .ash099-head img{height:min(58vw,260px)!important;}
+  .ash099-cards,.ash099-npc-grid{grid-template-columns:1fr!important;}
+  .ash099-npc-card{min-height:0;grid-template-rows:auto auto auto;}
+  .ash099-npc-card img{height:min(48vw,190px)!important;}
+
+  /* Beginning / traveler creation */
+  .v094-beginning-shell{width:100%!important;padding:10px!important;align-content:start!important;}
+  .v094-beginning h1{font-size:clamp(2.5rem,15vw,5rem)!important;overflow-wrap:anywhere;}
+  .v094-town-objective{grid-template-columns:1fr!important;}
+  .v094-town-pills{grid-template-columns:1fr!important;}
+  .v094-town-section-grid,.v094-town-polish .v080-town-actions{grid-template-columns:1fr!important;}
+
+  /* Road travel / encounters / combat */
+  .v087-road-hero,.v087-outcome{padding:13px!important;border-radius:18px!important;}
+  .v087-road-hero h2,.v087-outcome h2{font-size:clamp(1.9rem,10vw,3.4rem)!important;overflow-wrap:anywhere;}
+  .v087-road-scene{height:140px!important;}
+  .v087-status,.v087-options,.v093-sheet-row,.v093-actions{grid-template-columns:1fr!important;}
+  .v087-battle,.v093-battle-grid{grid-template-columns:1fr!important;}
+  .v087-enemy{width:min(190px,62vw)!important;height:min(190px,62vw)!important;margin:auto;}
+  .v093-enemy-frame{min-height:min(72vw,320px)!important;}
+  .v093-combat-panel{padding:13px!important;}
+  .v093-mini-stat{min-height:60px;}
+  .v093-combat-log{max-height:240px;}
+  .v093-d20{width:104px!important;height:104px!important;font-size:3rem!important;}
+
+  /* Account / settings */
+  .account09x-wrap,.settings09x-wrap{padding:10px!important;}
+  .account09x-hero{min-height:260px!important;border-radius:22px!important;}
+  .account09x-hero-content{min-height:260px!important;padding:18px!important;}
+  .account09x-hero h1{font-size:clamp(2.8rem,16vw,5rem)!important;overflow-wrap:anywhere;}
+  .account09x-grid,.account09x-grid-wide,.settings09x-grid{grid-template-columns:1fr!important;}
+  .account09x-status-grid{grid-template-columns:1fr!important;}
+  .account09x-actions{display:grid!important;grid-template-columns:1fr!important;}
+  .account09x-btn{width:100%!important;min-height:48px;}
+  .account09x-auth-tabs{position:static;}
+  .account09x-field input{min-height:48px;}
+  .settings09x-actions{display:grid!important;grid-template-columns:1fr!important;}
+  .settings09x-btn{width:100%!important;}
+}
+
+@media (max-width: 430px){
+  .shell{padding-left:6px!important;padding-right:6px!important;}
+  .panel{padding:12px!important;}
+  .title-card,.ornate-panel{padding:14px!important;}
+  .title-lore,.hero-lore{font-size:.94rem!important;}
+  .brand h1{font-size:1.75rem!important;}
+  .ash099-hero,.ash099-hero-content{min-height:500px!important;}
+  .ash099-hero-content{padding:66px 11px 11px!important;}
+  .ash099-title h1{font-size:clamp(2.7rem,16vw,4.2rem)!important;}
+  .v087-road-scene{height:125px!important;}
+  .v093-enemy-frame{min-height:245px!important;}
+  .account09x-panel,.settings09x-toggle{padding:12px!important;}
+}
+
+@media (hover:hover) and (pointer:fine){
+  .btn:hover,.card:hover,.shop:hover,.npc-card:hover,.event-card:hover,.setting-card:hover,.hub-card:hover,.ash099-action:hover,.v087-card:hover{transform:translateY(-2px);}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important;}
+}
