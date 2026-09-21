@@ -35,6 +35,73 @@
     };
   }
 
+  const CLOUD_TABLE = 'traveler_slots';
+  const CLOUD_SLOT_COUNT = 2;
+
+  function cloudReady(session){
+    return !!(session?.user && connected() && health()?.ok !== false);
+  }
+
+  function cloudErrorMessage(err){
+    const message = err?.message || 'Cloud save failed.';
+    if(/traveler_slots|relation .* does not exist|schema cache/i.test(message)){
+      return 'Cloud traveler storage is not installed yet. Run supabase/traveler-slots.sql in the Supabase SQL editor once.';
+    }
+    return message;
+  }
+
+  async function cloudList(session){
+    if(!cloudReady(session)) return { ok:false, rows:[] };
+    try {
+      const result = await client().from(CLOUD_TABLE).select('slot,display_name,updated_at').eq('user_id', session.user.id).order('slot', { ascending:true });
+      if(result.error) throw result.error;
+      return { ok:true, rows:result.data || [] };
+    } catch(err){
+      console.warn('LEGEND cloud list failed:', err);
+      return { ok:false, rows:[], message:cloudErrorMessage(err) };
+    }
+  }
+
+  async function cloudSave(session, slot){
+    const pl = local();
+    if(!cloudReady(session)) return { ok:false, message:'Sign in before saving a traveler to the cloud.' };
+    if(!pl) return { ok:false, message:'Create a traveler before saving a cloud slot.' };
+    if(slot < 1 || slot > CLOUD_SLOT_COUNT) return { ok:false, message:'Invalid cloud traveler slot.' };
+    try {
+      const result = await client().from(CLOUD_TABLE).upsert({ user_id:session.user.id, slot, display_name:pl.username || 'Unnamed Traveler', traveler_data:pl, updated_at:new Date().toISOString() }, { onConflict:'user_id,slot' });
+      if(result.error) throw result.error;
+      return { ok:true, message:'Cloud Slot ' + slot + ' saved.' };
+    } catch(err){
+      console.warn('LEGEND cloud save failed:', err);
+      return { ok:false, message:cloudErrorMessage(err) };
+    }
+  }
+
+  async function cloudLoad(session, slot){
+    if(!cloudReady(session)) return { ok:false, message:'Sign in before loading a cloud traveler.' };
+    try {
+      const result = await client().from(CLOUD_TABLE).select('traveler_data').eq('user_id', session.user.id).eq('slot', slot).maybeSingle();
+      if(result.error) throw result.error;
+      if(!result.data?.traveler_data) return { ok:false, message:'Cloud Slot ' + slot + ' is empty.' };
+      S().savePlayer?.(result.data.traveler_data);
+      return { ok:true, message:'Cloud Slot ' + slot + ' loaded into this browser.' };
+    } catch(err){
+      console.warn('LEGEND cloud load failed:', err);
+      return { ok:false, message:cloudErrorMessage(err) };
+    }
+  }
+
+  async function cloudDelete(session, slot){
+    if(!cloudReady(session)) return { ok:false, message:'Sign in before clearing a cloud traveler.' };
+    try {
+      const result = await client().from(CLOUD_TABLE).delete().eq('user_id', session.user.id).eq('slot', slot);
+      if(result.error) throw result.error;
+      return { ok:true, message:'Cloud Slot ' + slot + ' cleared.' };
+    } catch(err){
+      console.warn('LEGEND cloud delete failed:', err);
+      return { ok:false, message:cloudErrorMessage(err) };
+    }
+  }
   function fmtDate(value){
     if(!value) return 'Not synced yet';
     try { return new Date(value).toLocaleString([], { dateStyle:'medium', timeStyle:'short' }); }
@@ -165,6 +232,9 @@
     const pl = local();
     const prof = getProfile();
     const snap = prof?.activeTraveler || snapshotTraveler(pl);
+    const cloudCanUse = cloudReady(session);
+    const cloudResult = await cloudList(session);
+    const cloudRows = cloudResult.rows || [];
     root().innerHTML = `
       <main class="account09x account09x-finished">
         <div class="account09x-wrap">
@@ -198,8 +268,7 @@
               <h3>Traveler Slots</h3>
               <div class="account09x-slots">
                 <button class="account09x-slot ${snap ? '' : 'account09x-disabled'}" id="localSlot" type="button"><strong>${snap ? esc(snap.username) : 'Local Traveler'}</strong><small>${snap ? `${esc(snap.className)} • ${esc(snap.town)} • Day ${snap.day} • ${snap.roadTokens} Road Tokens` : 'No local traveler linked yet.'}</small></button>
-                <div class="account09x-slot account09x-disabled"><strong>Cloud Slot 1</strong><small>Reserved for Supabase traveler sync.</small></div>
-                <div class="account09x-slot account09x-disabled"><strong>Cloud Slot 2</strong><small>Reserved for alternate traveler saves.</small></div>
+<div class="account09x-cloud-grid"><article class="account09x-slot"><strong>Cloud Slot 1</strong><small id="cloudSlot1Info">Loading cloud slot...</small><div class="account09x-actions"><button class="account09x-btn" type="button" data-cloud-load="1" disabled>Load</button><button class="account09x-btn primary" type="button" data-cloud-save="1" disabled>Save Here</button><button class="account09x-btn danger" type="button" data-cloud-delete="1" disabled>Clear</button></div></article><article class="account09x-slot"><strong>Cloud Slot 2</strong><small id="cloudSlot2Info">Loading cloud slot...</small><div class="account09x-actions"><button class="account09x-btn" type="button" data-cloud-load="2" disabled>Load</button><button class="account09x-btn primary" type="button" data-cloud-save="2" disabled>Save Here</button><button class="account09x-btn danger" type="button" data-cloud-delete="2" disabled>Clear</button></div></article></div>
               </div>
               <h3 class="account09x-subhead">Save Readiness</h3>
               <div class="account09x-readiness">
@@ -270,9 +339,33 @@
       const result = await signOut();
       renderAccount(result.message);
     };
+    [1,2].forEach(slot => {
+      const row = cloudRows.find(item => Number(item.slot) === slot);
+      const info = document.getElementById('cloudSlot' + slot + 'Info');
+      if(info) info.textContent = row ? ((row.display_name || 'Traveler') + ' • ' + fmtDate(row.updated_at)) : 'Empty cloud traveler slot.';
+      document.querySelectorAll('[data-cloud-load="' + slot + '"],[data-cloud-save="' + slot + '"],[data-cloud-delete="' + slot + '"]').forEach(btn => {
+        btn.disabled = !cloudCanUse || (btn.dataset.cloudLoad || btn.dataset.cloudDelete ? !row : false);
+      });
+    });
+    document.querySelectorAll('[data-cloud-load]').forEach(btn => btn.onclick = async () => {
+      const result = await cloudLoad(session, Number(btn.dataset.cloudLoad));
+      if(result.ok) window.LegendGameBootstrap?.continueGame?.();
+      else renderAccount(result.message);
+    });
+    document.querySelectorAll('[data-cloud-save]').forEach(btn => btn.onclick = async () => {
+      const result = await cloudSave(session, Number(btn.dataset.cloudSave));
+      renderAccount(result.message);
+    });
+    document.querySelectorAll('[data-cloud-delete]').forEach(btn => btn.onclick = async () => {
+      const slot = Number(btn.dataset.cloudDelete);
+      if(confirm('Clear Cloud Slot ' + slot + '? This does not delete your local traveler.')){
+        const result = await cloudDelete(session, slot);
+        renderAccount(result.message);
+      }
+    });
     const localSlot = document.getElementById('localSlot');
     if(localSlot && pl) localSlot.onclick = () => window.LegendGameBootstrap?.continueGame?.();
   }
 
-  window.LegendAccountV09x = { renderAccount, getProfile, saveProfile, deleteProfile, getSession };
+  window.LegendAccountV09x = { renderAccount, getProfile, saveProfile, deleteProfile, getSession, cloudSave, cloudLoad, cloudList, cloudDelete };
 })();
