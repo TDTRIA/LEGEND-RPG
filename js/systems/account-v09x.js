@@ -43,11 +43,15 @@
 
   function client(){ return window.LegendSupabaseV09x?.client || null; }
   function connected(){ return !!client(); }
+  function health(){ return window.LegendSupabaseV09x?.health || null; }
   function supabaseReadyText(){
     if(!window.supabase) return 'CDN library missing';
     if(!window.LegendSupabaseV09x) return 'Config not loaded';
     if(!connected()) return 'Client unavailable';
-    return 'Client ready';
+    const h = health();
+    if(h?.ok === true) return 'Online';
+    if(h?.ok === false) return h.message || 'Service unavailable';
+    return 'Checking service';
   }
 
   function authRedirectUrl(){
@@ -76,6 +80,16 @@
     } catch(err){
       console.warn('LEGEND account session check failed:', err);
       return null;
+    }
+  }
+
+  async function refreshHealth(){
+    const check = window.LegendSupabaseV09x?.checkHealth;
+    if(typeof check !== 'function') return health();
+    try { return await check(); }
+    catch(err){
+      console.warn('LEGEND Supabase health check failed:', err);
+      return health();
     }
   }
 
@@ -123,6 +137,8 @@
     try {
       const result = await c.auth.signOut();
       if(result.error) throw result.error;
+      const current = getProfile();
+      if(current) saveProfile({ ...current, authUserId:null });
       return { ok:true, message:'Signed out. Local traveler save kept.' };
     } catch(err){
       return { ok:false, message:`Could not sign out: ${err.message || 'Unknown Supabase error.'}` };
@@ -144,6 +160,7 @@
   }
 
   async function renderAccount(message = ''){
+    await refreshHealth();
     const session = await getSession();
     const pl = local();
     const prof = getProfile();
