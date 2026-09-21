@@ -267,3 +267,50 @@ button.account09x-slot:hover:not(.account09x-disabled){
 .account09x-auth-switch button{border:0;background:none;color:#ffd369;font:inherit;font-weight:900;cursor:pointer;padding:0;}
 .account09x-auth-switch button:hover{text-decoration:underline;}
 .account09x-debug{margin-top:8px;font-size:.78rem;opacity:.72;}
+
+/* v0.9.x Profile redesign — Supabase-first, no debug/readiness clutter */
+.account09x-clean .account09x-wrap{width:min(900px,100%);gap:12px;}
+.account09x-clean .account09x-header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 2px 4px;}
+.account09x-clean .account09x-header h1{margin:2px 0 0;color:#fff2c2;font:900 clamp(2rem,6vw,3.4rem)/.9 Georgia,serif;}
+.account09x-clean .account09x-header-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+.account09x-clean .account09x-header-actions .account09x-btn{min-width:120px;}
+.account09x-clean .account09x-panel{padding:18px;}
+.account09x-clean .account09x-profile-card{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;}
+.account09x-avatar{width:64px;height:64px;display:grid;place-items:center;border:1px solid rgba(255,211,105,.34);border-radius:50%;background:radial-gradient(circle,rgba(255,211,105,.16),rgba(0,0,0,.38));color:#ffd369;font:900 1.8rem Georgia,serif;}
+.account09x-avatar.small{width:52px;height:52px;font-size:1.45rem;}
+.account09x-profile-main h2,.account09x-section-head h2{margin:2px 0 3px;color:#fff2c2;font:900 clamp(1.35rem,4vw,1.9rem)/1 Georgia,serif;}
+.account09x-profile-main p{margin:0;color:#aebfb4;word-break:break-word;}
+.account09x-profile-form{grid-column:1 / -1;display:grid;gap:6px;margin-top:4px;}
+.account09x-profile-form label{color:#ffd369;text-transform:uppercase;letter-spacing:.1em;font-size:.68rem;font-weight:900;}
+.account09x-profile-edit{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;}
+.account09x-profile-edit input{width:100%;min-height:48px;border:1px solid rgba(255,211,105,.22);border-radius:12px;background:rgba(0,0,0,.34);color:#eaffef;padding:10px 12px;font:inherit;}
+.account09x-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.account09x-section-head .account09x-kicker{margin-bottom:3px;}
+.account09x-cloud-state{color:#93d071;font-size:.76rem;font-weight:900;white-space:nowrap;}
+.account09x-traveler-summary{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;border:1px solid rgba(255,211,105,.13);border-radius:16px;background:rgba(0,0,0,.24);padding:12px;}
+.account09x-traveler-summary h3{margin:0 0 4px;color:#fff2c2;font-size:1.15rem;}
+.account09x-traveler-summary p{margin:0;color:#b8c8bd;line-height:1.45;}
+.account09x-traveler-summary.empty{opacity:.78;}
+.account09x-cloud-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.account09x-cloud-slot{display:grid;gap:10px;border:1px solid rgba(255,211,105,.13);border-radius:16px;background:rgba(0,0,0,.24);padding:12px;}
+.account09x-cloud-slot strong{display:block;color:#ffd369;}
+.account09x-cloud-slot small{display:block;margin-top:4px;color:#aebfb4;line-height:1.35;}
+.account09x-cloud-slot .account09x-actions{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:0;}
+.account09x-clean .account09x-actions{justify-content:stretch;}
+.account09x-clean .account09x-btn{min-height:44px;}
+.account09x-clean .account09x-success{margin:0;}
+@media(max-width:680px){
+  .account09x-clean .account09x-header{align-items:stretch;flex-direction:column;}
+  .account09x-clean .account09x-header-actions{display:grid;grid-template-columns:1fr 1fr;}
+  .account09x-clean .account09x-header-actions .account09x-btn{width:100%;}
+  .account09x-clean .account09x-section-head{align-items:stretch;flex-direction:column;}
+  .account09x-clean .account09x-section-head>.account09x-btn{width:100%;}
+  .account09x-clean .account09x-cloud-grid{grid-template-columns:1fr;}
+  .account09x-clean .account09x-cloud-slot .account09x-actions{grid-template-columns:1fr;}
+}
+@media(max-width:430px){
+  .account09x-clean .account09x-panel{padding:14px;}
+  .account09x-clean .account09x-profile-card{grid-template-columns:auto minmax(0,1fr);}
+  .account09x-profile-edit{grid-template-columns:1fr;}
+  .account09x-profile-edit .account09x-btn{width:100%;}
+}
