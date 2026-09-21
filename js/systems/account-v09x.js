@@ -250,81 +250,105 @@
     const cloudCanUse = cloudReady(session);
     const cloudResult = await cloudList(session);
     const cloudRows = cloudResult.rows || [];
+    const signedIn = !!session?.user;
+    const name = prof?.displayName || pl?.username || session?.user?.user_metadata?.display_name || 'Ashmere Traveler';
+
     root().innerHTML = `
-      <main class="account09x account09x-finished">
+      <main class="account09x account09x-clean">
         <div class="account09x-wrap">
-          <section class="account09x-hero">
-            <div class="account09x-hero-content">
+          <header class="account09x-header">
+            <div>
               <div class="account09x-kicker">LEGEND Account</div>
               <h1>Profile</h1>
-              <p>Claim a local profile, track the active traveler, sign in with an account, and prepare this save for cloud traveler slots.</p>
+            </div>
+            <div class="account09x-header-actions">
+              <button class="account09x-btn" id="backTitle" type="button">Back to Realm</button>
+              ${signedIn ? '<button class="account09x-btn danger" id="signOutBtn" type="button">Sign Out</button>' : ''}
+            </div>
+          </header>
+          ${message ? `<p class="account09x-success">${esc(message)}</p>` : ''}
+
+          ${signedIn ? `
+            <section class="account09x-panel account09x-profile-card">
+              <div class="account09x-avatar">${esc(String(name).slice(0,1)).toUpperCase()}</div>
+              <div class="account09x-profile-main">
+                <div class="account09x-kicker">Traveler Profile</div>
+                <h2>${esc(name)}</h2>
+                <p>${esc(sessionEmail(session))}</p>
+              </div>
+              <form class="account09x-profile-form" id="profileForm">
+                <label for="displayName">Traveler Name</label>
+                <div class="account09x-profile-edit"><input id="displayName" maxlength="28" value="${esc(name)}" autocomplete="nickname"><button class="account09x-btn primary" type="submit">Save Name</button></div>
+              </form>
+            </section>
+          ` : authBox(session, prof)}
+
+          <section class="account09x-panel">
+            <div class="account09x-section-head">
+              <div><div class="account09x-kicker">Your Journey</div><h2>Traveler</h2></div>
+              ${pl ? '<button class="account09x-btn primary" id="continueTraveler" type="button">Continue Journey</button>' : '<button class="account09x-btn primary" id="newTraveler" type="button">New Traveler</button>'}
+            </div>
+            <div class="account09x-traveler-summary ${pl ? '' : 'empty'}">
+              <div class="account09x-avatar small">${pl ? esc(String(pl.username || '?').slice(0,1)).toUpperCase() : '?'}</div>
+              <div>
+                <h3>${pl ? esc(pl.username || 'Unnamed Traveler') : 'No traveler yet'}</h3>
+                <p>${pl ? `${esc(pl.className || pl.class || 'Traveler')} • ${esc(pl.town || 'Ashmere')} • Day ${pl.day || 1} • ${Number(pl.inventory?.roadToken || 0)} Road Tokens` : 'Create a traveler to begin your journey through Ashmere.'}</p>
+              </div>
             </div>
           </section>
-          ${message ? `<p class="account09x-success">${esc(message)}</p>` : ''}
-          <section class="account09x-grid account09x-grid-wide">
-            <div class="account09x-panel">
-              <h2>Account Status</h2>
-              <div class="account09x-status account09x-status-grid">
-                <div class="account09x-stat"><strong>${sessionLabel(session)}</strong><span>Supabase Auth</span></div>
-                <div class="account09x-stat"><strong>${prof ? 'Profile Ready' : 'No Profile'}</strong><span>Local Account</span></div>
-                <div class="account09x-stat"><strong>${pl ? 'Linked' : 'No Traveler'}</strong><span>Active Traveler</span></div>
-                <div class="account09x-stat"><strong>${session?.user ? 'Unlocked' : 'Staged'}</strong><span>Account Rewards</span></div>
-              </div>
-              <form class="account09x-form" id="profileForm">
-                <div class="account09x-field"><label for="displayName">Profile Name</label><input id="displayName" maxlength="28" value="${esc(prof?.displayName || pl?.username || '')}" placeholder="Ashmere profile name"></div>
-                <div class="account09x-field"><label for="profileEmail">Email / Login Handle</label><input id="profileEmail" maxlength="72" value="${esc(prof?.email || sessionEmail(session) || '')}" placeholder="Optional for now"></div>
-                <p class="account09x-note"><strong>v0.9.x note:</strong> This still saves a local profile shell. Cloud saves and tester rewards stay staged until the account tables are ready.</p>
-                <div class="account09x-actions"><button class="account09x-btn primary" id="saveProfile" type="submit">Save Profile</button><button class="account09x-btn" id="syncTraveler" type="button" ${pl ? '' : 'disabled'}>Link Active Traveler</button>${prof ? '<button class="account09x-btn danger" id="clearProfile" type="button">Clear Profile</button>' : ''}</div>
-              </form>
-              <div class="account09x-actions account09x-nav-actions"><button class="account09x-btn primary" id="backTitle">Back to Realm Portal</button>${pl ? '<button class="account09x-btn" id="backAshmere">Back to Ashmere</button>' : '<button class="account09x-btn" id="newTraveler">New Traveler</button>'}</div>
+
+          <section class="account09x-panel">
+            <div class="account09x-section-head"><div><div class="account09x-kicker">Cloud Save</div><h2>Traveler Slots</h2></div><span class="account09x-cloud-state">${signedIn && cloudCanUse ? 'Cloud Online' : signedIn ? 'Connecting…' : 'Sign in to use cloud saves'}</span></div>
+            <div class="account09x-cloud-grid">
+              ${[1,2].map(slot => {
+                const row = cloudRows.find(item => Number(item.slot) === slot);
+                return `<article class="account09x-cloud-slot"><div><strong>Cloud Slot ${slot}</strong><small id="cloudSlot${slot}Info">${row ? esc(row.display_name || 'Traveler') + ' • ' + fmtDate(row.updated_at) : 'Empty'}</small></div><div class="account09x-actions"><button class="account09x-btn" type="button" data-cloud-load="${slot}" ${cloudCanUse && row ? '' : 'disabled'}>Load</button><button class="account09x-btn primary" type="button" data-cloud-save="${slot}" ${cloudCanUse && pl ? '' : 'disabled'}>Save Here</button><button class="account09x-btn danger" type="button" data-cloud-delete="${slot}" ${cloudCanUse && row ? '' : 'disabled'}>Clear</button></div></article>`;
+              }).join('')}
             </div>
-            ${authBox(session, prof)}
-            <aside class="account09x-panel">
-              <h3>Traveler Slots</h3>
-              <div class="account09x-slots">
-                <button class="account09x-slot ${snap ? '' : 'account09x-disabled'}" id="localSlot" type="button"><strong>${snap ? esc(snap.username) : 'Local Traveler'}</strong><small>${snap ? `${esc(snap.className)} • ${esc(snap.town)} • Day ${snap.day} • ${snap.roadTokens} Road Tokens` : 'No local traveler linked yet.'}</small></button>
-<div class="account09x-cloud-grid"><article class="account09x-slot"><strong>Cloud Slot 1</strong><small id="cloudSlot1Info">Loading cloud slot...</small><div class="account09x-actions"><button class="account09x-btn" type="button" data-cloud-load="1" disabled>Load</button><button class="account09x-btn primary" type="button" data-cloud-save="1" disabled>Save Here</button><button class="account09x-btn danger" type="button" data-cloud-delete="1" disabled>Clear</button></div></article><article class="account09x-slot"><strong>Cloud Slot 2</strong><small id="cloudSlot2Info">Loading cloud slot...</small><div class="account09x-actions"><button class="account09x-btn" type="button" data-cloud-load="2" disabled>Load</button><button class="account09x-btn primary" type="button" data-cloud-save="2" disabled>Save Here</button><button class="account09x-btn danger" type="button" data-cloud-delete="2" disabled>Clear</button></div></article></div>
-              </div>
-              <h3 class="account09x-subhead">Save Readiness</h3>
-              <div class="account09x-readiness">
-                <div><span>Local Profile</span><strong>${prof ? 'Ready' : 'Missing'}</strong></div>
-                <div><span>Supabase Session</span><strong>${session?.user ? 'Signed In' : connected() ? 'Ready' : 'Offline'}</strong></div>
-                <div><span>Traveler Snapshot</span><strong>${snap ? 'Ready' : 'Missing'}</strong></div>
-                <div><span>Last Profile Update</span><strong>${fmtDate(prof?.updatedAt)}</strong></div>
-                <div><span>Last Traveler Link</span><strong>${fmtDate(snap?.updatedAt)}</strong></div>
-              </div>
-            </aside>
           </section>
         </div>
       </main>`;
 
     const back = document.getElementById('backTitle');
     if(back) back.onclick = () => window.LegendGameBootstrap?.title?.();
-    const ash = document.getElementById('backAshmere');
-    if(ash) ash.onclick = () => window.LegendGameBootstrap?.continueGame?.();
+    const continueTraveler = document.getElementById('continueTraveler');
+    if(continueTraveler) continueTraveler.onclick = () => window.LegendGameBootstrap?.continueGame?.();
     const newTraveler = document.getElementById('newTraveler');
     if(newTraveler) newTraveler.onclick = () => window.LegendGameBootstrap?.newTraveler?.();
+
     const form = document.getElementById('profileForm');
     if(form) form.onsubmit = e => {
       e.preventDefault();
       const displayName = document.getElementById('displayName').value.trim() || pl?.username || 'Ashmere Traveler';
-      const email = document.getElementById('profileEmail').value.trim() || sessionEmail(session);
-      saveProfile({ ...(prof || {}), displayName, email, authUserId: session?.user?.id || null, activeTraveler: prof?.activeTraveler || snapshotTraveler(pl) });
+      saveProfile({ ...(prof || {}), displayName, email:sessionEmail(session), authUserId:session?.user?.id || null, activeTraveler:prof?.activeTraveler || snapshotTraveler(pl) });
       renderAccount('Profile saved.');
     };
-    const sync = document.getElementById('syncTraveler');
-    if(sync) sync.onclick = () => {
-      const current = getProfile() || { displayName: pl?.username || 'Ashmere Traveler', email: sessionEmail(session) || '' };
-      saveProfile({ ...current, authUserId: session?.user?.id || null, activeTraveler: snapshotTraveler(pl) });
-      renderAccount('Active traveler linked to profile.');
+
+    const signOutBtn = document.getElementById('signOutBtn');
+    if(signOutBtn) signOutBtn.onclick = async () => {
+      signOutBtn.disabled = true;
+      signOutBtn.textContent = 'Signing Out...';
+      const result = await signOut();
+      renderAccount(result.message);
     };
-    const clear = document.getElementById('clearProfile');
-    if(clear) clear.onclick = () => {
-      if(confirm('Clear local profile shell? Your traveler save will not be deleted.')){
-        deleteProfile();
-        renderAccount('Profile cleared. Traveler save kept.');
+
+    document.querySelectorAll('[data-cloud-load]').forEach(btn => btn.onclick = async () => {
+      const result = await cloudLoad(session, Number(btn.dataset.cloudLoad));
+      if(result.ok) window.LegendGameBootstrap?.continueGame?.();
+      else renderAccount(result.message);
+    });
+    document.querySelectorAll('[data-cloud-save]').forEach(btn => btn.onclick = async () => {
+      const result = await cloudSave(session, Number(btn.dataset.cloudSave));
+      renderAccount(result.message);
+    });
+    document.querySelectorAll('[data-cloud-delete]').forEach(btn => btn.onclick = async () => {
+      const slot = Number(btn.dataset.cloudDelete);
+      if(confirm('Clear Cloud Slot ' + slot + '? This does not delete your local traveler.')){
+        const result = await cloudDelete(session, slot);
+        renderAccount(result.message);
       }
-    };
+    });
+
     const authForm = document.getElementById('authForm');
     let authMode = 'signin';
     const setAuthMode = mode => {
@@ -369,39 +393,6 @@
       }
       renderAccount(result.message);
     };
-    const signOutBtn = document.getElementById('signOutBtn');
-    if(signOutBtn) signOutBtn.onclick = async () => {
-      signOutBtn.disabled = true;
-      signOutBtn.textContent = 'Signing Out...';
-      const result = await signOut();
-      renderAccount(result.message);
-    };
-    [1,2].forEach(slot => {
-      const row = cloudRows.find(item => Number(item.slot) === slot);
-      const info = document.getElementById('cloudSlot' + slot + 'Info');
-      if(info) info.textContent = row ? ((row.display_name || 'Traveler') + ' • ' + fmtDate(row.updated_at)) : 'Empty cloud traveler slot.';
-      document.querySelectorAll('[data-cloud-load="' + slot + '"],[data-cloud-save="' + slot + '"],[data-cloud-delete="' + slot + '"]').forEach(btn => {
-        btn.disabled = !cloudCanUse || (btn.dataset.cloudLoad || btn.dataset.cloudDelete ? !row : false);
-      });
-    });
-    document.querySelectorAll('[data-cloud-load]').forEach(btn => btn.onclick = async () => {
-      const result = await cloudLoad(session, Number(btn.dataset.cloudLoad));
-      if(result.ok) window.LegendGameBootstrap?.continueGame?.();
-      else renderAccount(result.message);
-    });
-    document.querySelectorAll('[data-cloud-save]').forEach(btn => btn.onclick = async () => {
-      const result = await cloudSave(session, Number(btn.dataset.cloudSave));
-      renderAccount(result.message);
-    });
-    document.querySelectorAll('[data-cloud-delete]').forEach(btn => btn.onclick = async () => {
-      const slot = Number(btn.dataset.cloudDelete);
-      if(confirm('Clear Cloud Slot ' + slot + '? This does not delete your local traveler.')){
-        const result = await cloudDelete(session, slot);
-        renderAccount(result.message);
-      }
-    });
-    const localSlot = document.getElementById('localSlot');
-    if(localSlot && pl) localSlot.onclick = () => window.LegendGameBootstrap?.continueGame?.();
   }
 
   window.LegendAccountV09x = { renderAccount, getProfile, saveProfile, deleteProfile, getSession, cloudSave, cloudLoad, cloudList, cloudDelete };
