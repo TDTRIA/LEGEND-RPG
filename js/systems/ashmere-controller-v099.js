@@ -92,8 +92,8 @@
         <section class="ash100-status">
           <div><span>Traveler</span><strong>${esc(pl.username||'Traveler')}</strong><small>${esc(pl.className||'Wanderer')}</small></div>
           <div><span>Health</span><strong>${Number(pl.hp||0)}/${Number(pl.maxHp||0)}</strong><i><b style="width:${health}%"></b></i></div>
-          <div><span>Road Proof</span><strong>${tokenCount}/3 Tokens</strong><small>${tokenCount>=3?'Ready to report':'Keep exploring'}</small></div>
-          <div><span>Gold</span><strong>${gold(pl.gold)}</strong><small>Day ${Number(pl.day||1)}</small></div>
+          <div><span>Road Tokens</span><strong>${tokenCount}</strong><small>${tokenCount>=3?'A region can be opened':'Earned on the road'}</small></div>
+          <div><span>Location</span><strong>${esc(pl.currentRegion||'Ashmere')}</strong><small>${gold(pl.gold)} • Day ${Number(pl.day||1)}</small></div>
         </section>
         <section class="ash100-panel">
           <div class="ash100-section-head"><div><div class="ash099-kicker">Town Map</div><h2>Where do you want to go?</h2></div><span>Five places. One clear loop.</span></div>
