@@ -1,4 +1,4 @@
-// LEGEND: Roads of Ashmere v0.10.0 - Slim Game Bootstrap
+// LEGEND: Roads of Ashmere v0.11.0 - Slim Game Bootstrap
 // Owns title/start/settings/account entry. Ashmere is owned by ashmere-controller-v099.js.
 (() => {
   const S = () => window.LegendStorage || {};
@@ -241,7 +241,7 @@
 
         <footer class="portal100-footer">
           <span>LEGEND: ROADS OF ASHMERE</span>
-          <span>v0.10.0</span>
+          <span>v0.11.0</span>
         </footer>
       </div>`;
     startAmbience();
