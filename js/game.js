@@ -195,17 +195,56 @@
     applySettings();
     const player = loadPlayer();
     const prof = profile();
+    const name = player?.username || 'No Traveler';
+    const cls = player?.className || player?.class || 'Wayfarer';
+    const town = player?.town || 'Ashmere';
+    const day = Number(player?.day || 1);
+    const tokens = Number(player?.inventory?.roadToken || 0);
     root().innerHTML = `
-      <div class="title-wrap title-v09x-final portal-shell portal-gamefeel">
+      <div class="title-wrap title-v100 portal-shell portal-v100">
         <div class="title-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
         <div class="title-fog" aria-hidden="true"><i></i><i></i><i></i></div>
-        ${portalHeader(prof)}
-        <section class="portal-main-grid">
-          ${worldStatusPanel(prof)}
-          ${travelerRosterPanel(player)}
-          ${noticeBoardPanel()}
-        </section>
-        ${portalFooter()}
+
+        <header class="portal100-header">
+          <div class="portal100-brand">
+            <img src="assets/ui/logos/logo_legend_emblem_v1.png" alt="LEGEND emblem" onerror="this.style.display='none'">
+            <div><span>ROADS OF ASHMERE</span><h1>LEGEND</h1><p>A dark road waits beyond the lanterns.</p></div>
+          </div>
+          <div class="portal100-header-actions">
+            <button id="account" type="button">Profile</button>
+            <button id="settings" type="button" aria-label="Open settings">⚙</button>
+          </div>
+        </header>
+
+        <main class="portal100-main">
+          <section class="portal100-hero">
+            <div class="portal100-kicker">THE ROAD REMEMBERS</div>
+            <h2>Every journey<br><em>leaves a mark.</em></h2>
+            <p>Ashmere is your refuge. The Old Road is your proving ground. Prepare well, choose your path, and bring something home.</p>
+            <div class="portal100-hero-rule"><span></span><b>ASHMERE</b><span></span></div>
+          </section>
+
+          <section class="portal100-traveler">
+            <div class="portal100-traveler-top">
+              <div class="portal100-avatar">${player ? esc(String(name).slice(0,1)).toUpperCase() : '?'}</div>
+              <div><span class="portal100-label">CURRENT TRAVELER</span><h3>${esc(name)}</h3><p>${esc(cls)} • ${esc(town)}</p></div>
+            </div>
+            <div class="portal100-stats">
+              <div><span>DAY</span><strong>${day}</strong></div>
+              <div><span>ROAD TOKENS</span><strong>${tokens}</strong></div>
+              <div><span>REGISTRY</span><strong>${esc(registryStatus(prof))}</strong></div>
+            </div>
+            <div class="portal100-actions">
+              ${player ? '<button class="portal100-primary" id="continue">Continue Journey <small>Enter Ashmere</small></button>' : '<button class="portal100-primary" id="newPrimary">Begin Your Journey <small>Create a traveler</small></button>'}
+              <button id="new" type="button">New Traveler</button>
+            </div>
+          </section>
+        </main>
+
+        <footer class="portal100-footer">
+          <span>LEGEND: ROADS OF ASHMERE</span>
+          <span>v0.10.0</span>
+        </footer>
       </div>`;
     startAmbience();
     bindTitleAudio();
@@ -213,13 +252,11 @@
     if(cont) cont.onclick = () => titleTransition('Opening Ashmere Gate...', continueGame);
     const newPrimary = document.getElementById('newPrimary');
     if(newPrimary) newPrimary.onclick = () => titleTransition('Preparing New Traveler...', newTraveler);
-    document.getElementById('account').onclick = () => titleTransition('Opening Traveler Registry...', account);
-    document.getElementById('settings').onclick = () => titleTransition('Opening Options...', settings);
     document.getElementById('new').onclick = () => titleTransition('Preparing New Traveler...', newTraveler);
-    document.getElementById('registry').onclick = () => titleTransition('Opening Traveler Registry...', account);
-    const settingsTop = document.getElementById('settingsTop');
-    if(settingsTop) settingsTop.onclick = () => titleTransition('Opening Options...', settings);
+    document.getElementById('account').onclick = () => titleTransition('Opening Traveler Profile...', account);
+    document.getElementById('settings').onclick = () => titleTransition('Opening Options...', settings);
   }
+
 
   function continueGame(){
     const player = loadPlayer();
