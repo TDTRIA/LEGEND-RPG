@@ -1,4 +1,4 @@
-// LEGEND: Roads of Ashmere v0.9.x - Slim Game Bootstrap
+// LEGEND: Roads of Ashmere v0.10.0 - Slim Game Bootstrap
 // Owns title/start/settings/account entry. Ashmere is owned by ashmere-controller-v099.js.
 (() => {
   const S = () => window.LegendStorage || {};
@@ -201,13 +201,11 @@
     const day = Number(player?.day || 1);
     const tokens = Number(player?.inventory?.roadToken || 0);
     root().innerHTML = `
-      <div class="title-wrap title-v100 portal-shell portal-v100">
-        <div class="title-embers" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-        <div class="title-fog" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="title-wrap title-v100 portal-shell portal-v100"><div class="title-atmosphere" aria-hidden="true"><div class="title-moon"></div><div class="title-horizon"></div><div class="title-road"></div><div class="title-lantern l1"></div><div class="title-lantern l2"></div><div class="title-lantern l3"></div><div class="title-embers"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="title-fog"><i></i><i></i><i></i></div></div>
 
         <header class="portal100-header">
           <div class="portal100-brand">
-            <img src="assets/ui/logos/logo_legend_emblem_v1.png" alt="LEGEND emblem" onerror="this.style.display='none'">
+            <div class="portal100-emblem-wrap"><img src="assets/ui/logos/logo_legend_emblem_v1.png" alt="LEGEND emblem" onerror="this.style.display='none'"><span>✦</span></div>
             <div><span>ROADS OF ASHMERE</span><h1>LEGEND</h1><p>A dark road waits beyond the lanterns.</p></div>
           </div>
           <div class="portal100-header-actions">
@@ -218,10 +216,10 @@
 
         <main class="portal100-main">
           <section class="portal100-hero">
-            <div class="portal100-kicker">THE ROAD REMEMBERS</div>
+            <div class="portal100-kicker">THE ROAD REMEMBERS</div><div class="portal100-title-mark"><span></span><b>LEGEND</b><span></span></div>
             <h2>Every journey<br><em>leaves a mark.</em></h2>
             <p>Ashmere is your refuge. The Old Road is your proving ground. Prepare well, choose your path, and bring something home.</p>
-            <div class="portal100-hero-rule"><span></span><b>ASHMERE</b><span></span></div>
+            <div class="portal100-hero-rule"><span></span><b>ASHMERE</b><span></span></div><div class="portal100-location"><i></i><span>THE LANTERN GATE</span><small>OLD ROAD — EASTWARD</small></div>
           </section>
 
           <section class="portal100-traveler">
@@ -235,7 +233,7 @@
               <div><span>REGISTRY</span><strong>${esc(registryStatus(prof))}</strong></div>
             </div>
             <div class="portal100-actions">
-              ${player ? '<button class="portal100-primary" id="continue">Continue Journey <small>Enter Ashmere</small></button>' : '<button class="portal100-primary" id="newPrimary">Begin Your Journey <small>Create a traveler</small></button>'}
+              ${player ? '<button class="portal100-primary" id="continue"><span>Continue Journey</span><small>Enter Ashmere</small><i>→</i></button>' : '<button class="portal100-primary" id="newPrimary"><span>Begin Your Journey</span><small>Create a traveler</small><i>→</i></button>'}
               <button id="new" type="button">New Traveler</button>
             </div>
           </section>
@@ -290,7 +288,7 @@
       ['spacious','Spacious Layout','Adds breathing room for touch and mobile play.','space'],
       ['readableFont','Readable Font','Uses a simpler font treatment for long reading sessions.','font']
     ];
-    root().innerHTML = `<main class="settings09x"><div class="settings09x-wrap"><section class="settings09x-hero"><div class="settings09x-kicker">LEGEND v0.9.x</div><h1>Settings</h1><p>Adjust readability and comfort for this device. These options should feel like part of the game, not a browser form.</p></section><section class="settings09x-grid">${rows.map(([key,label,desc,ic]) => `<label class="settings09x-toggle"><input type="checkbox" data-setting="${key}" ${current[key] ? 'checked' : ''}><span class="settings09x-setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[ic]}"/></svg></span><span><strong>${label}</strong><span>${desc}</span></span><i class="settings09x-switch"></i></label>`).join('')}</section><p class="settings09x-note"><strong>Note:</strong> Accessibility settings do not change your save file, stats, or progress. They only affect presentation on this device.</p><div class="settings09x-actions"><button class="settings09x-btn primary" id="saveSettings">Save Settings</button><button class="settings09x-btn" id="backTitle">Back to Title</button>${loadPlayer()?'<button class="settings09x-btn" id="backGame">Back to Ashmere</button>':''}</div></div></main>`;
+    root().innerHTML = `<main class="settings09x"><div class="settings09x-wrap"><section class="settings09x-hero"><div class="settings09x-kicker">LEGEND v0.10.0</div><h1>Settings</h1><p>Adjust readability and comfort for this device. These options should feel like part of the game, not a browser form.</p></section><section class="settings09x-grid">${rows.map(([key,label,desc,ic]) => `<label class="settings09x-toggle"><input type="checkbox" data-setting="${key}" ${current[key] ? 'checked' : ''}><span class="settings09x-setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[ic]}"/></svg></span><span><strong>${label}</strong><span>${desc}</span></span><i class="settings09x-switch"></i></label>`).join('')}</section><p class="settings09x-note"><strong>Note:</strong> Accessibility settings do not change your save file, stats, or progress. They only affect presentation on this device.</p><div class="settings09x-actions"><button class="settings09x-btn primary" id="saveSettings">Save Settings</button><button class="settings09x-btn" id="backTitle">Back to Title</button>${loadPlayer()?'<button class="settings09x-btn" id="backGame">Back to Ashmere</button>':''}</div></div></main>`;
     document.getElementById('saveSettings').onclick = () => {
       const next = {...current};
       document.querySelectorAll('[data-setting]').forEach(input => next[input.dataset.setting] = input.checked);
