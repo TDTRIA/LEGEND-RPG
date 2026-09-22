@@ -85,7 +85,8 @@
     const quick=(view,label,ic)=>`<button class="ash100-quick" data-ash-view="${esc(view)}">${icon(ic)}<span>${esc(label)}</span></button>`;
     shell(`
       <section class="ash100-town">
-        <div class="ash100-hero">${img(bg(),'Ashmere')}${currentRouteCard(g)}<div class="ash100-hero-copy"><div class="ash099-kicker">LEGEND • Roads of Ashmere</div><h1>Ashmere</h1><p>A living base camp at the edge of the Old Road. Prepare here, make choices here, and always know how to get back home.</p></div></div>
+        <div class="ash100-hero">${img(bg(),'Ashmere')}<div class="ash100-hero-copy"><div class="ash099-kicker">LEGEND • Roads of Ashmere</div><h1>Ashmere</h1><p>A living base camp at the edge of the Old Road. Prepare here, make choices here, and always know how to get back home.</p></div></div>
+        <div class="ash100-route-dock">${currentRouteCard(g)}</div>
         <section class="ash100-status">
           <div><span>Traveler</span><strong>${esc(pl.username||'Traveler')}</strong><small>${esc(pl.className||'Wanderer')}</small></div>
           <div><span>Health</span><strong>${Number(pl.hp||0)}/${Number(pl.maxHp||0)}</strong><i><b style="width:${health}%"></b></i></div>
