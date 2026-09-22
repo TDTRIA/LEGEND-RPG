@@ -39,7 +39,7 @@
     craft:'M6 18l8-8M14 4l6 6M5 5l4 4M3 21l4-1 10-10-3-3L4 17z',
     profile:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c1.4-4.2 4.5-6.5 8-6.5s6.6 2.3 8 6.5',
     quest:'M12 3l2.4 5 5.6.8-4 3.9.9 5.5L12 15.6 7.1 18.2l.9-5.5-4-3.9 5.6-.8L12 3Z',
-    route:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 3v6l4 2'
+    route:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm3.5 5.5-3 6-6 3 3-6 6-3Z'
   };
   const icon = k => `<span class="ash099-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${iconMap[k] || iconMap.quest}"/></svg></span>`;
   function shell(html){ root().innerHTML = `<main class="ash099 ash099-terminal"><div class="ash099-wrap">${html}</div></main>`; }
