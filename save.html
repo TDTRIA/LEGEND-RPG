@@ -69,12 +69,13 @@
       </section>
     </main>
 
-    <footer>Legend - Recovered Build / Save Vault</footer>
+    <footer>LEGEND: Roads of Ashmere / Save Vault</footer>
   </div>
 
   <script>
-    const ACTIVE_KEY = 'legend-recovered-build-v06';
+    const ACTIVE_KEY = 'legend-roads-of-ashmere-v09';
     const SAVE_KEYS = [
+      'legend-roads-of-ashmere-v09',
       'legend-recovered-build-v06',
       'legend-recovered-build-v051',
       'legend-recovered-build-v05',
@@ -102,7 +103,7 @@
       const parsed = JSON.parse(raw);
       return {
         format:'LEGEND_SAVE_V1',
-        game:'Legend - Recovered Build',
+        game:'LEGEND: Roads of Ashmere',
         exportedAt:new Date().toISOString(),
         sourceKey:key,
         targetKey:ACTIVE_KEY,
@@ -181,7 +182,7 @@
       if(!payload || !payload.save) throw new Error('Invalid LEGEND save payload.');
       const p = payload.save;
       if(!p.username || !p.inventory || !p.className) throw new Error('Save is missing required LEGEND character data.');
-      p.version = p.version || 'v0.6.4';
+      p.version = p.version || 'v0.9.0';
       localStorage.setItem(ACTIVE_KEY, JSON.stringify(p));
       importStatus.className = 'notice';
       importStatus.textContent = 'Imported save for ' + p.username + '. Return to LEGEND and choose Continue.';
