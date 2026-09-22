@@ -86,6 +86,9 @@ window.LegendStorage = (() => {
     ['mara','brenn','oric','sella'].forEach(k => p.npcTalk[k] ??= 0);
     p.discoveredRoutes = p.discoveredRoutes || ['Old Road'];
     p.discoveredTowns = p.discoveredTowns || ['Ashmere'];
+    p.unlockedRegions = p.unlockedRegions || ['Ashmere'];
+    p.currentRegion = p.currentRegion || 'Ashmere';
+    p.regionTravelCount = p.regionTravelCount || 0;
     p.discoveredRegions = Array.isArray(p.discoveredRegions) && p.discoveredRegions.length ? p.discoveredRegions : ['Ashmere'];
     if(!p.currentRegion || !p.discoveredRegions.includes(p.currentRegion)) p.currentRegion = 'Ashmere';
     return p;
