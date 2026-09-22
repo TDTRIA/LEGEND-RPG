@@ -66,7 +66,7 @@
   }
   function miniMeter(pl){ return `<div class="ash099-meter"><span>Health</span><strong>${Number(pl.hp || 0)}/${Number(pl.maxHp || 0)}</strong><i style="width:${hpPct(pl)}%"></i></div>`; }
   function currentRouteCard(g){
-    return `<aside class="ash099-route-card"><h2>Current Route</h2><div class="ash099-route-title">${icon(g.icon)}<div><strong>${esc(g.title)}</strong><p>${esc(g.text)}</p></div></div><ul>${(g.tasks || []).map(x => `<li>${esc(x)}</li>`).join('')}</ul><button class="ash099-btn primary" data-ash-view="${esc(g.view)}">${esc(g.cta)}</button></aside>`;
+    return `<aside class="ash100-route-strip"><span class="ash100-route-strip-icon">${icon(g.icon)}</span><div class="ash100-route-strip-copy"><span>Current Route</span><strong>${esc(g.title)}</strong><small>${esc(g.text)}</small></div><button class="ash099-btn primary" data-ash-view="${esc(g.view)}">${esc(g.cta)}</button></aside>`;
   }
   function travelerTerminal(pl){
     const name = pl.username || 'Traveler';
