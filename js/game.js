@@ -185,7 +185,7 @@
   }
 
   function bindTitleAudio(){
-    document.querySelectorAll('.game-menu-btn,.portal-enter-btn,.portal-secondary-btn,.portal-gear').forEach(btn => {
+    document.querySelectorAll('.game-menu-btn,.portal-enter-btn,.portal-secondary-btn,.portal-gear,.portal100-primary,.portal100-header-actions button').forEach(btn => {
       btn.addEventListener('pointerenter', () => playUi('hover'));
       btn.addEventListener('focus', () => playUi('hover'));
     });
