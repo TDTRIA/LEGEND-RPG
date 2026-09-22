@@ -67,7 +67,7 @@ window.LegendStorage = (() => {
     p.mastery = p.mastery || {};
     Object.keys(p.skills).forEach(k => p.mastery[k] ??= 0);
     p.memories = p.memories || ['You woke beneath a dead lantern outside Ashmere.'];
-    p.questLog = p.questLog || ['The Bell That Rang Once: Speak to Mara in People of Ashmere.','The First Road: Explore Old Road and return with 3 Road Tokens.'];
+    p.questLog = p.questLog || ['The Bell That Rang Once: Speak to Mara in People of Ashmere.','The First Road: Explore Old Road and return with 5 Road Tokens to open the first new region.'];
     p.quests = p.quests || {
       bellThatRangOnce:{status:'active',step:1,title:'The Bell That Rang Once'},
       firstRoad:{status:'active',step:1,title:'The First Road'},
