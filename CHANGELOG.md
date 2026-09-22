@@ -1,12 +1,43 @@
 # Changelog
 
-All notable changes to **Legend - Recovered Build** will be documented in this file.
+All notable changes to **LEGEND: Roads of Ashmere** will be documented in this file.
 
-This project is an HTML5 browser remake of the original Windows Batch RPG **LegendTFC**.
+This project is an HTML5 fantasy RPG. Earlier remake history is retained below as a development record. of the original Windows Batch RPG **LegendTFC**.
 
 ---
 
-## [Current] v0.7.0 - Interface & Encounter Update
+## [Current] v0.10.x — Ashmere & Old Road Rework
+
+### Added
+
+- Added a mobile-first five-destination Ashmere town terminal.
+- Added clearer routes for Inn, Market, Forge & Workshop, Town Hall, and the Old Road Gate.
+- Added traveler status for health, gold, road proof, and identity.
+- Added a five-stage Old Road expedition layer.
+- Added Road Pressure and meaningful expedition choices.
+- Added clear expedition completion, fall-back, and return-to-Ashmere paths.
+- Added combat as part of the expedition.
+- Added choice-driven road resolution without a visible D20 gate.
+
+### Changed
+
+- Ashmere is now presented as a base of operations instead of a large menu list.
+- The Old Road is now structured as a finite expedition loop.
+- Mobile touch layouts are treated as a primary interface.
+- Current public documentation now uses **LEGEND: Roads of Ashmere** as the active identity.
+
+### Development Focus
+
+- Expand traveler progression, gear, skills, and mastery.
+- Deepen Ashmere jobs, NPC relationships, crafting, and town progression.
+- Expand road events, enemies, discoveries, and deeper route tiers.
+- Connect rewards into longer-term progression.
+- Continue mobile UX polish and real-device testing.
+- Resume regular devlog/update posts as meaningful changes land.
+
+---
+
+## Historical v0.7.0 - Interface & Encounter Update
 
 ### Added
 
