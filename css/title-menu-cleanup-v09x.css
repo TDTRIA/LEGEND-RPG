@@ -525,3 +525,80 @@
 .portal100-hero::before{content:"✦";width:54px;height:54px;margin-bottom:18px;border:1px solid rgba(215,184,106,.28);border-radius:50%;display:grid;place-items:center;color:#d7b86a;font-size:1.25rem;box-shadow:0 0 34px rgba(215,184,106,.07)}
 .portal100-footer{position:relative}.portal100-footer::after{content:"THE ROAD REMEMBERS";position:absolute;left:50%;top:-30px;transform:translateX(-50%);color:rgba(215,184,106,.22);font-size:.52rem;letter-spacing:.28em;white-space:nowrap}
 @media(max-width:760px){.portal-v100::after{display:none}.portal-v100::before{width:90vw;left:-42vw;top:26%}.portal100-hero::before{width:46px;height:46px;margin-bottom:14px}}
+
+
+/* v0.10 Ashmere title atmosphere — cinematic world layer */
+.portal-v100{
+  isolation:isolate;
+  background:
+    radial-gradient(ellipse at 50% 72%,rgba(71,88,51,.22),transparent 34%),
+    radial-gradient(circle at 70% 12%,rgba(213,181,103,.08),transparent 24%),
+    linear-gradient(180deg,#080c0a 0%,#0b100d 48%,#050806 100%)!important;
+}
+.portal-v100 .title-atmosphere{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.portal-v100 .title-atmosphere:before{
+  content:"";position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 50% 38%,rgba(218,194,126,.045),transparent 18%),
+    linear-gradient(180deg,transparent 58%,rgba(0,0,0,.62) 100%);
+}
+.title-moon{position:absolute;width:clamp(90px,12vw,170px);aspect-ratio:1;border-radius:50%;right:9%;top:11%;background:radial-gradient(circle at 38% 35%,rgba(244,221,164,.24),rgba(215,184,106,.08) 48%,transparent 72%);filter:blur(.2px);box-shadow:0 0 70px rgba(215,184,106,.08)}
+.title-horizon{position:absolute;left:-5%;right:-5%;bottom:18%;height:28%;background:linear-gradient(180deg,transparent 0%,rgba(9,15,11,.22) 42%,rgba(3,7,5,.9) 100%);clip-path:polygon(0 62%,8% 54%,14% 61%,21% 45%,29% 57%,37% 49%,44% 60%,52% 42%,60% 56%,68% 47%,76% 60%,83% 51%,91% 57%,100% 43%,100% 100%,0 100%);opacity:.9}
+.title-road{position:absolute;left:50%;bottom:-9%;width:min(34vw,420px);height:58%;transform:translateX(-50%);background:linear-gradient(90deg,transparent 0%,rgba(28,35,25,.72) 32%,rgba(53,60,38,.82) 50%,rgba(28,35,25,.72) 68%,transparent 100%);clip-path:polygon(43% 0,57% 0,100% 100%,0 100%);opacity:.72}
+.title-road:after{content:"";position:absolute;left:49%;top:6%;width:2px;height:82%;background:repeating-linear-gradient(180deg,rgba(224,198,129,.28) 0 14px,transparent 14px 30px);transform:rotate(.5deg)}
+.title-lantern{position:absolute;width:8px;height:8px;border-radius:50%;background:#f2d68e;box-shadow:0 0 10px 4px rgba(237,196,102,.32),0 0 32px 12px rgba(237,196,102,.08);animation:ashmere-lantern 4.8s ease-in-out infinite}
+.title-lantern:before{content:"";position:absolute;left:3px;top:7px;width:2px;height:24px;background:rgba(112,91,51,.58)}
+.title-lantern.l1{left:29%;bottom:29%;animation-delay:-1.2s}
+.title-lantern.l2{right:30%;bottom:25%;animation-delay:-3.1s}
+.title-lantern.l3{left:50%;bottom:33%;animation-delay:-.4s;transform:scale(.72)}
+@keyframes ashmere-lantern{0%,100%{opacity:.55;filter:brightness(.8)}50%{opacity:1;filter:brightness(1.25)}}
+.portal100-header,.portal100-main,.portal100-footer{z-index:3}
+.portal100-header{border-bottom-color:rgba(215,184,106,.22)}
+.portal100-emblem-wrap{position:relative;width:66px;height:66px;display:grid;place-items:center;flex:0 0 auto}
+.portal100-emblem-wrap:before{content:"";position:absolute;inset:2px;border:1px solid rgba(215,184,106,.28);border-radius:50%;box-shadow:0 0 24px rgba(215,184,106,.06)}
+.portal100-emblem-wrap img{width:48px!important;height:48px!important;filter:drop-shadow(0 7px 15px rgba(0,0,0,.75))}
+.portal100-emblem-wrap>span{position:absolute;right:0;bottom:1px;color:#e8ca80;font-size:.75rem;text-shadow:0 0 10px rgba(215,184,106,.6)}
+.portal100-hero{position:relative}
+.portal100-title-mark{display:flex;align-items:center;gap:12px;width:min(460px,100%);margin:0 0 13px;color:rgba(215,184,106,.7);font-size:.55rem;letter-spacing:.38em}
+.portal100-title-mark span{height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(215,184,106,.36))}
+.portal100-title-mark span:last-child{background:linear-gradient(90deg,rgba(215,184,106,.36),transparent)}
+.portal100-title-mark b{font-weight:800;white-space:nowrap}
+.portal100-location{display:flex;align-items:center;gap:9px;margin-top:24px;color:#d7b86a;font-size:.61rem;font-weight:900;letter-spacing:.2em}
+.portal100-location i{width:7px;height:7px;border-radius:50%;background:#d7b86a;box-shadow:0 0 12px rgba(215,184,106,.55);animation:ashmere-pulse 2.8s ease-in-out infinite}
+.portal100-location small{color:#65736a;font-size:.56rem;letter-spacing:.16em}
+@keyframes ashmere-pulse{0%,100%{opacity:.5;transform:scale(.8)}50%{opacity:1;transform:scale(1.15)}}
+.portal100-traveler{position:relative;overflow:hidden}
+.portal100-traveler:before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 15%,rgba(215,184,106,.035) 50%,transparent 85%);transform:translateX(-100%);animation:traveler-sheen 8s ease-in-out infinite}
+@keyframes traveler-sheen{0%,65%,100%{transform:translateX(-100%)}78%{transform:translateX(100%)}}
+.portal100-traveler>*{position:relative;z-index:1}
+.portal100-primary{position:relative;display:grid!important;grid-template-columns:1fr auto;align-items:center;padding:9px 15px!important;overflow:hidden}
+.portal100-primary:before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent,rgba(215,184,106,.09),transparent);transform:translateX(-100%);transition:transform .5s ease}
+.portal100-primary:hover:before,.portal100-primary:focus-visible:before{transform:translateX(100%)}
+.portal100-primary i{grid-column:2;grid-row:1 / span 2;color:#d7b86a;font:400 1.5rem Georgia,serif;transition:transform .2s ease}
+.portal100-primary:hover i,.portal100-primary:focus-visible i{transform:translateX(4px)}
+.portal100-actions button:not(.portal100-primary){font-size:.8rem;letter-spacing:.08em;text-transform:uppercase}
+.portal100-avatar{box-shadow:0 0 0 1px rgba(215,184,106,.05),0 0 30px rgba(215,184,106,.06)}
+.portal100-footer{z-index:4}
+@media(max-width:760px){
+  .title-moon{right:-6%;top:12%;width:105px}
+  .title-horizon{bottom:17%;height:25%}
+  .title-road{width:68vw;height:43%;bottom:-5%}
+  .title-lantern.l1{left:17%;bottom:24%}.title-lantern.l2{right:16%;bottom:22%}.title-lantern.l3{bottom:29%}
+  .portal100-emblem-wrap{width:51px;height:51px}.portal100-emblem-wrap img{width:38px!important;height:38px!important}
+  .portal100-title-mark{margin-bottom:10px}
+  .portal100-location{margin-top:18px;flex-wrap:wrap}
+  .portal100-location small{width:100%;margin-left:16px}
+  .portal100-traveler{box-shadow:0 20px 55px rgba(0,0,0,.46),0 0 0 1px rgba(215,184,106,.025)}
+}
+@media(max-width:430px){
+  .portal100-main{padding:22px 0 34px}
+  .portal100-hero h2{font-size:clamp(2.65rem,14.5vw,4rem)}
+  .portal100-hero>p{line-height:1.55}
+  .portal100-location{font-size:.55rem;letter-spacing:.14em}
+  .portal100-traveler-top{gap:10px}
+  .portal100-avatar{width:52px;height:52px;font-size:1.7rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .title-lantern,.portal100-location i,.portal100-traveler:before{animation:none!important}
+  .portal100-primary:before{display:none}
+}
