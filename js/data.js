@@ -1,5 +1,5 @@
 window.LEGEND_DATA = {
-  VERSION: 'v0.9.0',
+  VERSION: 'v0.10.0',
   SAVE_KEY: 'legend-roads-of-ashmere-v09',
   OLD_KEYS: ['legend-recovered-build-v06','legend-recovered-build-v051','legend-recovered-build-v05','legend-recovered-build-v041','legend-recovered-build-v04','legend-recovered-build-v03','legend-recovered-build-v02'],
   classes: {
