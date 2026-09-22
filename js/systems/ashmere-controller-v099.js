@@ -39,7 +39,8 @@
     craft:'M6 18l8-8M14 4l6 6M5 5l4 4M3 21l4-1 10-10-3-3L4 17z',
     profile:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-8 9c1.4-4.2 4.5-6.5 8-6.5s6.6 2.3 8 6.5',
     quest:'M12 3l2.4 5 5.6.8-4 3.9.9 5.5L12 15.6 7.1 18.2l.9-5.5-4-3.9 5.6-.8L12 3Z',
-    route:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm3.5 5.5-3 6-6 3 3-6 6-3Z'
+    route:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm3.5 5.5-3 6-6 3 3-6 6-3Z',
+    regions:'M4 6h7v5H4zM13 13h7v5h-7zM11 8h2v8h-2z'
   };
   const icon = k => `<span class="ash099-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${iconMap[k] || iconMap.quest}"/></svg></span>`;
   function shell(html){ root().innerHTML = `<main class="ash099 ash099-terminal"><div class="ash099-wrap">${html}</div></main>`; }
@@ -56,7 +57,7 @@
     if(!pl?.flags?.talkedToMara) return { view:'people', title:'Report to the Square', text:'Ashmere does not trust strangers from the road. Speak with Mara, Brenn, and Oric before crossing the lantern line.', cta:'Enter Town Square', icon:'people', tasks:['Meet Mara Vell','Speak with Old Brenn','Hear Oric\'s warning'] };
     if(!pl.flags.firstRoadEvent) return { view:'inn', title:'Prepare Before the Gate', text:'Rest, gather supplies, check gear, or take a small town job before your first Old Road expedition.', cta:'Prepare in Town', icon:'inn', tasks:['Visit the Work Board','Check gear at the Blacksmith','Rest at the Inn'] };
     if(t < 3) return { view:'road', title:'Bring Back Road Proof', text:`You have ${t}/3 Road Tokens. Leave through the gate, survive the Old Road, then return to the ledger.`, cta:'Leave Through the Gate', icon:'road', tasks:[`${t}/3 Road Tokens collected`,'Return alive','Record proof with Brenn'] };
-    return { view:'brenn', title:'Record Your Proof', text:'You have enough Road Tokens. Take them to Old Brenn and make the road remember your name.', cta:'Open the Ledger', icon:'brenn', tasks:['Turn in 3 Road Tokens','Collect ledger reward','Ask about the next road tier'] };
+    return { view:'regions', title:'Open the Regional Ledger', text:'You have enough Road Tokens to begin opening the world beyond Ashmere. Spend them on a region, then pay gold to travel between places you know.', cta:'View the Road Network', icon:'regions', tasks:['Spend Road Tokens to unlock a region','Pay gold to travel','Return to Ashmere whenever you need'] };
   }
 
   function actionCard(view, title, desc, label = 'Open', featured = false, ic = view){
@@ -102,6 +103,7 @@
             ${townCard('smith','Forge & Workshop','Upgrade weapons and armor, then use the crafting bench for road finds.','Gear & craft','smith',false)}
             ${townCard('work','Town Hall','Meet the town, take work, manage road proof, and track what Ashmere needs.','Jobs & people','work',g.view==='people'||g.view==='brenn')}
             ${townCard('road','Old Road Gate','Start an expedition with a five-stage route, pressure, choices, and a clear return home.','Begin expedition','road',g.view==='road')}
+            ${townCard('regions','Road Network','Unlock new regions with Road Tokens, then travel between places you know for gold.','Open map','regions',g.view==='regions')}
           </div>
         </section>
         <section class="ash100-panel ash100-bottom-panel">
@@ -126,6 +128,7 @@
     if(v === 'archive') return renderArchive();
     if(v === 'profile') return window.LegendAccountV09x?.renderAccount?.() || renderAshmere();
     if(v === 'road') return startRoad();
+    if(v === 'regions') return window.LegendRegionsV100?.render?.() || renderAshmere();
     return renderAshmere();
   }
   function back(extra = ''){ return `<div class="ash099-bottom">${extra}<button class="ash099-btn primary" id="ashBack">Back to Ashmere</button></div>`; }
@@ -148,10 +151,10 @@
     if(id==='mara'){ pl.flags.talkedToMara=true; pl.flags.bellQuestStarted=true; }
     save(pl);
     let extra='';
-    if(id==='brenn'&&Number(pl.inventory?.roadToken||0)>=3) extra='<button class="ash099-btn" id="turnTokens">Turn in 3 Road Tokens</button>';
+    if(id==='brenn'&&Number(pl.inventory?.roadToken||0)>=3) extra='<button class="ash099-btn" id="turnTokens">Open the Regional Ledger</button>';
     screen(head(n.role,n.name,n.text,n.art,id),`<div class="ash099-lines">${n.lines.map(x=>`<p>${esc(x)}</p>`).join('')}</div>`,extra);
     const turn=document.getElementById('turnTokens');
-    if(turn) turn.onclick=()=>{ const fresh=p(); fresh.inventory.roadToken-=3; fresh.flags.firstRoadComplete=true; fresh.gold=Number(fresh.gold||0)+260; save(fresh); renderNPC('brenn'); };
+    if(turn) turn.onclick=()=>window.LegendRegionsV100?.render?.() || renderNPC('brenn');
   }
 
   function renderInn(){
