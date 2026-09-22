@@ -1,216 +1,158 @@
 # LEGEND: Roads of Ashmere
 
-**LEGEND: Roads of Ashmere** is a dark medieval fantasy HTML5 RPG built from the remains of my original Windows Batch RPG project, **LegendTFC**.
+**LEGEND: Roads of Ashmere** is a dark medieval fantasy HTML5 RPG built around a persistent traveler, a living town, and expeditions into the Old Road.
 
-The project started as **Legend - Recovered Build**, a browser remake of my first-ever game. It has now pivoted into a fuller RPG direction: a grounded first-town adventure loop, cleaner dark fantasy UI, real art assets, D&D-style checks, better combat presentation, and a stronger sense of place.
-
-This is **not a 1.0 release yet**. The current work is the **v0.9.x Ashmere overhaul**, focused on making the first playable loop feel like a real RPG before expanding the world further.
-
----
+The project is now in its **full RPG development phase**. The old recovery/remake phase is historical context, not the current identity.
 
 ## Play Now
 
-**Live build:** https://tdtria.github.io/LEGEND-RPG/
+- **Live game:** https://tdtria.github.io/LEGEND-RPG/
+- **Save Vault:** https://tdtria.github.io/LEGEND-RPG/save.html
+- **Playtest feedback:** https://tdtria.github.io/LEGEND-RPG/feedback.html
+- **Devlog:** https://tdtria.github.io/LEGEND-RPG/blog.html
+- **Development updates:** https://tdtria.github.io/LEGEND-RPG/updates.html
 
-**Save Vault:** https://tdtria.github.io/LEGEND-RPG/save.html
+## Current Direction
 
-**Playtest feedback page:** https://tdtria.github.io/LEGEND-RPG/feedback.html
+LEGEND is being developed as a **mobile-first, progression-focused fantasy RPG**.
 
----
+The intended loop is:
 
-## Current Build Focus
+**Ashmere → prepare → choose an expedition → survive encounters → bring home loot and proof → improve the traveler → unlock more of Ashmere and the road → go farther**
 
-### v0.9.x - Ashmere Overhaul
+The Old Road is being shaped around stages, pressure, meaningful choices, combat, discoveries, rewards, and a clear return to town.
 
-Current development is focused on the first-town loop:
+The earlier skill-check philosophy remains useful under the hood, but the player-facing experience is moving toward **choices first, resolution second**. Stats, gear, traits, supplies, and preparation should influence outcomes without making every interaction feel like a tabletop dice prompt.
 
-**Ashmere → talk / shop / rest / prepare → Old Road → checks / battles / finds → return to Ashmere**
+## Current Build
 
-The goal is to make the opening feel less like a menu prototype and more like a compact tabletop-inspired RPG session with a town, NPCs, vendors, risk, preparation, rewards, and reasons to return.
+### v0.10.x — Ashmere & Old Road Rework
 
----
+The current development pass is focused on making the first-town loop feel like a complete game rather than a collection of screens.
+
+### Ashmere
+
+Ashmere is organized around five clear destinations:
+
+- **Ashmere Inn** — rest, recovery, supplies, rumors
+- **Market** — buy essentials and sell road loot
+- **Forge & Workshop** — weapons, armor, and crafting
+- **Town Hall** — people, jobs, records, and town progression
+- **Old Road Gate** — begin an expedition
+
+The traveler panel, journal, character sheet, and profile remain available without forcing the player through the title screen.
+
+### Old Road
+
+The new expedition layer introduces:
+
+- Five-stage expeditions
+- Road Pressure
+- Meaningful travel choices
+- Discoveries and roadside resources
+- Combat as part of the expedition
+- Clear fall-back and return options
+- Rewards that feed the Ashmere progression loop
+- Road Tokens and discoveries as progression resources
+- Mobile-first touch controls
 
 ## Current Features
 
 - Browser-based HTML5 RPG
-- Playable live on GitHub Pages
-- Mobile-friendly layout direction
-- Local browser saving with `localStorage`
-- Portable save export/import through the Save Vault
-- Character creation with class, origin, and keepsake choices
-- Character sheet and inventory systems
-- First town hub: **Ashmere**
-- First route: **The Old Road**
-- First-town NPCs and vendor flow
-- Inn, trader, blacksmith, and town preparation loop
-- Road travel pacing options:
-  - Travel Carefully
-  - Follow the Road
-  - Press Ahead
-- D20 road checks with:
-  - Skill modifiers
-  - DC display
-  - Failure risk
-  - Natural 20 critical success
-  - Natural 1 botch
-- D20-style road combat with:
-  - Enemy art
-  - HP bars
-  - Player attack rolls vs enemy DC
-  - Enemy attack rolls vs player AC
-  - Guard, Potion, and Fall Back actions
-  - Combat action log
-- Early quest/objective structure around Road Tokens and Ashmere progression
-- Dark fantasy UI skin for the Ashmere direction
-- Uploaded art asset integration for:
-  - Title screen
-  - Ashmere main street
-  - Old Road
-  - NPC portraits
-  - Vendor portraits
-  - Road enemies
-- Legacy systems kept where useful while old unused/callback systems are gradually reduced
+- GitHub Pages deployment
+- Mobile-first responsive presentation
+- Local browser saves
+- Supabase account/auth integration
+- Cloud traveler slots
+- Character creation with identity, personality, origin, class, and keepsake choices
+- Ashmere town hub
+- Old Road expedition system
+- Road encounters and combat
+- NPCs and town services
+- Work board and town jobs
+- Trading and crafting
+- Character sheet and inventory
+- Settings and accessibility options
+- Portable Save Vault
+- Dark fantasy art and interface assets
+- Playtest / smoke-test tooling
 
----
+## Progression Philosophy
 
-## Project Direction
+LEGEND is moving toward a long-term progression structure inspired by the satisfying clarity of games such as **Melvor Idle** while keeping its own town, road, narrative, encounter, and choice identity.
 
-LEGEND is moving away from ASCII-first presentation and into a cleaner dark fantasy RPG style.
+Progress should come from connected loops:
 
-Current design priorities:
+- Traveler level and attributes
+- Skills and mastery
+- Weapons and armor
+- Inventory and crafting
+- Gold and trade
+- Road Tokens and discoveries
+- Ashmere jobs and favor
+- NPC relationships and story progression
+- Deeper road tiers and new destinations
 
-- Make Ashmere feel like a real place, not just a menu
-- Make the Old Road feel dangerous, readable, and replayable
-- Keep the game playable on desktop and mobile
-- Use the existing uploaded art assets instead of constantly generating new ones
-- Keep systems modular enough to polish safely
-- Avoid rushing toward 1.0 before the first-town loop is strong
+Rewards should feed another meaningful choice instead of simply filling a number.
 
----
+## Mobile-First Rule
+
+The game is being designed for phones first, especially 360–430px wide screens.
+
+That means:
+
+- Large touch targets
+- Clear one-screen decisions
+- No hover-dependent interactions
+- Persistent Back / Continue / Return paths
+- Shorter information blocks
+- Menus that do not trap the player
+- Desktop layouts that expand from the mobile foundation
 
 ## Important Files
 
-### Core entry
+- `index.html` — live game shell and load order
+- `js/data.js` — shared game data
+- `js/storage.js` — save normalization and settings
+- `js/game.js` — current game bootstrap / portal flow
+- `js/systems/ashmere-controller-v099.js` — Ashmere town controller
+- `js/systems/road-controller-v100.js` — current Old Road expedition layer
+- `js/content/roads/old-road-v087.js` — Old Road content data
+- `js/systems/account-v09x.js` — account/profile/cloud-save UI
+- `supabase/traveler-slots.sql` — cloud traveler slot schema
+- `playtest.html` — QA and manual playtest runner
 
-- `index.html` - live game shell and script/style loading order
-- `js/data.js` - shared game data
-- `js/storage.js` - save/settings support
-- `js/ui.js` - older UI helpers
-- `js/game.js` - legacy game flow baseline still used by the project
+## Development Philosophy
 
-### Ashmere / first loop
+The repository contains historical and compatibility files from earlier development phases. Some legacy save keys and systems must remain so existing travelers can migrate safely.
 
-- `js/content/towns/ashmere-v080.js` - Ashmere town content
-- `js/systems/town-controller-v080.js` - town menu and location flow
-- `js/content/roads/old-road-v087.js` - Old Road content data
-- `js/systems/road-controller-v087.js` - current Old Road travel/check/combat controller
+Those compatibility details are **not the current game identity**.
 
-### v0.9.x presentation and art
+For active development:
 
-- `js/systems/assets-v090.js` - central asset manifest
-- `js/systems/art-integration-v092.js` - art integration for town, location, dialogue-like, and battle screens
-- `js/systems/title-bg-v089.js` - fullscreen Ashmere title treatment
-- `css/game-ui-v090.css` - dark fantasy UI skin and art integration styles
-- `css/road-combat-v093.css` - D20 road encounter and combat styling
-
-### Useful support pages
-
-- `save.html` - Save Vault export/import
-- `feedback.html` - playtest feedback
-- `playtest.html` - smoke/playtest page when maintained for the current build
-
----
-
-## Asset Direction
-
-The current Ashmere overhaul uses uploaded art assets from the repo, including:
-
-- `assets/title/title_bg_ashmere_road_v089.jpg`
-- `assets/ui/logos/logo_legend_main_v1.png`
-- `assets/ui/logos/logo_legend_emblem_v1.png`
-- `assets/ui/logos/logo_legend_emblem_full_v1.png`
-- `assets/locations/ashmere/location_ashmere_mainstreet_v1.jpg`
-- `assets/locations/roads/location_old_road_main_v1.jpg`
-- `assets/npcs/ashmere/npc_mara_portrait_v1.jpg`
-- `assets/npcs/ashmere/npc_brenn_portrait_v1.jpg`
-- `assets/npcs/ashmere/npc_oric_portrait_v1.jpg`
-- `assets/npcs/vendors/npc_innkeeper_portrait_v1.jpg`
-- `assets/npcs/vendors/npc_blacksmith_portrait_v1.jpg`
-- `assets/npcs/vendors/npc_trader_portrait_v1.jpg`
-- `assets/enemies/road/enemy_road_goblin_v1.jpg`
-- `assets/enemies/road/enemy_blackroot_wolf_v1.jpg`
-- `assets/enemies/road/enemy_lantern_wisp_v1.jpg`
-
----
-
-## Current Roadmap
-
-### v0.9.x Ashmere polish
-
-- Polish Ashmere town menus with backgrounds, portraits, and clearer player choices
-- Improve NPC and vendor screens
-- Tighten the Old Road encounter loop
-- Continue improving D20 checks and battle presentation
-- Improve character sheet and inventory readability
-- Keep mobile-first readability in mind
-- Reduce old unused systems safely without breaking the live game
-
-### Later goals
-
-- Expand beyond the first Old Road loop
-- Add deeper quest consequences in Ashmere
-- Build more locations around Ashmere
-- Add stronger enemy variety and combat tuning
-- Improve onboarding and opening story context
-- Prepare for a true 1.0 only after the core loop feels solid
-
----
+1. Treat the live game and current modular controllers as the source of truth.
+2. Preserve established architecture and load order unless a change is deliberate.
+3. Prefer coherent system-level changes over temporary UI patches.
+4. Test the actual mobile flow after meaningful changes.
+5. Keep public documentation synchronized with the current build.
+6. Record meaningful development changes in the changelog and devlog.
 
 ## Tech Stack
 
 - HTML
 - CSS
 - JavaScript
-- Browser `localStorage`
-- Portable save export/import
+- Browser localStorage
+- Supabase
 - GitHub Pages
-- Optional playtest/smoke-test pages
 
-No build pipeline is required for the live game right now. The project is currently a static HTML/CSS/JS game hosted through GitHub Pages.
-
----
-
-## How to Play Locally
-
-1. Download or clone this repository.
-2. Open `index.html` in a browser.
-3. Create a character.
-4. Explore Ashmere.
-5. Prepare in town, travel the Old Road, survive checks and battles, then return to Ashmere.
-
-Your active save data is stored in your browser. Use `save.html` to export a portable `.legend` save file or import a save from another browser/device.
-
----
-
-## Development Notes
-
-This project still contains older systems from the recovered/remake phase. Some of those files are still active, some are compatibility layers, and some are gradually being replaced.
-
-Important rule for future updates:
-
-**Do not overwrite large core files like `js/game.js` or `js/systems/road-controller-v087.js` with tiny stubs.**
-
-When possible, add safely, integrate carefully, and verify the live loop still works.
-
----
+No build pipeline is required for the live web game.
 
 ## Credits
 
 Original concept and Windows Batch version created by **Keegan Lewis VanOrder**.
 
-Recovered, rebuilt, and expanded as **LEGEND: Roads of Ashmere**, an HTML5 dark fantasy RPG.
-
----
+Developed as **LEGEND: Roads of Ashmere**, a dark fantasy RPG focused on travelers, towns, roads, encounters, and progression.
 
 ## License
 
