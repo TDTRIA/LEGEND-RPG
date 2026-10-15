@@ -307,3 +307,20 @@
 @keyframes rpg-foe-windup{from{transform:translateY(2px) scale(1)}to{transform:translateY(7px) scale(1.065) rotate(-1.8deg)}}
 @keyframes rpg-foe-feint{0%,100%{transform:translateX(0) scale(1)}28%{transform:translateX(-5px) scale(.98)}58%{transform:translateX(4px) scale(1.015)}}
 @media(prefers-reduced-motion:reduce){.rpg-battle.rpg-intent-heavy .rpg-foe-sprite,.rpg-battle.rpg-intent-guardbreak .rpg-foe-sprite{animation:none}.rpg-battle.rpg-intent-snared .rpg-foe-sprite{transform:none}}
+
+
+/* Combat impact pass: use committed item/skill art as tactical command glyphs. */
+.rpg-command-glyph{display:grid;place-items:center;overflow:hidden;isolation:isolate}
+.rpg-command-glyph img{display:block;width:100%;height:100%;max-width:42px;max-height:42px;object-fit:contain;filter:drop-shadow(0 3px 7px rgba(0,0,0,.52));transition:transform .18s ease,filter .18s ease}
+.rpg-command:hover .rpg-command-glyph img,.rpg-command:focus-visible .rpg-command-glyph img{transform:scale(1.12) rotate(-3deg);filter:drop-shadow(0 0 8px rgba(255,211,105,.42))}
+.rpg-command:active .rpg-command-glyph img{transform:scale(.92)}
+.rpg-command:disabled .rpg-command-glyph img{filter:grayscale(.85);opacity:.5}
+.rpg-command-fight .rpg-command-glyph img{filter:drop-shadow(0 0 7px rgba(255,105,72,.26))}
+.rpg-command-act .rpg-command-glyph img{filter:drop-shadow(0 0 8px rgba(105,191,255,.28))}
+.rpg-command-item .rpg-command-glyph img{filter:drop-shadow(0 0 7px rgba(125,255,173,.22))}
+.rpg-command-guard .rpg-command-glyph img{filter:drop-shadow(0 0 7px rgba(255,211,105,.24))}
+.rpg-battle.rpg-player-hit .rpg-foe-sprite{animation:rpg-foe-struck .32s ease-out}
+.rpg-battle.rpg-foe-hit .rpg-hero-portrait{animation:rpg-hero-struck .32s ease-out}
+@keyframes rpg-foe-struck{0%{transform:translateX(0) scale(1)}22%{transform:translateX(-9px) scale(1.035);filter:brightness(1.9) saturate(1.3)}48%{transform:translateX(6px) scale(.99)}100%{transform:translateX(0) scale(1)}}
+@keyframes rpg-hero-struck{0%{transform:translateX(0)}20%{transform:translateX(6px);filter:brightness(1.65)}45%{transform:translateX(-4px)}100%{transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.rpg-command-glyph img,.rpg-foe-sprite,.rpg-hero-portrait{transition:none!important;animation:none!important}}

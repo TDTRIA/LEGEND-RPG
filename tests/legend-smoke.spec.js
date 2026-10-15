@@ -466,6 +466,17 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('#guard')).toContainText(/GUARD/i);
     await expect(page.locator('.rpg-turn-heading')).toContainText('YOUR TURN');
     await expect(page.locator('.rpg-command-grid .rpg-command')).toHaveCount(4);
+    const commandArt = [
+      ['#strike', /iron-short-sword|short-sword/],
+      ['#skill', /skills\/icons\/(gale|ember|veil|weapon-mastery)\.webp/],
+      ['#item', /skills\/icons\/healing\.webp/],
+      ['#guard', /round-shield\.webp/]
+    ];
+    for (const [selector, srcPattern] of commandArt) {
+      const image = page.locator(selector + ' .rpg-command-glyph img');
+      await expect(image).toHaveAttribute('src', srcPattern);
+      await expect.poll(() => image.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    }
     await expect(page.locator('#strike')).toContainText('FIGHT');
     await expect(page.locator('#skill')).toContainText('ACT');
     await expect(page.locator('#item')).toContainText('ITEM');
