@@ -1,0 +1,33 @@
+name: Ashmere Return Dialogue Regression
+
+on:
+  push:
+    branches: [ feature/ashmere-return-dialogue ]
+
+jobs:
+  return-dialogue:
+    name: Return dialogue in Desktop Chrome
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Check controller syntax
+        run: node --check js/systems/ashmere-controller-v099.js
+      - name: Test first-return dialogue
+        run: npx playwright test tests/town-return-dialogue.spec.js --project="Desktop Chrome"
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ash-remere-return-dialogue-report
+          path: playwright-report/
+          retention-days: 14

@@ -322,12 +322,61 @@ function renderDryCrossing(){
       oric:{name:'Captain Oric',role:'Causeway Watch',art:npc('oric'),text:'Oric watches the raised paths between Greyfen and the drowned lowlands. He marks every stretch that can vanish after heavy rain.',lines:['Stay on the old stone where you can. Reeds hide holes deep enough to swallow a cart.','If something keeps pace with you in the water, do not turn your lantern toward it.','Rest before the causeway narrows. There is nowhere to stand once the flood reaches the markers.']}
     };
     const n=(greyfen?fenMap:ashMap)[id]||(greyfen?fenMap:ashMap).mara;
+    // First-return dialogue makes the town acknowledge a completed road journey.
+    // It uses existing saved outcomes only; it does not add a new quest or reward flag.
+    let npcText=n.text, lines=n.lines;
+    const completedRoads=Number(pl.stats?.oldRoadClears||0);
+    const bellFragments=Number(pl.inventory?.bellFragment||0);
+    const roadTokens=Number(pl.inventory?.roadToken||0);
+    const roadHistory=pl.flags?.roadExpeditionV100||{};
+    if(!greyfen&&completedRoads>0){
+      if(id==='mara'){
+        npcText='Mara has spread damp route charts beside the archived bell-marks. This time, she asks what you saw—not what you think it means.';
+        lines=bellFragments>0?[
+          'You brought back a Bell Fragment. The name is a starting point, not proof that it broke from the bell.',
+          'Was the blue light fixed in one place, or did it move? That difference belongs in the record.',
+          'I will leave its meaning open until we can compare the marks with another source.'
+        ]:[
+          'You came back. Start with what you saw, in order; we can decide what it means after the details are safely recorded.',
+          'The archive has old routes, not ready-made answers. A changed road needs a new entry.',
+          'If you find another marked object, keep its edges intact. A broken corner can still tell us something.'
+        ];
+      }else if(id==='brenn'){
+        npcText='Brenn opens a fresh ledger page. He records the journey, but every reward must have a source and every claim must be clear.';
+        lines=[
+          'One clear return is better than a dozen rumors. I can record the trip and the proof you brought back.',
+          bellFragments>0?'Bell Fragments are not just scrap. I will record where you found one before anyone tries to price it.':'Tokens prove distance traveled; the next route still needs evidence.',
+          roadTokens>=3?'You have three Road Tokens. I can open the regional ledger when you are ready.':'Bring three Road Tokens and we can review the next regional entry.'
+        ];
+      }else if(id==='oric'){
+        npcText='Oric has added your last route to the gate notes. His questions are about footing, visibility, and what would keep the next traveler alive.';
+        if(roadHistory.routeChoice==='reeds'){
+          lines=[
+            'You chose the Reed Cut. The fragment was worth finding, but those tracks are a reason to report the route—not chase them alone.',
+            'When you leave again, carry enough supplies to turn back before pressure leaves you no safe choice.',
+            'Tell me where the footing changed. A useful report can keep the next traveler from meeting the same danger unready.'
+          ];
+        }else if(roadHistory.routeChoice==='ridge'){
+          lines=[
+            'You chose the High Ridge. Firmer ground is useful, but I want to know where it stopped being firm.',
+            'Mark the place where the cairn stood and tell me what the higher ground let you see.',
+            'I will update the gate notes when we have enough reports to tell a pattern from an accident.'
+          ];
+        }else{
+          lines=[
+            'You made it back. Begin with where the footing changed and what you would prepare differently.',
+            'Road danger starts before a foe appears. A reliable report can keep the next traveler from meeting it unready.',
+            'Tell me what happened in the order it happened. I need specifics more than a heroic summary.'
+          ];
+        }
+      }
+    }
     pl.flags=pl.flags||{}; pl.npcTalk=pl.npcTalk||{}; pl.npcTalk[id]=Number(pl.npcTalk[id]||0)+1;
     if(id==='mara'&&!greyfen){ pl.flags.talkedToMara=true; pl.flags.bellQuestStarted=true; }
     save(pl);
     let extra='';
-    if(id==='brenn'&&Number(pl.inventory?.roadToken||0)>=3) extra='<button class="ash099-btn" id="turnTokens">Open the Regional Ledger</button>';
-    screen(head(n.role,n.name,n.text,n.art,id),'<div class="ash099-lines">'+n.lines.map(x=>'<p>'+esc(x)+'</p>').join('')+'</div>',extra);
+    if(id==='brenn'&&roadTokens>=3) extra='<button class="ash099-btn" id="turnTokens">Open the Regional Ledger</button>';
+    screen(head(n.role,n.name,npcText,n.art,id),'<div class="ash099-lines">'+lines.map(x=>'<p>'+esc(x)+'</p>').join('')+'</div>',extra);
     const turn=document.getElementById('turnTokens');
     if(turn) turn.onclick=()=>window.LegendRegionsV100?.render?.() || renderNPC('brenn');
   }

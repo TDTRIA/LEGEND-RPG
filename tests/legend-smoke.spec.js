@@ -336,6 +336,41 @@ test.describe('LEGEND v0.20.21 browser regression tests', () => {
     await expect.poll(() => page.locator('.ash099-head img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
   });
 
+  test('Ashmere NPCs acknowledge returned road evidence and route choices', async ({ page }) => {
+    await startFreshCharacter(page, 'ReturnEchoQA');
+    await page.evaluate(() => {
+      const rt = window.LegendRuntimeV080;
+      const pl = rt.loadPlayer();
+      pl.stats = { ...(pl.stats || {}), oldRoadClears: 1 };
+      pl.inventory = { ...(pl.inventory || {}), bellFragment: 1, roadToken: 3 };
+      pl.flags = {
+        ...(pl.flags || {}),
+        roadExpeditionV100: {
+          ...(pl.flags?.roadExpeditionV100 || {}),
+          routeChoice: 'reeds'
+        }
+      };
+      rt.savePlayer(pl);
+    });
+
+    await page.locator('.ash100-destinations .ash100-destination[data-ash-view="people"]').click();
+    await page.locator('[data-ash-view="mara"]').click();
+    await expect(page.locator('.ash099-lines')).toContainText(/You brought back a Bell Fragment/i);
+    await expect(page.locator('.ash099-lines')).toContainText(/blue light/i);
+
+    await page.locator('#ashBack').click();
+    await page.locator('.ash100-destinations .ash100-destination[data-ash-view="people"]').click();
+    await page.locator('[data-ash-view="brenn"]').click();
+    await expect(page.locator('.ash099-lines')).toContainText(/Bell Fragments are not just scrap/i);
+    await expect(page.locator('#turnTokens')).toBeVisible();
+
+    await page.locator('#ashBack').click();
+    await page.locator('.ash100-destinations .ash100-destination[data-ash-view="people"]').click();
+    await page.locator('[data-ash-view="oric"]').click();
+    await expect(page.locator('.ash099-lines')).toContainText(/You chose the Reed Cut/i);
+    await expect(page.locator('.ash099-lines')).toContainText(/tracks are a reason to report the route/i);
+  });
+
   test('town job awards gold, favor, and progression XP', async ({ page }) => {
     await startFreshCharacter(page, 'JobQA');
     await page.evaluate(() => {
