@@ -7,9 +7,57 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# Queue rather than overlap repeated pushes to the same branch. The newest pending
+# run supersedes an older pending run, while the current run is allowed to finish.
+concurrency:
+  group: legend-playwright-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
+  road-discovery-diagnostic:
+    name: Focused road-discovery diagnostic
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Check road controller syntax
+        run: node --check js/systems/road-controller-v100.js
+      - name: Reproduce the road discovery interaction
+        run: npx playwright test tests/road-discovery.spec.js --project="Desktop Chrome"
+      - name: Upload focused diagnostic report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: road-discovery-diagnostic
+          path: playwright-report/
+          retention-days: 30
+
   test:
-    timeout-minutes: 25
+    name: Browser checks — ${{ matrix.project }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - project: Desktop Chrome
+            browser: chromium
+            live_smoke: true
+          - project: Mobile Safari
+            browser: webkit
+            live_smoke: false
+          - project: Mobile Chrome
+            browser: chromium
+            live_smoke: false
     runs-on: ubuntu-latest
 
     steps:
@@ -22,32 +70,45 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
+        id: install_dependencies
         run: npm install
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+      - name: Install Playwright browser
+        id: install_browser
+        run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Check critical JavaScript syntax
+        id: syntax
         run: |
           node --check js/data.js
           node --check js/version-v090.js
           node --check js/game.js
+          node --check js/systems/beginning-v094.js
           node --check js/systems/ashmere-controller-v099.js
+          node --check js/systems/road-controller-v087.js
           node --check js/systems/road-controller-v100.js
+          node --check js/systems/region-controller-v100.js
+          node --check js/systems/scene-transitions-v120.js
+          node --check tests/legend-smoke.spec.js
           node --check tests/live-deployment.spec.js
 
-      - name: Run Playwright tests
-        run: npm run test:e2e
+      - name: Run Playwright regression tests
+        id: source_tests
+        run: npx playwright test --project="${{ matrix.project }}"
 
+      # Deployment is verified independently of source regressions. If the game
+      # source has a failing test, the live smoke report still tells us whether
+      # the deployed page matches the commit and can enter the core game loop.
       - name: Smoke-test the deployed GitHub Pages build
+        if: ${{ always() && matrix.live_smoke && steps.install_dependencies.outcome == 'success' && steps.install_browser.outcome == 'success' && steps.syntax.outcome == 'success' }}
         env:
           RUN_LIVE_SMOKE: '1'
-        run: npx playwright test tests/live-deployment.spec.js --project="Desktop Chrome"
+        run: npx playwright test tests/live-deployment.spec.js --project="${{ matrix.project }}"
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.project }}
           path: playwright-report/
           retention-days: 30

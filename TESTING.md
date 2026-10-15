@@ -28,7 +28,7 @@ To start a run manually:
 2. Select **Playwright Tests**.
 3. Choose **Run workflow** and the `main` branch.
 
-The workflow checks JavaScript syntax, runs the automated regression suite against the checked-out source, then runs a separate live smoke test against the published GitHub Pages game. The live test waits for the published version and key asset URLs to match the commit under test before it clicks through character creation, different Work Board activities, the Forge/Crafting Bench, and side contracts. It also checks desktop title sizing, mobile overflow, and browser errors.
+The workflow runs independent Playwright jobs for Desktop Chrome, Mobile Safari, and Mobile Chrome, so each browser profile reports its own result. Each job checks critical JavaScript syntax before running the regression suite. The Desktop Chrome job then checks the published GitHub Pages build even if its source regression suite fails, provided setup and syntax checks succeeded. The live test waits for the published version and key asset URLs to match the commit under test before it clicks through character creation, different Work Board activities, the Forge/Crafting Bench, and side contracts. It also checks desktop title sizing, mobile overflow, and browser errors. Repeated pushes to the same branch are queued rather than running multiple broad test matrices concurrently.
 
 If a run fails, open the run and expand the failed step. The uploaded `playwright-report` artifact contains test details, screenshots, and video where available. A failed test means we found something to fix; it does not mean you need a paid browser session.
 
@@ -78,6 +78,10 @@ npm run test:e2e:report
 ```
 
 ---
+
+## Focused regression diagnosis
+
+The workflow runs a short **Focused road-discovery diagnostic** job before the full matrix. It creates a synthetic traveler, takes the Reed Cut, advances to the first discovery, clicks **Look closer**, and records whether the click reached the document, whether the discovery panel appeared, and whether browser errors were raised. This isolates the known interaction from the rest of the suite; the full browser jobs still run afterward.
 
 ## Current smoke tests
 
