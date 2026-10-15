@@ -99,6 +99,8 @@ Do not answer all of these in the first game. Each answer should create a sharpe
 
 ## 6. People and continuity anchors
 
+For character voice rules, proposed long-term arcs, and implementation-to-canon audits, see [ASHMERE_CHARACTER_ARCS.md](ASHMERE_CHARACTER_ARCS.md). It is a writing-room draft: private motives and future reveals are proposals until approved, while code reuse across regions is called out as a continuity decision rather than silently canonized.
+
 ### Mara Vell
 **Established:** Archive keeper, early guide, and source of lore. She helps connect discoveries to records and turns observations into journal or archive progress. Her knowledge should feel researched and partial, not omniscient.
 
