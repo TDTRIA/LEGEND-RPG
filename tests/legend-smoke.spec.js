@@ -394,6 +394,21 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect.poll(() => oricDialoguePortrait.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
   });
 
+  test('town destinations use the committed local service icon family', async ({ page }) => {
+    await startFreshCharacter(page, 'TownIconQA');
+    const iconCases = [
+      { view: 'inn', path: /service-inn\.webp$/ },
+      { view: 'trader', path: /service-market\.webp$/ },
+      { view: 'smith', path: /service-blacksmith\.webp$/ },
+      { view: 'work', path: /service-job-board\.webp$/ },
+      { view: 'regions', path: /service-gatehouse\.webp$/ }
+    ];
+    for (const item of iconCases) {
+      const icon = page.locator('.ash100-destination[data-ash-view="' + item.view + '"] .ash099-icon-art img');
+      await expect(icon).toHaveAttribute('src', item.path);
+      await expect.poll(() => icon.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    }
+  });
   test('town job awards gold, favor, and progression XP', async ({ page }) => {
     await startFreshCharacter(page, 'JobQA');
     await page.evaluate(() => {

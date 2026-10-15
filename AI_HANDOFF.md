@@ -369,3 +369,10 @@ Created the isolated [Phaser proof of concept](prototypes/reboot/README.md), usi
 Recommended direction: keep browser delivery, desktop-first with mobile compatibility, but replace the screen-by-screen runtime with a persistent 2D game layer if the prototype passes. Phaser is the first candidate; do not commit the production game to a migration until a complete small slice (movement, NPC interaction, skill activity, battle, persistent reward) proves enjoyable. Godot remains an alternative if a standalone desktop editor-driven workflow becomes more important.
 
 **Lore reset:** the previous Pale Surveyor / Hollow Mile cosmology is superseded as the default proposal, not canon. New working candidate: magic through the Veil and Five Arts; a world-level threat called the Hollow Saint tied to the Last Mercy and the Afterwake; Bells are ordinary Ashmere currency/civic signaling. These ideas are still proposals. Do not implement the Last Mercy as fact in dialogue until deliberately approved. Old NPC, culture, and region ideas may be retained after checking whether they still fit.
+
+
+## Town/service icon integration — verification pending
+- Production service icons are available locally under `assets/generated/ui/icons/service-*.webp`; see `assets/generated/IMPORT_REPORT.md` for dimensions and file sizes.
+- The integration branch maps town destinations and navigation actions to the imported icon family while retaining SVG fallback icons for unrelated actions.
+- Regression coverage checks that Ashmere's Inn, Market, Forge, Work Board, and Regional Gate icons load from local files.
+- Do not mark this pass verified until Playwright and desktop-first browser review plus a 390px mobile overflow check complete.

@@ -163,3 +163,8 @@
 .ash100-destination:hover,.ash100-destination:focus-visible{transform:translateY(-2px);outline:none;border-color:rgba(215,184,106,.52);background:linear-gradient(125deg,rgba(37,40,27,.96),rgba(12,18,13,.96))}
 .ash100-destination[data-ash-view="people"] .ash100-destination-icon{color:#ddca94;background:linear-gradient(145deg,rgba(201,158,82,.17),rgba(8,13,10,.8))}
 @media(prefers-reduced-motion:reduce){.ash100-destination{transition:none}.ash100-destination:hover{transform:none}}
+
+/* Service icon artwork fits town cards, route strips and quick actions */
+.ash100-destination-icon .ash099-icon-art img{width:27px;height:27px}
+.ash100-route-strip-icon .ash099-icon-art img{width:20px;height:20px}
+.ash100-quick .ash099-icon-art img{width:19px;height:19px}

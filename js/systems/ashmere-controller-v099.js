@@ -44,6 +44,14 @@
   const armorName = id => (D().armors || []).find(a => a.id === id)?.name || id || 'None';
 
   const icon = (k, alt='') => {
+    const artKey = {
+      inn:'inn', trader:'market', smith:'forge', road:'map', sheet:'traveler',
+      archive:'journal', work:'workBoard', craft:'forge', profile:'traveler',
+      people:'traveler', route:'route', regions:'gate', gate:'gate', world:'gate',
+      continue:'map', new:'workBoard'
+    }[k];
+    const artPath = artKey && A().uiIcons?.[artKey];
+    if (artPath) return `<span class="ash099-icon ash099-icon-art" aria-hidden="true"><img src="${esc(artPath)}" alt=""></span>`;
     const symbol = {"people":"people","inn":"inn","trader":"trader","smith":"smith","road":"road","sheet":"sheet","brenn":"ledger","archive":"archive","mara":"quill","oric":"captain","work":"work","craft":"craft","profile":"profile","quest":"quest","route":"route","regions":"regions","settings":"settings","gate":"gate","world":"world","notice":"notice","cloud":"cloud","account":"profile","feedback":"quest","delete":"quest","text":"ledger","bold":"sheet","contrast":"settings","motion":"road","space":"regions","font":"sheet","lock":"captain","slot":"regions","continue":"road","new":"work"}[k] || 'quest';
     return `<span class="ash099-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><use href="assets/ui/icons/legend-ui-icons-v1.svg#icon-${symbol}"></use></svg></span>`;
   };

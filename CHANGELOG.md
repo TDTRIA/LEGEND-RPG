@@ -531,3 +531,8 @@ This project is an HTML5 fantasy RPG. Earlier remake history is retained below a
 The recovered batch version included account creation, login, saving, town menus, random combat, enemy drops, shops, inventory, food, potions, equipment, skills, banking, quests, player levels, experience, and the Lacoyx boss fight.
 
 Later remembered versions are currently lost, and missing systems may be reimagined as part of the remake's lore.
+
+## 2026-10-15 — Town/service icon integration
+- Wire the imported local service-icon family into Ashmere/Greyfen navigation for the Inn, Market, Forge, Journal, Map, Work Board, Traveler, Route Milestone, and Regional Gate.
+- Preserve existing SVG fallback icons for unrelated actions and add Playwright checks for local paths and image decoding.
+- Browser regression and deployed desktop/mobile visual review are pending.
