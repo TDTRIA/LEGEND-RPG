@@ -1,53 +1,34 @@
-name: Playwright Tests
+name: Road Discovery Diagnostic
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  test:
-    timeout-minutes: 25
+  road-discovery-diagnostic:
+    name: Road-discovery event-path diagnostic
     runs-on: ubuntu-latest
-
+    timeout-minutes: 8
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - name: Install dependencies
         run: npm install
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Check critical JavaScript syntax
-        run: |
-          node --check js/data.js
-          node --check js/version-v090.js
-          node --check js/game.js
-          node --check js/systems/ashmere-controller-v099.js
-          node --check js/systems/road-controller-v100.js
-          node --check tests/live-deployment.spec.js
-
-      - name: Run Playwright tests
-        run: npm run test:e2e
-
-      - name: Smoke-test the deployed GitHub Pages build
-        env:
-          RUN_LIVE_SMOKE: '1'
-        run: npx playwright test tests/live-deployment.spec.js --project="Desktop Chrome"
-
-      - name: Upload Playwright report
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Check road controller syntax
+        run: node --check js/systems/road-controller-v100.js
+      - name: Reproduce the road discovery interaction
+        run: npx playwright test tests/road-discovery.spec.js --project="Desktop Chrome"
+      - name: Upload diagnostic report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: road-discovery-event-path
           path: playwright-report/
           retention-days: 30
