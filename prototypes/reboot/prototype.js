@@ -12,7 +12,11 @@
     library: ASSET + 'images/backgrounds/gothic_library_of_arcane_secrets.png',
     swamp: ASSET + 'images/backgrounds/goblin_in_a_haunted_swamp_path.png',
     hero: ASSET + 'generated/classes/class-adventurer.webp',
+    warrior: ASSET + 'generated/classes/class-warrior.webp',
+    ranger: ASSET + 'generated/classes/class-ranger.webp',
     mage: ASSET + 'generated/classes/class-mage.webp',
+    thief: ASSET + 'generated/classes/class-thief.webp',
+    skiller: ASSET + 'generated/classes/class-skiller.webp',
     goblin: ASSET + 'generated/enemies/road-goblin.webp',
     wolf: ASSET + 'generated/enemies/blackroot-wolf.webp',
     wisp: ASSET + 'generated/enemies/lantern-wisp.webp',
@@ -30,14 +34,25 @@
   const panels = {
     title: $('#title-panel'),
     cinematic: $('#cinematic-panel'),
+    exploration: $('#exploration-panel'),
     combat: $('#combat-panel'),
-    training: $('#training-panel')
+    training: $('#training-panel'),
+    debrief: $('#debrief-panel')
   };
 
   let scene = null;
   let currentMode = 'title';
   let soundEnabled = false;
   let trainingRank = 0;
+  const gameData = () => window.LegendRebootData || {};
+  const selectedClass = () => $('#classChoice')?.value || 'Adventurer';
+  const selectedClassStats = () => gameData().classStats?.(selectedClass()) || { name: 'Adventurer', maxHp: 100, hp: 100, gold: 100, mods: {}, move: 'Strike' };
+  function updateClassSummary() {
+    const c = selectedClassStats();
+    const mods = Object.entries(c.mods || {}).map(([key, value]) => key + ' +' + value).join(' · ') || 'Balanced attributes';
+    const summary = $('#classSummary');
+    if (summary) summary.textContent = c.maxHp + ' HP · ' + c.gold + ' starting Bells · ' + mods + ' · Technique: ' + c.move;
+  }
   let chosenRunes = [];
   const intendedPattern = ['TIDE', 'EMBER', 'ROOT'];
   let toastHandle = null;
@@ -66,10 +81,10 @@
   function updateBars() {
     if (!scene || !scene.battle) return;
     const b = scene.battle;
-    $('#heroHpText').textContent = Math.max(0, b.hp) + ' / 100';
-    $('#heroMpText').textContent = Math.max(0, b.mp) + ' / 30';
-    $('#heroHpBar').style.width = Math.max(0, b.hp) + '%';
-    $('#heroMpBar').style.width = Math.max(0, b.mp / 30 * 100) + '%';
+    $('#heroHpText').textContent = Math.max(0, b.hp) + ' / ' + b.maxHp;
+    $('#heroMpText').textContent = Math.max(0, b.mp) + ' / ' + b.maxMp;
+    $('#heroHpBar').style.width = Math.max(0, b.hp / Math.max(1, b.maxHp) * 100) + '%';
+    $('#heroMpBar').style.width = Math.max(0, b.mp / Math.max(1, b.maxMp) * 100) + '%';
     $$('[data-battle]').forEach(button => {
       button.disabled = b.busy || b.hp <= 0 || b.enemyHp <= 0 ||
         (button.dataset.battle === 'spell' && b.mp < 10);
@@ -86,24 +101,24 @@
     if (mode === 'title') {
       scene.showBackdrop('title');
       scene.clearBattle();
+      scene.resetExplorationState();
       scene.soundscape();
+    } else if (mode === 'exploration') {
+      scene.enterExploration();
     } else if (mode === 'combat') {
       scene.enterCombat();
     } else if (mode === 'training') {
       scene.enterTraining();
+    } else if (mode === 'debrief') {
+      scene.showDebrief();
     }
   }
 
   function endCinematic() {
     if (!scene) return;
     scene.stopCinematic();
-    setMode('cinematic');
-    $('#cinematicChapter').textContent = 'Arrival · Ashmere';
-    $('#cinematicLine').textContent = 'Ashmere waits beneath the first grey light. Beyond its lamps, old magic has begun to stir.';
-    $('#skipCinematic').hidden = true;
-    $('#cinematicNext').hidden = false;
-    $('#cinematicNext').textContent = 'Return to the prototype menu';
-    scene.showBackdrop('ash');
+    showMode('exploration');
+    toast('The journey begins · explore the Old Road');
   }
 
   function startCinematic() {
@@ -146,15 +161,28 @@
     title: () => showMode('title'),
     combat: () => showMode('combat'),
     training: () => showMode('training'),
+    exploration: () => showMode('exploration'),
+    interact: () => { if (scene) scene.interactNearby(); },
+    getExplorationState: () => scene?.explorationState || null,
+    returnToAshmere: () => showMode('debrief'),
     begin: startCinematic
   };
 
+  $('#classChoice')?.addEventListener('change', updateClassSummary);
+  updateClassSummary();
   $('#beginButton').addEventListener('click', startCinematic);
   $('#combatButton').addEventListener('click', () => showMode('combat'));
   $('#runeButton').addEventListener('click', () => showMode('training'));
   $('#skipCinematic').addEventListener('click', endCinematic);
   $('#cinematicNext').addEventListener('click', () => showMode('title'));
-  $$('.rune-choice').forEach(button => button.addEventListener('click', () => chooseRune(button.dataset.rune)));
+  $('#interactButton').addEventListener('click', () => { if (scene) scene.interactNearby(); });
+  $('#returnAshmereButton').addEventListener('click', () => showMode('debrief'));
+  $('#debriefBackButton').addEventListener('click', () => showMode('title'));
+  $('#battleContinue').addEventListener('click', () => {
+    if (scene && scene.battle && scene.battle.isScoutEncounter) showMode('exploration');
+    else showMode('title');
+  });
+  $('.rune-choice').forEach(button => button.addEventListener('click', () => chooseRune(button.dataset.rune)));
   $('#testRune').addEventListener('click', testRunes);
   $('#resetRune').addEventListener('click', () => {
     chosenRunes = [];
@@ -174,6 +202,14 @@
     if (event.key === 'Escape') {
       event.preventDefault();
       showMode('title');
+      return;
+    }
+    if (currentMode === 'exploration' && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D'].includes(event.key)) {
+      event.preventDefault();
+    }
+    if (currentMode === 'exploration' && (event.key.toLowerCase() === 'e' || event.key === 'Enter')) {
+      event.preventDefault();
+      if (scene) scene.interactNearby();
       return;
     }
     if (currentMode === 'combat' && ['1', '2', '3', '4'].includes(event.key)) {
@@ -206,6 +242,13 @@
       this.cinematicEvents = [];
       this.cinematicIndex = 0;
       this.cinematicRunning = false;
+      this.explorationState = null;
+      this.explorePlayer = null;
+      this.exploreShadow = null;
+      this.exploreMarkerVisuals = [];
+      this.exploreKeys = null;
+      this.exploreStamina = 100;
+      this.exploreStepElapsed = 0;
     }
 
     preload() {
@@ -222,9 +265,45 @@
       scene = this;
       this.showBackdrop('title');
       this.scale.on('resize', () => this.resizeCurrentScene());
+      this.exploreKeys = this.input.keyboard.addKeys('W,A,S,D,UP,DOWN,LEFT,RIGHT,SHIFT');
       this.soundscape();
       window.__legendRebootReady = true;
       window.dispatchEvent(new CustomEvent('legend-reboot-prototype-ready'));
+    }
+
+    update(time, delta) {
+      if (currentMode !== 'exploration' || !this.explorationState || !this.explorePlayer || !this.explorePlayer.active) return;
+      const keys = this.exploreKeys || {};
+      let dx = (keys.D && keys.D.isDown ? 1 : 0) - (keys.A && keys.A.isDown ? 1 : 0);
+      let dy = (keys.S && keys.S.isDown ? 1 : 0) - (keys.W && keys.W.isDown ? 1 : 0);
+      dx += (keys.RIGHT && keys.RIGHT.isDown ? 1 : 0) - (keys.LEFT && keys.LEFT.isDown ? 1 : 0);
+      dy += (keys.DOWN && keys.DOWN.isDown ? 1 : 0) - (keys.UP && keys.UP.isDown ? 1 : 0);
+      const frameMs = Math.min(delta || 16, 50);
+      const sprinting = Boolean(keys.SHIFT && keys.SHIFT.isDown && (dx || dy) && this.exploreStamina > 0);
+      if (sprinting) this.exploreStamina = Math.max(0, this.exploreStamina - frameMs * .035);
+      else this.exploreStamina = Math.min(100, this.exploreStamina + frameMs * .018);
+      if (dx || dy) {
+        const length = Math.hypot(dx, dy) || 1;
+        const distance = (sprinting ? 390 : 220) * frameMs / 1000;
+        this.exploreStepElapsed += frameMs;
+        if (this.exploreStepElapsed > (sprinting ? 175 : 290)) {
+          this.exploreStepElapsed = 0;
+          if (this.explorePlayer && this.explorePlayer.active) {
+            this.tweens.add({ targets: this.explorePlayer, scaleY: this.explorePlayer.scaleY * .94, duration: 65, yoyo: true, ease: 'Sine.easeOut' });
+          }
+        }
+        const { width, height } = this.dimensions();
+        this.explorationState.playerX = Phaser.Math.Clamp(this.explorationState.playerX + dx / length * distance / width, .06, .94);
+        this.explorationState.playerY = Phaser.Math.Clamp(this.explorationState.playerY + dy / length * distance / height, .39, .82);
+        this.layoutExploration();
+      } else if (this.explorePlayer.active && this.explorationState) {
+        this.explorePlayer.y = this.explorationState.playerY * this.dimensions().height + Math.sin(time / 180) * 1.5;
+      }
+      this.exploreUiElapsed = (this.exploreUiElapsed || 0) + (delta || 16);
+      if (this.exploreUiElapsed >= 100) {
+        this.exploreUiElapsed = 0;
+        this.updateExplorationUI();
+      }
     }
 
     dimensions() {
@@ -273,6 +352,7 @@
       this.runeRings = [];
       this.trainingGlyphs.forEach(glyph => glyph.destroy());
       this.trainingGlyphs = [];
+      this.clearExplorationGraphics();
     }
 
     resizeCurrentScene() {
@@ -284,6 +364,7 @@
         this.backdrop.setData('coverFactor', factor);
       }
       if (currentMode === 'combat') this.placeBattleActors();
+      if (currentMode === 'exploration') this.layoutExploration();
     }
 
     setSoundEnabled(enabled) {
@@ -309,6 +390,7 @@
 
     startCinematic() {
       this.stopModeEffects();
+      this.resetExplorationState();
       this.cinematicRunning = true;
       this.cinematicIndex = 0;
       const beats = [
@@ -348,10 +430,18 @@
 
     enterCombat() {
       this.stopModeEffects();
-      this.battle = { hp: 100, mp: 30, enemyHp: 72, busy: false, guarding: false, finished: false };
+      const isScoutEncounter = Boolean(this.explorationState && this.explorationState.scoutEngaged && !this.explorationState.scoutDefeated);
+      const character = selectedClassStats();
+      const enemy = (gameData().enemies || []).find(item => item.id === 'goblin') || { name: 'Road Goblin', hp: [24, 38], damage: [3, 8], text: 'A road goblin slips from the brush.' };
+      const range = enemy.hp || [30, 40];
+      this.battle = { hp: character.maxHp, maxHp: character.maxHp, mp: 30, maxMp: 30, enemyHp: isScoutEncounter ? 68 : Phaser.Math.Between(range[0], range[1]), enemyMaxHp: isScoutEncounter ? 68 : range[1], enemyDamage: enemy.damage || [3, 8], enemyName: isScoutEncounter ? 'Goblin Scout' : enemy.name, busy: false, guarding: false, finished: false, isScoutEncounter, character };
+      $('#battleContinue').hidden = true;
       this.showBackdrop('road');
       this.placeBattleActors();
-      setBattleLog('A road-goblin blocks the pass', 'It watches your hands. It has not committed to an attack yet.');
+      setBattleLog(
+        isScoutEncounter ? 'A goblin scout blocks the road' : (this.battle.enemyName || 'A road-goblin blocks the pass'),
+        isScoutEncounter ? 'The scout carries a charcoal mark used to signal a larger warband.' : ((enemy.text || 'It watches your hands. It has not committed to an attack yet.') + ' Your ' + character.name + ' training shapes your strength and technique.')
+      );
       updateBars();
     }
 
@@ -369,6 +459,8 @@
       }
       this.heroOrigin = { x: heroX, y: actorY };
       this.enemyOrigin = { x: enemyX, y: actorY };
+      this.heroArt.setTexture(({ Adventurer: 'hero', Warrior: 'warrior', Ranger: 'ranger', Mage: 'mage', Thief: 'thief', Skiller: 'skiller' })[selectedClass()] || 'hero');
+      this.enemyArt.setTexture('goblin');
       this.heroArt.setPosition(heroX, actorY);
       this.enemyArt.setPosition(enemyX, actorY);
       this.fitArtwork(this.heroArt, width * .25, height * .52);
@@ -392,8 +484,9 @@
       updateBars();
       if (action === 'retreat') {
         this.sfx('confirm');
+        const returnToRoad = Boolean(b.isScoutEncounter);
         setBattleLog('You break away', 'A wise retreat is still a decision. The encounter can be approached again.');
-        this.time.delayedCall(850, () => showMode('title'));
+        this.time.delayedCall(850, () => showMode(returnToRoad ? 'exploration' : 'title'));
         return;
       }
       if (action === 'guard') {
@@ -411,7 +504,12 @@
         return;
       }
       const isSpell = action === 'spell';
-      const damage = isSpell ? Phaser.Math.Between(23, 31) : Phaser.Math.Between(14, 21);
+      const mods = b.character?.mods || {};
+      const equippedWeapon = window.LegendRebootInventory?.getWeapon?.();
+      const weapon = equippedWeapon || (gameData().weapons || []).find(item => item.id === 'hand') || { min: 8, max: 20 };
+      const forceBonus = Number(mods.strength || 0) * 2;
+      const magicBonus = Number(mods.magic || 0) * 3;
+      const damage = isSpell ? Phaser.Math.Between(23, 31) + magicBonus : Phaser.Math.Between(Math.max(5, weapon.min), Math.max(10, weapon.max)) + forceBonus;
       if (isSpell) {
         b.mp -= 10;
         this.sfx('magic');
@@ -441,11 +539,27 @@
           if (b.enemyHp <= 0) {
             b.busy = false;
             b.finished = true;
+            if (b.isScoutEncounter && this.explorationState) {
+              this.explorationState.scoutDefeated = true;
+              this.explorationState.scoutEngaged = false;
+              this.explorationState.xp += 25;
+              this.explorationState.bells += 18;
+              window.LegendRebootInventory?.addBells?.(18);
+              window.LegendRebootInventory?.addItem?.('gmail', 1);
+              this.explorationState.expeditionComplete = true;
+              $('#battleContinue').textContent = 'Return to the road';
+              $('#battleContinue').hidden = false;
+            }
             this.time.delayedCall(520, () => {
               this.sfx('victory');
-              setBattleLog('The road falls quiet', 'The goblin retreats into the brush. This is a prototype encounter, not a production reward.');
+              if (b.isScoutEncounter) {
+                setBattleLog('Scout defeated', 'The scout carried a charcoal warband mark. You gain 25 XP and 18 Bells; the marks suggest these raids are organized.');
+                toast('Scout defeated · 25 XP · 18 Bells');
+              } else {
+                setBattleLog('The road falls quiet', 'The goblin retreats into the brush. This is a prototype encounter, not a production reward.');
+                toast('Encounter won · combat feedback prototype');
+              }
               updateBars();
-              toast('Encounter won · combat feedback prototype');
             });
             updateBars();
           } else {
@@ -515,8 +629,11 @@
         duration: 220,
         ease: 'Quad.easeIn',
         onComplete: () => {
-          const rawDamage = Phaser.Math.Between(11, 17);
-          const damage = b.guarding ? Math.ceil(rawDamage * .28) : rawDamage;
+          const enemyRange = b.enemyDamage || [3, 8];
+          const rawDamage = Phaser.Math.Between(enemyRange[0], enemyRange[1]) + (b.isScoutEncounter ? 5 : 0);
+          const armorDefense = Number(window.LegendRebootInventory?.getArmor?.()?.defense || 0);
+          const afterArmor = Math.max(1, rawDamage - Math.floor(armorDefense * .12));
+          const damage = b.guarding ? Math.ceil(afterArmor * .28) : afterArmor;
           b.hp = Math.max(0, b.hp - damage);
           b.guarding = false;
           this.sfx('hit');
@@ -537,9 +654,13 @@
           if (b.hp <= 0) {
             b.finished = true;
             b.busy = false;
-            setBattleLog('You fall back', 'Defeat should carry consequences in the real game. This preview resets cleanly when restarted.');
+            if (b.isScoutEncounter) {
+              $('#battleContinue').textContent = 'Withdraw to the road';
+              $('#battleContinue').hidden = false;
+            }
+            setBattleLog('You fall back', 'This expedition is a safe prototype. Withdraw to the road and prepare before trying again.');
             updateBars();
-            toast('Defeat preview · no save changed');
+            toast('Defeat · no production save changed');
           } else {
             b.busy = false;
             setBattleLog('Your turn', 'The goblin is exposed after its lunge. Guard, time a strike, or spend focus on magic.');
@@ -547,6 +668,279 @@
           }
         }
       });
+    }
+
+    resetExplorationState() {
+      this.explorationState = null;
+      this.exploreUiElapsed = 0;
+    }
+
+    enterExploration() {
+      if (!this.explorationState) {
+        this.explorationState = {
+          playerX: .22,
+          playerY: .72,
+          bells: 0,
+          xp: 0,
+          potions: 0,
+          cacheFound: false,
+          shrineInspected: false,
+          tracksInspected: false,
+          scoutEngaged: false,
+          scoutDefeated: false,
+          expeditionComplete: false,
+          brennSpoken: false,
+          herbsFound: false,
+          questAccepted: false,
+          questReported: false,
+          objects: [
+            { id: 'cache', label: 'Abandoned Supply Cache', shortLabel: 'Supply Cache', nx: .33, ny: .65, glyph: '▣', color: 0xd7b46f },
+            { id: 'shrine', label: 'Veil-touched Waystone', shortLabel: 'Waystone', nx: .51, ny: .49, glyph: '✧', color: 0x9bc9bf },
+            { id: 'tracks', label: 'Fresh Warband Tracks', shortLabel: 'Warband Tracks', nx: .61, ny: .72, glyph: '⌁', color: 0xc3b28b },
+            { id: 'scout', label: 'Goblin Scout', shortLabel: 'Goblin Scout', nx: .72, ny: .61, glyph: '!', color: 0xd27b69 },
+            { id: 'brenn', label: 'Brenn · Roadwarden', shortLabel: 'Roadwarden Brenn', nx: .19, ny: .53, glyph: '⚑', color: 0xb4c5a2 },
+            { id: 'herbs', label: 'Roadside Herbs', shortLabel: 'Roadside Herbs', nx: .43, ny: .78, glyph: '✿', color: 0x9fbd82 }
+          ]
+        };
+      }
+      this.showBackdrop('road');
+      this.clearExplorationGraphics();
+      const { width, height } = this.dimensions();
+      this.exploreShadow = this.add.ellipse(width * this.explorationState.playerX, height * this.explorationState.playerY + 35, 45, 13, 0x050807, .62).setDepth(19);
+      const classTexture = ({ Adventurer: 'hero', Warrior: 'warrior', Ranger: 'ranger', Mage: 'mage', Thief: 'thief', Skiller: 'skiller' })[selectedClass()] || 'hero';
+      this.explorePlayer = this.add.image(width * this.explorationState.playerX, height * this.explorationState.playerY, classTexture).setDepth(20);
+      this.fitArtwork(this.explorePlayer, width * .11, height * .18);
+      this.createExplorationMarkers();
+      this.layoutExploration();
+      this.updateExplorationUI();
+      $('#battleContinue').hidden = true;
+    }
+
+    clearExplorationGraphics() {
+      if (this.explorePlayer && this.explorePlayer.active) this.explorePlayer.destroy();
+      if (this.exploreShadow && this.exploreShadow.active) this.exploreShadow.destroy();
+      this.explorePlayer = null;
+      this.exploreShadow = null;
+      (this.exploreMarkerVisuals || []).forEach(visual => {
+        if (visual.tween) visual.tween.stop();
+        [visual.ring, visual.glyph, visual.label].forEach(item => {
+          if (item && item.active) item.destroy();
+        });
+      });
+      this.exploreMarkerVisuals = [];
+    }
+
+    createExplorationMarkers() {
+      if (!this.explorationState) return;
+      this.exploreMarkerVisuals = this.explorationState.objects.map(object => {
+        const ring = this.add.circle(0, 0, 22, object.color, .19).setStrokeStyle(2, object.color, .88).setDepth(11);
+        const glyph = this.add.text(0, 0, object.glyph, {
+          fontFamily: 'Georgia, serif', fontSize: '30px', fontStyle: 'bold',
+          color: '#' + object.color.toString(16).padStart(6, '0'),
+          stroke: '#101311', strokeThickness: 4
+        }).setOrigin(.5).setDepth(12);
+        const label = this.add.text(0, 0, object.shortLabel, {
+          fontFamily: 'system-ui, sans-serif', fontSize: '12px', fontStyle: 'bold',
+          color: '#f2e7cd', stroke: '#080b0a', strokeThickness: 4,
+          align: 'center'
+        }).setOrigin(.5, 0).setDepth(12);
+        const complete = this.explorationObjectComplete(object.id);
+        const tween = this.tweens.add({
+          targets: ring, scale: { from: .84, to: 1.16 }, alpha: { from: .28, to: .8 },
+          duration: 1150, ease: 'Sine.easeInOut', yoyo: true, repeat: -1
+        });
+        this.modeTweens.push(tween);
+        const visual = { id: object.id, ring, glyph, label, tween };
+        this.styleExplorationMarker(object.id, visual);
+        return visual;
+      });
+    }
+
+    explorationObjectComplete(id) {
+      const state = this.explorationState;
+      if (!state) return false;
+      if (id === 'cache') return state.cacheFound;
+      if (id === 'shrine') return state.shrineInspected;
+      if (id === 'tracks') return state.tracksInspected;
+      if (id === 'scout') return state.scoutDefeated;
+      if (id === 'brenn') return state.brennSpoken;
+      if (id === 'herbs') return state.herbsFound;
+      return false;
+    }
+
+    styleExplorationMarker(id, visual) {
+      const object = this.explorationState && this.explorationState.objects.find(item => item.id === id);
+      if (!object || !visual) return;
+      const complete = this.explorationObjectComplete(id);
+      visual.label.setText(complete ? object.shortLabel + ' ✓' : object.shortLabel);
+      visual.ring.setFillStyle(object.color, complete ? .07 : .19);
+      visual.ring.setStrokeStyle(2, object.color, complete ? .3 : .88);
+      visual.glyph.setAlpha(complete ? .45 : 1);
+      if (complete && visual.tween) visual.tween.pause();
+      if (!complete && visual.tween) visual.tween.resume();
+    }
+
+    layoutExploration() {
+      if (!this.explorationState) return;
+      const { width, height } = this.dimensions();
+      const playerX = this.explorationState.playerX * width;
+      const playerY = this.explorationState.playerY * height;
+      if (this.explorePlayer && this.explorePlayer.active) {
+        this.explorePlayer.setPosition(playerX, playerY + Math.sin(this.time.now / 180) * .7);
+        this.fitArtwork(this.explorePlayer, width * .11, height * .18);
+      }
+      if (this.exploreShadow && this.exploreShadow.active) this.exploreShadow.setPosition(playerX, playerY + height * .047);
+      (this.exploreMarkerVisuals || []).forEach(visual => {
+        const object = this.explorationState.objects.find(item => item.id === visual.id);
+        if (!object) return;
+        const x = object.nx * width;
+        const y = object.ny * height;
+        visual.ring.setPosition(x, y);
+        visual.glyph.setPosition(x, y - 1);
+        visual.label.setPosition(x, y + 29);
+      });
+    }
+
+    nearestExplorationObject(maxDistance = 96) {
+      if (!this.explorationState) return null;
+      const { width, height } = this.dimensions();
+      const px = this.explorationState.playerX * width;
+      const py = this.explorationState.playerY * height;
+      let nearest = null;
+      let nearestDistance = maxDistance;
+      this.explorationState.objects.forEach(object => {
+        if (this.explorationObjectComplete(object.id)) return;
+        const distance = Phaser.Math.Distance.Between(px, py, object.nx * width, object.ny * height);
+        if (distance <= nearestDistance) {
+          nearest = object;
+          nearestDistance = distance;
+        }
+      });
+      return nearest;
+    }
+
+    updateExplorationUI() {
+      const state = this.explorationState;
+      if (!state || currentMode !== 'exploration') return;
+      $('#exploreObjective').textContent = state.scoutDefeated
+        ? 'Objective: Return to Ashmere with evidence of an organized warband.'
+        : !state.questAccepted
+          ? 'Objective: Find Roadwarden Brenn and receive your field commission.'
+          : !(state.shrineInspected && state.tracksInspected)
+            ? 'Objective: Inspect the waystone and record the warband tracks.'
+            : 'Objective: Confront the goblin scout and recover proof.';
+      $('#exploreResources').textContent = state.bells + ' Bells  ·  ' + state.potions + (state.potions === 1 ? ' Tonic' : ' Tonics') + '  ·  ' + state.xp + ' XP';
+      $('#exploreStamina').style.width = this.exploreStamina + '%';
+      $('#exploreStaminaText').textContent = 'STAMINA ' + Math.round(this.exploreStamina) + '%';
+      $('#exploreClue').textContent = state.shrineInspected && state.tracksInspected
+        ? 'Evidence: Disturbed waystone + fresh warband tracks.'
+        : state.shrineInspected
+          ? 'Evidence: The waystone was disturbed recently.'
+          : state.tracksInspected
+            ? 'Evidence: Fresh tracks suggest an organized patrol.'
+            : 'No magical evidence collected yet.';
+      $('#returnAshmereButton').disabled = !state.scoutDefeated;
+      if (state.scoutDefeated && !state.questReported) $('#returnAshmereButton').textContent = 'Report to Ashmere';
+      const target = this.nearestExplorationObject(98);
+      const title = $('#exploreTargetTitle');
+      const prompt = $('#explorePromptText');
+      const button = $('#interactButton');
+      if (!target) {
+        title.textContent = state.scoutDefeated ? 'The road is quieter' : 'Keep exploring';
+        prompt.textContent = state.scoutDefeated
+          ? 'The scout is down. Return to Ashmere to report the charcoal warband mark.'
+          : 'Move with WASD or the arrow keys. Approach a marker and press E to interact.';
+        button.disabled = true;
+        button.textContent = 'Interact (E)';
+      } else {
+        title.textContent = target.label;
+        prompt.textContent = target.id === 'brenn'
+          ? 'A roadwarden watches the tree line and marks passing carts. Speak with Brenn for a field assignment.'
+          : target.id === 'scout'
+          ? 'The scout keeps looking over its shoulder. Press E when you are ready to confront it.'
+          : target.id === 'cache'
+            ? 'A supply cart was abandoned in a hurry. Search it for anything useful.'
+            : target.id === 'herbs'
+            ? 'Hardy herbs grow in the shelter of the mile-marker. Gather a few before moving on.'
+            : target.id === 'tracks'
+              ? 'Deep boot prints and claw marks cross the mud. Follow their direction to learn how many passed this way.'
+              : 'Faint green-gold lines move beneath the moss. The stone is warmer than the air.';
+        button.disabled = false;
+        button.textContent = 'Interact: ' + target.shortLabel + ' (E)';
+      }
+    }
+
+    interactNearby() {
+      if (currentMode !== 'exploration' || !this.explorationState) return;
+      const state = this.explorationState;
+      const target = this.nearestExplorationObject(105);
+      if (!target) {
+        toast('Move closer to a marker to interact.');
+        return;
+      }
+      if (target.id === 'cache') {
+        state.cacheFound = true;
+        state.bells += 8;
+        state.potions += 1;
+        window.LegendRebootInventory?.addBells?.(8);
+        window.LegendRebootInventory?.addItem?.('roadPoultice', 1);
+        this.sfx('confirm', .55);
+        toast('Supplies recovered · +8 Bells · +1 Tonic');
+      } else if (target.id === 'shrine') {
+        state.shrineInspected = true;
+        state.xp += 5;
+        this.sfx('magic', .4);
+        toast('Waystone studied · +5 XP');
+      } else if (target.id === 'tracks') {
+        state.tracksInspected = true;
+        state.xp += 7;
+        state.warbandEvidence = true;
+        this.sfx('confirm', .5);
+        toast('Tracks recorded · +7 XP · Warband evidence');
+      } else if (target.id === 'herbs') {
+        state.herbsFound = true;
+        state.xp += 3;
+        window.LegendRebootInventory?.addItem?.('roadHerb', 1);
+        this.sfx('confirm', .45);
+        toast('Road herbs gathered · +3 XP · +1 Road Herb');
+      } else if (target.id === 'brenn') {
+        state.brennSpoken = true;
+        state.questAccepted = true;
+        $('#exploreClue').textContent = 'Brenn’s commission: inspect the waystone, record the tracks, and bring back proof of the warband.';
+        toast('Brenn: “Bring me proof the raids are organized. The road is not safe by accident.”');
+        this.sfx('confirm', .5);
+      } else if (target.id === 'scout') {
+        if (!state.questAccepted) toast('You confront the scout without Brenn’s commission. The roadwarden will still want your report.');
+        state.scoutEngaged = true;
+        this.sfx('confirm', .7);
+        showMode('combat');
+        return;
+      }
+      (this.exploreMarkerVisuals || []).forEach(visual => this.styleExplorationMarker(visual.id, visual));
+      this.updateExplorationUI();
+    }
+
+    showDebrief() {
+      this.showBackdrop('ash');
+      if (this.explorationState?.scoutDefeated) {
+        this.explorationState.questReported = true;
+        this.explorationState.expeditionComplete = true;
+      }
+      const state = this.explorationState || { bells: 0, xp: 0, potions: 0, cacheFound: false, shrineInspected: false, scoutDefeated: false };
+      $('#debriefSummary').textContent = state.scoutDefeated
+        ? (state.questAccepted
+          ? 'Brenn studies the charcoal warband mark, then folds the report shut. “That is enough to warn the gate. It is not enough to know who commands them.” Your first commission is complete.'
+          : 'The scout carried a charcoal warband mark—not proof of the force behind the attacks, but the first sign that these raids may be coordinated. Ashmere needs to know.')
+        : 'You return to Ashmere before the expedition is complete. The road will still be there when you are ready.';
+      $('#debriefRewards').textContent = '+' + state.xp + ' XP  ·  ' + state.bells + ' Bells  ·  ' + state.potions + (state.potions === 1 ? ' Tonic recovered' : ' Tonics recovered');
+      const findings = [];
+      if (state.brennSpoken) findings.push('Brenn’s road commission accepted');
+      if (state.cacheFound) findings.push('Roadside supplies recovered');
+      if (state.herbsFound) findings.push('Roadside herbs gathered');
+      if (state.shrineInspected) findings.push('Waystone disturbance recorded');
+      if (state.tracksInspected) findings.push('Warband tracks recorded');
+      if (state.scoutDefeated) findings.push('Charcoal warband mark secured');
+      $('#debriefFindings').textContent = findings.length ? findings.join('  ·  ') : 'No discoveries recorded on this trip.';
     }
 
     enterTraining() {

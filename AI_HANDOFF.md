@@ -22,7 +22,15 @@ Existing documents were updated with prominent direction notes: `docs/LEGEND_WOR
 
 **Continuity guardrails:** Preserve the existing Ashmere starting context, named characters, regions, and implemented evidence chain (The Bell That Rang Once, The Moved Cairn, Blackroot Bend, Greyfen boundary evidence, Reedwatch field note, Brenn's ledger, earlier weekly return, and missing closure order). Treat those as a local investigation whose relationship to the wider conflict is not yet proven. Bells remain useful motifs/mechanics, not a universal explanation. The Pale Surveyor, Hollow Mile, Unreturned, Four Witnesses, Office of Measure, Seven-Wagon Dispatch, Aren Vey, and Ivara are legacy proposals demoted from primary canon; do not implement new dependencies on them without explicit re-approval.
 
-**Do not change game code as part of this documentation update.** Before a gameplay pivot, reconcile the world bible and arcs, define the monster-faction and magic rules, preserve Bells as ordinary Ashmere currency and decide how money, permits, preparation, relationships, guild standing, and local obstacles combine to unlock new regional opportunities, then produce a separate implementation plan including save compatibility and regression tests. Do not claim Ironpass, Blackwood, or the Ruined March are playable until implementation and verification confirm it.
+**Production runtime and save-compatibility guardrail:** The lore reconciliation is complete enough to test the new direction in an isolated Phaser proof of concept. Do not port prototype systems into production yet. Keep Bells as ordinary Ashmere currency; future regional access should combine appropriate money or permits with preparation, relationships, guild standing, local contributions, and regional obstacles where the fiction supports them. Any production migration still needs a separate implementation plan, save-compatibility review, and regression tests. Do not claim Ironpass, Blackwood, or the Ruined March are playable until implementation and verification confirm it.
+
+## First playable expedition prototype — 2026-10-15
+
+A draft pull request is open: [#12 — Prototype the first playable LEGEND expedition](https://github.com/TDTRIA/LEGEND-RPG/pull/12), branch `reboot/first-playable-expedition`.
+
+The isolated `prototypes/reboot/` experiment now includes keyboard movement on the Old Road, proximity-based interactions, a roadside supply cache, a disturbed waystone clue, a goblin scout battle, in-memory XP/Bells/tonic rewards, a return-to-road transition, and an Ashmere debrief. `tests/reboot-prototype.spec.js` includes a Playwright flow for this loop. This is a vertical-slice prototype, not production gameplay: it does not persist expedition state, write to production saves, or implement a complete quest/equipment/party system.
+
+At the time of this note, the pull-request Playwright workflow is running. Do not describe the slice as verified until that workflow completes successfully and any failures are addressed. Production files and save behavior remain unchanged. The work uses existing project assets and adds no paid tools or services. Continue in the isolated branch until the slice is reviewed; do not merge or port it into production based solely on the existence of the PR.
 
 ---
 

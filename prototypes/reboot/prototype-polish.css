@@ -1,0 +1,65 @@
+/* Visible polish pass for the isolated LEGEND reboot prototype. */
+:root {
+  --gold: #e5c27e;
+  --mint: #a6c9b6;
+}
+.site-top { border-bottom: 1px solid rgba(229,194,126,.08); }
+.brand { position: relative; }
+.build-ribbon {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-left: 12px;
+  padding: 5px 8px;
+  border: 1px solid rgba(229,194,126,.35);
+  color: #f0dca9;
+  background: rgba(13,20,17,.82);
+  font: 700 9px/1.2 system-ui,sans-serif;
+  letter-spacing: .12em;
+}
+.game-frame {
+  border-color: rgba(229,194,126,.34);
+  box-shadow: 0 28px 100px rgba(0,0,0,.68), 0 0 0 1px rgba(229,194,126,.05);
+}
+.game-frame::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  z-index: 4;
+  pointer-events: none;
+  border: 1px solid rgba(229,194,126,.11);
+}
+.class-picker {
+  position: relative;
+  border-color: rgba(229,194,126,.42);
+  box-shadow: inset 3px 0 0 rgba(229,194,126,.65), 0 12px 32px rgba(0,0,0,.2);
+}
+.class-picker label::before {
+  content: "✦";
+  display: inline-block;
+  margin-right: 7px;
+  color: var(--gold);
+}
+.class-picker select { font: 600 13px system-ui,sans-serif; }
+.class-summary { color: #e0dfd3; }
+.primary { box-shadow: 0 5px 22px rgba(219,185,121,.13), inset 0 1px rgba(255,255,255,.22); }
+.game-info > div:first-child {
+  padding: 10px 13px;
+  border-left: 2px solid var(--gold);
+  background: linear-gradient(90deg, rgba(5,8,8,.74), rgba(5,8,8,.05));
+}
+.combat-status > div, .explore-status {
+  padding: 8px 10px;
+  background: rgba(5,8,8,.48);
+  border: 1px solid rgba(229,194,126,.14);
+}
+.battle-narration, .battle-actions, .explore-copy, .debrief-card, .training-panel {
+  box-shadow: 0 14px 42px rgba(0,0,0,.26);
+}
+.action { min-height: 64px; }
+.action:first-letter { color: var(--gold); }
+.prototype-note { letter-spacing: .025em; }
+@media (max-width: 760px) {
+  .build-ribbon { display: table; margin: 7px 0 0; }
+  .game-frame::after { inset: 5px; }
+  .action { min-height: 52px; }
+}
