@@ -5,14 +5,26 @@ Last updated: 2026-10-16. Read this file before changing code, and update it whe
 ## Canon — read first
 Story decisions made by the owner are recorded in [`docs/CANON.md`](docs/CANON.md). **If another document disagrees with a LOCKED item there, CANON.md wins.** Assistants may propose and draft story options but never lock a decision themselves, and must ask the owner before changing a locked item. As of 2026-10-16 the owner has locked: (L1) the Hollow Saint and the Last Mercy as the deepest threat, and (L2) the Greyfen crossing records were altered because of trade pressure, and (L3) the Landing Warden reopened the lower crossing, unsigned, under merchant pressure, and (L4) the traveler is an echo touched by the Veil before the Last Mercy could finish making them, who does not know it (hidden knowledge: do not state or imply it in dialogue or UI until the owner approves a reveal plan). Where older sections below call these "proposals only," CANON.md supersedes them for all four locked items; locked is still not implemented, so keep the implementation-plan and verification rules in this file.
 
-## Production title refresh — v0.20.36 (branch work; not deployed)
+## Production architecture refactor — v0.20.36 (draft PR #17; not deployed)
 
-The current product title is **LEGEND: The Awakening**. The former visible subtitle **“The Unquiet Road” is retired**; the Old Road remains a location and travel route, not the product subtitle. The active creative direction is **Monster Wars & the Awakening**, governed by `docs/CANON.md`, which locks L1 (Hollow Saint / Last Mercy as the deepest threat), L2 (trade pressure drove the Greyfen crossing alteration), L3 (the Landing Warden reopened the lower crossing unsigned under merchant pressure), and L4 (the traveler is an echo left by the Last Mercy, touched by the Veil before the ritual finished making them; this is hidden truth that must not be stated or implied in dialogue or UI until an owner-approved reveal plan exists).
+The product remains **LEGEND: The Awakening**. The active production code is being refactored in place; do not replace it with `prototypes/reboot/`, introduce a bundler/framework, or alter locked story canon without the owner's approval.
 
-The `awakening-rpg-title-refresh` branch updates `js/game.js` and adds `css/title-rpg-menu-v136.css`. The target is a recognizable fantasy RPG main menu: the committed Ashmere panorama, antique-gold wordmark, squared double-framed panel, corner ornamentation, unified line-art menu icons, concise story hook, stronger secondary-text contrast, one primary Continue/Begin action, and quieter New Traveler, Profile, Settings, and Credits choices. Current-facing docs and support pages have been aligned; historic release notes remain historical.
+The current branch is `refactor/extract-settings-screen`, PR [#17](https://github.com/TDTRIA/LEGEND-RPG/pull/17). It remains a draft and is not merged or deployed. The active path uses versioned classic scripts in `index.html` and stable `window.Legend...` facades.
 
-This is a presentation pass only: no gameplay systems, save keys, or player data are intentionally changed. Current branch version references are **v0.20.36**. The live reference title was inspected at 1440×900; low-contrast secondary copy and repetitive pitch text informed the source refinements. The branch menu itself has not been deployed or rendered in a browser. At the owner's request, Playwright troubleshooting is not a gate and no Playwright run is claimed. Manual desktop/mobile review and deployed-site verification remain pending.
+Current architectural boundaries:
+- `js/game.js` is a thin title/bootstrap adapter; title markup, auxiliary screens, and title audio are separate modules.
+- `LegendStorage` remains the single owner for player save/load/normalization and settings persistence. Current-only save policy is intentional; do not reintroduce recovered-build imports or rename storage keys.
+- Traveler record construction, creation choices, step prompts, and creation UI are separated into `js/systems/player/` modules; `LegendBeginningV094` retains choice state and callback sequencing.
+- The Ashmere controller is a narrow facade over dedicated hub, navigation, shared-view, assets, guidance, catalog, feature, commerce, records, people/story, inn, work, contracts, and crossing modules.
+- The v100 road controller is the only active expedition path. State, actions, discovery and POI decisions/outcomes, views, combat, and result settlement have dedicated modules; `LegendProgressionV100` owns XP/level-up rules and read-only XP status.
+- `js/core/html-utils-v120.js` owns the shared HTML text/quoted-attribute escaping mapping. It is not an arbitrary-HTML sanitizer or URL validator.
+- `docs/ADDING_FEATURES.md`, `docs/ARCHITECTURE.md`, `docs/REFACTOR_PLAN.md`, and `docs/SAVE_DATA_CONTRACT.md` describe feature insertion points and compatibility rules.
 
+Validation status:
+- Playwright run #1425 passed the then-current full CI suite before the latest shared escaping/progression-status edits.
+- The latest code head should be checked against its own GitHub Actions run before claiming that those latest edits passed; PR-local Playwright uses the local test server.
+- The previous live GitHub Pages smoke attempt failed before reaching the game with `ERR_TUNNEL_CONNECTION_FAILED`. It made no character changes and did not modify storage. Live deployment is therefore still unverified.
+- Do not merge or deploy this draft without the owner's direction. Keep the remaining town/road browser smoke checks explicit rather than marking them complete based only on source review.
 
 ## Current narrative direction — 2026-10-15
 
@@ -46,16 +58,17 @@ Existing documents were updated with prominent direction notes: `docs/LEGEND_WOR
 - **Longer-term packaging:** keep the browser game as the source of truth until the first slice is stable and enjoyable. Then decide between desktop-app packaging and an engine port based on actual platform requirements; do not migrate engines during stabilization.
 
 ## Current game overview
+The active path does not import legacy recovered-build saves or v087 road state. New travelers use the v100 XP/progression system and the single active player-save key.
 Working RPG core includes title/character creation, Ashmere hub and NPC dialogue, Work Board jobs, trading/equipment/crafting, five-stage Old Road expeditions, meaningful exploration choices/discoveries, resting/field crafting, turn-based combat with class abilities/cooldowns, rewards, XP/leveling, and regional travel. Previous live playtesting found no horizontal overflow at 390×844 and no expedition event text/art overlap in checked scenes.
 
 Important files:
 - `index.html`: page shell, stylesheet/script loading, cache-busting query strings.
 - `js/game.js`: bootstrap; `js/data.js`: game data; `js/storage.js`: persistence.
-- `js/core/runtime-v080.js`: runtime bridge, save access, return-to-town handling.
+- `js/core/game-runtime-v120.js`: current runtime bridge for return/navigation; player persistence is owned only by `LegendStorage`.
 - `js/systems/beginning-v094.js`: character creation/entry.
 - `js/systems/ashmere-controller-v099.js`: Ashmere/Greyfen hub, NPCs, jobs, market, Forge, crafting, profile/sheet routes.
 - `js/systems/road-controller-v100.js`: current Old Road expedition flow.
-- `js/systems/road-controller-v087.js` and `js/content/roads/old-road-v087.js`: older/underlying road systems; inspect dependencies before edits.
+- `js/systems/road/road-combat-v100.js` and `js/systems/road/road-audio-v100.js`: current combat and audio modules. The v087 controller/data files are retired from the active project; road content is now `js/content/roads/old-road-v100.js`.
 - `js/systems/progression-v100.js`: XP and levels.
 - `js/systems/region-controller-v100.js`: regional unlocks/travel.
 - Relevant styles include `css/road-expedition-v100.css`, `css/ashmere-town-v100.css`, `css/ashmere-workshops-v100.css`, `css/title-cinematic-v120.css`.

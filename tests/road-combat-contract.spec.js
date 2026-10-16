@@ -1,0 +1,132 @@
+const { test, expect } = require('@playwright/test');
+
+test.describe('LegendRoadCombatV100 compatibility contract', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+  });
+
+  async function startCombat(page, overrides = {}) {
+    return page.evaluate((overrides) => {
+      const player = {
+        username: 'CombatQA',
+        className: 'Ranger',
+        level: 1,
+        hp: 40,
+        maxHp: 100,
+        gold: 0,
+        inventory: { potion: 1, roadPoultice: 1 },
+        stats: {},
+        ...overrides.player,
+      };
+      const state = { stage: 1, pressure: 30, poiUsed: {}, ...overrides.state };
+      const events = { saves: 0, inventory: [], progress: [], fx: [], music: [], outcomes: [], expedition: [] };
+      const context = {
+        getPlayer: () => player,
+        savePlayer: () => { events.saves += 1; },
+        getAssets: () => ({ enemies: {}, classes: {}, byName: () => '' }),
+        getWeapon: () => ({ name: 'Wooden Sword', min: 2, max: 4 }),
+        getArmor: () => ({ name: 'Cloth Armor', defense: 2 }),
+        score: () => 0,
+        ensureState: () => state,
+        hpPercent: pl => Math.max(0, Math.min(100, Math.round(pl.hp / Math.max(1, pl.maxHp) * 100))),
+        escapeHtml: value => String(value ?? '').replace(/[&<>'"]/g, character => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        }[character])),
+        clamp: (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value)),
+        randomInt: minimum => minimum,
+        addInventory: (pl, item, count) => {
+          pl.inventory[item] = Number(pl.inventory[item] || 0) + count;
+          events.inventory.push({ item, count });
+        },
+        itemName: item => item,
+        renderShell: html => { document.body.innerHTML = html; },
+        renderExpedition: text => { events.expedition.push(text); document.body.textContent = text; },
+        outcome: (...args) => { events.outcomes.push(args); document.body.textContent = args.join(' '); },
+        soundOn: () => false,
+        startMusic: () => { events.music.push('start'); },
+        stopMusic: () => { events.music.push('stop'); },
+        playBattleFx: effect => { events.fx.push(effect); },
+        tone: tone => { events.fx.push(tone); },
+        toggleSound: () => false,
+        awardProgress: (pl, amount) => {
+          events.progress.push(amount);
+          return { gained: amount, levels: 0, level: pl.level };
+        },
+      };
+      window.__combatContract = { player, state, events };
+      window.LegendRoadCombatV100.start(context, {
+        name: 'Road Goblin',
+        hp: 99,
+        maxHp: 99,
+        damage: [3, 7],
+        reward: 'fur',
+        turn: 0,
+        intent: 'attack',
+        ...overrides.enemy,
+      });
+      return { player, state };
+    }, overrides);
+  }
+
+  test('uses a healing potion and still resolves the enemy turn', async ({ page }) => {
+    await startCombat(page, { player: { hp: 40, inventory: { potion: 1, roadPoultice: 1 } }, enemy: { damage: [3, 3] } });
+    await page.locator('#item').click();
+
+    const result = await page.evaluate(() => window.__combatContract);
+    expect(result.player.hp).toBe(69);
+    expect(result.player.inventory.potion).toBe(0);
+    expect(result.events.saves).toBe(1);
+    await expect(page.locator('.rpg-dialogue')).toContainText('recover 30 HP');
+    await expect(page.locator('.rpg-dialogue')).toContainText('hits you for 1 damage');
+  });
+
+  test('caps potion healing at missing HP before the enemy counterattack', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 90, maxHp: 100, inventory: { potion: 1, roadPoultice: 1 } },
+      enemy: { damage: [3, 3] },
+    });
+    await page.locator('#item').click();
+
+    const result = await page.evaluate(() => window.__combatContract);
+    expect(result.player.hp).toBe(99);
+    expect(result.player.inventory.potion).toBe(0);
+    expect(result.events.saves).toBe(1);
+    await expect(page.locator('.rpg-dialogue')).toContainText('recover 10 HP');
+    await expect(page.locator('.rpg-dialogue')).toContainText('hits you for 1 damage');
+  });
+
+  test('guard fully absorbs a heavy wind-up when armor and guard reduction cover the hit', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 40, maxHp: 100 },
+      enemy: { hp: 99, intent: 'heavy', damage: [3, 7] },
+    });
+    await page.locator('#guard').click();
+
+    const result = await page.evaluate(() => window.__combatContract);
+    expect(result.player.hp).toBe(40);
+    expect(result.events.saves).toBe(1);
+    await expect(page.locator('.rpg-dialogue')).toContainText('guard turns the blow aside');
+    await expect(page.locator('.rpg-enemy-tell')).toContainText('Quick strike');
+  });
+
+  test('victory grants the configured drop and XP, updates counters, and advances the stage', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 40, maxHp: 100 },
+      state: { stage: 1, pressure: 30 },
+      enemy: { hp: 1, maxHp: 99, reward: 'fur' },
+    });
+    await page.locator('#strike').click();
+
+    const result = await page.evaluate(() => window.__combatContract);
+    expect(result.player.inventory.fur).toBe(1);
+    expect(result.player.stats.monstersDefeated).toBe(1);
+    expect(result.player.stats.roadVictories).toBe(1);
+    expect(result.state.stage).toBe(2);
+    expect(result.state.pressure).toBe(22);
+    expect(result.events.progress).toEqual([29]);
+    expect(result.events.inventory).toEqual([{ item: 'fur', count: 1 }]);
+    expect(result.events.music).toContain('stop');
+    expect(result.events.fx).toContain('victory');
+    await expect(page.locator('body')).toContainText('Road Goblin defeated');
+  });
+});

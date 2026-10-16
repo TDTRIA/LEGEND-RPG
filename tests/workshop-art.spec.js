@@ -68,7 +68,7 @@ test('Crafting Bench shows ingredients, recipe feedback, and armor comparisons',
       questLog: [],
       memories: []
     };
-    window.LegendRuntimeV080.savePlayer(player);
+    window.LegendRuntimeV120.savePlayer(player);
     window.LegendAshmereV099.renderAshmere();
   });
   await expect(page.locator('.ash100-town')).toBeVisible();

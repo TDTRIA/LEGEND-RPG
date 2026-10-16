@@ -1,7 +1,6 @@
 window.LEGEND_DATA = {
   VERSION: 'v0.20.36',
   SAVE_KEY: 'legend-roads-of-ashmere-v09',
-  OLD_KEYS: ['legend-recovered-build-v06','legend-recovered-build-v051','legend-recovered-build-v05','legend-recovered-build-v041','legend-recovered-build-v04','legend-recovered-build-v03','legend-recovered-build-v02'],
   classes: {
     Adventurer:{hp:110,gold:120,mod:{survival:1,luck:1},move:'Lucky Strike',desc:'Balanced survivor. Good for a first run.'},
     Warrior:{hp:140,gold:90,mod:{strength:3},move:'Cleave',desc:'High HP and better force checks.'},

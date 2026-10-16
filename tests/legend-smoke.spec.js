@@ -2,6 +2,9 @@ const { test, expect } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
 const dataSource = fs.readFileSync(path.join(__dirname, '../js/data.js'), 'utf8');
+const runtimeSource = fs.readFileSync(path.join(__dirname, '../js/core/game-runtime-v120.js'), 'utf8');
+const titleScreenSource = fs.readFileSync(path.join(__dirname, '../js/screens/title-screen-v120.js'), 'utf8');
+const indexSource = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
 const versionMatch = dataSource.match(/VERSION:\s*['"]v([^'"]+)['"]/);
 if (!versionMatch) throw new Error('Could not read LEGEND_DATA.VERSION from js/data.js');
 const version = versionMatch[1];
@@ -61,10 +64,156 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect.poll(() => page.evaluate(() => window.LEGEND_DATA?.VERSION)).toBe(`v${version}`);
   });
 
+  test('active runtime does not retain the retired town controller or return key', () => {
+    expect(runtimeSource).not.toContain('LegendTownControllerV080');
+    expect(runtimeSource).not.toContain('legend-v080-return-ashmere');
+    expect(runtimeSource).toContain('legend-awakening-return-to-town-v1');
+  });
+
+  test('active script graph excludes retired runtime and road assets', () => {
+    expect(indexSource).toContain('js/core/game-runtime-v120.js');
+    expect(indexSource).toContain('js/screens/title-screen-v120.js');
+    expect(indexSource).toContain('js/content/roads/old-road-v100.js');
+    expect(indexSource).toContain('js/systems/road-controller-v100.js');
+    expect(indexSource).toContain('js/systems/town/ashmere-hub-v099.js');
+    expect(indexSource).toContain('js/systems/town/ashmere-assets-v099.js');
+    expect(indexSource).toContain('js/systems/town/ashmere-view-v099.js');
+    expect(indexSource.indexOf('js/systems/town/ashmere-assets-v099.js')).toBeLessThan(indexSource.indexOf('js/systems/town/ashmere-view-v099.js'));
+    expect(indexSource.indexOf('js/systems/town/ashmere-view-v099.js')).toBeLessThan(indexSource.indexOf('js/systems/town/ashmere-hub-v099.js'));
+    expect(indexSource.indexOf('js/systems/town/ashmere-hub-v099.js')).toBeLessThan(indexSource.indexOf('js/systems/ashmere-controller-v099.js'));
+    expect(indexSource.indexOf('js/screens/title-screen-v120.js')).toBeLessThan(indexSource.indexOf('js/game.js'));
+    expect(indexSource).not.toContain('js/core/runtime-v080.js');
+    expect(indexSource).not.toContain('js/systems/road-controller-v087.js');
+    expect(indexSource).not.toContain('js/content/roads/old-road-v087.js');
+    expect(indexSource).not.toContain('css/road-v087.css');
+  });
+
+  test('active v120 title screen module owns current title rendering', async ({ page }) => {
+    expect(titleScreenSource).toContain('window.LegendTitleScreenV120');
+    await openTitle(page);
+    await expect.poll(() => page.evaluate(() => typeof window.LegendTitleScreenV120?.render)).toBe('function');
+    await expect(page.locator('.v120-title')).toBeVisible();
+    await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
+  });
+
+  test('recovered-build saves are not imported by the current loader', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+      localStorage.setItem('legend-recovered-build-v06', JSON.stringify({
+        username: 'LegacyGhost',
+        className: 'Ranger',
+        gold: 9999
+      }));
+    });
+    await page.reload();
+    await expect(page.locator('.v120-title')).toBeVisible();
+    await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
+    await expect(page.locator('#continue')).toHaveCount(0);
+    expect(await page.evaluate(() => window.LegendRuntimeV120.loadPlayer())).toBeNull();
+  });
+
+  test('active save normalization removes retired road fields but preserves current unknown data', async ({ page }) => {
+    await page.goto('/');
+    await page.evaluate(() => {
+      localStorage.clear();
+      sessionStorage.clear();
+      localStorage.setItem(window.LEGEND_DATA.SAVE_KEY, JSON.stringify({
+        username: 'NormalizeQA',
+        className: 'Ranger',
+        inventory: { roadToken: 2, customLoot: 7 },
+        flags: { roadV087: { stage: 3 }, customFlag: true },
+        xpUntil: 123,
+        customState: { preserved: true }
+      }));
+    });
+    await page.reload();
+    await expect(page.locator('.v120-title')).toBeVisible();
+    const player = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer());
+    expect(player.username).toBe('NormalizeQA');
+    expect(player.xpUntil).toBeUndefined();
+    expect(player.flags.roadV087).toBeUndefined();
+    expect(player.flags.customFlag).toBe(true);
+    expect(player.inventory.customLoot).toBe(7);
+    expect(player.customState).toEqual({ preserved: true });
+  });
+
+  test('traveler record builder preserves identity, starting stats, and merged starting inventory', async ({ page }) => {
+    await openTitle(page);
+    const player = await page.evaluate(() => {
+      const storage = window.LegendStorage;
+      return window.LegendPlayerRecordV094?.create({
+        data: window.LEGEND_DATA,
+        name: 'RecordBuilderQA',
+        gender: { id: 'unspoken', label: 'Keep It Unspoken', pronouns: 'they/them' },
+        personality: { id: 'kind', label: 'Kind-Hearted', bonus: { luck: 1 }, text: 'You notice fear before weakness.' },
+        originId: 'Wandering Cook',
+        classId: 'Ranger',
+        keepsakeId: 'Cooked Ration',
+        baseSkills: storage.baseSkills,
+        normalize: storage.normalize
+      });
+    });
+
+    expect(player).not.toBeNull();
+    expect(player.username).toBe('RecordBuilderQA');
+    expect(player.version).toBe(`v${version}`);
+    expect(player.origin).toBe('Wandering Cook');
+    expect(player.className).toBe('Ranger');
+    expect(player.keepsake).toBe('Cooked Ration');
+    expect(player.hp).toBe(115);
+    expect(player.maxHp).toBe(115);
+    expect(player.gold).toBe(100);
+    expect(player.creationV094.bonuses).toEqual({ luck: 1 });
+    expect(player.inventory.food).toBe(10);
+    expect(player.inventory.potion).toBe(1);
+    expect(player.inventory.camp).toBe(1);
+    expect(player.flags.introV094Complete).toBe(false);
+    expect(player.flags.tutorialStep).toBe('people');
+    expect(player.skills.Woodcutting.level).toBe(1);
+    expect(player.xpUntil).toBeUndefined();
+  });
+
+  test('Ashmere asset helpers preserve item aliases and region-aware presentation', async ({ page }) => {
+    await openTitle(page);
+    const result = await page.evaluate(() => {
+      const assets = window.LegendAssetsV090 || {};
+      const data = window.LEGEND_DATA || {};
+      const helpers = window.LegendAshmereAssetsV099?.create({
+        getAssets: () => assets,
+        getData: () => data,
+        getPlayer: () => ({ currentRegion: 'Greyfen' }),
+        escapeHtml: value => String(value == null ? '' : value).replace(/[&<>'"]/g, character => ({
+          '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;'
+        }[character]))
+      });
+      if (!helpers) return null;
+      return {
+        woodenSword: helpers.itemIcon('woodenSword'),
+        expectedSword: assets.items?.shortSword || assets.items?.pelt || '',
+        unknownItem: helpers.itemIcon('not-a-current-item'),
+        expectedFallback: assets.items?.pelt || '',
+        background: helpers.background(),
+        expectedGreyfenBackground: assets.locations?.greyfenMain || assets.locations?.ashmereMain || 'assets/locations/ashmere/location_ashmere_mainstreet_v1.jpg',
+        roadTokenName: helpers.itemName('roadToken'),
+        expectedRoadTokenName: data.itemNames?.roadToken || 'Road Token',
+        gold: helpers.gold(47)
+      };
+    });
+
+    expect(result).not.toBeNull();
+    expect(result.woodenSword).toBe(result.expectedSword);
+    expect(result.unknownItem).toBe(result.expectedFallback);
+    expect(result.background).toBe(result.expectedGreyfenBackground);
+    expect(result.roadTokenName).toBe(result.expectedRoadTokenName);
+    expect(result.gold).toBe('47g');
+  });
+
   test('title background, wordmark and Awakening sigil load from committed artwork', async ({ page }) => {
     await openTitle(page);
     const backdrop = page.locator('.v120-title-backdrop');
-    const emblem = page.locator('.portal100-emblem-wrap img');
+    const emblem = page.locator('.v136-corner-sigil');
     await expect(backdrop).toHaveAttribute('src', /title-ashmere-road\.webp/);
     await expect.poll(() => backdrop.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     const logo = page.locator('.v120-legend-logo');
@@ -92,7 +241,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.v120-legend-logo')).toBeVisible();
     await expect(page.locator('#legendTitleAccessibleName')).toHaveText('LEGEND: The Awakening');
     await expect(page.locator('.v120-title-hero h2')).toHaveCount(0);
-    await expect(page.locator('.v120-title-hero')).toContainText('Monsters gather beyond the borders');
+    await expect(page.locator('.v120-title-hero')).toContainText('Monsters press against the borders');
     await expect(page.locator('.portal100-brand')).not.toContainText('MONSTER WARS');
     await expect(page.locator('.portal100-traveler')).toHaveCount(0);
     await expect(page.locator('#newPrimary')).toBeVisible();
@@ -101,6 +250,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Ashmere hub avoids duplicate camp shortcuts and keeps destinations as the main focus', async ({ page }) => {
     await startFreshCharacter(page, 'AshmereLayoutQA');
+    expect(await page.evaluate(() => typeof window.LegendAshmereHubV099?.render)).toBe('function');
+    expect(await page.evaluate(() => typeof window.LegendAshmereAssetsV099?.create)).toBe('function');
+    expect(await page.evaluate(() => typeof window.LegendAshmereViewV099?.create)).toBe('function');
     await expect(page.locator('.ash100-town')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Ashmere', exact: true })).toBeVisible();
     await expect(page.locator('.ash100-destination')).toHaveCount(7);
@@ -156,7 +308,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Greyfen hub changes identity and destinations after regional travel', async ({ page }) => {
     await startFreshCharacter(page, 'GreyfenQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.currentRegion='Greyfen';
       pl.discoveredRegions=['Ashmere','Greyfen'];
@@ -175,7 +327,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('A Dry Crossing exposes its tradeoffs and persists the safe-route reward once', async ({ page }) => {
     await startFreshCharacter(page, 'DryCrossingQA');
     const before=await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.currentRegion='Greyfen';
       pl.discoveredRegions=['Ashmere','Greyfen'];
@@ -192,7 +344,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('[data-crossing-choice="posts"]').click();
     await expect(page.getByRole('heading', { name: 'The marker is safe' })).toBeVisible();
     const after=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {gold:Number(pl.gold||0),herbs:Number(pl.inventory.roadHerb||0),complete:Boolean(pl.flags.greyfenDryCrossingComplete)};
     });
     expect(after.gold).toBe(before.gold+35);
@@ -204,10 +356,81 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.ash099-screen')).toContainText('cannot be claimed again');
   });
 
+  test('Dry Crossing risky route penalizes a miss and allows a rewarded retry', async ({ page }) => {
+    await startFreshCharacter(page, 'RiskyCrossingQA');
+    const before = await page.evaluate(() => {
+      const rt = window.LegendRuntimeV120;
+      const pl = rt.loadPlayer();
+      pl.currentRegion = 'Greyfen';
+      pl.discoveredRegions = ['Ashmere', 'Greyfen'];
+      pl.inventory = pl.inventory || {};
+      pl.inventory.roadToken = 5;
+      pl.inventory.roadHerb = 0;
+      pl.gold = 40;
+      pl.hp = 50;
+      rt.savePlayer(pl);
+      window.LegendAshmereV099.renderAshmere();
+      return {
+        hp: Number(pl.hp),
+        gold: Number(pl.gold),
+        herbs: Number(pl.inventory.roadHerb || 0)
+      };
+    });
+
+    await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
+    await expect(page.getByRole('heading', { name: 'A Dry Crossing' })).toBeVisible();
+    await page.evaluate(() => { Math.random = () => 0.9; });
+    await page.locator('[data-crossing-choice="reeds"]').click();
+    await expect(page.getByRole('heading', { name: 'The reeds turn you back' })).toBeVisible();
+
+    const miss = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      return {
+        hp: Number(pl.hp),
+        gold: Number(pl.gold),
+        herbs: Number(pl.inventory.roadHerb || 0),
+        attempts: Number(pl.flags.greyfenCrossingAttempts || 0),
+        complete: Boolean(pl.flags.greyfenDryCrossingComplete),
+        memories: pl.memories || []
+      };
+    });
+    expect(miss.hp).toBe(before.hp - 5);
+    expect(miss.gold).toBe(before.gold);
+    expect(miss.herbs).toBe(before.herbs);
+    expect(miss.attempts).toBe(1);
+    expect(miss.complete).toBe(false);
+    expect(miss.memories.some(memory => /reed bed turned you back from Greyfen/i.test(memory))).toBe(true);
+    await expect(page.locator('.ash099-screen')).toContainText('You may try again');
+
+    await page.locator('#ashBack').click();
+    await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
+    await page.evaluate(() => { Math.random = () => 0.1; });
+    await page.locator('[data-crossing-choice="reeds"]').click();
+    await expect(page.getByRole('heading', { name: 'The shortcut pays off' })).toBeVisible();
+
+    const success = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      return {
+        hp: Number(pl.hp),
+        gold: Number(pl.gold),
+        herbs: Number(pl.inventory.roadHerb || 0),
+        attempts: Number(pl.flags.greyfenCrossingAttempts || 0),
+        complete: Boolean(pl.flags.greyfenDryCrossingComplete),
+        memories: pl.memories || []
+      };
+    });
+    expect(success.hp).toBe(miss.hp);
+    expect(success.gold).toBe(before.gold + 65);
+    expect(success.herbs).toBe(before.herbs + 2);
+    expect(success.attempts).toBe(2);
+    expect(success.complete).toBe(true);
+    expect(success.memories.some(memory => /recovered Greyfen.*through the reed bed/i.test(memory))).toBe(true);
+  });
+
   test('Continue Journey returns to the saved playable region', async ({ page }) => {
     await startFreshCharacter(page, 'RegionResumeQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.currentRegion='Greyfen';
       pl.discoveredRegions=['Ashmere','Greyfen'];
@@ -218,14 +441,14 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('#continue')).toContainText('Return to Greyfen');
     await page.locator('#continue').click();
     await expect(page.locator('.ash100-town-greyfen')).toBeVisible();
-    const region=await page.evaluate(() => window.LegendRuntimeV080.loadPlayer().currentRegion);
+    const region=await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().currentRegion);
     expect(region).toBe('Greyfen');
   });
 
   test('Greyfen work board offers lowland-specific contracts', async ({ page }) => {
     await startFreshCharacter(page, 'GreyfenWorkQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.currentRegion='Greyfen';
       pl.discoveredRegions=['Ashmere','Greyfen'];
@@ -248,7 +471,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Greyfen uses its own local scene and keeper dialogue', async ({ page }) => {
     await startFreshCharacter(page, 'GreyfenKeepersQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.currentRegion='Greyfen';
       pl.discoveredRegions=['Ashmere','Greyfen'];
@@ -269,7 +492,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Greyfen route board avoids starting the Ashmere Old Road expedition', async ({ page }) => {
     await startFreshCharacter(page, 'GreyfenRoutesQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.currentRegion='Greyfen';
       pl.discoveredRegions=['Ashmere','Greyfen'];
@@ -322,7 +545,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('regional unlocks enforce Greyfen before Ironpass even with surplus tokens', async ({ page }) => {
     await startFreshCharacter(page, 'RegionOrderQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.inventory=pl.inventory||{};
       pl.inventory.roadToken=50;
@@ -332,14 +555,14 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.getByRole('heading', { name: 'Roads & Regions' })).toBeVisible();
     const greyfen=page.locator('.reg100-card').filter({ has: page.getByRole('heading', { name: 'Greyfen', exact: true }) });
     const ironpass=page.locator('.reg100-card').filter({ has: page.getByRole('heading', { name: 'Ironpass', exact: true }) });
-    await expect(greyfen.locator('.reg100-card-scene img')).toHaveAttribute('src', /greyfen-marsh-walkway\\.webp/);
+    await expect(greyfen.locator('.reg100-card-scene img')).toHaveAttribute('src', /greyfen-marsh-walkway\.webp/);
     await expect.poll(() => greyfen.locator('.reg100-card-scene img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     await expect(greyfen.locator('[data-unlock="Greyfen"]')).toBeVisible();
     await expect(ironpass).toContainText('Requires Greyfen first');
     await expect(ironpass.locator('[data-unlock="Ironpass"]')).toHaveCount(0);
     let state=await page.evaluate(() => {
       window.LegendRegionsV100.unlock('Ironpass');
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {currentRegion:pl.currentRegion,known:pl.discoveredRegions,tokens:pl.inventory.roadToken};
     });
     expect(state.currentRegion).toBe('Ashmere');
@@ -351,7 +574,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(ironpass.locator('[data-unlock="Ironpass"]')).toHaveCount(0);
     state=await page.evaluate(() => {
       window.LegendRegionsV100.unlock('Ironpass');
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {currentRegion:pl.currentRegion,known:pl.discoveredRegions,tokens:pl.inventory.roadToken};
     });
     expect(state.currentRegion).toBe('Greyfen');
@@ -360,7 +583,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(state.tokens).toBe(45);
 
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.flags=pl.flags||{};
       pl.flags.greyfenDryCrossingComplete=true;
@@ -407,7 +630,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('town job awards gold, favor, and progression XP', async ({ page }) => {
     await startFreshCharacter(page, 'JobQA');
     await page.evaluate(() => {
-      const rt = window.LegendRuntimeV080;
+      const rt = window.LegendRuntimeV120;
       const pl = rt.loadPlayer();
       pl.xp = 95;
       rt.savePlayer(pl);
@@ -453,7 +676,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'BattleQA');
     // Prime pressure so the first advance deterministically triggers combat.
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080, pl=rt.loadPlayer();
+      const rt=window.LegendRuntimeV120, pl=rt.loadPlayer();
       pl.flags=pl.flags||{};
       pl.flags.roadExpeditionV100={...(pl.flags.roadExpeditionV100||{}),stage:0,pressure:53,trips:0,events:0,finds:0,battles:0};
       rt.savePlayer(pl);
@@ -514,7 +737,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.ash099-contract-card')).toHaveCount(4);
     await page.locator('[data-contract-accept="watchlightSurvey"]').click();
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;const pl=rt.loadPlayer();
+      const rt=window.LegendRuntimeV120;const pl=rt.loadPlayer();
       pl.stats=pl.stats||{};pl.stats.pointsOfInterest=Number(pl.stats.pointsOfInterest||0)+1;rt.savePlayer(pl);
     });
     await page.locator('#ashBack').click();
@@ -523,7 +746,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('[data-contract-turnin="watchlightSurvey"]')).toBeVisible();
     await page.locator('[data-contract-turnin="watchlightSurvey"]').click();
     await expect(page.locator('.ash099-contract-completed')).toContainText(/Recorded in Journal/i);
-    const result=await page.evaluate(()=>{const pl=window.LegendRuntimeV080.loadPlayer();return {completed:pl.stats.sideContractsCompleted,food:pl.inventory.food};});
+    const result=await page.evaluate(()=>{const pl=window.LegendRuntimeV120.loadPlayer();return {completed:pl.stats.sideContractsCompleted,food:pl.inventory.food};});
     expect(result.completed).toBe(1);
     await page.reload();
   });
@@ -587,7 +810,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.getByRole('button', { name: /The Old Road/i }).click();
     await page.locator('#routeRidge').click();
     await page.evaluate(() => {
-      const rt = window.LegendRuntimeV080;
+      const rt = window.LegendRuntimeV120;
       const pl = rt.loadPlayer();
       const state = pl.flags.roadExpeditionV100;
       state.stage = 5;
@@ -601,7 +824,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('#outcomeReturn').click();
 
     let firstReturn = await page.evaluate(() => {
-      const pl = window.LegendRuntimeV080.loadPlayer();
+      const pl = window.LegendRuntimeV120.loadPlayer();
       return {
         seen: pl.flags.firstRoadReturnSeen,
         route: pl.flags.firstRoadReturnRoute,
@@ -617,7 +840,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
     await expect(page.locator('.ash099-lines')).toContainText(/Ridgeway Cairn marks a dry line/i);
     let afterMara = await page.evaluate(() => {
-      const pl = window.LegendRuntimeV080.loadPlayer();
+      const pl = window.LegendRuntimeV120.loadPlayer();
       return {
         briefed: pl.flags.firstRoadReturnMaraBriefed,
         objective: pl.questLog.find(item => item.startsWith('The Bell That Rang Once:'))
@@ -634,7 +857,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       !el.classList.contains('is-covering') && !el.classList.contains('is-revealing')
     )).toBe(true);
     await page.evaluate(() => {
-      const rt = window.LegendRuntimeV080;
+      const rt = window.LegendRuntimeV120;
       const pl = rt.loadPlayer();
       const state = pl.flags.roadExpeditionV100;
       state.stage = 3;
@@ -647,14 +870,14 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(stageThreeScene).toHaveCount(1);
     await expect(stageThreeScene).toBeVisible();
     const savedStageBeforeClue = await page.evaluate(() =>
-      window.LegendRuntimeV080.loadPlayer().flags.roadExpeditionV100.stage
+      window.LegendRuntimeV120.loadPlayer().flags.roadExpeditionV100.stage
     );
     expect(savedStageBeforeClue).toBe(3);
     await stageThreeScene.locator('.exp100-hotspot-find').click();
     const blackrootClue = page.locator('.exp100-discovery-beat');
     await expect(blackrootClue).toContainText(/Roots Around an Old Seal/i);
     const clueState = await page.evaluate(() => ({
-      stage: window.LegendRuntimeV080.loadPlayer().flags.roadExpeditionV100.stage,
+      stage: window.LegendRuntimeV120.loadPlayer().flags.roadExpeditionV100.stage,
       sceneStage: document.querySelector('.exp100-scene-live')?.dataset.stage,
       title: document.querySelector('.exp100-discovery-beat strong')?.textContent
     }));
@@ -664,7 +887,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('#poiInspect').click();
 
     let sealReport = await page.evaluate(() => {
-      const pl = window.LegendRuntimeV080.loadPlayer();
+      const pl = window.LegendRuntimeV120.loadPlayer();
       return {
         searched: pl.flags.bellRoadSearched,
         memory: pl.memories.some(item => /Blackroot Bend.*bell-mark/i.test(item)),
@@ -676,7 +899,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(sealReport.objective).toMatch(/Return to Mara/i);
 
     await page.evaluate(() => {
-      const rt = window.LegendRuntimeV080;
+      const rt = window.LegendRuntimeV120;
       const pl = rt.loadPlayer();
       pl.flags.roadExpeditionV100.stage = 5;
       rt.savePlayer(pl);
@@ -686,7 +909,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('#outcomeReturn').click();
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
     await expect(page.locator('.ash099-lines')).toContainText(/Blackroot seal bears the same bell-mark/i);
-    const nextObjective = await page.evaluate(() => window.LegendRuntimeV080.loadPlayer().questLog.find(item => item.startsWith('The Bell That Rang Once:')));
+    const nextObjective = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().questLog.find(item => item.startsWith('The Bell That Rang Once:')));
     expect(nextObjective).toMatch(/Greyfen.*boundary marks/i);
   });
 
@@ -696,7 +919,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.getByRole('button', { name: /The Old Road/i }).click();
     await page.locator('#routeReeds').click();
     await page.evaluate(() => {
-      const rt = window.LegendRuntimeV080;
+      const rt = window.LegendRuntimeV120;
       const pl = rt.loadPlayer();
       const state = pl.flags.roadExpeditionV100;
       state.stage = 5;
@@ -711,7 +934,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
     await expect(page.locator('.ash099-lines')).toContainText(/Bell Fragment is physical evidence/i);
     const result = await page.evaluate(() => {
-      const pl = window.LegendRuntimeV080.loadPlayer();
+      const pl = window.LegendRuntimeV120.loadPlayer();
       return {
         route: pl.flags.firstRoadReturnRoute,
         discovery: pl.flags.firstRoadReturnDiscovery,
@@ -743,7 +966,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.exp100-head')).toContainText(/You sketch the stone as it stands/i);
 
     const choice = await page.evaluate(() => {
-      const pl = window.LegendRuntimeV080.loadPlayer();
+      const pl = window.LegendRuntimeV120.loadPlayer();
       return {
         decision: pl.flags.sideContracts.movedCairn.decision,
         memory: pl.memories.some(m => /recorded both the shifted stone/i.test(m))
@@ -757,7 +980,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('[data-contract-turnin="movedCairn"]').click();
     await expect(page.locator('.ash099-contract-completed')).toContainText(/Recorded in Journal/i);
     const turnedIn = await page.evaluate(() => {
-      const pl = window.LegendRuntimeV080.loadPlayer();
+      const pl = window.LegendRuntimeV120.loadPlayer();
       return {
         outcome: pl.flags.highRidgeCairnOutcome,
         complete: pl.flags.sideContracts.movedCairn.complete,
@@ -771,7 +994,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.reload();
     await expect(page.locator('.v120-title')).toBeVisible();
     const persisted = await page.evaluate(() => {
-      const pl = window.LegendRuntimeV080.loadPlayer();
+      const pl = window.LegendRuntimeV120.loadPlayer();
       return {
         outcome: pl.flags.highRidgeCairnOutcome,
         complete: pl.flags.sideContracts.movedCairn.complete,
@@ -797,7 +1020,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Blackroot evidence advances through the Greyfen boundary stone and Mara’s archive', async ({ page }) => {
     await startFreshCharacter(page, 'GreyfenEvidenceQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.flags=pl.flags||{};
       pl.flags.firstRoadReturnSeen=true;
@@ -813,7 +1036,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.exp100-discovery-beat')).toContainText(/same bell-mark from Blackroot/i);
     await page.locator('#poiInspect').click();
     const fieldEvidence=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {
         compared:pl.flags.greyfenBoundaryCompared,
         memory:pl.memories.some(m=>/Greyfen Approach.*bell-mark.*Blackroot Bend/i.test(m)),
@@ -825,11 +1048,11 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(fieldEvidence.objective).toMatch(/Greyfen.*Boundary Archive/i);
 
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
-    const ashmereObjective = await page.evaluate(() => window.LegendRuntimeV080.loadPlayer().questLog.find(q=>q.startsWith('The Bell That Rang Once:')));
+    const ashmereObjective = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().questLog.find(q=>q.startsWith('The Bell That Rang Once:')));
     expect(ashmereObjective).toMatch(/Greyfen.*Boundary Archive/i);
 
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.currentRegion='Greyfen';
       pl.discoveredRegions=['Ashmere','Greyfen'];
@@ -838,7 +1061,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
     await expect(page.locator('.ash099-lines')).toContainText(/Blackroot mark appears beneath the newer cut/i);
     const archiveRecord=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {
         read:pl.flags.greyfenArchiveRead,
         objective:pl.questLog.find(q=>q.startsWith('The Bell That Rang Once:')),
@@ -853,7 +1076,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Greyfen archive lead reveals a dated Reedwatch note and Brenn advances the ledger investigation', async ({ page }) => {
     await startFreshCharacter(page, 'GreyfenFieldNoteQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.flags=pl.flags||{};
       pl.flags.greyfenArchiveRead=true;
@@ -868,7 +1091,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.exp100-discovery-beat')).toContainText(/two days after Greyfen logged the flood/i);
     await page.locator('#poiInspect').click();
     const fieldNote=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {
         found:pl.flags.greyfenFieldNoteFound,
         memory:pl.memories.some(m=>/Reedwatch Shelter.*field note dated two days/i.test(m)),
@@ -880,7 +1103,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(fieldNote.objective).toMatch(/Bring the dated Reedwatch field note/i);
 
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.currentRegion='Greyfen';
       pl.discoveredRegions=['Ashmere','Greyfen'];
@@ -889,7 +1112,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
     await expect(page.locator('.ash099-lines')).toContainText(/field note is dated two days after Greyfen logged the flood/i);
     const maraReport=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {
         reported:pl.flags.greyfenFieldNoteReported,
         objective:pl.questLog.find(q=>q.startsWith('The Bell That Rang Once:'))
@@ -901,7 +1124,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.evaluate(() => window.LegendAshmereV099.route('brenn'));
     await expect(page.locator('.ash099-lines')).toContainText(/destinations were overwritten in a later hand/i);
     const brennReport=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {
         compared:pl.flags.greyfenLedgerCompared,
         objective:pl.questLog.find(q=>q.startsWith('The Bell That Rang Once:'))
@@ -914,7 +1137,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Earlier weekly route return completes the Greyfen evidence filing and leaves a clear next lead', async ({ page }) => {
     await startFreshCharacter(page, 'GreyfenWeeklyReturnQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.flags=pl.flags||{};
       pl.flags.greyfenLedgerCompared=true;
@@ -929,7 +1152,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.exp100-discovery-beat')).toContainText(/CLOSED pending inspection/i);
     await page.locator('#poiInspect').click();
     const recovered=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {
         found:pl.flags.greyfenWeeklyReturnFound,
         memory:pl.memories.some(m=>/earlier weekly route return.*CLOSED pending inspection/i.test(m)),
@@ -941,7 +1164,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(recovered.objective).toMatch(/Bring the earlier weekly route return/i);
 
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.currentRegion='Greyfen';
       pl.discoveredRegions=['Ashmere','Greyfen'];
@@ -950,7 +1173,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
     await expect(page.locator('.ash099-lines')).toContainText(/lower crossing is clearly marked CLOSED pending inspection/i);
     const brenn=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {
         reported:pl.flags.greyfenWeeklyReturnReported,
         objective:pl.questLog.find(q=>q.startsWith('The Bell That Rang Once:'))
@@ -962,7 +1185,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
     await expect(page.locator('.ash099-lines')).toContainText(/field note, the crossing ledger, and the earlier weekly return are now preserved together/i);
     const filed=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {
         evidenceFiled:pl.flags.greyfenEvidenceFiled,
         memory:pl.memories.some(m=>/Mara filed the Blackroot seal.*weekly route return/i.test(m)),
@@ -975,7 +1198,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
     await page.reload();
     const persisted=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {
         weeklyReturnFound:pl.flags.greyfenWeeklyReturnFound,
         evidenceFiled:pl.flags.greyfenEvidenceFiled,
@@ -990,7 +1213,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Wisp Lantern Wick uses a Bell Fragment and reduces opening Road Pressure once', async ({ page }) => {
     await startFreshCharacter(page, 'LanternWickQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.inventory=pl.inventory||{};
       pl.inventory.bellFragment=1;
@@ -1005,7 +1228,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(wickRecipe).toBeEnabled();
     await expect(wickRecipe).toContainText(/1 Bell Fragment/i);
     await wickRecipe.click();
-    let inventory=await page.evaluate(() => window.LegendRuntimeV080.loadPlayer().inventory);
+    let inventory=await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().inventory);
     expect(inventory.bellFragment).toBe(0);
     expect(inventory.oil).toBe(0);
     expect(inventory.wispLanternWick).toBe(1);
@@ -1015,7 +1238,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.exp100-head')).toBeVisible();
     await expect(page.locator('.exp100-head')).toContainText(/opening Road Pressure rises by only 3 instead of 8/i);
     const after=await page.evaluate(() => {
-      const pl=window.LegendRuntimeV080.loadPlayer();
+      const pl=window.LegendRuntimeV120.loadPlayer();
       return {pressure:pl.flags.roadExpeditionV100.pressure,wick:Number(pl.inventory.wispLanternWick||0)};
     });
     expect(after.pressure).toBe(3);
@@ -1051,14 +1274,17 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Ashmere navigation and destination symbols use local SVG sprite artwork', async ({ page }) => {
     await startFreshCharacter(page, 'IconArtQA');
-    const icons = page.locator('.ash100-destinations .ash100-destination-icon .ash099-icon svg');
-    await expect(icons.first()).toBeVisible();
-    await expect(icons).toHaveCount(7);
+    const destinationIcons = page.locator('.ash100-destinations .ash100-destination-icon');
+    await expect(destinationIcons).toHaveCount(7);
+    const spriteIcons = page.locator('.ash100-destinations .ash100-destination-icon .ash099-icon svg');
+    await expect(spriteIcons.first()).toBeVisible();
+    await expect(spriteIcons).toHaveCount(4);
     const iconReferences = await page.locator('.ash100-destinations .ash100-destination-icon .ash099-icon svg use').evaluateAll(nodes =>
       nodes.map(node => node.getAttribute('href') || node.getAttribute('xlink:href') || '')
     );
-    expect(iconReferences).toHaveLength(7);
+    expect(iconReferences).toHaveLength(4);
     expect(iconReferences.every(ref => ref.startsWith('assets/ui/icons/legend-ui-icons-v1.svg#icon-'))).toBe(true);
+    await expect(page.locator('.ash100-destinations .ash100-destination-icon .ash099-region-shop-icon img')).toHaveCount(3);
   });
 
   test('Trading Post uses Buy and Sell tabs with illustrated goods', async ({ page }) => {
@@ -1086,7 +1312,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Secured expedition has a direct Return to Ashmere action', async ({ page }) => {
     await startFreshCharacter(page, 'ReturnFromRoadQA');
     await page.evaluate(() => {
-      const rt=window.LegendRuntimeV080;
+      const rt=window.LegendRuntimeV120;
       const pl=rt.loadPlayer();
       pl.flags=pl.flags||{};
       pl.flags.roadExpeditionV100={stage:5,pressure:20,trips:1,events:0,finds:0,battles:0};
@@ -1138,7 +1364,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect.poll(() => page.evaluate(() => Array.from(document.styleSheets).some(s => (s.href || '').includes('title-cinematic-v120.css')))).toBe(true);
     const title = page.locator('.title-v100 .v120-title-hero');
     await expect(title).toBeVisible();
-    await expect(title.locator('h1')).toHaveText('LEGEND');
+    await expect(title.locator('h1')).toHaveText('LEGEND: The Awakening');
   });
 
 });

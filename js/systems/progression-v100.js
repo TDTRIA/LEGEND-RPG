@@ -1,5 +1,18 @@
 // LEGEND v0.16.0 - compact save-compatible character progression
 (() => {
+  function status(player) {
+    if (!player) return {level:1,xp:0,next:100,progressPercent:0};
+    const level = Math.max(1, Math.floor(Number(player.level || 1)));
+    const xp = Math.max(0, Number(player.xp || 0));
+    const next = level * 100;
+    return {
+      level,
+      xp,
+      next,
+      progressPercent:Math.max(0, Math.min(100, Math.round(xp / Math.max(1, next) * 100)))
+    };
+  }
+
   function award(player, amount) {
     if (!player) return {gained:0,levels:0,level:1,xp:0,next:100};
     player.level = Math.max(1, Math.floor(Number(player.level || 1)));
@@ -16,5 +29,5 @@
     }
     return {gained, levels, level:player.level, xp:player.xp, next:player.level * 100};
   }
-  window.LegendProgressionV100 = {award};
+  window.LegendProgressionV100 = Object.freeze({award, status});
 })();

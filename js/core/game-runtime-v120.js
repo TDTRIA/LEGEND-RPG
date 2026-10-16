@@ -1,23 +1,15 @@
-// LEGEND v0.9.9 - Runtime Bridge
+// LEGEND v0.20.36 - Active Game Runtime
 // Safe bridge for loading saves, returning to Ashmere, and avoiding title-loop reloads.
 (() => {
-  const SAVE_KEY = 'legend-recovered-build-v06';
-  const OLD_KEYS = ['legend-recovered-build-v051','legend-recovered-build-v05','legend-recovered-build-v041','legend-recovered-build-v04','legend-recovered-build-v03','legend-recovered-build-v02'];
-  const RETURN_KEY = 'legend-v080-return-ashmere';
+  const RETURN_KEY = 'legend-awakening-return-to-town-v1';
 
   function loadPlayer(){
-    const storage = window.LegendStorage;
-    if(storage && typeof storage.loadPlayer === 'function') return storage.loadPlayer();
-    const raw = localStorage.getItem(SAVE_KEY) || OLD_KEYS.map(k => localStorage.getItem(k)).find(Boolean);
-    if(!raw) return null;
-    try{return JSON.parse(raw)}catch{return null}
+    return window.LegendStorage?.loadPlayer?.() || null;
   }
 
   function savePlayer(player){
     if(!player) return;
-    const storage = window.LegendStorage;
-    if(storage && typeof storage.savePlayer === 'function') storage.savePlayer(player);
-    else localStorage.setItem(SAVE_KEY, JSON.stringify(player));
+    window.LegendStorage?.savePlayer?.(player);
   }
 
   function isContinueButton(el){
@@ -47,11 +39,6 @@
     savePlayer(player);
     if(window.LegendAshmereV099?.renderAshmere){
       window.LegendAshmereV099.renderAshmere();
-      sessionStorage.removeItem(RETURN_KEY);
-      return true;
-    }
-    if(window.LegendTownControllerV080?.renderTown){
-      window.LegendTownControllerV080.renderTown('ashmere');
       sessionStorage.removeItem(RETURN_KEY);
       return true;
     }
@@ -85,8 +72,8 @@
 
   function onRender(fn){
     const run = () => {
-      try{ fn(); }catch(err){ console.warn('LegendRuntimeV080 render hook failed:', err); }
-      try{ handlePendingReturn(); }catch(err){ console.warn('LegendRuntimeV080 return hook failed:', err); }
+      try{ fn(); }catch(err){ console.warn('LegendRuntimeV120 render hook failed:', err); }
+      try{ handlePendingReturn(); }catch(err){ console.warn('LegendRuntimeV120 return hook failed:', err); }
     };
     if(document.readyState === 'loading'){
       document.addEventListener('DOMContentLoaded', () => {
@@ -106,5 +93,5 @@
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoResumePendingReturn);
   else autoResumePendingReturn();
 
-  window.LegendRuntimeV080 = { SAVE_KEY, loadPlayer, savePlayer, returnToAshmere, continueFromTitle, handlePendingReturn, onRender };
+  window.LegendRuntimeV120 = { loadPlayer, savePlayer, returnToAshmere, continueFromTitle, handlePendingReturn, onRender };
 })();
