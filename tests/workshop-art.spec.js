@@ -81,7 +81,38 @@ test('Crafting Bench shows ingredients, recipe feedback, and armor comparisons',
   await page.locator('[data-forge-tab="craft"]').click();
   await expect(page.locator('.ash099-craft-card')).toHaveCount(6);
   await expect(page.locator('.ash099-craft-ingredient img').first()).toBeVisible();
+  const beforeCraft = await page.evaluate(() => {
+    const pl = window.LegendRuntimeV080.loadPlayer();
+    return {
+      herbs: Number(pl.inventory?.roadHerb || 0),
+      cloth: Number(pl.inventory?.clothScrap || 0),
+      poultices: Number(pl.inventory?.roadPoultice || 0)
+    };
+  });
   await page.locator('[data-craft="roadPoultice"]').click();
   await expect(page.locator('.ash099-craft-feedback')).toContainText('Crafted Road Poultice');
+  const afterCraft = await page.evaluate(() => {
+    const pl = window.LegendRuntimeV080.loadPlayer();
+    return {
+      herbs: Number(pl.inventory?.roadHerb || 0),
+      cloth: Number(pl.inventory?.clothScrap || 0),
+      poultices: Number(pl.inventory?.roadPoultice || 0)
+    };
+  });
+  expect(afterCraft.herbs).toBe(beforeCraft.herbs - 2);
+  expect(afterCraft.cloth).toBe(beforeCraft.cloth - 1);
+  expect(afterCraft.poultices).toBe(beforeCraft.poultices + 1);
+
+  // An exhausted ingredient must disable the recipe instead of allowing a
+  // free second craft from a stale workshop view.
+  await page.evaluate(() => {
+    const rt = window.LegendRuntimeV080, pl = rt.loadPlayer();
+    pl.inventory.roadHerb = 0;
+    rt.savePlayer(pl);
+  });
+  await page.locator('#ashBack').click();
+  await page.locator('.ash100-destination').filter({ hasText: /Forge & Workshop/ }).click();
+  await page.locator('[data-forge-tab="craft"]').click();
+  await expect(page.locator('[data-craft="roadPoultice"]')).toBeDisabled();
   expect(errors).toEqual([]);
 });

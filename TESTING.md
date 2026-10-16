@@ -36,12 +36,12 @@ This is the working inventory of critical coverage, not a claim that every row i
 | Character creation | valid character reaches Ashmere; blank name rejected; choices persist | Existing journey coverage; broaden combinations |
 | Regional hubs | Ashmere/Greyfen identity, destinations, regional services and routes | Existing targeted coverage; verify genuine travel journey |
 | Road/expedition | route choice, event outcomes, discovery, return to town | Partial; add full start-to-return journey |
-| Combat | Attack, Guard, class move, enemy turn, health/resources, victory/defeat and rewards | Victory progression/reward now asserted; defeat and resource-use edge cases remain |
+| Combat | Attack, Guard, class move, enemy turn, health/resources, victory/defeat and rewards | Victory reward is asserted; draft PR #24 adds potion accounting and defeat/recovery with no-loot checks (expanded CI pending); class-technique cooldown edges remain |
 | Quests/contracts | accept, objectives, turn-in, rewards, duplicate turn-in prevention | One contract's turn-in and reload persistence verified; broaden contract types and duplicate-attempt checks |
 | Inventory/equipment | gain, consume, buy, sell, equip, unequip and resource accounting | Market buy/sell and weapon purchase/equip transactions asserted; consumables and unequip remain |
-| Crafting/workshops | valid and invalid recipes, materials consumed, outputs granted | Partial; cover success and insufficient-material cases |
-| Saves/continue | reload, continue, region/quest/inventory state survives | Partial; cover broader persisted state |
-| Errors/assets | uncaught exceptions, failed first-party assets, missing registered assets | Partial; introduce shared error/asset assertions carefully |
+| Crafting/workshops | valid and invalid recipes, materials consumed, outputs granted | Exact Road Poultice ingredient/output accounting and insufficient-ingredient disabling passed in workflow #1343; broader recipe/save coverage remains |
+| Saves/continue | reload, continue, region/quest/inventory state survives | Existing continue/contract persistence coverage; draft PR #24 adds full page reload checks for loadout, inventory, journal and progression (expanded CI pending) |
+| Errors/assets | uncaught exceptions, failed first-party assets, missing registered assets | Draft PR #24 adds a shared uncaught-page-error assertion to all production smoke regressions (workflow #1399 pending); failed-request/asset monitoring remains partial |
 | Responsive/accessibility | overflow, reachable touch controls, dialog focus and keyboard close | Existing smoke checks; expand key gameplay screens |
 | Browser compatibility | critical journeys in Chromium, Firefox and WebKit | Default matrix is intentionally reduced; schedule/run full matrix |
 | Live deployment | published version/assets match expected release; core journeys work | Separate gated workflow; verify latest run status |

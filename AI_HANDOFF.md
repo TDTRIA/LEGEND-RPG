@@ -7,15 +7,11 @@ Story decisions made by the owner are recorded in [`docs/CANON.md`](docs/CANON.m
 
 ## Active engineering refactor — 2026-10-16
 
-The Playwright foundation is on `refactor/playwright-playtester` (PR #18); workflow #1238 passed 68 tests with one intentionally skipped live-deployment test. Do not merge without owner review.
+The Playwright foundation is on `refactor/playwright-playtester` (draft PR #18). Follow-on draft PRs #20 (audio), #21 (combat service), and #22 (narrative/POI data) are stacked to preserve reviewable boundaries and existing public APIs. Their recorded default-suite runs #1238, #1271, #1288, and #1317 each passed **68 tests, 0 failures, 1 skipped**; the skipped check is the live GitHub Pages smoke test, which is deliberately gated to `main`. Workflow #1317 validated the narrative/POI extraction after a missing service initialization was corrected.
 
-Follow-on branch `refactor/game-audio-service` (draft PR #20) extracts Old Road sound preference, synthesized UI tones, battle effects, and battle-music lifecycle into `js/systems/audio-v100.js`. Workflow #1271 passed 68 tests, 0 failures, 1 skipped (live deployment).
+Draft PR #24, branch `refactor/gameplay-regression-coverage`, builds on #22 to strengthen gameplay behavior assertions. Workflow #1343 passed the crafting resource-accounting assertions (68 passed, 0 failed, 1 skipped). Added checks now cover healing-potion accounting, defeat/recovery with no victory loot, full reload persistence for loadout/inventory/journal/progression, and a shared guard that fails production smoke regressions on uncaught browser exceptions. Workflow [#1399 / run 38951784042](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/38951784042) is validating these expanded checks; don't treat them as verified until it finishes.
 
-Branch `refactor/game-combat-service` (draft PR #21, stacked on audio) extracts combat presentation, action resolution, enemy intent, class techniques, and victory rewards into `js/systems/combat-v100.js`. Workflow #1288 passed 68 tests, 0 failures, 1 skipped (live deployment).
-
-Current branch `refactor/narrative-poi-data` (draft PR #22, stacked on combat) extracts stage descriptions and contextual POI definitions into `js/systems/narrative-poi-v100.js`. State changes, rewards, persistence, and discovery interactions remain in the road controller. Workflow #1317 is pending; do not treat this slice as validated until it completes. The first implementation check caught and fixed a missing service initialization before this run.
-
-Keep slices isolated and regression-tested. Next candidates after POI data are town economy/crafting boundaries and the remaining narrative mutation handlers. Preserve save compatibility, current public controller APIs, and PR dependency order. Do not merge stacked PRs out of order. Live GitHub Pages validation remains separate and is not claimed by these branch runs.
+Keep slices isolated and regression-tested. Preserve save compatibility, current public controller APIs, and PR dependency order. Do not merge stacked PRs out of order. Live GitHub Pages validation remains separate and is not claimed by these branch runs.
 
 ## Production title refresh — v0.20.36 (branch work; not deployed)
 
