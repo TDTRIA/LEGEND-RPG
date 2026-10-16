@@ -5,6 +5,18 @@ Last updated: 2026-10-16. Read this file before changing code, and update it whe
 ## Canon — read first
 Story decisions made by the owner are recorded in [`docs/CANON.md`](docs/CANON.md). **If another document disagrees with a LOCKED item there, CANON.md wins.** Assistants may propose and draft story options but never lock a decision themselves, and must ask the owner before changing a locked item. As of 2026-10-16 the owner has locked: (L1) the Hollow Saint and the Last Mercy as the deepest threat, and (L2) the Greyfen crossing records were altered because of trade pressure, and (L3) the Landing Warden reopened the lower crossing, unsigned, under merchant pressure, and (L4) the traveler is an echo touched by the Veil before the Last Mercy could finish making them, who does not know it (hidden knowledge: do not state or imply it in dialogue or UI until the owner approves a reveal plan). Where older sections below call these "proposals only," CANON.md supersedes them for all four locked items; locked is still not implemented, so keep the implementation-plan and verification rules in this file.
 
+## Active engineering refactor — 2026-10-16
+
+The Playwright foundation is on branch `refactor/playwright-playtester` (PR #18) and its latest CI run passed 68 tests with one intentionally skipped live-deployment test. Do not merge it without owner review.
+
+A follow-on branch, `refactor/game-audio-service`, is based on that branch and begins the gameplay-controller refactor with a bounded extraction:
+- `js/systems/audio-v100.js` owns the Old Road sound preference, synthesized UI tones, battle effects, and battle-music lifecycle.
+- `js/systems/road-controller-v100.js` delegates to `window.LegendAudioV100` rather than owning those audio implementations.
+- `index.html` loads the service before the Old Road controller.
+- Playwright asserts the service API is available; CI syntax-checks it and runs on `refactor/**` pushes.
+
+At handoff time, the latest audio-refactor CI run is still in progress. Treat the extraction as **unverified until that run finishes**. Keep this slice isolated; do not split combat or change game rules until the current regression run is understood. Next architectural candidate after validation: isolate combat logic from the 654-line Old Road controller, preserving its public controller API and save-state behavior.
+
 ## Production title refresh — v0.20.36 (branch work; not deployed)
 
 The current product title is **LEGEND: The Awakening**. The former visible subtitle **“The Unquiet Road” is retired**; the Old Road remains a location and travel route, not the product subtitle. The active creative direction is **Monster Wars & the Awakening**, governed by `docs/CANON.md`, which locks L1 (Hollow Saint / Last Mercy as the deepest threat), L2 (trade pressure drove the Greyfen crossing alteration), L3 (the Landing Warden reopened the lower crossing unsigned under merchant pressure), and L4 (the traveler is an echo left by the Last Mercy, touched by the Veil before the ritual finished making them; this is hidden truth that must not be stated or implied in dialogue or UI until an owner-approved reveal plan exists).

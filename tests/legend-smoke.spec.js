@@ -1207,8 +1207,15 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(box.height).toBeGreaterThanOrEqual(40);
   });
 
-  test('cinematic title layer and road transition controller load', async ({ page }) => {
+  test('cinematic title, road transitions, and audio service load', async ({ page }) => {
     await openTitle(page);
+    await expect.poll(() => page.evaluate(() => (
+      typeof window.LegendAudioV100?.soundOn === 'function' &&
+      typeof window.LegendAudioV100?.tone === 'function' &&
+      typeof window.LegendAudioV100?.playBattleFx === 'function' &&
+      typeof window.LegendAudioV100?.startBattleMusic === 'function' &&
+      typeof window.LegendAudioV100?.stopBattleMusic === 'function'
+    ))).toBe(true);
     await expect.poll(() => page.evaluate(() => Boolean(window.__legendSceneTransitionsV120))).toBe(true);
     await expect.poll(() => page.evaluate(() => Array.from(document.styleSheets).some(s => (s.href || '').includes('title-cinematic-v120.css')))).toBe(true);
     const title = page.locator('.title-v100 .v120-title-hero');
