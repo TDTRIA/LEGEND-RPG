@@ -1207,7 +1207,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(box.height).toBeGreaterThanOrEqual(40);
   });
 
-  test('cinematic title, road transitions, and audio service load', async ({ page }) => {
+  test('title, road transitions, audio, combat, and narrative services load', async ({ page }) => {
     await openTitle(page);
     await expect.poll(() => page.evaluate(() => (
       typeof window.LegendAudioV100?.soundOn === 'function' &&
@@ -1215,8 +1215,21 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       typeof window.LegendAudioV100?.playBattleFx === 'function' &&
       typeof window.LegendAudioV100?.startBattleMusic === 'function' &&
       typeof window.LegendAudioV100?.stopBattleMusic === 'function' &&
-      typeof window.LegendCombatV100?.create === 'function'
+      typeof window.LegendCombatV100?.create === 'function' &&
+      typeof window.LegendNarrativePoiV100?.create === 'function'
     ))).toBe(true);
+    const narrativeData = await page.evaluate(() => {
+      const service = window.LegendNarrativePoiV100.create({
+        p: () => ({ flags: {} }),
+        ensure: () => ({}),
+        clamp: (value, min, max) => Math.min(max, Math.max(min, value))
+      });
+      return {
+        area: service.areaForStage(0).name,
+        poi: service.pointOfInterest(0).key
+      };
+    });
+    expect(narrativeData).toEqual({ area: 'South Fork', poi: 'fork-marker' });
     await expect.poll(() => page.evaluate(() => Boolean(window.__legendSceneTransitionsV120))).toBe(true);
     await expect.poll(() => page.evaluate(() => Array.from(document.styleSheets).some(s => (s.href || '').includes('title-cinematic-v120.css')))).toBe(true);
     const title = page.locator('.title-v100 .v120-title-hero');

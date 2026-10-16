@@ -7,13 +7,15 @@ Story decisions made by the owner are recorded in [`docs/CANON.md`](docs/CANON.m
 
 ## Active engineering refactor — 2026-10-16
 
-The Playwright foundation is on `refactor/playwright-playtester` (PR #18); workflow #1238 passed 68 tests with one intentionally skipped live-deployment test. Do not merge it without owner review.
+The Playwright foundation is on `refactor/playwright-playtester` (PR #18); workflow #1238 passed 68 tests with one intentionally skipped live-deployment test. Do not merge without owner review.
 
-Follow-on branch `refactor/game-audio-service` (draft PR #20) extracts Old Road sound preference, synthesized UI tones, battle effects, and battle-music lifecycle into `js/systems/audio-v100.js`. The extraction is validated by workflow #1271: 68 passed, 0 failed, 1 skipped. Live GitHub Pages validation is not claimed.
+Follow-on branch `refactor/game-audio-service` (draft PR #20) extracts Old Road sound preference, synthesized UI tones, battle effects, and battle-music lifecycle into `js/systems/audio-v100.js`. Workflow #1271 passed 68 tests, 0 failures, 1 skipped (live deployment).
 
-Current branch `refactor/game-combat-service` is stacked on the audio branch (planned draft PR #21). It moves the Old Road combat presentation, action resolution, enemy intent, class techniques, and victory rewards into `js/systems/combat-v100.js`. The road controller injects persistence, expedition state, rendering, audio, and reward adapters, keeping its public entry points intact. The combat extraction is **not yet validated**; workflow #1288 is running on the latest code and must pass before this slice is considered complete.
+Branch `refactor/game-combat-service` (draft PR #21, stacked on audio) extracts combat presentation, action resolution, enemy intent, class techniques, and victory rewards into `js/systems/combat-v100.js`. Workflow #1288 passed 68 tests, 0 failures, 1 skipped (live deployment).
 
-Keep each slice isolated and regression-tested. Next likely boundaries after combat are narrative/POI content and town economy/crafting, but inspect their dependencies and preserve save compatibility before editing. Do not merge stacked PRs out of order.
+Current branch `refactor/narrative-poi-data` (draft PR #22, stacked on combat) extracts stage descriptions and contextual POI definitions into `js/systems/narrative-poi-v100.js`. State changes, rewards, persistence, and discovery interactions remain in the road controller. Workflow #1317 is pending; do not treat this slice as validated until it completes. The first implementation check caught and fixed a missing service initialization before this run.
+
+Keep slices isolated and regression-tested. Next candidates after POI data are town economy/crafting boundaries and the remaining narrative mutation handlers. Preserve save compatibility, current public controller APIs, and PR dependency order. Do not merge stacked PRs out of order. Live GitHub Pages validation remains separate and is not claimed by these branch runs.
 
 ## Production title refresh — v0.20.36 (branch work; not deployed)
 
