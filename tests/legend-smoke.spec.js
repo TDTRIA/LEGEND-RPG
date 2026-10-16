@@ -1214,7 +1214,8 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       typeof window.LegendAudioV100?.tone === 'function' &&
       typeof window.LegendAudioV100?.playBattleFx === 'function' &&
       typeof window.LegendAudioV100?.startBattleMusic === 'function' &&
-      typeof window.LegendAudioV100?.stopBattleMusic === 'function'
+      typeof window.LegendAudioV100?.stopBattleMusic === 'function' &&
+      typeof window.LegendCombatV100?.create === 'function'
     ))).toBe(true);
     await expect.poll(() => page.evaluate(() => Boolean(window.__legendSceneTransitionsV120))).toBe(true);
     await expect.poll(() => page.evaluate(() => Array.from(document.styleSheets).some(s => (s.href || '').includes('title-cinematic-v120.css')))).toBe(true);

@@ -49,6 +49,7 @@ jobs:
           node --check js/systems/ashmere-controller-v099.js
           node --check js/systems/road-controller-v100.js
           node --check js/systems/audio-v100.js
+          node --check js/systems/combat-v100.js
           node --check tests/helpers/game.js
           node --check tests/legend-smoke.spec.js
           node --check tests/mobile-smoke.spec.js

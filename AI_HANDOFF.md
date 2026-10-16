@@ -7,15 +7,13 @@ Story decisions made by the owner are recorded in [`docs/CANON.md`](docs/CANON.m
 
 ## Active engineering refactor — 2026-10-16
 
-The Playwright foundation is on branch `refactor/playwright-playtester` (PR #18) and its latest CI run passed 68 tests with one intentionally skipped live-deployment test. Do not merge it without owner review.
+The Playwright foundation is on `refactor/playwright-playtester` (PR #18); workflow #1238 passed 68 tests with one intentionally skipped live-deployment test. Do not merge it without owner review.
 
-A follow-on branch, `refactor/game-audio-service`, is based on that branch and begins the gameplay-controller refactor with a bounded extraction:
-- `js/systems/audio-v100.js` owns the Old Road sound preference, synthesized UI tones, battle effects, and battle-music lifecycle.
-- `js/systems/road-controller-v100.js` delegates to `window.LegendAudioV100` rather than owning those audio implementations.
-- `index.html` loads the service before the Old Road controller.
-- Playwright asserts the service API is available; CI syntax-checks it and runs on `refactor/**` pushes.
+Follow-on branch `refactor/game-audio-service` (draft PR #20) extracts Old Road sound preference, synthesized UI tones, battle effects, and battle-music lifecycle into `js/systems/audio-v100.js`. The extraction is validated by workflow #1271: 68 passed, 0 failed, 1 skipped. Live GitHub Pages validation is not claimed.
 
-At handoff time, the latest audio-refactor CI run is still in progress. Treat the extraction as **unverified until that run finishes**. Keep this slice isolated; do not split combat or change game rules until the current regression run is understood. Next architectural candidate after validation: isolate combat logic from the 654-line Old Road controller, preserving its public controller API and save-state behavior.
+Current branch `refactor/game-combat-service` is stacked on the audio branch (planned draft PR #21). It moves the Old Road combat presentation, action resolution, enemy intent, class techniques, and victory rewards into `js/systems/combat-v100.js`. The road controller injects persistence, expedition state, rendering, audio, and reward adapters, keeping its public entry points intact. The combat extraction is **not yet validated**; workflow #1288 is running on the latest code and must pass before this slice is considered complete.
+
+Keep each slice isolated and regression-tested. Next likely boundaries after combat are narrative/POI content and town economy/crafting, but inspect their dependencies and preserve save compatibility before editing. Do not merge stacked PRs out of order.
 
 ## Production title refresh — v0.20.36 (branch work; not deployed)
 
