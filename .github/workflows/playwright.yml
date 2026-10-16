@@ -48,8 +48,10 @@ jobs:
           node --check js/game.js
           node --check js/systems/ashmere-controller-v099.js
           node --check js/systems/road-controller-v100.js
+          node --check tests/helpers/game.js
           node --check tests/legend-smoke.spec.js
           node --check tests/mobile-smoke.spec.js
+          node --check tests/reboot-prototype.spec.js
           node --check tests/live-deployment.spec.js
 
       - name: Run Playwright tests

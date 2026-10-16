@@ -1,107 +1,57 @@
-# LEGEND Playtesting Guide
+# LEGEND automated playtesting
 
-This repo includes a Playwright setup for automated browser playtesting.
+Playwright is the browser-level regression layer for the production LEGEND game. It should verify user-visible journeys and gameplay outcomes, not only whether screens render.
 
-Playwright opens the game in a real browser, clicks through important flows, and reports if something breaks.
-
----
-
-## What you need installed
-
-Install Node.js first:
-
-https://nodejs.org/
-
-Recommended: Node.js 22 LTS or newer.
-
-You do **not** need VS Code, but VS Code makes it easier.
-
----
-
-## Run the free GitHub-hosted checks
-
-The public repository runs its Playwright workflow automatically when code is pushed to `main`. The standard GitHub-hosted runner used by this public repository is free under GitHub's current Actions policy.
-
-To start a run manually:
-
-1. Open [LEGEND-RPG Actions](https://github.com/TDTRIA/LEGEND-RPG/actions).
-2. Select **Playwright Tests**.
-3. Choose **Run workflow** and the `main` branch.
-
-The workflow checks JavaScript syntax, runs the automated regression suite against the checked-out source, then runs a separate live smoke test against the published GitHub Pages game. The live test waits for the published version and key asset URLs to match the commit under test before it clicks through character creation, different Work Board activities, the Forge/Crafting Bench, and side contracts. It also checks desktop title sizing, mobile overflow, and browser errors.
-
-If a run fails, open the run and expand the failed step. The uploaded `playwright-report` artifact contains test details, screenshots, and video where available. A failed test means we found something to fix; it does not mean you need a paid browser session.
-
-## First-time setup
-
-Open a terminal in the `LEGEND-RPG` repo folder and run:
+## Commands
 
 ```bash
 npm install
 npx playwright install
+npm run test:e2e                 # default regression + touch-critical mobile suites
+npm run test:e2e:headed          # watch tests in a browser
+npm run test:e2e:ui              # interactive Playwright runner
+npm run test:e2e:report          # open the latest HTML report
+FULL_BROWSER_MATRIX=1 npm run test:e2e  # full suite on desktop Chrome, desktop Firefox, Mobile Safari and Mobile Chrome
 ```
 
-This installs the testing packages and the browsers Playwright uses.
+The GitHub Actions workflow also runs syntax checks and, on main, a separate smoke test against the published GitHub Pages deployment. A local branch's source tests and the live deployment test answer different questions; don't treat one as a substitute for the other.
 
----
+## Test layers
 
-## Run all tests
+- **End-to-end journeys:** use visible controls and assert meaningful state/outcome changes.
+- **Targeted regression tests:** set up a specific state only when necessary to isolate a hard-to-reach rule; assert both the resulting UI and persisted state.
+- **Mobile interaction tests:** use real touch taps and verify critical controls are visible, reachable and not covered.
+- **Deployment smoke tests:** verify published version and key asset references before testing the deployed experience.
+- **Static checks:** syntax validation catches parse errors but does not establish gameplay correctness.
 
-```bash
-npm run test:e2e
-```
+Shared setup and journey helpers live in tests/helpers/. Keep helper code small and behavior-focused; don't move assertions into helpers if that would hide what an individual test guarantees.
 
----
+## Coverage inventory
 
-## Run tests with the browser visible
+This is the working inventory of critical coverage, not a claim that every row is currently complete. Update it when gameplay systems or test files change.
 
-```bash
-npm run test:e2e:headed
-```
+| Area | Minimum behavior to verify | Current status / next work |
+|---|---|---|
+| Boot/title/build | title, version consistency, key title art, menu and dialog accessibility | Existing desktop coverage; retain |
+| Character creation | valid character reaches Ashmere; blank name rejected; choices persist | Existing journey coverage; broaden combinations |
+| Regional hubs | Ashmere/Greyfen identity, destinations, regional services and routes | Existing targeted coverage; verify genuine travel journey |
+| Road/expedition | route choice, event outcomes, discovery, return to town | Partial; add full start-to-return journey |
+| Combat | Attack, Guard, class move, enemy turn, health/resources, victory/defeat and rewards | Victory progression/reward now asserted; defeat and resource-use edge cases remain |
+| Quests/contracts | accept, objectives, turn-in, rewards, duplicate turn-in prevention | One contract's turn-in and reload persistence verified; broaden contract types and duplicate-attempt checks |
+| Inventory/equipment | gain, consume, buy, sell, equip, unequip and resource accounting | Market buy/sell and weapon purchase/equip transactions asserted; consumables and unequip remain |
+| Crafting/workshops | valid and invalid recipes, materials consumed, outputs granted | Partial; cover success and insufficient-material cases |
+| Saves/continue | reload, continue, region/quest/inventory state survives | Partial; cover broader persisted state |
+| Errors/assets | uncaught exceptions, failed first-party assets, missing registered assets | Partial; introduce shared error/asset assertions carefully |
+| Responsive/accessibility | overflow, reachable touch controls, dialog focus and keyboard close | Existing smoke checks; expand key gameplay screens |
+| Browser compatibility | critical journeys in Chromium, Firefox and WebKit | Default matrix is intentionally reduced; schedule/run full matrix |
+| Live deployment | published version/assets match expected release; core journeys work | Separate gated workflow; verify latest run status |
 
----
+## Rules for reliable tests
 
-## Open Playwright's visual test UI
-
-```bash
-npm run test:e2e:ui
-```
-
-This is the friendliest mode for watching the tests run step-by-step.
-
----
-
-## Open the latest test report
-
-```bash
-npm run test:e2e:report
-```
-
----
-
-## Current smoke tests
-
-The starter tests check that:
-
-- The title screen loads.
-- A new player can create a character.
-- The player can reach Ashmere.
-- Core menu buttons appear.
-- The player can talk to Mara.
-- The player can open Ashmere Inn.
-- The player can enter The First Road route screen.
-- The desktop page has no obvious horizontal overflow.
-- The mobile layout loads and has tappable buttons.
-
----
-
-## Future tests to add
-
-Good next automated tests:
-
-- Complete The Bell That Rang Once.
-- Collect 3 Road Tokens and turn them in to Brenn.
-- Trigger combat and use Attack, Guard, and Class Move.
-- Buy Camp Supplies and Make Camp while exploring.
-- Sell drops at the Trading Post.
-- Check that mobile battle buttons stay reachable.
+1. Prefer accessible roles/names and stable data-* selectors over styling classes where practical.
+2. Assert behavior and state changes, not just that a button exists or a panel opens.
+3. Use isolated Playwright browser contexts and never rely on a developer's real save.
+4. Avoid direct internal-state mutation in end-to-end tests. Keep it for explicitly labeled targeted regression tests.
+5. Don't silence console errors, increase timeouts, or weaken assertions merely to make a flaky test pass. Diagnose the underlying cause first.
+6. Every bug fix should add or update a regression test that fails before the fix and passes afterward.
+7. Treat full-browser and live-deployment results as separate signals, and report which ones actually ran.

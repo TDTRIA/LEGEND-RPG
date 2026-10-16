@@ -1,57 +1,8 @@
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
-const dataSource = fs.readFileSync(path.join(__dirname, '../js/data.js'), 'utf8');
-const versionMatch = dataSource.match(/VERSION:\s*['"]v([^'"]+)['"]/);
-if (!versionMatch) throw new Error('Could not read LEGEND_DATA.VERSION from js/data.js');
-const version = versionMatch[1];
-
-// Each Playwright test runs in an isolated browser context, so clearing localStorage
-// here only resets that test's synthetic traveler—not a player's live browser save.
-async function openTitle(page) {
-  await page.goto('/');
-  await page.evaluate(() => {
-    localStorage.clear();
-    sessionStorage.clear();
-  });
-  await page.reload();
-  // The game's ember/fog/CTA animations are decorative; disable them in test contexts
-  // so WebKit touch targets do not remain perpetually "unstable" during clicks.
-  await page.addStyleTag({ content: `
-    *, *::before, *::after {
-
-      animation: none !important;
-
-      transition: none !important;
-
-      scroll-behavior: auto !important;
-
-    }
-  ` });
-  await expect(page.locator('.v120-title')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
-}
-
-async function startFreshCharacter(page, name = 'QATraveler') {
-  await openTitle(page);
-  await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.locator('#v094Name').fill(name);
-  await page.locator('#v094Next').click();
-  await page.locator('[data-gender="unspoken"]').click();
-  await page.locator('#v094Next').click();
-  await page.locator('[data-personality="kind"]').click();
-  await page.locator('#v094Next').click();
-  await page.locator('[data-origin]').first().click();
-  await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
-  await page.locator('#v094Next').click();
-  await page.locator('[data-keepsake="Old Map"]').click();
-  await page.locator('#v094Next').click();
-  await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
-  await page.getByRole('button', { name: /Begin the Road/i }).click();
-  await page.getByRole('button', { name: /Enter Ashmere/i }).click();
-  await expect(page.locator('.ash100-town')).toBeVisible();
-}
+const { readGameVersion, openTitle, startFreshCharacter } = require('./helpers/game');
+const version = readGameVersion();
 
 test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('title and visible build version are consistent', async ({ page }) => {
@@ -64,12 +15,12 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('title background, wordmark and Awakening sigil load from committed artwork', async ({ page }) => {
     await openTitle(page);
     const backdrop = page.locator('.v120-title-backdrop');
-    const emblem = page.locator('.portal100-emblem-wrap img');
+    const emblem = page.locator('.v136-corner-sigil');
     await expect(backdrop).toHaveAttribute('src', /title-ashmere-road\.webp/);
     await expect.poll(() => backdrop.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     const logo = page.locator('.v120-legend-logo');
     await expect(emblem).toBeVisible();
-    await expect(emblem).toHaveAttribute('src', /awakening-sigil\.svg/);
+    await expect(emblem).toHaveAttribute('src', /assets\/ui\/icons\/awakening-sigil\.svg/);
     await expect(logo).toBeVisible();
     await expect(logo).toHaveAttribute('src', /logo_legend_awakening_wordmark\.svg/);
     await expect.poll(() => emblem.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
@@ -92,7 +43,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.v120-legend-logo')).toBeVisible();
     await expect(page.locator('#legendTitleAccessibleName')).toHaveText('LEGEND: The Awakening');
     await expect(page.locator('.v120-title-hero h2')).toHaveCount(0);
-    await expect(page.locator('.v120-title-hero')).toContainText('Monsters gather beyond the borders');
+    await expect(page.locator('.v120-title-hero')).toContainText('Monsters press against the borders');
     await expect(page.locator('.portal100-brand')).not.toContainText('MONSTER WARS');
     await expect(page.locator('.portal100-traveler')).toHaveCount(0);
     await expect(page.locator('#newPrimary')).toBeVisible();
@@ -332,7 +283,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.getByRole('heading', { name: 'Roads & Regions' })).toBeVisible();
     const greyfen=page.locator('.reg100-card').filter({ has: page.getByRole('heading', { name: 'Greyfen', exact: true }) });
     const ironpass=page.locator('.reg100-card').filter({ has: page.getByRole('heading', { name: 'Ironpass', exact: true }) });
-    await expect(greyfen.locator('.reg100-card-scene img')).toHaveAttribute('src', /greyfen-marsh-walkway\\.webp/);
+    await expect(greyfen.locator('.reg100-card-scene img')).toHaveAttribute('src', /greyfen-marsh-walkway\.webp/);
     await expect.poll(() => greyfen.locator('.reg100-card-scene img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     await expect(greyfen.locator('[data-unlock="Greyfen"]')).toBeVisible();
     await expect(ironpass).toContainText('Requires Greyfen first');
@@ -525,7 +476,18 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.ash099-contract-completed')).toContainText(/Recorded in Journal/i);
     const result=await page.evaluate(()=>{const pl=window.LegendRuntimeV080.loadPlayer();return {completed:pl.stats.sideContractsCompleted,food:pl.inventory.food};});
     expect(result.completed).toBe(1);
-    await page.reload();
+    await page.evaluate(() => window.LegendGameBootstrap.title());
+    await expect(page.locator('.v120-title')).toBeVisible();
+    await page.locator('#continue').click();
+    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await page.getByRole('button', { name: /Side Stories & Contracts/i }).click();
+    await expect(page.locator('[data-contract-turnin="watchlightSurvey"]')).toHaveCount(0);
+    const persisted = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV080.loadPlayer();
+      return { completed: Number(pl.stats?.sideContractsCompleted || 0), food: Number(pl.inventory?.food || 0) };
+    });
+    expect(persisted.completed).toBe(1);
+    expect(persisted.food).toBe(result.food);
   });
 
   test('Forge shows material-specific sword illustrations and tactical passive descriptions', async ({ page }) => {
@@ -535,6 +497,35 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('[data-gear="stoneSword"]')).toContainText(/Heavy Strike deals 25% more damage/i);
     await expect(page.locator('[data-gear="steelSword"]')).toContainText(/20% critical chance/i);
     await expect(page.locator('[data-gear="woodenSword"] .ash099-weapon-art svg')).toBeVisible();
+  });
+
+
+  test('buying gear deducts the correct price and equips the purchased weapon', async ({ page }) => {
+    await startFreshCharacter(page, 'GearTransactionQA');
+    await page.evaluate(() => {
+      const rt = window.LegendRuntimeV080, pl = rt.loadPlayer();
+      pl.gold = 10000;
+      rt.savePlayer(pl);
+    });
+    await page.locator('[data-ash-view="smith"]').click();
+    const item = await page.evaluate(() => {
+      const weapon = window.LEGEND_DATA.weapons.find(entry => entry.id === 'stoneSword');
+      const pl = window.LegendRuntimeV080.loadPlayer();
+      return { cost: Number(weapon.cost), gold: Number(pl.gold), equipped: pl.weapon };
+    });
+    await page.locator('[data-gear="stoneSword"]').click();
+    const after = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV080.loadPlayer();
+      return {
+        gold: Number(pl.gold),
+        weapon: pl.weapon,
+        owned: Number(pl.ownedWeapons?.stoneSword || 0)
+      };
+    });
+    expect(after.gold).toBe(item.gold - item.cost);
+    expect(after.weapon).toBe('stoneSword');
+    expect(after.owned).toBeGreaterThan(0);
+    await expect(page.locator('[data-gear="stoneSword"]')).toContainText(/Equipped/i);
   });
 
   test('Old Road fork offers a persistent risk-reward route choice', async ({ page }) => {
@@ -1053,11 +1044,11 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'IconArtQA');
     const icons = page.locator('.ash100-destinations .ash100-destination-icon .ash099-icon svg');
     await expect(icons.first()).toBeVisible();
-    await expect(icons).toHaveCount(7);
+    await expect(icons).toHaveCount(4);
     const iconReferences = await page.locator('.ash100-destinations .ash100-destination-icon .ash099-icon svg use').evaluateAll(nodes =>
       nodes.map(node => node.getAttribute('href') || node.getAttribute('xlink:href') || '')
     );
-    expect(iconReferences).toHaveLength(7);
+    expect(iconReferences).toHaveLength(4);
     expect(iconReferences.every(ref => ref.startsWith('assets/ui/icons/legend-ui-icons-v1.svg#icon-'))).toBe(true);
   });
 
@@ -1081,6 +1072,90 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('.ash099-forge-tabs [data-forge-tab="craft"]').click();
     await expect(page.getByRole('heading', { name: 'Crafting Bench' })).toBeVisible();
     await expect(page.locator('[data-craft="wispLanternWick"]')).toBeVisible();
+  });
+
+
+  test('winning a road battle changes progression and persists the victory reward', async ({ page }) => {
+    await startFreshCharacter(page, 'CombatOutcomeQA');
+    const before = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV080.loadPlayer();
+      return {
+        victories: Number(pl.stats?.roadVictories || 0),
+        defeated: Number(pl.stats?.monstersDefeated || 0),
+        gold: Number(pl.gold || 0),
+        inventory: { ...(pl.inventory || {}) }
+      };
+    });
+    // This is deterministic setup for the battle trigger; all combat actions
+    // below use the actual player-facing controls.
+    await page.evaluate(() => {
+      const rt = window.LegendRuntimeV080, pl = rt.loadPlayer();
+      pl.flags = pl.flags || {};
+      pl.flags.roadExpeditionV100 = {
+        ...(pl.flags.roadExpeditionV100 || {}),
+        stage: 0, pressure: 53, trips: 0, events: 0, finds: 0, battles: 0
+      };
+      rt.savePlayer(pl);
+    });
+    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await page.getByRole('button', { name: /The Old Road/i }).click();
+    await page.locator('#push').click();
+    await expect(page.locator('.exp100-combat')).toBeVisible();
+
+    // Strike until the real battle resolves; fail if the fight cannot complete
+    // within a bounded number of turns rather than hanging the suite.
+    for (let turn = 0; turn < 12 && await page.locator('.exp100-combat').isVisible().catch(() => false); turn++) {
+      await page.locator('#strike').click();
+    }
+    await expect(page.locator('.exp100-combat')).toHaveCount(0);
+    await expect(page.locator('.exp100-head')).toContainText(/defeated/i);
+    const after = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV080.loadPlayer();
+      return {
+        victories: Number(pl.stats?.roadVictories || 0),
+        defeated: Number(pl.stats?.monstersDefeated || 0),
+        inventory: { ...(pl.inventory || {}) }
+      };
+    });
+    expect(after.victories).toBe(before.victories + 1);
+    expect(after.defeated).toBe(before.defeated + 1);
+    expect(Object.entries(after.inventory).some(([key, qty]) =>
+      Number(qty || 0) > Number(before.inventory[key] || 0) &&
+      !['roadToken', 'food', 'potion', 'camp'].includes(key)
+    )).toBe(true);
+  });
+
+
+  test('market purchases and sales update both currency and inventory', async ({ page }) => {
+    await startFreshCharacter(page, 'MarketTransactionQA');
+    await page.evaluate(() => {
+      const rt = window.LegendRuntimeV080, pl = rt.loadPlayer();
+      pl.gold = 200;
+      pl.inventory = pl.inventory || {};
+      pl.inventory.roadHerb = 2;
+      rt.savePlayer(pl);
+    });
+    await page.locator('[data-ash-view="trader"]').click();
+    const beforeBuy = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV080.loadPlayer();
+      return { gold: Number(pl.gold || 0), food: Number(pl.inventory?.food || 0) };
+    });
+    await page.locator('[data-buy="food"]').click();
+    const afterBuy = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV080.loadPlayer();
+      return { gold: Number(pl.gold || 0), food: Number(pl.inventory?.food || 0) };
+    });
+    expect(afterBuy.gold).toBe(beforeBuy.gold - 60);
+    expect(afterBuy.food).toBe(beforeBuy.food + 1);
+
+    await page.locator('[data-market-tab="sell"]').click();
+    await page.locator('[data-sell="roadHerb"]').click();
+    const afterSell = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV080.loadPlayer();
+      return { gold: Number(pl.gold || 0), herbs: Number(pl.inventory?.roadHerb || 0) };
+    });
+    expect(afterSell.gold).toBe(afterBuy.gold + 10);
+    expect(afterSell.herbs).toBe(1);
   });
 
   test('Secured expedition has a direct Return to Ashmere action', async ({ page }) => {
@@ -1138,7 +1213,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect.poll(() => page.evaluate(() => Array.from(document.styleSheets).some(s => (s.href || '').includes('title-cinematic-v120.css')))).toBe(true);
     const title = page.locator('.title-v100 .v120-title-hero');
     await expect(title).toBeVisible();
-    await expect(title.locator('h1')).toHaveText('LEGEND');
+    await expect(title.locator('h1')).toHaveText('LEGEND: The Awakening');
   });
 
 });

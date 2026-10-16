@@ -1,10 +1,8 @@
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
-const dataSource = fs.readFileSync(path.join(__dirname, '..', 'js', 'data.js'), 'utf8');
-const versionMatch = dataSource.match(/VERSION:\s*['"]v([^'"]+)['"]/);
-if (!versionMatch) throw new Error('Could not read LEGEND_DATA.VERSION from js/data.js');
-const expectedVersion = 'v' + versionMatch[1];
+const { readGameVersion } = require('./helpers/game');
+const expectedVersion = 'v' + readGameVersion();
 const liveUrl = 'https://tdtria.github.io/LEGEND-RPG/';
 
 function expectedAsset(regex, label) {

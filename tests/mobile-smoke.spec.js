@@ -1,25 +1,9 @@
 const { test, expect } = require('@playwright/test');
 const fs = require('fs');
 const path = require('path');
-const dataSource = fs.readFileSync(path.join(__dirname, '../js/data.js'), 'utf8');
-const versionMatch = dataSource.match(/VERSION:\s*['"]v([^'"]+)['"]/);
-if (!versionMatch) throw new Error('Could not read LEGEND_DATA.VERSION from js/data.js');
-const version = versionMatch[1];
+const { readGameVersion, openTitle, startFreshCharacter } = require('./helpers/game');
+const version = readGameVersion();
 
-async function openTitle(page) {
-  await page.goto('/');
-  await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
-  await page.reload();
-  await page.addStyleTag({ content: `
-    *, *::before, *::after {
-      animation: none !important;
-      transition: none !important;
-      scroll-behavior: auto !important;
-    }
-  ` });
-  await expect(page.locator('.v120-title')).toBeVisible();
-  await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
-}
 async function tap(page, locator) {
   await expect(locator).toBeVisible();
   await expect(locator).toBeEnabled();
@@ -61,26 +45,6 @@ async function tap(page, locator) {
   await page.touchscreen.tap(target.x, target.y);
 }
 
-async function startFreshCharacter(page, name) {
-  await openTitle(page);
-  await tap(page, page.getByRole('button', { name: /Begin Your Journey/i }));
-  await page.locator('#v094Name').fill(name);
-  await tap(page, page.locator('#v094Next'));
-  await tap(page, page.locator('[data-gender="unspoken"]'));
-  await tap(page, page.locator('#v094Next'));
-  await tap(page, page.locator('[data-personality="kind"]'));
-  await tap(page, page.locator('#v094Next'));
-  await tap(page, page.locator('[data-origin]').first());
-  await tap(page, page.locator('#v094Next'));
-  await tap(page, page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }));
-  await tap(page, page.locator('#v094Next'));
-  await tap(page, page.locator('[data-keepsake="Old Map"]'));
-  await tap(page, page.locator('#v094Next'));
-  await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
-  await tap(page, page.getByRole('button', { name: /Begin the Road/i }));
-  await tap(page, page.getByRole('button', { name: /Enter Ashmere/i }));
-  await expect(page.locator('.ash100-town')).toBeVisible();
-}
 async function expectNoHorizontalOverflow(page) {
   const widths = await page.evaluate(() => ({
     viewport: document.documentElement.clientWidth,
@@ -129,7 +93,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
 
   test('Work Board signal job accepts taps and fits the viewport', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await startFreshCharacter(page, 'MobileWorkQA');
+    await startFreshCharacter(page, 'MobileWorkQA', tap);
     await tap(page, page.locator('.ash100-destinations').getByRole('button', { name: /Work Board/i }));
     await expect(page.locator('[data-job-open="wood"]')).toContainText(/Timing challenge/i);
     await expect(page.locator('[data-job-open="gate"]')).toContainText(/Read the signal/i);
@@ -143,7 +107,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
 
   test('Old Road route and discovery respond to touch input', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await startFreshCharacter(page, 'MobileRoadQA');
+    await startFreshCharacter(page, 'MobileRoadQA', tap);
     await tap(page, page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }));
     await tap(page, page.getByRole('button', { name: /The Old Road/i }));
     await expect(page.locator('#routeRidge')).toBeVisible();
@@ -159,7 +123,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
 
   test('Road combat controls render and accept a touch action', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await startFreshCharacter(page, 'MobileCombatQA');
+    await startFreshCharacter(page, 'MobileCombatQA', tap);
     await page.evaluate(() => {
       const rt = window.LegendRuntimeV080;
       const pl = rt.loadPlayer();
