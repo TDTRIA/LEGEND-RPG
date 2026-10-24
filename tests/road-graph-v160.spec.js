@@ -96,7 +96,7 @@ test('the map can choose a route and shows the unchosen branch explicitly', asyn
   await expect(dialog.locator('[data-exp160-map-route="ridge"]')).toBeVisible();
   await expect(dialog.locator('[data-exp160-map-route="reeds"]')).toBeVisible();
   await dialog.locator('[data-exp160-map-route="reeds"]').click();
-  await expect(page.locator('.exp100-route-choice')).toContainText('Reed Cut');
+  await expect(page.locator('.exp100-poi-done')).toContainText('Reed Cut');
   const route = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().flags.roadExpeditionV100.routeChoice);
   expect(route).toBe('reeds');
   await page.locator('#exp150OpenMap').click();
@@ -110,7 +110,7 @@ test('Windbreak is an optional logged stop and the player can return to the rout
   const map = page.getByRole('dialog', { name: 'Road map' });
   await expect(map.locator('[data-exp160-map-visit="windbreak"]')).toBeVisible();
   await map.locator('[data-exp160-map-visit="windbreak"]').click();
-  await expect(page.getByRole('heading', { name: 'Windbreak' })).toBeVisible();
+  await expect(page.locator('.exp160-optional-site').getByRole('heading', { name: 'Windbreak' })).toBeVisible();
   await expect(page.locator('#exp160WindObserve')).toContainText('Cost: 1 hour');
   await page.locator('#exp160WindObserve').click();
   const result = await page.evaluate(() => {
@@ -173,7 +173,7 @@ test('Sunken Cart salvage discloses cost and records the recovered material with
   await seedRoadStage(page, 1, 'reeds');
   await page.locator('#exp150OpenMap').click();
   await page.getByRole('dialog', { name: 'Road map' }).locator('[data-exp160-map-visit="sunken-cart"]').click();
-  await expect(page.getByRole('heading', { name: 'Sunken Cart' })).toBeVisible();
+  await expect(page.locator('.exp160-optional-site').getByRole('heading', { name: 'Sunken Cart' })).toBeVisible();
   await expect(page.locator('#exp160CartSalvage')).toContainText('5 Road Pressure');
   await page.locator('#exp160CartSalvage').click();
   const result = await page.evaluate(() => {

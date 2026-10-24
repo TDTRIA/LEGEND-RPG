@@ -129,7 +129,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await page.locator('#search').click();
     await expect(page.locator('#push')).toBeEnabled();
     await page.locator('#push').click();
-    await expect(page.locator('.exp100-head h1')).toHaveText('Lantern Ditch');
+    await expect(page.locator('.exp100-head h1')).toHaveText('Ridgeway Cairn');
     await page.locator('#push').click();
     await expect(page.locator('.exp100-head h1')).toHaveText("Wayfarer's Camp");
     await expect(page.locator('.exp100-camp')).toBeVisible();

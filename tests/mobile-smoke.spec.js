@@ -178,7 +178,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await expect(page.locator('#routeRidge')).toBeVisible();
     await tap(page, page.locator('#routeRidge'));
     await tap(page, page.locator('#push'));
-    await expect(page.locator('.exp100-head')).toContainText(/arrive at Lantern Ditch/i);
+    await expect(page.locator('.exp100-head')).toContainText(/arrive at Ridgeway Cairn/i);
     await tap(page, page.locator('.exp100-hotspot-find'));
     await expect(page.locator('.exp100-discovery-beat')).toContainText(/Ridgeway Cairn/i);
     await tap(page, page.locator('#poiInspect'));
@@ -255,7 +255,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await tap(page, page.locator('#search'));
     await expect(page.locator('#push')).toBeEnabled();
     await tap(page, page.locator('#push'));
-    await expect(page.locator('.exp100-head h1')).toHaveText('Lantern Ditch');
+    await expect(page.locator('.exp100-head h1')).toHaveText('Ridgeway Cairn');
     await expectNoHorizontalOverflow(page);
     expect(errors).toEqual([]);
   });
