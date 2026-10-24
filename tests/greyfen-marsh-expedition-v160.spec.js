@@ -314,4 +314,42 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
     await expect(page.locator('.ash100-route-strip')).toContainText('Learn Greyfen’s Old Marks');
   });
 
+
+
+  test('retreating from the Reed Wisp records the disclosed pressure cost and prevents a free repeat fight', async ({ page }) => {
+    await seedGreyfen(page, { className: 'Warrior', level: 4, weapon: 'hand', armor: 'none', food: 0, camp: 0, hp: 100 });
+    await enterMarsh(page);
+    await page.locator('#gfm160Begin').click();
+    await page.locator('#gfm160ChooseRaised').click();
+    await page.locator('#gfm160Continue').click();
+    await page.locator('#gfm160FaceWisp').click();
+    await expect(page.locator('.rpg-battle')).toBeVisible();
+
+    await page.locator('#flee').click();
+    await expect(page.getByRole('heading', { name: 'You crossed without fighting.' })).toBeVisible();
+    await expect(page.locator('#gfm160ContinueShelter')).toBeEnabled();
+    await expect(page.locator('#gfm160FaceWisp')).toHaveCount(0);
+
+    const state = await page.evaluate(() => {
+      const s = window.LegendRuntimeV120.loadPlayer().flags.greyfenMarshExpeditionV160;
+      return {
+        stage: s.stage,
+        pressure: s.pressure,
+        retreated: s.encounterRetreated,
+        avoided: s.encounterAvoided,
+        cleared: s.sluiceCleared
+      };
+    });
+    expect(state).toEqual({
+      stage: 2,
+      pressure: 12,
+      retreated: true,
+      avoided: true,
+      cleared: false
+    });
+
+    await page.locator('#gfm160ContinueShelter').click();
+    await expect(page.getByRole('heading', { name: 'A dry pause above the floodline.' })).toBeVisible();
+  });
+
 });

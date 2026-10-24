@@ -37,6 +37,7 @@
     s.sideTripReturnNode = typeof s.sideTripReturnNode === 'string' ? s.sideTripReturnNode : null;
     s.sluiceCleared = Boolean(s.sluiceCleared);
     s.encounterAvoided = Boolean(s.encounterAvoided);
+    s.encounterRetreated = Boolean(s.encounterRetreated);
     s.shelterRested = Boolean(s.shelterRested);
     s.gaugeInspected = Boolean(s.gaugeInspected);
     return s;
@@ -128,6 +129,7 @@
     s.sideTripReturnNode = null;
     s.sluiceCleared = false;
     s.encounterAvoided = false;
+    s.encounterRetreated = false;
     s.shelterRested = false;
     s.gaugeInspected = false;
     s.failed = false;
@@ -425,6 +427,7 @@
       maxHp: 34,
       damage: [3, 7],
       reward: 'wispAsh',
+      combatStartRoadPressureV160: Number(s.pressure || 0),
       turn: 0,
       intent: 'heavy',
       greyfenMarshV160: true
@@ -447,7 +450,18 @@
       renderShell: html => { const host = root(); if (host) host.innerHTML = html; },
       renderExpedition: note => {
         if (/withdraw from/i.test(String(note || ''))) {
-          const current = player(); if (current) { const state = ensure(current); state.encounterRetreated = true; save(current); }
+          const current = player();
+          if (current) {
+            const state = ensure(current);
+            state.encounterRetreated = true;
+            state.encounterAvoided = true;
+            // The shared combat system lowers pressure on retreat. Greyfen's
+            // retreat should instead carry the same disclosed +8 cost as
+            // avoiding the wisp, without allowing a free repeat encounter.
+            const startingPressure = Number(enemy.combatStartRoadPressureV160 ?? state.pressure ?? 0);
+            state.pressure = clamp(startingPressure + 8, 0, 100);
+            save(current);
+          }
         }
         return render(note || '');
       },
