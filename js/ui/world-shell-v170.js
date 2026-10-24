@@ -50,6 +50,14 @@
     if (!text || text.length < 24) return null;
     if (/^Opening the realm|New Traveler|Begin Your Journey/i.test(text)) return null;
 
+    if (rootNode.querySelector('.exp150-return-report, .exp100-outcome')) {
+      return {
+        kind: 'expedition-results',
+        location: 'Old Road · Field Report',
+        sublocation: rootNode.querySelector('.exp100-outcome .exp100-route strong')?.textContent?.trim() || 'Expedition report',
+        camp: false
+      };
+    }
     if (rootNode.querySelector('.exp150-world-page, .exp150-expedition-head, .exp150-route-tracker, .exp100-scene-live')) {
       const state = player.flags?.roadExpeditionV100 || {};
       const stage = Math.max(0, Math.min(5, Number(state.stage || 0)));
@@ -159,9 +167,11 @@
           ? context.location
           : context.kind === 'combat-results'
             ? context.location
-            : context.kind === 'dungeon'
+            : context.kind === 'expedition-results'
               ? context.location
-              : (context.sublocation || context.location);
+              : context.kind === 'dungeon'
+                ? context.location
+                : (context.sublocation || context.location);
     const objective = panels.objectiveFor?.(player, rootNode, context) || 'Find your next lead in town';
     const hp = Math.max(0, Number(player.hp || 0));
     const maxHp = Math.max(1, Number(player.maxHp || 1));
@@ -359,6 +369,8 @@
           if (!clickExisting('#town')) showToast('Return to Ashmere is not available at this point in the expedition.');
         } else if (lastContext?.kind === 'dungeon') {
           if (!clickExisting('#vaultRetreat') && !clickExisting('#vaultReturn')) showToast('The current cellar room has no retreat action available.');
+        } else if (lastContext?.kind === 'expedition-results') {
+          if (!clickExisting('#outcomeReturn')) showToast('The expedition report has no return action on this screen.');
         } else if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
           showToast('Finish the active encounter through its battle or results controls before leaving.');
         } else {
@@ -426,6 +438,14 @@
       case 'leave-road':
         event.preventDefault();
         if (!clickExisting('#town')) showToast('Returning to Ashmere is not available at this point in the expedition.');
+        break;
+      case 'expedition-return':
+        event.preventDefault();
+        if (!clickExisting('#outcomeReturn')) showToast('The expedition report has no return action on this screen.');
+        break;
+      case 'report-to-mara':
+        event.preventDefault();
+        if (!clickExisting('#outcomeReportToMara')) showToast('There is no field-report handoff available on this trip.');
         break;
       case 'combat-continue':
         event.preventDefault();
