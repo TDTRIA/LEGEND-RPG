@@ -48,14 +48,17 @@ function finish(){
  const progress=awardProgress(pl,15+Number(s.stage||0)*10);
  pl.stats=pl.stats||{};
  pl.stats.oldRoadClears=Number(pl.stats.oldRoadClears||0)+1;
+ // Show the trip as it ended (stops reached, final Road Pressure) before the
+ // state resets for the next departure; otherwise the summary read "0/5".
+ const endedState={...s};
  s.stage=0;s.pressure=clamp(Math.floor(s.pressure*.35),0,100);
  save(pl);
- outcome('Expedition Secured','You bring the expedition home: '+reward+'g'+(complete?' and a Road Token. The Road Tokens can now open a new region.':'.')+(progress?' XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'.':'')+routeReport,'Return')
+ outcome('Expedition Secured','You bring the expedition home: '+reward+'g'+(complete?' and a Road Token. The Road Tokens can now open a new region.':'.')+(progress?' XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'.':'')+routeReport,'Return',undefined,undefined,endedState)
 }
-function outcome(title,text,kicker,skill,modifier){
+function outcome(title,text,kicker,skill,modifier,viewState){
  stopMusic();
  const pl=p();if(!pl)return;
- const s=ensure(pl);
+ const s=viewState||ensure(pl);
  if(resultView?.render){
   return resultView.render({player:pl,state:s,kicker,title,text,skill,modifier});
  }
