@@ -40,6 +40,13 @@
     player.stats = player.stats || {};
     player.stats.bellVaultVictories = Number(player.stats.bellVaultVictories || 0) + 1;
     globalSave(player);
+    const resultView = window.LegendRoadControllerV100?.showDungeonCombatResults;
+    if (typeof resultView === 'function' && resultView({
+      player, enemy, result: 'victory', progress,
+      rewardName: window.LEGEND_DATA?.itemNames?.[enemy?.reward || 'fur'] || enemy?.reward || 'Furs',
+      goldGained: Math.max(0, Number(player.gold || 0) - Number(enemy?.combatStartGold || 0)),
+      routeStage: Number(run.room || 3), room: Number(run.room || 3)
+    })) return;
     const transition = window.LegendSceneTransitionsV120?.transitionTo;
     return typeof transition === 'function' ? transition('The bell chamber falls silent', reopenVault) : reopenVault();
   }
@@ -55,6 +62,14 @@
     player.stats = player.stats || {};
     player.stats.bellVaultWithdrawals = Number(player.stats.bellVaultWithdrawals || 0) + 1;
     globalSave(player);
+    const resultView = window.LegendRoadControllerV100?.showDungeonCombatResults;
+    if (typeof resultView === 'function' && resultView({
+      player, enemy, result: 'defeat',
+      progress: { gained: 0, levels: 0, level: Number(player.level || 1) },
+      rewardName: '',
+      goldGained: Math.max(0, Number(player.gold || 0) - Number(enemy?.combatStartGold || 0)),
+      routeStage: Number(run.lastRoom || 2), room: Number(run.lastRoom || 2)
+    })) return;
     const transition = window.LegendSceneTransitionsV120?.transitionTo;
     return typeof transition === 'function' ? transition('Driven back from the bell chamber', reopenVault) : reopenVault();
   }

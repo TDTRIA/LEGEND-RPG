@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>LEGEND: The Awakening v0.22.1</title>
+  <title>LEGEND: The Awakening v0.23.0</title>
   <link rel="icon" type="image/webp" href="assets/generated/ui/icons/service-milestone.webp">
   <link rel="stylesheet" href="css/style.css?v=0.6.4">
   <link rel="stylesheet" href="css/game-ui-v090.css?v=0.22.1-runway-world-bg">
@@ -39,13 +39,14 @@
   <link rel="stylesheet" href="css/bell-vault-v100.css?v=0.21.0-first-delve">
   <link rel="stylesheet" href="css/world-client-boot-v100.css?v=0.22.1-runway-bg">
   <link rel="stylesheet" href="css/runway-art-pass-v151.css?v=0.22.1-runway-art-polish9">
+  <link rel="stylesheet" href="css/progression-results-v152.css?v=0.23.0-growth-results">
 </head>
 <body>
   <div id="legend-boot-screen" class="legend-boot-screen" role="status" aria-label="Loading LEGEND: The Awakening">
     <div class="legend-boot-vignette" aria-hidden="true"></div>
     <section class="legend-boot-frame" aria-labelledby="legend-boot-title">
       <div class="legend-boot-sigil" aria-hidden="true"><span>✦</span><i></i></div>
-      <p id="legend-boot-title" class="legend-boot-kicker">REALM INITIALIZATION · v0.22.1</p>
+      <p id="legend-boot-title" class="legend-boot-kicker">REALM INITIALIZATION · v0.23.0</p>
       <img class="legend-boot-wordmark" src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
       <div class="legend-boot-wordmark-fallback" hidden><strong>LEGEND</strong><span>THE AWAKENING</span></div>
       <p class="legend-boot-subtitle">The roads remember. The realm is waking.</p>
@@ -127,14 +128,15 @@
     })();
   </script>
   <div id="root"></div>
-  <script defer src="js/data.js?v=0.22.1-daily-road-cache"></script>
+  <script defer src="js/data.js?v=0.23.0-growth-results"></script>
   <script defer src="js/core/html-utils-v120.js?v=0.20.36-shared-html-utils-1"></script>
   <script defer src="js/storage/settings-storage-v120.js?v=0.20.36-settings-storage-1"></script>
-  <script defer src="js/storage/player-normalizer-v120.js?v=0.20.36-player-normalizer-extraction-1"></script>
-  <script defer src="js/version-v090.js?v=0.22.1-runway-art-daily"></script>
+  <script defer src="js/storage/player-normalizer-v120.js?v=0.23.0-growth-fields"></script>
+  <script defer src="js/version-v090.js?v=0.23.0-growth-results"></script>
   <script defer src="js/storage.js?v=0.20.36-player-normalizer-extraction-1"></script>
   <script defer src="js/core/game-runtime-v120.js?v=0.20.36-runtime-v120-1"></script>
-  <script defer src="js/systems/progression-v100.js?v=0.20.36-progression-status-1"></script>
+  <script defer src="js/systems/progression-v100.js?v=0.23.0-growth-choice"></script>
+  <script defer src="js/systems/player/progression-level-up-v152.js?v=0.23.0-level-up"></script>
   <script defer src="js/systems/quest-log-v120.js?v=0.20.36-quest-log-service-1"></script>
   <script defer src="js/systems/assets-v090.js?v=0.22.1-runway-art-r3"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -179,7 +181,7 @@
   <script defer src="js/systems/town/ashmere-contracts-v099.js?v=0.22.1-daily-quests-road-cache-r3"></script>
   <script defer src="js/systems/town/ashmere-assets-v099.js?v=0.22.1-runway-icons"></script>
   <script defer src="js/systems/town/ashmere-features-v099.js?v=0.21.0-bell-vault"></script>
-  <script defer src="js/systems/dungeons/bell-vault-v100.js?v=0.21.0-local-cellar-art"></script>
+  <script defer src="js/systems/dungeons/bell-vault-v100.js?v=0.23.0-cellar-results"></script>
   <script defer src="js/systems/town/ashmere-view-v099.js?v=0.20.36-view-extraction-1"></script>
   <script defer src="js/systems/town/ashmere-guidance-v099.js?v=0.20.36-guidance-extraction-1"></script>
   <script defer src="js/systems/town/ashmere-destination-catalog-v099.js?v=0.22.1-daily-board"></script>
@@ -189,20 +191,21 @@
   <script defer src="js/systems/ashmere-controller-v099.js?v=0.21.0-departure-field-order"></script>
   <script defer src="js/systems/road/road-audio-v100.js?v=0.20.36-audio-refactor-1"></script>
   <script defer src="js/systems/road/road-combat-view-v100.js?v=0.21.0-vault-keeper-art-3"></script>
-  <script defer src="js/systems/road/road-combat-v100.js?v=0.21.0-vault-combat-3"></script>
-  <script defer src="js/systems/road/road-state-v100.js?v=0.21.1-legacy-creation-bonuses"></script>
+  <script defer src="js/systems/road/road-combat-v100.js?v=0.23.0-combat-results"></script>
+  <script defer src="js/systems/road/road-combat-results-view-v152.js?v=0.23.0-combat-results"></script>
+  <script defer src="js/systems/road/road-state-v100.js?v=0.23.0-growth-attributes"></script>
   <script defer src="js/systems/quests/bell-road-evidence-v120.js?v=0.20.36-bell-road-evidence-1"></script>
   <script defer src="js/content/roads/road-poi-catalog-v100.js?v=0.20.36-road-poi-catalog-extraction-1"></script>
   <script defer src="js/systems/road/road-discovery-view-v100.js?v=0.20.36-discovery-view-extraction-1"></script>
   <script defer src="js/systems/road/road-decisions-v100.js?v=0.21.0-world-rework"></script>
   <script defer src="js/systems/road/road-poi-outcomes-v100.js?v=0.21.0-trip-records"></script>
   <script defer src="js/systems/road/road-discovery-v100.js?v=0.21.0-world-rework"></script>
-  <script defer src="js/systems/road/road-view-v100.js?v=0.22.1-runway-fallback"></script>
+  <script defer src="js/systems/road/road-view-v100.js?v=0.23.0-road-art"></script>
   <script defer src="js/systems/road/road-actions-v100.js?v=0.21.0-pressure-encounters-clock"></script>
-  <script defer src="js/systems/road/road-results-view-v100.js?v=0.21.0-mara-report-handoff"></script>
-  <script defer src="js/systems/road/road-results-v100.js?v=0.20.40-opening-complete"></script>
+  <script defer src="js/systems/road/road-results-view-v100.js?v=0.23.0-expedition-debrief"></script>
+  <script defer src="js/systems/road/road-results-v100.js?v=0.23.0-expedition-debrief"></script>
   <script defer src="js/systems/road/road-expedition-screen-v100.js?v=0.21.0-clock-header-order"></script>
-  <script defer src="js/systems/road-controller-v100.js?v=0.21.0-mara-report-handoff"></script>
+  <script defer src="js/systems/road-controller-v100.js?v=0.23.0-combat-results"></script>
   <script defer src="js/systems/road-opening-v140.js?v=0.20.40-veil-road-tutorial"></script>
   <script defer src="js/systems/scene-transitions-v120.js?v=0.22.0-cinematic-transitions"></script>
   <script defer src="js/systems/boot-sequence-v100.js?v=0.22.0-realm-boot"></script>

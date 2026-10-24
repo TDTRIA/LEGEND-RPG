@@ -122,4 +122,28 @@ test.describe('LegendRoadStateV100 compatibility contract', () => {
     expect(result.skillLabel).toBe('ROADSENSE');
     expect(result.hpPercent).toBe(100);
   });
+
+  test('spends earned attribute points into the road skill checks they describe', async ({ page }) => {
+    const result = await page.evaluate(() => {
+      const data = { classes: {}, origins: {}, keepsakes: {}, weapons: [], armors: [], itemNames: {} };
+      const rules = window.LegendRoadStateV100.create({
+        getData: () => data,
+        clamp: (value, minimum, maximum) => Math.max(minimum, Math.min(maximum, value))
+      });
+      return {
+        might: rules.score({ attributesV152: { might: 2 } }, 'strength'),
+        agility: rules.score({ attributesV152: { agility: 3 } }, 'agility'),
+        guile: rules.score({ attributesV152: { agility: 3 } }, 'thieving'),
+        arcana: rules.score({ attributesV152: { arcana: 4 } }, 'magic'),
+        endurance: rules.score({ attributesV152: { endurance: 2 } }, 'survival'),
+        insightLore: rules.score({ attributesV152: { insight: 2 } }, 'lore'),
+        insightCraft: rules.score({ attributesV152: { insight: 2 } }, 'craft'),
+        fortune: rules.score({ attributesV152: { fortune: 3 } }, 'luck')
+      };
+    });
+    expect(result).toEqual({
+      might: 2, agility: 3, guile: 3, arcana: 4,
+      endurance: 2, insightLore: 2, insightCraft: 2, fortune: 3
+    });
+  });
 });

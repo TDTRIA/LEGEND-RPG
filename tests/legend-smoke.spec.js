@@ -80,6 +80,18 @@ async function enterOldRoadFromDeparture(page) {
   await expect(page.locator('.exp150-world-page')).toBeVisible();
 }
 
+async function allocatePendingGrowth(page) {
+  const overlay = page.locator('#legendLevelUpOverlay');
+  if (!(await overlay.count())) return;
+  const progressText = await overlay.locator('#v152-growth-total').textContent() || '0';
+  const points = Number(progressText.split('/').pop().trim());
+  for (let i = 0; i < points; i += 1) {
+    await overlay.locator('[data-attr-add="might"]').click();
+  }
+  await overlay.locator('#v152-growth-confirm').click();
+  await expect(overlay).toHaveCount(0);
+}
+
 test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('News & Roadmap opens from the title and returns without changing the save', async ({ page }) => {
     await openTitle(page);
@@ -688,9 +700,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       };
     });
     await page.locator('#strike').click();
-    await expect(page.locator('.exp100-outcome')).toBeVisible();
-    await expect(page.locator('.exp100-outcome')).toContainText('Driven Back');
-    await expect(page.locator('.exp100-outcome')).toContainText('badly wounded');
+    await expect(page.getByRole('main', { name: 'Battle defeat results' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Driven Back' })).toBeVisible();
+    await expect(page.locator('.v152-results-heading p')).toContainText(/Return to Ashmere and regroup/i);
 
     const after = await page.evaluate(() => {
       const pl = window.LegendRuntimeV120.loadPlayer();
@@ -713,7 +725,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(after.gold).toBe(before.gold);
     expect(after.inventory).toEqual(before.inventory);
 
-    await page.locator('#outcomeReturn').click();
+    await page.locator('#v152CombatReturn').click();
     await expect(page.locator('.ash100-town')).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.LegendRuntimeV120.loadPlayer().hp)).toBe(1);
   });
@@ -1301,6 +1313,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
     await page.locator('#finish').click();
     await expect(page.locator('.exp100-outcome')).toContainText(/Ridgeway Cairn/i);
+    await allocatePendingGrowth(page);
+    await expect.poll(() => page.evaluate(() => Number(window.LegendRuntimeV120.loadPlayer().pendingStatPointsV152 || 0))).toBe(0);
+    await expect(page.locator('#legendLevelUpOverlay')).toHaveCount(0);
     await page.locator('#outcomeReturn').click();
     const returnCurtain = page.locator('#legend-scene-curtain');
     await expect(returnCurtain).toBeAttached();
@@ -1398,6 +1413,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       window.LegendRoadControllerV100.renderExpedition();
     });
     await page.locator('#finish').click();
+    await allocatePendingGrowth(page);
+    await expect.poll(() => page.evaluate(() => Number(window.LegendRuntimeV120.loadPlayer().pendingStatPointsV152 || 0))).toBe(0);
+    await expect(page.locator('#legendLevelUpOverlay')).toHaveCount(0);
     await page.locator('#outcomeReturn').click();
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
     await expect(page.locator('.ash099-lines')).toContainText(/Blackroot seal bears the same bell-mark/i);
@@ -1909,6 +1927,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.exp100-outcome')).toContainText('Expedition Secured');
     await expect(page.locator('.exp100-outcome')).toContainText(/Road Token/i);
     await expect(page.locator('.exp100-outcome')).toContainText(/Level up! You are now level 2\./);
+    await allocatePendingGrowth(page);
 
     const after = await page.evaluate(() => {
       const player = window.LegendRuntimeV120.loadPlayer();

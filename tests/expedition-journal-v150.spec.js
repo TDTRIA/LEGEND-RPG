@@ -62,6 +62,9 @@ test('first secured field report can be handed directly to Mara to advance the n
   });
 
   await page.locator('#finish').click();
+  await expect(page.getByRole('region', { name: 'Expedition results' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Expedition results' })).toContainText('5 / 5');
+  await expect(page.getByRole('region', { name: 'Expedition results' })).toContainText('Road Token');
   await expect(page.getByRole('region', { name: 'Expedition field report' })).toContainText('High Ridge');
   await expect(page.locator('#outcomeReportToMara')).toBeVisible();
   await expect(page.locator('#outcomeReturn')).toBeVisible();

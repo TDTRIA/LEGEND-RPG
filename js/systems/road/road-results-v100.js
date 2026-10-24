@@ -14,7 +14,12 @@
   const header=renderHeader,shell=renderShell;
 function finish(){
  const pl=p();if(!pl)return;
- const s=ensure(pl),complete=s.stage>=5,reward=30+s.stage*20+Math.floor(s.pressure/20)*10;
+ const s=ensure(pl),stageCount=Number(s.stage||0),complete=stageCount>=5,reward=30+stageCount*20+Math.floor(s.pressure/20)*10;
+ const levelBefore=Math.max(1,Number(pl.level||1)),pressureBefore=Number(s.pressure||0),trip=Number(s.trips||0);
+ const routeName=s.routeChoice==='ridge'?'High Ridge':s.routeChoice==='reeds'?'Reed Cut':'Route unrecorded';
+ const journal=pl.flags?.roadFieldJournalV150||{};
+ const discoveriesThisTrip=(Array.isArray(journal.discoveries)?journal.discoveries:[]).filter(entry=>Number(entry.trip||0)===trip).length;
+ const campsThisTrip=(Array.isArray(journal.campReports)?journal.campReports:[]).filter(entry=>Number(entry.trip||0)===trip).length;
  pl.flags=pl.flags||{};
  const firstSecuredReturn=complete&&!pl.flags.firstRoadReturnSeen;
  let routeReport='';
@@ -48,19 +53,23 @@ function finish(){
  const progress=awardProgress(pl,15+Number(s.stage||0)*10);
  pl.stats=pl.stats||{};
  pl.stats.oldRoadClears=Number(pl.stats.oldRoadClears||0)+1;
- // Show the trip as it ended (stops reached, final Road Pressure) before the
- // state resets for the next departure; otherwise the summary read "0/5".
+ const pressureAfter=clamp(Math.floor(s.pressure*.35),0,100);
+ // Keep the trip as it ended (stops reached, final Road Pressure) for the
+ // summary header before the live state resets for the next departure.
  const endedState={...s};
- s.stage=0;s.pressure=clamp(Math.floor(s.pressure*.35),0,100);
+ s.stage=0;s.pressure=pressureAfter;
  save(pl);
- outcome('Expedition Secured','You bring the expedition home: '+reward+'g'+(complete?' and a Road Token. The Road Tokens can now open a new region.':'.')+(progress?' XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'.':'')+routeReport,'Return',undefined,undefined,endedState)
+ const details={type:'expedition',complete,stagesCompleted:stageCount,rewardGold:reward,roadTokens:complete?1:0,
+  xpGained:Number(progress?.gained||0),levelsGained:Number(progress?.levels||0),levelBefore,levelAfter:Math.max(1,Number(pl.level||1)),
+  routeName,discoveriesThisTrip,campsThisTrip,pressureBefore,pressureAfter,trip};
+ outcome(complete?'Expedition Secured':'Field Report Secured',(complete?'You bring the expedition home: ':'You return early with: ')+reward+'g'+(complete?' and a Road Token. The Road Tokens can now open a new region.':'.')+(progress?' XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'.':'')+routeReport,'Return',null,null,details,endedState)
 }
-function outcome(title,text,kicker,skill,modifier,viewState){
+function outcome(title,text,kicker,skill,modifier,details,viewState){
  stopMusic();
  const pl=p();if(!pl)return;
  const s=viewState||ensure(pl);
  if(resultView?.render){
-  return resultView.render({player:pl,state:s,kicker,title,text,skill,modifier});
+  return resultView.render({player:pl,state:s,kicker,title,text,skill,modifier,details});
  }
  shell(header(pl,s,kicker||'EXPEDITION COMPLETE',title,text)+'<section class="exp100-explore-dock exp100-outcome"><div class="exp100-route"><span>THE ROAD REMEMBERS</span><strong>'+esc(title)+'</strong><small>'+esc(text)+'</small></div><div class="exp100-dock-actions"><button class="exp100-dock-action primary" id="outcomeReturn"><strong>Return to Ashmere</strong><span>Leave the road and return to town.</span></button></div><p class="exp100-dock-note">The result view module did not load; your result has still been recorded.</p></section>');
  document.getElementById('outcomeReturn')?.addEventListener('click',()=>{
