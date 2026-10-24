@@ -8,7 +8,13 @@
     if (!player || !dialogue || typeof setBellQuestObjective !== 'function') return false;
     const pl = player;
     const n = dialogue;
-    if(greyfen&&id==='mara'&&pl.flags?.greyfenEvidenceFiled){
+    if(greyfen&&id==='mara'&&pl.flags?.greyfenWaterlineGaugeRead&&!pl.flags?.greyfenWaterlineGaugeReported){
+      n.lines=[
+        'The gauge gives us a height and a clean, hand-cut notch. I will preserve the measurement in the Boundary Archive as an observation, not an accusation.',
+        'The notch itself does not identify who cut it or explain why. We need a dated comparison before assigning it to any route change.',
+        'The missing closure order remains our next lead. The gauge is now part of the record, but it does not settle the question of who authorized the lower crossing.'
+      ];
+    }else if(greyfen&&id==='mara'&&pl.flags?.greyfenEvidenceFiled){
       n.lines=[
         'The field note, the crossing ledger, and the earlier weekly return are now preserved together. Each record tells a different part of the same route history.',
         'The lower crossing was officially closed pending inspection, then marked open without initials. We have evidence of an alteration, not the name of the person who made it.',
@@ -80,6 +86,12 @@
       const memory='Mara filed the Blackroot seal, Greyfen boundary comparison, Reedwatch field note, and weekly route return together. The route alteration is documented, but its author and the missing closure order remain unknown.';
       if(!pl.memories.includes(memory))pl.memories.push(memory);
       setBellQuestObjective(pl,'Find the missing closure order that authorized the later change to the lower crossing.');
+    }
+    if(greyfen&&id==='mara'&&pl.flags?.greyfenWaterlineGaugeRead&&!pl.flags.greyfenWaterlineGaugeReported){
+      pl.flags.greyfenWaterlineGaugeReported=true;
+      pl.memories=Array.isArray(pl.memories)?pl.memories:[];
+      const memory='Mara filed the Greyfen Waterline Gauge reading: its newest notch records a height and appears cut by hand, but does not identify its maker or intent. The missing closure order remains unresolved.';
+      if(!pl.memories.includes(memory))pl.memories.push(memory);
     }
     if(greyfen&&id==='mara'&&pl.flags?.greyfenFieldNoteFound&&!pl.flags.greyfenFieldNoteReported){
       pl.flags.greyfenFieldNoteReported=true;
