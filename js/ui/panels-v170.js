@@ -199,11 +199,12 @@
     const worldTitle = active === 'road' ? 'Town' : active === 'dungeon' ? 'Retreat' : active === 'expedition-results' ? 'Return' : active === 'combat' || active === 'combat-results' ? 'Encounter' : 'World';
     const button = (action, icon, title, primary = false, disabled = false) =>
       '<button type="button" class="lws-btn ' + (primary ? 'primary' : 'quiet') + '" data-world-action="' + action + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '><span class="lws-btn-icon" aria-hidden="true">' + icon + '</span><span class="lws-btn-copy"><strong>' + title + '</strong></span></button>';
+    const combatAvailable = active === 'combat';
     return button('world', '⌂', worldTitle, false, lockNavigation) +
       button('inventory', '◇', 'Inventory', true) +
       button('journal', '✧', 'Journal', false, lockNavigation) +
       button('map', '⌖', 'Map', false, lockNavigation) +
-      button('combat', '⚔', 'Combat') +
+      button('combat', '⚔', 'Combat', false, !combatAvailable) +
       button('settings', '⚙', 'Settings');
   }
 

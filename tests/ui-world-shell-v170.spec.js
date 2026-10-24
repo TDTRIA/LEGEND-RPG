@@ -233,7 +233,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'town');
   });
 
-  test('settings overlay persists through the existing settings store and combat never spawns a demo enemy', async ({ page }) => {
+  test('settings persist through the existing store and combat stays unavailable until an encounter is active', async ({ page }) => {
     await enterAshmere(page, 'OverlayTraveler');
     await page.locator('.lws-bottom-bar [data-world-action="settings"]').click();
     const dialog = page.getByRole('dialog', { name: 'Settings' });
@@ -245,11 +245,10 @@ test.describe('LEGEND persistent world shell v170', () => {
     await dialog.getByRole('button', { name: /Return to the world/i }).click();
 
     const playerBefore = await page.evaluate(() => window.LegendStorage.loadPlayer());
-    await page.locator('.lws-bottom-bar [data-world-action="combat"]').click();
-    const combatDialog = page.getByRole('dialog', { name: 'No active encounter' });
-    await expect(combatDialog).toBeVisible();
-    await expect(combatDialog).toContainText('does not spawn enemies');
-    await combatDialog.getByRole('button', { name: /Return to the world/i }).click();
+    const combatButton = page.locator('.lws-bottom-bar [data-world-action="combat"]');
+    await expect(combatButton).toBeDisabled();
+    await expect(page.locator('.rpg-battle')).toHaveCount(0);
+    await expect(page.getByRole('dialog')).toHaveCount(0);
     const playerAfter = await page.evaluate(() => window.LegendStorage.loadPlayer());
     expect(playerAfter).toEqual(playerBefore);
     await expectNoHorizontalOverflow(page);
