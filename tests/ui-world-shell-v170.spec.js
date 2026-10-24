@@ -83,6 +83,7 @@ test.describe('LEGEND persistent world shell v170', () => {
       };
     });
     await expect(page.locator('#lws-panel-left')).toContainText(saved.name);
+    await expect.poll(() => page.locator('.lws-panel-left .lws-quest-item').first().evaluate(element => getComputedStyle(element).display)).toBe('block');
     await expect(page.locator('#lws-hud-health')).toHaveText(saved.health);
     await expect(page.locator('#lws-hud-gold')).toHaveText(saved.gold);
     await expect(page.getByRole('heading', { name: 'Ashmere', exact: true })).toHaveCount(1);
