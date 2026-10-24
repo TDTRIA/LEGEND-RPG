@@ -27,7 +27,21 @@
       player.hp = Math.min(player.maxHp, Math.max(0, Number(player.hp || 0)) + 8);
       levels += 1;
     }
-    return {gained, levels, level:player.level, xp:player.xp, next:player.level * 100};
+    const summary = {gained, levels, level:player.level, xp:player.xp, next:player.level * 100};
+    if (levels > 0) {
+      if (window.LegendLevelUpV152?.ensureAttributes) {
+        window.LegendLevelUpV152.ensureAttributes(player);
+      } else {
+        player.attributesV152 = player.attributesV152 || {};
+        ['might','agility','arcana','endurance','insight','fortune'].forEach(key => {
+          player.attributesV152[key] = Math.max(0, Math.floor(Number(player.attributesV152[key] || 0)));
+        });
+        player.pendingStatPointsV152 = Math.max(0, Math.floor(Number(player.pendingStatPointsV152 || 0)));
+      }
+      player.pendingStatPointsV152 = Math.max(0, Math.floor(Number(player.pendingStatPointsV152 || 0))) + levels * 2;
+      window.LegendLevelUpV152?.open?.(player, { ...summary, fromLevel: player.level - levels });
+    }
+    return summary;
   }
   window.LegendProgressionV100 = Object.freeze({award, status});
 })();
