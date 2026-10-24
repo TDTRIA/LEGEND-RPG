@@ -11,7 +11,7 @@
     const shell = renderShell;
     const esc = escapeHtml;
 
-    function render({ player, state, kicker, title, text } = {}) {
+    function render({ player, state, kicker, title, text, details } = {}) {
       if (!player || !state) return;
       const journal = player.flags?.roadFieldJournalV150 || {};
       const trip = Number(state.trips || 0);
