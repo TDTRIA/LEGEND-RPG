@@ -208,7 +208,7 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
         cleared: pl.flags.greyfenMarshExpeditionV160.sluiceCleared,
         victories: pl.stats.greyfenMarshVictories,
         wispAsh: pl.inventory.wispAsh,
-        oldRoadStage: pl.flags.roadExpeditionV100.stage
+        oldRoadStage: Number(pl.flags.roadExpeditionV100?.stage || 0)
       };
     });
     expect(afterWin).toMatchObject({ stage: 3, cleared: true, victories: 1, wispAsh: 1, oldRoadStage: 0 });
@@ -294,7 +294,7 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
         stage: s.stage,
         pressure: s.pressure,
         peatBrick: pl.inventory.peatBrick,
-        oldRoadStage: pl.flags.roadExpeditionV100.stage
+        oldRoadStage: Number(pl.flags.roadExpeditionV100?.stage || 0)
       };
     });
     expect(defeated).toMatchObject({
