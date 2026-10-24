@@ -86,6 +86,14 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(page.locator('#lws-hud-health')).toHaveText(saved.health);
     await expect(page.locator('#lws-hud-gold')).toHaveText(saved.gold);
     await expect(page.locator('.lws-panel-right [data-world-route]').first()).toBeVisible();
+    const viewportLayout = await page.evaluate(() => {
+      const root = document.getElementById('root').getBoundingClientRect();
+      const left = document.querySelector('.lws-panel-left').getBoundingClientRect();
+      const right = document.querySelector('.lws-panel-right').getBoundingClientRect();
+      return { rootLeft: root.left, rootRight: root.right, leftRailRight: left.right, rightRailLeft: right.left };
+    });
+    expect(viewportLayout.rootLeft).toBeGreaterThanOrEqual(viewportLayout.leftRailRight);
+    expect(viewportLayout.rootRight).toBeLessThanOrEqual(viewportLayout.rightRailLeft);
     await expectNoHorizontalOverflow(page);
 
     await page.locator('.lws-panel-right [data-world-route]').first().click();
