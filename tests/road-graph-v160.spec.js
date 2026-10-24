@@ -145,11 +145,14 @@ test('the optional Windbreak stop can be skipped without blocking the shared roa
   await page.locator('#push').click();
   const state = await page.evaluate(() => {
     const road = window.LegendRuntimeV120.loadPlayer().flags.roadExpeditionV100;
-    return { stage: road.stage, current: road.currentNodeIdV160, visited: road.visitedNodeIdsV160, pressure: road.pressure };
+    return { stage: road.stage, current: road.currentNodeIdV160, visited: road.visitedNodeIdsV160, discovered: road.discoveredNodeIdsV160, pressure: road.pressure };
   });
   expect(state.stage).toBe(2);
   expect(state.current).toBe('wayfarers-camp');
   expect(state.visited).not.toContain('windbreak');
+  expect(state.discovered).not.toContain('windbreak');
+  await page.locator('#exp150OpenMap').click();
+  await expect(page.getByRole('dialog', { name: 'Road map' })).toContainText('Detour skipped');
 });
 
 test('the map remains usable at 390px without horizontal overflow', async ({ page }) => {
