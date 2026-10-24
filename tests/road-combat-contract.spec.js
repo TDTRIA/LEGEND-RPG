@@ -19,7 +19,7 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
         ...overrides.player,
       };
       const state = { stage: 1, pressure: 30, poiUsed: {}, ...overrides.state };
-      const events = { saves: 0, inventory: [], progress: [], fx: [], music: [], outcomes: [], expedition: [] };
+      const events = { saves: 0, inventory: [], progress: [], fx: [], music: [], outcomes: [], expedition: [], results: [] };
       const context = {
         getPlayer: () => player,
         savePlayer: () => { events.saves += 1; },
@@ -42,6 +42,19 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
         renderShell: html => { document.body.innerHTML = html; },
         renderExpedition: text => { events.expedition.push(text); document.body.textContent = text; },
         outcome: (...args) => { events.outcomes.push(args); document.body.textContent = args.join(' '); },
+        showCombatResults: payload => {
+          events.results.push({
+            result: payload.result,
+            enemy: payload.enemy.name,
+            rewardName: payload.rewardName,
+            xpGained: payload.progress?.gained || 0,
+            routeStage: payload.routeStage
+          });
+          document.body.innerHTML = '<main class="v152-combat-results"><h1>' +
+            (payload.result === 'victory' ? 'Victory' : 'Driven Back') + '</h1><p>' +
+            payload.enemy.name + ' ' + (payload.rewardName || '') + '</p></main>';
+          return true;
+        },
         soundOn: () => false,
         startMusic: () => { events.music.push('start'); },
         stopMusic: () => { events.music.push('stop'); },
@@ -167,6 +180,27 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.events.inventory).toEqual([{ item: 'fur', count: 1 }]);
     expect(result.events.music).toContain('stop');
     expect(result.events.fx).toContain('victory');
-    await expect(page.locator('body')).toContainText('Road Goblin defeated');
+    expect(result.events.results).toEqual([{
+      result: 'victory', enemy: 'Road Goblin', rewardName: 'fur', xpGained: 29, routeStage: 2
+    }]);
+    await expect(page.locator('.v152-combat-results')).toBeVisible();
+    await expect(page.locator('.v152-combat-results')).toContainText('Victory');
   });
+
+test('a road defeat uses the same outcome flow with a clear return-to-town state', async ({ page }) => {
+  await startCombat(page, {
+    player: { hp: 1, maxHp: 100 },
+    enemy: { hp: 99, maxHp: 99, intent: 'attack', damage: [3, 7] },
+  });
+  await page.locator('#heavy').click();
+
+  const result = await page.evaluate(() => window.__combatContract);
+  expect(result.player.hp).toBe(1);
+  expect(result.state.stage).toBe(0);
+  expect(result.events.results).toEqual([{
+    result: 'defeat', enemy: 'Road Goblin', rewardName: '', xpGained: 0, routeStage: 0
+  }]);
+  await expect(page.locator('.v152-combat-results')).toContainText('Driven Back');
+});
+
 });
