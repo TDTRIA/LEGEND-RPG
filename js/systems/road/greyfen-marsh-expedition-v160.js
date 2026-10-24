@@ -389,6 +389,9 @@
       ...payload,
       locationName: 'GREYFEN MARSH PATH',
       sceneArtKey: 'greyfenMarshWalkway',
+      resultSubtitle: victory
+        ? 'The sluice is passable. The marsh has yielded another observation, not an explanation.'
+        : 'The marsh has driven you back. Return to Greyfen, recover, and prepare before another outing.',
       progressLabel: 'MARSH MILE',
       progressValue: Math.min(5, Number(s.stage || 0) + 1) + ' / 5',
       progressHint: victory ? 'The sluice is passable' : 'The outing was cut short',
