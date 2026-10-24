@@ -1,3 +1,15 @@
+## Unreleased — Playtest bug fixes (from a full live playthrough of v0.22.1)
+
+- The traveler's portrait now follows the form chosen at creation (the same image shown on that choice card) in combat, the Traveler record, and the Forge. Previously it always used the class art, so a "Man" Adventurer was shown as a woman. Saves without a form fall back to class art.
+- The Town Square NPC cards no longer let the 186px portraits spill over Mara, Brenn, and Oric's names.
+- The expedition return summary now shows the trip as it ended (stops reached and final Road Pressure) instead of the already-reset "0/5" state.
+- Resting by the fire is limited to once per stop (like Keep Watch), is recorded as a camp report in the field journal and return summary, and says plainly when you were already at full health. Previously it could be repeated to burn supplies and skip days with no healing.
+- The Bell Cellar banner art now loads (a relative `url()` in a CSS custom property resolved against `css/`), the place name is shown once in the header while the banner names the current room, the boss button no longer shows developer wording, and its battle is labeled "The Bell Cellar" instead of "The Old Road".
+- The name step clears its "Please enter a traveler name" error as you type, and Enter submits the name.
+- The locked search action at the first fork now says to choose a route first instead of "Inspect the marker first".
+- Singular wording for "1 Road Token" and "1 discovery".
+- New Playwright coverage: `tests/playtest-fixes-v0222.spec.js`.
+
 ## v0.22.0 — Realm boot sequence, game-client title screen, and cinematic transitions
 
 - Add a real browser boot sequence before the title menu. The progress readout follows script load/error events, then checks the game manifest, core screen/runtime APIs, saved-traveler presence, and opening-scene artwork before revealing the realm. This is a static browser game, so the sequence reports loading and linking systems rather than claiming that production files are compiled at runtime.
