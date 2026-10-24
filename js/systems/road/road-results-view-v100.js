@@ -32,8 +32,8 @@
         ? discoveries.slice(-3).reverse().map(entry => '<li><strong>' + esc(entry.name || 'Road discovery') + '</strong><span>' + esc(entry.place || 'The Old Road') + '</span></li>').join('')
         : '<li><strong>No landmark recorded</strong><span>There is still more of this road to learn.</span></li>';
       const campMarkup = camps.length
-        ? camps.slice(-2).reverse().map(entry => '<li><strong>' + esc(entry.place || 'Waystation') + '</strong><span>' + esc(entry.note || 'A night kept beside the road.') + '</span></li>').join('')
-        : '<li><strong>No camp report</strong><span>You did not rest or keep watch on this trip.</span></li>';
+        ? camps.slice(-2).reverse().map(entry => '<li><strong>' + esc(entry.place || 'Waystation') + ' · ' + (entry.kind === 'rest' ? 'Rested' : entry.kind === 'craft' ? 'Road poultice crafted' : 'Kept watch') + '</strong><span>' + esc(entry.note || 'A choice made at the waystation.') + '</span></li>').join('')
+        : '<li><strong>No camp report</strong><span>You did not rest, craft, or keep watch on this trip.</span></li>';
       const expeditionSummary = details?.type === 'expedition'
         ? '<section class="v152-expedition-summary" aria-label="Expedition results">' +
             '<div class="v152-expedition-summary-head"><span>OUTING DEBRIEF</span><strong>' + (details.complete ? 'A route secured' : 'A report from the road') + '</strong><p>' +
