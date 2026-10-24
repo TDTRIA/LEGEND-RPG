@@ -162,6 +162,24 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(page.locator('#legend-world-shell-root')).toBeVisible();
   });
 
+  test('real opening combat retains its native commands inside the contextual shell', async ({ page }) => {
+    await enterAshmere(page, 'CombatShellTraveler');
+    await page.evaluate(() => window.LegendRoadControllerV100.startOpeningEncounter());
+    await expect(page.locator('.rpg-battle')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'combat');
+    await expect(page.locator('#lws-panel-right')).toContainText('Encounter in progress');
+    await expect(page.locator('#strike')).toBeVisible();
+    await expect(page.locator('#skill')).toBeVisible();
+
+    await page.locator('.lws-bottom-bar [data-world-action="combat"]').click();
+    const dialog = page.getByRole('dialog', { name: 'Combat encounter' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toContainText('live encounter');
+    await dialog.getByRole('button', { name: /Return to encounter/i }).click();
+    await expect(page.locator('#skill')).toBeEnabled();
+    await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'combat');
+  });
+
   test('settings overlay persists through the existing settings store and combat never spawns a demo enemy', async ({ page }) => {
     await enterAshmere(page, 'OverlayTraveler');
     await page.locator('.lws-bottom-bar [data-world-action="settings"]').click();
