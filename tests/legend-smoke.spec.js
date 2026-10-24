@@ -1413,6 +1413,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       window.LegendRoadControllerV100.renderExpedition();
     });
     await page.locator('#finish').click();
+    await allocatePendingGrowth(page);
+    await expect.poll(() => page.evaluate(() => Number(window.LegendRuntimeV120.loadPlayer().pendingStatPointsV152 || 0))).toBe(0);
+    await expect(page.locator('#legendLevelUpOverlay')).toHaveCount(0);
     await page.locator('#outcomeReturn').click();
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
     await expect(page.locator('.ash099-lines')).toContainText(/Blackroot seal bears the same bell-mark/i);
