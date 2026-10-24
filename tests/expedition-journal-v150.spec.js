@@ -309,6 +309,14 @@ test('Road Poultice crafting is recorded in the saved journal and expedition ret
   });
   expect(crafted.report.note).toMatch(/Road Poultice.*healing potion/i);
 
+  await page.locator('#exp150OpenJournal').click();
+  const journal = page.getByRole('dialog', { name: 'Field journal' });
+  await expect(journal).toBeVisible();
+  await expect(journal).toContainText('Road poultice crafted');
+  await expect(journal).toContainText(/One healing potion was added to your pack/i);
+  await page.keyboard.press('Escape');
+  await expect(journal).toBeHidden();
+
   await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
     player.flags.roadExpeditionV100.stage = 5;
