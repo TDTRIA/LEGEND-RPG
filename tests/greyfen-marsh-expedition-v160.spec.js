@@ -268,4 +268,48 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
     });
   });
 
+
+
+  test('a Greyfen defeat returns safely to town without erasing route supplies or resetting the Old Road', async ({ page }) => {
+    await seedGreyfen(page, { className: 'Warrior', food: 1, camp: 0, hp: 1 });
+    await enterMarsh(page);
+    await page.locator('#gfm160Begin').click();
+    await page.locator('#gfm160ChooseRaised').click();
+    await page.locator('#gfm160Continue').click();
+    await page.locator('#gfm160FaceWisp').click();
+
+    await expect(page.locator('.rpg-battle')).toBeVisible();
+    await page.locator('#guard').click();
+    await expect(page.getByRole('main', { name: 'Battle defeat results' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Driven Back' })).toBeVisible();
+    await expect(page.locator('.v152-results-heading p')).toContainText('Return to Greyfen');
+
+    const defeated = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      const s = pl.flags.greyfenMarshExpeditionV160;
+      return {
+        hp: pl.hp,
+        active: s.active,
+        failed: s.failed,
+        stage: s.stage,
+        pressure: s.pressure,
+        peatBrick: pl.inventory.peatBrick,
+        oldRoadStage: pl.flags.roadExpeditionV100.stage
+      };
+    });
+    expect(defeated).toMatchObject({
+      hp: 1,
+      active: false,
+      failed: true,
+      stage: 0,
+      pressure: 16,
+      peatBrick: 1,
+      oldRoadStage: 0
+    });
+
+    await page.locator('#v152CombatReturn').click();
+    await expect(page.locator('.ash100-town')).toBeVisible();
+    await expect(page.locator('.ash100-route-strip')).toContainText('Learn Greyfen’s Old Marks');
+  });
+
 });
