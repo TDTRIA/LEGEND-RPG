@@ -113,7 +113,7 @@
         routes: 'View local routes',
         quests: 'Review contracts',
         road: 'Set out on the Old Road',
-        regions: 'Open the road network',
+        regions: 'View regional map',
         profile: 'Review traveler records'
       })[view] || 'Open destination';
       const icon = view === 'road' ? '➜' : view === 'inn' ? '⌂' : view === 'trader' ? '◇' : view === 'smith' ? '⚒' : view === 'dungeon' ? '⌑' : view === 'people' ? '♙' : '✦';
