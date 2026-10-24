@@ -317,6 +317,22 @@ test('Road Poultice crafting is recorded in the saved journal and expedition ret
   await page.keyboard.press('Escape');
   await expect(journal).toBeHidden();
 
+  await page.reload();
+  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+  const persistedCraft = await page.evaluate(() => {
+    const player = window.LegendRuntimeV120.loadPlayer();
+    return {
+      herb: Number(player.inventory.roadHerb),
+      cloth: Number(player.inventory.clothScrap),
+      potions: Number(player.inventory.potion),
+      reports: player.flags.roadFieldJournalV150?.campReports || []
+    };
+  });
+  expect(persistedCraft.herb).toBe(0);
+  expect(persistedCraft.cloth).toBe(0);
+  expect(persistedCraft.potions).toBe(1);
+  expect(persistedCraft.reports.some(entry => entry.kind === 'craft' && entry.trip === 5)).toBe(true);
+
   await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
     player.flags.roadExpeditionV100.stage = 5;
