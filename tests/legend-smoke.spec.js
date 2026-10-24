@@ -83,7 +83,8 @@ async function enterOldRoadFromDeparture(page) {
 async function allocatePendingGrowth(page) {
   const overlay = page.locator('#legendLevelUpOverlay');
   if (!(await overlay.count())) return;
-  const points = Number(await overlay.locator('#v152-growth-total').textContent() || 0);
+  const progressText = await overlay.locator('#v152-growth-total').textContent() || '0 / 0';
+  const points = Number(progressText.split('/').pop().trim());
   for (let i = 0; i < points; i += 1) {
     await overlay.locator('[data-attr-add="might"]').click();
   }
