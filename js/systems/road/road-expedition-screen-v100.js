@@ -65,11 +65,9 @@
     add(s.visitedNodeIdsV160,'south-fork');
     if(stage>=1&&s.routeChoice==='ridge'){
       add(s.visitedNodeIdsV160,'high-ridge');add(s.visitedNodeIdsV160,'ridgeway-cairn');
-      add(s.discoveredNodeIdsV160,'windbreak');
       if(s.poiUsed?.['ridge-cairn'])add(s.discoveredNodeIdsV160,'ridgeway-cairn');
     }else if(stage>=1&&s.routeChoice==='reeds'){
       add(s.visitedNodeIdsV160,'reed-cut');add(s.visitedNodeIdsV160,'lantern-ditch');
-      add(s.discoveredNodeIdsV160,'sunken-cart');
       if(s.poiUsed?.['marsh-watcher-tracks']||s.poiUsed?.['ditch-lantern'])add(s.discoveredNodeIdsV160,'lantern-ditch');
     }
     if(stage>=2)add(s.visitedNodeIdsV160,'wayfarers-camp');
@@ -196,8 +194,9 @@
       const isCurrent=currentId===id,isVisited=visited.has(id),isReachable=reachable.has(id),isDiscovered=discovered.has(id);
       const offRoute=!!(node.route&&route&&node.route!==route);
       const known=knownFromJournal(node);
-      const status=offRoute?'Route not taken':isCurrent?'You are here':isVisited?'Visited this trip':isReachable?(node.optional?'Optional detour available':'Reachable next'):isDiscovered?'Discovered, not visited':known?'Known from an earlier expedition':'Uncharted';
-      const statusClass=offRoute?'is-off-route':isCurrent?'is-current':isVisited?'is-visited':isReachable?'is-reachable':isDiscovered?'is-discovered':known?'is-known':'is-unknown';
+      const skippedOptional=!!node.optional&&node.route===route&&stage>1&&!isVisited&&!isDiscovered&&!known;
+      const status=offRoute?'Route not taken':isCurrent?'You are here':isVisited?'Visited this trip':isReachable?(node.optional?'Optional detour available':'Reachable next'):isDiscovered?'Discovered, not visited':known?'Known from an earlier expedition':skippedOptional?'Detour skipped':'Uncharted';
+      const statusClass=offRoute?'is-off-route':isCurrent?'is-current':isVisited?'is-visited':isReachable?'is-reachable':isDiscovered?'is-discovered':known?'is-known':skippedOptional?'is-known':'is-unknown';
       let action='';
       if(stage===0&&!route&&id==='high-ridge')action='<button type="button" class="exp160-map-action" data-exp160-map-route="ridge">Choose High Ridge</button>';
       else if(stage===0&&!route&&id==='reed-cut')action='<button type="button" class="exp160-map-action" data-exp160-map-route="reeds">Choose Reed Cut</button>';
