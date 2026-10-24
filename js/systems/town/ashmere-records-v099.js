@@ -11,7 +11,7 @@
       armorArt, gold, hpPct, getProgressionStatus, head, screen
     } = context;
     const items = assets.items || {};
-    const portrait = assets.classes?.[pl.className] || '';
+    const portrait = assets.travelerPortrait?.(pl) || assets.classes?.[pl.className] || '';
     const inventoryEntries = Object.entries(pl.inventory || {}).filter(([, value]) => Number(value) > 0);
     const inventoryMarkup = inventoryEntries.map(([key, value]) => {
       const art = itemIcon(key);

@@ -18,7 +18,7 @@
     const pl=p(),assets=A().items||{};
     const weapons=(D().weapons||[]).filter(w=>w.id!=='hand'),armors=(D().armors||[]).filter(a=>a.id!=='none');
     const equippedWeapon=weapons.find(w=>w.id===pl.weapon),equippedArmor=armors.find(a=>a.id===pl.armor);
-    const portrait=A().classes?.[pl.className]||'';
+    const portrait=A().travelerPortrait?.(pl)||A().classes?.[pl.className]||'';
     const loadoutItem=(name,detail,art,kind)=>'<div class="ash099-loadout-slot">'+(kind==='weapon'?weaponArtSvg(p()?.weapon):(armorArt(p()?.armor)?'<img src="'+esc(armorArt(p()?.armor))+'" alt="" aria-hidden="true" onerror="this.onerror=null;this.style.display=\'none\'">':icon('sheet')))+'<span><small>'+(kind==='weapon'?'WEAPON':'ARMOR')+'</small><strong>'+esc(name)+'</strong><em>'+esc(detail)+'</em></span></div>';
     const list=tab==='weapon'?weapons:armors;
     screen(head('Workshop',String(pl.currentRegion||'Ashmere')==='Greyfen'?'Causeway Smithy':'The Blacksmith','A good weapon is chosen. Good armor is earned. Equip what you own, or spend gold to improve your odds.',locationInterior('forge'),'smith'),

@@ -102,11 +102,19 @@
       return window.LegendProgressionV100?.status?.(player) ||
         { level: Math.max(1, Number(player.level || 1)), xp: Number(player.xp || 0), next: 100, progressPercent: 0 };
     }
+    const PLACE_TITLE = 'The Bell Cellar';
+    const PLACE_SUBTITLE = 'A sealed stair lies beneath the old archive. Something below has been answering the town bell.';
     function titleMarkup(pl, title, subtitle) {
-      const art = 'assets/generated/locations/bell-cellar-undercroft.webp';
+      // A relative url() inside a CSS custom property resolves against the
+      // stylesheet that reads it (css/), not the page, which left the banner
+      // as an empty dark box. Resolve the art against the page first.
+      const art = new URL('assets/generated/locations/bell-cellar-undercroft.webp', document.baseURI).href;
+      // The screen header already names the place, so the banner only names
+      // the current room and skips a subtitle that would repeat the header.
+      const detail = subtitle && subtitle !== PLACE_SUBTITLE ? '<p>' + esc(subtitle) + '</p>' : '';
       return '<div class="bell-vault-banner" style="--bell-vault-scene:url(\'' + art + '\')">' +
-        '<div class="bell-vault-overline">ASHMERE · BELOW THE ARCHIVE</div>' +
-        '<h1>' + esc(title) + '</h1><p>' + esc(subtitle) + '</p></div>';
+        '<div class="bell-vault-overline">OLD BELL COMPLEX</div>' +
+        '<h1>' + esc(title) + '</h1>' + detail + '</div>';
     }
     function action(id, label, detail, sceneLabel, kind = '') {
       return '<button type="button" class="bell-vault-choice ' + kind + '" id="' + id +
@@ -197,6 +205,7 @@
         id: 'bell-vault-mirebound-sentinel', name: 'Mirebound Sentinel', behavior: 'flicker',
         hp, maxHp: hp, damage: [minDamage, maxDamage], reward: run.tookFragment ? 'bellFragment' : 'roadHerb',
         dungeonV100: true,
+        locationLabel: 'THE BELL CELLAR',
         text: run.enemyWeakened
           ? 'The Mirebound Sentinel rises from the bell cradle, its runes dulled by the path you found.'
           : 'The Mirebound Sentinel unfolds from the reliquary wall. Its drowned armor moves as if the bell were ringing underwater.'
@@ -262,7 +271,7 @@
       const weapon = entry(pl.weapon), armor = armorEntry(pl.armor);
       const level = Number(status.level || 1);
       const isUnlocked = !!pl.flags?.firstRoadReturnSeen;
-      let title = 'The Bell Cellar', subtitle = 'A sealed stair lies beneath the old archive. Something below has been answering the town bell.';
+      let title = PLACE_TITLE, subtitle = PLACE_SUBTITLE;
       let story = '', choices = '', roomLabel = 'A sealed stair', roomNumber = 'ENTRY', hint = '';
       if (!isUnlocked) {
         title = 'A Sealed Stair';
@@ -283,7 +292,7 @@
         choices = action('vaultRetry', 'Descend again', 'The rooms have settled, but the keeper may wake once more.', 'Descending into the cellar', 'primary') +
           '<button id="vaultReturn" type="button" class="bell-vault-secondary" data-legend-scene-transition="Reporting back to Ashmere">Return to Ashmere</button>';
       } else if (!run.active) {
-        title = 'The Bell Cellar';
+        title = 'The Sealed Stair';
         subtitle = 'A first dungeon for a world that keeps its dead and its questions close.';
         story = '<p>Below the archive, water beads on stone cut with the same worn bell-mark found along the Old Road. A few steps descend into dark, and the air below moves in slow, measured breaths.</p>' +
           '<div class="bell-vault-room-card"><span>ROOM 1 · THE SILTED STEPS</span><h2>Before the first descent</h2><p>Make sure your health is steady and that your weapon and armor are equipped. You can retreat to town between rooms.</p></div>';
@@ -316,7 +325,7 @@
         story = '<p>' + esc(run.reliquaryNote || 'The sentinel begins to rise.') + '</p>' +
           '<div class="bell-vault-keeper-card"><img src="assets/generated/enemies/mirebound-sentinel.webp" alt="Mirebound Sentinel" loading="eager" decoding="async"><div><span>VAULT ENCOUNTER</span><h2>Mirebound Sentinel</h2><p>Read its intent. Your equipped weapon and armor directly affect the fight; level affects its health and damage.</p></div></div>' +
           (run.enemyWeakened ? '<p class="bell-vault-after-note">Your approach has weakened the sentinel.</p>' : '<p class="bell-vault-after-note">No weakness found. Guard its heavy wind-up and use your class technique.</p>');
-        choices = action('vaultFight', 'Confront the sentinel', 'Begin turn-based combat using the game’s existing fight, guard, ACT, item, and retreat commands.', 'Entering the bell chamber', 'primary') +
+        choices = action('vaultFight', 'Confront the sentinel', 'Face the drowned keeper. Watch its wind-up, guard the heavy blows, and strike when it staggers.', 'Entering the bell chamber', 'primary') +
           '<button id="vaultRetreat" type="button" class="bell-vault-secondary" data-legend-scene-transition="Returning to Ashmere">Retreat to Ashmere</button>';
       } else if (Number(run.room) === 3 && run.battleWon) {
         title = 'The Bell Chamber'; roomLabel = 'The reliquary'; roomNumber = 'ROOM 4 / 4';
@@ -326,12 +335,12 @@
       }
       const body = '<section class="bell-vault-v100">' +
         titleMarkup(pl, title, subtitle) +
-        '<div class="bell-vault-body"><div class="bell-vault-room-heading"><span>' + esc(roomNumber) + '</span><strong>' + esc(roomLabel) + '</strong><em>OLD BELL COMPLEX</em></div>' +
+        '<div class="bell-vault-body"><div class="bell-vault-room-heading"><span>' + esc(roomNumber) + '</span><strong>' + esc(roomLabel) + '</strong></div>' +
         story +
         '<div class="bell-vault-actions">' + choices + '</div>' +
         '<div class="bell-vault-footer"><div><span>TRAVELER</span><strong>' + esc(pl.username || 'Traveler') + ' · LV ' + level + '</strong></div><div><span>HEALTH</span><strong>' + Number(pl.hp || 0) + ' / ' + Number(pl.maxHp || 1) + '</strong></div><div><span>GOLD</span><strong>' + Number(pl.gold || 0) + 'g</strong></div><div><span>LOADOUT</span><strong>' + esc(weapon.name || 'Worn blade') + ' / ' + esc(armor.name || 'No armor') + '</strong></div></div>' +
         '</div></section>';
-      screen(head('ASHMERE · BELOW THE BELL', title, subtitle,
+      screen(head('ASHMERE · BELOW THE BELL', PLACE_TITLE, PLACE_SUBTITLE,
         typeof locationInterior === 'function' ? locationInterior('archive') : '', 'archive'), body);
 
       document.getElementById('vaultBegin')?.addEventListener('click', () => startRun(pl));

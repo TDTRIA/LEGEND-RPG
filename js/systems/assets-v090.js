@@ -147,6 +147,20 @@
       if(n.includes('mirebound') || n.includes('sentinel')) return this.enemies.mireboundSentinel;
       if(n.includes('wisp') || n.includes('spirit') || n.includes('lantern')) return this.enemies.lanternWisp;
       return '';
+    },
+    // The traveler's own portrait follows the form chosen at creation, so a
+    // player who chose "Man" never sees a woman's face in combat or records.
+    // Creation shows these same images for each form; class art remains the
+    // fallback for older saves that predate the form choice.
+    travelerPortrait(player) {
+      const form = String(player?.gender || player?.creationV094?.gender?.id || '').toLowerCase();
+      const byForm = {
+        woman: this.classes.Adventurer,
+        man: this.classes.Warrior,
+        nonbinary: this.classes.Mage,
+        unspoken: this.ui.serviceIcons.traveler
+      };
+      return byForm[form] || this.classes[player?.className] || this.ui.serviceIcons.traveler || '';
     }
   };
 })();
