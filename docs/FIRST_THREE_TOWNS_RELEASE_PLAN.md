@@ -4,7 +4,7 @@
 
 **Target scope:** Ashmere, the Old Road, Greyfen, and Ironpass. Blackwood and the Ruined March may remain visible as future destinations, but must not offer broken or misleading travel actions in this release.
 
-**Status note:** this is a production plan, not a claim that all listed content is implemented. Current source foundations exist for Ashmere, the Old Road, and Greyfen. Ironpass is not yet a playable town. The detailed route work in the Cowork Old Road redesign is an additive implementation slice and must pass browser QA before it is treated as complete.
+**Status note (2026-10-24):** this is a production plan, not a claim that all listed content is implemented. Current source foundations exist for Ashmere, the Old Road, and Greyfen. Ironpass is not yet a playable town. The connected Old Road topology and optional Windbreak/Sunken Cart stops were merged to `main` in PR #36 (`988886b`); its Playwright run passed **136 tests with 1 skipped**. The overall three-town release remains incomplete, and the Ashmere progression/results follow-up is still undergoing regression testing.
 
 ## 1. Design rules
 
