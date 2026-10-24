@@ -2,6 +2,57 @@
 
 Last updated: 2026-10-24. GitHub `main` is the source of truth; read this before changing code.
 
+## Multi-AI coordination — read before starting any work
+
+Several AI assistants work on this repository, sometimes at the same time. These rules keep them from overwriting or conflicting with each other. They apply to every assistant and take priority over older workflow notes below.
+
+### 1. Claim the work first
+- Every task needs a GitHub issue. Before writing code, search open issues and open PRs (`gh pr list --repo TDTRIA/LEGEND-RPG`) for the same area. If someone else already claimed it, don't start parallel work. Pick another task or ask the owner.
+- Claim a task by commenting on its issue: `Claimed by <assistant name> — branch <branch-name> — files/areas: <list>`. Remove the claim or close the issue when you finish or give up.
+- Add one line for your branch to the **Active work** table below. Remove it when the PR is merged or closed.
+
+### 2. Stay in your lane
+- One task per branch and one assistant per branch. Never push to another assistant's branch.
+- Branch names: `fix/<topic>`, `feat/<topic>`, `docs/<topic>`, `test/<topic>`.
+- Only edit the files and systems named in your claim. If you need to change a file owned by another active branch, stop and note it in your PR or issue instead of editing it.
+- Edit the existing file instead of creating a new versioned copy (for example, don't add `foo-v170.js` next to `foo-v150.js`) unless the owner asks for a new version. Duplicate versioned files cause hidden conflicts and dead code.
+
+### 3. Keep branches short-lived
+- Start from the latest `main`: `git fetch origin && git checkout -b <branch> origin/main`.
+- Before opening a PR, and again before merging, update from `main` (`git rebase origin/main` or merge `main`) and re-run the affected tests.
+- Keep PRs small and focused, ideally one feature or one set of related fixes. Open them early (draft is fine) so other assistants can see what is in progress.
+- Don't leave work sitting in a draft PR. If a branch is abandoned or superseded, close the PR and say why.
+
+### 4. Shared files: conflict hot spots
+These files are touched by nearly every change. Follow these rules for them:
+- **Version labels** (`package.json`, `js/version-*.js`, `LEGEND_DATA.VERSION`, `index.html` `?v=` cache-busters, version assertions in tests): don't bump them in feature or fix branches. The owner, or one assistant the owner names, bumps the version at release time after merging.
+- **`CHANGELOG.md`**: add entries only under a single `## Unreleased` heading at the top. Add your bullets there and don't rewrite other entries. If the heading is missing, create it.
+- **`AI_HANDOFF.md`**: change only your own row in the Active work table, plus a short note in the section for your area. Don't rewrite or reorder other sections. Larger handoff rewrites need their own `docs/` PR.
+- **`index.html` script/style list**: add or remove only your own tags, and keep the existing load order.
+- **`README.md`**: release-time only, together with the version bump.
+
+### 5. Merging
+- Only merge a PR when the **Playwright Tests** check passes and the branch is up to date with `main`.
+- Merge one PR at a time. After each merge, the other open branches update from `main` before they merge.
+- Don't merge another assistant's PR unless the owner asks.
+- Don't force-push to `main`, and don't rewrite shared history.
+
+### 6. Handing off
+- When you stop, whether finished, out of credits, or blocked, push your branch, update your Active work row with its status, and leave a PR or issue comment with: what is done, what isn't, test status, and the next step.
+
+### Active work
+One row per open branch. Add your row when you start and remove it when the PR is merged or closed.
+
+| Branch | PR | Assistant | Area / files | Status |
+|---|---|---|---|---|
+| `fix/playtest-bugs-v0221` | [#40](https://github.com/TDTRIA/LEGEND-RPG/pull/40) | Perplexity Computer | Traveler portrait, Town Square cards, camp rest/results, Bell Cellar header, name field, plurals | Open, awaiting CI/review |
+| `docs/ai-coordination-rules` | this PR | Perplexity Computer | `AI_HANDOFF.md` (this section only) | Open |
+| `feat/greyfen-marsh-expedition-v160` | [#39](https://github.com/TDTRIA/LEGEND-RPG/pull/39) | Unknown, owner please fill in | Greyfen Marsh Path expedition | Draft |
+| `feat/expedition-progression-results-v152` | [#34](https://github.com/TDTRIA/LEGEND-RPG/pull/34) | Unknown, owner please fill in | Attribute growth and expedition results (check overlap with merged progression work) | Draft |
+| `reboot/first-playable-expedition` | [#12](https://github.com/TDTRIA/LEGEND-RPG/pull/12) | Unknown, owner please fill in | Reboot prototype | Draft |
+| `design/greyfen-culture-cast` | [#7](https://github.com/TDTRIA/LEGEND-RPG/pull/7) | Unknown, owner please fill in | Greyfen culture and cast (design) | Draft |
+| `design/ashmere-character-arcs` | [#6](https://github.com/TDTRIA/LEGEND-RPG/pull/6) | Unknown, owner please fill in | Ashmere character arcs (design) | Draft |
+
 ## Active PR — v0.22.1 Runway art pass, daily contracts, and Road Cache (PR #33)
 
 **Status: open PR, validation pending; not merged or deployed.** Branch: `feat/runway-art-daily-quests-v023`. Main remains v0.22.0 until PR #33 is reviewed and passes CI.
@@ -253,7 +304,7 @@ Scripts in `package.json`:
 If a test fails, retain failure details and distinguish app bugs from environment/deployment failures. Never claim tests passed unless the run completed.
 
 ## Safe workflow for any AI assistant
-1. Read this handoff and the relevant source/tests first.
+1. Read this handoff, especially **Multi-AI coordination** at the top, and the relevant source/tests first. Claim the task before editing.
 2. Inspect the current `main` branch and recent commits; don't rely on stale chat context.
 3. Explain the intended change and risks before broad/irreversible edits.
 4. Make the smallest coherent change; keep the browser architecture and preserve working routes/save behavior unless explicitly authorized.
@@ -261,7 +312,7 @@ If a test fails, retain failure details and distinguish app bugs from environmen
 6. Run the targeted test, then broader tests when feasible.
 7. Review diffs and check desktop/mobile where possible.
 8. Commit with a descriptive message. Don't claim deployment or test success without evidence.
-9. Update this handoff with what is fixed, committed, deployed, and verified.
+9. Update this handoff with what is fixed, committed, deployed, and verified. Only edit your own Active work row and area notes (see Multi-AI coordination).
 10. If an AI reaches its usage limit, this file plus Git history should allow the next assistant to resume without making the owner reconstruct the project.
 
 ## Budget/tooling notes
