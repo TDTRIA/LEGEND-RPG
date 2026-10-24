@@ -1,0 +1,610 @@
+/* LEGEND UI Design System v160 — phase 1 proof layer.
+   Presentation-only overrides for title/realm entry, Ashmere/services, and Old Road/map.
+   Game logic, copy, handlers, IDs, save state, rewards and version labels remain untouched. */
+:root {
+  color-scheme: dark;
+  --legend-ui-night: #070b08;
+  --legend-ui-iron: #111812;
+  --legend-ui-wood: #1b231a;
+  --legend-ui-wood-light: #293126;
+  --legend-ui-brass: #bfa064;
+  --legend-ui-amber: #e7c982;
+  --legend-ui-parchment: #efe7d4;
+  --legend-ui-muted: #b0b8a8;
+  --legend-ui-moss: #829b74;
+  --legend-ui-water: #9cb9b4;
+  --legend-ui-danger: #b96f5f;
+  --legend-ui-line: rgba(215,194,139,.23);
+  --legend-ui-shadow: rgba(0,0,0,.48);
+  --legend-ui-focus: #ffe6a0;
+}
+#root { color: var(--legend-ui-parchment); accent-color: var(--legend-ui-amber); }
+#root button, .title-v100 button { font-family: inherit; touch-action: manipulation; }
+#root button:focus-visible,
+#root a:focus-visible,
+#root input:focus-visible,
+#root textarea:focus-visible,
+#root select:focus-visible,
+.title-v100 button:focus-visible {
+  outline: 2px solid var(--legend-ui-focus) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 4px rgba(231,201,130,.16), 0 5px 18px rgba(0,0,0,.3) !important;
+}
+#root button:disabled, .title-v100 button:disabled { cursor: not-allowed; }
+@media (prefers-reduced-motion: reduce) {
+  #root *, #root *::before, #root *::after,
+  .title-v100 *, .title-v100 *::before, .title-v100 *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
+
+/* Proof 1: cinematic title / realm entrance */
+.title-v100 {
+  position: relative !important;
+  min-height: 100svh !important;
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+  isolation: isolate !important;
+  color: var(--legend-ui-parchment) !important;
+  background: radial-gradient(ellipse at 68% 47%,rgba(217,183,104,.10),transparent 34%),#060a07 !important;
+}
+.title-v100::before {
+  content: "" !important;
+  position: absolute !important;
+  z-index: 7 !important;
+  inset: 10px !important;
+  border: 1px solid rgba(231,201,130,.23) !important;
+  box-shadow: inset 0 0 0 3px rgba(4,8,5,.48),inset 0 0 0 4px rgba(231,201,130,.07) !important;
+  pointer-events: none !important;
+}
+.title-v100 .v120-title-backdrop {
+  object-position: center 52% !important;
+  filter: saturate(.92) contrast(1.09) brightness(.75) !important;
+}
+.title-v100::after {
+  background:
+    linear-gradient(90deg,rgba(3,7,4,.90),rgba(3,7,4,.68) 31%,rgba(3,7,4,.22) 57%,rgba(3,7,4,.10)),
+    linear-gradient(180deg,rgba(3,7,4,.58),transparent 23%,transparent 68%,rgba(3,7,4,.82)),
+    radial-gradient(ellipse at 69% 46%,rgba(231,201,130,.10),transparent 33%) !important;
+}
+.title-v100 .portal100-header {
+  padding: clamp(14px,2vw,24px) clamp(24px,4.2vw,66px) !important;
+  background: linear-gradient(180deg,rgba(4,8,5,.84),rgba(4,8,5,.18) 74%,transparent) !important;
+}
+.title-v100 .portal100-brand span { color: var(--legend-ui-amber) !important; letter-spacing: .22em !important; }
+.title-v100 .v120-title-main {
+  box-sizing: border-box !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-height: 100svh !important;
+  padding: clamp(112px,14vh,148px) clamp(30px,5vw,76px) clamp(78px,10vh,100px) !important;
+}
+.title-v100 .v120-title-hero {
+  box-sizing: border-box !important;
+  width: min(530px,42vw) !important;
+  max-width: 530px !important;
+  padding: clamp(22px,2.2vw,32px) !important;
+  border: 1px solid rgba(231,201,130,.68) !important;
+  border-radius: 3px !important;
+  background: linear-gradient(145deg,rgba(24,33,24,.97),rgba(7,12,8,.985) 70%) !important;
+  box-shadow: 0 28px 80px rgba(0,0,0,.60),inset 0 0 0 4px rgba(3,7,4,.88),inset 0 0 0 5px rgba(231,201,130,.17),inset 0 1px rgba(255,246,211,.12) !important;
+  backdrop-filter: none !important;
+}
+.title-v100 .v120-title-hero::before { inset: 8px !important; border-color: rgba(231,201,130,.25) !important; }
+.title-v100 .v120-title-hero::after {
+  content: "" !important; position: absolute !important; inset: 0 !important; z-index: 0 !important; pointer-events: none !important;
+  background:
+    linear-gradient(90deg,rgba(231,201,130,.58),transparent) left top/45px 1px no-repeat,
+    linear-gradient(180deg,rgba(231,201,130,.58),transparent) left top/1px 45px no-repeat,
+    linear-gradient(270deg,rgba(231,201,130,.58),transparent) right top/45px 1px no-repeat,
+    linear-gradient(180deg,rgba(231,201,130,.58),transparent) right top/1px 45px no-repeat,
+    linear-gradient(90deg,rgba(231,201,130,.58),transparent) left bottom/45px 1px no-repeat,
+    linear-gradient(0deg,rgba(231,201,130,.58),transparent) left bottom/1px 45px no-repeat,
+    linear-gradient(270deg,rgba(231,201,130,.58),transparent) right bottom/45px 1px no-repeat,
+    linear-gradient(0deg,rgba(231,201,130,.58),transparent) right bottom/1px 45px no-repeat !important;
+}
+.title-v100 .v120-title-hero .v120-legend-logo { max-height: clamp(100px,16vh,164px) !important; margin-bottom: 15px !important; }
+.title-v100 .v120-title-hero > p { max-width: 460px !important; color: #e4e5d9 !important; line-height: 1.58 !important; }
+.title-v100 .v120-divider { gap: 9px !important; margin: 16px 0 13px !important; }
+.title-v100 .v120-divider span { background: linear-gradient(90deg,rgba(231,201,130,.62),rgba(231,201,130,.08)) !important; }
+.title-v100 .v120-traveler-line {
+  margin-bottom: 16px !important; padding: 13px 10px !important;
+  border: 1px solid rgba(231,201,130,.19) !important;
+  background: linear-gradient(90deg,rgba(231,201,130,.07),rgba(3,7,4,.19)) !important;
+}
+.title-v100 .v120-avatar {
+  border-radius: 3px !important; border-color: rgba(231,201,130,.55) !important;
+  background: linear-gradient(145deg,#293326,#0c120d) !important;
+}
+.title-v100 .v136-menu-heading { color: var(--legend-ui-amber) !important; letter-spacing: .22em !important; }
+.title-v100 .v136-menu-list { gap: 7px !important; }
+.title-v100 .v136-menu-btn {
+  min-height: 56px !important;
+  border: 1px solid rgba(215,194,139,.30) !important;
+  border-radius: 2px !important;
+  background: linear-gradient(100deg,rgba(33,43,31,.94),rgba(8,13,9,.92)) !important;
+  box-shadow: inset 0 1px rgba(255,245,211,.07),0 5px 17px rgba(0,0,0,.15) !important;
+  color: var(--legend-ui-parchment) !important;
+}
+.title-v100 .v136-menu-btn:hover,
+.title-v100 .v136-menu-btn:focus-visible {
+  border-color: rgba(255,230,160,.82) !important;
+  background: linear-gradient(100deg,rgba(55,60,39,.98),rgba(17,24,16,.98)) !important;
+  transform: translateX(2px) !important;
+}
+.title-v100 .v136-menu-primary {
+  border-color: rgba(255,230,160,.88) !important;
+  background: linear-gradient(100deg,rgba(103,84,43,.98),rgba(33,34,22,.98)) !important;
+  box-shadow: inset 0 1px rgba(255,248,219,.16),0 7px 22px rgba(0,0,0,.22) !important;
+}
+.title-v100 .v136-menu-icon {
+  border: 1px solid rgba(231,201,130,.34) !important;
+  border-radius: 2px !important;
+  background: linear-gradient(145deg,rgba(215,194,139,.12),rgba(1,5,3,.45)) !important;
+}
+.title-v100 .v136-menu-copy small { color: #bec5b6 !important; }
+
+/* Realm artwork stays visible on desktop and stacks below the title on narrow screens. */
+.title-v100 .v140-realm-overview.v151-realm-art {
+  display: block !important; box-sizing: border-box !important;
+  top: 50% !important; right: clamp(20px,4.2vw,66px) !important;
+  width: min(390px,31vw) !important; padding: 14px !important;
+  transform: translateY(-34%) !important;
+  border: 1px solid rgba(231,201,130,.58) !important; border-radius: 3px !important;
+  background: linear-gradient(145deg,rgba(16,24,16,.97),rgba(4,8,5,.97)) !important;
+  box-shadow: 0 28px 80px rgba(0,0,0,.58),inset 0 0 0 3px rgba(0,0,0,.24),inset 0 1px rgba(255,247,214,.10) !important;
+  backdrop-filter: none !important;
+}
+.title-v100 .v151-realm-art .v140-realm-overview-head { padding: 2px 2px 11px !important; }
+.title-v100 .v151-realm-feature {
+  min-height: 220px !important; margin-top: 10px !important;
+  border: 1px solid rgba(231,201,130,.28) !important; border-radius: 2px !important; background: #0b120c !important;
+}
+.title-v100 .v151-realm-feature > img { filter: saturate(.86) contrast(1.08) brightness(.83) !important; }
+.title-v100 .v151-realm-feature-shade {
+  background: linear-gradient(90deg,rgba(3,7,4,.30),transparent 70%),linear-gradient(0deg,rgba(2,6,4,.96),rgba(2,6,4,.06) 80%) !important;
+}
+.title-v100 .v151-realm-destination {
+  grid-template-columns: 92px minmax(0,1fr) !important;
+  border: 1px solid rgba(215,194,139,.21) !important; border-radius: 2px !important;
+  background: linear-gradient(100deg,rgba(32,42,30,.86),rgba(7,12,8,.94)) !important;
+}
+.title-v100 .v151-realm-destination > img { filter: saturate(.8) brightness(.86) !important; }
+.title-v100 .v140-realm-player-state {
+  border: 1px solid rgba(231,201,130,.25) !important; border-radius: 2px !important;
+  background: linear-gradient(95deg,rgba(191,160,100,.10),rgba(0,0,0,.17)) !important;
+}
+.title-v100 .portal100-footer { padding: 14px clamp(22px,4.2vw,66px) !important; letter-spacing: .14em !important; }
+
+@media (max-width: 1160px) and (min-width: 981px) {
+  .title-v100 .v120-title-main { padding-left: 25px !important; padding-right: 25px !important; }
+  .title-v100 .v120-title-hero { width: min(500px,43vw) !important; padding: 20px !important; }
+  .title-v100 .v140-realm-overview.v151-realm-art { width: min(370px,34vw) !important; right: 20px !important; padding: 11px !important; }
+  .title-v100 .v151-realm-feature { min-height: 176px !important; }
+  .title-v100 .v151-realm-destination { grid-template-columns: 76px minmax(0,1fr) !important; }
+}
+@media (max-width: 980px) {
+  .title-v100 { overflow-y: visible !important; min-height: 100svh !important; padding-bottom: 0 !important; }
+  .title-v100 .v120-title-main { min-height: auto !important; padding: 104px 15px 16px !important; align-items: flex-end !important; }
+  .title-v100 .v120-title-hero { width: min(620px,100%) !important; max-width: 620px !important; margin: 0 auto !important; padding: 18px !important; }
+  .title-v100 .v120-title-hero .v120-legend-logo { max-height: clamp(78px,12vh,112px) !important; margin-bottom: 11px !important; }
+  .title-v100 .v120-title-hero > p { font-size: .88rem !important; line-height: 1.45 !important; }
+  .title-v100 .v140-realm-overview.v151-realm-art {
+    position: relative !important; top: auto !important; right: auto !important; display: block !important;
+    width: calc(100% - 30px) !important; max-width: 620px !important; margin: 0 auto 74px !important; transform: none !important; padding: 12px !important;
+  }
+  .title-v100 .v151-realm-feature { min-height: 185px !important; }
+  .title-v100 .portal100-footer { position: relative !important; inset: auto !important; gap: 10px !important; margin-top: 12px !important; padding: 12px 16px 16px !important; }
+}
+@media (max-width: 520px) {
+  .title-v100::before { inset: 5px !important; }
+  .title-v100 .portal100-header { padding: 12px 17px !important; }
+  .title-v100 .v120-title-main { padding: 90px 12px 12px !important; }
+  .title-v100 .v120-title-hero { padding: 15px 12px !important; }
+  .title-v100 .v120-title-hero .v120-legend-logo { max-height: 83px !important; margin-bottom: 9px !important; }
+  .title-v100 .v120-divider { margin: 10px 0 8px !important; }
+  .title-v100 .v120-divider b { font-size: .48rem !important; letter-spacing: .12em !important; }
+  .title-v100 .v120-traveler-line { padding: 9px 6px !important; margin-bottom: 10px !important; }
+  .title-v100 .v136-menu-btn { min-height: 50px !important; }
+  .title-v100 .v136-menu-icon { width: 34px !important; height: 34px !important; }
+  .title-v100 .v140-realm-overview.v151-realm-art { margin-bottom: 62px !important; }
+  .title-v100 .v151-realm-feature { min-height: 154px !important; }
+  .title-v100 .v151-realm-destination { grid-template-columns: 76px minmax(0,1fr) !important; }
+  .title-v100 .portal100-footer { font-size: .49rem !important; flex-wrap: wrap !important; }
+}
+
+/* Proof 2: town hub and service frame */
+.ash100-town {
+  box-sizing: border-box !important; width: min(1420px,100%) !important; min-height: 100svh !important;
+  margin: 0 auto !important; padding: clamp(7px,1.7vw,22px) !important; color: var(--legend-ui-parchment) !important;
+  background: radial-gradient(ellipse at 50% 0%,rgba(91,113,76,.10),transparent 45%),linear-gradient(180deg,#0a100b,#070b08 60%,#060907) !important;
+}
+.ash100-hero {
+  min-height: clamp(245px,27vw,350px) !important;
+  border: 1px solid rgba(231,201,130,.43) !important; border-radius: 3px !important; background: #101711 !important;
+  box-shadow: 0 18px 44px rgba(0,0,0,.34),inset 0 0 0 3px rgba(0,0,0,.20) !important;
+}
+.ash100-hero > img { object-position: center 56% !important; filter: saturate(.87) contrast(1.08) brightness(.87) !important; }
+.ash100-hero::after {
+  background: linear-gradient(90deg,rgba(3,7,4,.86),rgba(3,7,4,.30) 58%,rgba(3,7,4,.10)),linear-gradient(0deg,rgba(2,6,4,.93),rgba(2,6,4,.04) 68%) !important;
+}
+.ash100-hero-copy { left: clamp(18px,3.3vw,42px) !important; bottom: clamp(18px,3.2vw,34px) !important; max-width: min(580px,83%) !important; }
+.ash100-hero-copy .ash099-kicker { color: var(--legend-ui-amber) !important; letter-spacing: .22em !important; }
+.ash100-hero-copy h1 {
+  color: #f6edda !important; font-family: Georgia,"Times New Roman",serif !important; font-weight: 500 !important;
+  line-height: .95 !important; letter-spacing: .015em !important; text-shadow: 0 4px 24px #000 !important;
+}
+.ash100-hero-copy p { color: #e0e2d4 !important; text-shadow: 0 2px 10px #000 !important; }
+.ash100-town .ash099-topnav {
+  grid-template-columns: repeat(6,minmax(0,1fr)) !important; gap: 4px !important; margin: 10px 0 14px !important; padding: 5px !important;
+  border: 1px solid rgba(231,201,130,.32) !important; border-radius: 3px !important;
+  background: linear-gradient(180deg,rgba(26,35,25,.97),rgba(6,11,7,.97)) !important;
+  box-shadow: 0 8px 25px rgba(0,0,0,.28),inset 0 1px rgba(255,246,211,.06) !important;
+}
+.ash100-town .ash099-topnav .ash099-footer-item {
+  display: flex !important; flex-direction: column !important; justify-content: center !important; gap: 4px !important;
+  min-width: 0 !important; min-height: 54px !important; padding: 7px 4px !important;
+  border: 1px solid transparent !important; border-radius: 2px !important; background: transparent !important;
+  color: #c2c8b8 !important; font-size: .65rem !important; letter-spacing: .11em !important; text-transform: uppercase !important;
+}
+.ash100-town .ash099-topnav .ash099-footer-item.active {
+  border-color: rgba(231,201,130,.48) !important; background: linear-gradient(180deg,rgba(191,160,100,.18),rgba(191,160,100,.04)) !important;
+  color: var(--legend-ui-amber) !important; box-shadow: inset 0 -2px rgba(231,201,130,.48) !important;
+}
+.ash100-town .ash099-topnav .ash099-footer-item:hover,
+.ash100-town .ash099-topnav .ash099-footer-item:focus-visible {
+  border-color: rgba(231,201,130,.55) !important; background: rgba(191,160,100,.08) !important; color: #fff2d2 !important;
+}
+.ash100-town .ash100-route-dock { margin: 0 0 10px !important; }
+.ash100-town .ash100-route-strip {
+  grid-template-columns: 42px minmax(0,1fr) auto !important; gap: 12px !important; padding: 13px 15px !important;
+  border: 1px solid rgba(231,201,130,.42) !important; border-left: 3px solid var(--legend-ui-amber) !important; border-radius: 2px !important;
+  background: linear-gradient(105deg,rgba(49,45,29,.92),rgba(15,22,15,.97) 50%,rgba(7,12,8,.97)) !important;
+  box-shadow: 0 9px 24px rgba(0,0,0,.25),inset 0 1px rgba(255,246,211,.07) !important;
+}
+.ash100-town .ash100-route-strip-icon {
+  border: 1px solid rgba(231,201,130,.35) !important; border-radius: 2px !important;
+  background: rgba(231,201,130,.07) !important; color: var(--legend-ui-amber) !important;
+}
+.ash100-town .ash100-route-strip-copy > span { color: var(--legend-ui-amber) !important; font-size: .61rem !important; letter-spacing: .18em !important; text-transform: uppercase !important; }
+.ash100-town .ash100-route-strip-copy strong { color: var(--legend-ui-parchment) !important; font-family: Georgia,"Times New Roman",serif !important; font-size: 1.12rem !important; font-weight: 500 !important; }
+.ash100-town .ash100-route-strip-copy small { color: #bdc5b6 !important; }
+.ash100-town .ash100-status {
+  grid-template-columns: minmax(0,1.2fr) minmax(140px,.8fr) minmax(0,1fr) !important; gap: clamp(12px,2vw,24px) !important;
+  padding: 13px 5px !important; border: 0 !important; border-bottom: 1px solid rgba(231,201,130,.25) !important;
+  border-radius: 0 !important; background: linear-gradient(90deg,rgba(191,160,100,.05),transparent 62%) !important;
+}
+.ash100-town .ash100-status > div { min-width: 0 !important; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; }
+.ash100-town .ash100-status span { color: var(--legend-ui-amber) !important; font-size: .61rem !important; letter-spacing: .13em !important; }
+.ash100-town .ash100-status strong { color: #f0ead9 !important; font-variant-numeric: tabular-nums !important; }
+.ash100-town .ash100-status small { color: var(--legend-ui-muted) !important; }
+.ash100-town .ash100-status-health i { border-radius: 1px !important; background: #252e23 !important; }
+.ash100-town .ash100-status-health i b { background: linear-gradient(90deg,#78966e,#d9bd78) !important; border-radius: 1px !important; }
+.ash100-town .ash100-destination-section { padding: 14px 0 10px !important; }
+.ash100-town .ash100-section-head { margin-bottom: 14px !important; }
+.ash100-town .ash100-section-head .ash099-kicker { color: var(--legend-ui-amber) !important; letter-spacing: .20em !important; }
+.ash100-town .ash100-section-head h2 { color: var(--legend-ui-parchment) !important; font-family: Georgia,"Times New Roman",serif !important; font-weight: 500 !important; }
+.ash100-town .ash100-destinations { gap: 9px !important; }
+.ash100-town .ash100-destination {
+  position: relative !important; box-sizing: border-box !important; min-height: 103px !important; padding: 13px !important;
+  border: 1px solid rgba(215,194,139,.27) !important; border-radius: 2px !important;
+  background: linear-gradient(110deg,rgba(31,42,30,.92),rgba(8,13,9,.96)) !important;
+  box-shadow: inset 0 1px rgba(255,246,211,.045),0 5px 17px rgba(0,0,0,.16) !important;
+  transition: border-color .16s ease,background .16s ease,transform .16s ease !important;
+}
+.ash100-town .ash100-destination::before {
+  content: "" !important; position: absolute !important; inset: 4px !important;
+  border: 1px solid rgba(231,201,130,.06) !important; pointer-events: none !important;
+}
+.ash100-town .ash100-destination:hover,
+.ash100-town .ash100-destination:focus-visible {
+  border-color: rgba(255,230,160,.75) !important;
+  background: linear-gradient(110deg,rgba(54,61,40,.97),rgba(14,21,14,.98)) !important;
+  transform: translateY(-1px) !important;
+}
+.ash100-town .ash100-destination.featured { border-color: rgba(231,201,130,.66) !important; background: linear-gradient(115deg,rgba(64,53,31,.89),rgba(12,19,12,.98)) !important; }
+.ash100-town .ash100-destination-icon {
+  width: 39px !important; height: 39px !important; border: 1px solid rgba(231,201,130,.26) !important; border-radius: 2px !important;
+  background: linear-gradient(145deg,rgba(191,160,100,.10),rgba(0,0,0,.25)) !important; color: var(--legend-ui-amber) !important;
+}
+.ash100-town .ash100-destination-copy strong { color: var(--legend-ui-parchment) !important; font-family: Georgia,"Times New Roman",serif !important; font-weight: 600 !important; font-size: .98rem !important; }
+.ash100-town .ash100-destination-copy small { color: #b1baaa !important; line-height: 1.42 !important; }
+.ash100-town .ash100-destination > em { color: var(--legend-ui-amber) !important; font-size: .62rem !important; letter-spacing: .08em !important; font-weight: 800 !important; }
+
+.ash099-screen {
+  box-sizing: border-box !important; width: min(1120px,calc(100% - 24px)) !important;
+  margin: clamp(12px,2vw,24px) auto 58px !important; padding: clamp(16px,2.5vw,31px) !important;
+  border: 1px solid rgba(231,201,130,.44) !important; border-radius: 3px !important; color: var(--legend-ui-parchment) !important;
+  background: linear-gradient(145deg,rgba(29,39,28,.97),rgba(9,14,9,.985) 64%) !important;
+  box-shadow: 0 20px 54px rgba(0,0,0,.38),inset 0 0 0 3px rgba(0,0,0,.20),inset 0 1px rgba(255,246,211,.08) !important;
+}
+.ash099-screen .ash099-head {
+  display: grid !important; grid-template-columns: minmax(0,1fr) !important; gap: 10px !important;
+  margin: 0 0 18px !important; padding: 0 0 18px !important; border-bottom: 1px solid rgba(231,201,130,.27) !important;
+}
+.ash099-screen .ash099-head.has-art { grid-template-columns: minmax(120px,220px) minmax(0,1fr) !important; align-items: stretch !important; }
+.ash099-screen .ash099-head.has-art > img {
+  width: 100% !important; height: 140px !important; object-fit: cover !important;
+  border: 1px solid rgba(231,201,130,.29) !important; border-radius: 2px !important;
+}
+.ash099-screen .ash099-head h1 { color: var(--legend-ui-parchment) !important; font-family: Georgia,"Times New Roman",serif !important; font-size: clamp(1.9rem,5vw,3.1rem) !important; font-weight: 500 !important; line-height: 1.04 !important; }
+.ash099-screen .ash099-kicker { color: var(--legend-ui-amber) !important; font-size: .65rem !important; font-weight: 850 !important; letter-spacing: .19em !important; }
+.ash099-screen p, .ash099-screen li { color: #d2d7c9 !important; line-height: 1.58 !important; }
+.ash099-screen .ash099-lines, .ash099-screen .ash099-note, .ash099-screen .ash099-craft-feedback, .ash099-screen .ash099-job-result, .ash099-screen .ash099-result {
+  border: 1px solid rgba(231,201,130,.18) !important; border-left: 3px solid rgba(231,201,130,.58) !important;
+  border-radius: 2px !important; background: rgba(2,7,4,.30) !important; padding: 13px 15px !important;
+}
+.ash099-screen .ash099-cards, .ash099-screen .ash099-actions, .ash099-screen .ash099-group-grid { gap: 9px !important; }
+.ash099-screen .ash099-btn, .ash099-screen button.ash099-btn, .ash099-screen .ash099-card {
+  min-height: 45px !important; border: 1px solid rgba(215,194,139,.30) !important; border-radius: 2px !important;
+  background: linear-gradient(100deg,rgba(36,47,34,.96),rgba(9,15,10,.98)) !important;
+  box-shadow: inset 0 1px rgba(255,246,211,.05) !important; color: var(--legend-ui-parchment) !important;
+}
+.ash099-screen .ash099-btn:hover, .ash099-screen .ash099-card:hover,
+.ash099-screen .ash099-btn:focus-visible, .ash099-screen .ash099-card:focus-visible {
+  border-color: rgba(255,230,160,.75) !important; background: linear-gradient(100deg,rgba(55,63,41,.98),rgba(16,24,16,.98)) !important;
+}
+.ash099-screen .ash099-btn.primary { border-color: rgba(255,230,160,.76) !important; background: linear-gradient(105deg,#e2c582,#ad8c4f) !important; color: #241d0f !important; }
+.ash099-screen .ash099-btn:disabled, .ash099-screen button:disabled { opacity: .52 !important; filter: none !important; }
+@media (max-width: 720px) {
+  .ash100-town { padding: 6px !important; }
+  .ash100-town .ash100-hero { min-height: 235px !important; }
+  .ash100-town .ash099-topnav { gap: 1px !important; padding: 4px !important; }
+  .ash100-town .ash099-topnav .ash099-footer-item { min-height: 48px !important; padding: 5px 1px !important; font-size: .56rem !important; letter-spacing: .04em !important; }
+  .ash100-town .ash099-topnav .ash099-icon, .ash100-town .ash099-topnav .ash099-icon.ash099-asset-icon { width: 23px !important; height: 23px !important; min-width: 23px !important; min-height: 23px !important; }
+  .ash100-town .ash100-route-strip { grid-template-columns: 34px minmax(0,1fr) !important; gap: 8px !important; padding: 10px !important; }
+  .ash100-town .ash100-route-strip .ash099-btn { grid-column: 1/-1 !important; width: 100% !important; margin-top: 5px !important; }
+  .ash100-town .ash100-status { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap: 9px !important; padding: 11px 2px !important; }
+  .ash100-town .ash100-status-resources { grid-column: 1/-1 !important; padding-top: 8px !important; border-top: 1px solid rgba(231,201,130,.15) !important; text-align: left !important; }
+  .ash100-town .ash100-destinations { grid-template-columns: 1fr !important; gap: 7px !important; }
+  .ash100-town .ash100-destination { min-height: 72px !important; padding: 10px !important; gap: 0 9px !important; grid-template-columns: 36px minmax(0,1fr) auto !important; grid-template-rows: auto !important; }
+  .ash100-town .ash100-destination-icon { width: 32px !important; height: 32px !important; }
+  .ash100-town .ash100-destination > em { max-width: 82px !important; font-size: .59rem !important; }
+  .ash099-screen { width: calc(100% - 12px) !important; padding: 13px !important; margin-bottom: 30px !important; }
+  .ash099-screen .ash099-head.has-art { grid-template-columns: minmax(0,1fr) !important; }
+  .ash099-screen .ash099-head.has-art > img { height: 145px !important; }
+}
+
+/* Proof 3: Old Road panorama, HUD, choices and map */
+.exp100 {
+  box-sizing: border-box !important; min-height: 100svh !important; padding: 0 !important; color: var(--legend-ui-parchment) !important;
+  background: radial-gradient(ellipse at 50% 0%,rgba(108,128,86,.12),transparent 46%),linear-gradient(180deg,#080d09,#060906 65%,#050705) !important;
+}
+.exp100:has(.exp150-world-page) .exp100-wrap {
+  box-sizing: border-box !important; width: min(1440px,100%) !important; max-width: 1440px !important;
+  padding: clamp(10px,2vw,25px) !important; margin: 0 auto !important;
+}
+.exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live {
+  height: clamp(320px,38vw,485px) !important; margin: 0 !important;
+  border: 1px solid rgba(231,201,130,.53) !important; border-radius: 3px !important;
+  box-shadow: 0 23px 66px rgba(0,0,0,.48),inset 0 0 0 3px rgba(0,0,0,.24) !important;
+}
+.exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live img { filter: saturate(.87) contrast(1.10) brightness(.86) !important; }
+.exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live .exp100-scene-shade {
+  background: linear-gradient(90deg,rgba(3,7,4,.20),transparent 58%),linear-gradient(180deg,rgba(2,5,3,.10),rgba(2,5,3,.03) 45%,rgba(2,5,3,.82)) !important;
+}
+.exp100:has(.exp150-world-page) .exp100-scene-label {
+  left: 22px !important; bottom: 18px !important; padding: 8px 11px !important;
+  border: 1px solid rgba(231,201,130,.30) !important; border-radius: 2px !important; background: rgba(4,9,5,.72) !important;
+  color: var(--legend-ui-amber) !important; letter-spacing: .20em !important;
+}
+.exp100:has(.exp150-world-page) .exp100-hotspot { border-radius: 2px !important; border-color: rgba(255,230,160,.8) !important; background: rgba(8,15,9,.91) !important; color: #fff0c7 !important; }
+.exp100:has(.exp150-world-page) .exp150-expedition-head.exp100-head {
+  box-sizing: border-box !important; display: grid !important; grid-template-columns: minmax(0,1fr) minmax(230px,.48fr) !important;
+  gap: 12px 24px !important; margin: 0 clamp(12px,2.2vw,30px) 0 !important;
+  padding: clamp(18px,2.2vw,30px) !important; border: 1px solid rgba(231,201,130,.45) !important;
+  border-radius: 2px !important; background: linear-gradient(115deg,rgba(26,36,25,.99),rgba(8,13,8,.99) 72%) !important;
+  box-shadow: 0 16px 35px rgba(0,0,0,.30),inset 0 0 0 3px rgba(0,0,0,.18),inset 0 1px rgba(255,246,211,.08) !important;
+}
+.exp100:has(.exp150-world-page) .exp150-expedition-head .exp150-kicker { color: var(--legend-ui-amber) !important; letter-spacing: .21em !important; }
+.exp100:has(.exp150-world-page) .exp150-expedition-head h1 {
+  color: #f3ead7 !important; font-family: Georgia,"Times New Roman",serif !important; font-weight: 500 !important;
+  font-size: clamp(1.9rem,3.4vw,3.1rem) !important; line-height: 1.0 !important; letter-spacing: .005em !important;
+}
+.exp100:has(.exp150-world-page) .exp150-expedition-head p { color: #c9d0c1 !important; line-height: 1.55 !important; }
+.exp100:has(.exp150-world-page) .exp150-vitals { align-content: center !important; gap: 14px !important; }
+.exp100:has(.exp150-world-page) .exp150-meter span { color: #c2b58e !important; }
+.exp100:has(.exp150-world-page) .exp150-meter strong { color: var(--legend-ui-parchment) !important; }
+.exp100:has(.exp150-world-page) .exp150-meter > i {
+  height: 7px !important; border: 1px solid rgba(255,246,211,.08) !important; border-radius: 1px !important; background: #202b20 !important;
+}
+.exp100:has(.exp150-world-page) .exp150-meter > i > b { border-radius: 0 !important; background: linear-gradient(90deg,#6b8c63,#d4b66e) !important; }
+.exp100:has(.exp150-world-page) .exp150-meter.pressure > i > b { background: linear-gradient(90deg,#8e955e,#bb6f50) !important; }
+.exp100:has(.exp150-world-page) .exp150-utility-actions button {
+  min-height: 44px !important; border: 1px solid rgba(231,201,130,.36) !important; border-radius: 2px !important;
+  background: linear-gradient(100deg,rgba(34,45,32,.96),rgba(8,14,9,.98)) !important; color: var(--legend-ui-parchment) !important;
+}
+.exp100:has(.exp150-world-page) .exp150-utility-actions button:hover { border-color: rgba(255,230,160,.8) !important; }
+.exp100:has(.exp150-world-page) .exp150-road-clock {
+  margin: 12px clamp(12px,2.2vw,30px) !important; border: 1px solid rgba(231,201,130,.30) !important; border-radius: 2px !important;
+  background: linear-gradient(100deg,rgba(25,35,24,.98),rgba(7,12,8,.96)) !important; box-shadow: inset 0 1px rgba(255,246,211,.05) !important;
+}
+.exp100:has(.exp150-world-page) .exp150-world-page { max-width: none !important; margin: 0 clamp(12px,2.2vw,30px) !important; padding: 0 0 25px !important; }
+.exp100:has(.exp150-world-page) .exp150-tracker-label { padding: 11px 0 !important; border-bottom: 1px solid rgba(231,201,130,.26) !important; }
+.exp100:has(.exp150-world-page) .exp150-tracker-label > span { color: var(--legend-ui-amber) !important; letter-spacing: .19em !important; }
+.exp100:has(.exp150-world-page) .exp150-main-grid {
+  grid-template-columns: minmax(0,1fr) minmax(250px,310px) !important; gap: clamp(18px,2.3vw,32px) !important; padding-top: 18px !important;
+}
+.exp100:has(.exp150-world-page) .exp150-interactions { gap: 11px !important; }
+.exp100:has(.exp150-world-page) .exp150-world-page .exp100-panel,
+.exp100:has(.exp150-world-page) .exp150-world-page .exp100-poi,
+.exp100:has(.exp150-world-page) .exp150-world-page .exp100-camp,
+.exp100:has(.exp150-world-page) .exp160-optional-detour,
+.exp100:has(.exp150-world-page) .exp160-optional-site {
+  border: 1px solid rgba(231,201,130,.30) !important; border-radius: 2px !important;
+  background: linear-gradient(135deg,rgba(28,38,27,.97),rgba(7,12,8,.985)) !important;
+  box-shadow: inset 0 1px rgba(255,246,211,.055),0 7px 22px rgba(0,0,0,.18) !important;
+}
+.exp100:has(.exp150-world-page) .exp100-choice,
+.exp100:has(.exp150-world-page) .exp150-action {
+  border: 1px solid rgba(215,194,139,.28) !important; border-radius: 2px !important;
+  background: linear-gradient(105deg,rgba(35,47,33,.97),rgba(8,14,9,.98)) !important;
+  color: var(--legend-ui-parchment) !important; box-shadow: inset 0 1px rgba(255,246,211,.04) !important;
+}
+.exp100:has(.exp150-world-page) .exp100-choice:hover:not(:disabled),
+.exp100:has(.exp150-world-page) .exp100-choice:focus-visible,
+.exp100:has(.exp150-world-page) .exp150-action:hover:not(:disabled),
+.exp100:has(.exp150-world-page) .exp150-action:focus-visible {
+  border-color: rgba(255,230,160,.72) !important; background: linear-gradient(100deg,rgba(53,64,40,.98),rgba(13,21,13,.99)) !important;
+}
+.exp100:has(.exp150-world-page) .exp150-action.primary {
+  border-color: rgba(255,230,160,.78) !important; background: linear-gradient(110deg,rgba(82,67,39,.98),rgba(22,29,20,.99)) !important;
+}
+.exp100:has(.exp150-world-page) .exp150-action-symbol { border: 1px solid rgba(231,201,130,.28) !important; border-radius: 2px !important; }
+.exp100:has(.exp150-world-page) .exp150-journey-aside { top: 12px !important; gap: 9px !important; }
+.exp100:has(.exp150-world-page) .exp150-aside-card {
+  border: 1px solid rgba(215,194,139,.24) !important; border-radius: 2px !important;
+  background: linear-gradient(145deg,rgba(22,32,22,.96),rgba(7,12,8,.98)) !important;
+  box-shadow: inset 0 1px rgba(255,246,211,.04) !important;
+}
+.exp100:has(.exp150-world-page) .exp150-next-stop { border-color: rgba(231,201,130,.40) !important; background: linear-gradient(140deg,rgba(51,45,28,.92),rgba(8,14,9,.99)) !important; }
+.exp100:has(.exp150-world-page) .exp150-aside-card h2 { color: var(--legend-ui-parchment) !important; font-family: Georgia,"Times New Roman",serif !important; font-weight: 500 !important; }
+.exp100:has(.exp150-world-page) .exp150-kicker { color: var(--legend-ui-amber) !important; }
+.exp100:has(.exp150-world-page) .exp150-modal-layer { background: rgba(2,5,3,.85) !important; backdrop-filter: blur(7px) !important; }
+.exp100:has(.exp150-world-page) .exp150-modal-dialog {
+  max-width: 900px !important; border: 1px solid rgba(231,201,130,.63) !important; border-radius: 3px !important;
+  background: linear-gradient(145deg,#182219,#080d09) !important; box-shadow: 0 28px 90px rgba(0,0,0,.7),inset 0 0 0 3px rgba(0,0,0,.25) !important;
+}
+.exp100:has(.exp150-world-page) .exp150-modal-close {
+  min-height: 46px !important; border: 1px solid rgba(231,201,130,.42) !important; border-radius: 2px !important;
+  background: linear-gradient(100deg,#343a29,#121910) !important; color: var(--legend-ui-parchment) !important;
+}
+@media (max-width: 900px) {
+  .exp100:has(.exp150-world-page) .exp150-main-grid { grid-template-columns: minmax(0,1fr) !important; }
+  .exp100:has(.exp150-world-page) .exp150-journey-aside { position: static !important; grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+  .exp100:has(.exp150-world-page) .exp150-next-stop,
+  .exp100:has(.exp150-world-page) .exp150-supplies-card { grid-column: 1/-1 !important; }
+}
+@media (max-width: 720px) {
+  .exp100:has(.exp150-world-page) .exp100-wrap { padding: 6px !important; }
+  .exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live { height: clamp(245px,60vw,330px) !important; border-radius: 2px !important; }
+  .exp100:has(.exp150-world-page) .exp150-expedition-head.exp100-head {
+    grid-template-columns: minmax(0,1fr) !important; gap: 12px !important; margin: -20px 8px 0 !important; padding: 15px !important;
+  }
+  .exp100:has(.exp150-world-page) .exp150-vitals { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+  .exp100:has(.exp150-world-page) .exp150-utility-actions { justify-content: stretch !important; }
+  .exp100:has(.exp150-world-page) .exp150-utility-actions button { flex: 1 !important; min-width: 0 !important; }
+  .exp100:has(.exp150-world-page) .exp150-road-clock { margin: 9px 8px !important; }
+  .exp100:has(.exp150-world-page) .exp150-world-page { margin: 0 8px !important; }
+  .exp100:has(.exp150-world-page) .exp150-tracker-label { align-items: flex-start !important; flex-wrap: wrap !important; }
+  .exp100:has(.exp150-world-page) .exp150-world-page .exp100-choices { grid-template-columns: minmax(0,1fr) !important; }
+  .exp100:has(.exp150-world-page) .exp150-world-page .exp150-camp-actions { grid-template-columns: minmax(0,1fr) !important; }
+  .exp100:has(.exp150-world-page) .exp150-action-list { grid-template-columns: minmax(0,1fr) !important; }
+  .exp100:has(.exp150-world-page) .exp150-action.primary { grid-column: auto !important; }
+  .exp100:has(.exp150-world-page) .exp150-journey-aside { grid-template-columns: minmax(0,1fr) !important; }
+  .exp100:has(.exp150-world-page) .exp150-next-stop,
+  .exp100:has(.exp150-world-page) .exp150-supplies-card { grid-column: auto !important; }
+  .exp100:has(.exp150-world-page) .exp150-modal-layer { padding: 8px !important; }
+  .exp100:has(.exp150-world-page) .exp150-modal-dialog { max-height: 92svh !important; padding: 15px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .title-v100 .v151-realm-feature > img,
+  .ash100-town .ash100-destination,
+  .exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live img {
+    animation: none !important; transition: none !important; transform: none !important;
+  }
+}
+
+
+/* The destination frame rule needs to outrank the older Ashmere theme layer,
+   whose selector is scoped to the region and loaded later by some legacy embeds. */
+html body #root .ash100-town .ash100-destination {
+  border-radius: 2px !important;
+}
+
+/* Keep a short landscape title viewport cinematic without forcing the realm atlas
+   below the fold. At low heights the two panes stay side-by-side and compact. */
+@media (max-height: 760px) and (min-width: 761px) {
+  .title-v100 {
+    min-height: 100svh !important;
+    height: 100svh !important;
+    overflow: hidden !important;
+  }
+  .title-v100 .portal100-header {
+    padding: 10px 22px !important;
+  }
+  .title-v100 .v120-title-main {
+    min-height: 100svh !important;
+    height: 100svh !important;
+    align-items: center !important;
+    padding: 58px 18px 46px !important;
+  }
+  .title-v100 .v120-title-hero {
+    width: min(460px,45vw) !important;
+    max-width: 460px !important;
+    padding: 14px !important;
+  }
+  .title-v100 .v120-title-hero .v120-legend-logo {
+    max-height: 70px !important;
+    margin-bottom: 7px !important;
+  }
+  .title-v100 .v120-title-hero > p {
+    font-size: .8rem !important;
+    line-height: 1.35 !important;
+  }
+  .title-v100 .v120-divider {
+    margin: 8px 0 6px !important;
+  }
+  .title-v100 .v120-traveler-line {
+    margin-bottom: 8px !important;
+    padding: 7px !important;
+  }
+  .title-v100 .v136-menu-list { gap: 3px !important; }
+  .title-v100 .v136-menu-btn {
+    min-height: 35px !important;
+    padding: 4px 7px !important;
+    grid-template-columns: 25px minmax(0,1fr) 12px !important;
+    gap: 7px !important;
+  }
+  .title-v100 .v136-menu-icon {
+    width: 24px !important;
+    height: 24px !important;
+  }
+  .title-v100 .v136-menu-copy strong { font-size: .73rem !important; }
+  .title-v100 .v136-menu-copy small { margin-top: 1px !important; font-size: .61rem !important; }
+  .title-v100 .v140-realm-overview.v151-realm-art {
+    position: absolute !important;
+    display: block !important;
+    top: 50% !important;
+    right: 20px !important;
+    width: min(340px,35vw) !important;
+    max-width: 340px !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    transform: translateY(-50%) !important;
+  }
+  .title-v100 .v151-realm-feature { min-height: 128px !important; }
+  .title-v100 .v151-realm-destinations { gap: 5px !important; margin-top: 6px !important; }
+  .title-v100 .v151-realm-destination {
+    grid-template-columns: 62px minmax(0,1fr) !important;
+    min-height: 45px !important;
+  }
+  .title-v100 .v151-realm-destination > img { height: 45px !important; }
+  .title-v100 .v140-realm-player-state { gap: 3px !important; margin-top: 6px !important; padding: 7px !important; }
+  .title-v100 .portal100-footer {
+    position: absolute !important;
+    inset: auto 0 0 !important;
+    margin: 0 !important;
+    padding: 6px 18px !important;
+    font-size: .48rem !important;
+  }
+}
+
+
+/* The saved accessibility preference is implemented with the body class
+   .a11y-reduced-motion. Keep the shared transition rules from outranking it. */
+.a11y-reduced-motion #root .title-v100 .v151-realm-feature > img,
+.a11y-reduced-motion #root .exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live img {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+.a11y-reduced-motion #root .ash100-town .ash100-destination,
+.a11y-reduced-motion #root .ash100-town .ash100-destination:hover,
+.a11y-reduced-motion #root .ash100-town .ash100-destination:focus-visible {
+  transition: none !important;
+  transform: none !important;
+}
