@@ -199,12 +199,21 @@
 
   function refreshMobileToggleState(shell = document.getElementById(SHELL_ID)) {
     if (!shell) return;
-    shell.querySelectorAll('[data-world-action="toggle-left"]').forEach(button => {
-      button.setAttribute('aria-expanded', String(document.body.classList.contains('legend-shell-left-open')));
-    });
-    shell.querySelectorAll('[data-world-action="toggle-right"]').forEach(button => {
-      button.setAttribute('aria-expanded', String(document.body.classList.contains('legend-shell-right-open')));
-    });
+    const mobile = window.matchMedia?.('(max-width: 1199px)').matches || false;
+    const updateDrawer = (side, buttonSelector) => {
+      const isOpen = document.body.classList.contains('legend-shell-' + side + '-open');
+      const panel = shell.querySelector('#lws-panel-' + side);
+      if (panel) {
+        const shouldHide = mobile && !isOpen;
+        panel.inert = shouldHide;
+        panel.setAttribute('aria-hidden', String(shouldHide));
+      }
+      shell.querySelectorAll(buttonSelector).forEach(button => {
+        button.setAttribute('aria-expanded', String(isOpen));
+      });
+    };
+    updateDrawer('left', '[data-world-action="toggle-left"]');
+    updateDrawer('right', '[data-world-action="toggle-right"]');
   }
 
   function hideShell() {
@@ -486,11 +495,17 @@
     document.addEventListener('click', handleShellClick);
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape') {
+        const shell = document.getElementById(SHELL_ID);
+        const leftWasOpen = document.body.classList.contains('legend-shell-left-open');
+        const rightWasOpen = document.body.classList.contains('legend-shell-right-open');
         closeShellModal();
         document.body.classList.remove('legend-shell-left-open', 'legend-shell-right-open');
-        refreshMobileToggleState();
+        refreshMobileToggleState(shell);
+        if (leftWasOpen) shell?.querySelector('[data-world-action="toggle-left"]')?.focus();
+        else if (rightWasOpen) shell?.querySelector('[data-world-action="toggle-right"]')?.focus();
       }
     });
+    window.addEventListener('resize', () => refreshMobileToggleState());
   }
 
   function boot() {
