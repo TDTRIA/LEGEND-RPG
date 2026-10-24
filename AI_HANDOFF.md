@@ -48,10 +48,7 @@ One row per open branch. Add your row when you start and remove it when the PR i
 | `fix/playtest-bugs-v0221` | [#40](https://github.com/TDTRIA/LEGEND-RPG/pull/40) | Perplexity Computer | Traveler portrait, Town Square cards, camp rest/results, Bell Cellar header, name field, plurals | Open, awaiting CI/review |
 | `docs/ai-coordination-rules` | this PR | Perplexity Computer | `AI_HANDOFF.md` (this section only) | Open |
 | `feat/greyfen-marsh-expedition-v160` | [#39](https://github.com/TDTRIA/LEGEND-RPG/pull/39) | Unknown, owner please fill in | Greyfen Marsh Path expedition | Draft |
-| `feat/expedition-progression-results-v152` | [#34](https://github.com/TDTRIA/LEGEND-RPG/pull/34) | Unknown, owner please fill in | Attribute growth and expedition results (check overlap with merged progression work) | Draft |
-| `reboot/first-playable-expedition` | [#12](https://github.com/TDTRIA/LEGEND-RPG/pull/12) | Unknown, owner please fill in | Reboot prototype | Draft |
 | `design/greyfen-culture-cast` | [#7](https://github.com/TDTRIA/LEGEND-RPG/pull/7) | Unknown, owner please fill in | Greyfen culture and cast (design) | Draft |
-| `design/ashmere-character-arcs` | [#6](https://github.com/TDTRIA/LEGEND-RPG/pull/6) | Unknown, owner please fill in | Ashmere character arcs (design) | Draft |
 
 ## Active PR — v0.22.1 Runway art pass, daily contracts, and Road Cache (PR #33)
 
