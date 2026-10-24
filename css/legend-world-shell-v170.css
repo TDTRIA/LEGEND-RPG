@@ -27,6 +27,7 @@
   font-family: inherit;
   pointer-events: none;
   isolation: isolate;
+  overflow: clip;
 }
 
 #legend-world-shell-root button,
