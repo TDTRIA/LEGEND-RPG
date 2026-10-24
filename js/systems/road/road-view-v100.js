@@ -17,7 +17,7 @@
 function scene(stage=0,interactive=true){
  const art=A().locations||{};
  const stageNum=clamp(Number(stage||0),0,5),pl=p(),s=pl?ensure(pl):{},route=s.routeChoice;
- const fallback=art.oldRoadScene||'assets/locations/roads/old_road_exploration_v1.svg';
+ const fallback=art.oldRoad||art.highRidge||art.roadCamp||'assets/generated/locations/old-road-south-fork.webp';
  const path=stageNum===2?(art.roadCamp||art.oldRoad||fallback):stageNum===1&&route==='ridge'?(art.highRidge||art.oldRoad||fallback):stageNum===1&&route==='reeds'?(art.reedCut||art.oldRoad||fallback):(art.oldRoad||fallback);
  const point=roadDiscovery.pointOfInterest(stage),stageClass='exp100-stage-'+stageNum,sideTrip=s.activeSideTripV160;
  const sideInfo=sideTrip==='windbreak'?{label:'WINDBREAK',alt:'A sheltered rock shelf above the lowland tracks',path:art.highRidge||art.oldRoad||fallback}
