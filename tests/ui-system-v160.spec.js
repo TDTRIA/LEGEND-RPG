@@ -148,7 +148,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('saved Reduced Motion preference suppresses new decorative transitions', async ({ page }) => {
-    await enterAshmere(page, 'MotionUIPreview');
+    await openTitle(page);
     await page.evaluate(() => document.body.classList.add('a11y-reduced-motion'));
 
     const realmMotion = await page.locator('.v151-realm-feature > img').evaluate(el => {
@@ -159,6 +159,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(realmMotion.animation).toBe('none');
     expect(realmMotion.transform).toBe('none');
 
+    await enterAshmere(page, 'MotionUIPreview');
+    await page.evaluate(() => document.body.classList.add('a11y-reduced-motion'));
     const destination = page.locator('.ash100-destination').first();
     await destination.hover();
     const cardMotion = await destination.evaluate(el => {
