@@ -30,6 +30,14 @@
   overflow: clip;
 }
 
+body.legend-world-shell-active #root {
+  position: relative;
+  z-index: 1;
+  margin: 68px clamp(248px, 18vw, 280px) 72px;
+  width: auto;
+  min-height: calc(100vh - 140px);
+}
+
 #legend-world-shell-root button,
 #legend-world-shell-modal-root button,
 #legend-world-shell-root a,
@@ -412,6 +420,25 @@
   .lws-bottom-bar { justify-content: flex-start; overflow-x: auto; }
   .lws-bottom-bar .lws-btn { min-width: 83px; }
 }
+@media (max-width: 1199px) {
+  body.legend-world-shell-active #root {
+    margin: 64px 0 64px;
+    min-height: calc(100vh - 128px);
+  }
+  .lws-panel {
+    top: 66px;
+    bottom: 69px;
+    width: min(86vw, 320px);
+    max-width: calc(100vw - 20px);
+    transition: transform .18s ease;
+  }
+  .lws-panel-left { left: 8px; transform: translateX(calc(-100% - 14px)); }
+  .lws-panel-right { right: 8px; transform: translateX(calc(100% + 14px)); }
+  .legend-shell-left-open .lws-panel-left,
+  .legend-shell-right-open .lws-panel-right { transform: translateX(0); }
+  .lws-mobile-toggle { display: inline-flex; width: auto; min-height: 29px; padding: 5px 7px; font-size: 10px; }
+}
+
 @media (max-width: 760px) {
   .lws-hud { min-height: 58px; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; padding: 7px 9px; }
   .lws-hud-center { display: none; }
