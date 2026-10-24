@@ -176,7 +176,7 @@
 
   function openCombat(root = document.getElementById('root')) {
     const active = !!root?.querySelector(
-      '[data-combat-screen], [data-combat-action], #roadCombat, #battleActions, .road-combat-screen, .combat-v152-screen, .battle-v100-screen'
+      '[data-combat-screen], [data-combat-action], #roadCombat, #battleActions, .road-combat-screen, .combat-v152-screen, .battle-v100-screen, .rpg-battle, .v152-combat-results, .bell-vault-v100'
     );
     return openModal({
       eyebrow: 'Encounter state',
