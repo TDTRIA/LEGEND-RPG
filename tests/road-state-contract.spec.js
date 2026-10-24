@@ -36,7 +36,9 @@ test.describe('LegendRoadStateV100 compatibility contract', () => {
     });
 
     expect(result.state).toEqual({
-      stage: 5, pressure: 100, trips: 3, events: 4, finds: 5, battles: 6, routeChoice: 'ridge'
+      stage: 5, pressure: 100, trips: 3, events: 4, finds: 5, battles: 6, routeChoice: 'ridge',
+      currentNodeIdV160: null, visitedNodeIdsV160: [], discoveredNodeIdsV160: [],
+      completedInteractionIdsV160: [], activeSideTripV160: null, sideTripReturnNodeIdV160: null
     });
     expect(result.sameReference).toBe(true);
   });

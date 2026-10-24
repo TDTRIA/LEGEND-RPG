@@ -27,6 +27,39 @@
       {key:'reedwatch-locker',name:'The Shelter Locker',kind:'Forgotten Stores',text:'A swollen wooden locker sits beneath a shelter bench, held shut by a rusted catch.',action:'Open the locker',icon:'▣',short:'Locker',x:25,y:52},
       {key:'greyfen-marker',name:'The Greyfen Boundary Stone',kind:'Regional Clue',text:'The boundary stone is scored with route marks. A few fresh scratches point beyond the reeds.',action:'Record the route marks',icon:'⚑',short:'Boundary',x:78,y:48}
     ],
+    routeGraphV160: {
+      startNodeId: 'south-fork',
+      nodes: [
+        { id: 'south-fork', name: 'South Fork', type: 'Crossroads', stage: 0, description: 'The shared fork where the High Ridge and Reed Cut diverge.' },
+        { id: 'high-ridge', name: 'High Ridge', type: 'Route', route: 'ridge', stage: 1, description: 'A firm, exposed climb above the lower marsh.' },
+        { id: 'ridgeway-cairn', name: 'Ridgeway Cairn', type: 'Trail Clue', route: 'ridge', stage: 1, poiKey: 'ridge-cairn', description: 'A stack of old stones marks the dry line. One stone sits beyond its weathered groove.' },
+        { id: 'windbreak', name: 'Windbreak', type: 'Optional Shelter', route: 'ridge', stage: 1, optional: true, description: 'A broken rock shelf cuts the worst of the wind and looks down over the lowland tracks.' },
+        { id: 'reed-cut', name: 'Reed Cut', type: 'Route', route: 'reeds', stage: 1, description: 'A wet, reed-choked passage with poor sight lines and rising pressure.' },
+        { id: 'lantern-ditch', name: 'Lantern Ditch', type: 'Strange Find', route: 'reeds', stage: 1, poiKey: 'marsh-watcher-tracks', description: 'A low ditch crosses the cut. A cold blue light moves beneath the reeds.' },
+        { id: 'sunken-cart', name: 'Sunken Cart', type: 'Optional Salvage', route: 'reeds', stage: 1, optional: true, description: 'A partly submerged cart rests at the edge of the reed cut.' },
+        { id: 'wayfarers-camp', name: "Wayfarer's Camp", type: 'Waystation', stage: 2, description: 'A shared clearing where travelers can rest, craft, and prepare for the dangerous stretch ahead.' },
+        { id: 'blackroot-bend', name: 'Blackroot Bend', type: 'Dangerous Crossing', stage: 3, poiKey: 'blackroot-mark', description: 'Black roots buckle the road around a stone seal bearing the old mark.' },
+        { id: 'reedwatch-shelter', name: 'Reedwatch Shelter', type: 'Shelter', stage: 4, poiKey: 'reedwatch-locker', description: 'An abandoned watch shelter whose locker may hold useful records.' },
+        { id: 'greyfen-boundary', name: 'Greyfen Boundary', type: 'Regional Threshold', stage: 5, poiKey: 'greyfen-marker', description: 'The last marker and the boundary stone before Greyfen.' }
+      ],
+      edges: [
+        { from: 'south-fork', to: 'high-ridge', route: 'ridge', kind: 'main' },
+        { from: 'south-fork', to: 'reed-cut', route: 'reeds', kind: 'main' },
+        { from: 'high-ridge', to: 'ridgeway-cairn', route: 'ridge', kind: 'main' },
+        { from: 'ridgeway-cairn', to: 'windbreak', route: 'ridge', kind: 'optional' },
+        { from: 'ridgeway-cairn', to: 'wayfarers-camp', route: 'ridge', kind: 'main' },
+        { from: 'windbreak', to: 'ridgeway-cairn', route: 'ridge', kind: 'return' },
+        { from: 'windbreak', to: 'wayfarers-camp', route: 'ridge', kind: 'main' },
+        { from: 'reed-cut', to: 'lantern-ditch', route: 'reeds', kind: 'main' },
+        { from: 'lantern-ditch', to: 'sunken-cart', route: 'reeds', kind: 'optional' },
+        { from: 'lantern-ditch', to: 'wayfarers-camp', route: 'reeds', kind: 'main' },
+        { from: 'sunken-cart', to: 'lantern-ditch', route: 'reeds', kind: 'return' },
+        { from: 'sunken-cart', to: 'wayfarers-camp', route: 'reeds', kind: 'main' },
+        { from: 'wayfarers-camp', to: 'blackroot-bend', kind: 'main' },
+        { from: 'blackroot-bend', to: 'reedwatch-shelter', kind: 'main' },
+        { from: 'reedwatch-shelter', to: 'greyfen-boundary', kind: 'main' }
+      ]
+    },
     travelBeats: {
       0: 'Ashmere’s lanterns shrink behind you as the fork opens into two uncertain tracks.',
       1: 'The road dips sharply. Cart tracks disappear into reeds, and a small blue glimmer moves where the water should be still.',
@@ -73,6 +106,11 @@
     }) };
     const variant = area.routeVariants?.[routeChoice];
     if (variant && typeof variant === 'object') Object.assign(area, variant);
+    if (index === 1 && routeChoice === 'ridge') {
+      Object.assign(area, { name: 'Ridgeway Cairn', type: 'Trail Clue', text: 'The High Ridge crests at a stack of old stones above the marsh. One stone sits beyond its weathered groove.' });
+    } else if (index === 1 && routeChoice === 'reeds') {
+      Object.assign(area, { name: 'Lantern Ditch', type: 'Strange Find', text: 'The Reed Cut narrows into a low ditch. A cold blue light flickers under the reeds, and the water hides the bottom.' });
+    }
     delete area.routeVariants;
     return area;
   };
