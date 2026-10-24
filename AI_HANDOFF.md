@@ -45,7 +45,6 @@ One row per open branch. Add your row when you start and remove it when the PR i
 
 | Branch | PR | Assistant | Area / files | Status |
 |---|---|---|---|---|
-| `fix/playtest-bugs-v0221` | [#40](https://github.com/TDTRIA/LEGEND-RPG/pull/40) | Perplexity Computer | Traveler portrait, Town Square cards, camp rest/results, Bell Cellar header, name field, plurals | Open, awaiting CI/review |
 | `docs/ai-coordination-rules` | this PR | Perplexity Computer | `AI_HANDOFF.md` (this section only) | Open |
 | `feat/greyfen-marsh-expedition-v160` | [#39](https://github.com/TDTRIA/LEGEND-RPG/pull/39) | Unknown, owner please fill in | Greyfen Marsh Path expedition | Draft |
 | `design/greyfen-culture-cast` | [#7](https://github.com/TDTRIA/LEGEND-RPG/pull/7) | Unknown, owner please fill in | Greyfen culture and cast (design) | Draft |
