@@ -592,3 +592,19 @@ html body #root .ash100-town .ash100-destination {
     font-size: .48rem !important;
   }
 }
+
+
+/* The saved accessibility preference is implemented with the body class
+   .a11y-reduced-motion. Keep the shared transition rules from outranking it. */
+.a11y-reduced-motion #root .title-v100 .v151-realm-feature > img,
+.a11y-reduced-motion #root .exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live img {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+.a11y-reduced-motion #root .ash100-town .ash100-destination,
+.a11y-reduced-motion #root .ash100-town .ash100-destination:hover,
+.a11y-reduced-motion #root .ash100-town .ash100-destination:focus-visible {
+  transition: none !important;
+  transform: none !important;
+}
