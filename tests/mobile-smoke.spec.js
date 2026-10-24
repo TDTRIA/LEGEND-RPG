@@ -260,4 +260,41 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     expect(errors).toEqual([]);
   });
 
+
+
+  test('Greyfen Marsh Path route choice and field map fit a 390px touch viewport', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await startFreshCharacter(page, 'MobileMarshQA');
+    await page.evaluate(() => {
+      const rt = window.LegendRuntimeV120;
+      const pl = rt.loadPlayer();
+      pl.currentRegion = 'Greyfen';
+      pl.town = 'Greyfen';
+      pl.discoveredRegions = ['Ashmere', 'Greyfen'];
+      pl.unlockedRegions = ['Ashmere', 'Greyfen'];
+      pl.flags.firstRoadReturnSeen = true;
+      pl.flags.greyfenDryCrossingComplete = true;
+      rt.savePlayer(pl);
+      window.LegendAshmereV099.renderAshmere();
+    });
+    await expect(page.locator('.ash100-town-greyfen')).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+
+    await tap(page, page.locator('[data-ash-view="marsh"]').first());
+    await expect(page.getByRole('main', { name: 'Greyfen Marsh Path expedition' })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+
+    await tap(page, page.locator('#gfm160Begin'));
+    await expect(page.getByRole('button', { name: /Raised Posts/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Reed Bed/i })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+
+    await tap(page, page.locator('#gfm160ChooseRaised'));
+    await tap(page, page.locator('#gfm160OpenMap'));
+    await expect(page.getByRole('dialog', { name: 'Greyfen Marsh field map' })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await tap(page, page.locator('#gfm160CloseMap'));
+    await expect(page.locator('#gfm160MapOverlay')).toBeHidden();
+  });
+
 });
