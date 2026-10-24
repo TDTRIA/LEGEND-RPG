@@ -2,11 +2,14 @@ const { test, expect } = require('@playwright/test');
 
 async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await page.setViewportSize(viewport);
+  // Use the browser's supported accessibility preference so the game itself
+  // skips its scene curtain. Never blanket-disable transitions: that can leave
+  // a transition overlay visible and contaminate UI screenshots.
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
-  await page.addStyleTag({ content: '*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}' });
   await expect(page.locator('.v120-title')).toBeVisible();
   await expect(page.locator('.v120-title-hero .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
 }
