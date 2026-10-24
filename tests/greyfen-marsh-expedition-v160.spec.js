@@ -210,4 +210,51 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
     await expect(page.getByRole('main', { name: 'Marsh expedition results' })).toBeVisible();
     await expect(page.locator('.gfm160-report-findings')).toContainText('The Waterline Gauge');
   });
+
+
+  test('the Reed Bed survey remains completable when the optional Fallen Ferry is skipped', async ({ page }) => {
+    await seedGreyfen(page, { food: 1, camp: 0, hp: 100 });
+    await enterMarsh(page);
+    await page.locator('#gfm160Begin').click();
+    await page.locator('#gfm160ChooseReeds').click();
+
+    await page.locator('#gfm160OpenMap').click();
+    await expect(page.getByRole('dialog', { name: 'Greyfen Marsh field map' })).toContainText('Fallen Ferry');
+    await expect(page.getByRole('dialog', { name: 'Greyfen Marsh field map' })).toContainText('Optional detour available');
+    await page.locator('#gfm160CloseMap').click();
+
+    // Skip the detour and continue to the required Waterline Gauge.
+    await page.locator('#gfm160Continue').click();
+    await page.locator('#gfm160PassSluice').click();
+    await page.locator('#gfm160ContinueShelter').click();
+    await expect(page.locator('#gfm160Rest')).toBeDisabled();
+    await page.locator('#gfm160ContinueGauge').click();
+    await page.locator('#gfm160InspectGauge').click();
+    await page.locator('#gfm160Complete').click();
+
+    await expect(page.getByRole('main', { name: 'Marsh expedition results' })).toBeVisible();
+    await expect(page.locator('.gfm160-report-metrics')).toContainText('Reed Bed');
+    await expect(page.locator('.gfm160-report-findings')).toContainText('Road Herb');
+    await expect(page.locator('.gfm160-report-findings')).not.toContainText('Fallen Ferry');
+
+    const state = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      const s = pl.flags.greyfenMarshExpeditionV160;
+      return {
+        complete: s.lastResultV160.complete,
+        ferryVisited: s.visitedNodeIds.includes('fallen-ferry'),
+        clothScrap: Number(pl.inventory?.clothScrap || 0),
+        roadHerb: Number(pl.inventory?.roadHerb || 0),
+        gaugeRead: Boolean(pl.flags.greyfenWaterlineGaugeRead)
+      };
+    });
+    expect(state).toEqual({
+      complete: true,
+      ferryVisited: false,
+      clothScrap: 0,
+      roadHerb: 1,
+      gaugeRead: true
+    });
+  });
+
 });
