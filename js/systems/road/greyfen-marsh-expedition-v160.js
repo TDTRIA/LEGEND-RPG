@@ -77,6 +77,9 @@
   }
   function visit(pl, s, id) {
     add(s.visitedNodeIds, id);
+    // Every visited landmark becomes known on the field map, while only
+    // meaningful evidence and interaction notes are added to the journal.
+    add(s.discoveredNodeIds, id);
     s.currentNodeId = id;
     const node = (content().stops || []).find(stop => stop.id === id);
     if (node && !node.optional) add(journalFor(pl).visitedPlaces, node.name);

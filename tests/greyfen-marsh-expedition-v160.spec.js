@@ -67,6 +67,7 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
   test('route choice, optional ferry, map knowledge, shelter and waterline report persist across reload', async ({ page }) => {
     await seedGreyfen(page);
     await enterMarsh(page);
+    await expect(page.locator('#gfm160OpenMap')).toContainText('1 known');
 
     await page.locator('#gfm160OpenMap').click();
     await expect(page.getByRole('dialog', { name: 'Greyfen Marsh field map' })).toBeVisible();
