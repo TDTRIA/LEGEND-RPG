@@ -68,11 +68,9 @@
       if(Number(stage)>=1&&state.routeChoice==='ridge'){
         pushUnique(state.visitedNodeIdsV160,'high-ridge');
         pushUnique(state.visitedNodeIdsV160,'ridgeway-cairn');
-        pushUnique(state.discoveredNodeIdsV160,'windbreak');
       }else if(Number(stage)>=1&&state.routeChoice==='reeds'){
         pushUnique(state.visitedNodeIdsV160,'reed-cut');
         pushUnique(state.visitedNodeIdsV160,'lantern-ditch');
-        pushUnique(state.discoveredNodeIdsV160,'sunken-cart');
       }
       ['wayfarers-camp','blackroot-bend','reedwatch-shelter','greyfen-boundary'].slice(0,Math.max(0,Number(stage)-1)).forEach(id=>pushUnique(state.visitedNodeIdsV160,id));
       pushUnique(state.visitedNodeIdsV160,mainNode);
