@@ -98,25 +98,45 @@
       return true;
     }).map(button => {
       const view = String(button.dataset.ashView || '');
-      const title = button.querySelector('.ash100-destination-copy strong')?.textContent?.trim()
-        || button.textContent?.trim()
-        || humanize(view);
-      const description = button.querySelector('.ash100-destination-copy small')?.textContent?.trim() || '';
+      const command = ({
+        home: 'Return to the town hub',
+        people: 'Meet the townsfolk',
+        inn: 'Enter the inn',
+        trader: 'Visit the market',
+        smith: 'Visit the forge',
+        work: 'Open the Work Board',
+        dungeon: 'Descend into the cellar',
+        crossing: 'Approach the crossing',
+        craft: 'Use the workbench',
+        sheet: 'Review your traveler',
+        archive: 'Read the journal',
+        routes: 'View local routes',
+        quests: 'Review contracts',
+        road: 'Set out on the Old Road',
+        regions: 'Open the road network',
+        profile: 'Review traveler records'
+      })[view] || 'Open destination';
       const icon = view === 'road' ? '➜' : view === 'inn' ? '⌂' : view === 'trader' ? '◇' : view === 'smith' ? '⚒' : view === 'dungeon' ? '⌑' : view === 'people' ? '♙' : '✦';
-      return '<button class="lws-btn" type="button" data-world-route="' + esc(view) + '"><span class="lws-btn-icon" aria-hidden="true">' + icon + '</span><span class="lws-btn-copy"><strong>' + esc(title) + '</strong><small>' + esc(description || 'Open this location') + '</small></span></button>';
+      return '<button class="lws-btn" type="button" data-world-route="' + esc(view) + '"><span class="lws-btn-icon" aria-hidden="true">' + icon + '</span><span class="lws-btn-copy"><strong>' + esc(command) + '</strong><small>Use the current game destination</small></span></button>';
     }).join('');
   }
 
   function renderRightPanel(player, context, root) {
-    const heading = esc(context?.kind === 'road' ? 'Old Road' : context?.kind === 'town' ? (player?.currentRegion || 'Ashmere') : screenHeading(root, player?.currentRegion || 'Ashmere'));
+    const heading = esc(context?.kind === 'road' ? 'Road Actions'
+      : context?.kind === 'town' ? 'Town Actions'
+      : context?.kind === 'combat' ? 'Encounter Actions'
+      : context?.kind === 'combat-results' ? 'Results Actions'
+      : context?.kind === 'dungeon' ? 'Delve Actions'
+      : 'Service Actions');
     let intro = 'Choose an action for the place you are visiting.';
     let actions = '';
     if (context?.kind === 'road') {
       intro = 'Actions use the live expedition handlers. Unavailable choices stay unavailable.';
       const action = (id, icon, title, detail, selector, primary = false) => {
         const target = selector ? root?.querySelector(selector) : null;
-        const disabled = !target || target.disabled || target.getAttribute('aria-disabled') === 'true';
-        return '<button class="lws-btn ' + (primary ? 'primary' : '') + '" type="button" data-world-action="' + id + '"' + (disabled ? ' disabled' : '') + '><span class="lws-btn-icon" aria-hidden="true">' + icon + '</span><span class="lws-btn-copy"><strong>' + title + '</strong><small>' + detail + '</small></span></button>';
+        if (!target) return '';
+        const disabled = target.disabled || target.getAttribute('aria-disabled') === 'true';
+        return '<button class="lws-btn ' + (primary ? 'primary' : '') + '" type="button" data-world-action="' + id + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '><span class="lws-btn-icon" aria-hidden="true">' + icon + '</span><span class="lws-btn-copy"><strong>' + title + '</strong><small>' + detail + '</small></span></button>';
       };
       const state = player?.flags?.roadExpeditionV100 || {};
       const isCamp = !!root?.querySelector('#campRest, #campCraft, #campWatch');
@@ -146,8 +166,8 @@
       intro = 'The Bell Cellar keeps its own room decisions and retreat rules. This panel delegates to those controls.';
       const retreat = !!root?.querySelector('#vaultRetreat');
       const returnButton = !!root?.querySelector('#vaultReturn');
-      if (retreat) actions += '<button class="lws-btn primary" type="button" data-world-action="dungeon-retreat"><span class="lws-btn-icon" aria-hidden="true">↩</span><span class="lws-btn-copy"><strong>Retreat to Ashmere</strong><small>Use the cellar’s existing retreat handler</small></span></button>';
-      if (returnButton) actions += '<button class="lws-btn" type="button" data-world-action="dungeon-return"><span class="lws-btn-icon" aria-hidden="true">⌂</span><span class="lws-btn-copy"><strong>Return</strong><small>Use the current cellar action</small></span></button>';
+      if (retreat) actions += '<button class="lws-btn primary" type="button" data-world-action="dungeon-retreat"><span class="lws-btn-icon" aria-hidden="true">↩</span><span class="lws-btn-copy"><strong>Retreat from delve</strong><small>Use the cellar’s existing retreat handler</small></span></button>';
+      if (returnButton) actions += '<button class="lws-btn" type="button" data-world-action="dungeon-return"><span class="lws-btn-icon" aria-hidden="true">⌂</span><span class="lws-btn-copy"><strong>Continue cellar return</strong><small>Use the current cellar action</small></span></button>';
       if (!actions) actions = '<p class="lws-context-copy">Continue through the cellar choices in the central scene.</p>';
     } else if (context?.kind === 'town') {
       intro = 'Select a destination from the town’s existing location catalog.';
