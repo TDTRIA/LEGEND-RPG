@@ -164,6 +164,9 @@
 .ash099-card em{margin-top:4px;color:#c8b477;font-size:.67rem}
 .ash099-npc-card{background:linear-gradient(180deg,rgba(26,34,27,.98),rgba(9,14,10,.99));border-color:rgba(215,184,106,.22);border-radius:13px}
 .ash099-npc-card img{height:186px;box-shadow:0 8px 20px rgba(0,0,0,.26)}
+/* The portrait is 186px tall here, but the base grid reserved a 170px row, so
+   the image spilled over the NPC name. Let the rows size to their content. */
+.ash099-npc-card{grid-template-rows:auto auto auto}
 .ash099-footer.ash099-topnav{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin-top:18px}
 .ash099-topnav .ash099-footer-item{min-width:0;min-height:57px;border-radius:12px;gap:4px;background:linear-gradient(180deg,rgba(18,26,20,.98),rgba(8,13,10,.98));border:1px solid rgba(215,184,106,.12);color:#aeb8a7}
 .ash099-topnav .ash099-footer-item.active,.ash099-topnav .ash099-footer-item:focus-visible{border-color:rgba(215,184,106,.5);background:linear-gradient(180deg,#29271c,#121911);color:#f0d99a}

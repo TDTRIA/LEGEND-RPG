@@ -71,7 +71,7 @@
               <div><small>THE FIRST DELVE</small><strong>Bell Cellar</strong><span>Explore below Ashmere’s old archive</span></div>
             </article>
           </div>
-          <div class="v140-realm-player-state"><span>YOUR JOURNEY</span><strong>${player ? 'Day ' + day + ' · ' + tokens + ' Road Tokens' : 'A new journey awaits'}</strong><small>${player ? esc(name) + ' · ' + esc(cls) : 'Shape a traveler and enter the realm.'}</small></div>
+          <div class="v140-realm-player-state"><span>YOUR JOURNEY</span><strong>${player ? 'Day ' + day + ' · ' + tokens + (Number(tokens) === 1 ? ' Road Token' : ' Road Tokens') : 'A new journey awaits'}</strong><small>${player ? esc(name) + ' · ' + esc(cls) : 'Shape a traveler and enter the realm.'}</small></div>
         </aside>
         <footer class="portal100-footer portal-footer v120-title-footer"><span>LEGEND: THE AWAKENING</span><span>${esc(buildVersion)} · ASHMERE · OLD ROAD · GREYFEN</span></footer>
       </div>`;

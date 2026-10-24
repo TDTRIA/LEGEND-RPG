@@ -33,7 +33,7 @@
         : '<li><strong>No landmark recorded</strong><span>There is still more of this road to learn.</span></li>';
       const campMarkup = camps.length
         ? camps.slice(-2).reverse().map(entry => '<li><strong>' + esc(entry.place || 'Waystation') + '</strong><span>' + esc(entry.note || 'A night kept beside the road.') + '</span></li>').join('')
-        : '<li><strong>No camp report</strong><span>The road offered no safe pause this time.</span></li>';
+        : '<li><strong>No camp report</strong><span>You did not rest or keep watch on this trip.</span></li>';
       const expeditionSummary = details?.type === 'expedition'
         ? '<section class="v152-expedition-summary" aria-label="Expedition results">' +
             '<div class="v152-expedition-summary-head"><span>OUTING DEBRIEF</span><strong>' + (details.complete ? 'A route secured' : 'A report from the road') + '</strong><p>' +
@@ -58,7 +58,7 @@
       const report = '<section class="exp150-return-report" aria-label="Expedition field report"><div class="exp150-return-report-head"><span>FIELD REPORT · TRIP ' + trip + '</span><strong>Before you return</strong></div>' +
         '<div class="exp150-return-report-route"><small>ROUTE TAKEN</small><strong>' + esc(routeName) + '</strong><p>' + esc(routeNote?.note || (routeName === 'High Ridge' ? 'Firm ground led above the flooded lowland.' : routeName === 'Reed Cut' ? 'The low path brought you through waterlogged ground.' : 'The road report does not contain a chosen route.')) + '</p></div>' +
         '<div class="exp150-return-report-columns"><section><h3>Evidence brought back <b>' + discoveries.length + '</b></h3><ul>' + discoveryMarkup + '</ul></section><section><h3>Camp reports <b>' + camps.length + '</b></h3><ul>' + campMarkup + '</ul></section></div>' +
-        '<div class="exp150-return-report-foot"><span>' + Number((journal.visitedPlaces || []).length) + ' places known to your map</span><span>' + discoveries.length + ' discoveries this trip</span></div></section>';
+        '<div class="exp150-return-report-foot"><span>' + Number((journal.visitedPlaces || []).length) + ' places known to your map</span><span>' + discoveries.length + (discoveries.length === 1 ? ' discovery' : ' discoveries') + ' this trip</span></div></section>';
       shell(header(player, state, kicker || 'EXPEDITION COMPLETE', title, text) + expeditionSummary + report +
         '<section class="exp100-explore-dock exp100-outcome"><div class="exp100-route"><span>THE ROAD REMEMBERS</span><strong>' +
         esc(title) + '</strong><small>' + esc(text) +

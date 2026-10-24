@@ -54,17 +54,20 @@ function finish(){
  pl.stats=pl.stats||{};
  pl.stats.oldRoadClears=Number(pl.stats.oldRoadClears||0)+1;
  const pressureAfter=clamp(Math.floor(s.pressure*.35),0,100);
+ // Keep the trip as it ended (stops reached, final Road Pressure) for the
+ // summary header before the live state resets for the next departure.
+ const endedState={...s};
  s.stage=0;s.pressure=pressureAfter;
  save(pl);
  const details={type:'expedition',complete,stagesCompleted:stageCount,rewardGold:reward,roadTokens:complete?1:0,
   xpGained:Number(progress?.gained||0),levelsGained:Number(progress?.levels||0),levelBefore,levelAfter:Math.max(1,Number(pl.level||1)),
   routeName,discoveriesThisTrip,campsThisTrip,pressureBefore,pressureAfter,trip};
- outcome(complete?'Expedition Secured':'Field Report Secured',(complete?'You bring the expedition home: ':'You return early with: ')+reward+'g'+(complete?' and a Road Token. The Road Tokens can now open a new region.':'.')+(progress?' XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'.':'')+routeReport,'Return',null,null,details)
+ outcome(complete?'Expedition Secured':'Field Report Secured',(complete?'You bring the expedition home: ':'You return early with: ')+reward+'g'+(complete?' and a Road Token. The Road Tokens can now open a new region.':'.')+(progress?' XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'.':'')+routeReport,'Return',null,null,details,endedState)
 }
-function outcome(title,text,kicker,skill,modifier,details){
+function outcome(title,text,kicker,skill,modifier,details,viewState){
  stopMusic();
  const pl=p();if(!pl)return;
- const s=ensure(pl);
+ const s=viewState||ensure(pl);
  if(resultView?.render){
   return resultView.render({player:pl,state:s,kicker,title,text,skill,modifier,details});
  }

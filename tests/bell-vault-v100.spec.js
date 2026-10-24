@@ -58,7 +58,9 @@ test('first secured road return unlocks the Bell Cellar, with gear-sensitive roo
 
   await expect(page.getByRole('button', { name: /The Bell Cellar/i })).toBeVisible();
   await page.getByRole('button', { name: /The Bell Cellar/i }).click();
-  await expect(page.locator('.bell-vault-banner h1')).toHaveText('The Bell Cellar');
+  // The screen header names the place once; the banner names the room.
+  await expect(page.locator('.ash099-head h1')).toHaveText('The Bell Cellar');
+  await expect(page.locator('.bell-vault-banner h1')).toHaveText('The Sealed Stair');
   await expect(page.locator('.bell-vault-banner')).toHaveAttribute('style', /bell-cellar-undercroft\.webp/);
   await page.locator('#vaultBegin').click();
   await expect(page.locator('.bell-vault-room-heading')).toContainText('ROOM 1 / 4');

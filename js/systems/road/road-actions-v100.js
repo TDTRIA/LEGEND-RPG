@@ -83,6 +83,7 @@ function startExpedition(){
  s.searchUsed={};
  s.readUsed={};
  s.campWatchUsed={};
+ s.campRestUsed={};
  s.routeChoice=null;
  s.currentNodeIdV160=null;
  s.visitedNodeIdsV160=[];

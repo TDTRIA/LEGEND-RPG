@@ -34,7 +34,7 @@
 
     document.getElementById('legendLevelUpOverlay')?.remove();
     const allocations = Object.fromEntries(Object.keys(ATTRIBUTES).map(key => [key, 0]));
-    const art = window.LegendAssetsV090?.classes?.[player.className] || '';
+    const art = window.LegendAssetsV090?.travelerPortrait?.(player) || window.LegendAssetsV090?.classes?.[player.className] || '';
     const previousLevel = Math.max(1, Number(player.level || 1) - Math.max(1, Number(summary.levels || 1)));
     const levelLine = Number(summary.levels || 0) > 1
       ? 'Your journey carried you through ' + Number(summary.levels) + ' levels.'

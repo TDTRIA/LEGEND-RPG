@@ -72,10 +72,22 @@
       '<p id="v094NameError" role="alert" style="display:none;color:#ffb4a9;margin:8px 0 0"></p></div>' +
       actionButtons({ back: true, next: true, label: 'Choose Identity' }) + '</section>', { step: 1, guideText: 'You are not awake yet. Not quite. I can offer questions; only you can give the answers shape. First, a name. Is it remembered, wished for, or waiting to be made?' });
     root?.querySelector('#v094Back')?.addEventListener('click', () => onBack?.());
-    root?.querySelector('#v094Next')?.addEventListener('click', () => {
+    const submit = () => {
       const input = root.querySelector('#v094Name');
       const error = root.querySelector('#v094NameError');
       onSubmit?.(input, error);
+    };
+    root?.querySelector('#v094Next')?.addEventListener('click', submit);
+    // Clear a stale "Please enter a traveler name" message as soon as the
+    // player types, and let Enter submit the name like the button does.
+    const nameInput = root?.querySelector('#v094Name');
+    nameInput?.addEventListener('input', () => {
+      const error = root.querySelector('#v094NameError');
+      if (error) { error.textContent = ''; error.style.display = 'none'; }
+      nameInput.removeAttribute('aria-invalid');
+    });
+    nameInput?.addEventListener('keydown', event => {
+      if (event.key === 'Enter') { event.preventDefault(); submit(); }
     });
   }
 
