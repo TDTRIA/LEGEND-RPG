@@ -13,7 +13,8 @@
         { view: 'people', title: 'Town Square', desc: 'Meet the keepers and travelers who know the drowned roads.', cta: 'Meet the town', iconKey: 'people', featured: currentView === 'people' },
         { view: 'crossing', title: 'A Dry Crossing', desc: flags.greyfenDryCrossingComplete ? 'The washed route marker is recovered and recorded.' : 'Recover a washed route marker. Choose the raised posts or risk the reed bed. ', cta: flags.greyfenDryCrossingComplete ? 'Review contract' : 'Take contract', iconKey: 'route', featured: currentView === 'crossing' },
         { view: 'work', title: 'Bellkeeper’s Hall', desc: 'Take practical work while learning the rhythms of Greyfen.', cta: 'Find work', iconKey: 'work', featured: currentView === 'work' },
-        { view: 'regions', title: 'Road Network', desc: 'Return to Ashmere or travel between lands you have unlocked.', cta: 'Travel', iconKey: 'regions', featured: currentView === 'regions' }
+        { view: 'regions', title: 'Road Network', desc: 'Return to Ashmere or travel between lands you have unlocked.', cta: 'Travel', iconKey: 'regions', featured: currentView === 'regions' },
+  
       ];
     }
     const destinations = [
@@ -23,7 +24,8 @@
       { view: 'people', title: 'Town Square', desc: 'Talk with Mara Vell, Old Brenn, and Captain Oric. Hear warnings and follow local stories.', cta: 'Meet the town', iconKey: 'people', featured: ['people', 'mara', 'brenn', 'oric'].includes(currentView) },
       { view: 'work', title: 'Work Board', desc: 'Take paid jobs, test your timing, and earn gold plus useful supplies.', cta: 'Browse jobs', iconKey: 'work', featured: currentView === 'work' },
       { view: 'road', title: 'Old Road Gate', desc: 'Begin the expedition; find clues, face danger, and bring proof home.', cta: 'Begin expedition', iconKey: 'road', featured: currentView === 'road' },
-      { view: 'regions', title: 'Road Network', desc: 'Unlock new regions with Road Tokens, then travel between places you know for gold.', cta: 'Open map', iconKey: 'regions', featured: currentView === 'regions' }
+      { view: 'regions', title: 'Road Network', desc: 'Unlock new regions with Road Tokens, then travel between places you know for gold.', cta: 'Open map', iconKey: 'regions', featured: currentView === 'regions' },
+
     ];
     if (flags.firstRoadReturnSeen) destinations.splice(5, 0, {
       view: 'dungeon', title: 'The Bell Cellar', desc: 'A sealed stair beneath the archive. Explore the rooms below, face the sentinel, and bring a relic home.', cta: 'Descend', iconKey: 'dungeon', featured: currentView === 'dungeon'

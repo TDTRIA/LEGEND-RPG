@@ -1,5 +1,20 @@
 # AI Handoff — LEGEND: The Awakening
 
+Last updated: 2026-10-24. GitHub `main` is the source of truth; read this before changing code.
+
+## Active PR — v0.22.1 Runway art pass, daily contracts, and Road Cache (PR #33)
+
+**Status: open PR, validation pending; not merged or deployed.** Branch: `feat/runway-art-daily-quests-v023`. Main remains v0.22.0 until PR #33 is reviewed and passes CI.
+
+- **Asset rule:** active game UI should use local, committed Runway-generated raster assets. Do not add SVG icons or temporary signed Runway URLs. Use existing paths such as `assets/generated/ui/icons/service-*.webp`, `assets/generated/locations/*.webp`, `assets/generated/classes/*.webp`, `assets/generated/items/*.webp`, and `assets/generated/enemies/*.webp`. The current local title panorama is `assets/generated/title/title-ashmere-road.webp`; the Runway-generated `LEGEND: The Awakening` wordmark remains a raster PNG. Legacy SVG files may still exist in the repository but should not be referenced by production UI.
+- The title launcher now has raster menu icons and a visual realm atlas showing Ashmere, the Old Road, and Bell Cellar. Scene backgrounds and fallbacks in the active title/boot/transition CSS point at committed Runway WebP art. Menu, settings, regional markers, and town icons use local raster imagery with screen blending to suppress the dark square backing and remove the old boxy icon tiles.
+- Traveler creation now uses standalone Runway raster images for choice artwork rather than cropping an SVG sprite atlas. The old `assets/generated/creation/creation-choice-atlas.svg` path is no longer used by the creation flow.
+- The Road Network card for **Ashmere** now includes the local Ashmere town scene, alongside Greyfen's scene artwork. Check desktop and narrow/mobile layouts and image-load fallbacks.
+- Three local-calendar daily field contracts are stored in `player.flags.dailyContractsV151` with daily progress baselines and claim IDs: inspect a roadside point of interest; win a road battle; return from an Old Road outing. Gold and XP use existing systems. Each claimed reward grants a `roadCacheKey` in the existing inventory structure.
+- **Road Cache fairness:** keys are earned through gameplay only and are not sold. The UI discloses odds before opening: 40% for 2 Rations; 30% for 60–100g; 20% for two matching field materials; 8% for 2 Rations and 1 Potion; 2% for 1 Road Token and 100g. Results are saved in the existing player record and a memory entry.
+- `tests/runway-art-daily-board-v151.spec.js` covers raster menu/hub art, Ashmere Road Network art, daily completion, and a deterministic rare-cache result. `tests/traveler-creation-benefits-v150.spec.js` remains the creation-effects regression guard. Wait for the full Playwright suite and inspect any failures before merge. A live deployed smoke test and manual desktop/mobile review are still required after merge.
+- Version labels are v0.22.1. The boot sequence, classic-JavaScript runtime, existing save key, and combat formulas remain unchanged.
+
 Last updated: 2026-10-24. GitHub `main` is the source of truth; inspect current source before every change.
 
 ## Current main checkpoint — v0.22.0 (merged 2026-10-24)

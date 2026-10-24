@@ -31,7 +31,7 @@
   inset:0;
   background:
     linear-gradient(90deg,rgba(2,4,3,.92),rgba(2,4,3,.48),rgba(2,4,3,.90)),
-    url('../assets/title/title_bg_ashmere_road_v089.jpg');
+    url('../assets/generated/title/title-ashmere-road.webp');
   background-size:cover;
   background-position:center;
   filter:saturate(.94) contrast(1.07);

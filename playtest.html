@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LEGEND: The Awakening — Production QA Runner</title>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/webp" href="assets/generated/ui/icons/service-milestone.webp">
   <link rel="stylesheet" href="css/legend-site-v090.css?v=0.9.0">
   <style>
     .runner-shell{width:min(1240px,100%);margin:0 auto;position:relative;z-index:1;display:grid;grid-template-columns:400px 1fr;gap:14px}.status{display:grid;gap:8px;margin-top:12px;max-height:42vh;overflow:auto}.entry.pass{border-left:4px solid var(--green)}.entry.fail{border-left:4px solid var(--red)}.entry.info{border-left:4px solid var(--gold)}.manual label{display:flex;gap:8px;align-items:flex-start;color:var(--text);line-height:1.4;margin:8px 0}.manual input{margin-top:3px}.frame-wrap{height:calc(100vh - 48px);overflow:hidden}.frame-wrap iframe{width:100%;height:100%;border:1px solid var(--line);border-radius:24px;background:#000;box-shadow:0 24px 70px var(--shadow)}button,a.btn{width:100%;margin:6px 0}textarea{min-height:180px;width:100%;margin-top:10px}@media(max-width:980px){.runner-shell{grid-template-columns:1fr}.frame-wrap{height:70vh}}
@@ -57,8 +57,28 @@ function beginReport(title){report.length=0;statusBox.innerHTML='';report.push(t
 async function runCore(){beginReport('LEGEND LEGACY QA RUNNER REPORT');await checkPage('index.html?v=0.9x',/LEGEND|Roads of Ashmere|New Traveler|Settings/i,'Game shell loads current title');await checkFile('index.html','Index loads Ashmere shell CSS',/ashmere-v099\.css/);await checkFile('index.html','Index loads game polish CSS',/game-polish-v09x\.css/);await checkFile('index.html','Index loads settings CSS',/settings-v09x\.css/);await checkFile('index.html','Index loads direct beginning JS',/beginning-v094\.js\?v=0\.9\.x-direct/);await checkFile('index.html','Index loads v099 Ashmere controller',/ashmere-controller-v099\.js/);await checkFile('index.html','Index does not load old title replacement',/^((?!title-bg-v089\.js).)*$/s);await checkFile('index.html','Index does not load old systems',/^((?!ui-v080\.css|js\/ui\.js|town-controller-v080|objectives-v080|inventory-v065|arrival-v090|sheet-inventory-v080|defeat-v070|enemy-sprites-v080).)*$/s)}
 async function runPages(){beginReport('LEGEND SUPPORT PAGE REPORT');await checkPage('feedback.html?v=0.9x',/Roads of Ashmere|Playtest Feedback|Submit Feedback/i,'Feedback page');await checkPage('blog.html?v=0.9x',/Roads of Ashmere|LEGEND DEVLOG|Fantasy Identity|Ashmere/i,'Blog/devlog page');await checkPage('updates.html?v=0.9x',/Newsletter|LEGEND|Dispatch|v0/i,'Updates/newsletter page');await checkNotPage('feedback.html?v=0.9x',/Recovered Build v0\.7\.0/i,'Feedback no old v0.7 identity');await checkNotPage('blog.html?v=0.9x',/Recovered Build Archive/i,'Blog no old archive header')}
 async function runSystems(){beginReport('LEGEND ACTIVE SYSTEMS REPORT');await checkFile('js/game.js?v=0.9x','Slim bootstrap',/Slim Game Bootstrap|LegendGameBootstrap|Settings/);await checkFile('js/systems/beginning-v094.js?v=0.9x','Direct beginning flow',/genderOptions|personalityOptions|enterAshmere|LegendAshmereV099/);await checkFile('js/systems/ashmere-controller-v099.js?v=0.9x','Ashmere v099 shell',/Clean Ashmere Controller|renderAshmere|data-ash-view|ash099/);await checkFile('js/core/game-runtime-v120.js?v=0.9x','Direct Ashmere return bridge',/renderAshmereDirect|returnToAshmere|LegendAshmereV099/);await checkFile('js/content/roads/old-road-v100.js?v=0.9x','Active v100 road content',/LegendRoadsV100\.oldRoad|stages|checks|finds|enemies/);await checkFile('js/systems/road-controller-v100.js?v=0.9x','Active v100 Old Road controller',/LegendRoadControllerV100|Road Pressure|renderExpedition/);await checkFile('js/systems/road/road-combat-v100.js?v=0.9x','Dedicated combat module',/LegendRoadCombatV100|combatAction|function combat/);await checkFile('js/systems/road/road-audio-v100.js?v=0.9x','Dedicated road audio module',/LegendRoadAudioV100|legend-road-sound/);await checkFile('index.html','Legacy road controller/data are not loaded',/^((?!road-controller-v087\.js|old-road-v087\.js|road-v087\.css).)*$/s);await checkFile('css/game-polish-v09x.css?v=0.9x','Subtitle separation CSS',/game-menu-btn small|ash099-action small|settings09x-toggle/)}
-async function runAssets(){beginReport('LEGEND ASHMERE ART ASSET REPORT');await checkFile('assets/title/title_bg_ashmere_road_v089.jpg','Title background');await checkFile('assets/ui/logos/logo_legend_main_v1.png','Main logo');await checkFile('assets/ui/logos/logo_legend_emblem_v1.png','Emblem logo');await checkFile('assets/locations/ashmere/location_ashmere_mainstreet_v1.jpg','Ashmere main street art');await checkFile('assets/locations/roads/location_old_road_main_v1.jpg','Old Road art');await checkFile('assets/npcs/ashmere/npc_mara_portrait_v1.jpg','Mara portrait');await checkFile('assets/npcs/ashmere/npc_brenn_portrait_v1.jpg','Brenn portrait');await checkFile('assets/npcs/ashmere/npc_oric_portrait_v1.jpg','Oric portrait');await checkFile('assets/npcs/vendors/npc_innkeeper_portrait_v1.jpg','Innkeeper portrait');await checkFile('assets/npcs/vendors/npc_blacksmith_portrait_v1.jpg','Blacksmith portrait');await checkFile('assets/npcs/vendors/npc_trader_portrait_v1.jpg','Trader portrait');await checkFile('assets/enemies/road/enemy_road_goblin_v1.jpg','Road Goblin art');await checkFile('assets/enemies/road/enemy_blackroot_wolf_v1.jpg','Blackroot Wolf art');await checkFile('assets/enemies/road/enemy_lantern_wisp_v1.jpg','Lantern Wisp art')}
-document.getElementById('runCore').onclick=runCore;document.getElementById('runPages').onclick=runPages;document.getElementById('runSystems').onclick=runSystems;document.getElementById('runAssets').onclick=runAssets;
+async function runAssets(){
+    beginReport('LEGEND RUNWAY PRODUCTION ART REPORT');
+    await checkFile('assets/generated/title/title-ashmere-road.webp','Runway title / realm panorama');
+    await checkFile('assets/ui/logos/logo_legend_awakening_wordmark.png','Runway LEGEND: The Awakening wordmark');
+    await checkFile('assets/generated/ui/icons/service-milestone.webp','Runway emblem / favicon art');
+    await checkFile('assets/generated/locations/ashmere-town.webp','Ashmere town scene');
+    await checkFile('assets/generated/locations/old-road-south-fork.webp','Old Road scene');
+    await checkFile('assets/generated/locations/bell-cellar-undercroft.webp','Bell Cellar scene');
+    await checkFile('assets/generated/ui/icons/service-inn.webp','Inn service icon');
+    await checkFile('assets/generated/ui/icons/service-market.webp','Market service icon');
+    await checkFile('assets/generated/ui/icons/service-blacksmith.webp','Blacksmith service icon');
+    await checkFile('assets/generated/ui/icons/service-journal.webp','Journal service icon');
+    await checkFile('assets/generated/ui/icons/service-map.webp','Map service icon');
+    await checkFile('assets/generated/ui/icons/service-job-board.webp','Work board service icon');
+    await checkFile('assets/generated/ui/icons/service-traveler.webp','Traveler icon');
+    await checkFile('assets/generated/ui/icons/service-gatehouse.webp','Regional gate icon');
+    await checkFile('assets/generated/npcs/captain-oric.webp','Runway Captain Oric portrait');
+    await checkFile('assets/generated/enemies/road-goblin.webp','Road Goblin art');
+    await checkFile('assets/generated/enemies/blackroot-wolf.webp','Blackroot Wolf art');
+    await checkFile('assets/generated/enemies/lantern-wisp.webp','Lantern Wisp art');
+  }
+  document.getElementById('runCore').onclick=runCore;document.getElementById('runPages').onclick=runPages;document.getElementById('runSystems').onclick=runSystems;document.getElementById('runAssets').onclick=runAssets;
 </script>
 </body>
 </html>

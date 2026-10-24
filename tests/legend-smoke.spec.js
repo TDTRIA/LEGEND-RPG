@@ -1302,6 +1302,12 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('#finish').click();
     await expect(page.locator('.exp100-outcome')).toContainText(/Ridgeway Cairn/i);
     await page.locator('#outcomeReturn').click();
+    const returnCurtain = page.locator('#legend-scene-curtain');
+    await expect(returnCurtain).toBeAttached();
+    await expect.poll(() => returnCurtain.evaluate(el =>
+      !el.classList.contains('is-covering') && !el.classList.contains('is-revealing')
+    )).toBe(true);
+    await expect(page.locator('.ash100-town')).toBeVisible();
 
     let firstReturn = await page.evaluate(() => {
       const pl = window.LegendRuntimeV120.loadPlayer();
@@ -1769,7 +1775,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     const iconImages = page.locator('.ash100-destinations .ash100-destination-icon .ash099-asset-icon img');
     await expect(iconImages).toHaveCount(7);
     const iconSources = await iconImages.evaluateAll(nodes => nodes.map(node => node.getAttribute('src') || ''));
-    expect(iconSources.every(src => src.startsWith('assets/generated/ui/icons/service-'))).toBe(true);
+    expect(iconSources.every(src => src.startsWith('assets/generated/') && /\.(?:webp|png)(?:\?.*)?$/i.test(src))).toBe(true);
     await expect(page.locator('.ash100-destinations .ash100-destination-icon .ash099-icon svg')).toHaveCount(0);
     await expect(page.locator('.ash100-destinations .ash100-destination-icon .ash099-region-shop-icon img')).toHaveCount(0);
     const iconBounds = await iconImages.evaluateAll(nodes => nodes.map(img => {

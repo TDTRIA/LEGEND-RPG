@@ -22,7 +22,7 @@
 .account09x-hero:before{
   background:
     linear-gradient(90deg,rgba(2,4,3,.94),rgba(2,4,3,.45),rgba(2,4,3,.90)),
-    url('../assets/title/title_bg_ashmere_road_v1.jpg')!important;
+    url('../assets/generated/title/title-ashmere-road.webp')!important;
   background-size:cover!important;
   background-position:center!important;
 }

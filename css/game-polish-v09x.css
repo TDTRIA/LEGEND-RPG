@@ -10,7 +10,7 @@
   --legend-muted:#b8c9bd;
   --legend-line:rgba(255,211,105,.22);
   --legend-red:#d85f4f;
-  --title-bg-image:url('../assets/title/title_bg_ashmere_road_v1.jpg');
+  --title-bg-image:url('../assets/generated/title/title-ashmere-road.webp');
 }
 
 body{background:#030604}
