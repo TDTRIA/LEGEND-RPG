@@ -183,6 +183,56 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'combat');
   });
 
+  test('secured expedition report keeps its real return action without duplicate labels', async ({ page }) => {
+    await enterAshmere(page, 'ReportShellTraveler');
+    await page.evaluate(() => {
+      const player = window.LegendStorage.loadPlayer();
+      player.flags = player.flags || {};
+      player.flags.roadExpeditionV100 = {
+        stage: 5, pressure: 16, trips: 1, routeChoice: 'ridge', events: 0, finds: 0, battles: 0
+      };
+      player.flags.roadFieldJournalV150 = {
+        visitedPlaces: ['South Fork', 'Wayfarer’s Camp'],
+        discoveries: [], routes: [], campReports: []
+      };
+      player.flags.firstRoadReturnSeen = true;
+      player.flags.firstRoadReturnMaraBriefed = false;
+      window.LegendStorage.savePlayer(player);
+
+      const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, character => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      }[character]));
+      const view = window.LegendRoadResultsViewV100.create({
+        renderHeader: (_player, _state, _kicker, title) => '<header class="exp100-head"><h1>' + escapeHtml(title) + '</h1></header>',
+        renderShell: html => { document.getElementById('root').innerHTML = html; },
+        escapeHtml,
+        onReturn: () => window.LegendAshmereV099.renderAshmere(),
+        onReportToMara: () => window.LegendAshmereV099.route('mara')
+      });
+      view.render({
+        player,
+        state: player.flags.roadExpeditionV100,
+        kicker: 'Return',
+        title: 'Expedition Secured',
+        text: 'Your route notes are saved.',
+        details: {
+          type: 'expedition', complete: true, stagesCompleted: 5, rewardGold: 130,
+          roadTokens: 1, xpGained: 20, levelsGained: 0, levelBefore: 1, levelAfter: 1,
+          routeName: 'High Ridge', discoveriesThisTrip: 0, campsThisTrip: 0,
+          pressureBefore: 16, pressureAfter: 5, trip: 1
+        }
+      });
+    });
+
+    await expect(page.locator('.exp150-return-report')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'expedition-results');
+    await expect(page.getByRole('button', { name: /Return to Ashmere/i })).toHaveCount(1);
+    await expect(page.getByRole('button', { name: /Report to Mara/i })).toHaveCount(1);
+    await page.locator('#lws-panel-right [data-world-action="expedition-return"]').click();
+    await expect(page.locator('.ash100-town')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'town');
+  });
+
   test('settings overlay persists through the existing settings store and combat never spawns a demo enemy', async ({ page }) => {
     await enterAshmere(page, 'OverlayTraveler');
     await page.locator('.lws-bottom-bar [data-world-action="settings"]').click();
