@@ -22,7 +22,7 @@ test.describe('LegendProgressionV100 compatibility contract', () => {
       const summary = window.LegendProgressionV100.award(player, 25);
       return { player, summary };
     });
-    expect(result.player).toEqual({ level: 2, xp: 15, hp: 58, maxHp: 108 });
+    expect(result.player).toEqual({ level: 2, xp: 15, hp: 58, maxHp: 108, attributesV152: { might: 0, agility: 0, arcana: 0, endurance: 0, insight: 0, fortune: 0 }, pendingStatPointsV152: 2 });
     expect(result.summary).toEqual({ gained: 25, levels: 1, level: 2, xp: 15, next: 200 });
   });
 
@@ -32,7 +32,7 @@ test.describe('LegendProgressionV100 compatibility contract', () => {
       const summary = window.LegendProgressionV100.award(player, 300);
       return { player, summary };
     });
-    expect(result.player).toEqual({ level: 3, xp: 0, hp: 26, maxHp: 26 });
+    expect(result.player).toEqual({ level: 3, xp: 0, hp: 26, maxHp: 26, attributesV152: { might: 0, agility: 0, arcana: 0, endurance: 0, insight: 0, fortune: 0 }, pendingStatPointsV152: 4 });
     expect(result.summary).toEqual({ gained: 300, levels: 2, level: 3, xp: 0, next: 300 });
   });
 
@@ -42,7 +42,7 @@ test.describe('LegendProgressionV100 compatibility contract', () => {
       const summary = window.LegendProgressionV100.award(player, 1);
       return { player, summary };
     });
-    expect(result.player).toEqual({ level: 2, xp: 0, hp: 108, maxHp: 108 });
+    expect(result.player).toEqual({ level: 2, xp: 0, hp: 108, maxHp: 108, attributesV152: { might: 0, agility: 0, arcana: 0, endurance: 0, insight: 0, fortune: 0 }, pendingStatPointsV152: 2 });
     expect(result.summary.levels).toBe(1);
   });
 
