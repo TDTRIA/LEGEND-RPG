@@ -488,6 +488,7 @@
       if (event.key === 'Escape') {
         closeShellModal();
         document.body.classList.remove('legend-shell-left-open', 'legend-shell-right-open');
+        refreshMobileToggleState();
       }
     });
   }
