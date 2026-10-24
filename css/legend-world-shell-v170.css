@@ -37,6 +37,14 @@ body.legend-world-shell-active #root {
   width: auto;
   min-height: calc(100vh - 140px);
 }
+body.legend-world-shell-active #root .ash100-town,
+body.legend-world-shell-active #root .ash099-terminal,
+body.legend-world-shell-active #root .exp100 {
+  min-height: auto;
+}
+body.legend-world-shell-active #root .v152-combat-results {
+  min-height: inherit;
+}
 
 #legend-world-shell-root button,
 #legend-world-shell-modal-root button,
