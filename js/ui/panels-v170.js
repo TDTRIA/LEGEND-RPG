@@ -132,6 +132,23 @@
       actions += action('journal', '✧', 'Field journal', 'Review discoveries and camp reports', '#exp150OpenJournal');
       actions += action('leave-road', '↩', 'Return to Ashmere', 'Leave the expedition using its return handler', '#town');
       void state;
+    } else if (context?.kind === 'combat') {
+      intro = 'The encounter is active. Use the commands in the battlefield; this frame will not replace the combat system.';
+      actions = '<div class="lws-quest-item"><strong>Encounter in progress</strong><p>FIGHT, ACT, ITEM, GUARD, and retreat are handled by the live battle scene. The shell keeps the traveler HUD visible without changing enemy state.</p></div>';
+    } else if (context?.kind === 'combat-results') {
+      intro = 'The live results screen owns the resolution and reward state. Continue or return through its existing choices.';
+      const hasContinue = !!root?.querySelector('#v152CombatContinue');
+      const hasReturn = !!root?.querySelector('#v152CombatReturn');
+      if (hasContinue) actions += '<button class="lws-btn primary" type="button" data-world-action="combat-continue"><span class="lws-btn-icon" aria-hidden="true">➜</span><span class="lws-btn-copy"><strong>Continue</strong><small>Use the current results action</small></span></button>';
+      if (hasReturn) actions += '<button class="lws-btn" type="button" data-world-action="combat-return"><span class="lws-btn-icon" aria-hidden="true">↩</span><span class="lws-btn-copy"><strong>Return from results</strong><small>Use the current return action</small></span></button>';
+      if (!actions) actions = '<p class="lws-context-copy">Continue using the choices in the results screen.</p>';
+    } else if (context?.kind === 'dungeon') {
+      intro = 'The Bell Cellar keeps its own room decisions and retreat rules. This panel delegates to those controls.';
+      const retreat = !!root?.querySelector('#vaultRetreat');
+      const returnButton = !!root?.querySelector('#vaultReturn');
+      if (retreat) actions += '<button class="lws-btn primary" type="button" data-world-action="dungeon-retreat"><span class="lws-btn-icon" aria-hidden="true">↩</span><span class="lws-btn-copy"><strong>Retreat to Ashmere</strong><small>Use the cellar’s existing retreat handler</small></span></button>';
+      if (returnButton) actions += '<button class="lws-btn" type="button" data-world-action="dungeon-return"><span class="lws-btn-icon" aria-hidden="true">⌂</span><span class="lws-btn-copy"><strong>Return</strong><small>Use the current cellar action</small></span></button>';
+      if (!actions) actions = '<p class="lws-context-copy">Continue through the cellar choices in the central scene.</p>';
     } else if (context?.kind === 'town') {
       intro = 'Select a destination from the town’s existing location catalog.';
       actions = destinationButtons(root);
@@ -149,12 +166,14 @@
 
   function renderBottomBar(context) {
     const active = context?.kind || 'town';
+    const lockNavigation = active === 'combat' || active === 'combat-results';
+    const worldTitle = active === 'road' ? 'Town' : active === 'dungeon' ? 'Retreat' : active === 'combat' || active === 'combat-results' ? 'Encounter' : 'World';
     const button = (action, icon, title, primary = false, disabled = false) =>
-      '<button type="button" class="lws-btn ' + (primary ? 'primary' : 'quiet') + '" data-world-action="' + action + '"' + (disabled ? ' disabled' : '') + '><span class="lws-btn-icon" aria-hidden="true">' + icon + '</span><span class="lws-btn-copy"><strong>' + title + '</strong></span></button>';
-    return button('world', '⌂', active === 'road' ? 'Town' : 'World', false) +
+      '<button type="button" class="lws-btn ' + (primary ? 'primary' : 'quiet') + '" data-world-action="' + action + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '><span class="lws-btn-icon" aria-hidden="true">' + icon + '</span><span class="lws-btn-copy"><strong>' + title + '</strong></span></button>';
+    return button('world', '⌂', worldTitle, false, lockNavigation) +
       button('inventory', '◇', 'Inventory', true) +
-      button('journal', '✧', 'Journal') +
-      button('map', '⌖', 'Map') +
+      button('journal', '✧', 'Journal', false, lockNavigation) +
+      button('map', '⌖', 'Map', false, lockNavigation) +
       button('combat', '⚔', 'Combat') +
       button('settings', '⚙', 'Settings');
   }
