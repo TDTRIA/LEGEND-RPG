@@ -424,6 +424,7 @@
       getPlayer: player,
       savePlayer: save,
       getAssets: A,
+      getLocationLabel: () => 'GREYFEN MARSH PATH',
       getWeapon: pl => rules?.weapon(pl) || { name: 'Hands', min: 1, max: 3 },
       getArmor: pl => rules?.armor(pl) || { name: 'No Armor', defense: 0 },
       score: (pl, skill) => rules?.score(pl, skill) || 0,
