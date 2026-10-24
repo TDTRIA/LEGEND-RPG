@@ -208,10 +208,11 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
         cleared: pl.flags.greyfenMarshExpeditionV160.sluiceCleared,
         victories: pl.stats.greyfenMarshVictories,
         wispAsh: pl.inventory.wispAsh,
+        shelterVisited: pl.flags.greyfenMarshExpeditionV160.visitedNodeIds.includes('mossbarrow-shelter'),
         oldRoadStage: Number(pl.flags.roadExpeditionV100?.stage || 0)
       };
     });
-    expect(afterWin).toMatchObject({ stage: 3, cleared: true, victories: 1, wispAsh: 1, oldRoadStage: 0 });
+    expect(afterWin).toMatchObject({ stage: 3, cleared: true, victories: 1, wispAsh: 1, shelterVisited: true, oldRoadStage: 0 });
 
     await page.locator('#v152CombatContinue').click();
     await expect(page.getByRole('heading', { name: 'A dry pause above the floodline.' })).toBeVisible();

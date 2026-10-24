@@ -368,6 +368,9 @@
       s.sluiceCleared = true;
       add(s.completedInteractionIds, 'flooded-sluice');
       discover(pl, s, 'flooded-sluice', 'The Wisp at the Sluice', 'You drove the pale wisp from the sluice. The water kept moving; no answer came with it.');
+      // Combat victory advances directly to stage 3, so record the shelter visit
+      // here just as the non-combat crossing path does in moveToShelter().
+      if (Number(s.stage) === 3) visit(pl, s, 'mossbarrow-shelter');
       pl.stats = pl.stats || {};
       pl.stats.greyfenMarshVictories = Number(pl.stats.greyfenMarshVictories || 0) + 1;
       save(pl);
