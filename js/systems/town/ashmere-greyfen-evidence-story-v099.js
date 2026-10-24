@@ -92,6 +92,7 @@
       pl.memories=Array.isArray(pl.memories)?pl.memories:[];
       const memory='Mara filed the Greyfen Waterline Gauge reading: its newest notch records a height and appears cut by hand, but does not identify its maker or intent. The missing closure order remains unresolved.';
       if(!pl.memories.includes(memory))pl.memories.push(memory);
+      setBellQuestObjective(pl,'Find the missing closure order that authorized the later change to the lower crossing.');
     }
     if(greyfen&&id==='mara'&&pl.flags?.greyfenFieldNoteFound&&!pl.flags.greyfenFieldNoteReported){
       pl.flags.greyfenFieldNoteReported=true;

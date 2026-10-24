@@ -177,10 +177,12 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
       const pl = window.LegendRuntimeV120.loadPlayer();
       return {
         reported: pl.flags.greyfenWaterlineGaugeReported,
-        memory: pl.memories.some(line => line.includes('Waterline Gauge reading'))
+        memory: pl.memories.some(line => line.includes('Waterline Gauge reading')),
+        objective: (pl.questLog || []).some(line => String(line).includes('Find the missing closure order that authorized the later change to the lower crossing.')),
+        guidance: window.LegendAshmereGuidanceV099.getGoal(pl).title
       };
     });
-    expect(filed).toEqual({ reported: true, memory: true });
+    expect(filed).toEqual({ reported: true, memory: true, objective: true, guidance: 'Find the Missing Closure Order' });
   });
 
   test('raised posts remain available without rations and a successful wisp fight uses Greyfen-specific combat results', async ({ page }) => {
