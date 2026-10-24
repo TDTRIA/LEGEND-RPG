@@ -155,6 +155,13 @@
     } else if (context?.kind === 'combat') {
       intro = 'The encounter is active. Use the commands in the battlefield; this frame will not replace the combat system.';
       actions = '<div class="lws-quest-item"><strong>Encounter in progress</strong><p>FIGHT, ACT, ITEM, GUARD, and retreat are handled by the live battle scene. The shell keeps the traveler HUD visible without changing enemy state.</p></div>';
+    } else if (context?.kind === 'expedition-results') {
+      intro = 'Your field notes and secured rewards are recorded. Continue through the report controls rather than starting another road action.';
+      const hasReturn = !!root?.querySelector('#outcomeReturn');
+      const hasMaraHandoff = !!root?.querySelector('#outcomeReportToMara');
+      if (hasReturn) actions += '<button class="lws-btn primary" type="button" data-world-action="expedition-return"><span class="lws-btn-icon" aria-hidden="true">↩</span><span class="lws-btn-copy"><strong>Return from expedition</strong><small>Leave the report and return to the town</small></span></button>';
+      if (hasMaraHandoff) actions += '<button class="lws-btn" type="button" data-world-action="report-to-mara"><span class="lws-btn-icon" aria-hidden="true">✧</span><span class="lws-btn-copy"><strong>Hand off field notes</strong><small>Report the saved discoveries to Mara</small></span></button>';
+      if (!actions) actions = '<p class="lws-context-copy">Use the choices in the report to return to town.</p>';
     } else if (context?.kind === 'combat-results') {
       intro = 'The live results screen owns the resolution and reward state. Continue or return through its existing choices.';
       const hasContinue = !!root?.querySelector('#v152CombatContinue');
@@ -187,7 +194,7 @@
   function renderBottomBar(context) {
     const active = context?.kind || 'town';
     const lockNavigation = active === 'combat' || active === 'combat-results';
-    const worldTitle = active === 'road' ? 'Town' : active === 'dungeon' ? 'Retreat' : active === 'combat' || active === 'combat-results' ? 'Encounter' : 'World';
+    const worldTitle = active === 'road' ? 'Town' : active === 'dungeon' ? 'Retreat' : active === 'expedition-results' ? 'Return' : active === 'combat' || active === 'combat-results' ? 'Encounter' : 'World';
     const button = (action, icon, title, primary = false, disabled = false) =>
       '<button type="button" class="lws-btn ' + (primary ? 'primary' : 'quiet') + '" data-world-action="' + action + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '><span class="lws-btn-icon" aria-hidden="true">' + icon + '</span><span class="lws-btn-copy"><strong>' + title + '</strong></span></button>';
     return button('world', '⌂', worldTitle, false, lockNavigation) +
