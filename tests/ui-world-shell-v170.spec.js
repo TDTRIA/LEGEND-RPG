@@ -85,6 +85,9 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(page.locator('#lws-panel-left')).toContainText(saved.name);
     await expect(page.locator('#lws-hud-health')).toHaveText(saved.health);
     await expect(page.locator('#lws-hud-gold')).toHaveText(saved.gold);
+    await expect(page.getByRole('heading', { name: 'Ashmere', exact: true })).toHaveCount(1);
+    await expect(page.getByRole('button', { name: /The Bell Cellar/i })).toHaveCount(1);
+    await expect(page.getByRole('button', { name: /Road Network/i })).toHaveCount(1);
     await expect(page.locator('.lws-panel-right [data-world-route]').first()).toBeVisible();
     const viewportLayout = await page.evaluate(() => {
       const root = document.getElementById('root').getBoundingClientRect();
