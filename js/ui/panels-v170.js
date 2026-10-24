@@ -14,6 +14,7 @@
 
   function objectiveFor(player, root, context) {
     const sceneObjective = root?.querySelector('.ash100-route-strip-copy strong, .ash100-departure-card h2, .exp150-title-group h1');
+    if (context?.kind === 'expedition-results') return 'Field report secured — choose a return or handoff';
     if (context?.kind === 'road') {
       const state = player?.flags?.roadExpeditionV100 || {};
       if (Number(state.stage || 0) >= 5) return 'Secure your return to Ashmere';
@@ -126,6 +127,7 @@
       : context?.kind === 'town' ? 'Town Actions'
       : context?.kind === 'combat' ? 'Encounter Actions'
       : context?.kind === 'combat-results' ? 'Results Actions'
+      : context?.kind === 'expedition-results' ? 'Field Report Actions'
       : context?.kind === 'dungeon' ? 'Delve Actions'
       : 'Service Actions');
     let intro = 'Choose an action for the place you are visiting.';
@@ -188,7 +190,7 @@
         '<button class="lws-btn" type="button" data-world-action="prepare-road"><span class="lws-btn-icon" aria-hidden="true">➜</span><span class="lws-btn-copy"><strong>Prepare for the road</strong><small>Open the real departure briefing</small></span></button>' +
         '<button class="lws-btn" type="button" data-world-action="journal"><span class="lws-btn-icon" aria-hidden="true">✧</span><span class="lws-btn-copy"><strong>Quest & field journal</strong><small>Open the existing journal view</small></span></button>';
     }
-    return '<div class="lws-panel-header"><div><span class="lws-panel-eyebrow">' + (context?.kind === 'road' ? 'Journey actions' : context?.kind === 'town' ? 'Town actions' : 'Context actions') + '</span><h2>' + heading + '</h2><p>' + esc(intro) + '</p></div></div><div class="lws-panel-scroll"><div class="lws-action-list">' + actions + '</div></div>';
+    return '<div class="lws-panel-header"><div><span class="lws-panel-eyebrow">' + (context?.kind === 'road' ? 'Journey actions' : context?.kind === 'town' ? 'Town actions' : context?.kind === 'expedition-results' ? 'Expedition debrief' : context?.kind === 'combat' ? 'Live encounter' : 'Context actions') + '</span><h2>' + heading + '</h2><p>' + esc(intro) + '</p></div></div><div class="lws-panel-scroll"><div class="lws-action-list">' + actions + '</div></div>';
   }
 
   function renderBottomBar(context) {
