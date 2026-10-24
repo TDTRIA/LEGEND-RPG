@@ -62,6 +62,32 @@
         camp: !!rootNode.querySelector('#campRest, #campCraft, #campWatch')
       };
     }
+    const liveCombat = rootNode.querySelector('.rpg-battle');
+    if (liveCombat) {
+      return {
+        kind: 'combat',
+        location: liveCombat.querySelector('.rpg-overline')?.textContent?.trim() || 'Encounter',
+        sublocation: liveCombat.querySelector('.rpg-battle-topline strong')?.textContent?.trim() || 'Combat encounter',
+        camp: false
+      };
+    }
+    const combatResults = rootNode.querySelector('.v152-combat-results');
+    if (combatResults) {
+      return {
+        kind: 'combat-results',
+        location: combatResults.querySelector('.v152-results-kicker')?.textContent?.trim() || 'Encounter results',
+        sublocation: PANELS().screenHeading?.(rootNode, 'Encounter results') || 'Encounter results',
+        camp: false
+      };
+    }
+    if (rootNode.querySelector('.bell-vault-v100')) {
+      return {
+        kind: 'dungeon',
+        location: 'Bell Cellar',
+        sublocation: rootNode.querySelector('.bell-vault-room-heading strong, .bell-vault-overline')?.textContent?.trim() || 'The Bell Cellar',
+        camp: false
+      };
+    }
     if (rootNode.querySelector('.ash100-town')) {
       return {
         kind: 'town',
@@ -129,7 +155,13 @@
       ? (context.sublocation && context.sublocation !== 'Old Road' ? context.sublocation + ' · Old Road' : 'Old Road')
       : context.kind === 'town'
         ? context.location
-        : (context.sublocation || context.location);
+        : context.kind === 'combat'
+          ? context.location
+          : context.kind === 'combat-results'
+            ? context.location
+            : context.kind === 'dungeon'
+              ? context.location
+              : (context.sublocation || context.location);
     const objective = panels.objectiveFor?.(player, rootNode, context) || 'Find your next lead in town';
     const hp = Math.max(0, Number(player.hp || 0));
     const maxHp = Math.max(1, Number(player.maxHp || 1));
@@ -224,6 +256,10 @@
   }
 
   function routeTo(view) {
+    if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
+      showToast('Finish the active encounter through its battle or results controls before changing location.');
+      return false;
+    }
     const host = root();
     const candidates = Array.from(host?.querySelectorAll('[data-ash-view]') || []);
     const native = candidates.find(button => String(button.dataset.ashView || '') === view && !button.disabled);
@@ -297,7 +333,9 @@
         break;
       case 'journal': {
         event.preventDefault();
-        if (lastContext?.kind === 'road') {
+        if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
+          showToast('Finish the encounter before changing to the journal.');
+        } else if (lastContext?.kind === 'road') {
           if (!clickExisting('#exp150OpenJournal') && !clickExisting('#exp150OpenJournalAside')) showToast('The field journal is not available on this screen.');
         } else {
           routeTo('archive');
@@ -306,7 +344,9 @@
       }
       case 'map': {
         event.preventDefault();
-        if (lastContext?.kind === 'road') {
+        if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
+          showToast('Finish the encounter before changing to the map.');
+        } else if (lastContext?.kind === 'road') {
           if (!clickExisting('#exp150OpenMap')) showToast('The road map is not available on this screen.');
         } else {
           routeTo('routes');
@@ -317,6 +357,10 @@
         event.preventDefault();
         if (lastContext?.kind === 'road') {
           if (!clickExisting('#town')) showToast('Return to Ashmere is not available at this point in the expedition.');
+        } else if (lastContext?.kind === 'dungeon') {
+          if (!clickExisting('#vaultRetreat') && !clickExisting('#vaultReturn')) showToast('The current cellar room has no retreat action available.');
+        } else if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
+          showToast('Finish the active encounter through its battle or results controls before leaving.');
         } else {
           routeTo('home');
         }
@@ -382,6 +426,22 @@
       case 'leave-road':
         event.preventDefault();
         if (!clickExisting('#town')) showToast('Returning to Ashmere is not available at this point in the expedition.');
+        break;
+      case 'combat-continue':
+        event.preventDefault();
+        if (!clickExisting('#v152CombatContinue')) showToast('There is no continuation action on this results screen.');
+        break;
+      case 'combat-return':
+        event.preventDefault();
+        if (!clickExisting('#v152CombatReturn')) showToast('There is no return action on this results screen.');
+        break;
+      case 'dungeon-retreat':
+        event.preventDefault();
+        if (!clickExisting('#vaultRetreat')) showToast('Retreat is not available in this cellar beat.');
+        break;
+      case 'dungeon-return':
+        event.preventDefault();
+        if (!clickExisting('#vaultReturn')) showToast('Return is not available in this cellar beat.');
         break;
       case 'toggle-left':
         event.preventDefault();
