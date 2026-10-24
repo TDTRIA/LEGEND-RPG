@@ -46,6 +46,35 @@
       const journal=fieldJournal(player);
       if(!journal.visitedPlaces.includes(name))journal.visitedPlaces.push(name);
     }
+    function pushUnique(list,id){if(id&&!list.includes(id))list.push(id);}
+    function graphNodeForStage(stage,route){
+      if(stage<=0)return 'south-fork';
+      if(stage===1)return route==='ridge'?'ridgeway-cairn':route==='reeds'?'lantern-ditch':'south-fork';
+      return ({2:'wayfarers-camp',3:'blackroot-bend',4:'reedwatch-shelter',5:'greyfen-boundary'})[stage]||'south-fork';
+    }
+    function syncGraphNode(player,state,stage){
+      state.visitedNodeIdsV160=Array.isArray(state.visitedNodeIdsV160)?state.visitedNodeIdsV160:[];
+      state.discoveredNodeIdsV160=Array.isArray(state.discoveredNodeIdsV160)?state.discoveredNodeIdsV160:[];
+      state.completedInteractionIdsV160=Array.isArray(state.completedInteractionIdsV160)?state.completedInteractionIdsV160:[];
+      if(state.activeSideTripV160){
+        state.currentNodeIdV160=state.activeSideTripV160;
+        pushUnique(state.visitedNodeIdsV160,state.currentNodeIdV160);
+        pushUnique(state.discoveredNodeIdsV160,state.currentNodeIdV160);
+        return;
+      }
+      const mainNode=graphNodeForStage(stage,state.routeChoice);
+      state.currentNodeIdV160=mainNode;
+      pushUnique(state.visitedNodeIdsV160,'south-fork');
+      if(Number(stage)>=1&&state.routeChoice==='ridge'){
+        pushUnique(state.visitedNodeIdsV160,'high-ridge');
+        pushUnique(state.visitedNodeIdsV160,'ridgeway-cairn');
+      }else if(Number(stage)>=1&&state.routeChoice==='reeds'){
+        pushUnique(state.visitedNodeIdsV160,'reed-cut');
+        pushUnique(state.visitedNodeIdsV160,'lantern-ditch');
+      }
+      ['wayfarers-camp','blackroot-bend','reedwatch-shelter','greyfen-boundary'].slice(0,Math.max(0,Number(stage)-1)).forEach(id=>pushUnique(state.visitedNodeIdsV160,id));
+      pushUnique(state.visitedNodeIdsV160,mainNode);
+    }
 function startExpedition(){
  const pl=p();if(!pl)return null;
  const s=ensure(pl);
@@ -55,6 +84,13 @@ function startExpedition(){
  s.readUsed={};
  s.campWatchUsed={};
  s.routeChoice=null;
+ s.currentNodeIdV160=null;
+ s.visitedNodeIdsV160=[];
+ s.discoveredNodeIdsV160=[];
+ s.completedInteractionIdsV160=[];
+ s.activeSideTripV160=null;
+ s.sideTripReturnNodeIdV160=null;
+ syncGraphNode(pl,s,0);
  s.roadClockHour=15;
  s.lastEncounterTier=null;
  s.lastEncounterEnemy=null;
@@ -70,7 +106,10 @@ function startExpedition(){
   :(pl.flags?.openingRoadV140?.phase==='road'&&!pl.flags.openingRoadV140.completed?'Oric heads back to warn the gate. You follow the tracks beyond the fork, looking for what brought the wolf so close.':'You leave Ashmere with a clear route and a reason to come back.');
 }
 function resolveChoice(kind){
- const pl=p();if(!pl)return;const s=ensure(pl),stageBefore=s.stage,area=areaForStage(stageBefore);
+ const pl=p();if(!pl)return;const s=ensure(pl),stageBefore=s.stage;
+ const graphNodes=road().routeGraphV160?.nodes||[];
+ const activeNode=graphNodes.find(node=>node.id===s.activeSideTripV160);
+ const area=activeNode?{name:activeNode.name,type:activeNode.type,text:activeNode.description}:areaForStage(stageBefore);
  s.events=Number(s.events||0)+1;
  if(kind==='search'&&stageBefore===0&&pl.flags?.openingRoadV140?.phase==='road'&&!pl.flags.openingRoadV140.completed&&!Object.values(s.poiUsed||{}).some(Boolean))return renderExpedition('Inspect the roadside marker before searching this stretch. Look for the glowing “Look closer” hotspot in the scene.');
  if(kind==='careful'){
@@ -107,6 +146,9 @@ function resolveChoice(kind){
  if(s.pressure>=65){s.discoveryOpen=false;s.discoveryStage=null;save(pl);return battleEvent()}
  const roadSense=score(pl,'survival')+score(pl,'strength');
  s.stage=clamp(s.stage+1,0,5);
+ s.activeSideTripV160=null;
+ s.sideTripReturnNodeIdV160=null;
+ syncGraphNode(pl,s,s.stage);
  recordVisit(pl,s.stage);
  s.discoveryOpen=false;s.discoveryStage=null;
  const destination=areaForStage(s.stage);
@@ -120,6 +162,9 @@ function eventCheck(skill,bonus){
  const pl=p();if(!pl)return;const s=ensure(pl),ev=pick(road().checks)||{title:'A Strange Silence',text:'The road goes quiet around you.',skill:'survival',success:'You keep your footing.',fail:'The silence costs time and nerves.'};
  const actual=ev.skill||skill,modifier=score(pl,actual)+Number(bonus||0),success=modifier>=0;
  s.stage=clamp(s.stage+1,0,5);
+ s.activeSideTripV160=null;
+ s.sideTripReturnNodeIdV160=null;
+ syncGraphNode(pl,s,s.stage);
  recordVisit(pl,s.stage);
  if(success){s.pressure=clamp(s.pressure-4,0,100);pl.stats=pl.stats||{};pl.stats.checksPassed=Number(pl.stats.checksPassed||0)+1;save(pl);return renderExpedition(ev.success+' Your '+skillLabel(actual).toLowerCase()+' helps you make steady progress.')}
  const loss=Math.min(Math.max(0,Number(pl.hp||1)-1),3+Math.max(0,-modifier));pl.hp=Number(pl.hp||1)-loss;s.pressure=clamp(s.pressure+5,0,100);pl.stats=pl.stats||{};pl.stats.checksFailed=Number(pl.stats.checksFailed||0)+1;save(pl);return renderExpedition(ev.fail+' You lose '+loss+' HP, but keep moving.');

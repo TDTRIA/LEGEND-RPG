@@ -699,3 +699,71 @@
 .ash100-departure-order{padding:13px 15px;border:1px solid rgba(215,184,106,.28);border-left:3px solid #c8ad6d;border-radius:8px;background:linear-gradient(105deg,rgba(55,43,22,.4),rgba(12,18,13,.96))}
 .ash100-departure-order>strong{display:block;margin:5px 0;color:#f0e3c3;font:500 1.05rem Georgia,"Times New Roman",serif}
 .ash100-departure-order>p{margin:0;color:#b8c4b2;font-size:.8rem;line-height:1.55}
+
+
+/* LEGEND v0.21.1 · Connected Old Road graph and optional side locations */
+.exp160-route-graph{margin:16px 0 20px;padding:clamp(10px,2.5vw,18px);border:1px solid rgba(215,184,106,.24);border-radius:14px;background:linear-gradient(160deg,rgba(20,30,22,.92),rgba(7,12,9,.96));}
+.exp160-graph-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-bottom:14px;color:#acbba7;font-size:.68rem}
+.exp160-graph-legend span{display:inline-flex;align-items:center;gap:5px}
+.exp160-graph-legend i{display:grid;place-items:center;width:20px;height:20px;border:1px solid rgba(215,184,106,.3);border-radius:5px;color:#e6ce88;font-style:normal;font-weight:900}
+.exp160-map-row{display:grid;gap:10px;align-items:stretch;margin:0}
+.exp160-row-start,.exp160-row-shared{grid-template-columns:minmax(0,1fr)}
+.exp160-row-start .exp160-map-node{width:min(100%,460px);justify-self:center}
+.exp160-row-branches,.exp160-row-landmarks{grid-template-columns:repeat(2,minmax(0,1fr))}
+.exp160-row-junction{grid-template-columns:repeat(3,minmax(0,1fr))}
+.exp160-map-connectors{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:7px 0;text-align:center;color:#bba56d;font-size:.7rem;line-height:1.3}
+.exp160-map-connectors span{min-width:0;padding:2px 0}
+.exp160-map-connectors-junction{grid-template-columns:repeat(3,minmax(0,1fr))}
+.exp160-map-node{min-width:0;padding:11px;border:1px solid rgba(180,196,169,.18);border-radius:11px;background:linear-gradient(150deg,rgba(23,34,25,.98),rgba(10,16,12,.98));box-shadow:inset 0 1px rgba(255,255,255,.025)}
+.exp160-map-node-head{display:flex;align-items:flex-start;gap:8px}
+.exp160-map-symbol{display:grid;place-items:center;flex:0 0 25px;width:25px;height:25px;border:1px solid rgba(215,184,106,.28);border-radius:7px;color:#e5cf90;font-size:.86rem;font-weight:900}
+.exp160-map-node-head>div{min-width:0}
+.exp160-map-node-head strong{display:block;color:#eee4c6;font-size:.83rem;line-height:1.25;overflow-wrap:anywhere}
+.exp160-map-node-head strong small{display:inline-block;margin-left:4px;color:#e2c578;font:900 .51rem/1.2 "Trebuchet MS",sans-serif;letter-spacing:.08em}
+.exp160-map-node-head span{display:block;margin-top:3px;color:#8f9f8b;font-size:.62rem}
+.exp160-map-node>p{margin:8px 0;color:#a8b5a2;font-size:.7rem;line-height:1.45;overflow-wrap:anywhere}
+.exp160-map-node-status{display:block;margin-top:8px;padding-top:7px;border-top:1px solid rgba(255,255,255,.07);color:#8f9f8b;font-size:.62rem;font-weight:900;letter-spacing:.035em}
+.exp160-map-node.is-current{border-color:rgba(236,207,127,.8);background:linear-gradient(145deg,rgba(64,53,28,.6),rgba(12,18,13,.98));box-shadow:inset 0 0 0 1px rgba(236,207,127,.12)}
+.exp160-map-node.is-current .exp160-map-node-status{color:#f2d98e}
+.exp160-map-node.is-visited{border-color:rgba(141,176,139,.44)}
+.exp160-map-node.is-visited .exp160-map-symbol{color:#b9d4b4;border-color:rgba(141,176,139,.45)}
+.exp160-map-node.is-reachable{border-style:dashed;border-color:rgba(215,184,106,.54)}
+.exp160-map-node.is-discovered{border-color:rgba(180,158,218,.48)}
+.exp160-map-node.is-discovered .exp160-map-node-status{color:#d0bfed}
+.exp160-map-node.is-known{background:linear-gradient(145deg,rgba(22,33,25,.84),rgba(10,16,12,.98))}
+.exp160-map-node.is-off-route{opacity:.5;border-style:dashed}
+.exp160-map-node.is-unknown .exp160-map-node-status{color:#849180}
+.exp160-map-node.is-optional{background:linear-gradient(145deg,rgba(45,39,23,.54),rgba(10,16,12,.98))}
+.exp160-map-action{display:block;width:100%;min-height:35px;margin-top:8px;padding:7px 8px;border:1px solid rgba(216,190,117,.48);border-radius:7px;background:rgba(126,101,46,.2);color:#f0dfac;font-size:.68rem;font-weight:800;cursor:pointer}
+.exp160-map-action:hover,.exp160-map-action:focus-visible{border-color:#efd88d;background:rgba(126,101,46,.38);outline:2px solid rgba(239,216,141,.45);outline-offset:2px}
+.exp160-map-connection-text{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.exp160-optional-detour,.exp160-optional-site{margin:12px 0;padding:14px;border:1px solid rgba(215,184,106,.35);border-radius:12px;background:linear-gradient(125deg,rgba(62,50,27,.32),rgba(10,17,12,.96) 70%)}
+.exp160-optional-detour>h3,.exp160-optional-site h2{margin:5px 0 8px;color:#f0e4c5;font:500 1.35rem Georgia,"Times New Roman",serif}
+.exp160-optional-detour>h3 small{display:inline-block;margin-left:6px;color:#d7bd79;font:900 .58rem "Trebuchet MS",sans-serif;letter-spacing:.12em}
+.exp160-optional-detour>p,.exp160-optional-site>p{margin:0 0 10px;color:#aebca7;font-size:.8rem;line-height:1.5}
+.exp160-site-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.exp160-site-actions .exp100-choice{min-width:0}
+.exp160-site-complete{margin-top:12px!important;padding-top:9px;border-top:1px solid rgba(255,255,255,.08);color:#d6c28b!important}
+.exp160-optional-site button:disabled{opacity:.45;cursor:not-allowed}
+.exp160-side-trip-scene img{filter:saturate(.82) contrast(1.05)}
+@media(max-width:620px){
+  .exp160-route-graph{padding:9px}
+  .exp160-map-row{gap:7px}
+  .exp160-row-junction{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .exp160-row-junction .exp160-map-node:nth-child(2){grid-column:1/-1;grid-row:1}
+  .exp160-map-connectors-junction{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .exp160-map-connectors-junction span:nth-child(2){grid-column:1/-1;grid-row:1}
+  .exp160-map-node{padding:9px}
+  .exp160-map-node-head{gap:6px}
+  .exp160-map-node-head strong{font-size:.76rem}
+  .exp160-map-node>p{font-size:.67rem}
+  .exp160-graph-legend{font-size:.62rem;gap:6px 9px}
+  .exp160-site-actions{grid-template-columns:1fr}
+}
+@media(max-width:390px){
+  .exp160-row-branches,.exp160-row-landmarks{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .exp160-map-node-head{display:block}
+  .exp160-map-symbol{margin-bottom:6px}
+  .exp160-map-node-head strong{font-size:.72rem}
+}
+@media(prefers-reduced-motion:reduce){.exp160-map-action{transition:none!important;animation:none!important}}

@@ -27,6 +27,12 @@
     const current=state(player);
     current.stage=clamp(Number(current.stage||0),0,5);
     current.pressure=clamp(Number(current.pressure||0),0,100);
+    current.currentNodeIdV160=typeof current.currentNodeIdV160==='string'?current.currentNodeIdV160:null;
+    ['visitedNodeIdsV160','discoveredNodeIdsV160','completedInteractionIdsV160'].forEach(key=>{
+      current[key]=Array.isArray(current[key])?[...new Set(current[key].filter(value=>typeof value==='string'))]:[];
+    });
+    current.activeSideTripV160=['windbreak','sunken-cart'].includes(current.activeSideTripV160)?current.activeSideTripV160:null;
+    current.sideTripReturnNodeIdV160=typeof current.sideTripReturnNodeIdV160==='string'?current.sideTripReturnNodeIdV160:null;
     return current;
   };
   const score=(player,skill)=>{

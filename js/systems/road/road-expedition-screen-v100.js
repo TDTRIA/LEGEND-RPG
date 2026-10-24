@@ -42,6 +42,136 @@
   function statusMetric(label,value,percent,kind=''){
     return '<div class="exp150-meter '+kind+'"><div><span>'+label+'</span><strong>'+value+'</strong></div><i><b style="width:'+clamp(Number(percent)||0,0,100)+'%"></b></i></div>';
   }
+  function graphForState(pl,s,stage){
+    const graph=window.LegendRoadsV100?.oldRoad?.routeGraphV160;
+    if(!graph)return null;
+    const validIds=new Set(graph.nodes.map(node=>node.id));
+    const normalize=key=>Array.isArray(s[key])?[...new Set(s[key].filter(id=>validIds.has(id)))]:[];
+    s.visitedNodeIdsV160=normalize('visitedNodeIdsV160');
+    s.discoveredNodeIdsV160=normalize('discoveredNodeIdsV160');
+    s.completedInteractionIdsV160=Array.isArray(s.completedInteractionIdsV160)?[...new Set(s.completedInteractionIdsV160.filter(id=>typeof id==='string'))]:[];
+    const add=(list,id)=>{if(id&&validIds.has(id)&&!list.includes(id))list.push(id);};
+    if(s.activeSideTripV160&&validIds.has(s.activeSideTripV160)){
+      s.currentNodeIdV160=s.activeSideTripV160;
+      add(s.visitedNodeIdsV160,s.currentNodeIdV160);
+      add(s.discoveredNodeIdsV160,s.currentNodeIdV160);
+      return graph;
+    }
+    let current='south-fork';
+    if(stage===1&&s.routeChoice==='ridge')current='ridgeway-cairn';
+    else if(stage===1&&s.routeChoice==='reeds')current='lantern-ditch';
+    else if(stage>=2)current=({2:'wayfarers-camp',3:'blackroot-bend',4:'reedwatch-shelter',5:'greyfen-boundary'})[stage]||'greyfen-boundary';
+    s.currentNodeIdV160=current;
+    add(s.visitedNodeIdsV160,'south-fork');
+    if(stage>=1&&s.routeChoice==='ridge'){
+      add(s.visitedNodeIdsV160,'high-ridge');add(s.visitedNodeIdsV160,'ridgeway-cairn');
+      if(s.poiUsed?.['ridge-cairn'])add(s.discoveredNodeIdsV160,'ridgeway-cairn');
+    }else if(stage>=1&&s.routeChoice==='reeds'){
+      add(s.visitedNodeIdsV160,'reed-cut');add(s.visitedNodeIdsV160,'lantern-ditch');
+      if(s.poiUsed?.['marsh-watcher-tracks']||s.poiUsed?.['ditch-lantern'])add(s.discoveredNodeIdsV160,'lantern-ditch');
+    }
+    if(stage>=2)add(s.visitedNodeIdsV160,'wayfarers-camp');
+    if(stage>=3)add(s.visitedNodeIdsV160,'blackroot-bend');
+    if(stage>=4)add(s.visitedNodeIdsV160,'reedwatch-shelter');
+    if(stage>=5)add(s.visitedNodeIdsV160,'greyfen-boundary');
+    const currentNode=graph.nodes.find(node=>node.id===current);
+    if(currentNode?.poiKey&&s.poiUsed?.[currentNode.poiKey])add(s.discoveredNodeIdsV160,current);
+    return graph;
+  }
+  function addJournalDiscovery(pl,s,nodeId,key,name,note){
+    const graph=window.LegendRoadsV100?.oldRoad?.routeGraphV160;
+    const node=graph?.nodes?.find(item=>item.id===nodeId);
+    if(!node)return;
+    const journal=journalFor(pl),trip=Number(s.trips||0);
+    if(!journal.discoveries.some(item=>item.key===key&&Number(item.trip||0)===trip)){
+      journal.discoveries.push({key,name,kind:node.type,place:node.name,note,route:s.routeChoice||'unrecorded',day:Number(pl.day||1),trip});
+    }
+    if(!journal.visitedPlaces.includes(node.name))journal.visitedPlaces.push(node.name);
+    s.discoveredNodeIdsV160=s.discoveredNodeIdsV160||[];
+    if(!s.discoveredNodeIdsV160.includes(nodeId))s.discoveredNodeIdsV160.push(nodeId);
+    s.completedInteractionIdsV160=s.completedInteractionIdsV160||[];
+    if(!s.completedInteractionIdsV160.includes(nodeId))s.completedInteractionIdsV160.push(nodeId);
+    pl.stats=pl.stats||{};
+    pl.stats.optionalRoadStopsCompleted=Number(pl.stats.optionalRoadStopsCompleted||0)+1;
+    save(pl);
+  }
+  function advanceOptionalTime(pl,s,hours){
+    const total=clamp(Number(s.roadClockHour??15),0,23)+Number(hours||0);
+    pl.day=Math.max(1,Number(pl.day||1)+Math.floor(total/24));
+    s.roadClockHour=total%24;
+  }
+  function beginOptionalSite(nodeId){
+    const pl=p();if(!pl)return;
+    const s=ensure(pl),graph=graphForState(pl,s,clamp(Number(s.stage||0),0,5));
+    const expected=s.routeChoice==='ridge'?'windbreak':s.routeChoice==='reeds'?'sunken-cart':null;
+    if(Number(s.stage||0)!==1||nodeId!==expected||s.visitedNodeIdsV160.includes(nodeId))return renderExpedition('That detour is not available from your current location.');
+    s.sideTripReturnNodeIdV160=s.currentNodeIdV160;
+    s.activeSideTripV160=nodeId;
+    s.currentNodeIdV160=nodeId;
+    if(!s.visitedNodeIdsV160.includes(nodeId))s.visitedNodeIdsV160.push(nodeId);
+    if(!s.discoveredNodeIdsV160.includes(nodeId))s.discoveredNodeIdsV160.push(nodeId);
+    save(pl);
+    renderExpedition();
+  }
+  function leaveOptionalSite(){
+    const pl=p();if(!pl)return;
+    const s=ensure(pl);
+    if(!s.activeSideTripV160)return;
+    s.activeSideTripV160=null;
+    s.currentNodeIdV160=s.sideTripReturnNodeIdV160||'south-fork';
+    s.sideTripReturnNodeIdV160=null;
+    save(pl);
+    renderExpedition('You return to the marked route. The detour remains in your field map.');
+  }
+  function optionalSiteMarkup(pl,s,node){
+    const completed=(s.completedInteractionIdsV160||[]).includes(node.id);
+    if(node.id==='windbreak'){
+      return '<section class="exp160-optional-site" aria-label="Windbreak optional stop"><span class="exp150-kicker">OPTIONAL DETOUR · RIDGE</span><h2>Windbreak</h2><p>'+esc(node.description)+' From the shelter, shallow bootprints cross the dry edge and separate lines of traffic can be seen below. Nothing identifies who passed.</p><div class="exp160-site-actions"><button type="button" class="exp100-choice" id="exp160WindObserve" '+(completed?'disabled':'')+'><strong>Study the tracks and traffic</strong><span>Record what the ground and visible routes show without guessing who made them.</span><em>Cost: 1 hour · No supplies</em></button><button type="button" class="exp100-choice" id="exp160WindShelter" '+(completed||Number(pl.inventory?.food||0)<1?'disabled':'')+'><strong>Spend a ration to shelter</strong><span>Take a short pause behind the rock shelf to recover a little strength.</span><em>Cost: 1 Ration + 1 hour · Restore up to 5 HP and lower Road Pressure by 8</em></button></div>'+(completed?'<p class="exp160-site-complete" role="status">You have completed one interaction here this trip. You can return to the route or continue to Wayfarer’s Camp.</p>':'')+'</section>';
+    }
+    return '<section class="exp160-optional-site" aria-label="Sunken Cart optional stop"><span class="exp150-kicker">OPTIONAL DETOUR · REED CUT</span><h2>Sunken Cart</h2><p>'+esc(node.description)+' The boards are waterlogged and the cargo marks are too worn to identify a person or explain who used the cart.</p><div class="exp160-site-actions"><button type="button" class="exp100-choice" id="exp160CartInspect" '+(completed?'disabled':'')+'><strong>Inspect the cargo marks</strong><span>Record the visible markings and the condition of the cargo. No reward is promised by this inspection.</span><em>Cost: None · No supplies</em></button><button type="button" class="exp100-choice" id="exp160CartSalvage" '+(completed?'disabled':'')+'><strong>Salvage one usable bundle</strong><span>Take one intact cloth wrap from above the waterline before moving on.</span><em>Cost: 1 hour + 5 Road Pressure · Gain 1 Cloth Scrap</em></button></div>'+(completed?'<p class="exp160-site-complete" role="status">You have completed one interaction here this trip. You can return to the route or continue to Wayfarer’s Camp.</p>':'')+'</section>';
+  }
+  function optionalDetourCard(pl,s,stage){
+    if(stage!==1||s.activeSideTripV160||!s.routeChoice)return '';
+    const id=s.routeChoice==='ridge'?'windbreak':'sunken-cart';
+    if((s.visitedNodeIdsV160||[]).includes(id))return '';
+    const title=id==='windbreak'?'Windbreak':'Sunken Cart';
+    const copy=id==='windbreak'?'A shallow lee offers a place to observe the tracks and visible traffic below.':'A partly submerged cart holds a possible scrap of salvage and worn cargo marks.';
+    return '<section class="exp160-optional-detour" aria-label="Optional road detour"><span class="exp150-kicker">OFF THE MARKED ROUTE</span><h3>'+title+' <small>OPTIONAL</small></h3><p>'+copy+' Visiting is never required to complete the expedition.</p><button type="button" class="exp100-choice" id="exp160VisitOptional" data-node="'+id+'"><strong>Visit '+title+'</strong><span>Make a short detour, then return to the route or continue to camp.</span><em>Optional · costs and rewards are shown at the location</em></button></section>';
+  }
+  function wireOptionalSiteActions(pl,s,node){
+    const completed=(s.completedInteractionIdsV160||[]).includes(node.id);
+    if(completed)return;
+    if(node.id==='windbreak'){
+      document.getElementById('exp160WindObserve')?.addEventListener('click',()=>{
+        const player=p();if(!player)return;const state=ensure(player);
+        advanceOptionalTime(player,state,1);
+        addJournalDiscovery(player,state,'windbreak','windbreak-track-observation','Tracks from the Windbreak','From the dry lee, you recorded shallow prints crossing the shelf and two lines of traffic below. Their makers and purpose remain unknown.');
+        renderExpedition('You spend an hour studying the tracks and the lowland routes. Your notes record what you saw, not who made the tracks.');
+      });
+      document.getElementById('exp160WindShelter')?.addEventListener('click',()=>{
+        const player=p();if(!player)return;const state=ensure(player);
+        if(Number(player.inventory?.food||0)<1)return renderExpedition('You need one Ration to shelter at Windbreak.');
+        player.inventory.food=Number(player.inventory.food||0)-1;advanceOptionalTime(player,state,1);
+        const healed=Math.min(5,Math.max(0,Number(player.maxHp||1)-Number(player.hp||0)));
+        player.hp=Number(player.hp||0)+healed;state.pressure=clamp(Number(state.pressure||0)-8,0,100);
+        addJournalDiscovery(player,state,'windbreak','windbreak-shelter-note','A Pause at Windbreak','You spent a ration behind the rock shelf. The wind eased for a time, and the tracks below remained too distant to identify.');
+        renderExpedition('You spend one Ration and an hour in shelter. You recover '+healed+' HP and Road Pressure falls by 8.');
+      });
+    }else if(node.id==='sunken-cart'){
+      document.getElementById('exp160CartInspect')?.addEventListener('click',()=>{
+        const player=p();if(!player)return;const state=ensure(player);
+        addJournalDiscovery(player,state,'sunken-cart','sunken-cart-marks','Waterlogged Cart Marks','The cargo marks are water-worn and incomplete. No surviving name identifies the cart or explains why it was here.');
+        renderExpedition('You record the waterlogged cargo marks. They provide a field note, but no reliable name or explanation.');
+      });
+      document.getElementById('exp160CartSalvage')?.addEventListener('click',()=>{
+        const player=p();if(!player)return;const state=ensure(player);
+        advanceOptionalTime(player,state,1);state.pressure=clamp(Number(state.pressure||0)+5,0,100);
+        inv(player,'clothScrap',1);player.stats=player.stats||{};player.stats.resourcesFound=Number(player.stats.resourcesFound||0)+1;
+        addJournalDiscovery(player,state,'sunken-cart','sunken-cart-salvage','A Salvaged Cloth Wrap','You recovered one intact cloth wrap. The rest of the cargo remains waterlogged; its former owner is unknown.');
+        renderExpedition('You salvage one Cloth Scrap. The work costs an hour and raises Road Pressure by 5.');
+      });
+    }
+  }
   function trackerMarkup(pl,s,stage){
     const journal=journalFor(pl);
     const visited=new Set(journal.visitedPlaces);
@@ -51,19 +181,49 @@
     }).join('')+'</ol></nav>';
   }
   function mapPanel(pl,s,stage){
-    const journal=journalFor(pl),visited=new Set(journal.visitedPlaces),route=s.routeChoice;
+    const journal=journalFor(pl),graph=graphForState(pl,s,stage),route=s.routeChoice,currentId=s.currentNodeIdV160;
+    const visited=new Set(s.visitedNodeIdsV160||[]),discovered=new Set(s.discoveredNodeIdsV160||[]);
+    const nodes=graph?.nodes||[],edges=graph?.edges||[];
+    const nodeById=Object.fromEntries(nodes.map(node=>[node.id,node]));
     const discoveries=[...journal.discoveries].slice().reverse();
+    const permittedEdges=edges.filter(edge=>!edge.route||!route||edge.route===route);
+    const reachable=new Set(permittedEdges.filter(edge=>edge.from===currentId).map(edge=>edge.to));
+    const knownFromJournal=node=>journal.visitedPlaces.includes(node.name)||journal.discoveries.some(item=>item.place===node.name||item.key===node.poiKey);
+    function card(id){
+      const node=nodeById[id];if(!node)return '';
+      const isCurrent=currentId===id,isVisited=visited.has(id),isReachable=reachable.has(id),isDiscovered=discovered.has(id);
+      const offRoute=!!(node.route&&route&&node.route!==route);
+      const known=knownFromJournal(node);
+      const skippedOptional=!!node.optional&&node.route===route&&stage>1&&!isVisited&&!isDiscovered&&!known;
+      const status=offRoute?'Route not taken':isCurrent?'You are here':isVisited?'Visited this trip':isReachable?(node.optional?'Optional detour available':'Reachable next'):isDiscovered?'Discovered, not visited':known?'Known from an earlier expedition':skippedOptional?'Detour skipped':'Uncharted';
+      const statusClass=offRoute?'is-off-route':isCurrent?'is-current':isVisited?'is-visited':isReachable?'is-reachable':isDiscovered?'is-discovered':known?'is-known':skippedOptional?'is-known':'is-unknown';
+      let action='';
+      if(stage===0&&!route&&id==='high-ridge')action='<button type="button" class="exp160-map-action" data-exp160-map-route="ridge">Choose High Ridge</button>';
+      else if(stage===0&&!route&&id==='reed-cut')action='<button type="button" class="exp160-map-action" data-exp160-map-route="reeds">Choose Reed Cut</button>';
+      else if(stage===1&&isReachable&&node.optional&&!isVisited&&node.route===route)action='<button type="button" class="exp160-map-action" data-exp160-map-visit="'+id+'">Visit optional stop</button>';
+      return '<article class="exp160-map-node '+statusClass+(node.optional?' is-optional':'')+'" role="listitem" aria-label="'+esc(node.name+', '+status)+'"><div class="exp160-map-node-head"><span class="exp160-map-symbol" aria-hidden="true">'+(isCurrent?'✦':isVisited?'✓':node.optional?'◇':'·')+'</span><div><strong>'+esc(node.name)+(node.optional?' <small>OPTIONAL</small>':'')+'</strong><span>'+esc(node.type||'Road stop')+'</span></div></div><p>'+esc(node.description||'A place along the Old Road.')+'</p><div class="exp160-map-node-status">'+esc(status)+'</div>'+action+'</article>';
+    }
+    const row=(ids,cls='')=>'<div class="exp160-map-row '+cls+'" role="list">'+ids.map(card).join('')+'</div>';
+    const graphMarkup='<section class="exp160-route-graph" aria-label="Connected Old Road route"><div class="exp160-graph-legend"><span><i>✦</i> You are here</span><span><i>✓</i> Visited this trip</span><span><i>→</i> Reachable next</span><span><i>◇</i> Optional detour</span></div>'+
+      row(['south-fork'],'exp160-row-start')+
+      '<div class="exp160-map-connectors" aria-hidden="true"><span>↙ High Ridge</span><span>↘ Reed Cut</span></div>'+
+      row(['high-ridge','reed-cut'],'exp160-row-branches')+
+      '<div class="exp160-map-connectors exp160-map-connectors-double" aria-hidden="true"><span>↓ Ridgeway Cairn</span><span>↓ Lantern Ditch</span></div>'+
+      row(['ridgeway-cairn','lantern-ditch'],'exp160-row-landmarks')+
+      '<div class="exp160-map-connectors exp160-map-connectors-junction" aria-hidden="true"><span>↘ Optional shelter</span><span>↓ Shared junction</span><span>↙ Optional salvage</span></div>'+
+      row(['windbreak','wayfarers-camp','sunken-cart'],'exp160-row-junction')+
+      '<div class="exp160-map-connectors" aria-hidden="true"><span>↓ The shared road continues</span></div>'+
+      row(['blackroot-bend'],'exp160-row-shared')+
+      '<div class="exp160-map-connectors" aria-hidden="true"><span>↓</span></div>'+
+      row(['reedwatch-shelter'],'exp160-row-shared')+
+      '<div class="exp160-map-connectors" aria-hidden="true"><span>↓</span></div>'+
+      row(['greyfen-boundary'],'exp160-row-shared')+
+      '<ul class="exp160-map-connection-text" aria-label="Route connections">'+permittedEdges.map(edge=>'<li>'+esc(nodeById[edge.from]?.name||edge.from)+' connects to '+esc(nodeById[edge.to]?.name||edge.to)+(edge.kind==='optional'?' by an optional detour':edge.kind==='return'?' by a return path':'')+'.</li>').join('')+'</ul></section>';
     const discoveryMarkup=discoveries.length?discoveries.map(item=>{
       const routeName=item.route==='ridge'?'High Ridge':item.route==='reeds'?'Reed Cut':'Unrecorded route';
       return '<article class="exp150-map-discovery"><span class="exp150-map-discovery-pin" aria-hidden="true">✧</span><div><strong>'+esc(item.name||'Road discovery')+'</strong><small>'+esc(item.place||'The Old Road')+' · Day '+esc(String(item.day||1))+' · '+esc(routeName)+'</small><p>'+esc(item.note||'A landmark recorded in your field journal.')+'</p></div></article>';
     }).join(''):'<p class="exp150-map-discovery-empty">No landmarks marked yet. Investigate a point of interest along the road to add its mark here.</p>';
-    return '<div class="exp150-map-sheet"><div class="exp150-map-intro"><span class="exp150-kicker">FIELD MAP · OLD ROAD</span><h2>The road you know</h2><p>Places take shape as you reach them. Investigated landmarks stay marked here on future journeys.</p></div><div class="exp150-map-line">'+Array.from({length:6},(_,i)=>{
-      const stop=areaForStage(i),name=String(stop.name||('Road '+(i+1))),isCurrent=i===stage,isVisited=visited.has(name)||i<stage,isKnown=visited.has(name)||i<=stage;
-      const label=isKnown?name:'Uncharted stretch';
-      const status=isCurrent?'You are here':isVisited?'Visited':'Unexplored';
-      const detail=!isKnown?'No reliable mark yet':i===0&&route?(route==='ridge'?'Route chosen: High Ridge':'Route chosen: Reed Cut'):stop.type||'Road location';
-      return '<div class="exp150-map-stop '+(isCurrent?'is-current ':'')+(isVisited?'is-visited ':'')+(!isKnown?'is-unknown':'')+'"><span class="exp150-map-dot">'+(isVisited&&!isCurrent?'✓':isCurrent?'✦':'·')+'</span><div><strong>'+esc(label)+'</strong><small>'+esc(detail)+'</small></div><em>'+status+'</em></div>';
-    }).join('')+'</div><div class="exp150-map-legend"><span><i class="visited"></i> Visited</span><span><i class="current"></i> Current stop</span><span><i class="unknown"></i> Uncharted</span></div><section class="exp150-map-discoveries"><div class="exp150-map-discoveries-heading"><span>MARKS FOUND</span><strong>'+discoveries.length+'</strong></div><div class="exp150-map-discovery-list">'+discoveryMarkup+'</div></section></div>';
+    return '<div class="exp150-map-sheet"><div class="exp150-map-intro"><span class="exp150-kicker">FIELD MAP · OLD ROAD</span><h2>The road you know</h2><p>This is a connected route, not just a record of places already passed. Your current stop, visited places, available next steps, optional detours, and known but unvisited sites are labeled below.</p></div>'+graphMarkup+'<section class="exp150-map-discoveries"><div class="exp150-map-discoveries-heading"><span>MARKS FOUND</span><strong>'+discoveries.length+'</strong></div><div class="exp150-map-discovery-list">'+discoveryMarkup+'</div></section></div>';
   }
   function journalPanel(pl){
     const journal=journalFor(pl);
@@ -94,6 +254,12 @@
       document.body.classList.remove('exp150-modal-open');
       if(returnFocus&&typeof returnFocus.focus==='function'&&returnFocus.isConnected)returnFocus.focus();
     };
+    content.querySelectorAll('[data-exp160-map-route]').forEach(button=>button.addEventListener('click',()=>{
+      const route=button.dataset.exp160MapRoute;close();roadDiscovery.chooseRoadRoute(route);
+    }));
+    content.querySelectorAll('[data-exp160-map-visit]').forEach(button=>button.addEventListener('click',()=>{
+      const nodeId=button.dataset.exp160MapVisit;close();beginOptionalSite(nodeId);
+    }));
     document.getElementById('exp150ModalClose')?.addEventListener('click',close,{once:true});
     overlay.onclick=event=>{if(event.target===overlay)close();};
     overlay.onkeydown=event=>{
@@ -108,7 +274,10 @@
   }
   function renderExpedition(note=''){
     const pl=p();if(!pl)return;
-    const s=ensure(pl),stage=clamp(Number(s.stage||0),0,5),area=areaForStage(stage),atCamp=!!area.camp;
+    const s=ensure(pl),stage=clamp(Number(s.stage||0),0,5),graph=graphForState(pl,s,stage);
+    const sideNode=s.activeSideTripV160?(graph?.nodes||[]).find(node=>node.id===s.activeSideTripV160):null;
+    const area=sideNode?{name:sideNode.name,type:sideNode.type,text:sideNode.description}:areaForStage(stage),atCamp=!sideNode&&!!area.camp;
+    save(pl);
     const searchDone=!!s.searchUsed?.[stage];
     const guide=window.LegendRoadOpeningV140?.guide?.(pl,s,stage)||'';
     const travelGate=window.LegendRoadOpeningV140?.travelGate?.(pl,s,stage)||{allowed:true};
@@ -123,7 +292,9 @@
     const roadMood=s.pressure>=65?'The mist closes around the road. Something has found your trail.':s.pressure>=40?'The birds have gone quiet. Footsteps pace you somewhere beyond the reeds.':'Rain beads on the old stones. A lantern flickers far beyond the bend.';
     const sceneText=(stage===2&&s.routeChoice&&note)?note+' '+area.text:(note||area.text||roadMood);
     const sceneMarkup=typeof scene==='function'?scene(stage,true):header(pl,s,'OLD ROAD EXPEDITION',area.name,sceneText);
-    let choices=stage>=5
+    let choices=sideNode
+      ? '<button class="exp150-action" type="button" id="exp160ReturnToRoute"><span class="exp150-action-symbol">↶</span><span><strong>Return to the main path</strong><small>Leave this optional stop and return to '+esc((graph.nodes.find(node=>node.id===s.sideTripReturnNodeIdV160)||{}).name||'the route')+'.</small></span><b>↗</b></button><button class="exp150-action primary" type="button" id="exp160ContinueToCamp"><span class="exp150-action-symbol">➜</span><span><strong>Continue to Wayfarer’s Camp</strong><small>Leave the detour and rejoin the shared road.</small></span><b>→</b></button>'
+      : stage>=5
       ? '<button class="exp150-action primary" id="finish" data-legend-scene-transition="Returning to Ashmere"><span class="exp150-action-symbol">↩</span><span><strong>Return to Ashmere</strong><small>Secure what you found and bring the road report home.</small></span><b>→</b></button>'
       : '<button class="exp150-action primary" id="push" data-legend-scene-transition="Onward along the Old Road" '+(travelLocked?'disabled aria-disabled="true"':'')+'><span class="exp150-action-symbol">➜</span><span><strong>'+(travelLocked?'Complete the first road lesson':'Travel On')+'</strong><small>'+(travelLocked?esc(travelGate.message):'Continue toward '+esc(nextArea.name))+'</small></span><b>→</b></button><button class="exp150-action" id="search" '+(searchDone||searchLocked?'disabled aria-disabled="true"':'')+'><span class="exp150-action-symbol">⌕</span><span><strong>'+(searchDone?'Nothing left to search':searchLocked?'Inspect the marker first':'Search the roadside')+'</strong><small>'+(searchDone?'You have searched this stretch':searchLocked?'A clue may reveal something useful':'Look for supplies and useful traces')+'</small></span><b>+</b></button><button class="exp150-action" id="careful"><span class="exp150-action-symbol">◉</span><span><strong>Read the Road</strong><small>Study the ground and lower Road Pressure.</small></span><b>↗</b></button>';
     const pressureNote=s.pressure>=65?'The road is closing in. A dangerous encounter may follow.':s.pressure>=40?'Your trail is growing easier to follow. Consider slowing down or finding shelter.':'You have a little room to breathe, but the road never stays quiet for long.';
@@ -133,7 +304,7 @@
       trackerMarkup(pl,s,stage)+
       '<div class="exp150-main-grid"><section class="exp150-scene-column">'+
       (guide?'<div class="exp150-guide">'+guide+'</div>':'')+
-      '<div class="exp150-interactions">'+roadDiscovery.routeChoicePanel(s,stage)+roadDiscovery.pointOfInterestPanel(pl,s,stage)+roadDiscovery.movedCairnDecisionPanel(pl,s,stage)+'</div>'+
+      '<div class="exp150-interactions">'+(sideNode?optionalSiteMarkup(pl,s,sideNode):roadDiscovery.routeChoicePanel(s,stage)+roadDiscovery.pointOfInterestPanel(pl,s,stage)+roadDiscovery.movedCairnDecisionPanel(pl,s,stage)+optionalDetourCard(pl,s,stage))+'</div>'+
       (atCamp?campActions(pl,s,area):'')+
       '<section class="exp150-action-dock"><div class="exp150-section-heading"><div><span class="exp150-kicker">YOUR NEXT MOVE</span><h2>How will you proceed?</h2></div><span class="exp150-current-mark">STOP '+(stage+1)+' / 6</span></div><div class="exp150-action-list">'+choices+'</div><button class="exp150-abandon" id="town" data-legend-scene-transition="Leaving the expedition" type="button">Leave the expedition and return to Ashmere</button></section></section>'+
       '<aside class="exp150-journey-aside"><section class="exp150-aside-card exp150-next-stop"><span class="exp150-kicker">AHEAD ON THE ROAD</span><h2>'+(stage>=5?'Ashmere':esc(nextArea.name))+'</h2><p>'+(stage>=5?'The trip is complete. Your finds can be secured in town.':'The route can change what you find, how much pressure builds, and what follows you.')+'</p>'+(stage===0?'<div class="exp150-route-reminder"><span>THE FIRST FORK</span><strong>'+(s.routeChoice?(s.routeChoice==='ridge'?'High Ridge chosen':'Reed Cut chosen'):'High Ridge · Reed Cut')+'</strong><small>'+(s.routeChoice?'Your route choice is recorded for this journey.':'Compare a safer ridge path with a riskier trail through the reeds.')+'</small></div>':'')+'</section>'+
@@ -145,6 +316,10 @@
     bindHotspotDelegation();
     document.getElementById('poiLeave')?.addEventListener('click',()=>{const player=p();if(!player)return;const state=ensure(player);state.discoveryOpen=false;state.discoveryStage=null;roadDiscovery.hide();save(player);document.querySelector('.exp150-interactions .exp100-discovery-beat')?.remove();});
     document.getElementById('poiInspect')?.addEventListener('click',roadDiscovery.inspectPointOfInterest);
+    document.getElementById('exp160VisitOptional')?.addEventListener('click',button=>beginOptionalSite(button.currentTarget.dataset.node));
+    document.getElementById('exp160ReturnToRoute')?.addEventListener('click',leaveOptionalSite);
+    document.getElementById('exp160ContinueToCamp')?.addEventListener('click',()=>resolveChoice('push'));
+    if(sideNode)wireOptionalSiteActions(pl,s,sideNode);
     document.querySelectorAll('[data-moved-cairn]').forEach(button=>button.addEventListener('click',()=>roadDiscovery.chooseMovedCairnDecision(button.dataset.movedCairn)));
     document.getElementById('routeRidge')?.addEventListener('click',()=>roadDiscovery.chooseRoadRoute('ridge'));
     document.getElementById('routeReeds')?.addEventListener('click',()=>roadDiscovery.chooseRoadRoute('reeds'));
@@ -155,6 +330,7 @@
     document.getElementById('exp150OpenMap')?.addEventListener('click',()=>openPanel('map'));
     document.getElementById('exp150OpenJournal')?.addEventListener('click',()=>openPanel('journal'));
     document.getElementById('exp150OpenJournalAside')?.addEventListener('click',()=>openPanel('journal'));
+
     document.getElementById('town').onclick=()=>{const player=p();if(player?.flags?.openingRoadV140?.phase==='road'&&!player.flags.openingRoadV140.completed)window.LegendRoadOpeningV140?.complete?.(player,'abandoned');ret();};
     document.getElementById('campRest')?.addEventListener('click',()=>{
       const player=p();if(!player)return;const state=ensure(player);

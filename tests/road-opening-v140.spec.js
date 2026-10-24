@@ -129,7 +129,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await page.locator('#search').click();
     await expect(page.locator('#push')).toBeEnabled();
     await page.locator('#push').click();
-    await expect(page.locator('.exp100-head h1')).toHaveText('Lantern Ditch');
+    await expect(page.locator('.exp100-head h1')).toHaveText('Ridgeway Cairn');
     await page.locator('#push').click();
     await expect(page.locator('.exp100-head h1')).toHaveText("Wayfarer's Camp");
     await expect(page.locator('.exp100-camp')).toBeVisible();
@@ -161,7 +161,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     });
     expect(saved).toMatchObject({ completed: true, tutorialStep: 'people', discoveries: 1, campsMade: 1 });
     expect(saved.roadToken).toBeGreaterThanOrEqual(1);
-    expect(saved.visitedPlaces).toEqual(['South Fork', 'Lantern Ditch', "Wayfarer's Camp", 'Blackroot Bend', 'Reedwatch Shelter', 'Greyfen Approach']);
+    expect(saved.visitedPlaces).toEqual(['South Fork', 'Ridgeway Cairn', "Wayfarer's Camp", 'Blackroot Bend', 'Reedwatch Shelter', 'Greyfen Approach']);
     expect(saved.journalRoutes.some(entry => entry.title === 'High Ridge')).toBe(true);
     await page.getByRole('button', { name: /Return to Ashmere/i }).click();
     await expect(page.locator('.ash100-town')).toBeVisible();
