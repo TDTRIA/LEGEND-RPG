@@ -266,6 +266,61 @@ test('waystation watch spends one ration, lowers pressure, and persists its camp
 });
 
 
+test('Road Poultice crafting is recorded in the saved journal and expedition return report', async ({ page }) => {
+  await startFreshTraveler(page);
+  await enterDeparture(page);
+  await beginRoadExpedition(page);
+
+  await page.evaluate(() => {
+    const player = window.LegendRuntimeV120.loadPlayer();
+    player.inventory = player.inventory || {};
+    player.inventory.roadHerb = 1;
+    player.inventory.clothScrap = 1;
+    player.inventory.potion = 0;
+    player.flags = player.flags || {};
+    player.flags.roadExpeditionV100 = {
+      stage: 2, pressure: 44, trips: 5, events: 0, finds: 0, battles: 0,
+      routeChoice: 'ridge', poiUsed: {}, searchUsed: {}, readUsed: {},
+      campWatchUsed: {}, roadClockHour: 14
+    };
+    window.LegendRuntimeV120.savePlayer(player);
+    window.LegendRoadControllerV100.renderHub();
+  });
+
+  await page.locator('#campCraft').click();
+  await expect(page.locator('.exp150-expedition-head')).toContainText(/choice is recorded in your field report/i);
+
+  const crafted = await page.evaluate(() => {
+    const player = window.LegendRuntimeV120.loadPlayer();
+    const state = player.flags.roadExpeditionV100;
+    const reports = player.flags.roadFieldJournalV150?.campReports || [];
+    return {
+      herb: Number(player.inventory.roadHerb),
+      cloth: Number(player.inventory.clothScrap),
+      potions: Number(player.inventory.potion),
+      pressure: Number(state.pressure),
+      hour: Number(state.roadClockHour),
+      report: reports[reports.length - 1]
+    };
+  });
+  expect(crafted).toMatchObject({ herb: 0, cloth: 0, potions: 1, pressure: 44, hour: 14 });
+  expect(crafted.report).toMatchObject({
+    kind: 'craft', trip: 5, routeName: 'High Ridge', pressureBefore: 44, pressureAfter: 44
+  });
+  expect(crafted.report.note).toMatch(/Road Poultice.*healing potion/i);
+
+  await page.evaluate(() => {
+    const player = window.LegendRuntimeV120.loadPlayer();
+    player.flags.roadExpeditionV100.stage = 5;
+    window.LegendRuntimeV120.savePlayer(player);
+    window.LegendRoadControllerV100.renderExpedition();
+  });
+  await page.locator('#finish').click();
+  const report = page.getByRole('region', { name: 'Expedition field report' });
+  await expect(report).toContainText('Road poultice crafted');
+  await expect(report).toContainText(/One healing potion was added to your pack/i);
+});
+
 test('late-night Reed Cut pressure summons a stronger Lantern Wisp', async ({ page }) => {
   await startFreshTraveler(page);
   await enterDeparture(page);
