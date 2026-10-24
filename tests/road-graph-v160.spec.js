@@ -96,7 +96,7 @@ test('the map can choose a route and shows the unchosen branch explicitly', asyn
   await expect(dialog.locator('[data-exp160-map-route="ridge"]')).toBeVisible();
   await expect(dialog.locator('[data-exp160-map-route="reeds"]')).toBeVisible();
   await dialog.locator('[data-exp160-map-route="reeds"]').click();
-  await expect(page.locator('.exp100-poi-done')).toContainText('Reed Cut');
+  await expect(page.locator('.exp100-route-choice')).toContainText('Reed Cut');
   const route = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().flags.roadExpeditionV100.routeChoice);
   expect(route).toBe('reeds');
   await page.locator('#exp150OpenMap').click();
