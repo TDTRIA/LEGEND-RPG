@@ -32,7 +32,7 @@ async function seedGreyfen(page, options = {}) {
       inventory: { food: options.food ?? 2, camp: options.camp ?? 1, potion: 1, roadToken: 0 },
       bank: [0, 0, 0, 0, 0],
       stats: {},
-      flags: { firstRoadReturnSeen: true },
+      flags: { firstRoadReturnSeen: true, greyfenDryCrossingComplete: true },
       traits: [],
       skills: {},
       mastery: {},
@@ -169,6 +169,17 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
     await page.locator('#gfm160ResultReturn').click();
     await expect(page.locator('.ash100-town')).toBeVisible();
     await expect(page.locator('[data-ash-view="marsh"]')).toBeVisible();
+    await expect(page.locator('.ash100-route-strip')).toContainText('Report the Waterline Gauge');
+    await page.locator('.ash100-route-strip button[data-ash-view="mara"]').click();
+    await expect(page.locator('.ash099-lines')).toContainText('The gauge gives us a height and a clean, hand-cut notch');
+    const filed = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      return {
+        reported: pl.flags.greyfenWaterlineGaugeReported,
+        memory: pl.memories.some(line => line.includes('Waterline Gauge reading'))
+      };
+    });
+    expect(filed).toEqual({ reported: true, memory: true });
   });
 
   test('raised posts remain available without rations and a successful wisp fight uses Greyfen-specific combat results', async ({ page }) => {
