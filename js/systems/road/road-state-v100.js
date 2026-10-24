@@ -35,7 +35,18 @@
     const originBonus=data.origins?.[player.origin]?.bonus||{};
     const keepsakeBonus=data.keepsakes?.[player.keepsake]?.bonus||{};
     const creationBonus={...(player.creationV090?.bonuses||{}),...(player.creationV094?.bonuses||{})};
-    return Number(classMods[skill]||0)+Number(originBonus[skill]||0)+Number(keepsakeBonus[skill]||0)+Number(creationBonus[skill]||0);
+    const growth=player.attributesV152||{};
+    const growthBonus={
+      strength:Number(growth.might||0),
+      agility:Number(growth.agility||0),
+      thieving:Number(growth.agility||0),
+      magic:Number(growth.arcana||0),
+      survival:Number(growth.endurance||0),
+      lore:Number(growth.insight||0),
+      craft:Number(growth.insight||0),
+      luck:Number(growth.fortune||0)
+    };
+    return Number(classMods[skill]||0)+Number(originBonus[skill]||0)+Number(keepsakeBonus[skill]||0)+Number(creationBonus[skill]||0)+Number(growthBonus[skill]||0);
   };
   const weapon=player=>(D().weapons||[]).find(item=>item.id===player.weapon)||{name:'Hands',min:1,max:3};
   const armor=player=>{

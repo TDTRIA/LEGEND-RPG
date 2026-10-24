@@ -1,6 +1,6 @@
-// LEGEND v0.22.0 — realm boot sequence, game-client title screen, and cinematic scene transitions.
+// LEGEND v0.23.0 — realm boot, player-directed growth, and expedition results.
 window.LEGEND_DATA = {
-  VERSION: 'v0.22.0',
+  VERSION: 'v0.23.0',
   SAVE_KEY: 'legend-roads-of-ashmere-v09',
   classes: {
     Adventurer:{hp:110,gold:120,mod:{survival:1,luck:1},move:'Lucky Strike',desc:'Balanced survivor. Good for a first run.'},

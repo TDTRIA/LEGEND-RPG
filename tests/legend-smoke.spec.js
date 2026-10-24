@@ -80,6 +80,17 @@ async function enterOldRoadFromDeparture(page) {
   await expect(page.locator('.exp150-world-page')).toBeVisible();
 }
 
+async function allocatePendingGrowth(page) {
+  const overlay = page.locator('#legendLevelUpOverlay');
+  if (!(await overlay.count())) return;
+  const points = Number(await overlay.locator('#v152-growth-total').textContent() || 0);
+  for (let i = 0; i < points; i += 1) {
+    await overlay.locator('[data-attr-add="might"]').click();
+  }
+  await overlay.locator('#v152-growth-confirm').click();
+  await expect(overlay).toHaveCount(0);
+}
+
 test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('News & Roadmap opens from the title and returns without changing the save', async ({ page }) => {
     await openTitle(page);
@@ -688,9 +699,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       };
     });
     await page.locator('#strike').click();
-    await expect(page.locator('.exp100-outcome')).toBeVisible();
-    await expect(page.locator('.exp100-outcome')).toContainText('Driven Back');
-    await expect(page.locator('.exp100-outcome')).toContainText('badly wounded');
+    await expect(page.getByRole('main', { name: 'Battle defeat results' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Driven Back' })).toBeVisible();
+    await expect(page.locator('.v152-results-heading p')).toContainText(/Return to Ashmere and regroup/i);
 
     const after = await page.evaluate(() => {
       const pl = window.LegendRuntimeV120.loadPlayer();
@@ -713,7 +724,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(after.gold).toBe(before.gold);
     expect(after.inventory).toEqual(before.inventory);
 
-    await page.locator('#outcomeReturn').click();
+    await page.locator('#v152CombatReturn').click();
     await expect(page.locator('.ash100-town')).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.LegendRuntimeV120.loadPlayer().hp)).toBe(1);
   });
@@ -1301,7 +1312,24 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
     await page.locator('#finish').click();
     await expect(page.locator('.exp100-outcome')).toContainText(/Ridgeway Cairn/i);
+    const finishCurtain = page.locator('#legend-scene-curtain');
+    await expect(finishCurtain).toBeAttached();
+    await expect.poll(() => finishCurtain.evaluate(el =>
+      !el.classList.contains('is-covering') && !el.classList.contains('is-revealing')
+    )).toBe(true);
+    await allocatePendingGrowth(page);
+    await expect.poll(() => page.evaluate(() => Number(window.LegendRuntimeV120.loadPlayer().pendingStatPointsV152 || 0))).toBe(0);
+    await expect(page.locator('#legendLevelUpOverlay')).toHaveCount(0);
+    await expect.poll(() => finishCurtain.evaluate(el =>
+      !el.classList.contains('is-covering') && !el.classList.contains('is-revealing')
+    )).toBe(true);
     await page.locator('#outcomeReturn').click();
+    const returnCurtain = page.locator('#legend-scene-curtain');
+    await expect(returnCurtain).toBeAttached();
+    await expect.poll(() => returnCurtain.evaluate(el =>
+      !el.classList.contains('is-covering') && !el.classList.contains('is-revealing')
+    )).toBe(true);
+    await expect(page.locator('.ash100-town')).toBeVisible();
 
     let firstReturn = await page.evaluate(() => {
       const pl = window.LegendRuntimeV120.loadPlayer();
@@ -1769,7 +1797,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     const iconImages = page.locator('.ash100-destinations .ash100-destination-icon .ash099-asset-icon img');
     await expect(iconImages).toHaveCount(7);
     const iconSources = await iconImages.evaluateAll(nodes => nodes.map(node => node.getAttribute('src') || ''));
-    expect(iconSources.every(src => src.startsWith('assets/generated/ui/icons/service-'))).toBe(true);
+    expect(iconSources.every(src => src.startsWith('assets/generated/') && /\.(?:webp|png)(?:\?.*)?$/i.test(src))).toBe(true);
     await expect(page.locator('.ash100-destinations .ash100-destination-icon .ash099-icon svg')).toHaveCount(0);
     await expect(page.locator('.ash100-destinations .ash100-destination-icon .ash099-region-shop-icon img')).toHaveCount(0);
     const iconBounds = await iconImages.evaluateAll(nodes => nodes.map(img => {
@@ -1903,6 +1931,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.exp100-outcome')).toContainText('Expedition Secured');
     await expect(page.locator('.exp100-outcome')).toContainText(/Road Token/i);
     await expect(page.locator('.exp100-outcome')).toContainText(/Level up! You are now level 2\./);
+    await allocatePendingGrowth(page);
 
     const after = await page.evaluate(() => {
       const player = window.LegendRuntimeV120.loadPlayer();

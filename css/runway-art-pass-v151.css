@@ -1,0 +1,202 @@
+/* LEGEND v0.22.1 — Runway raster-art presentation and daily road rewards. */
+
+/* Runway service illustrations were painted on dark square canvases. Screen blending
+   lets the painted silhouette sit directly on the world UI instead of looking like a tile. */
+.ash099-icon.ash099-raster-icon,
+.ash099-icon.ash099-asset-icon,
+.ash100-destination-icon,
+.ash100-route-strip-icon {
+  border:0!important;
+  border-radius:50%!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.ash099-icon.ash099-raster-icon,
+.ash099-icon.ash099-asset-icon {
+  display:grid!important;
+  place-items:center!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:0!important;
+}
+.ash099-icon.ash099-raster-icon img,
+.ash099-icon.ash099-asset-icon img {
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  padding:0!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  mix-blend-mode:screen!important;
+  filter:drop-shadow(0 3px 7px rgba(0,0,0,.3))!important;
+}
+.ash099-icon.is-missing{display:none!important}
+.ash100-destination-icon{display:grid!important;place-items:center!important;align-self:center;min-width:0!important;min-height:0!important}
+.ash100-destination-icon .ash099-icon{width:100%!important;height:100%!important}
+.ash100-destination-icon .ash099-icon img{padding:0!important}
+.ash100-route-strip-icon .ash099-icon{width:100%!important;height:100%!important}
+.ash100-route-strip-icon .ash099-icon img{padding:0!important}
+.ash100-town .ash099-topnav .ash099-icon{width:100%!important;height:100%!important}
+.ash100-town .ash099-topnav .ash099-icon img{padding:0!important}
+/* Keep destination art inside its hit target even while hovered/focused. */
+.ash100-destination:hover .ash100-destination-icon img,
+.ash100-destination:focus-visible .ash100-destination-icon img{transform:none!important;filter:drop-shadow(0 5px 10px rgba(0,0,0,.4))!important}
+.ash099-footer-item .ash099-icon img{width:100%;height:100%;object-fit:contain;mix-blend-mode:screen}
+.ash099-head-icon .ash099-icon img{width:100%;height:100%;object-fit:contain;mix-blend-mode:screen}
+
+/* The title becomes a small world launcher: real location paintings replace the text-only atlas. */
+.v140-realm-overview.v151-realm-art{
+  width:min(410px,35vw);
+  top:49%;
+  transform:translateY(-34%);
+  padding:14px;
+  border-radius:4px;
+  border-color:rgba(223,192,119,.35);
+  background:linear-gradient(145deg,rgba(8,15,10,.94),rgba(3,8,5,.91));
+  box-shadow:0 28px 75px rgba(0,0,0,.5),inset 0 0 0 3px rgba(0,0,0,.18),inset 0 1px rgba(255,240,195,.06);
+}
+.v151-realm-art .v140-realm-overview-head{padding:2px 2px 10px}
+.v151-realm-feature{position:relative;isolation:isolate;min-height:194px;overflow:hidden;margin-top:12px;background:#101811;border:1px solid rgba(223,192,119,.23)}
+.v151-realm-feature>img{position:absolute;z-index:-2;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 55%;filter:saturate(.9) contrast(1.06);transform:scale(1.02);transition:transform 8s ease}
+.v151-realm-art:hover .v151-realm-feature>img{transform:scale(1.07)}
+.v151-realm-feature-shade{position:absolute;z-index:-1;inset:0;background:linear-gradient(90deg,rgba(3,7,4,.18),rgba(3,7,4,.02) 50%,rgba(3,7,4,.2)),linear-gradient(0deg,rgba(2,6,4,.94),rgba(2,6,4,.08) 78%)}
+.v151-realm-feature-copy{position:absolute;left:13px;right:13px;bottom:12px}
+.v151-realm-feature-copy>span{color:#e4c879;font-size:.5rem;font-weight:900;letter-spacing:.18em}
+.v151-realm-feature-copy h2{margin:5px 0 4px;color:#f4e8c8;font:500 1.95rem/.98 Georgia,"Times New Roman",serif;text-shadow:0 2px 12px #000}
+.v151-realm-feature-copy p{max-width:310px;margin:0;color:#e0e4d6;font-size:.69rem;line-height:1.45;text-shadow:0 1px 8px #000}
+.v151-realm-destinations{display:grid;gap:8px;margin-top:9px}
+.v151-realm-destination{display:grid;grid-template-columns:102px minmax(0,1fr);gap:11px;align-items:center;min-width:0;min-height:73px;overflow:hidden;border:1px solid rgba(179,194,169,.16);background:rgba(13,21,15,.84)}
+.v151-realm-destination>img{width:100%;height:73px;object-fit:cover;filter:saturate(.82) brightness(.82)}
+.v151-realm-destination>div{display:grid;gap:3px;min-width:0;padding:7px 9px 7px 0}
+.v151-realm-destination small{color:#c9ac68;font-size:.48rem;font-weight:900;letter-spacing:.13em}
+.v151-realm-destination strong{color:#f0e6ce;font:500 1rem/1.1 Georgia,"Times New Roman",serif}
+.v151-realm-destination span{color:#9cae9b;font-size:.61rem;line-height:1.35}
+.v151-realm-art .v140-realm-player-state{margin-top:9px;padding:9px 10px}
+.v151-realm-art .v140-realm-player-state>span{font-size:.48rem}
+.v151-realm-art .v140-realm-player-state>strong{font-size:.69rem}
+.v151-realm-art .v140-realm-player-state>small{font-size:.59rem}
+.v136-menu-icon{display:grid!important;place-items:center!important;overflow:visible!important;border:0!important;border-radius:50%!important;background:transparent!important;box-shadow:none!important}
+.v136-menu-icon img{display:block;width:100%;height:100%;object-fit:contain;mix-blend-mode:screen;filter:drop-shadow(0 3px 7px rgba(0,0,0,.32))}
+.title-v136-rpg .v136-menu-btn:hover .v136-menu-icon img,.title-v136-rpg .v136-menu-btn:focus-visible .v136-menu-icon img{transform:translateY(-1px) scale(1.06)}
+.dispatches-v140-feature-mark img{width:100%;height:100%;object-fit:contain;mix-blend-mode:screen}
+
+/* Daily contracts and earnable cache rewards use the existing save / XP / inventory systems. */
+.ash099-daily-board{display:grid;gap:14px}
+.ash099-daily-intro{padding:17px;border:1px solid rgba(215,184,106,.2);background:linear-gradient(115deg,rgba(49,43,27,.58),rgba(8,15,10,.82))}
+.ash099-daily-intro .ash099-job-overline{color:#d7bd77;font-size:.6rem;font-weight:900;letter-spacing:.17em}
+.ash099-daily-intro h2{margin:6px 0 5px;color:#f0e4c5;font:500 clamp(1.5rem,3vw,2.1rem)/1.05 Georgia,"Times New Roman",serif}
+.ash099-daily-intro p{margin:0;color:#b8c4b5;line-height:1.5;font-size:.84rem}
+.ash099-daily-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ash099-daily-card{display:grid;align-content:start;gap:9px;min-width:0;padding:14px;border:1px solid rgba(195,178,126,.2);background:linear-gradient(155deg,rgba(25,34,24,.95),rgba(7,12,9,.96));box-shadow:0 14px 28px rgba(0,0,0,.18)}
+.ash099-daily-card.is-ready{border-color:rgba(220,192,113,.58);background:linear-gradient(155deg,rgba(58,49,27,.8),rgba(7,12,9,.96))}
+.ash099-daily-card.is-claimed{opacity:.7}
+.ash099-daily-card-head{display:flex;align-items:center;gap:10px;min-width:0}
+.ash099-daily-card-head img{flex:0 0 41px;width:41px;height:41px;object-fit:contain;mix-blend-mode:screen;filter:drop-shadow(0 3px 7px rgba(0,0,0,.35))}
+.ash099-daily-card-head span{color:#cdb878;font-size:.53rem;font-weight:900;letter-spacing:.12em}
+.ash099-daily-card h3{margin:0;color:#f0e6d1;font:500 1.12rem/1.14 Georgia,"Times New Roman",serif}
+.ash099-daily-card p{margin:0;color:#aebbaa;font-size:.78rem;line-height:1.45}
+.ash099-daily-progress-copy{display:flex;justify-content:space-between;gap:8px;color:#98a791;font-size:.65rem}
+.ash099-daily-progress{height:5px;overflow:hidden;background:#202b21}
+.ash099-daily-progress i{display:block;height:100%;background:linear-gradient(90deg,#7d9771,#d7b86a);transition:width .18s ease}
+.ash099-daily-reward{color:#d9c486;font-size:.72rem;font-weight:800}
+.ash099-daily-state{color:#d0c29a;font-size:.7rem;line-height:1.35}
+.ash099-daily-card .ash099-btn{width:100%}
+.ash099-daily-card .ash099-btn[disabled]{opacity:.48;cursor:not-allowed}
+.ash099-road-cache{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);min-height:210px;overflow:hidden;border:1px solid rgba(215,184,106,.3);background:linear-gradient(115deg,rgba(43,38,25,.94),rgba(7,12,9,.98));box-shadow:0 18px 38px rgba(0,0,0,.24)}
+.ash099-road-cache-art{position:relative;min-height:210px;overflow:hidden}
+.ash099-road-cache-art>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.8) brightness(.74)}
+.ash099-road-cache-art:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 60%,rgba(8,13,9,.7)),linear-gradient(0deg,rgba(4,8,5,.58),transparent 68%)}
+.ash099-road-cache-copy{display:grid;align-content:center;gap:9px;padding:clamp(15px,2.4vw,25px)}
+.ash099-road-cache-copy>span{color:#d7bd77;font-size:.57rem;font-weight:900;letter-spacing:.17em}
+.ash099-road-cache-copy h2{margin:0;color:#f0e5ca;font:500 clamp(1.6rem,3vw,2.1rem)/1 Georgia,"Times New Roman",serif}
+.ash099-road-cache-copy p{margin:0;color:#aebbaa;font-size:.81rem;line-height:1.5}
+.ash099-road-cache-copy .ash099-btn{width:100%}
+.ash099-cache-key-count{color:#e0c781;font-size:.72rem;font-weight:900}
+.ash099-cache-odds{padding:13px 15px;border:1px solid rgba(215,184,106,.17);background:rgba(0,0,0,.2)}
+.ash099-cache-odds summary{color:#dfc984;font-size:.79rem;font-weight:800;cursor:pointer}
+.ash099-cache-odds ul{display:grid;gap:7px;margin:11px 0 0;padding-left:18px;color:#aebbaa;font-size:.74rem;line-height:1.45}
+.ash099-cache-odds strong{color:#e6d3a1}
+.ash099-daily-notice{padding:12px 14px;border-left:3px solid #d7b86a;background:rgba(215,184,106,.08);color:#efe4c7;font-size:.82rem;line-height:1.5}
+@media(max-width:960px){.v140-realm-overview.v151-realm-art{width:min(380px,35vw);padding:11px}.v151-realm-feature{min-height:168px}.v151-realm-destination{grid-template-columns:88px minmax(0,1fr)}.ash099-daily-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1160px){.v140-realm-overview.v151-realm-art{display:none!important}}
+@media(max-width:720px){.ash099-daily-grid{grid-template-columns:1fr}.ash099-road-cache{grid-template-columns:1fr}.ash099-road-cache-art{min-height:140px}.ash099-daily-card{padding:13px}}
+@media(prefers-reduced-motion:reduce){.v151-realm-feature>img,.ash100-destination:hover .ash100-destination-icon img,.ash100-destination:focus-visible .ash100-destination-icon img,.title-v136-rpg .v136-menu-btn:hover .v136-menu-icon img,.title-v136-rpg .v136-menu-btn:focus-visible .v136-menu-icon img,.ash099-daily-progress i{transition:none!important;transform:none!important}}
+
+/* High-specificity overrides beat the older service-icon tile rules. */
+.ash100-destination-icon .ash099-icon.ash099-asset-icon img,
+.ash100-destination-icon .ash099-icon.ash099-raster-icon img,
+.ash100-route-strip-icon .ash099-icon.ash099-asset-icon img,
+.ash100-route-strip-icon .ash099-icon.ash099-raster-icon img,
+.ash100-town .ash099-topnav .ash099-icon.ash099-asset-icon img,
+.ash100-town .ash099-topnav .ash099-icon.ash099-raster-icon img{
+  padding:0!important;
+  background:transparent!important;
+  border:0!important;
+  border-radius:0!important;
+  mix-blend-mode:screen!important;
+}
+.title-v136-rpg .v136-menu-icon{
+  border:0!important;
+  border-radius:50%!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.title-v136-rpg .v136-menu-icon img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  padding:0!important;
+  object-fit:contain!important;
+  mix-blend-mode:screen!important;
+  filter:drop-shadow(0 3px 7px rgba(0,0,0,.32))!important;
+}
+
+.v120-avatar img{display:block;width:100%;height:100%;padding:7px;box-sizing:border-box;object-fit:contain;mix-blend-mode:screen;filter:drop-shadow(0 3px 7px rgba(0,0,0,.28))}
+.reg100-mark{display:grid;place-items:center;background:transparent!important;overflow:visible}
+.reg100-mark img{display:block;width:100%;height:100%;max-width:38px;max-height:38px;object-fit:contain;mix-blend-mode:screen;filter:drop-shadow(0 3px 7px rgba(0,0,0,.3))}
+
+/* Settings use the same local Runway icon language as the hub. */
+.settings09x-setting-icon{display:grid;place-items:center;overflow:visible!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.settings09x-setting-icon img{display:block;width:100%;height:100%;padding:0!important;object-fit:contain;mix-blend-mode:screen;filter:drop-shadow(0 3px 7px rgba(0,0,0,.32))}
+
+ 
+/* Hard-bound generated hub illustrations to the visible icon box.
+   Some local paintings can overrun their CSS hit target. */
+.ash100-destination-icon .ash099-icon.ash099-asset-icon img,
+.ash100-destination-icon .ash099-icon.ash099-raster-icon img{
+  display:block!important;
+  width:calc(100% - 8px)!important;
+  height:calc(100% - 8px)!important;
+  max-width:32px!important;
+  max-height:32px!important;
+  box-sizing:border-box!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  transform:none!important;
+}
+
+ 
+/* A single diegetic notice-board link lives inside the existing Work Board. */
+.ash099-workboard-daily-entry{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  margin:16px 0;padding:15px 17px;border:1px solid rgba(212,185,108,.42);
+  border-radius:12px;background:linear-gradient(115deg,rgba(155,119,51,.17),rgba(12,19,14,.94) 72%);
+  box-shadow:inset 0 1px rgba(255,255,255,.035);
+}
+.ash099-workboard-daily-entry>div{min-width:0}
+.ash099-workboard-daily-entry>div>span{display:block;color:#d1b66d;font-size:.62rem;font-weight:900;letter-spacing:.14em}
+.ash099-workboard-daily-entry>div>strong{display:block;margin:5px 0;color:#f0e6cb;font-family:Georgia,serif;font-size:1.08rem}
+.ash099-workboard-daily-entry>div>small{display:block;color:#aebba7;font-size:.76rem;line-height:1.45}
+.ash099-workboard-daily-entry>button{flex:0 0 auto}
+@media(max-width:620px){
+ .ash099-workboard-daily-entry{align-items:stretch;flex-direction:column;gap:10px;padding:13px}
+ .ash099-workboard-daily-entry>button{width:100%}
+}

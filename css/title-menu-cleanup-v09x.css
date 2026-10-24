@@ -610,7 +610,7 @@
   background:
     linear-gradient(90deg,rgba(4,7,5,.88) 0%,rgba(4,7,5,.62) 34%,rgba(4,7,5,.18) 72%,rgba(4,7,5,.48) 100%),
     linear-gradient(0deg,rgba(4,7,5,.84) 0%,transparent 44%,rgba(4,7,5,.26) 100%),
-    url('../assets/title/title_bg_ashmere_road_v089.jpg') center/cover no-repeat,
+    url('../assets/generated/title/title-ashmere-road.webp') center/cover no-repeat,
     #080c09!important;
   color:#eeeadd!important
 }
@@ -663,7 +663,7 @@
  .v120-title-actions{width:min(100%,440px)}
 }
 @media(max-width:480px){
- .v120-title{background-image:linear-gradient(90deg,rgba(4,7,5,.8),rgba(4,7,5,.45)),linear-gradient(0deg,rgba(4,7,5,.88),transparent 55%,rgba(4,7,5,.18)),url('../assets/title/title_bg_ashmere_road_v089.jpg')!important}
+ .v120-title{background-image:linear-gradient(90deg,rgba(4,7,5,.8),rgba(4,7,5,.45)),linear-gradient(0deg,rgba(4,7,5,.88),transparent 55%,rgba(4,7,5,.18)),url('../assets/generated/title/title-ashmere-road.webp')!important}
  .v120-title .portal100-header{gap:8px;padding-bottom:10px}
  .v120-title .portal100-brand img{width:32px;height:32px}
  .v120-title .portal100-brand span{font-size:.54rem}

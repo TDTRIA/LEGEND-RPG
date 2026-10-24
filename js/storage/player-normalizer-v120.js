@@ -33,6 +33,12 @@
       p.creationV094.bonuses = p.creationV094.bonuses || {};
       p.creationV090 = p.creationV090 || {};
       p.creationV090.bonuses = {...(p.creationV090.bonuses || {}), ...(p.creationV094.bonuses || {})};
+      // v0.23.0 growth fields are additive and safe for older saved travelers.
+      p.attributesV152 = p.attributesV152 || {};
+      ['might','agility','arcana','endurance','insight','fortune'].forEach(key => {
+        p.attributesV152[key] = Math.max(0, Math.floor(Number(p.attributesV152[key] || 0)));
+      });
+      p.pendingStatPointsV152 = Math.max(0, Math.floor(Number(p.pendingStatPointsV152 || 0)));
       p.inventory = p.inventory || {};
       Object.keys(D.itemNames).forEach(k => p.inventory[k] ??= 0);
       p.ownedWeapons = p.ownedWeapons || { hand:1 };

@@ -19,7 +19,8 @@
     morb: 0,
     codeFragment: 0,
     bellFragment: 0,
-    roadToken: 0
+    roadToken: 0,
+    roadCacheKey: 0
   });
 
   function addItems(inventory, items) {

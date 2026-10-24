@@ -13,7 +13,7 @@
         typeof getPlayer !== 'function' || typeof esc !== 'function') return null;
 
     const imageMarkup = (path, alt = '') => path
-      ? `<img src="${esc(path)}" alt="${esc(alt)}" onerror="if(this.src.startsWith('https://')){this.onerror=null;this.src='assets/locations/ashmere/location_ashmere_mainstreet_v1.jpg'}else{this.style.display='none'}">`
+      ? `<img src="${esc(path)}" alt="${esc(alt)}" onerror="if(this.src.startsWith('https://')){this.onerror=null;this.src='assets/generated/locations/ashmere-town.webp'}else{this.style.display='none'}">`
       : '';
 
     const itemIcon = key => {
@@ -52,21 +52,25 @@
         : ({inn:'ashmereInn', market:'ashmereMarket', forge:'ashmereForge', archive:'ashmereArchive'}[kind]);
       return locations[key] || background();
     };
-    const roadBackground = () => getAssets().locations?.oldRoad || 'assets/locations/roads/location_old_road_main_v1.jpg';
+    const roadBackground = () => getAssets().locations?.oldRoad || getAssets().locations?.highRidge || 'assets/generated/locations/old-road-south-fork.webp';
     const npcArt = id => getAssets().npcs?.[id] || (id === 'oric' ? 'assets/generated/npcs/captain-oric.webp' : '');
     const weaponName = id => (getData().weapons || []).find(item => item.id === id)?.name || id || 'Hands';
     const armorName = id => (getData().armors || []).find(item => item.id === id)?.name || id || 'None';
 
     const icon = (key, alt = '') => {
-      const symbol = {
-        people:'people', inn:'inn', trader:'trader', smith:'smith', road:'road', sheet:'sheet', brenn:'ledger',
-        archive:'archive', mara:'quill', oric:'captain', work:'work', craft:'craft', profile:'profile',
-        quest:'quest', route:'route', regions:'regions', settings:'settings', gate:'gate', world:'world',
-        notice:'notice', cloud:'cloud', account:'profile', feedback:'quest', delete:'quest', text:'ledger',
-        bold:'sheet', contrast:'settings', motion:'road', space:'regions', font:'sheet', lock:'captain',
-        slot:'regions', continue:'road', new:'work'
-      }[key] || 'quest';
-      return `<span class="ash099-icon" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><use href="assets/ui/icons/legend-ui-icons-v1.svg#icon-${symbol}"></use></svg></span>`;
+      const iconKeys = {
+        people:'traveler', inn:'inn', trader:'market', smith:'blacksmith', road:'map',
+        sheet:'journal', brenn:'journal', archive:'journal', mara:'journal', oric:'traveler',
+        work:'jobBoard', craft:'blacksmith', profile:'traveler', quest:'jobBoard', route:'map',
+        regions:'gatehouse', settings:'gatehouse', gate:'gatehouse', world:'map', notice:'jobBoard',
+        cloud:'map', account:'traveler', feedback:'journal', delete:'gatehouse', text:'journal',
+        bold:'journal', contrast:'gatehouse', motion:'map', space:'gatehouse', font:'journal',
+        lock:'gatehouse', slot:'traveler', continue:'map', new:'traveler'
+      };
+      const path = getAssets().ui?.serviceIcons?.[iconKeys[key] || 'traveler'];
+      return path
+        ? '<span class="ash099-icon ash099-asset-icon ash099-raster-icon" aria-hidden="true"><img src="' + esc(path) + '" alt="' + esc(alt) + '" loading="lazy" decoding="async" onerror="this.closest(\'.ash099-icon\').classList.add(\'is-missing\')"></span>'
+        : '<span class="ash099-icon ash099-raster-icon is-missing" aria-hidden="true"></span>';
     };
     const regionShopArt = key => {
       const path = getAssets().ui?.regionShops?.[key];

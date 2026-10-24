@@ -2,15 +2,6 @@
  * Persistence and navigation are injected so this screen does not own game state.
  */
 (() => {
-  const ICON_PATHS = {
-    text: 'M5 7h14M5 12h14M5 17h10',
-    bold: 'M8 5h5a4 4 0 0 1 0 8H8zM8 13h6a4 4 0 0 1 0 8H8z',
-    contrast: 'M12 3a9 9 0 1 0 0 18V3z',
-    motion: 'M4 12h10M10 6l6 6-6 6',
-    space: 'M4 8h16M4 16h16M8 4v16M16 4v16',
-    font: 'M4 19l6-14h4l6 14M8 14h8'
-  };
-
   const escapeHtml = window.LegendHtmlV120.escapeHtml;
 
   function render(config) {
@@ -39,7 +30,7 @@
           <section class="settings09x-grid">${rows.map(([key, label, desc, iconKey]) => `
             <label class="settings09x-toggle">
               <input type="checkbox" data-setting="${key}" ${current[key] ? 'checked' : ''}>
-              <span class="settings09x-setting-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ICON_PATHS[iconKey]}"/></svg></span>
+              <span class="settings09x-setting-icon"><img src="${({text:'assets/generated/ui/icons/service-journal.webp',bold:'assets/generated/ui/icons/service-traveler.webp',contrast:'assets/generated/ui/icons/service-gatehouse.webp',motion:'assets/generated/ui/icons/service-map.webp',space:'assets/generated/ui/icons/service-market.webp',font:'assets/generated/ui/icons/service-job-board.webp'})[iconKey]}" alt="" loading="lazy" decoding="async"></span>
               <span><strong>${label}</strong><span>${desc}</span></span>
               <i class="settings09x-switch"></i>
             </label>

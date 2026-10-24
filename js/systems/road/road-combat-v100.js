@@ -23,6 +23,7 @@
     const shell = context.renderShell;
     const renderExpedition = context.renderExpedition;
     const outcome = context.outcome;
+    const showCombatResults = context.showCombatResults;
     const soundOn = context.soundOn;
     const startBattleMusic = context.startMusic;
     const stopBattleMusic = context.stopMusic;
@@ -75,6 +76,8 @@ function classTechnique(pl){
 function combat(enemy,note=''){
  const pl=p();if(!pl)return;
  ensure(pl);
+ if(enemy.combatStartGold==null)enemy.combatStartGold=Number(pl.gold||0);
+ if(enemy.combatStartLevel==null)enemy.combatStartLevel=Math.max(1,Number(pl.level||1));
  enemy.turn=Number(enemy.turn||0);
  enemy.intent=enemy.intent||enemyIntent(enemy);
  startBattleMusic();
@@ -156,7 +159,14 @@ function combatAction(enemy,action){
  if(action!=='skill')enemy.skillCooldown=Math.max(0,Number(enemy.skillCooldown||0)-1);
  note+=(guarding?' Your guard turns the blow aside.':' '+enemy.name+' hits you for '+incoming+' damage.')+(action==='heavy'?' Your heavy swing leaves you exposed.':'');
  if(incoming>0)playBattleFx('hit');
- if(pl.hp<=0){pl.hp=1;if(enemy.dungeonV100&&typeof context.onDungeonEncounterDefeat==='function'){save(pl);stopBattleMusic();return context.onDungeonEncounterDefeat(pl,enemy)}s.stage=0;s.poiUsed={};s.pressure=clamp(s.pressure+12,0,100);save(pl);stopBattleMusic();return outcome('Driven Back','The road overwhelms you. You make it back alive, badly wounded, and the expedition is cut short.','Defeat')}
+ if(pl.hp<=0){
+  pl.hp=1;
+  if(enemy.dungeonV100&&typeof context.onDungeonEncounterDefeat==='function'){save(pl);stopBattleMusic();return context.onDungeonEncounterDefeat(pl,enemy)}
+  s.stage=0;s.poiUsed={};s.pressure=clamp(s.pressure+12,0,100);save(pl);stopBattleMusic();
+  const result={player:pl,enemy,result:'defeat',progress:{gained:0,levels:0,level:Number(pl.level||1)},rewardName:'',goldGained:Math.max(0,Number(pl.gold||0)-Number(enemy.combatStartGold||0)),routeStage:0};
+  if(typeof showCombatResults==='function'&&showCombatResults(result))return;
+  return outcome('Driven Back','The road overwhelms you. You make it back alive, badly wounded, and the expedition is cut short.','Defeat')
+ }
  save(pl);combat(enemy,note);
 }
 function win(enemy){
@@ -173,7 +183,10 @@ function win(enemy){
  }
  if(enemy.dungeonV100){pl.stats=pl.stats||{};pl.stats.monstersDefeated=Number(pl.stats.monstersDefeated||0)+1;pl.stats.dungeonVictories=Number(pl.stats.dungeonVictories||0)+1;save(pl);if(typeof context.onDungeonEncounterWin==='function')return context.onDungeonEncounterWin(pl,enemy,progress);return outcome('The Sentinel Falls','The cellar encounter is won and its combat rewards are saved.','DUNGEON ENCOUNTER')}
  s.stage=clamp(s.stage+1,0,5);s.pressure=clamp(s.pressure-8,0,100);pl.stats=pl.stats||{};pl.stats.monstersDefeated=Number(pl.stats.monstersDefeated||0)+1;pl.stats.roadVictories=Number(pl.stats.roadVictories||0)+1;
- save(pl);renderExpedition(enemy.name+' defeated. You recover '+itemName(enemy.reward||'fur')+'. '+(progress?'XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'. ':'')+'You continue along the Old Road.');
+ save(pl);
+ const result={player:pl,enemy,result:'victory',progress:progress||{gained:0,levels:0,level:Number(pl.level||1)},rewardName:itemName(enemy.reward||'fur'),goldGained:Math.max(0,Number(pl.gold||0)-Number(enemy.combatStartGold||0)),routeStage:Number(s.stage||0),pressure:Number(s.pressure||0)};
+ if(typeof showCombatResults==='function'&&showCombatResults(result))return;
+ renderExpedition(enemy.name+' defeated. You recover '+itemName(enemy.reward||'fur')+'. '+(progress?'XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'. ':'')+'You continue along the Old Road.');
 }
 
     return combat(enemy, note);

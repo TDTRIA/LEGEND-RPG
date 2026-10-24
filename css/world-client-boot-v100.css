@@ -1,6 +1,6 @@
 /* LEGEND v0.22.0 — boot sequence and realm-client title layer. */
 body.legend-booting{overflow:hidden!important}
-#legend-boot-screen{position:fixed;inset:0;z-index:100001;display:grid;place-items:center;overflow:hidden;box-sizing:border-box;padding:clamp(18px,4vw,44px);color:#eee6cf;background:#030705 url('../assets/title/title_bg_ashmere_road_v089.jpg') center 55%/cover no-repeat;opacity:1;visibility:visible;transition:opacity .58s ease,visibility .58s step-end;font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif}
+#legend-boot-screen{position:fixed;inset:0;z-index:100001;display:grid;place-items:center;overflow:hidden;box-sizing:border-box;padding:clamp(18px,4vw,44px);color:#eee6cf;background:#030705 url('../assets/generated/title/title-ashmere-road.webp') center 55%/cover no-repeat;opacity:1;visibility:visible;transition:opacity .58s ease,visibility .58s step-end;font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif}
 #legend-boot-screen[hidden]{display:none!important}
 #legend-boot-screen:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(2,5,3,.84),rgba(2,5,3,.6) 38%,rgba(2,5,3,.65) 70%,rgba(2,5,3,.88)),linear-gradient(180deg,rgba(1,3,2,.5),rgba(1,4,3,.35) 35%,rgba(1,4,3,.9))}
 #legend-boot-screen:after{content:"";position:absolute;inset:16px;border:1px solid rgba(226,194,117,.22);box-shadow:inset 0 0 0 1px rgba(226,194,117,.055),inset 0 0 100px rgba(0,0,0,.16);pointer-events:none}

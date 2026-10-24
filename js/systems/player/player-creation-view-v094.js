@@ -80,22 +80,14 @@
   }
 
   function choiceMarkup(items, key, selected, classPortraits) {
-    const iconFallbacks = {
-      woman:'♙', man:'♟', nonbinary:'◇', unspoken:'✧',
-      kind:'✦', grim:'⬟', bold:'⚔', clever:'✒', quiet:'◉',
-      'Lost Squire':'⚔', 'Runaway Apprentice':'✧', 'Debt-Bound Thief':'◈',
-      "Archivist's Child":'▤', 'Wandering Cook':'♨', 'Failed Monster Hunter':'⌁',
-      'Rusty Charm':'✥', 'Old Map':'⌖', 'Bent Coin':'◉', 'Cracked Tablet':'▦',
-      'Dull Knife':'†', 'Cooked Ration':'♨'
-    };
     return '<div class="v094-choice-grid ' + (key === 'class' ? 'v094-class-grid' : '') + '">' +
       items.map(item => {
         const active = selected === item.id;
         const classPortrait = key === 'class' ? classPortraits?.[item.id] : '';
         const artCell = key !== 'class' && Array.isArray(item.artCell) ? item.artCell : null;
         const atlas = item.artSource || '';
-        const atlasArt = atlas && artCell
-          ? '<span class="v094-choice-art" aria-hidden="true"><img src="' + escapeHtml(atlas) + '" alt="" aria-hidden="true" loading="lazy" decoding="async" style="left:-' + (Number(artCell[0]) * 100) + '%;top:-' + (Number(artCell[1]) * 100) + '%" ><span>' + escapeHtml(iconFallbacks[item.id] || '✧') + '</span></span>'
+        const atlasArt = atlas
+          ? '<span class="v094-choice-art" aria-hidden="true"><img ' + (artCell ? 'src="' + escapeHtml(atlas) + '" style="left:-' + (Number(artCell[0]) * 100) + '%;top:-' + (Number(artCell[1]) * 100) + '%"' : 'class="v094-choice-art-image" src="' + escapeHtml(atlas) + '"') + ' alt="" aria-hidden="true" loading="lazy" decoding="async"></span>'
           : '';
         return '<button class="v094-choice' + (active ? ' is-selected' : '') + ((classPortrait || atlasArt) ? ' v094-choice-has-art' : '') +
           '" data-' + key + '="' + escapeHtml(item.id) + '" aria-pressed="' + active + '">' +

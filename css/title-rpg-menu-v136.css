@@ -92,3 +92,13 @@
 .a11y-reduced-motion .title-v136-rpg .v120-title-backdrop,
 .a11y-reduced-motion .title-v136-rpg .v120-title-hero{animation:none!important;transition:none!important;transform:none!important;will-change:auto!important}
 .a11y-reduced-motion .title-v136-rpg .v136-menu-btn{transition:none!important}
+
+ 
+/* Keep desktop title art and credits within the viewport. */
+.title-v136-rpg{
+  position:fixed!important;inset:0!important;width:100%!important;height:100svh!important;max-height:100svh!important;
+  min-height:0!important;box-sizing:border-box!important;overflow:hidden!important;
+}
+@media(max-width:760px){
+ .title-v136-rpg{position:absolute!important;inset:0!important;width:100%!important;height:100svh!important;max-height:none!important;min-height:100svh!important;overflow:auto!important}
+}
