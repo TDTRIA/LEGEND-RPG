@@ -146,4 +146,27 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-old-road-mobile-390.png');
   });
+
+  test('saved Reduced Motion preference suppresses new decorative transitions', async ({ page }) => {
+    await enterAshmere(page, 'MotionUIPreview');
+    await page.evaluate(() => document.body.classList.add('a11y-reduced-motion'));
+
+    const realmMotion = await page.locator('.v151-realm-feature > img').evaluate(el => {
+      const style = getComputedStyle(el);
+      return { transition: style.transitionProperty, animation: style.animationName, transform: style.transform };
+    });
+    expect(realmMotion.transition).toBe('none');
+    expect(realmMotion.animation).toBe('none');
+    expect(realmMotion.transform).toBe('none');
+
+    const destination = page.locator('.ash100-destination').first();
+    await destination.hover();
+    const cardMotion = await destination.evaluate(el => {
+      const style = getComputedStyle(el);
+      return { transition: style.transitionProperty, transform: style.transform };
+    });
+    expect(cardMotion.transition).toBe('none');
+    expect(cardMotion.transform).toBe('none');
+  });
+
 });
