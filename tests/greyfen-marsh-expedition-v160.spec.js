@@ -356,4 +356,96 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
     await expect(page.getByRole('heading', { name: 'A dry pause above the floodline.' })).toBeVisible();
   });
 
+
+  test('Silted Storehouse is an optional saved salvage stop that never blocks the Waterline Gauge', async ({ page }) => {
+    await seedGreyfen(page);
+    await enterMarsh(page);
+    await page.locator('#gfm160Begin').click();
+    await page.locator('#gfm160ChooseReeds').click();
+    await page.locator('#gfm160Continue').click();
+    await page.locator('#gfm160PassSluice').click();
+    await page.locator('#gfm160ContinueShelter').click();
+    await expect(page.getByRole('heading', { name: 'A dry pause above the floodline.' })).toBeVisible();
+
+    const before = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      const s = pl.flags.greyfenMarshExpeditionV160;
+      return {
+        peatBrick: Number(pl.inventory.peatBrick || 0),
+        pressure: Number(s.pressure || 0),
+        hours: Number(s.hoursElapsed || 0)
+      };
+    });
+    expect(before).toMatchObject({ pressure: 20, hours: 1 });
+    await expect(page.locator('.gfm160-optional')).toContainText('Silted Storehouse');
+    await expect(page.locator('.gfm160-optional')).toContainText('1 hour and +6 Road Pressure');
+    await expect(page.locator('.gfm160-optional')).toContainText('1 Dry Peat Brick');
+
+    await page.locator('#gfm160VisitStorehouse').click();
+    await expect(page.getByRole('heading', { name: 'Silted Storehouse', level: 1 })).toBeVisible();
+    let state = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      const s = pl.flags.greyfenMarshExpeditionV160;
+      const journal = pl.flags.greyfenMarshFieldJournalV160;
+      return {
+        activeSideTrip: s.activeSideTrip,
+        pressure: Number(s.pressure),
+        hours: Number(s.hoursElapsed),
+        peatBrick: Number(pl.inventory.peatBrick || 0),
+        discovery: (journal?.discoveries || []).find(item => item.key === 'silted-storehouse')?.name || ''
+      };
+    });
+    expect(state).toMatchObject({
+      activeSideTrip: 'silted-storehouse',
+      pressure: 26,
+      hours: 2,
+      peatBrick: before.peatBrick + 1,
+      discovery: 'Dry Peat Brick salvaged at the Silted Storehouse'
+    });
+
+    await page.reload();
+    await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+    await page.evaluate(() => window.LegendGreyfenMarshV160.start());
+    await expect(page.getByRole('heading', { name: 'Silted Storehouse', level: 1 })).toBeVisible();
+    await expect(page.locator('#gfm160ReturnFromStorehouse')).toBeVisible();
+    await page.locator('#gfm160ReturnFromStorehouse').click();
+    await expect(page.getByRole('heading', { name: 'A dry pause above the floodline.' })).toBeVisible();
+    await expect(page.locator('.gfm160-note[role="status"]')).toContainText('Silted Storehouse visited');
+    await expect(page.locator('#gfm160VisitStorehouse')).toHaveCount(0);
+    await expect(page.locator('#gfm160ContinueGauge')).toBeVisible();
+
+    await page.locator('#gfm160OpenMap').click();
+    const map = page.getByRole('dialog', { name: 'Greyfen Marsh field map' });
+    await expect(map).toContainText('Silted Storehouse');
+    await expect(map).toContainText('Visited this trip');
+    await expect(map).toContainText('Reachable next');
+    await page.locator('#gfm160CloseMap').click();
+
+    // The authored survey still completes normally after skipping the rest of the detour.
+    await page.locator('#gfm160ContinueGauge').click();
+    await page.locator('#gfm160InspectGauge').click();
+    await page.locator('#gfm160Complete').click();
+    await expect(page.getByRole('main', { name: 'Marsh expedition results' })).toBeVisible();
+    await expect(page.locator('.gfm160-report-findings')).toContainText('Dry Peat Brick salvaged at the Silted Storehouse');
+    await expect(page.locator('.gfm160-report-findings')).toContainText('Optional salvage: 1 Dry Peat Brick from the Silted Storehouse');
+    const final = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      const s = pl.flags.greyfenMarshExpeditionV160;
+      return {
+        complete: s.lastResultV160?.complete,
+        gauge: s.lastResultV160?.gaugeInspected,
+        peatBrick: Number(pl.inventory.peatBrick || 0),
+        reportIncludesStorehouse: (s.lastResultV160?.discoveries || []).includes('Dry Peat Brick salvaged at the Silted Storehouse'),
+        optionalSalvage: s.lastResultV160?.optionalSalvage
+      };
+    });
+    expect(final).toMatchObject({
+      complete: true,
+      gauge: true,
+      peatBrick: before.peatBrick + 1,
+      reportIncludesStorehouse: true,
+      optionalSalvage: '1 Dry Peat Brick from the Silted Storehouse'
+    });
+  });
+
 });

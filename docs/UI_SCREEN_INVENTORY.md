@@ -1,7 +1,7 @@
 # LEGEND: The Awakening — UI Screen Inventory
 
-**Baseline:** public main at commit 3c84ac5e95e1d06cb5b55fc74d7f03bfd827f592 (2026-10-25), with Phase 1–4 merged and Phase 4 deployed.  
-**Current rollout:** Phase 2/3/4 are merged; Phase 5 story-guidance work is on `feat/greyfen-quest-guidance-v210`.  
+**Baseline:** public main at commit 64edeb4956c9b7da2d805e023810ba843f306d32 (2026-10-25), application version v0.24.1; Phase 1–4 are merged, and Phase 4 is deployed.  
+**Current rollout:** Phase 2/3/4 and Phase 5 Greyfen story-guidance/handoffs are present on `main`. The optional Silted Storehouse site is in [PR #54](https://github.com/TDTRIA/LEGEND-RPG/pull/54) pending CI; it is not playable on main until merged and deployed.  
 **Purpose:** Track reachable screen families, implemented presentation coverage, current verification, and features that are not yet playable. This is a screen-coverage ledger, not a claim that every state has passed manual visual review.
 
 ## Status vocabulary
@@ -19,7 +19,7 @@ The game is a classic-JavaScript browser runtime. It already has local landscape
 
 Presentation is layered across 38 stylesheets. The latest stack includes `greyfen-marsh-v160.css`, `legend-ui-system-v160.css`, `legend-world-shell-v170.css`, and `legend-ui-rollout-v180.css` in that order after the earlier theme layers. Phase 3 added an order/asset-response regression contract; Phase 4 preserved that cascade while wiring Greyfen in. Avoid removing accumulated style layers without before/after computed-style and interaction evidence.
 
-Phase 4 is merged and deployed in v0.24.0. Phase 5 is improving saved evidence guidance and cross-region quest handoffs on a separate branch.
+Phase 4 is merged and deployed in v0.24.0. Phase 5 saved evidence guidance and cross-region handoffs are now integrated on main in v0.24.1. The post-Phase-4 full main Playwright suite still needs a confirmed green run.
 
 ## Screen-family inventory
 
@@ -110,7 +110,7 @@ Phase 4 release state: Greyfen Marsh Path and Road Poultice journal/report are l
 - [ ] Continue beyond this slice: fully finish Greyfen's town quests/service states and complete the first three towns; Greyfen Path alone does not satisfy that wider goal.
 
 
-## Phase 5 — Greyfen story guidance and handoffs (implementation branch; targeted validation underway)
+## Phase 5 — Greyfen story guidance and handoffs (integrated on main; broader QA remains)
 
 - [x] Make the hub Current Route card follow the active saved evidence chain before the generic Greyfen contract.
 - [x] Add explicit navigation targets for Mara, Brenn, Old Road evidence searches, cross-region travel, and Boundary Archive review.

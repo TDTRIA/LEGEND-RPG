@@ -1,34 +1,33 @@
 # AI Handoff — LEGEND: The Awakening
 
-Last updated: 2026-10-24. GitHub `main` is the source of truth; read this before changing code.
+Last updated: 2026-10-25. GitHub `main` is the source of truth; inspect current source and PR checks before changing or merging code.
 
-## Active PR — v0.22.1 Runway art pass, daily contracts, and Road Cache (PR #33)
+## Current main checkpoint — v0.24.1
 
-**Status: open PR, validation pending; not merged or deployed.** Branch: `feat/runway-art-daily-quests-v023`. Main remains v0.22.0 until PR #33 is reviewed and passes CI.
+- Current `main` commit: [`64edeb4`](https://github.com/TDTRIA/LEGEND-RPG/commit/64edeb4956c9b7da2d805e023810ba843f306d32). The active product remains the existing classic-JavaScript browser game; do not introduce a framework or engine migration.
+- Phase 2 shared screen-family presentation, Phase 3 CSS cascade guard, and Phase 4 Greyfen Marsh Path are integrated; Phase 4's Pages deployment passed in [Actions run 40220627763](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40220627763).
+- Phase 5 Greyfen evidence guidance and cross-region handoffs are already present on `main`; the guidance module and `tests/greyfen-guidance-v210.spec.js` match the source previously placed on the now-closed PR #52. Do not merge or resurrect that stale branch; its HTML cache references predate current main.
+- The post-Phase-4 full Playwright suite has not yet been confirmed green on the current main baseline. Do not claim full regression, live Pages smoke, or manual desktop/mobile visual review without fresh evidence.
 
-- **Asset rule:** active game UI should use local, committed Runway-generated raster assets. Do not add SVG icons or temporary signed Runway URLs. Use existing paths such as `assets/generated/ui/icons/service-*.webp`, `assets/generated/locations/*.webp`, `assets/generated/classes/*.webp`, `assets/generated/items/*.webp`, and `assets/generated/enemies/*.webp`. The current local title panorama is `assets/generated/title/title-ashmere-road.webp`; the Runway-generated `LEGEND: The Awakening` wordmark remains a raster PNG. Legacy SVG files may still exist in the repository but should not be referenced by production UI.
-- The title launcher now has raster menu icons and a visual realm atlas showing Ashmere, the Old Road, and Bell Cellar. Scene backgrounds and fallbacks in the active title/boot/transition CSS point at committed Runway WebP art. Menu, settings, regional markers, and town icons use local raster imagery with screen blending to suppress the dark square backing and remove the old boxy icon tiles.
-- Traveler creation now uses standalone Runway raster images for choice artwork rather than cropping an SVG sprite atlas. The old `assets/generated/creation/creation-choice-atlas.svg` path is no longer used by the creation flow.
-- The Road Network card for **Ashmere** now includes the local Ashmere town scene, alongside Greyfen's scene artwork. Check desktop and narrow/mobile layouts and image-load fallbacks.
-- Three local-calendar daily field contracts are stored in `player.flags.dailyContractsV151` with daily progress baselines and claim IDs: inspect a roadside point of interest; win a road battle; return from an Old Road outing. Gold and XP use existing systems. Each claimed reward grants a `roadCacheKey` in the existing inventory structure.
-- **Road Cache fairness:** keys are earned through gameplay only and are not sold. The UI discloses odds before opening: 40% for 2 Rations; 30% for 60–100g; 20% for two matching field materials; 8% for 2 Rations and 1 Potion; 2% for 1 Road Token and 100g. Results are saved in the existing player record and a memory entry.
-- `tests/runway-art-daily-board-v151.spec.js` covers raster menu/hub art, Ashmere Road Network art, daily completion, and a deterministic rare-cache result. `tests/traveler-creation-benefits-v150.spec.js` remains the creation-effects regression guard. Wait for the full Playwright suite and inspect any failures before merge. A live deployed smoke test and manual desktop/mobile review are still required after merge.
-- Version labels are v0.22.1. The boot sequence, classic-JavaScript runtime, existing save key, and combat formulas remain unchanged.
+## Active feature PR — #54: Silted Storehouse
 
-Last updated: 2026-10-24. GitHub `main` is the source of truth; inspect current source before every change.
+**Status: open, validation pending; not merged or deployed.** Tracking issue: [#53](https://github.com/TDTRIA/LEGEND-RPG/issues/53). Branch: `feat/greyfen-silted-storehouse-v251`.
 
-## Current main checkpoint — v0.22.0 (merged 2026-10-24)
+- Adds the optional Silted Storehouse off Mossbarrow Shelter. Its disclosed cost is 1 hour and up to +6 Road Pressure; its reward is one existing `peatBrick` (Dry Peat Brick).
+- The detour uses the existing Greyfen expedition state, field-map and journal, inventory, and return-report systems. Reload while inside, return to shelter, and completion of the mandatory Waterline Gauge survey are covered by the new regression test.
+- This is a single salvage stop—not the full optional multi-room Greyfen delve, a completed Greyfen town loop, or a completed three-town release.
+- The PR has five core feature/docs files plus the current handoff and screen-inventory refresh. Wait for the latest PR-head Playwright checks to complete and inspect failures before merging. After merge, verify Pages deployment and a live smoke test.
 
-- Current `main` commit: [`ef0607f`](https://github.com/TDTRIA/LEGEND-RPG/commit/ef0607f6d7d7fea798f3aa8ca4608eb23ecb2af8), merged from [PR #32](https://github.com/TDTRIA/LEGEND-RPG/pull/32). The app remains the existing browser-based classic-JavaScript runtime; no framework or engine migration occurred.
-- Startup now has a full-screen realm boot sequence before the title menu. It tracks local script loading, checks the data manifest and key game systems, looks for an existing traveler save, and checks opening-scene art with a safe fallback. The intended minimum visible time is about 3.3 seconds (reduced-motion users get a shorter path); it does not claim that static browser files are compiling.
-- The production title now includes the v0.22 realm-style overview/menu treatment. The visible title remains **LEGEND: The Awakening**; use the committed raster wordmark where available and retain the correct text fallback. Do not replace it with the old *Roads of Ashmere* identity or an SVG wordmark.
-- Scene transitions now provide a readable branded curtain for roughly 1.45 seconds plus the reveal, wait for scene assets with a safety bound, and honor reduced-motion preferences. Existing navigation handlers, save key `legend-roads-of-ashmere-v09`, and traveler record contract remain intact.
-- Verification: [PR #32's Playwright workflow](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40093027009) passed before merge. The immediate post-merge combined-status query returned no status entries, so do not claim a separate post-merge workflow, deployed GitHub Pages smoke, or manual desktop/mobile visual review until those are checked.
-- The overlapping [PR #31](https://github.com/TDTRIA/LEGEND-RPG/pull/31) was closed as superseded by the passing PR #32 implementation. Its branch remains available if destination-specific transition art is worth porting later; review it as a focused change and run fresh tests rather than merging the duplicate boot/menu implementation.
+## Production asset and behavior guardrails
 
-## Next implementation priority
+- Use local, committed, watermark-free raster assets for active UI. The current title identity is **LEGEND: The Awakening**; use the committed Runway raster wordmark and correct text fallback. Never restore the old *Roads of Ashmere* logo, introduce an SVG wordmark, or use temporary signed asset URLs.
+- Preserve the boot and transition layers, existing save key `legend-roads-of-ashmere-v09`, traveler record compatibility, combat formulas, and classic-JavaScript architecture. Add state to existing records and normalize older saves safely.
+- Keep routes and discoveries consequence-driven, make costs/rewards clear before commitment, and keep optional detours from blocking authored evidence.
+- Read `docs/CANON.md` before lore work. In particular, keep the opening voice displayed only as `???`, do not expose the traveler's hidden nature, and do not infer who altered the crossing beyond established evidence. The Landing Warden is the locked sympathetic wrong-doer; do not invent a different culprit.
 
-Continue from `main`, not a stale draft branch. Focus on the player's actual fantasy-RPG loop: a stronger scene-first expedition, route choices and discoveries that have consequences, meaningful camp/preparation decisions, callbacks when returning to Ashmere, and a compact dungeon progression loop that uses the existing gear/XP/save systems. Improve one complete playable slice at a time and add regression coverage before integrating. Preserve existing combat formulas, save compatibility, canon guardrails, accessible mobile layouts, and the current browser runtime. Avoid another broad refactor unless a concrete bug requires it.
+## Immediate next implementation priority
+
+Finish and verify the Silted Storehouse PR. Then continue the Greyfen release checklist: local jobs/resources with useful sinks, the still-open crossing-evidence choice and resolution, complete town/service-state coverage, and a truly playable optional delve. Only after Greyfen's acceptance gate is green should Ironpass be built out. Work in small slices with regression coverage instead of another broad refactor.
 
 ## Canon — read first
 Story decisions made by the owner are recorded in [`docs/CANON.md`](docs/CANON.md). **If another document disagrees with a LOCKED item there, CANON.md wins.** Assistants may propose and draft story options but never lock a decision themselves, and must ask the owner before changing a locked item. As of 2026-10-16 the owner has locked: (L1) the Hollow Saint and the Last Mercy as the deepest threat, and (L2) the Greyfen crossing records were altered because of trade pressure, and (L3) the Landing Warden reopened the lower crossing, unsigned, under merchant pressure, and (L4) the traveler is an echo touched by the Veil before the Last Mercy could finish making them, who does not know it (hidden knowledge: do not state or imply it in dialogue or UI until the owner approves a reveal plan). Where older sections below call these "proposals only," CANON.md supersedes them for every locked item. Also locked on 2026-10-19: (L5) "echo" means anything the Veil made or touched, and the hostile monsters, including goblins and ogres, are Veil-touched echoes while human wrongdoers stay ordinary people; (L6) the Last Mercy wounded the Veil, and the wound makes echoes on its own; (L7) an old war between the monsters and the kingdoms ended in an agreement that the Veil is now breaking. The Veil is therefore canon, while the Five Arts, Strain and the Afterwake remain proposals. Locked is still not implemented, so keep the implementation-plan and verification rules in this file.
@@ -66,9 +65,9 @@ Key modules include `js/systems/road-opening-v140.js`, `js/systems/road-controll
 
 ## Active development phase — gameplay loop quality
 
-- v0.21.1 established illustrated traveler options with meaningful starting effects, the Blackroot Tracks contract, the Ashmere departure flow, the Old Road, and the Bell Cellar's first compact dungeon loop. Keep rewards, equipment, leveling, and story flags inside the existing production systems.
-- v0.22.0 is now merged to `main`: boot-up checks and the minimum startup moment, a more game-like realm entrance, and longer scene transitions. Validate the actual merged/deployed build before treating deployment as confirmed.
-- Next, expand the expedition experience through a cohesive playable outing: preparation, route forks, persistent discovered places/journal entries, camp decisions, unique encounters, a satisfying return to town, and incremental dungeon/gear progression. The player should see gameplay consequences, not just new panels.
+- The v0.21.1 and v0.22.0 slices remain part of the current production base: meaningful traveler creation effects, opening/tutorial, Old Road and Bell Cellar foundations, realm boot sequence, title presentation, and longer scene transitions.
+- Phase 2/3/4 are integrated; Phase 5 saved Greyfen evidence guidance is also on `main`. The broader Greyfen town/service loop, regional optional delve, and Ironpass are not complete.
+- The immediate gameplay focus is a coherent Greyfen loop: optional detours with disclosed costs, useful resource sinks, saved consequences, a reliable report/return, and evidence-led story choices. Preserve the mandatory Waterline Gauge path when adding optional content.
 - Prefer small, tested additions over more architecture extraction. Keep the desktop presentation polished while checking mobile overflow and reduced-motion behavior. Do not invent new paid dependencies.
 
 Canon guardrails: read `docs/CANON.md` before lore changes. L1–L7 are locked. Keep the traveler’s nature hidden from dialogue/UI until an owner-approved reveal plan. The Veil, Last Mercy, Hollow Saint, echo rules, and old war/agreement are canon; the Five Arts as named disciplines, Strain, and the Afterwake remain proposals.

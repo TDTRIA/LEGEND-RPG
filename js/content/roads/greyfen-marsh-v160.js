@@ -14,6 +14,7 @@
       { id: 'flooded-sluice', name: 'Flooded Sluice', stage: 2, type: 'Encounter Site', description: 'A low sluice has trapped the last of the current. A pale wisp moves along the waterline, and something glints in the mud.' },
       { id: 'fallen-ferry', name: 'Fallen Ferry', stage: 2, route: 'reeds', optional: true, type: 'Optional Salvage', description: 'A broken ferry lies nose-down against a post. One bundle of cloth remains above the waterline.' },
       { id: 'mossbarrow-shelter', name: 'Mossbarrow Shelter', stage: 3, type: 'Waystation', description: 'A raised timber shelter stands over the marsh. Its dry bench and sealed peat bin have survived another flood.' },
+      { id: 'silted-storehouse', name: 'Silted Storehouse', stage: 3, optional: true, type: 'Optional Salvage', description: 'A low stone storehouse leans into the marsh. Most shelves are submerged, but a sealed peat bin remains above the latest visible floodline.' },
       { id: 'waterline-gauge', name: 'Waterline Gauge', stage: 4, type: 'Field Evidence', description: 'An old iron gauge records the height of previous floods. The latest notch was cut by hand; its date can be compared with Greyfen’s records.' },
       { id: 'greyfen-landing', name: 'Return to Greyfen', stage: 5, type: 'Return', description: 'The same pilings rise above the low water. The field notes and supplies are ready to bring back to the town.' }
     ],
@@ -27,6 +28,8 @@
       { from: 'fallen-ferry', to: 'reed-bed', route: 'reeds', kind: 'return' },
       { from: 'flooded-sluice', to: 'mossbarrow-shelter', kind: 'main' },
       { from: 'mossbarrow-shelter', to: 'waterline-gauge', kind: 'main' },
+      { from: 'mossbarrow-shelter', to: 'silted-storehouse', kind: 'optional' },
+      { from: 'silted-storehouse', to: 'mossbarrow-shelter', kind: 'return' },
       { from: 'waterline-gauge', to: 'greyfen-landing', kind: 'return' }
     ],
     routeOptions: {
@@ -62,6 +65,14 @@
         hours: 1,
         pressure: 5,
         item: 'clothScrap',
+        amount: 1
+      },
+      'silted-storehouse': {
+        cost: '1 hour · +6 Road Pressure',
+        reward: '1 Dry Peat Brick',
+        hours: 1,
+        pressure: 6,
+        item: 'peatBrick',
         amount: 1
       }
     }

@@ -33,7 +33,7 @@
     ['visitedNodeIds', 'discoveredNodeIds', 'completedInteractionIds'].forEach(key => {
       s[key] = Array.isArray(s[key]) ? [...new Set(s[key].filter(value => typeof value === 'string'))] : [];
     });
-    s.activeSideTrip = s.activeSideTrip === 'fallen-ferry' ? 'fallen-ferry' : null;
+    s.activeSideTrip = ['fallen-ferry', 'silted-storehouse'].includes(s.activeSideTrip) ? s.activeSideTrip : null;
     s.sideTripReturnNode = typeof s.sideTripReturnNode === 'string' ? s.sideTripReturnNode : null;
     s.sluiceCleared = Boolean(s.sluiceCleared);
     s.encounterAvoided = Boolean(s.encounterAvoided);
@@ -220,6 +220,36 @@
     save(pl);
     return render('You return to the Reed Bed. The ferry salvage is saved; the waterline survey remains ahead.');
   }
+  function visitStorehouse() {
+    const pl = player(); if (!pl) return;
+    const s = ensure(pl);
+    if (!s.active || Number(s.stage) !== 3 || has(s.visitedNodeIds, 'silted-storehouse')) {
+      return render('The Silted Storehouse is not available from your current position.');
+    }
+    s.sideTripReturnNode = 'mossbarrow-shelter';
+    s.activeSideTrip = 'silted-storehouse';
+    visit(pl, s, 'silted-storehouse');
+    addHours(pl, s, 1);
+    s.pressure = clamp(Number(s.pressure || 0) + 6, 0, 100);
+    addInventory(pl, 'peatBrick', 1);
+    discover(
+      pl, s, 'silted-storehouse',
+      'Dry Peat Brick salvaged at the Silted Storehouse',
+      'A sealed peat bin sat above the latest visible floodline. The old tally board is too water-damaged to read; no name or explanation survives.'
+    );
+    save(pl);
+    return render('You salvage one Dry Peat Brick from the Silted Storehouse. The detour cost one hour and six Road Pressure; the Waterline Gauge remains ahead.');
+  }
+  function returnFromStorehouse() {
+    const pl = player(); if (!pl) return;
+    const s = ensure(pl);
+    if (s.activeSideTrip !== 'silted-storehouse') return render();
+    s.activeSideTrip = null;
+    s.sideTripReturnNode = null;
+    s.currentNodeId = 'mossbarrow-shelter';
+    save(pl);
+    return render('You return to Mossbarrow Shelter with the Dry Peat Brick secured. The Waterline Gauge survey remains ahead.');
+  }
   function moveToSluice() {
     const pl = player(); if (!pl) return;
     const s = ensure(pl);
@@ -326,6 +356,7 @@
       hoursElapsed: Number(s.hoursElapsed || 0),
       discoveries: (journalFor(pl).discoveries || []).filter(item => item.trip === s.trips).map(item => item.name || item.place),
       items: s.routeChoice === 'raised' ? 'Dry Peat Brick' : s.routeChoice === 'reeds' ? 'Road Herb' : 'No route supply secured',
+      optionalSalvage: has(s.visitedNodeIds, 'silted-storehouse') ? '1 Dry Peat Brick from the Silted Storehouse' : 'None',
       shelterRested: Boolean(s.shelterRested),
       gaugeInspected: Boolean(s.gaugeInspected)
     };
@@ -355,7 +386,7 @@
             '<div><span>GOLD</span><strong>+' + Number(report.goldGained || 0) + 'g</strong></div>' +
             '<div><span>EXPERIENCE</span><strong>+' + Number(report.xpGained || 0) + ' XP</strong></div>' +
           '</div>' +
-          '<section class="gfm160-report-findings" aria-label="Field discoveries"><h2>Recorded Findings</h2>' + discoveries + '<p><strong>Route supply:</strong> ' + esc(report.items || 'None') + '</p><p><strong>Shelter:</strong> ' + (report.shelterRested ? 'Rested at Mossbarrow Shelter' : 'No shelter rest recorded') + '</p><p><strong>Waterline Gauge:</strong> ' + (report.gaugeInspected ? 'Reading saved' : 'Not reached or not inspected') + '</p></section>' +
+          '<section class="gfm160-report-findings" aria-label="Field discoveries"><h2>Recorded Findings</h2>' + discoveries + '<p><strong>Route supply:</strong> ' + esc(report.items || 'None') + '</p><p><strong>Optional salvage:</strong> ' + esc(report.optionalSalvage || 'None') + '</p><p><strong>Shelter:</strong> ' + (report.shelterRested ? 'Rested at Mossbarrow Shelter' : 'No shelter rest recorded') + '</p><p><strong>Waterline Gauge:</strong> ' + (report.gaugeInspected ? 'Reading saved' : 'Not reached or not inspected') + '</p></section>' +
           '<div class="gfm160-report-actions"><button class="gfm160-action is-primary" id="gfm160ResultReturn" data-legend-scene-transition="Returning to Greyfen" type="button">Return to Greyfen <span aria-hidden="true">→</span></button><button class="gfm160-action" id="gfm160ResultAgain" type="button">Plan another outing</button></div>' +
         '</section></main>';
     document.getElementById('gfm160ResultReturn')?.addEventListener('click', returnToGreyfen);
@@ -489,9 +520,12 @@
     const visited = new Set(s.visitedNodeIds || []);
     const nodeId = currentNodeId(s);
     const activeFerry = s.activeSideTrip === 'fallen-ferry';
+    const activeStorehouse = s.activeSideTrip === 'silted-storehouse';
     let actions = '';
     if (activeFerry) {
       actions = '<section class="gfm160-panel"><span class="gfm160-kicker">OPTIONAL DETOUR · SALVAGE RECORDED</span><h2>Fallen Ferry</h2><p>You recovered one Cloth Scrap above the waterline. The rest of the ferry remains submerged; no name or owner can be read from the boards.</p><button class="gfm160-action is-primary" id="gfm160ReturnFromFerry" type="button">Return to the Reed Bed <span aria-hidden="true">→</span></button></section>';
+    } else if (activeStorehouse) {
+      actions = '<section class="gfm160-panel"><span class="gfm160-kicker">OPTIONAL FIELD SITE · SALVAGE RECORDED</span><h2>Silted Storehouse</h2><p>You recovered one Dry Peat Brick from a sealed bin above the latest visible floodline. The old tally board is too water-damaged to read; no name or explanation survives.</p><button class="gfm160-action is-primary" id="gfm160ReturnFromStorehouse" type="button">Return to Mossbarrow Shelter <span aria-hidden="true">→</span></button></section>';
     } else if (Number(s.stage) === 0) {
       actions = '<section class="gfm160-panel"><span class="gfm160-kicker">DEPARTURE</span><h2>The Split Causeway lies ahead.</h2><p>Both routes rejoin at the Flooded Sluice. The Waterline Gauge is the authored survey objective; the optional ferry is never required.</p><button class="gfm160-action is-primary" id="gfm160Begin" type="button">Leave Greyfen Landing <span aria-hidden="true">→</span></button></section>';
     } else if (Number(s.stage) === 1) {
@@ -502,9 +536,13 @@
         '<button class="gfm160-action is-primary" id="gfm160ContinueShelter" type="button" ' + ((!s.sluiceCleared && !s.encounterAvoided) ? 'disabled' : '') + '>Continue to Mossbarrow Shelter <span aria-hidden="true">→</span></button></section>';
     } else if (Number(s.stage) === 3) {
       const canRest = Number(pl.inventory?.camp || 0) > 0 || Number(pl.inventory?.food || 0) > 0;
+      const storehouseVisited = has(s.visitedNodeIds, 'silted-storehouse');
+      const storehouseMarkup = storehouseVisited
+        ? '<p class="gfm160-note" role="status">Silted Storehouse visited; the Dry Peat Brick is secured. You can skip it on later trips.</p>'
+        : '<section class="gfm160-optional"><span class="gfm160-kicker">OPTIONAL FIELD SITE</span><h3>Silted Storehouse</h3><p>A low stone storehouse leans into the marsh. Most shelves are submerged, but a sealed peat bin remains above the latest visible floodline.</p><p><strong>Cost:</strong> 1 hour and +6 Road Pressure. <strong>Reward:</strong> 1 Dry Peat Brick.</p><button class="gfm160-action" id="gfm160VisitStorehouse" type="button">Inspect the Silted Storehouse</button></section>';
       actions = '<section class="gfm160-panel"><span class="gfm160-kicker">WAYSTATION · MOSSBARROW SHELTER</span><h2>A dry pause above the floodline.</h2><p>The shelter is optional respite: spend one Camp Supply or one Ration to recover up to 20% of maximum HP and reduce Road Pressure by 12. You can continue without resting.</p>' +
         '<div class="gfm160-action-row"><button class="gfm160-action" id="gfm160Rest" type="button" ' + ((!canRest || s.shelterRested) ? 'disabled' : '') + '>' + (s.shelterRested ? 'Shelter Rest Used' : 'Rest · 1 Supply') + '</button><button class="gfm160-action is-primary" id="gfm160ContinueGauge" type="button">Continue to the Waterline Gauge <span aria-hidden="true">→</span></button></div>' +
-        (s.shelterRested ? '<p class="gfm160-note" role="status">Shelter rest recorded and saved.</p>' : '') + '</section>';
+        (s.shelterRested ? '<p class="gfm160-note" role="status">Shelter rest recorded and saved.</p>' : '') + storehouseMarkup + '</section>';
     } else {
       actions = '<section class="gfm160-panel"><span class="gfm160-kicker">FIELD EVIDENCE · WATERLINE GAUGE</span><h2>' + (s.gaugeInspected ? 'The reading is recorded.' : 'Inspect the old gauge.') + '</h2><p>The newest notch is a clean cut made by hand. Record its height without guessing who made it or why. Completing the survey earns 35g and 35 XP.</p>' +
         '<div class="gfm160-action-row">' + (!s.gaugeInspected ? '<button class="gfm160-action is-primary" id="gfm160InspectGauge" type="button">Record the Waterline Gauge</button>' : '<button class="gfm160-action is-primary" id="gfm160Complete" type="button">Complete the survey · Return with report</button>') +
@@ -513,6 +551,8 @@
     }
     const contentText = activeFerry
       ? 'The ferry’s usable cloth lay above the waterline. Its markings are too damaged to identify who used it.'
+      : activeStorehouse
+        ? 'Most shelves are submerged beneath silt. One sealed peat bin survived above the latest visible floodline; the old tally board is unreadable.'
       : String(s.stage) === '0'
         ? stop.description
         : String(s.stage) === '1' && !s.routeChoice
@@ -578,6 +618,8 @@
     document.getElementById('gfm160ChooseReeds')?.addEventListener('click', () => chooseRoute('reeds'));
     document.getElementById('gfm160VisitFerry')?.addEventListener('click', visitFerry);
     document.getElementById('gfm160ReturnFromFerry')?.addEventListener('click', returnFromFerry);
+    document.getElementById('gfm160VisitStorehouse')?.addEventListener('click', visitStorehouse);
+    document.getElementById('gfm160ReturnFromStorehouse')?.addEventListener('click', returnFromStorehouse);
     document.getElementById('gfm160Continue')?.addEventListener('click', moveToSluice);
     document.getElementById('gfm160FaceWisp')?.addEventListener('click', startEncounter);
     document.getElementById('gfm160PassSluice')?.addEventListener('click', passSluice);
