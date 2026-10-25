@@ -1,13 +1,42 @@
 const { test, expect } = require('@playwright/test');
 
-async function openGame(page) {
+async function openTitle(page) {
   await page.goto('/');
+  await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
+  await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+  await expect(page.locator('.v120-title')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
+}
+
+async function startFreshCharacter(page, name = 'GreyfenGuideQA') {
+  await openTitle(page);
+  await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+  await page.locator('#v094Name').fill(name);
+  await page.locator('#v094Next').click();
+  await page.locator('[data-gender="unspoken"]').click();
+  await page.locator('#v094Next').click();
+  await page.locator('[data-personality="kind"]').click();
+  await page.locator('#v094Next').click();
+  await page.locator('[data-origin]').first().click();
+  await page.locator('#v094Next').click();
+  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('#v094Next').click();
+  await page.locator('[data-keepsake="Old Map"]').click();
+  await page.locator('#v094Next').click();
+  await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
+  await page.getByRole('button', { name: /Let Me Wake/i }).click();
+  await page.evaluate(() => {
+    const player = window.LegendRuntimeV120.loadPlayer();
+    window.LegendRoadOpeningV140.complete(player, 'abandoned');
+    window.LegendAshmereV099.renderAshmere();
+  });
+  await expect(page.locator('.ash100-town')).toBeVisible();
 }
 
 test.describe('Greyfen story guidance v0.24.1', () => {
   test('the Current Route guidance follows saved evidence handoffs before generic town contracts', async ({ page }) => {
-    await openGame(page);
+    await openTitle(page);
     const goals = await page.evaluate(() => {
       const getGoal = window.LegendAshmereGuidanceV099?.getGoal;
       if (typeof getGoal !== 'function') throw new Error('Greyfen guidance module did not load.');
