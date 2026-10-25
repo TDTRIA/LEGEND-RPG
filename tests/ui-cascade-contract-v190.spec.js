@@ -37,10 +37,12 @@ test.describe('LEGEND UI cascade contract v190', () => {
     expect(new Set(files).size, 'duplicate local stylesheet links found').toBe(files.length);
 
     const position = file => files.indexOf(file);
+    expect(position('css/greyfen-marsh-v160.css')).toBeGreaterThan(position('css/progression-results-v152.css'));
+    expect(position('css/greyfen-marsh-v160.css')).toBeLessThan(position('css/legend-ui-system-v160.css'));
     expect(position('css/legend-ui-system-v160.css')).toBeGreaterThanOrEqual(0);
     expect(position('css/legend-world-shell-v170.css')).toBeGreaterThan(position('css/legend-ui-system-v160.css'));
     expect(position('css/legend-ui-rollout-v180.css')).toBeGreaterThan(position('css/legend-world-shell-v170.css'));
-    expect(files).toHaveLength(37);
+    expect(files).toHaveLength(38);
 
     const responses = await Promise.all(files.map(async file => ({
       file,

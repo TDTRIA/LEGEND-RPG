@@ -12,6 +12,7 @@
         { view: 'smith', title: 'Causeway Smithy', desc: 'Equip better gear and turn gathered materials into useful things.', cta: 'Gear & craft', iconKey: 'smith', shopKey: 'greyfenForge', featured: false },
         { view: 'people', title: 'Town Square', desc: 'Meet the keepers and travelers who know the drowned roads.', cta: 'Meet the town', iconKey: 'people', featured: currentView === 'people' },
         { view: 'crossing', title: 'A Dry Crossing', desc: flags.greyfenDryCrossingComplete ? 'The washed route marker is recovered and recorded.' : 'Recover a washed route marker. Choose the raised posts or risk the reed bed. ', cta: flags.greyfenDryCrossingComplete ? 'Review contract' : 'Take contract', iconKey: 'route', featured: currentView === 'crossing' },
+        { view: 'marsh', title: 'The Marsh Path', desc: flags.greyfenMarshPathComplete ? 'The waterline report is saved. Take another trip to gather more field notes and supplies.' : 'Choose the raised posts or pay a ration to take the reed-bed route. Face or avoid a marsh encounter, rest at a shelter, and record the Waterline Gauge.', cta: 'Set out', iconKey: 'road', featured: currentView === 'marsh' },
         { view: 'work', title: 'Bellkeeper’s Hall', desc: 'Take practical work while learning the rhythms of Greyfen.', cta: 'Find work', iconKey: 'work', featured: currentView === 'work' },
         { view: 'regions', title: 'Road Network', desc: 'Return to Ashmere or travel between lands you have unlocked.', cta: 'Travel', iconKey: 'regions', featured: currentView === 'regions' },
   

@@ -173,6 +173,11 @@
       const account = window.LegendAccountV09x;
       if (typeof account?.renderAccount === 'function') return account.renderAccount();
       return renderAshmere();
+    },
+    renderMarsh: () => {
+      const marsh = window.LegendGreyfenMarshV160;
+      if (typeof marsh?.start === 'function') return marsh.start();
+      return renderAshmere();
     }
   });
 
