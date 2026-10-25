@@ -87,11 +87,17 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(page.locator('#lws-hud-health')).toHaveText(saved.health);
     await expect(page.locator('#lws-hud-gold')).toHaveText(saved.gold);
     await expect(page.getByRole('heading', { name: 'Ashmere', exact: true })).toHaveCount(1);
-    await expect(page.locator('.ash100-town [data-ash-view="dungeon"]')).toHaveCount(1);
+    // The Bell Cellar is a genuine first-road-return unlock, not a default Ashmere destination.
+    await page.evaluate(() => {
+      const player = window.LegendStorage.loadPlayer();
+      player.flags = player.flags || {};
+      player.flags.firstRoadReturnSeen = true;
+      window.LegendStorage.savePlayer(player);
+      window.LegendAshmereV099.renderAshmere();
+    });
+    await expect(page.getByRole('button', { name: /The Bell Cellar/i })).toHaveCount(1);
     await expect(page.locator('.lws-panel-right [data-world-route="dungeon"]')).toHaveCount(1);
-    await expect(page.getByRole('button', { name: /The Old Road/i })).toHaveCount(1);
     await expect(page.getByRole('button', { name: /Road Network/i })).toHaveCount(1);
-    await expect(page.locator('.lws-panel-right [data-world-route]').first()).toBeVisible();
     const viewportLayout = await page.evaluate(() => {
       const root = document.getElementById('root').getBoundingClientRect();
       const left = document.querySelector('.lws-panel-left').getBoundingClientRect();
@@ -101,6 +107,11 @@ test.describe('LEGEND persistent world shell v170', () => {
     expect(viewportLayout.rootLeft).toBeGreaterThanOrEqual(viewportLayout.leftRailRight);
     expect(viewportLayout.rootRight).toBeLessThanOrEqual(viewportLayout.rightRailLeft);
     await expectNoHorizontalOverflow(page);
+
+    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' })
+      .getByRole('button', { name: /Routes/i }).click();
+    await expect(page.getByRole('button', { name: /The Old Road/i })).toHaveCount(1);
+    await expect(page.locator('.lws-panel-right [data-world-route]').first()).toBeVisible();
 
     await page.locator('.lws-panel-right [data-world-route]').first().click();
     await expect(page.locator('.ash100-town, .ash099-screen').first()).toBeVisible();
