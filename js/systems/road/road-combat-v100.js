@@ -41,6 +41,7 @@
       clamp,
       renderShell: shell,
       soundOn,
+      getLocationLabel: context.getLocationLabel,
       onCommand: combatAction,
       onRetreat: retreat,
       onToggleSound: toggleBattleSound
