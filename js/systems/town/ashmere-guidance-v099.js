@@ -36,7 +36,6 @@
   function currentGreyfenStoryGoal(player) {
     const flags = player?.flags || {};
     const current = String(player?.currentRegion || 'Ashmere');
-    const inGreyfen = current === 'Greyfen';
 
     if (flags.greyfenWeeklyReturnFound && !flags.greyfenWeeklyReturnReported) {
       return regionalStoryGoal(player, 'Greyfen', {
