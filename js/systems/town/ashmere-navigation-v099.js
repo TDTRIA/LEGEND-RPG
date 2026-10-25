@@ -11,7 +11,8 @@
       renderRoutes,
       renderRoad,
       renderRegions,
-      renderProfile
+      renderProfile,
+      renderMarsh
     } = context;
 
     if (typeof renderHome !== 'function' || typeof renderFeature !== 'function' ||
@@ -29,6 +30,7 @@
       work: () => renderFeature('renderWorkBoard'),
       dungeon: () => renderFeature('renderBellVault'),
       crossing: () => renderFeature('renderDryCrossing'),
+      marsh: () => typeof renderMarsh === 'function' ? renderMarsh() : renderHome(),
       craft: () => renderFeature('renderCrafting'),
       sheet: () => renderFeature('renderSheet'),
       archive: () => renderFeature('renderArchive'),

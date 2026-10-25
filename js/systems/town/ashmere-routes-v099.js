@@ -33,6 +33,8 @@
           '<strong>Road Network</strong><small>Pay the fare to return to Ashmere or travel onward to lands already opened.</small><em>Open map</em></button>' +
           '<button class="ash099-btn ash099-card" data-ash-view="people">' + icon('people') +
           '<strong>Ask the Keepers</strong><small>Compare the old boundary marks and hear the latest causeway warnings.</small><em>Visit the hall</em></button>' +
+          '<button class="ash099-btn ash099-card" data-ash-view="marsh">' + icon('road') +
+          '<strong>The Marsh Path</strong><small>Choose the raised posts or reed bed, salvage supplies, face a marsh encounter, and record the Waterline Gauge.</small><em>Prepare to depart</em></button>' +
           '<button class="ash099-btn ash099-card" data-ash-view="quests">' + icon('quest') +
           '<strong>Side Stories & Contracts</strong><small>Take keeper requests that reward exploration, victories, and a safe return.</small><em>Read postings</em></button>' +
         '</div>'
