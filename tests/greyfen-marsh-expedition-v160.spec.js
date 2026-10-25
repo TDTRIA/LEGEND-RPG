@@ -100,7 +100,7 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
     await page.reload();
     await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
     await page.evaluate(() => window.LegendGreyfenMarshV160.start());
-    await expect(page.getByRole('heading', { name: 'Fallen Ferry' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Fallen Ferry', level: 1 })).toBeVisible();
     await expect(page.locator('#gfm160ReturnFromFerry')).toBeVisible();
 
     routeState = await page.evaluate(() => {
