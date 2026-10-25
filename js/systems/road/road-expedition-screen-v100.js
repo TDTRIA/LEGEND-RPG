@@ -232,7 +232,7 @@
     const campReports=[...journal.campReports].slice().reverse();
     const discoveryMarkup=discoveries.length?discoveries.map(item=>'<article class="exp150-journal-entry"><span class="exp150-journal-entry-type">'+esc(item.kind||'Discovery')+' · '+esc(item.place||'The Old Road')+'</span><strong>'+esc(item.name||'Field note')+'</strong><p>'+esc(item.note||'The traveler recorded a detail worth remembering.')+'</p></article>').join(''):'<div class="exp150-journal-empty"><span>✧</span><strong>No clues recorded yet</strong><p>Investigate a landmark in the world to add a field note here.</p></div>';
     const routeMarkup=routes.length?routes.map(item=>'<article class="exp150-route-entry"><span>'+esc(item.place||'The Old Road')+'</span><strong>'+esc(item.title||'Route decision')+'</strong><small>'+esc(item.note||'A choice made on the road.')+'</small></article>').join(''):'<p class="exp150-journal-muted">Route decisions will be recorded here as you explore.</p>';
-    const campMarkup=campReports.length?campReports.map(item=>'<article class="exp150-route-entry"><span>'+esc(item.place||'The Old Road')+' · '+esc(item.routeName||'Unrecorded route')+'</span><strong>'+(item.kind==='rest'?'Rest by the fire':'Night watch')+' · Day '+esc(String(item.day||1))+'</strong><small>'+esc(item.note||'You kept watch through the night.')+' Road Pressure: '+esc(String(item.pressureBefore??0))+'% → '+esc(String(item.pressureAfter??0))+'%.</small></article>').join(''):'<p class="exp150-journal-muted">Your watches and things heard after dark will be recorded here.</p>';
+    const campMarkup=campReports.length?campReports.map(item=>'<article class="exp150-route-entry"><span>'+esc(item.place||'The Old Road')+' · '+esc(item.routeName||'Unrecorded route')+'</span><strong>'+(item.kind==='rest'?'Rest by the fire':item.kind==='craft'?'Road poultice crafted':'Night watch')+' · Day '+esc(String(item.day||1))+'</strong><small>'+esc(item.note||'You kept watch through the night.')+' Road Pressure: '+esc(String(item.pressureBefore??0))+'% → '+esc(String(item.pressureAfter??0))+'%.</small></article>').join(''):'<p class="exp150-journal-muted">Rest, crafting, and watches will be recorded here as you make camp.</p>';
     const places=journal.visitedPlaces.length?journal.visitedPlaces.map(name=>'<span class="exp150-place-chip">'+esc(name)+'</span>').join(''):'<p class="exp150-journal-muted">Places appear as your journey reaches them.</p>';
     return '<div class="exp150-journal-sheet"><div class="exp150-map-intro"><span class="exp150-kicker">TRAVELER’S FIELD JOURNAL</span><h2>What the road remembers</h2><p>Your discoveries persist between expeditions. Quest evidence and inventory remain in their own existing records.</p></div><section class="exp150-journal-section"><h3>Places visited <span>'+journal.visitedPlaces.length+'</span></h3><div class="exp150-place-list">'+places+'</div></section><section class="exp150-journal-section"><h3>Clues & discoveries <span>'+discoveries.length+'</span></h3>'+discoveryMarkup+'</section><section class="exp150-journal-section"><h3>Route decisions <span>'+routes.length+'</span></h3>'+routeMarkup+'</section><section class="exp150-journal-section"><h3>Camp reports <span>'+campReports.length+'</span></h3>'+campMarkup+'</section></div>';
   }
@@ -359,8 +359,17 @@
     document.getElementById('campCraft')?.addEventListener('click',()=>{
       const player=p();if(!player)return;
       if(Number(player.inventory?.roadHerb||0)<1||Number(player.inventory?.clothScrap||0)<1)return;
-      player.inventory.roadHerb--;player.inventory.clothScrap--;inv(player,'potion',1);save(player);
-      renderExpedition('You bind a Road Herb into clean cloth and make a healing potion.');
+      const state=ensure(player);
+      const pressure=clamp(Number(state.pressure||0),0,100);
+      const routeName=state.routeChoice==='ridge'?'High Ridge':state.routeChoice==='reeds'?'Reed Cut':'Unchosen route';
+      player.inventory.roadHerb--;player.inventory.clothScrap--;inv(player,'potion',1);
+      journalFor(player).campReports.push({
+        kind:'craft',trip:Number(state.trips||0),place:String(area.name||'Waystation'),routeName,
+        pressureBefore:pressure,pressureAfter:pressure,day:Number(player.day||1),
+        note:'You crafted a Road Poultice from 1 Road Herb and 1 Cloth Scrap. One healing potion was added to your pack.'
+      });
+      save(player);
+      renderExpedition('You bind a Road Herb into clean cloth and make a healing potion. The choice is recorded in your field report.');
     });
     document.getElementById('campWatch')?.addEventListener('click',()=>{
       const player=p();if(!player)return;
@@ -383,7 +392,7 @@
           ?'A sound like loose stone travels along the ridge. You mark the dry line and keep the fire low until dawn.'
           :'Rain taps the shelter roof. Near dawn, footsteps pause beyond the firelight, then fade back toward the road.';
       const journal=journalFor(player);
-      journal.campReports.push({trip:Number(state.trips||0),place:String(area.name||'Waystation'),routeName,pressureBefore,pressureAfter,day:Number(player.day||1),note:watchNote});
+      journal.campReports.push({kind:'watch',trip:Number(state.trips||0),place:String(area.name||'Waystation'),routeName,pressureBefore,pressureAfter,day:Number(player.day||1),note:watchNote});
       save(player);
       renderExpedition('You keep watch at '+area.name+'. One ration is gone; the darkness offers no clear answer, but you notice the trail settling. Road Pressure falls by 18.');
     });
