@@ -108,14 +108,18 @@ test.describe('LEGEND persistent world shell v170', () => {
     expect(viewportLayout.rootRight).toBeLessThanOrEqual(viewportLayout.rightRailLeft);
     await expectNoHorizontalOverflow(page);
 
+    // Exercise the shell's destination delegate while the town destination catalog is active.
+    await expect(page.locator('.lws-panel-right [data-world-route="inn"]')).toBeVisible();
+    await page.locator('.lws-panel-right [data-world-route="inn"]').click();
+    await expect(page.locator('.ash099-screen')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+
+    // Return through the shell to the hub, then assert the road destination is unique on Routes.
+    await page.locator('.lws-bottom-bar [data-world-action="world"]').click();
+    await expect(page.locator('.ash100-town')).toBeVisible();
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' })
       .getByRole('button', { name: /Routes/i }).click();
     await expect(page.getByRole('button', { name: /The Old Road/i })).toHaveCount(1);
-    await expect(page.locator('.lws-panel-right [data-world-route]').first()).toBeVisible();
-
-    await page.locator('.lws-panel-right [data-world-route]').first().click();
-    await expect(page.locator('.ash100-town, .ash099-screen').first()).toBeVisible();
-    await expect(page.locator('#legend-world-shell-root')).toBeVisible();
   });
 
   test('inventory overlay reads real saved quantities without changing inventory or leaving the world', async ({ page }) => {
