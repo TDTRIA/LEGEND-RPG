@@ -55,6 +55,7 @@ test.describe('Greyfen story guidance v0.24.1', () => {
         reportWeeklyReturn: pick('Greyfen', { greyfenWeeklyReturnFound: true }),
         fileEvidence: pick('Greyfen', { greyfenWeeklyReturnReported: true }),
         reportGauge: pick('Greyfen', { greyfenEvidenceFiled: true, greyfenWaterlineGaugeRead: true }),
+        continueAfterGauge: pick('Greyfen', { greyfenWaterlineGaugeRead: true, greyfenWaterlineGaugeReported: true }),
         finalArchive: pick('Greyfen', {
           greyfenEvidenceFiled: true,
           greyfenWeeklyReturnFound: true,
@@ -76,6 +77,7 @@ test.describe('Greyfen story guidance v0.24.1', () => {
     expect(goals.reportWeeklyReturn).toMatchObject({ view: 'brenn', title: 'Report the Earlier Weekly Return' });
     expect(goals.fileEvidence).toMatchObject({ view: 'mara', title: 'File the Crossing Evidence' });
     expect(goals.reportGauge).toMatchObject({ view: 'mara', title: 'Report the Waterline Gauge' });
+    expect(goals.continueAfterGauge).toMatchObject({ view: 'people', title: 'Continue the Crossing Investigation' });
     expect(goals.finalArchive).toMatchObject({ view: 'archive', title: 'Review the Preserved Evidence' });
     expect(goals.defaultGreyfen).toMatchObject({ view: 'crossing', title: 'Recover the Washed Marker' });
   });

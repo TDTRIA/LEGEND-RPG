@@ -137,6 +137,17 @@
       });
     }
 
+    if (flags.greyfenWaterlineGaugeReported && !flags.greyfenEvidenceFiled) {
+      return regionalStoryGoal(player, 'Greyfen', {
+        view: 'people',
+        title: 'Continue the Crossing Investigation',
+        text: 'Mara has filed the Waterline Gauge reading. It records a height and a hand-cut notch, but does not identify its maker. Continue comparing the record with the Boundary Archive and the crossing ledger.',
+        cta: 'Visit the Town’s Keepers',
+        icon: 'people',
+        tasks: ['Review the preserved gauge reading', 'Compare it with the Boundary Archive', 'Do not assign blame without corroborating evidence']
+      });
+    }
+
     if (flags.greyfenEvidenceFiled) {
       return regionalStoryGoal(player, 'Greyfen', {
         view: 'archive',
@@ -145,17 +156,6 @@
         cta: 'Review the Boundary Archive',
         icon: 'journal',
         tasks: ['Review the filed field note and crossing records', 'Keep the conclusion limited to what the evidence proves', 'Continue from the missing closure-order lead']
-      });
-    }
-
-    if (flags.greyfenWaterlineGaugeReported) {
-      return regionalStoryGoal(player, 'Greyfen', {
-        view: 'people',
-        title: 'Continue the Crossing Investigation',
-        text: 'Mara has filed the Waterline Gauge reading. It records a height and a hand-cut notch, but does not identify its maker. Continue comparing the record with the Boundary Archive and the crossing ledger.',
-        cta: 'Visit the Town’s Keepers',
-        icon: 'people',
-        tasks: ['Review the preserved gauge reading', 'Compare it with the Boundary Archive', 'Do not assign blame without corroborating evidence']
       });
     }
 
