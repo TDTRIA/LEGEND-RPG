@@ -189,6 +189,7 @@
     if (right) right.innerHTML = panels.renderRightPanel?.(player, context, rootNode) || '';
     const bottom = shell.querySelector('.lws-bottom-bar');
     if (bottom) bottom.innerHTML = panels.renderBottomBar?.(context) || '';
+    panels.syncTownScene?.(player, context, rootNode);
     shell.dataset.context = context.kind;
     shell.dataset.region = String(player.currentRegion || player.town || 'Ashmere');
     shell.hidden = false;
@@ -321,9 +322,23 @@
   function handleShellClick(event) {
     const actionButton = event.target.closest('[data-world-action]');
     const routeButton = event.target.closest('[data-world-route]');
-    if (!actionButton && !routeButton) return;
-    const owner = (actionButton || routeButton).closest('#' + SHELL_ID + ', #' + MODAL_ID);
+    const placeButton = event.target.closest('[data-world-place]');
+    if (!actionButton && !routeButton && !placeButton) return;
+    const owner = (actionButton || routeButton || placeButton).closest('#' + SHELL_ID + ', #' + MODAL_ID);
     if (!owner) return;
+
+    if (placeButton) {
+      event.preventDefault();
+      const player = loadPlayer();
+      if (lastContext?.kind === 'town' &&
+          String(player?.currentRegion || player?.town || 'Ashmere') === 'Ashmere' &&
+          PANELS().selectAshmerePoi?.(String(placeButton.dataset.worldPlace || ''))) {
+        queueRefresh();
+      } else {
+        showToast('That place cannot be selected from the current scene.');
+      }
+      return;
+    }
 
     if (routeButton) {
       event.preventDefault();
@@ -342,6 +357,17 @@
         event.preventDefault();
         MODALS().openInventory?.(loadPlayer());
         break;
+      case 'visit-selected-place': {
+        event.preventDefault();
+        const poi = PANELS().getSelectedAshmerePoi?.();
+        const native = poi && root()?.querySelector('.ash100-town-ashmere .ash100-destination[data-ash-view="' + poi.view + '"]');
+        if (lastContext?.kind === 'town' && native && !native.disabled && native.getAttribute('aria-disabled') !== 'true') {
+          routeTo(poi.view);
+        } else {
+          showToast('Choose an available Ashmere place before entering it.');
+        }
+        break;
+      }
       case 'settings':
         event.preventDefault();
         MODALS().openSettings?.();
