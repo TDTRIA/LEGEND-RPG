@@ -165,7 +165,6 @@
 /* Bound content and respect reduced-motion preferences across every rollout. */
 #root .v140-creation,
 #root .opening-road-v140,
-#root .v080-sheet,
 #root .settings09x,
 #root .account09x,
 #root .rpg-battle,
@@ -173,8 +172,6 @@
 #root .v152-combat-results { min-width: 0; max-width: 100%; }
 #root .v140-creation img,
 #root .opening-road-v140 img,
-#root .v080-sheet img,
-.v080-pack img,
 #root .settings09x img,
 #root .account09x img,
 #root .rpg-battle img,
@@ -183,7 +180,6 @@
 @media (max-width: 560px) {
   #root .v140-creation .v094-choice-grid,
   #root .v140-creation .v094-summary,
-  #root .v080-sheet .v080-grid,
   #root .rpg-battle .rpg-command-grid { min-width: 0; }
   #root .rpg-battle .rpg-command { min-width: 0 !important; }
   #root .bell-vault-banner { padding: 18px 16px !important; }
@@ -193,8 +189,6 @@
 @media (prefers-reduced-motion: reduce) {
   #root .v140-creation *,
   #root .opening-road-v140 *,
-  #root .v080-sheet *,
-  .v080-pack *,
   #root .settings09x *,
   #root .account09x *,
   #root .rpg-battle *,
