@@ -81,7 +81,14 @@
   }
 
   function renderAshmerePoiPanel(root) {
-    const current = getSelectedAshmerePoi();
+    let current = getSelectedAshmerePoi();
+    if (current) {
+      const native = root?.querySelector('.ash100-town-ashmere .ash100-destination[data-ash-view="' + current.view + '"]');
+      if (!native || native.disabled || native.getAttribute('aria-disabled') === 'true') {
+        selectedAshmerePoi = null;
+        current = null;
+      }
+    }
     const placeOptions = Object.entries(ASHMERE_POIS).map(([id, poi]) => {
       const native = root?.querySelector('.ash100-town-ashmere .ash100-destination[data-ash-view="' + poi.view + '"]');
       const disabled = !native || native.disabled || native.getAttribute('aria-disabled') === 'true';
