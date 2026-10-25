@@ -14,6 +14,10 @@ async function createTravelerToLantern(page, name = 'PhaseTwoQA') {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
   await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
+  // Capture the actual memory-shaping scene before continuing to the road.
+  await expect(page.locator('.v094-beginning-card').first()).toHaveCSS('border-radius', '3px');
+  await expect(page.locator('.v140-dialogue-box')).toBeVisible();
+  await expectNoHorizontalOverflow(page);
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();
@@ -52,10 +56,7 @@ test.describe('LEGEND UI rollout v180 — Phase 2 screen families', () => {
     );
     expect(rolloutToken).toBe('1');
 
-    await expect(page.locator('.v094-beginning-card').first()).toHaveCSS('border-radius', '3px');
-    await expect(page.locator('.v140-dialogue-box')).toBeVisible();
-    await expectNoHorizontalOverflow(page);
-
+    // The memory screen has been checked by the helper above; this stage is now the road scene.
     await expect(page.locator('.opening-road-v140-card')).toHaveCSS('border-radius', '3px');
     await expect(page.locator('[data-oric-response="honest"]')).toBeVisible();
     await expectNoHorizontalOverflow(page);
