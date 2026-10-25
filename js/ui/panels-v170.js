@@ -12,6 +12,93 @@
     .trim()
     .replace(/\b\w/g, char => char.toUpperCase());
 
+  // Phase 4 Ashmere POI selection is presentation-only state. It never writes to
+  // the traveler record; entering a place delegates to the real Ashmere route.
+  const ASHMERE_POIS = Object.freeze({
+    inn: {
+      view: 'inn', name: 'Ashmere Inn', icon: '⌂', eyebrow: 'REST & RUMORS',
+      detail: 'The inn offers rest, supplies, and a place to hear what road travelers are saying.',
+      action: 'Enter the Inn'
+    },
+    market: {
+      view: 'trader', name: 'Market', icon: '◇', eyebrow: 'TRADE & SUPPLIES',
+      detail: 'Buy essentials and sell road loot through Ashmere’s existing market.',
+      action: 'Visit the Market'
+    },
+    forge: {
+      view: 'smith', name: 'Forge & Workshop', icon: '⚒', eyebrow: 'GEAR & CRAFT',
+      detail: 'Review weapons and armor, then use the existing workshop and crafting bench.',
+      action: 'Visit the Forge'
+    },
+    road: {
+      view: 'road', name: 'Old Road Gate', icon: '➜', eyebrow: 'THE BORDERLANDS',
+      detail: 'Review the existing departure briefing before setting out on the Old Road.',
+      action: 'Approach the Old Road Gate'
+    }
+  });
+  let selectedAshmerePoi = null;
+
+  function getSelectedAshmerePoi() {
+    return selectedAshmerePoi ? ASHMERE_POIS[selectedAshmerePoi] || null : null;
+  }
+
+  function selectAshmerePoi(id) {
+    if (!Object.prototype.hasOwnProperty.call(ASHMERE_POIS, String(id || ''))) return false;
+    selectedAshmerePoi = String(id);
+    return true;
+  }
+
+  function syncTownScene(player, context, root) {
+    const town = root?.querySelector('.ash100-town-ashmere');
+    root?.querySelectorAll('.ash100-destination.lws-poi-active').forEach(node => node.classList.remove('lws-poi-active'));
+    if (!town || context?.kind !== 'town' || String(player?.currentRegion || player?.town || 'Ashmere') !== 'Ashmere') {
+      root?.querySelector('.lws-poi-scene-note')?.remove();
+      return;
+    }
+
+    const poi = getSelectedAshmerePoi();
+    const native = poi ? town.querySelector('.ash100-destination[data-ash-view="' + poi.view + '"]') : null;
+    if (!poi || !native) {
+      if (poi && !native) selectedAshmerePoi = null;
+      town.querySelector('.lws-poi-scene-note')?.remove();
+      return;
+    }
+    native.classList.add('lws-poi-active');
+
+    const noteHtml = '<span class="lws-poi-scene-kicker">' + esc(poi.eyebrow) + ' · SELECTED PLACE</span>' +
+      '<strong>' + esc(poi.name) + '</strong><p>' + esc(poi.detail) + '</p>';
+    let note = town.querySelector('.lws-poi-scene-note');
+    if (!note) {
+      note = document.createElement('aside');
+      note.className = 'lws-poi-scene-note';
+      note.setAttribute('aria-label', 'Selected Ashmere point of interest');
+      note.setAttribute('aria-live', 'polite');
+      const hero = town.querySelector('.ash100-hero');
+      if (!hero) return;
+      hero.insertAdjacentElement('afterend', note);
+    }
+    if (note.innerHTML !== noteHtml) note.innerHTML = noteHtml;
+  }
+
+  function renderAshmerePoiPanel(root) {
+    const current = getSelectedAshmerePoi();
+    const placeOptions = Object.entries(ASHMERE_POIS).map(([id, poi]) => {
+      const native = root?.querySelector('.ash100-town-ashmere .ash100-destination[data-ash-view="' + poi.view + '"]');
+      const disabled = !native || native.disabled || native.getAttribute('aria-disabled') === 'true';
+      return '<button class="lws-place-option' + (selectedAshmerePoi === id ? ' is-selected' : '') + '" type="button" data-world-place="' + id + '" aria-pressed="' + String(selectedAshmerePoi === id) + '"' +
+        (disabled ? ' disabled aria-disabled="true"' : '') + '><span class="lws-place-option-icon" aria-hidden="true">' + poi.icon + '</span><span class="lws-place-option-copy"><strong>' + esc(poi.name) + '</strong><small>' + esc(poi.eyebrow) + '</small></span><span class="lws-place-option-state">' + (selectedAshmerePoi === id ? 'Selected' : 'Inspect') + '</span></button>';
+    }).join('');
+    const selectedMarkup = current
+      ? '<section class="lws-selected-place" aria-label="Selected place details"><span class="lws-panel-eyebrow">Selected location</span><h3>' + esc(current.name) + '</h3><p>' + esc(current.detail) + '</p><button type="button" class="lws-btn primary lws-visit-place" data-world-action="visit-selected-place"><span class="lws-btn-icon" aria-hidden="true">' + current.icon + '</span><span class="lws-btn-copy"><strong>' + esc(current.action) + '</strong><small>Open the existing game service</small></span></button></section>'
+      : '<div class="lws-poi-hint"><strong>Choose a place to inspect it.</strong><p>The town scene stays in view. Enter a place only when you are ready to use its existing service.</p></div>';
+    const excluded = Object.values(ASHMERE_POIS).map(poi => poi.view);
+    const otherDestinations = destinationButtons(root, excluded);
+    return '<div class="lws-panel-header"><div><span class="lws-panel-eyebrow">Ashmere · Town scene</span><h2>Places of Interest</h2><p>Inspect a destination, then enter through the existing game route.</p></div></div>' +
+      '<div class="lws-panel-scroll"><section class="lws-poi-picker" aria-label="Ashmere points of interest"><div class="lws-place-option-list">' + placeOptions + '</div>' + selectedMarkup + '</section>' +
+      (otherDestinations ? '<section class="lws-other-destinations"><div class="lws-section-title"><span>Other destinations</span><span>Town services</span></div><div class="lws-action-list">' + otherDestinations + '</div></section>' : '') +
+      '<button class="lws-btn quiet lws-town-routes" type="button" data-world-action="map"><span class="lws-btn-icon" aria-hidden="true">⌖</span><span class="lws-btn-copy"><strong>Town routes</strong><small>Open the existing route screen</small></span></button></div>';
+  }
+
   function objectiveFor(player, root, context) {
     const sceneObjective = root?.querySelector('.ash100-route-strip-copy strong, .ash100-departure-card h2, .exp150-title-group h1');
     if (context?.kind === 'expedition-results') return 'Field report secured — choose a return or handoff';
@@ -89,12 +176,13 @@
       '</div>';
   }
 
-  function destinationButtons(root) {
+  function destinationButtons(root, excludedViews = []) {
     const controls = Array.from(root?.querySelectorAll('.ash100-destination[data-ash-view]') || []);
     const dedupe = new Set();
+    const excluded = new Set(excludedViews);
     return controls.filter(button => {
       const view = String(button.dataset.ashView || '');
-      if (!view || dedupe.has(view)) return false;
+      if (!view || excluded.has(view) || dedupe.has(view)) return false;
       dedupe.add(view);
       return true;
     }).map(button => {
@@ -178,6 +266,8 @@
       if (retreat) actions += '<button class="lws-btn primary" type="button" data-world-action="dungeon-retreat"><span class="lws-btn-icon" aria-hidden="true">↩</span><span class="lws-btn-copy"><strong>Retreat from delve</strong><small>Use the cellar’s existing retreat handler</small></span></button>';
       if (returnButton) actions += '<button class="lws-btn" type="button" data-world-action="dungeon-return"><span class="lws-btn-icon" aria-hidden="true">⌂</span><span class="lws-btn-copy"><strong>Continue cellar return</strong><small>Use the current cellar action</small></span></button>';
       if (!actions) actions = '<p class="lws-context-copy">Continue through the cellar choices in the central scene.</p>';
+    } else if (context?.kind === 'town' && String(player?.currentRegion || player?.town || 'Ashmere') === 'Ashmere' && root?.querySelector('.ash100-town-ashmere')) {
+      return renderAshmerePoiPanel(root);
     } else if (context?.kind === 'town') {
       intro = 'Select a destination from the town’s existing location catalog.';
       actions = destinationButtons(root);
@@ -213,6 +303,9 @@
     screenHeading,
     renderLeftPanel,
     renderRightPanel,
-    renderBottomBar
+    renderBottomBar,
+    selectAshmerePoi,
+    getSelectedAshmerePoi,
+    syncTownScene
   });
 })();
