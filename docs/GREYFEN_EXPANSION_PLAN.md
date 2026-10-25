@@ -3,6 +3,8 @@
 ## Priority
 Greyfen is the active milestone. Do not begin Ironpass implementation until Greyfen's art, services, core loop, and regression checks are coherent.
 
+The region’s everyday culture, proposed local cast, Bellkeeper institution, and A Dry Crossing story beats are expanded in [GREYFEN_CULTURE_AND_CAST.md](GREYFEN_CULTURE_AND_CAST.md). That file labels proposed lore separately from implemented systems.
+
 ## Identity
 Greyfen is a working lowland marsh settlement: raised timber walks, stilted homes, low bridges, reed roofs, fishing platforms, peat stores, lantern docks, dark shallow water, and weathered stone footings. Palette: marsh green, wet charcoal timber, cold slate, muddy umber, tarnished brass, small amber lights. Quiet unease, not horror. Ashmere is a road-facing lantern town; Greyfen is a water-facing working town.
 
