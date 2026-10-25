@@ -356,6 +356,7 @@
       hoursElapsed: Number(s.hoursElapsed || 0),
       discoveries: (journalFor(pl).discoveries || []).filter(item => item.trip === s.trips).map(item => item.name || item.place),
       items: s.routeChoice === 'raised' ? 'Dry Peat Brick' : s.routeChoice === 'reeds' ? 'Road Herb' : 'No route supply secured',
+      optionalSalvage: has(s.visitedNodeIds, 'silted-storehouse') ? '1 Dry Peat Brick from the Silted Storehouse' : 'None',
       shelterRested: Boolean(s.shelterRested),
       gaugeInspected: Boolean(s.gaugeInspected)
     };
@@ -385,7 +386,7 @@
             '<div><span>GOLD</span><strong>+' + Number(report.goldGained || 0) + 'g</strong></div>' +
             '<div><span>EXPERIENCE</span><strong>+' + Number(report.xpGained || 0) + ' XP</strong></div>' +
           '</div>' +
-          '<section class="gfm160-report-findings" aria-label="Field discoveries"><h2>Recorded Findings</h2>' + discoveries + '<p><strong>Route supply:</strong> ' + esc(report.items || 'None') + '</p><p><strong>Shelter:</strong> ' + (report.shelterRested ? 'Rested at Mossbarrow Shelter' : 'No shelter rest recorded') + '</p><p><strong>Waterline Gauge:</strong> ' + (report.gaugeInspected ? 'Reading saved' : 'Not reached or not inspected') + '</p></section>' +
+          '<section class="gfm160-report-findings" aria-label="Field discoveries"><h2>Recorded Findings</h2>' + discoveries + '<p><strong>Route supply:</strong> ' + esc(report.items || 'None') + '</p><p><strong>Optional salvage:</strong> ' + esc(report.optionalSalvage || 'None') + '</p><p><strong>Shelter:</strong> ' + (report.shelterRested ? 'Rested at Mossbarrow Shelter' : 'No shelter rest recorded') + '</p><p><strong>Waterline Gauge:</strong> ' + (report.gaugeInspected ? 'Reading saved' : 'Not reached or not inspected') + '</p></section>' +
           '<div class="gfm160-report-actions"><button class="gfm160-action is-primary" id="gfm160ResultReturn" data-legend-scene-transition="Returning to Greyfen" type="button">Return to Greyfen <span aria-hidden="true">→</span></button><button class="gfm160-action" id="gfm160ResultAgain" type="button">Plan another outing</button></div>' +
         '</section></main>';
     document.getElementById('gfm160ResultReturn')?.addEventListener('click', returnToGreyfen);
