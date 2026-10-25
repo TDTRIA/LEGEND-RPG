@@ -98,11 +98,21 @@ Phase 4 release state: Greyfen Marsh Path and the Road Poultice journal/report c
 **Status at this revision:** Phase 1 is deployed to production. Phase 2's implementation and added browser tests are in PR #47; final full-suite verification and artifact review remain release gates. The inventory explicitly leaves unfinished flows and unavailable regions marked as pending/unavailable rather than claiming the whole game's redesign complete.
 
 
-## Phase 4 — expedition and field-report implementation (in progress)
+## Phase 4 — expedition and field-report implementation (merged to main, v0.24.0)
 
 - [x] Port the scene-first Greyfen Marsh Path feature onto the post-Phase-2/3 baseline without replacing index.html or dropping the UI v160/v170/v180 cascade.
 - [x] Add Greyfen's own saved expedition state, route/POI choices, optional detours, waterline gauge evidence and reporting path.
 - [x] Record Road Poultice crafting in the Old Road camp journal and expedition return report; preserve item costs and leave pressure/time unchanged.
 - [x] Add Greyfen expedition, mobile smoke and Road Poultice report regression coverage.
-- [ ] Validate the merged production build and added scene/camp flows after targeted fixes; the long full Playwright workflow is tracked but does not block continued implementation.
+- [ ] Complete the full browser verification of the merged production build. Targeted syntax/source checks are clean, Pages deployed successfully, and the corrected ferry-cost assertion matches the real detour card; the main full-suite run remains pending/in progress.
 - [ ] Continue beyond this slice: fully finish Greyfen's town quests/service states and complete the first three towns; Greyfen Path alone does not satisfy that wider goal.
+
+
+## Phase 5 — Greyfen story guidance and handoffs (in progress)
+
+- [x] Make the hub Current Route card follow the active saved evidence chain before the generic Greyfen contract.
+- [x] Add explicit navigation targets for Mara, Brenn, Old Road evidence searches, cross-region travel, and Boundary Archive review.
+- [x] Preserve uncertainty: the evidence establishes a changed crossing status, not who authorized it. The missing closure order remains unresolved.
+- [x] Add targeted regression tests for each important saved-flag handoff and the actual hub’s Current Route action.
+- [ ] Continue the missing-closure-order story only when its clue, player choice, and outcomes can preserve established canon.
+- [ ] Finish Greyfen town service/resource-loop acceptance, then begin Ironpass as the third playable town.

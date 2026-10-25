@@ -86,9 +86,9 @@ A new player can finish the opening tutorial, learn at least one town service an
 The repository contains Greyfen-specific hub/art/service patterns, the Bellkeeper’s Hall work board, the “A Dry Crossing” contract, local jobs for Dry Peat Bricks, salvage, and flood markers, regional travel gating, and a multi-step evidence trail involving the Boundary Stone, Reedwatch field note, crossing ledger, earlier weekly return, and missing closure order.
 
 ### Release work still required
-- [ ] Make the full Greyfen hub/service loop coherent: landing, inn, market, smith/workbench, people, Boundary Archive, Work Board, and Marsh Path must have distinct jobs and usable exits.
-- [ ] Build a first true Marsh Path expedition, not just a crossing contract. Use water-sensitive route decisions, raised-post navigation versus reed-bed risk, salvage, local creatures, shelter/rest, and an authored return/report.
-- [ ] Give the marsh expedition its own connected map and discoveries while reusing the production expedition/save framework.
+- [ ] Make the full Greyfen hub/service loop coherent: landing, inn, market, smith/workbench, people, Boundary Archive, Work Board, and Marsh Path must have distinct jobs and usable exits. Phase 5 improves saved-evidence guidance and cross-region handoffs; the broader service acceptance sweep remains open.
+- [x] Build a first true Marsh Path expedition with water-sensitive route decisions, Raised Posts vs. Reed Bed, optional Fallen Ferry salvage, a marsh encounter, shelter/rest, Waterline Gauge evidence, and an authored return/report (Phase 4 / PR #49).
+- [x] Give the marsh expedition its own connected map and discoveries while reusing the production save framework (Phase 4 / PR #49).
 - [ ] Add field activities and a small optional delve/site suited to the marsh (for example, a partially flooded storage or drainage location; the final name and exact layout are proposed, not locked).
 - [ ] Extend the local resource loop around peat, salvage, fishing/ferry supplies, and repairs so the materials actually feed trade, crafting, equipment, or quest requirements.
 - [ ] Complete the evidence chain consistently with the locked Greyfen direction: the Landing Warden reopened the lower crossing early under trade pressure, left the change unsigned because the crossing still needed inspection, and is a sympathetic wrong-doer rather than a villain. Build toward a player choice and practical consequence rather than inventing an unrelated culprit.
@@ -169,3 +169,13 @@ The shared shell must not erase differences: Ashmere is road-facing and lantern-
 - [ ] Playtest the complete loop at realistic pace before calling the first three towns release-ready.
 
 **Release decision:** these gates, not the presence of a hub image or a completed design document, determine whether each town is finished.
+
+
+## Phase 5 — Greyfen investigation guidance and town handoffs
+
+- [x] Make the town’s Current Route card follow the saved evidence stage before repeating the generic A Dry Crossing prompt.
+- [x] Add explicit handoffs for the Blackroot seal → boundary stone → Reedwatch note → crossing ledger → earlier weekly return → Mara’s evidence filing chain.
+- [x] Route cross-region stages through the existing Road Network when the player must return to Ashmere/Old Road or travel back to Greyfen.
+- [x] Give the final filed-evidence state a working Boundary Archive review action while keeping the missing closure order unresolved.
+- [ ] Continue the playable case beyond the missing-closure-order lead after the next clue and player-response beats are defined; do not reveal the Warden by assumption.
+- [ ] Complete the entire Greyfen service/resource loop and test save/reload at each handoff.
