@@ -17,7 +17,7 @@ The game is a classic-JavaScript browser runtime. It already has local landscape
 
 Presentation is layered across many CSS files. The consequential cascade includes title-screen-v135.css, title-rpg-menu-v136.css, immersive-world-v150.css, world-client-boot-v100.css, runway-art-pass-v151.css, progression-results-v152.css, `legend-ui-system-v160.css`, and `legend-world-shell-v170.css`, alongside earlier baseline styles. Phase 1 added a scoped proof stylesheet; Phase 2 adds `legend-ui-rollout-v180.css` after the shared system and world shell. Do not remove accumulated style layers until Phase 3 confirms the winning cascade and regression coverage.
 
-The relevant open changes observed during inspection were Greyfen Marsh Path PR #39 (draft; its latest Playwright run reported 150 passed, 1 failing Greyfen assertion, 1 skipped) and coordination-doc PR #41. This UI feature lives on its own branch and avoids their active files. The Greyfen PR must not be confused with what is playable on main.
+Phase 4 is being built on feat/expedition-phase4-greyfen-camp-v200. It brings existing Greyfen Marsh Path work and the Old Road campsite-report improvement onto the current Phase 2/3 baseline; nothing in that branch is claimed live until it is published.
 
 ## Screen-family inventory
 
@@ -31,8 +31,8 @@ The relevant open changes observed during inspection were Greyfen Marsh Path PR 
 | Opening / tutorial | road-opening-v140.js, opening-road-v140.css, creation modules | Existing: anonymous ??? voice, Dead Lantern arrival, Captain Oric, opening encounter/ACT, resume/abandon | Phase 2 aligns Dead Lantern frames and choices with the shared material language; regression covers ???, road responses, ACT combat, and 390px overflow. Story wording and mechanics unchanged |
 | Ashmere town hub | ashmere-hub-v099.js, navigation/catalog, ashmere-town-v100.css, immersive-world-v150.css | Existing: panorama, navigation, objective strip, traveler/health/resources and destination links | **Phase 1 proof** — make place art/objective focal, tighten navigation dock, make destinations feel like local places |
 | Ashmere service screen | ashmere-controller-v099.js, ashmere-view-v099.js, service modules | Existing: service art/header, content, actions and return-to-town control | Phase 1 Work Board proof is deployed; Phase 2 applies matching frame/focus rules to service cards, NPC choices, trading, gear, crafting, result notes, and region travel. Transaction/cost logic untouched; visual review of every transaction state remains |
-| Greyfen hub and services | Shared hub/catalog plus Greyfen art, crossing, job, market and forge modules | Existing: Greyfen-flavored hub and service routes; not equivalent to complete town release | Later rollout after Phase 1; retain lowland identity and region gating |
-| Greyfen Marsh Path | Proposed in PR #39, branch feat/greyfen-marsh-expedition-v160 | **Not available on main** while PR #39 remains unmerged | Do not style it as shipped in this pass; apply system after it lands |
+| Greyfen hub and services | Shared hub/catalog plus Greyfen art, crossing, job, market and forge modules | Existing: Greyfen-flavored hub and service routes; not equivalent to complete town release | Phase 4 wires the Marsh Path route and evidence handoff into this existing region. Full Greyfen quest/service acceptance remains broader than this expedition slice |
+| Greyfen Marsh Path | js/systems/road/greyfen-marsh-expedition-v160.js, js/content/roads/greyfen-marsh-v160.js, Phase 4 branch | Implemented on the Phase 4 branch; **not live on main yet** | Scene-first route, fork choices, detours, journal/map/report and waterline evidence loop; keep state isolated from Old Road. Not a claim that all three towns are complete |
 | Ironpass | js/data.js region entry and region gating; available=false | **Not playable on main** | Do not invent a hub/expedition. Inventory when implemented/reachable |
 | People / NPC dialogue | ashmere-people-v099.js, dialogue/story modules and shared town view | Existing: people list, individual speakers, conditional dialogue, choices and back navigation | Phase 2 applies shared service frames, clearer focus outlines, and restrained dialogue/choice surfaces via the existing town view. Individual NPC branches/canon unchanged; each branch still needs visual acceptance coverage |
 | Main quest / journal / evidence | town records, quest-log helpers, evidence/story modules and road journal | Partial/existing: quest objective, local archive/evidence, memories and road journal/map | Later rollout; distinguish observation from inference; preserve quest keys |
@@ -44,8 +44,8 @@ The relevant open changes observed during inspection were Greyfen Marsh Path PR 
 | Market / trade | ashmere-market-v099.js, shop data and town views | Existing: buy, sell, sell-all and transaction feedback | Later rollout; preserve price/count/failure/gold/inventory semantics |
 | Region travel / world map | region-controller-v100.js, region-view-v100.js, region-service-v100.js | Existing: unlock/travel state and locked/unavailable destinations | Phase 2 adds map-card, destination-state, wallet, and action framing through the shared region selectors; route gating remains unchanged. Ironpass remains unavailable; regional route-by-route visual review is pending |
 | Old Road departure briefing | Town departure module, tests/departure-briefing-v150.spec.js | Existing: health/loadout, supplies and route readiness | Later rollout; preserve costs and start/back actions |
-| Old Road live expedition | road-controller-v100.js, road-view-v100.js, road-expedition-screen-v100.js, road actions/discovery/results | Existing: scene, stages, route choice, hotspots, status, pressure/time, actions, optional detours | **Phase 1 proof** — extend scene-first framing, HUD, route/action hierarchy without touching business logic |
-| Old Road route/map | Route graph and expedition map modal, tests/road-graph-v160.spec.js | Existing: fork choices, discovered/visited state and optional detours | **Phase 1 proof** — align map frame and route states with shared material, do not change graph/discovery semantics |
+| Old Road live expedition | road-controller-v100.js, road-view-v100.js, road-expedition-screen-v100.js, road actions/discovery/results | Existing: scene, stages, route choice, hotspots, status, pressure/time, actions, optional detours | Phase 1 UI proof is deployed; Phase 4 adds the saved Road Poultice camp report to the field journal and return debrief without changing route or pressure behavior |
+| Old Road route/map | Route graph and expedition map modal, tests/road-graph-v160.spec.js | Existing: fork choices, discovered/visited state and optional detours | Phase 1 shared styling is deployed; Phase 4 keeps route state isolated while adding camp actions to the journal/report |
 | Field journal / discoveries | Expedition screen and journal state, tests/expedition-journal-v150.spec.js | Existing: discoveries, route notes and return summary | Later rollout for overlay/empty/long-content states |
 | Combat / intent / skills | road-combat-v100.js, road-combat-view-v100.js and combat tests | Existing: battle presentation, enemy intent, health, actions, skills, cooldowns, retreat/turn feedback | Phase 2 gives battle, intent, dialogue log, tactical commands, and focus states shared framing; automated flow checks opening ACT combat at 390px. Turn rules, cooldowns, enemy intent, rewards and control availability unchanged |
 | Battle victory / defeat | road-combat-results-view-v152.js and road settlement | Existing: result frame, reward/XP/level display and exit actions | Phase 2 frames the full result composition and reward section; a regression asserts rewards render and the continue callback still fires. Existing victory/defeat/reward tests remain the gameplay guard |
@@ -86,7 +86,7 @@ Current implementation is in [PR #47](https://github.com/TDTRIA/LEGEND-RPG/pull/
 - [ ] Inspect the final run's desktop/mobile evidence artifact. Automated viewport tests do not replace manual visual acceptance of every nested screen.
 - [ ] Continue one-by-one acceptance review for all NPC branches, transaction failures, item inspection/comparison, empty/error/loading states, and every dungeon room.
 
-Not part of Phase 2 shipping: Greyfen Marsh Path remains unmerged in PR #39; Ironpass remains unavailable. The shared selectors do not fabricate either feature.
+Phase 4 release state: Greyfen Marsh Path and the Road Poultice journal/report change are staged on the Phase 4 branch, not yet live. Ironpass remains unavailable.
 
 ## Phase 3 — consolidation
 - [ ] Capture before/after comparisons for all screen families.
@@ -96,3 +96,13 @@ Not part of Phase 2 shipping: Greyfen Marsh Path remains unmerged in PR #39; Iro
 - [ ] Run full regressions, deployed smoke and responsive/keyboard checks before declaring the full redesign done.
 
 **Status at this revision:** Phase 1 is deployed to production. Phase 2's implementation and added browser tests are in PR #47; final full-suite verification and artifact review remain release gates. The inventory explicitly leaves unfinished flows and unavailable regions marked as pending/unavailable rather than claiming the whole game's redesign complete.
+
+
+## Phase 4 — expedition and field-report implementation (in progress)
+
+- [x] Port the scene-first Greyfen Marsh Path feature onto the post-Phase-2/3 baseline without replacing index.html or dropping the UI v160/v170/v180 cascade.
+- [x] Add Greyfen's own saved expedition state, route/POI choices, optional detours, waterline gauge evidence and reporting path.
+- [x] Record Road Poultice crafting in the Old Road camp journal and expedition return report; preserve item costs and leave pressure/time unchanged.
+- [x] Add Greyfen expedition, mobile smoke and Road Poultice report regression coverage.
+- [ ] Validate the merged production build and added scene/camp flows after targeted fixes; the long full Playwright workflow is tracked but does not block continued implementation.
+- [ ] Continue beyond this slice: fully finish Greyfen's town quests/service states and complete the first three towns; Greyfen Path alone does not satisfy that wider goal.

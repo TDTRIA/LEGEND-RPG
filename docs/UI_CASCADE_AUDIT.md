@@ -1,6 +1,6 @@
 # LEGEND UI Phase 3 — CSS Cascade Audit
 
-**Baseline:** `main` at `5465efb09842dc9ece57dabe32ef8e736db9c94c` (2026-10-25), after Phase 2 was merged and published.  
+**Baseline:** main at 48646f3654fbafd81b780232ceece3cb44e81efa (2026-10-25), after Phase 2 and the Phase 3 audit landed. Phase 4 adds the proposed Greyfen stylesheet on its feature branch.  
 **Branch:** `feat/ui-phase3-cascade-audit-v190`  
 **Purpose:** document the active stylesheet order and repeated selector ownership before consolidation. This audit is intentionally non-destructive: a repeated selector is not, by itself, proof that a file or rule is obsolete.
 
@@ -8,7 +8,7 @@
 
 LEGEND’s presentation evolved in layers: compatibility styles, location/service themes, title treatments, world/expedition layers, art polish, progression results, the shared UI system, and the persistent world shell. Several of the later rules deliberately win over earlier rules. Removing one because its name appears more than once can change a screen even when the rule looks redundant in isolation.
 
-Phase 1 added `css/legend-ui-system-v160.css` after the older theme stack; the persistent shell adds `css/legend-world-shell-v170.css` after that. Phase 2 PR #47 is merged: `css/legend-ui-rollout-v180.css` now follows both in production. Phase 3 audits this actual 37-sheet stack and only consolidates styles when regression evidence shows which rules are safely redundant.
+Phase 1 added `css/legend-ui-system-v160.css` after the older theme stack; the persistent shell adds `css/legend-world-shell-v170.css` after that. Phase 2 PR #47 is merged: `css/legend-ui-rollout-v180.css` now follows both in production. Phase 3 audited the 37-sheet production stack. Phase 4 adds css/greyfen-marsh-v160.css before the shared design layers, producing a proposed 38-sheet branch stack; this count is asserted by the Phase 4 cascade-contract test.
 
 ## Live stylesheet order on the audited baseline
 
@@ -50,9 +50,10 @@ The positions below come directly from `index.html`, not a guessed dependency or
 | 32 | `css/world-client-boot-v100.css` | Boot/loading layer. |
 | 33 | `css/runway-art-pass-v151.css` | Art sizing/placement fixes. |
 | 34 | `css/progression-results-v152.css` | Growth/results presentation. |
-| 35 | `css/legend-ui-system-v160.css` | Phase 1 shared palette/frame/accessibility layer; intentionally last among the older themed layers. |
-| 36 | `css/legend-world-shell-v170.css` | Persistent contextual world shell. |
-| 37 | `css/legend-ui-rollout-v180.css` | Phase 2 extension for creation/opening, inventory, services, region travel, combat, results and dungeon. Must remain after v160 and v170. |
+| 35 | `css/greyfen-marsh-v160.css` | Phase 4 Greyfen Marsh Path scene/route styles. Loaded before the shared design-system layers. |
+| 36 | `css/legend-ui-system-v160.css` | Phase 1 shared palette/frame/accessibility layer. |
+| 37 | `css/legend-world-shell-v170.css` | Persistent contextual world shell. |
+| 38 | `css/legend-ui-rollout-v180.css` | Phase 2 extension for creation/opening, inventory, services, region travel, combat, results and dungeon. Must remain after v160 and v170. |
 
 ## High-confidence overlap hotspots to review
 
