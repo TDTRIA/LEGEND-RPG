@@ -102,9 +102,19 @@ test.describe('LEGEND UI rollout v180 — Phase 2 screen families', () => {
     });
     await expect(page.locator('.ash100-town')).toBeVisible();
 
+    const savedPackBefore = await page.evaluate(() => {
+      const player = window.LegendRuntimeV120.loadPlayer();
+      return { name: player.username, gold: player.gold, hp: player.hp, inventory: { ...player.inventory } };
+    });
     await page.evaluate(() => window.LegendInventoryV080.open());
     await expect(page.locator('.v080-pack')).toBeVisible();
+    await expect(page.locator('.v080-pack h2')).toHaveText(savedPackBefore.name + "'s Pack");
     await expect(page.locator('.v080-pack')).toHaveCSS('border-radius', '3px');
+    const savedPackAfter = await page.evaluate(() => {
+      const player = window.LegendRuntimeV120.loadPlayer();
+      return { name: player.username, gold: player.gold, hp: player.hp, inventory: { ...player.inventory } };
+    });
+    expect(savedPackAfter).toEqual(savedPackBefore);
     await expect(page.locator('.v080-item-card').first()).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await page.locator('#v080ClosePack').click();
