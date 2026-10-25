@@ -81,11 +81,11 @@ test.describe('Greyfen story guidance v0.24.1', () => {
   });
 
   test('the live Greyfen hub sends a traveler to the right region for the next evidence step', async ({ page }) => {
-    await openGame(page);
+    await startFreshCharacter(page, 'GreyfenRouteGuide');
     const result = await page.evaluate(() => {
       const runtime = window.LegendRuntimeV120;
       const player = runtime.loadPlayer();
-      if (!player) throw new Error('Expected the title flow to create a default traveler for this browser context.');
+      if (!player) throw new Error('The traveler should exist after character creation.');
       player.currentRegion = 'Greyfen';
       player.discoveredRegions = ['Ashmere', 'Greyfen'];
       player.flags = player.flags || {};
