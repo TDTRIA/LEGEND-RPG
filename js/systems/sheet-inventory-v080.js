@@ -6,31 +6,11 @@
   const OVERLAY_ID = 'legendPackV080';
 
   function load(){
-    // Prefer the current save service so this legacy-compatible pack view reads
-    // the same traveler as the v0.9x+ game. Fall back to archived keys for old
-    // builds and stand-alone recovery screens.
-    try {
-      const current = window.LegendStorage?.loadPlayer?.();
-      if (current) return current;
-    } catch (error) {
-      console.warn('[LEGEND pack] Current traveler load failed; checking archived saves.', error);
-    }
     const raw = localStorage.getItem(SAVE_KEY) || OLD_KEYS.map(k => localStorage.getItem(k)).find(Boolean);
     if(!raw) return null;
     try{return JSON.parse(raw)}catch{return null}
   }
-  function save(p){
-    if (!p) return;
-    try {
-      if (typeof window.LegendStorage?.savePlayer === 'function') {
-        window.LegendStorage.savePlayer(p);
-        return;
-      }
-    } catch (error) {
-      console.warn('[LEGEND pack] Current traveler save failed; preserving the archived pack save instead.', error);
-    }
-    localStorage.setItem(SAVE_KEY, JSON.stringify(p));
-  }
+  function save(p){ localStorage.setItem(SAVE_KEY, JSON.stringify(p)); }
   function esc(s){return String(s == null ? '' : s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
   function D(){ return window.LEGEND_DATA || {}; }
   function itemNames(){ return D().itemNames || {}; }

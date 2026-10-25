@@ -88,7 +88,7 @@ test.describe('LEGEND UI rollout v180 — Phase 2 screen families', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('the live pack overlay and Bell Cellar room use Phase 2 frames without changing inventory or retreat flow', async ({ page }) => {
+  test('the live inventory modal and Bell Cellar room use Phase 2 frames without mutating the saved traveler', async ({ page }) => {
     await createTravelerToLantern(page, 'InventoryVaultQA');
     await page.evaluate(() => {
       const player = window.LegendRuntimeV120.loadPlayer();
@@ -97,28 +97,45 @@ test.describe('LEGEND UI rollout v180 — Phase 2 screen families', () => {
       player.flags.firstRoadReturnSeen = true;
       player.currentRegion = 'Ashmere';
       player.town = 'Ashmere';
+      player.inventory = player.inventory || {};
+      player.inventory.roadHerb = 2;
+      player.inventory.clothScrap = 1;
       window.LegendRuntimeV120.savePlayer(player);
       window.LegendAshmereV099.renderAshmere();
     });
     await expect(page.locator('.ash100-town')).toBeVisible();
 
-    const savedPackBefore = await page.evaluate(() => {
-      const player = window.LegendRuntimeV120.loadPlayer();
-      return { name: player.username, gold: player.gold, hp: player.hp, inventory: { ...player.inventory } };
+    const savedBefore = await page.evaluate(() => {
+      const player = window.LegendStorage.loadPlayer();
+      return {
+        name: player.username,
+        gold: player.gold,
+        hp: player.hp,
+        inventory: { ...player.inventory }
+      };
     });
-    await page.evaluate(() => window.LegendInventoryV080.open());
-    await expect(page.locator('.v080-pack')).toBeVisible();
-    await expect(page.locator('.v080-pack h2')).toHaveText(savedPackBefore.name + "'s Pack");
-    await expect(page.locator('.v080-pack')).toHaveCSS('border-radius', '3px');
-    const savedPackAfter = await page.evaluate(() => {
-      const player = window.LegendRuntimeV120.loadPlayer();
-      return { name: player.username, gold: player.gold, hp: player.hp, inventory: { ...player.inventory } };
-    });
-    expect(savedPackAfter).toEqual(savedPackBefore);
-    await expect(page.locator('.v080-item-card').first()).toBeVisible();
+    await page.locator('.lws-bottom-bar [data-world-action="inventory"]').click();
+    const inventoryDialog = page.getByRole('dialog', { name: 'Inventory' });
+    await expect(inventoryDialog).toBeVisible();
+    await expect(inventoryDialog).toContainText('Road Herb');
+    await expect(inventoryDialog).toContainText('Carried: 2');
+    await expect(inventoryDialog).toContainText('Cloth Scrap');
+    await expect(inventoryDialog).toHaveCSS('border-radius', '3px');
+    await expect(inventoryDialog.locator('.lws-inventory-card').first()).toHaveCSS('border-radius', '3px');
     await expectNoHorizontalOverflow(page);
-    await page.locator('#v080ClosePack').click();
-    await expect(page.locator('.v080-pack')).toHaveCount(0);
+
+    const savedDuring = await page.evaluate(() => {
+      const player = window.LegendStorage.loadPlayer();
+      return {
+        name: player.username,
+        gold: player.gold,
+        hp: player.hp,
+        inventory: { ...player.inventory }
+      };
+    });
+    expect(savedDuring).toEqual(savedBefore);
+    await inventoryDialog.getByRole('button', { name: /Return to the world/i }).click();
+    await expect(inventoryDialog).toHaveCount(0);
 
     await page.getByRole('button', { name: /The Bell Cellar/i }).click();
     await expect(page.locator('.bell-vault-v100')).toBeVisible();

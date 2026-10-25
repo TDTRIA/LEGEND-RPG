@@ -48,45 +48,7 @@
   background: linear-gradient(155deg,rgba(20,22,34,.98),rgba(5,7,12,.99)) !important;
 }
 
-/* Character profile and pack: durable record surfaces, legible item tiles. */
-#root .v080-sheet .v080-hero,
-#root .v080-sheet .v080-card,
-#root .v080-sheet .v080-meter-card,
-#root .v080-sheet .v080-stat,
-#root .v080-sheet .v080-quest-main,
-#root .v080-sheet .v080-log-entry,
-.v080-pack,
-.v080-pack-head,
-.v080-pack-summary > div,
-.v080-item-card,
-.v080-chip,
-.v080-count,
-.v080-icon {
-  border-radius: var(--legend-ui-frame-radius) !important;
-}
-#root .v080-sheet .v080-hero,
-#root .v080-sheet .v080-card,
-.v080-pack {
-  border-color: var(--legend-ui-edge-soft) !important;
-  background: var(--legend-ui-panel-fill) !important;
-  color: var(--legend-ui-parchment) !important;
-  box-shadow: 0 18px 48px rgba(0,0,0,.32), inset 0 1px rgba(255,246,211,.04) !important;
-}
-#root .v080-sheet .v080-kicker,
-#root .v080-sheet .v080-section-title h4,
-#root .v080-sheet .v080-stat > span,
-#root .v080-sheet .v080-chip,
-.v080-pack .v080-kicker { color: var(--legend-ui-amber) !important; }
-#root .v080-sheet .v080-stat,
-#root .v080-sheet .v080-log-entry,
-.v080-pack .v080-item-card,
-.v080-pack .v080-pack-summary > div {
-  border-color: rgba(215,194,139,.20) !important;
-  background: rgba(0,0,0,.24) !important;
-}
-#root .v080-sheet button:focus-visible,
-.v080-pack button:focus-visible { outline: 2px solid var(--legend-ui-focus) !important; outline-offset: 3px !important; }
-
+/* The active save-backed inventory is rendered by the persistent world shell. */
 /* Story, settings and account: consistent edges without replacing their layouts. */
 #root .ash099-screen .ash099-lines,
 #root .ash099-screen .ash099-note,
@@ -409,4 +371,59 @@
 #root .v152-combat-results .v152-results-frame {
   position: relative;
   z-index: 1;
+}
+
+
+/* The real save-backed inventory modal lives in the world-shell overlay root,
+   outside #root. Match its frame and item tiles without replacing native actions. */
+#legend-world-shell-modal-root .lws-modal {
+  border-color: var(--legend-ui-edge-strong) !important;
+  border-radius: var(--legend-ui-frame-radius) !important;
+  background: var(--legend-ui-panel-fill) !important;
+  box-shadow: 0 30px 86px rgba(0,0,0,.66), inset 0 0 0 3px rgba(0,0,0,.26) !important;
+}
+#legend-world-shell-modal-root .lws-modal::before {
+  border-color: var(--legend-ui-edge-soft) !important;
+  border-radius: 2px !important;
+}
+#legend-world-shell-modal-root .lws-modal-header,
+#legend-world-shell-modal-root .lws-modal-footer {
+  border-color: var(--legend-ui-edge-soft) !important;
+}
+#legend-world-shell-modal-root .lws-inventory-card,
+#legend-world-shell-modal-root .lws-item-sigil,
+#legend-world-shell-modal-root .lws-empty-state {
+  border-radius: var(--legend-ui-frame-radius) !important;
+}
+#legend-world-shell-modal-root .lws-inventory-card {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: rgba(0,0,0,.24) !important;
+}
+#legend-world-shell-modal-root .lws-item-sigil {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: rgba(231,201,130,.07) !important;
+}
+#legend-world-shell-modal-root .lws-modal-footer .lws-btn:focus-visible,
+#legend-world-shell-modal-root .lws-close-btn:focus-visible {
+  outline: 2px solid var(--legend-ui-focus) !important;
+  outline-offset: 3px !important;
+}
+@media (max-width: 560px) {
+  #legend-world-shell-modal-root .lws-modal {
+    width: 100% !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100vh - 24px) !important;
+  }
+  #legend-world-shell-modal-root .lws-inventory-grid {
+    grid-template-columns: minmax(0,1fr) !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #legend-world-shell-modal-root .lws-modal *,
+  #legend-world-shell-modal-root .lws-modal *::before,
+  #legend-world-shell-modal-root .lws-modal *::after {
+    transition-duration: .001ms !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
