@@ -67,4 +67,107 @@ test.describe('LEGEND UI rollout v180 — Phase 2 screen families', () => {
     await expect(page.locator('.rpg-command-grid')).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
+
+  test('settings and profile/account surfaces retain their real navigation and shared frame at 390px', async ({ page }) => {
+    await openTitle(page);
+
+    await page.locator('#settings').click();
+    await expect(page.locator('.settings09x')).toBeVisible();
+    await expect(page.locator('.settings09x-btn').first()).toHaveCSS('border-radius', '3px');
+    await expect(page.locator('[data-setting="reducedMotion"]')).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+
+    await page.locator('#backTitle').click();
+    await expect(page.locator('.v120-title')).toBeVisible();
+
+    await page.locator('#account').click();
+    await expect(page.locator('.account09x')).toBeVisible();
+    await expect(page.locator('.account09x-panel').first()).toHaveCSS('border-radius', '3px');
+    await expect(page.locator('.account09x-btn').first()).toHaveCSS('border-radius', '3px');
+    await expect(page.getByRole('heading', { name: 'Profile', exact: true })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test('the live pack overlay and Bell Cellar room use Phase 2 frames without changing inventory or retreat flow', async ({ page }) => {
+    await createTravelerToLantern(page, 'InventoryVaultQA');
+    await page.evaluate(() => {
+      const player = window.LegendRuntimeV120.loadPlayer();
+      window.LegendRoadOpeningV140.complete(player, 'abandoned');
+      player.flags = player.flags || {};
+      player.flags.firstRoadReturnSeen = true;
+      player.currentRegion = 'Ashmere';
+      player.town = 'Ashmere';
+      window.LegendRuntimeV120.savePlayer(player);
+      window.LegendAshmereV099.renderAshmere();
+    });
+    await expect(page.locator('.ash100-town')).toBeVisible();
+
+    await page.evaluate(() => window.LegendInventoryV080.open());
+    await expect(page.locator('.v080-pack')).toBeVisible();
+    await expect(page.locator('.v080-pack')).toHaveCSS('border-radius', '3px');
+    await expect(page.locator('.v080-item-card').first()).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await page.locator('#v080ClosePack').click();
+    await expect(page.locator('.v080-pack')).toHaveCount(0);
+
+    await page.getByRole('button', { name: /The Bell Cellar/i }).click();
+    await expect(page.locator('.bell-vault-v100')).toBeVisible();
+    await expect(page.locator('.bell-vault-banner')).toHaveCSS('border-radius', '3px');
+    await page.locator('#vaultBegin').click();
+    await expect(page.locator('.bell-vault-room-heading')).toContainText('ROOM 1 / 4');
+    await expect(page.locator('.bell-vault-choice').first()).toHaveCSS('border-radius', '3px');
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test('combat results and body-mounted growth overlay use shared frames while preserving native actions', async ({ page }) => {
+    await openTitle(page);
+    await page.evaluate(() => {
+      window.__phaseTwoResultCounts = { continued: 0, returned: 0 };
+      window.__phaseTwoResultsView = window.LegendRoadCombatResultsViewV152.create({
+        renderShell: html => { document.getElementById('root').innerHTML = html; },
+        getAssets: () => window.LegendAssetsV090,
+        escapeHtml: value => String(value ?? '').replace(/[&<>'"]/g, ch => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        }[ch])),
+        onContinue: () => { window.__phaseTwoResultCounts.continued += 1; },
+        onReturnToTown: () => { window.__phaseTwoResultCounts.returned += 1; }
+      });
+      window.__phaseTwoResultsView.render({
+        result: 'victory',
+        player: { username: 'Results QA', className: 'Ranger', level: 2, hp: 35, maxHp: 50 },
+        enemy: { name: 'Road Goblin' },
+        progress: { gained: 29, levels: 0, level: 2 },
+        rewardName: 'Furs',
+        goldGained: 8,
+        routeStage: 2,
+        primaryTitle: 'Continue QA route',
+        secondaryTitle: 'Return to town'
+      });
+    });
+
+    await expect(page.locator('.v152-combat-results')).toBeVisible();
+    await expect(page.locator('.v152-combat-results')).toHaveCSS('border-radius', '3px');
+    await expect(page.locator('.v152-results-rewards')).toHaveCSS('border-radius', '3px');
+    await expect(page.getByRole('button', { name: /Continue QA route/i })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await page.locator('#v152CombatContinue').click();
+    await expect.poll(() => page.evaluate(() => window.__phaseTwoResultCounts.continued)).toBe(1);
+
+    await page.evaluate(() => {
+      const player = {
+        username: 'Growth QA', className: 'Ranger', level: 2,
+        hp: 35, maxHp: 50, pendingStatPointsV152: 2,
+        attributesV152: { might: 0, agility: 0, arcana: 0, endurance: 0, insight: 0, fortune: 0 },
+        inventory: { food: 1, potion: 1 }, flags: {}, stats: {}
+      };
+      window.__phaseTwoGrowthPlayer = player;
+      window.LegendLevelUpV152.open(player, { levels: 1 });
+    });
+    await expect(page.getByRole('dialog', { name: 'Level 2' })).toBeVisible();
+    await expect(page.locator('.v152-levelup-overlay .v152-levelup-panel')).toHaveCSS('border-radius', '3px');
+    await expect(page.locator('.v152-levelup-overlay .v152-growth-card').first()).toHaveCSS('border-radius', '3px');
+    await expectNoHorizontalOverflow(page);
+    await page.locator('#legendLevelUpOverlay').evaluate(element => element.remove());
+  });
+
 });

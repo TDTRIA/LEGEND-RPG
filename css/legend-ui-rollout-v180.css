@@ -244,3 +244,156 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+/* Full Phase 2 coverage: region routing and town transactions. These surfaces
+   retain their native layouts, costs and controls, but use the same frontier
+   materials, focus language and crisp frame as entry and exploration. */
+#root .reg100-head,
+#root .reg100-panel,
+#root .reg100-card,
+#root .reg100-card-scene,
+#root .reg100-wallet > div,
+#root .reg100-mark,
+#root .reg100-btn,
+#root .reg100-state,
+#root .reg100-note,
+#root .ash099-screen,
+#root .ash099-card,
+#root .ash099-btn,
+#root .ash099-service-card,
+#root .ash099-job-choice,
+#root .ash099-market-item,
+#root .ash099-gear-item,
+#root .ash099-craft-card,
+#root .ash099-npc-card,
+#root .ash099-topnav .ash099-footer-item,
+#root .ash099-job-result,
+#root .ash099-result,
+#root .ash099-craft-feedback {
+  border-radius: var(--legend-ui-frame-radius) !important;
+}
+#root .reg100-head,
+#root .reg100-panel {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: var(--legend-ui-panel-fill) !important;
+  box-shadow: 0 18px 48px rgba(0,0,0,.34), inset 0 1px rgba(255,246,211,.04) !important;
+}
+#root .reg100-card {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: linear-gradient(145deg,rgba(22,32,23,.97),rgba(7,12,8,.99)) !important;
+}
+#root .reg100-card.current {
+  border-color: var(--legend-ui-edge-strong) !important;
+  background: linear-gradient(145deg,rgba(54,49,32,.95),rgba(8,14,9,.99)) !important;
+  box-shadow: inset 0 0 0 1px rgba(231,201,130,.10) !important;
+}
+#root .reg100-card-scene {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: #080e09 !important;
+}
+#root .reg100-mark {
+  border: 1px solid var(--legend-ui-edge-soft) !important;
+  background: rgba(231,201,130,.08) !important;
+  color: var(--legend-ui-amber) !important;
+}
+#root .reg100-wallet > div,
+#root .reg100-state,
+#root .reg100-note {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: rgba(0,0,0,.24) !important;
+}
+#root .reg100-btn {
+  border-color: var(--legend-ui-edge-strong) !important;
+  background: var(--legend-ui-control-fill) !important;
+  color: var(--legend-ui-parchment) !important;
+}
+#root .reg100-btn:focus-visible,
+#root .ash099-btn:focus-visible,
+#root .ash099-service-card:focus-visible,
+#root .ash099-job-choice:focus-visible,
+#root .ash099-market-item:focus-visible,
+#root .ash099-gear-item:focus-visible,
+#root .ash099-topnav .ash099-footer-item:focus-visible {
+  outline: 2px solid var(--legend-ui-focus) !important;
+  outline-offset: 3px !important;
+}
+#root .ash099-screen {
+  border-color: var(--legend-ui-edge-strong) !important;
+  background: linear-gradient(145deg,rgba(17,25,18,.98),rgba(5,10,6,.99)) !important;
+  box-shadow: 0 22px 62px rgba(0,0,0,.46), inset 0 0 0 3px rgba(0,0,0,.20) !important;
+}
+#root .ash099-screen .ash099-card,
+#root .ash099-screen .ash099-service-card,
+#root .ash099-screen .ash099-job-choice,
+#root .ash099-screen .ash099-market-item,
+#root .ash099-screen .ash099-gear-item,
+#root .ash099-screen .ash099-craft-card,
+#root .ash099-screen .ash099-npc-card {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background-color: rgba(0,0,0,.21) !important;
+}
+#root .ash099-screen .ash099-btn.primary,
+#root .ash099-screen .ash099-service-card.primary {
+  border-color: var(--legend-ui-edge-strong) !important;
+}
+#root .ash099-screen .ash099-topnav .ash099-footer-item.active {
+  border-color: var(--legend-ui-edge-strong) !important;
+  background: var(--legend-ui-control-fill) !important;
+}
+
+/* The growth choice sheet is appended to body by design, not inside #root.
+   Target its real host so Phase 2 framing applies to the actual modal. */
+.v152-levelup-overlay .v152-levelup-panel {
+  border: 1px solid var(--legend-ui-edge-strong) !important;
+  border-radius: var(--legend-ui-frame-radius) !important;
+  background: var(--legend-ui-panel-fill) !important;
+  box-shadow: 0 30px 90px rgba(0,0,0,.66), inset 0 0 0 3px rgba(0,0,0,.24) !important;
+}
+.v152-levelup-overlay .v152-growth-pointbar,
+.v152-levelup-overlay .v152-growth-card,
+.v152-levelup-overlay .v152-growth-confirm {
+  border-radius: var(--legend-ui-frame-radius) !important;
+}
+.v152-levelup-overlay .v152-growth-pointbar,
+.v152-levelup-overlay .v152-growth-card {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: var(--legend-ui-panel-fill) !important;
+}
+.v152-levelup-overlay .v152-growth-card.has-growth {
+  border-color: var(--legend-ui-edge-strong) !important;
+}
+.v152-levelup-overlay .v152-growth-confirm {
+  border-color: var(--legend-ui-edge-strong) !important;
+}
+.v152-levelup-overlay button:focus-visible {
+  outline: 2px solid var(--legend-ui-focus) !important;
+  outline-offset: 3px !important;
+}
+.v152-levelup-overlay *,
+.v152-levelup-overlay *::before,
+.v152-levelup-overlay *::after {
+  box-sizing: border-box;
+}
+@media (max-width: 560px) {
+  #root .reg100-wallet { grid-template-columns: repeat(3,minmax(0,1fr)) !important; }
+  #root .reg100-card { min-width: 0 !important; }
+  #root .ash099-screen .ash099-card,
+  #root .ash099-screen .ash099-service-card,
+  #root .ash099-screen .ash099-job-choice,
+  #root .ash099-screen .ash099-market-item,
+  #root .ash099-screen .ash099-gear-item,
+  #root .ash099-screen .ash099-craft-card { min-width: 0 !important; }
+  .v152-levelup-overlay .v152-levelup-panel { max-width: calc(100vw - 16px) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v152-levelup-overlay *,
+  .v152-levelup-overlay *::before,
+  .v152-levelup-overlay *::after,
+  #root .reg100-card,
+  #root .reg100-btn,
+  #root .ash099-screen * {
+    transition-duration: .001ms !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
