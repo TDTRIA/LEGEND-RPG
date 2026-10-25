@@ -397,3 +397,16 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Frame the entire victory/defeat composition, not only its inner reward cards. */
+#root .v152-combat-results {
+  border: 1px solid var(--legend-ui-edge-strong) !important;
+  border-radius: var(--legend-ui-frame-radius) !important;
+  background: linear-gradient(145deg,rgba(16,25,18,.98),rgba(5,10,6,.99)) !important;
+  box-shadow: 0 26px 76px rgba(0,0,0,.54), inset 0 0 0 3px rgba(0,0,0,.24) !important;
+}
+#root .v152-combat-results .v152-results-frame {
+  position: relative;
+  z-index: 1;
+}
