@@ -89,9 +89,11 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
       };
     });
     expect(routeState).toEqual({ route: 'reeds', stage: 1, pressure: 12, food: 1, herbs: 1 });
-    await expect(page.locator('#gfm160VisitFerry')).toContainText('Fallen Ferry');
-    await expect(page.locator('#gfm160VisitFerry')).toContainText('1 hour');
-    await expect(page.locator('#gfm160VisitFerry')).toContainText('Cloth Scrap');
+    const ferryDetour = page.locator('.gfm160-optional').filter({ has: page.locator('#gfm160VisitFerry') });
+    await expect(ferryDetour).toContainText('Fallen Ferry');
+    await expect(ferryDetour).toContainText('1 hour and +5 Road Pressure');
+    await expect(ferryDetour).toContainText('1 Cloth Scrap');
+    await expect(page.locator('#gfm160VisitFerry')).toHaveText('Inspect the Fallen Ferry');
 
     await page.locator('#gfm160VisitFerry').click();
     await expect(page.locator('#gfm160ReturnFromFerry')).toBeVisible();
