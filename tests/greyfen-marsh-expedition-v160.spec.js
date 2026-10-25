@@ -427,6 +427,7 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
     await page.locator('#gfm160Complete').click();
     await expect(page.getByRole('main', { name: 'Marsh expedition results' })).toBeVisible();
     await expect(page.locator('.gfm160-report-findings')).toContainText('Dry Peat Brick salvaged at the Silted Storehouse');
+    await expect(page.locator('.gfm160-report-findings')).toContainText('Optional salvage: 1 Dry Peat Brick from the Silted Storehouse');
     const final = await page.evaluate(() => {
       const pl = window.LegendRuntimeV120.loadPlayer();
       const s = pl.flags.greyfenMarshExpeditionV160;
@@ -434,14 +435,16 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
         complete: s.lastResultV160?.complete,
         gauge: s.lastResultV160?.gaugeInspected,
         peatBrick: Number(pl.inventory.peatBrick || 0),
-        reportIncludesStorehouse: (s.lastResultV160?.discoveries || []).includes('Dry Peat Brick salvaged at the Silted Storehouse')
+        reportIncludesStorehouse: (s.lastResultV160?.discoveries || []).includes('Dry Peat Brick salvaged at the Silted Storehouse'),
+        optionalSalvage: s.lastResultV160?.optionalSalvage
       };
     });
     expect(final).toMatchObject({
       complete: true,
       gauge: true,
       peatBrick: before.peatBrick + 1,
-      reportIncludesStorehouse: true
+      reportIncludesStorehouse: true,
+      optionalSalvage: '1 Dry Peat Brick from the Silted Storehouse'
     });
   });
 
