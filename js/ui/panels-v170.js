@@ -113,7 +113,7 @@
         archive: 'Read the journal',
         routes: 'View local routes',
         quests: 'Review contracts',
-        road: 'Set out on the Old Road',
+        road: 'Set out on the road',
         regions: 'View regional map',
         profile: 'Review traveler records'
       })[view] || 'Open destination';
