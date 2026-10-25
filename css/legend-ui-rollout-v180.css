@@ -1,0 +1,423 @@
+/* LEGEND UI rollout v180 — Phase 2.
+   Shared presentation for the remaining reachable screen families. Does not alter mechanics or copy. */
+:root {
+  --legend-ui-rollout-v180-active: 1;
+  --legend-ui-frame-radius: 3px;
+  --legend-ui-panel-fill: linear-gradient(145deg, rgba(23,33,24,.98), rgba(6,11,7,.99));
+  --legend-ui-control-fill: linear-gradient(105deg, rgba(37,48,34,.98), rgba(8,14,9,.99));
+  --legend-ui-edge-strong: rgba(231,201,130,.58);
+  --legend-ui-edge-soft: rgba(215,194,139,.24);
+}
+
+/* Traveler creation and the Dead Lantern use one crafted frame language while
+   preserving each scene's artwork, Veil/Oric dialogue and choice behavior. */
+#root .v140-creation .v094-beginning-card,
+#root .v140-creation .v140-dialogue-box,
+#root .opening-road-v140-card,
+#root .opening-road-v140-scene-note,
+#root .opening-road-v140-guide,
+#root .v140-creation .v094-choice,
+#root .v140-creation .v094-field,
+#root .v140-creation .v094-field input,
+#root .v140-creation .v094-summary > div,
+#root .v140-creation .v094-confirm-benefit,
+#root .v140-creation .v094-btn,
+#root .opening-road-v140-choice,
+#root .opening-road-v140-primary,
+#root .opening-road-v140-secondary {
+  border-radius: var(--legend-ui-frame-radius) !important;
+}
+#root .v140-creation .v094-beginning-card,
+#root .opening-road-v140-card {
+  border-color: var(--legend-ui-edge-strong) !important;
+  background: var(--legend-ui-panel-fill) !important;
+  box-shadow: 0 24px 72px rgba(0,0,0,.58), inset 0 0 0 4px rgba(2,6,4,.72), inset 0 0 0 5px rgba(231,201,130,.11) !important;
+}
+#root .v140-creation .v094-choice,
+#root .opening-road-v140-choice {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: var(--legend-ui-control-fill) !important;
+}
+#root .v140-creation .v094-choice:hover,
+#root .v140-creation .v094-choice:focus-visible,
+#root .v140-creation .v094-choice.is-selected,
+#root .opening-road-v140-choice:hover,
+#root .opening-road-v140-choice:focus-visible { border-color: var(--legend-ui-edge-strong) !important; }
+#root .v140-creation .v140-dialogue-box {
+  border-color: rgba(177,166,218,.42) !important;
+  background: linear-gradient(155deg,rgba(20,22,34,.98),rgba(5,7,12,.99)) !important;
+}
+
+/* The active save-backed inventory is rendered by the persistent world shell. */
+/* Story, settings and account: consistent edges without replacing their layouts. */
+#root .ash099-screen .ash099-lines,
+#root .ash099-screen .ash099-note,
+#root .ash099-screen .ash099-craft-feedback,
+#root .ash099-screen .ash099-job-result,
+#root .ash099-screen .ash099-result,
+#root .settings09x-hero,
+#root .settings09x-toggle,
+#root .settings09x-actions,
+#root .settings09x-note,
+#root .settings09x-btn,
+#root .account09x-hero,
+#root .account09x-panel,
+#root .account09x-slot,
+#root .account09x-note,
+#root .account09x-btn,
+#root .account09x-field input {
+  border-radius: var(--legend-ui-frame-radius) !important;
+}
+#root .settings09x-hero,
+#root .settings09x-toggle,
+#root .settings09x-actions,
+#root .settings09x-note,
+#root .account09x-hero,
+#root .account09x-panel,
+#root .account09x-slot {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background-color: rgba(7,12,8,.88) !important;
+}
+#root .settings09x-hero h1,
+#root .settings09x-toggle strong,
+#root .account09x-hero h1,
+#root .account09x-panel h2,
+#root .account09x-panel h3 { color: var(--legend-ui-parchment) !important; }
+#root .settings09x-btn,
+#root .account09x-btn {
+  border-color: var(--legend-ui-edge-strong) !important;
+  background: var(--legend-ui-control-fill) !important;
+  color: var(--legend-ui-parchment) !important;
+}
+#root .settings09x-btn.primary,
+#root .account09x-btn.primary { background: linear-gradient(110deg,#dfc47e,#ad8540) !important; color: #1c1b12 !important; }
+#root .settings09x-btn:focus-visible,
+#root .account09x-btn:focus-visible,
+#root .account09x-auth-tab:focus-visible { outline: 2px solid var(--legend-ui-focus) !important; outline-offset: 3px !important; }
+
+/* Tactical combat keeps enemy intent and action availability unchanged. */
+#root .rpg-battle {
+  border: 1px solid var(--legend-ui-edge-strong) !important;
+  border-radius: var(--legend-ui-frame-radius) !important;
+  background: var(--legend-ui-panel-fill) !important;
+  box-shadow: 0 26px 78px rgba(0,0,0,.56), inset 0 0 0 3px rgba(1,5,3,.46) !important;
+}
+#root .rpg-foe-nameplate,
+#root .rpg-combat-status,
+#root .rpg-dialogue,
+#root .rpg-enemy-tell,
+#root .rpg-command,
+#root .rpg-utility-command { border-radius: var(--legend-ui-frame-radius) !important; border-color: var(--legend-ui-edge-soft) !important; }
+#root .rpg-dialogue { background: linear-gradient(100deg,rgba(27,37,27,.98),rgba(6,11,7,.98)) !important; }
+#root .rpg-enemy-tell { background: linear-gradient(100deg,rgba(61,38,28,.72),rgba(12,13,9,.98)) !important; }
+#root .rpg-command:not(:disabled):hover,
+#root .rpg-utility-command:not(:disabled):hover { border-color: var(--legend-ui-edge-strong) !important; }
+#root .rpg-command:focus-visible,
+#root .rpg-utility-command:focus-visible,
+#root .rpg-sound-toggle:focus-visible { outline: 2px solid var(--legend-ui-focus) !important; outline-offset: 3px !important; }
+
+/* Bell Cellar room decisions, loadout and retreat controls share the same
+   frame. Scene art and room order remain owned by the existing dungeon system. */
+#root .bell-vault-v100 {
+  border-color: var(--legend-ui-edge-strong) !important;
+  border-radius: var(--legend-ui-frame-radius) !important;
+  background: var(--legend-ui-panel-fill) !important;
+  box-shadow: 0 25px 72px rgba(0,0,0,.46), inset 0 0 0 3px rgba(0,0,0,.24) !important;
+}
+#root .bell-vault-banner,
+#root .bell-vault-room-card,
+#root .bell-vault-choice,
+#root .bell-vault-clue,
+#root .bell-vault-after-note,
+#root .bell-vault-loadout > div,
+#root .bell-vault-footer > div,
+#root .bell-vault-secondary { border-radius: var(--legend-ui-frame-radius) !important; }
+#root .bell-vault-room-card,
+#root .bell-vault-clue,
+#root .bell-vault-after-note,
+#root .bell-vault-loadout > div,
+#root .bell-vault-footer > div {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: rgba(0,0,0,.24) !important;
+}
+#root .bell-vault-choice,
+#root .bell-vault-secondary { border-color: var(--legend-ui-edge-strong) !important; background: var(--legend-ui-control-fill) !important; }
+#root .bell-vault-choice:focus-visible,
+#root .bell-vault-secondary:focus-visible { outline: 2px solid var(--legend-ui-focus) !important; outline-offset: 3px !important; }
+
+/* Results and growth screens read as the same game's field ledger. */
+#root .v152-results-duel,
+#root .v152-results-rewards,
+#root .v152-results-section,
+#root .v152-results-exit,
+#root .v152-growth-pointbar,
+#root .v152-growth-card,
+#root .v152-growth-confirm,
+#root .exp150-modal-dialog { border-radius: var(--legend-ui-frame-radius) !important; }
+#root .v152-results-duel,
+#root .v152-results-rewards,
+#root .v152-growth-card { border-color: var(--legend-ui-edge-soft) !important; }
+#root .v152-results-rewards,
+#root .v152-growth-card { background: var(--legend-ui-panel-fill) !important; }
+#root .v152-growth-card.has-growth { border-color: var(--legend-ui-edge-strong) !important; }
+#root .v152-growth-confirm { min-height: 46px !important; }
+
+/* Bound content and respect reduced-motion preferences across every rollout. */
+#root .v140-creation,
+#root .opening-road-v140,
+#root .settings09x,
+#root .account09x,
+#root .rpg-battle,
+#root .bell-vault-v100,
+#root .v152-combat-results { min-width: 0; max-width: 100%; }
+#root .v140-creation img,
+#root .opening-road-v140 img,
+#root .settings09x img,
+#root .account09x img,
+#root .rpg-battle img,
+#root .bell-vault-v100 img,
+#root .v152-combat-results img { max-width: 100%; }
+@media (max-width: 560px) {
+  #root .v140-creation .v094-choice-grid,
+  #root .v140-creation .v094-summary,
+  #root .rpg-battle .rpg-command-grid { min-width: 0; }
+  #root .rpg-battle .rpg-command { min-width: 0 !important; }
+  #root .bell-vault-banner { padding: 18px 16px !important; }
+  #root .v152-combat-results,
+  #root .opening-road-v140 { overflow-x: clip !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #root .v140-creation *,
+  #root .opening-road-v140 *,
+  #root .settings09x *,
+  #root .account09x *,
+  #root .rpg-battle *,
+  #root .bell-vault-v100 *,
+  #root .v152-combat-results *,
+  #root .v152-levelup-overlay * {
+    transition-duration: .001ms !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* Full Phase 2 coverage: region routing and town transactions. These surfaces
+   retain their native layouts, costs and controls, but use the same frontier
+   materials, focus language and crisp frame as entry and exploration. */
+#root .reg100-head,
+#root .reg100-panel,
+#root .reg100-card,
+#root .reg100-card-scene,
+#root .reg100-wallet > div,
+#root .reg100-mark,
+#root .reg100-btn,
+#root .reg100-state,
+#root .reg100-note,
+#root .ash099-screen,
+#root .ash099-card,
+#root .ash099-btn,
+#root .ash099-service-card,
+#root .ash099-job-choice,
+#root .ash099-market-item,
+#root .ash099-gear-item,
+#root .ash099-craft-card,
+#root .ash099-npc-card,
+#root .ash099-topnav .ash099-footer-item,
+#root .ash099-job-result,
+#root .ash099-result,
+#root .ash099-craft-feedback {
+  border-radius: var(--legend-ui-frame-radius) !important;
+}
+#root .reg100-head,
+#root .reg100-panel {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: var(--legend-ui-panel-fill) !important;
+  box-shadow: 0 18px 48px rgba(0,0,0,.34), inset 0 1px rgba(255,246,211,.04) !important;
+}
+#root .reg100-card {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: linear-gradient(145deg,rgba(22,32,23,.97),rgba(7,12,8,.99)) !important;
+}
+#root .reg100-card.current {
+  border-color: var(--legend-ui-edge-strong) !important;
+  background: linear-gradient(145deg,rgba(54,49,32,.95),rgba(8,14,9,.99)) !important;
+  box-shadow: inset 0 0 0 1px rgba(231,201,130,.10) !important;
+}
+#root .reg100-card-scene {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: #080e09 !important;
+}
+#root .reg100-mark {
+  border: 1px solid var(--legend-ui-edge-soft) !important;
+  background: rgba(231,201,130,.08) !important;
+  color: var(--legend-ui-amber) !important;
+}
+#root .reg100-wallet > div,
+#root .reg100-state,
+#root .reg100-note {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: rgba(0,0,0,.24) !important;
+}
+#root .reg100-btn {
+  border-color: var(--legend-ui-edge-strong) !important;
+  background: var(--legend-ui-control-fill) !important;
+  color: var(--legend-ui-parchment) !important;
+}
+#root .reg100-btn:focus-visible,
+#root .ash099-btn:focus-visible,
+#root .ash099-service-card:focus-visible,
+#root .ash099-job-choice:focus-visible,
+#root .ash099-market-item:focus-visible,
+#root .ash099-gear-item:focus-visible,
+#root .ash099-topnav .ash099-footer-item:focus-visible {
+  outline: 2px solid var(--legend-ui-focus) !important;
+  outline-offset: 3px !important;
+}
+#root .ash099-screen {
+  border-color: var(--legend-ui-edge-strong) !important;
+  background: linear-gradient(145deg,rgba(17,25,18,.98),rgba(5,10,6,.99)) !important;
+  box-shadow: 0 22px 62px rgba(0,0,0,.46), inset 0 0 0 3px rgba(0,0,0,.20) !important;
+}
+#root .ash099-screen .ash099-card,
+#root .ash099-screen .ash099-service-card,
+#root .ash099-screen .ash099-job-choice,
+#root .ash099-screen .ash099-market-item,
+#root .ash099-screen .ash099-gear-item,
+#root .ash099-screen .ash099-craft-card,
+#root .ash099-screen .ash099-npc-card {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background-color: rgba(0,0,0,.21) !important;
+}
+#root .ash099-screen .ash099-btn.primary,
+#root .ash099-screen .ash099-service-card.primary {
+  border-color: var(--legend-ui-edge-strong) !important;
+}
+#root .ash099-screen .ash099-topnav .ash099-footer-item.active {
+  border-color: var(--legend-ui-edge-strong) !important;
+  background: var(--legend-ui-control-fill) !important;
+}
+
+/* The growth choice sheet is appended to body by design, not inside #root.
+   Target its real host so Phase 2 framing applies to the actual modal. */
+.v152-levelup-overlay .v152-levelup-panel {
+  border: 1px solid var(--legend-ui-edge-strong) !important;
+  border-radius: var(--legend-ui-frame-radius) !important;
+  background: var(--legend-ui-panel-fill) !important;
+  box-shadow: 0 30px 90px rgba(0,0,0,.66), inset 0 0 0 3px rgba(0,0,0,.24) !important;
+}
+.v152-levelup-overlay .v152-growth-pointbar,
+.v152-levelup-overlay .v152-growth-card,
+.v152-levelup-overlay .v152-growth-confirm {
+  border-radius: var(--legend-ui-frame-radius) !important;
+}
+.v152-levelup-overlay .v152-growth-pointbar,
+.v152-levelup-overlay .v152-growth-card {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: var(--legend-ui-panel-fill) !important;
+}
+.v152-levelup-overlay .v152-growth-card.has-growth {
+  border-color: var(--legend-ui-edge-strong) !important;
+}
+.v152-levelup-overlay .v152-growth-confirm {
+  border-color: var(--legend-ui-edge-strong) !important;
+}
+.v152-levelup-overlay button:focus-visible {
+  outline: 2px solid var(--legend-ui-focus) !important;
+  outline-offset: 3px !important;
+}
+.v152-levelup-overlay *,
+.v152-levelup-overlay *::before,
+.v152-levelup-overlay *::after {
+  box-sizing: border-box;
+}
+@media (max-width: 560px) {
+  #root .reg100-wallet { grid-template-columns: repeat(3,minmax(0,1fr)) !important; }
+  #root .reg100-card { min-width: 0 !important; }
+  #root .ash099-screen .ash099-card,
+  #root .ash099-screen .ash099-service-card,
+  #root .ash099-screen .ash099-job-choice,
+  #root .ash099-screen .ash099-market-item,
+  #root .ash099-screen .ash099-gear-item,
+  #root .ash099-screen .ash099-craft-card { min-width: 0 !important; }
+  .v152-levelup-overlay .v152-levelup-panel { max-width: calc(100vw - 16px) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .v152-levelup-overlay *,
+  .v152-levelup-overlay *::before,
+  .v152-levelup-overlay *::after,
+  #root .reg100-card,
+  #root .reg100-btn,
+  #root .ash099-screen * {
+    transition-duration: .001ms !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+
+/* Frame the entire victory/defeat composition, not only its inner reward cards. */
+#root .v152-combat-results {
+  border: 1px solid var(--legend-ui-edge-strong) !important;
+  border-radius: var(--legend-ui-frame-radius) !important;
+  background: linear-gradient(145deg,rgba(16,25,18,.98),rgba(5,10,6,.99)) !important;
+  box-shadow: 0 26px 76px rgba(0,0,0,.54), inset 0 0 0 3px rgba(0,0,0,.24) !important;
+}
+#root .v152-combat-results .v152-results-frame {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* The real save-backed inventory modal lives in the world-shell overlay root,
+   outside #root. Match its frame and item tiles without replacing native actions. */
+#legend-world-shell-modal-root .lws-modal {
+  border-color: var(--legend-ui-edge-strong) !important;
+  border-radius: var(--legend-ui-frame-radius) !important;
+  background: var(--legend-ui-panel-fill) !important;
+  box-shadow: 0 30px 86px rgba(0,0,0,.66), inset 0 0 0 3px rgba(0,0,0,.26) !important;
+}
+#legend-world-shell-modal-root .lws-modal::before {
+  border-color: var(--legend-ui-edge-soft) !important;
+  border-radius: 2px !important;
+}
+#legend-world-shell-modal-root .lws-modal-header,
+#legend-world-shell-modal-root .lws-modal-footer {
+  border-color: var(--legend-ui-edge-soft) !important;
+}
+#legend-world-shell-modal-root .lws-inventory-card,
+#legend-world-shell-modal-root .lws-item-sigil,
+#legend-world-shell-modal-root .lws-empty-state {
+  border-radius: var(--legend-ui-frame-radius) !important;
+}
+#legend-world-shell-modal-root .lws-inventory-card {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: rgba(0,0,0,.24) !important;
+}
+#legend-world-shell-modal-root .lws-item-sigil {
+  border-color: var(--legend-ui-edge-soft) !important;
+  background: rgba(231,201,130,.07) !important;
+}
+#legend-world-shell-modal-root .lws-modal-footer .lws-btn:focus-visible,
+#legend-world-shell-modal-root .lws-close-btn:focus-visible {
+  outline: 2px solid var(--legend-ui-focus) !important;
+  outline-offset: 3px !important;
+}
+@media (max-width: 560px) {
+  #legend-world-shell-modal-root .lws-modal {
+    width: 100% !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100vh - 24px) !important;
+  }
+  #legend-world-shell-modal-root .lws-inventory-grid {
+    grid-template-columns: minmax(0,1fr) !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #legend-world-shell-modal-root .lws-modal *,
+  #legend-world-shell-modal-root .lws-modal *::before,
+  #legend-world-shell-modal-root .lws-modal *::after {
+    transition-duration: .001ms !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
