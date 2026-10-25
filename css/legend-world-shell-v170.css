@@ -519,7 +519,7 @@ body.a11y-reduced-motion #legend-world-shell-modal-root *::after {
 .lws-place-option {
   width: 100%; min-width: 0; display: flex; align-items: center; gap: 10px;
   padding: 9px 10px; border: 1px solid rgba(211, 189, 129, .15); border-radius: 9px;
-  color: var(--lws-text); background: linear-gradient(120deg, rgba(18, 25, 19, .92), rgba(9, 14, 10, .94));
+  color: var(--lws-paper); background: linear-gradient(120deg, rgba(18, 25, 19, .92), rgba(9, 14, 10, .94));
   text-align: left; cursor: pointer; transition: border-color .14s ease, background .14s ease, box-shadow .14s ease;
 }
 .lws-place-option:hover:not(:disabled), .lws-place-option:focus-visible {
