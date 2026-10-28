@@ -148,6 +148,7 @@ test.describe('Greyfen Silted Storehouse v0.25.0', () => {
         herbs: Number(player.inventory.roadHerb || 0),
         peat: Number(player.inventory.peatBrick || 0),
         oil: Number(player.inventory.oil || 0),
+        salvageCollected: Boolean(player.flags.greyfenStorehouseSalvageCollected),
         dispatch: Boolean(player.flags.greyfenStorehouseDispatchFound),
         memory: player.memories.some(entry => entry.includes('Silted Storehouse')),
         room: run.room,
@@ -161,6 +162,7 @@ test.describe('Greyfen Silted Storehouse v0.25.0', () => {
     expect(after.herbs).toBe(before.herbs + 1);
     expect(after.peat).toBe(1);
     expect(after.oil).toBe(1);
+    expect(after.salvageCollected).toBe(true);
     expect(after.dispatch).toBe(true);
     expect(after.memory).toBe(true);
     expect(after).toMatchObject({ room: 1, active: true, oldRoadStage: 2, oldRoadPressure: 9, oldRoadRoute: 'ridge' });
@@ -177,13 +179,27 @@ test.describe('Greyfen Silted Storehouse v0.25.0', () => {
         dispatch: Boolean(player.flags.greyfenStorehouseDispatchFound),
         peat: player.inventory.peatBrick,
         oil: player.inventory.oil,
+        salvageCollected: Boolean(player.flags.greyfenStorehouseSalvageCollected),
         oldRoadStage: player.flags.roadExpeditionV100.stage,
         oldRoadPressure: player.flags.roadExpeditionV100.pressure
       };
     });
-    expect(restored).toMatchObject({ room: 1, dispatch: true, peat: 1, oil: 1, oldRoadStage: 2, oldRoadPressure: 9 });
+    expect(restored).toMatchObject({ room: 1, dispatch: true, peat: 1, oil: 1, salvageCollected: true, oldRoadStage: 2, oldRoadPressure: 9 });
     await page.locator('#gss170Retreat').click();
     await expect(page.locator('.ash100-town')).toBeVisible();
+
+    // The sealed crate is a one-time character reward, not repeatable on later attempts.
+    await page.evaluate(() => window.LegendAshmereV099.route('storehouse'));
+    await page.locator('#gss170Begin').click();
+    await page.locator('#gss170Upper').click();
+    await expect(page.locator('.gss170-page')).toContainText('ROOM 2 / 3');
+    await expect(page.locator('.gss170-page')).toContainText('Salvage recorded.');
+    await expect(page.locator('#gss170Salvage')).toHaveCount(0);
+    const replay = await page.evaluate(() => {
+      const player = window.LegendRuntimeV120.loadPlayer();
+      return { peat: Number(player.inventory.peatBrick || 0), oil: Number(player.inventory.oil || 0), salvaged: Boolean(player.flags.greyfenStorehouseSalvageCollected) };
+    });
+    expect(replay).toEqual({ peat: 1, oil: 1, salvaged: true });
   });
 
   test('the keeper uses production combat and tactical retreat returns safely to Greyfen', async ({ page }) => {

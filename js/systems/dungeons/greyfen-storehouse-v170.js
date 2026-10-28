@@ -101,7 +101,7 @@
       player.flags[KEY] = {
         active: true, room: 0, clears: previous.clears, attempts: previous.attempts + 1, retreats: previous.retreats,
         failed: false, completed: false, inBattle: false, battleWon: false, rewardClaimed: false,
-        approach: '', dispatchRead: false, salvageCollected: false,
+        approach: '', dispatchRead: false, salvageCollected: !!player.flags.greyfenStorehouseSalvageCollected,
         startedDay: Number(player.day || 1), records: previous.records
       };
       save(player); render();
@@ -140,8 +140,8 @@
     function salvage() {
       const player = getPlayer(); if (!player) return;
       const run = runFor(player);
-      if (!run.active || run.room !== 1 || run.salvageCollected) return render();
-      addItem(player, 'peatBrick'); addItem(player, 'oil'); run.salvageCollected = true;
+      if (!run.active || run.room !== 1 || run.salvageCollected || player.flags?.greyfenStorehouseSalvageCollected) return render();
+      addItem(player, 'peatBrick'); addItem(player, 'oil'); run.salvageCollected = true; player.flags.greyfenStorehouseSalvageCollected = true;
       run.records.push({ key: 'salvage', title: 'Dry Peat and Lamp Oil', note: 'A sealed crate yields one Dry Peat Brick and one flask of Lamp Oil.', day: Number(player.day || 1) });
       save(player); render();
       const status = document.getElementById('gss170Status');
@@ -225,7 +225,7 @@
         title = 'The Records Bay'; kicker = 'ROOM 2 / 3 · OPTIONAL DISCOVERY';
         copy = 'The paper has softened, not every mark. The authorization leaf is gone; preserve only what can be proved.';
         const dispatch = player.flags?.greyfenStorehouseDispatchFound ? '<p class="gss170-found-note"><strong>Dispatch already preserved.</strong> Its signature leaf is missing.</p>' : '<button type="button" id="gss170ReadDispatch" class="gss170-inline-action">Read and preserve the damp dispatch</button>';
-        const salvage = run.salvageCollected ? '<p class="gss170-found-note"><strong>Salvage recorded.</strong> Dry Peat Brick and Lamp Oil recovered.</p>' : '<button type="button" id="gss170Salvage" class="gss170-inline-action">Search the sealed freight crate</button>';
+        const salvage = run.salvageCollected || player.flags?.greyfenStorehouseSalvageCollected ? '<p class="gss170-found-note"><strong>Salvage recorded.</strong> Dry Peat Brick and Lamp Oil recovered.</p>' : '<button type="button" id="gss170Salvage" class="gss170-inline-action">Search the sealed freight crate</button>';
         content = stats(player, run) + '<article class="gss170-card"><span class="gss170-card-label">OILSKIN RECORD</span><h2>The authorization leaf is gone</h2><p>The dispatch lists supplies moved through the lower crossing as a temporary exception after the flood’s retreat. It records a route decision, not who approved it.</p>' + dispatch + '</article>' +
           '<article class="gss170-card"><span class="gss170-card-label">OPTIONAL SALVAGE</span><h2>Sealed freight</h2><p>Useful material remains beneath the waterline. Searching it does not change the evidence record.</p>' + salvage + '</article>';
         actions = button('gss170Fight', 'Enter the inner bay', 'Face the keeper using production combat.', 'primary') + button('gss170Retreat', 'Return to Greyfen', 'Leave with saved discoveries and supplies.', 'secondary');
