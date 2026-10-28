@@ -510,7 +510,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     const combatBackground = await combatDialog.locator('.lws-modal-emblem').evaluate(node => getComputedStyle(node).backgroundImage);
     expect(combatBackground).toContain('legend-icon-milestone.webp');
     await expectNoHorizontalOverflow(page);
-    await combatDialog.locator('[data-shell-modal-close]').click();
+    await combatDialog.getByRole('button', { name: 'Close overlay' }).click();
     await expect(combatDialog).toHaveCount(0);
 
     await page.evaluate(() => window.LegendWorldShellModalsV170.openNotice(
