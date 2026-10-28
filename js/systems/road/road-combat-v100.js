@@ -97,6 +97,7 @@ function combat(enemy,note=''){
 }
 function retreat(enemy){
  const pl=p();if(!pl)return;
+ if(enemy.specialEncounterV200===true&&typeof context.onSpecialEncounterRetreat==='function'){stopBattleMusic();return context.onSpecialEncounterRetreat(pl,enemy)}
  if(enemy.dungeonV100&&typeof context.onDungeonEncounterRetreat==='function'){stopBattleMusic();return context.onDungeonEncounterRetreat(pl,enemy)}
  const s=ensure(pl);
  stopBattleMusic();
@@ -177,6 +178,7 @@ function combatAction(enemy,action){
  }
  if(pl.hp<=0){
   pl.hp=1;
+  if(enemy.specialEncounterV200===true&&typeof context.onSpecialEncounterDefeat==='function'){save(pl);stopBattleMusic();return context.onSpecialEncounterDefeat(pl,enemy)}
   if(enemy.dungeonV100&&typeof context.onDungeonEncounterDefeat==='function'){save(pl);stopBattleMusic();return context.onDungeonEncounterDefeat(pl,enemy)}
   s.stage=0;s.poiUsed={};s.pressure=clamp(s.pressure+12,0,100);save(pl);stopBattleMusic();
   const result={player:pl,enemy,result:'defeat',progress:{gained:0,levels:0,level:Number(pl.level||1)},rewardName:'',goldGained:Math.max(0,Number(pl.gold||0)-Number(enemy.combatStartGold||0)),routeStage:0};
@@ -212,12 +214,20 @@ function win(enemy){
   if(typeof context.onOpeningEncounterWin==='function')return context.onOpeningEncounterWin(pl,enemy,progress);
   return outcome('Oric is still standing','The opening creature falls, but the story handoff did not load. Your victory and rewards are saved.','OPENING ENCOUNTER');
  }
+ if(enemy.specialEncounterV200===true){
+  pl.stats=pl.stats||{};
+  pl.stats.monstersDefeated=Number(pl.stats.monstersDefeated||0)+1;
+  pl.stats.specialEncounterVictories=Number(pl.stats.specialEncounterVictories||0)+1;
+  save(pl);
+  if(typeof context.onSpecialEncounterWin==='function')return context.onSpecialEncounterWin(pl,enemy,progress);
+  return outcome(enemy.name+' is driven off','The regional encounter is won and its rewards are saved.','REGIONAL ENCOUNTER');
+ }
  if(enemy.dungeonV100){pl.stats=pl.stats||{};pl.stats.monstersDefeated=Number(pl.stats.monstersDefeated||0)+1;pl.stats.dungeonVictories=Number(pl.stats.dungeonVictories||0)+1;save(pl);if(typeof context.onDungeonEncounterWin==='function')return context.onDungeonEncounterWin(pl,enemy,progress);return outcome('The Sentinel Falls','The cellar encounter is won and its combat rewards are saved.','DUNGEON ENCOUNTER')}
  s.stage=clamp(s.stage+1,0,5);s.pressure=clamp(s.pressure-8,0,100);pl.stats=pl.stats||{};pl.stats.monstersDefeated=Number(pl.stats.monstersDefeated||0)+1;pl.stats.roadVictories=Number(pl.stats.roadVictories||0)+1;
  save(pl);
  const result={player:pl,enemy,result:'victory',progress:progress||{gained:0,levels:0,level:Number(pl.level||1)},rewardName:rewardLabel,goldGained:Math.max(0,Number(pl.gold||0)-Number(enemy.combatStartGold||0)),routeStage:Number(s.stage||0),pressure:Number(s.pressure||0)};
  if(typeof showCombatResults==='function'&&showCombatResults(result))return;
- renderExpedition(enemy.name+' defeated. You recover '+itemName(enemy.reward||'fur')+'. '+(progress?'XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'. ':'')+'You continue along the Old Road.');
+ renderExpedition(enemy.name+' defeated. You recover '+rewardLabel+'. '+(progress?'XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'. ':'')+'You continue along the Old Road.');
 }
 
     return combat(enemy, note);
