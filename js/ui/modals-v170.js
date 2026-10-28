@@ -17,7 +17,7 @@
     { key: 'reducedMotion', label: 'Reduced motion', detail: 'Reduce decorative movement and transitions.' },
     { key: 'simpleAscii', label: 'Simplified symbols', detail: 'Prefer simpler interface symbols.' },
     { key: 'spacious', label: 'Spacious layout', detail: 'Increase spacing between interface elements.' },
-    { key: 'readableFont', label: 'Readable font', detail: 'Use the existing accessibility font setting.' }
+    { key: 'readableFont', label: 'Readable font', detail: 'Switch to a typeface chosen for legibility.' }
   ];
 
   let modalRoot = null;
@@ -31,7 +31,7 @@
       modalRoot = document.createElement('div');
       modalRoot.id = 'legend-world-shell-modal-root';
       modalRoot.hidden = true;
-      modalRoot.setAttribute('aria-label', 'Game overlay');
+      modalRoot.setAttribute('aria-label', 'Traveler records and tools');
       document.body.appendChild(modalRoot);
     }
     if (!modalRoot.dataset.lwsBound) {
@@ -88,12 +88,12 @@
     if (status) status.textContent = message;
   }
 
-  function openModal({ eyebrow = 'Realm overlay', title, description = '', content = '', footer = '', icon = 'journal' } = {}) {
+  function openModal({ eyebrow = 'The Borderlands', title, description = '', content = '', footer = '', icon = 'journal' } = {}) {
     const root = ensureRoot();
     previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const iconName = MODAL_ICON_CLASSES.includes(icon) ? icon : 'journal';
     root.innerHTML = '<section class="lws-modal" role="dialog" aria-modal="true" aria-labelledby="lws-modal-title" aria-describedby="lws-modal-description" tabindex="-1">' +
-      '<header class="lws-modal-header"><span class="lws-modal-emblem runway-icon runway-icon-' + iconName + '" aria-hidden="true"></span><div class="lws-modal-heading"><span>' + esc(eyebrow) + '</span><h2 id="lws-modal-title">' + esc(title || 'Realm') + '</h2><p id="lws-modal-description">' + esc(description) + '</p></div><button class="lws-close-btn" type="button" data-shell-modal-close aria-label="Close overlay">×</button></header>' +
+      '<header class="lws-modal-header"><span class="lws-modal-emblem runway-icon runway-icon-' + iconName + '" aria-hidden="true"></span><div class="lws-modal-heading"><span>' + esc(eyebrow) + '</span><h2 id="lws-modal-title">' + esc(title || 'The Borderlands') + '</h2><p id="lws-modal-description">' + esc(description) + '</p></div><button class="lws-close-btn" type="button" data-shell-modal-close aria-label="Close panel">×</button></header>' +
       '<div class="lws-modal-content">' + content + '<p class="lws-note" style="margin-top:12px" data-shell-modal-status aria-live="polite"></p></div>' +
       (footer ? '<footer class="lws-modal-footer">' + footer + '</footer>' : '') +
       '</section>';
@@ -174,7 +174,7 @@
         title: 'Inventory unavailable',
         icon: 'traveler',
         description: 'No saved traveler record could be read.',
-        content: '<div class="lws-empty-state">Create or load a traveler before opening the inventory.</div>',
+        content: '<div class="lws-empty-state">Your traveler’s pack is not available yet. Begin a journey, then return to your carried goods.</div>',
         footer: '<button type="button" class="lws-btn quiet" data-shell-modal-close>Close</button>'
       });
     }
@@ -193,7 +193,7 @@
             : '<span class="lws-item-sigil" aria-hidden="true">' + marker + '</span>';
           return '<article class="lws-inventory-card">' + icon + '<div><strong>' + esc(label) + '</strong><small>Carried: ' + esc(value) + '</small></div></article>';
         }).join('') + '</div>'
-      : '<div class="lws-empty-state">Your pack is currently empty. Items found on the road or acquired through existing town systems will appear here.</div>';
+      : '<div class="lws-empty-state">Your pack is empty. The road may yet provide.</div>';
     const equipment = [
       ['Weapon', player.weapon || player.equipment?.weapon || ''],
       ['Armor', player.armor || player.equipment?.armor || '']
@@ -206,12 +206,12 @@
           return '<li class="lws-equipped-item"><span>' + esc(label) + '</span><span class="lws-equipped-value">' + image + '<strong>' + esc(name) + '</strong></span></li>';
         }).join('') + '</ul></section>'
       : '';
-    const footer = '<button type="button" class="lws-btn quiet" data-shell-modal-close>Return to the world</button><button type="button" class="lws-btn primary" data-world-action="traveler-sheet"><span class="lws-btn-copy"><strong>Open traveler sheet</strong><small>Use the full existing character screen</small></span></button>';
+    const footer = '<button type="button" class="lws-btn quiet" data-shell-modal-close>Return to the world</button><button type="button" class="lws-btn primary" data-world-action="traveler-sheet"><span class="lws-btn-copy"><strong>Open traveler sheet</strong><small>View your attributes and equipment</small></span></button>';
     return openModal({
       eyebrow: 'Traveler archive',
       title: 'Inventory',
       icon: 'traveler',
-      description: 'A read-only view of the saved pack. Item use, crafting, and rewards remain owned by the existing game systems.',
+      description: 'Everything carried for the road: provisions, finds, keepsakes, and gear.',
       content: markup + equipmentMarkup,
       footer
     });
@@ -226,7 +226,7 @@
       eyebrow: 'Realm preferences',
       title: 'Settings',
       icon: 'settings',
-      description: 'Changes are written through LEGEND’s existing settings storage and accessibility handler.',
+      description: 'Tune text, contrast, motion, and spacing to suit the journey.',
       content: markup,
       footer: '<button type="button" class="lws-btn primary" data-shell-modal-close>Return to the world</button>'
     });
@@ -241,11 +241,11 @@
       title: active ? 'Combat encounter' : 'No active encounter',
       icon: 'milestone',
       description: active
-        ? 'The live encounter is owned by the existing combat system. Close this panel to use its combat actions.'
-        : 'Combat begins through real road or dungeon encounters. This shell does not spawn enemies or change combat state.',
+        ? 'The fight is underway. Close this panel and return to the battlefield to act.'
+        : 'No fight is underway. The road and its depths still await.',
       content: '<div class="lws-empty-state">' + (active
-        ? 'The encounter remains active in the world viewport. Use the visible battle controls to attack, guard, use an ability, or retreat.'
-        : 'There is no active encounter to resume. Continue the expedition or enter a supported dungeon to encounter enemies.') + '</div>',
+        ? 'Return to the battlefield to fight, act, use an item, guard, or retreat.'
+        : 'Head back to the road or descend into the cellar when you are ready for danger.') + '</div>',
       footer: '<button type="button" class="lws-btn primary" data-shell-modal-close>' + (active ? 'Return to encounter' : 'Return to the world') + '</button>'
     });
   }
