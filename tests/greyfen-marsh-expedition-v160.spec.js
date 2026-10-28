@@ -393,4 +393,25 @@ test.describe('Greyfen Marsh Path v0.24.1', () => {
     await expect(page.locator('.gfm160-panel')).toContainText('You avoided the Ferry ambush');
   });
 
+  test('a returning trained traveler can face the region-specific Mirebound Sentinel', async ({ page }) => {
+    await seedGreyfen(page, { level: 2, hp: 100 });
+    await enterMarsh(page);
+    await page.locator('#gfm160Begin').click();
+    await page.locator('#gfm160ChooseReeds').click();
+    await page.locator('#gfm160VisitFerry').click();
+    await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      pl.level = 2;
+      pl.flags.greyfenMarshExpeditionV160.trips = 2;
+      window.LegendRuntimeV120.savePlayer(pl);
+    });
+    await page.locator('#gfm160FaceRaider').click();
+
+    await expect(page.locator('.rpg-foe-nameplate')).toContainText('Mirebound Sentinel');
+    await expect(page.locator('.rpg-battlefield')).toHaveAttribute('data-arena', 'greyfen');
+    await expect(page.locator('.exp100-intent')).toContainText('Heavy wind-up');
+    const artPath = await page.locator('.rpg-foe-art').getAttribute('src');
+    expect(artPath).toContain('mirebound-sentinel.webp');
+  });
+
 });
