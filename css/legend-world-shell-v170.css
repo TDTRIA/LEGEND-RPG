@@ -28,6 +28,24 @@
   pointer-events: none;
   isolation: isolate;
   overflow: clip;
+  background:
+    radial-gradient(1200px 520px at 50% 0%, rgba(191, 160, 100, .06), transparent 60%),
+    linear-gradient(180deg, rgba(5, 9, 7, .84), rgba(3, 6, 5, .96));
+}
+#legend-world-shell-root::before,
+#legend-world-shell-root::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+#legend-world-shell-root::before {
+  background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.18), rgba(0,0,0,.05));
+}
+#legend-world-shell-root::after {
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(179, 150, 94, .14), transparent 43%),
+    radial-gradient(ellipse at 20% 18%, rgba(200, 170, 100, .08), transparent 24%);
 }
 
 body.legend-world-shell-active #root {
@@ -36,6 +54,8 @@ body.legend-world-shell-active #root {
   margin: 68px clamp(248px, 18vw, 280px) 72px;
   width: auto;
   min-height: calc(100vh - 140px);
+  border: 1px solid rgba(231, 201, 130, .12);
+  box-shadow: 0 24px 80px rgba(0,0,0,.32);
 }
 body.legend-world-shell-active #root .ash100-town,
 body.legend-world-shell-active #root .ash099-terminal,
@@ -105,6 +125,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   background: linear-gradient(145deg, rgba(191,160,100,.16), rgba(5,9,6,.78));
   font-size: 17px;
   text-shadow: 0 0 14px rgba(231, 201, 130, .25);
+  box-shadow: inset 0 0 18px rgba(231, 201, 130, .08);
 }
 .lws-brand-copy { display: flex; min-width: 0; flex-direction: column; gap: 1px; }
 .lws-brand-copy strong {
@@ -190,14 +211,15 @@ body.legend-world-shell-active #root .v152-combat-results {
   border-radius: 2px;
   color: #e9e4d5;
   background: linear-gradient(130deg, rgba(37, 47, 35, .95), rgba(12, 18, 13, .96));
-  box-shadow: inset 0 1px rgba(255,255,255,.025);
+  box-shadow: inset 0 1px rgba(255,255,255,.025), 0 6px 18px rgba(0,0,0,.12);
   text-align: left;
   cursor: pointer;
-  transition: border-color .14s ease, background-color .14s ease, transform .14s ease;
+  transition: border-color .14s ease, background-color .14s ease, transform .14s ease, box-shadow .14s ease;
 }
 .lws-btn:hover:not(:disabled) {
   border-color: rgba(231, 201, 130, .66);
   background: linear-gradient(130deg, rgba(60, 67, 42, .96), rgba(17, 23, 16, .98));
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 10px 22px rgba(0,0,0,.18);
 }
 .lws-btn:active:not(:disabled) { transform: translateY(1px); }
 .lws-btn:disabled { opacity: .42; cursor: not-allowed; }
@@ -211,6 +233,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   color: var(--lws-amber);
   background: rgba(0, 0, 0, .18);
   font-size: 11px;
+  box-shadow: inset 0 0 20px rgba(231, 201, 130, .04);
 }
 .lws-btn .lws-btn-copy { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 2px; }
 .lws-btn strong { color: #f0ead9; font-size: 11px; font-weight: 650; line-height: 1.3; }
@@ -239,7 +262,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   background:
     linear-gradient(150deg, rgba(17, 24, 17, .97), rgba(7, 12, 8, .95) 70%),
     var(--lws-panel);
-  box-shadow: 0 20px 55px rgba(0, 0, 0, .42), inset 0 0 0 3px rgba(0, 0, 0, .24);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, .42), inset 0 0 0 3px rgba(0, 0, 0, .24), inset 0 0 32px rgba(191, 160, 100, .025);
   pointer-events: auto;
   backdrop-filter: blur(12px);
 }
@@ -530,7 +553,7 @@ body.a11y-reduced-motion #legend-world-shell-modal-root *::after {
   box-shadow: inset 2px 0 0 rgba(225, 194, 112, .9), 0 4px 15px rgba(0, 0, 0, .16);
 }
 .lws-place-option:disabled { opacity: .42; cursor: not-allowed; }
-.lws-place-option-icon { flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid rgba(215, 184, 106, .23); border-radius: 7px; color: #d9bf7e; background: rgba(215, 184, 106, .055); font-size: 16px; }
+.lws-place-option-icon { flex: 0 0 30px; width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid rgba(215, 184, 106, .23); border-radius: 7px; color: #d9bf7e; background: rgba(191,160,100,.08); box-shadow: inset 0 0 10px rgba(191, 160, 100, .06); }
 .lws-place-option-copy { display: grid; min-width: 0; flex: 1; gap: 2px; }
 .lws-place-option-copy strong { color: #f0ead9; font: 600 12px/1.25 Georgia, 'Times New Roman', serif; }
 .lws-place-option-copy small { color: var(--lws-muted); font-size: 9px; letter-spacing: .1em; line-height: 1.35; }
@@ -545,11 +568,11 @@ body.a11y-reduced-motion #legend-world-shell-modal-root *::after {
 .lws-other-destinations { margin-top: 15px; padding-top: 11px; border-top: 1px solid rgba(215, 184, 106, .12); }
 .lws-other-destinations .lws-section-title { margin-bottom: 8px; }
 .lws-town-routes { width: 100%; margin-top: 10px; }
-.lws-poi-scene-note { display: grid; gap: 4px; margin: 0 0 9px; padding: 12px 15px; border: 1px solid rgba(215, 184, 106, .27); border-radius: 10px; background: linear-gradient(105deg, rgba(35, 34, 23, .96), rgba(8, 14, 10, .96)); box-shadow: 0 10px 24px rgba(0, 0, 0, .18); }
+.lws-poi-scene-note { display: grid; gap: 4px; margin: 0 0 9px; padding: 12px 15px; border: 1px solid rgba(215, 184, 106, .27); border-radius: 10px; background: linear-gradient(105deg, rgba(35, 30, 18, .72), rgba(8, 13, 9, .9)); }
 .lws-poi-scene-kicker { color: #cbb273; font-size: 9px; font-weight: 750; letter-spacing: .16em; }
 .lws-poi-scene-note > strong { color: #f0ead9; font: 600 16px/1.2 Georgia, 'Times New Roman', serif; }
 .lws-poi-scene-note > p { max-width: 760px; margin: 0; color: #b8c0b4; font-size: 12px; line-height: 1.45; }
-.ash100-town-ashmere .ash100-destination.lws-poi-active { border-color: rgba(230, 195, 110, .88) !important; box-shadow: inset 0 0 0 1px rgba(230, 195, 110, .23), 0 0 0 2px rgba(230, 195, 110, .1); }
+.ash100-town-ashmere .ash100-destination.lws-poi-active { border-color: rgba(230, 195, 110, .88) !important; box-shadow: inset 0 0 0 1px rgba(230, 195, 110, .23), 0 0 0 2px rgba(230, 195, 110, .1), 0 10px 28px rgba(0, 0, 0, .18) !important; }
 @media (max-width: 520px) {
   .lws-place-option { padding: 8px; gap: 8px; }
   .lws-place-option-icon { flex-basis: 27px; width: 27px; height: 27px; }
@@ -561,3 +584,4 @@ body.a11y-reduced-motion #legend-world-shell-modal-root *::after {
 @media (prefers-reduced-motion: reduce) {
   .lws-place-option { transition: none; }
 }
+
