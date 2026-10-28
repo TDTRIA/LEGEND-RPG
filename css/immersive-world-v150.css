@@ -767,3 +767,191 @@
   .exp160-map-node-head strong{font-size:.72rem}
 }
 @media(prefers-reduced-motion:reduce){.exp160-map-action{transition:none!important;animation:none!important}}
+
+
+/* Phase 4 title polish: use the generated icon atlas and remove protruding circular decorations. */
+.title-v136-rpg .v136-corner-sigil.v150-corner-sigil {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  pointer-events: none !important;
+}
+.title-v136-rpg .v150-legend-wordmark::before,
+.title-v136-rpg .v150-legend-wordmark::after,
+.title-v136-rpg .v150-logo-lockup::before,
+.title-v136-rpg .v150-logo-lockup::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+.title-v136-rpg .v136-menu-icon {
+  box-sizing: border-box !important;
+  position: relative !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  flex: 0 0 28px !important;
+  overflow: hidden !important;
+  clip-path: inset(0 round 3px) !important;
+  contain: paint !important;
+  isolation: isolate !important;
+  padding: 0 !important;
+  border-radius: 3px !important;
+}
+.title-v136-rpg .v136-menu-icon img,
+.title-v136-rpg .v136-menu-icon svg {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+}
+.title-v136-rpg .runway-icon {
+  background-image: var(--runway-icon-image), var(--runway-icon-fallback) !important;
+  background-size: contain, contain !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: center center, center center !important;
+  background-color: rgba(6, 11, 8, .94) !important;
+}
+.runway-icon-compass {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-compass.webp');
+  --runway-x: 0%;
+  --runway-y: 0%;
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-map.webp');
+}
+.runway-icon-journal {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-journal.webp');
+  --runway-x: 50%;
+  --runway-y: 0%;
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-journal.webp');
+}
+.runway-icon-traveler {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-traveler.webp');
+  --runway-x: 100%;
+  --runway-y: 0%;
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-traveler.webp');
+}
+.runway-icon-inn {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-inn.webp');
+  --runway-x: 0%;
+  --runway-y: 50%;
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-inn.webp');
+}
+.runway-icon-market {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-market.webp');
+  --runway-x: 50%;
+  --runway-y: 50%;
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-market.webp');
+}
+.runway-icon-forge {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-forge.webp');
+  --runway-x: 100%;
+  --runway-y: 50%;
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-blacksmith.webp');
+}
+.runway-icon-road {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-road.webp');
+  --runway-x: 0%;
+  --runway-y: 100%;
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp');
+}
+.runway-icon-settings {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-settings.webp');
+  --runway-x: 50%;
+  --runway-y: 100%;
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp');
+}
+.runway-icon-milestone {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-milestone.webp');
+  --runway-x: 100%;
+  --runway-y: 100%;
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-milestone.webp');
+}
+@media (max-width: 760px) {
+  .title-v136-rpg .v136-menu-icon {
+    overflow: hidden !important;
+    contain: paint !important;
+    border-radius: 3px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .title-v136-rpg .v136-menu-icon { transition: none !important; }
+}
+
+/* Reuse the distinct Runway icon cells in Ashmere's contextual place picker. */
+.lws-place-option-icon.runway-icon {
+  overflow: hidden !important;
+  font-size: 0 !important;
+  background-image: var(--runway-icon-image), var(--runway-icon-fallback) !important;
+  background-size: contain, contain !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: center center, center center !important;
+  background-color: #0a110c !important;
+}
+.lws-selected-place .lws-btn-icon.runway-icon {
+  display: inline-block !important;
+  flex: 0 0 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  overflow: hidden !important;
+  font-size: 0 !important;
+  background-image: var(--runway-icon-image), var(--runway-icon-fallback) !important;
+  background-size: contain, contain !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: center center, center center !important;
+  background-color: #0a110c !important;
+  border-radius: 3px !important;
+}
+.lws-place-option-icon.runway-icon-inn { --runway-x: 0%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-inn.webp'); }
+.lws-place-option-icon.runway-icon-market { --runway-x: 50%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-market.webp'); }
+.lws-place-option-icon.runway-icon-forge { --runway-x: 100%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-blacksmith.webp'); }
+.lws-place-option-icon.runway-icon-road { --runway-x: 0%; --runway-y: 100%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-inn { --runway-x: 0%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-inn.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-market { --runway-x: 50%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-market.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-forge { --runway-x: 100%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-blacksmith.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-road { --runway-x: 0%; --runway-y: 100%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp'); }
+
+
+/* Title cleanup: the landscape art is the only atmospheric layer. Remove legacy halo/fog/ember circles. */
+.title-v136-rpg .title-atmosphere,
+.title-v136-rpg .title-atmosphere::before,
+.title-v136-rpg .title-atmosphere::after,
+.title-v136-rpg .title-embers,
+.title-v136-rpg .title-fog {
+  display: none !important;
+  visibility: hidden !important;
+  content: none !important;
+  opacity: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  pointer-events: none !important;
+}
+
+/* Remove the legacy oversized portal ring. The landscape remains the only title-screen backdrop. */
+.title-v136-rpg.portal-v100::before {
+  content: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  background: none !important;
+  pointer-events: none !important;
+}

@@ -4,8 +4,8 @@
   window.LegendAssetsV090 = {
     logo: {
       main: 'assets/ui/logos/logo_legend_awakening_wordmark.png?v=0.21.0-local-raster-wordmark',
-      emblem: 'assets/generated/ui/icons/service-milestone.webp',
-      emblemFull: 'assets/generated/ui/icons/service-milestone.webp'
+      emblem: 'assets/generated/ui/icons/legend-icon-milestone.webp',
+      emblemFull: 'assets/generated/ui/icons/legend-icon-milestone.webp'
     },
     title: {
       background: 'assets/generated/title/title-ashmere-road.webp'
@@ -29,7 +29,7 @@
       oldRoadScene: 'assets/generated/locations/old-road-south-fork.webp'
     },
     creation: {
-      atlas: 'assets/generated/ui/icons/service-traveler.webp'
+      atlas: 'assets/generated/ui/icons/legend-icon-traveler.webp'
     },
     classes: {
       Adventurer: 'assets/generated/classes/class-adventurer.webp',
@@ -54,15 +54,15 @@
         greyfenApothecary: 'assets/generated/ui/region-shops/greyfen-apothecary.webp'
       },
       serviceIcons: {
-        inn: 'assets/generated/ui/icons/service-inn.webp',
-        market: 'assets/generated/ui/icons/service-market.webp',
-        blacksmith: 'assets/generated/classes/class-warrior.webp',
-        journal: 'assets/generated/ui/icons/service-journal.webp',
-        map: 'assets/generated/ui/icons/service-map.webp',
-        jobBoard: 'assets/generated/ui/icons/service-job-board.webp',
-        traveler: 'assets/generated/ui/icons/service-traveler.webp',
-        milestone: 'assets/generated/ui/icons/service-milestone.webp',
-        gatehouse: 'assets/generated/ui/icons/service-gatehouse.webp'
+        inn: 'assets/generated/ui/icons/legend-icon-inn.webp',
+        market: 'assets/generated/ui/icons/legend-icon-market.webp',
+        blacksmith: 'assets/generated/ui/icons/legend-icon-forge.webp',
+        journal: 'assets/generated/ui/icons/legend-icon-journal.webp',
+        map: 'assets/generated/ui/icons/legend-icon-compass.webp',
+        jobBoard: 'assets/generated/ui/icons/legend-icon-milestone.webp',
+        traveler: 'assets/generated/ui/icons/legend-icon-traveler.webp',
+        milestone: 'assets/generated/ui/icons/legend-icon-milestone.webp',
+        gatehouse: 'assets/generated/ui/icons/legend-icon-road.webp'
       }
     },
     skills: {
@@ -82,7 +82,7 @@
       brenn: 'assets/generated/classes/class-warrior.webp',
       oric: 'assets/generated/npcs/captain-oric.webp',
       innkeeper: 'assets/generated/classes/class-adventurer.webp',
-      blacksmith: 'assets/generated/ui/icons/service-blacksmith.webp',
+      blacksmith: 'assets/generated/ui/icons/legend-icon-forge.webp',
       trader: 'assets/generated/classes/class-thief.webp'
     },
     enemies: {

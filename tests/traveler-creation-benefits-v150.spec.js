@@ -81,6 +81,6 @@ test('every traveler choice has its own art and gameplay effects are visible and
     gold: 90,
     bonuses: { strength: 1 },
     strengthScore: 5,
-    atlas: 'assets/generated/ui/icons/service-traveler.webp'
+    atlas: 'assets/generated/ui/icons/legend-icon-traveler.webp'
   });
 });

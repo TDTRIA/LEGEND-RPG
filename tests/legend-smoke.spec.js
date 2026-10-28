@@ -286,20 +286,57 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(result.gold).toBe('47g');
   });
 
-  test('title background, current LEGEND wordmark, and CSS Awakening sigil render without SVG logo artwork', async ({ page }) => {
+  test('title background and raster wordmark render without circular title decorations or SVG logo artwork', async ({ page }) => {
     await openTitle(page);
+    const atlasResponse = await page.request.get('/assets/generated/ui/icons/legend-runway-icon-atlas.webp');
+    expect(atlasResponse.ok()).toBe(true);
+    expect(atlasResponse.headers()['content-type']).toContain('image/webp');
     const backdrop = page.locator('.v120-title-backdrop');
-    const emblem = page.locator('.v136-corner-sigil');
     await expect(backdrop).toHaveAttribute('src', /title-ashmere-road\.webp/);
     await expect.poll(() => backdrop.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     const logo = page.locator('.v150-logo-lockup');
-    await expect(emblem).toBeVisible();
-    await expect(emblem).toHaveClass(/v150-corner-sigil/);
+    await expect(page.locator('.v136-corner-sigil')).toHaveCount(0);
+    await expect(page.locator('.title-v136-rpg .v150-logo-lockup')).toBeVisible();
+    const ringStyles = await page.locator('.title-v136-rpg .v150-logo-lockup').evaluate(node =>
+      ['::before', '::after'].map(pseudo => {
+        const style = getComputedStyle(node, pseudo);
+        return { display: style.display, content: style.content };
+      })
+    );
+    expect(ringStyles.every(style => style.display === 'none' || style.content === 'none')).toBe(true);
     await expect(logo).toBeVisible();
     await expect(logo).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
     await expect(page.locator('.v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
     await expect(logo).not.toContainText(/Roads of Ashmere/i);
     await expect(page.locator('.v136-corner-sigil img')).toHaveCount(0);
+    const menuIcons = await page.locator('.title-v136-rpg .v136-menu-icon').evaluateAll(nodes => nodes.map(node => ({
+      classes: Array.from(node.classList).filter(name => name.startsWith('runway-icon-')),
+      width: node.getBoundingClientRect().width,
+      height: node.getBoundingClientRect().height,
+      overflow: getComputedStyle(node).overflow,
+      hasImageChild: Boolean(node.querySelector('img')),
+      backgroundImage: getComputedStyle(node).backgroundImage
+    })));
+    expect(menuIcons.length).toBeGreaterThanOrEqual(5);
+    expect(menuIcons.every(icon => icon.classes.length === 1)).toBe(true);
+    expect(new Set(menuIcons.map(icon => icon.classes[0])).size).toBe(menuIcons.length);
+    expect(menuIcons.every(icon => icon.width === 28 && icon.height === 28 && icon.overflow === 'hidden' && !icon.hasImageChild)).toBe(true);
+    expect(menuIcons.every(icon => {
+      const name = icon.classes[0].replace('runway-icon-', '');
+      return icon.backgroundImage.includes('legend-icon-' + name + '.webp');
+    })).toBe(true);
+    await expect(page.locator('.title-v136-rpg .title-atmosphere')).toBeHidden();
+    const legacyRing = await page.locator('.title-v136-rpg.portal-v100').evaluate(node => {
+      const style = getComputedStyle(node, '::before');
+      return { display: style.display, content: style.content, boxShadow: style.boxShadow };
+    });
+    expect(legacyRing.display === 'none' || legacyRing.content === 'none').toBe(true);
+    expect(legacyRing.boxShadow === 'none').toBe(true);
+    for (const name of ['compass', 'journal', 'traveler', 'inn', 'market', 'forge', 'road', 'settings', 'milestone']) {
+      const response = await page.request.get('/assets/generated/ui/icons/legend-icon-' + name + '.webp');
+      expect(response.ok()).toBe(true);
+      expect(response.headers()['content-type']).toContain('image/webp');
+    }
   });
 
   test('game opens directly on the actual title menu without the redundant Ashmere Gate screen', async ({ page }) => {
@@ -378,9 +415,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     const innIcon = page.locator('#rest .ash099-asset-icon img');
     const roadIcon = page.locator('#camp .ash099-asset-icon img');
     const journalIcon = page.locator('#rumor .ash099-asset-icon img');
-    await expect(innIcon).toHaveAttribute('src', /service-inn\.webp/);
-    await expect(roadIcon).toHaveAttribute('src', /service-milestone\.webp/);
-    await expect(journalIcon).toHaveAttribute('src', /service-journal\.webp/);
+    await expect(innIcon).toHaveAttribute('src', /legend-icon-inn\.webp/);
+    await expect(roadIcon).toHaveAttribute('src', /legend-icon-milestone\.webp/);
+    await expect(journalIcon).toHaveAttribute('src', /legend-icon-journal\.webp/);
     await expect.poll(async () => page.locator('.ash099-asset-icon img').evaluateAll(imgs =>
       imgs.length === 3 && imgs.every(img => img.complete && img.naturalWidth > 0)
     )).toBe(true);

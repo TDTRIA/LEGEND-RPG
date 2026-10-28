@@ -63,7 +63,7 @@ async function enterMarsh(page) {
   await expect(page.getByRole('main', { name: 'Greyfen Marsh Path expedition' })).toBeVisible();
 }
 
-test.describe('Greyfen Marsh Path v0.24.0', () => {
+test.describe('Greyfen Marsh Path v0.24.1', () => {
   test('route choice, optional ferry, map knowledge, shelter and waterline report persist across reload', async ({ page }) => {
     await seedGreyfen(page);
     await enterMarsh(page);
@@ -184,7 +184,7 @@ test.describe('Greyfen Marsh Path v0.24.0', () => {
         guidance: window.LegendAshmereGuidanceV099.getGoal(pl).title
       };
     });
-    expect(filed).toEqual({ reported: true, memory: true, objective: true, guidance: 'Find the Missing Closure Order' });
+    expect(filed).toEqual({ reported: true, memory: true, objective: true, guidance: 'Continue the Crossing Investigation' });
   });
 
   test('raised posts remain available without rations and a successful wisp fight uses Greyfen-specific combat results', async ({ page }) => {

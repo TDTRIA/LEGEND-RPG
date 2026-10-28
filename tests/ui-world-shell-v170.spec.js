@@ -109,8 +109,12 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expectNoHorizontalOverflow(page);
 
     // Exercise the shell's destination delegate while the town destination catalog is active.
-    await expect(page.locator('.lws-panel-right [data-world-route="inn"]')).toBeVisible();
-    await page.locator('.lws-panel-right [data-world-route="inn"]').click();
+    await expect(page.locator('.lws-panel-right [data-world-place="inn"]')).toBeVisible();
+    await page.locator('.lws-panel-right [data-world-place="inn"]').click();
+    await expect(page.locator('.lws-panel-right [data-world-place="inn"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.lws-poi-scene-note')).toContainText('Ashmere Inn');
+    await expect(page.locator('.ash100-town')).toBeVisible();
+    await page.locator('.lws-panel-right [data-world-action="visit-selected-place"]').click();
     await expect(page.locator('.ash099-screen')).toBeVisible();
     await expect(page.locator('#legend-world-shell-root')).toBeVisible();
 
@@ -306,4 +310,79 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect.poll(() => leftPanel.evaluate(panel => panel.inert)).toBe(true);
     await expect(leftPanel).not.toBeInViewport();
   });
+
+  test('Ashmere POI selection updates the contextual scene without changing saved gameplay state', async ({ page }) => {
+    await enterAshmere(page, 'AshmerePOITraveler');
+    const before = await page.evaluate(() => {
+      const player = window.LegendStorage.loadPlayer();
+      return JSON.stringify({
+        username: player.username,
+        hp: player.hp,
+        gold: player.gold,
+        inventory: player.inventory,
+        flags: player.flags,
+        quests: player.questLog
+      });
+    });
+
+    await expect(page.locator('.lws-panel-right [data-world-place]')).toHaveCount(4);
+    const placeIcons = await page.locator('.lws-panel-right .lws-place-option-icon').evaluateAll(nodes => nodes.map(node => ({
+      classes: Array.from(node.classList).filter(name => name.startsWith('runway-icon-')),
+      size: Math.max(node.getBoundingClientRect().width, node.getBoundingClientRect().height),
+      backgroundImage: getComputedStyle(node).backgroundImage
+    })));
+    expect(placeIcons).toHaveLength(4);
+    expect(new Set(placeIcons.map(icon => icon.classes[0])).size).toBe(4);
+    expect(placeIcons.every(icon => {
+      const name = icon.classes[0].replace('runway-icon-', '');
+      return icon.size <= 32 && icon.backgroundImage.includes('legend-icon-' + name + '.webp');
+    })).toBe(true);
+    await page.locator('.lws-panel-right [data-world-place="market"]').click();
+    await expect(page.locator('.lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.lws-selected-place h3')).toHaveText('Market');
+    await expect(page.locator('.lws-selected-place')).toContainText('Buy essentials and sell road loot');
+    await expect(page.locator('.lws-poi-scene-note')).toContainText('Market');
+    await expect(page.locator('.lws-poi-scene-note')).toContainText('TRADE & SUPPLIES');
+    await expect(page.locator('.ash100-town-ashmere .ash100-destination[data-ash-view="trader"]')).toHaveClass(/lws-poi-active/);
+    await expect(page.locator('.ash100-town')).toBeVisible();
+
+    const afterSelect = await page.evaluate(() => {
+      const player = window.LegendStorage.loadPlayer();
+      return JSON.stringify({
+        username: player.username,
+        hp: player.hp,
+        gold: player.gold,
+        inventory: player.inventory,
+        flags: player.flags,
+        quests: player.questLog
+      });
+    });
+    expect(afterSelect).toBe(before);
+
+    await page.locator('.lws-panel-right [data-world-action="visit-selected-place"]').click();
+    await expect(page.locator('.ash099-screen')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'service');
+    await page.locator('.lws-bottom-bar [data-world-action="world"]').click();
+    await expect(page.locator('.ash100-town')).toBeVisible();
+    await expect(page.locator('.lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.lws-poi-scene-note')).toContainText('Market');
+  });
+
+  test('Ashmere POI selection remains keyboard reachable and fits a narrow screen', async ({ page }) => {
+    await enterAshmere(page, 'AshmerePOIMobile');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('.lws-mobile-toggle[data-world-action="toggle-right"]').click();
+    const inn = page.locator('.lws-panel-right [data-world-place="inn"]');
+    await expect(inn).toBeVisible();
+    await inn.focus();
+    await page.keyboard.press('Enter');
+    await expect(inn).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.lws-poi-scene-note')).toContainText('Ashmere Inn');
+    await expectNoHorizontalOverflow(page);
+    await page.locator('.lws-panel-right [data-world-action="visit-selected-place"]').focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.ash099-screen')).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+  });
+
 });

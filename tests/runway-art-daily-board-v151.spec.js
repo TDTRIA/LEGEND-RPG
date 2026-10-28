@@ -37,11 +37,23 @@ async function enterAshmere(page, name = 'RasterQA') {
 test('title realm entrance uses local Runway raster menu art rather than SVG menu icons', async ({ page }) => {
   await openTitle(page);
   await expect(page.locator('.v136-menu-icon svg')).toHaveCount(0);
-  await expect(page.locator('.v136-menu-icon img')).toHaveCount(5);
+  const menuIcons = page.locator('.v136-menu-icon.runway-icon');
+  await expect(menuIcons).toHaveCount(5);
   await expect(page.locator('.v151-realm-feature img')).toHaveAttribute('src', 'assets/generated/locations/ashmere-town.webp');
   await expect(page.locator('.v151-realm-destination img')).toHaveCount(2);
-  const menuArt = await page.locator('.v136-menu-icon img').evaluateAll(imgs => imgs.map(img => img.getAttribute('src')));
-  expect(menuArt.every(src => src && src.startsWith('assets/generated/ui/icons/') && src.endsWith('.webp'))).toBe(true);
+  const menuArt = await menuIcons.evaluateAll(nodes => nodes.map(node => ({
+    className: Array.from(node.classList).find(name => name.startsWith('runway-icon-')),
+    backgroundImage: getComputedStyle(node).backgroundImage,
+    width: node.getBoundingClientRect().width,
+    height: node.getBoundingClientRect().height,
+    overflow: getComputedStyle(node).overflow
+  })));
+  expect(menuArt.every(icon => {
+    const name = String(icon.className || '').replace('runway-icon-', '');
+    return ['compass', 'journal', 'traveler', 'inn', 'market', 'forge', 'road', 'settings', 'milestone'].includes(name) &&
+      icon.backgroundImage.includes('legend-icon-' + name + '.webp') &&
+      icon.width === 28 && icon.height === 28 && icon.overflow === 'hidden';
+  })).toBe(true);
   const sceneArt = await page.locator('.v151-realm-feature img, .v151-realm-destination img').evaluateAll(imgs => imgs.map(img => img.getAttribute('src')));
   expect(sceneArt.every(src => src && src.startsWith('assets/generated/locations/') && src.endsWith('.webp'))).toBe(true);
 });
