@@ -143,7 +143,7 @@
   bottom: -1%;
   width: clamp(155px, 27vw, 310px);
   height: clamp(205px, 34vw, 390px);
-  animation: none !important;
+  animation: none;
   transform-origin: 50% 90%;
   filter: drop-shadow(0 18px 18px rgba(0,0,0,.46));
 }
@@ -201,8 +201,8 @@
 .rpg-battle.rpg-foe-hit .rpg-hero-stage-art { animation: rpg-hero-strike-v210 .46s cubic-bezier(.22,.75,.22,1) both; }
 .rpg-battle.rpg-player-hit:not(.rpg-foe-hit) .rpg-hero-stage-art { animation: rpg-hero-impact-v210 .4s ease-out both; }
 .rpg-battle.rpg-foe-hit.rpg-player-hit .rpg-hero-stage-art { animation: rpg-hero-round-v210 .82s cubic-bezier(.2,.72,.25,1) both; }
-.rpg-battle.rpg-foe-hit .rpg-foe-sprite { animation: rpg-impact-flash .34s ease both; }
-.rpg-battle.rpg-player-hit:not(.rpg-foe-hit) .rpg-foe-sprite { animation: rpg-enemy-counter-v200 .44s cubic-bezier(.2,.7,.25,1) both; }
+.rpg-battle.rpg-foe-hit .rpg-foe-sprite { animation: rpg-impact-flash .34s ease both !important; }
+.rpg-battle.rpg-player-hit:not(.rpg-foe-hit) .rpg-foe-sprite { animation: rpg-enemy-counter-v200 .44s cubic-bezier(.2,.7,.25,1) both !important; }
 .rpg-battle.rpg-foe-hit.rpg-player-hit .rpg-foe-sprite { animation: rpg-round-exchange-v200 .82s cubic-bezier(.2,.72,.25,1) both !important; }
 @keyframes rpg-hero-strike-v210 {
   0% { transform: translateX(0) scale(1); }
