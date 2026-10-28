@@ -20,6 +20,18 @@
         'The notch itself does not identify who cut it or explain why. We need a dated comparison before assigning it to any route change.',
         'The missing closure order remains our next lead. The gauge is now part of the record, but it does not settle the question of who authorized the lower crossing.'
       ];
+    }else if(greyfen&&id==='mara'&&pl.flags?.greyfenCrossingResponseV261==='provisional-notice'){
+      n.lines=[
+        'The notice is posted at the raised approach. It says the lower crossing record is uncertain and asks travelers to use the marked route until an inspection can be completed.',
+        'It names no one. The field note, overwritten ledger, and missing closure order still do not establish who changed the record or what pressure they were under.',
+        'We have given people a warning, not a verdict. Keep the records together while we look for the order that should have accompanied the change.'
+      ];
+    }else if(greyfen&&id==='mara'&&pl.flags?.greyfenCrossingResponseV261==='sealed-pending-order'){
+      n.lines=[
+        'The evidence remains sealed in the Boundary Archive until the missing closure order can be found.',
+        'Keeping the report private avoids turning an unsigned correction into an accusation, but it also means travelers receive no new warning from these records.',
+        'The lower crossing still needs inspection. We can reopen the question when the order or another dated record gives us grounds to do so.'
+      ];
     }else if(greyfen&&id==='mara'&&pl.flags?.greyfenEvidenceFiled){
       n.lines=[
         'The field note, the crossing ledger, and the earlier weekly return are now preserved together. Each record tells a different part of the same route history.',

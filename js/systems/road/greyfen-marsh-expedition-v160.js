@@ -170,7 +170,10 @@
     const options = content().routeOptions || {};
     const raised = options.raised || {}, reeds = options.reeds || {};
     const canReed = Number(pl.inventory?.food || 0) >= Number(reeds.supplyAmount || 1);
-    return '<section class="gfm160-route-choices" aria-label="Choose a Greyfen route"><span class="gfm160-kicker">THE SPLIT CAUSEWAY</span><h3>Which line will you take?</h3><p>Both routes rejoin at the Flooded Sluice. The survey and the route home do not depend on which one you choose.</p>' +
+    const notice = pl.flags?.greyfenNoticePressureCreditV261
+      ? '<p class="gfm160-note" role="status">A provisional safety notice is posted. Your first route choice gains up to 5 less Road Pressure, once.</p>'
+      : '';
+    return '<section class="gfm160-route-choices" aria-label="Choose a Greyfen route"><span class="gfm160-kicker">THE SPLIT CAUSEWAY</span><h3>Which line will you take?</h3><p>Both routes rejoin at the Flooded Sluice. The survey and the route home do not depend on which one you choose.</p>' + notice +
       '<button class="gfm160-route-option" id="gfm160ChooseRaised" type="button"><span class="gfm160-route-number">01</span><span><strong>Raised Posts</strong><small>Stable timber above the mud; slower but easier to read.</small><em>Cost: 1 hour · no supplies</em><em>Effect: +4 Road Pressure</em><em>Reward: 1 Dry Peat Brick</em></span><b aria-hidden="true">→</b></button>' +
       '<button class="gfm160-route-option" id="gfm160ChooseReeds" type="button" ' + (canReed ? '' : 'disabled') + '><span class="gfm160-route-number">02</span><span><strong>Reed Bed</strong><small>A faster lowland cut with soft ground and poor visibility.</small><em>Cost: 1 Ration · 1 hour</em><em>Effect: +12 Road Pressure; harder to avoid an encounter</em><em>Reward: 1 Road Herb</em>' + (canReed ? '' : '<em>Requires 1 Ration; the safer posts remain open.</em>') + '</span><b aria-hidden="true">→</b></button></section>';
   }
@@ -184,15 +187,24 @@
     if (option.supply) pl.inventory[option.supply] = Math.max(0, Number(pl.inventory[option.supply] || 0) - Number(option.supplyAmount || 1));
     s.routeChoice = id;
     addHours(pl, s, option.hours || 1);
-    s.pressure = clamp(Number(s.pressure || 0) + Number(option.pressure || 0), 0, 100);
+    const authoredPressure = Math.max(0, Number(option.pressure || 0));
+    const hasNoticeCredit = pl.flags?.greyfenNoticePressureCreditV261 === true;
+    const pressureRelief = hasNoticeCredit ? Math.min(5, authoredPressure) : 0;
+    s.pressure = clamp(Number(s.pressure || 0) + Math.max(0, authoredPressure - pressureRelief), 0, 100);
+    if (hasNoticeCredit) {
+      pl.flags.greyfenNoticePressureCreditV261 = false;
+      pl.flags.greyfenNoticePressureUsedV261 = true;
+    }
     const nodeId = id === 'raised' ? 'raised-posts' : 'reed-bed';
     visit(pl, s, nodeId);
-    discover(pl, s, nodeId, option.label, option.description + ' ' + option.consequence + '.');
+    discover(pl, s, nodeId, option.label, option.description + ' ' + option.consequence +
+      (hasNoticeCredit ? ' A provisional safety notice reduced the Road Pressure increase by ' + pressureRelief + '.' : '') + '.');
     addInventory(pl, option.item, 1);
     pl.stats = pl.stats || {};
     pl.stats.greyfenMarshRoutes = Number(pl.stats.greyfenMarshRoutes || 0) + 1;
     save(pl);
-    return render('You commit to ' + option.label + '. The cost and route effect are now recorded.');
+    return render('You commit to ' + option.label + '. The cost and route effect are now recorded.' +
+      (hasNoticeCredit ? ' The provisional safety notice reduced this route’s Road Pressure increase by ' + pressureRelief + '.' : ''));
   }
   function visitFerry() {
     const pl = player(); if (!pl) return;

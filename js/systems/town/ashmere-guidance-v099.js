@@ -158,6 +158,39 @@
       });
     }
 
+    if (flags.greyfenEvidenceFiled && !flags.greyfenCrossingResponseV261) {
+      return regionalStoryGoal(player, 'Greyfen', {
+        view: 'archive',
+        title: 'Choose a Crossing Response',
+        text: 'The field note, crossing ledger, and weekly return document an unsigned change, but they do not identify who made it. Decide whether to spend one Wood Scrap on a provisional public-safety notice or keep the report sealed until the missing closure order is found.',
+        cta: 'Review the Boundary Archive',
+        icon: 'journal',
+        tasks: ['Keep every dated record intact', 'Post a notice only if you can spare one Wood Scrap', 'Do not name a person without corroborating evidence']
+      });
+    }
+
+    if (flags.greyfenCrossingResponseV261 === 'provisional-notice' && flags.greyfenNoticePressureCreditV261) {
+      return regionalStoryGoal(player, 'Greyfen', {
+        view: 'marsh',
+        title: 'Test the Provisional Safety Notice',
+        text: 'The raised approach now carries a provisional warning. On the next Marsh Path trip, the first route choice gains up to 5 less Road Pressure. The notice warns travelers without naming an author.',
+        cta: 'Begin the Marsh Path',
+        icon: 'road',
+        tasks: ['Spend the prepared notice on one Marsh Path route choice', 'Confirm the route cost before committing', 'Keep the missing closure order unresolved']
+      });
+    }
+
+    if (flags.greyfenCrossingResponseV261 === 'sealed-pending-order') {
+      return regionalStoryGoal(player, 'Greyfen', {
+        view: 'archive',
+        title: 'Keep the Crossing Report Sealed',
+        text: 'Mara has kept the evidence private while the closure order remains missing. The report still documents the unsigned route change, but it does not settle who made it or why.',
+        cta: 'Review the Boundary Archive',
+        icon: 'journal',
+        tasks: ['Keep the source records together', 'Continue seeking the missing closure order', 'Do not confuse an incomplete record with proof of guilt']
+      });
+    }
+
     if (flags.greyfenEvidenceFiled) {
       return regionalStoryGoal(player, 'Greyfen', {
         view: 'archive',

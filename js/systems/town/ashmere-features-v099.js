@@ -224,6 +224,7 @@
         return records.renderArchive({
           player,
           currentRegion: player?.currentRegion || 'Ashmere',
+          savePlayer,
           locationInterior,
           esc,
           head,
