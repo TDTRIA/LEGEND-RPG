@@ -286,20 +286,31 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(result.gold).toBe('47g');
   });
 
-  test('title background, current LEGEND wordmark, and CSS Awakening sigil render without SVG logo artwork', async ({ page }) => {
+  test('title background and raster wordmark render without circular title decorations or SVG logo artwork', async ({ page }) => {
     await openTitle(page);
     const backdrop = page.locator('.v120-title-backdrop');
-    const emblem = page.locator('.v136-corner-sigil');
     await expect(backdrop).toHaveAttribute('src', /title-ashmere-road\.webp/);
     await expect.poll(() => backdrop.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     const logo = page.locator('.v150-logo-lockup');
-    await expect(emblem).toBeVisible();
-    await expect(emblem).toHaveClass(/v150-corner-sigil/);
+    await expect(page.locator('.v136-corner-sigil')).toHaveCount(0);
+    await expect(page.locator('.title-v136-rpg .v150-legend-wordmark::before')).toHaveCount(0);
+    await expect(page.locator('.title-v136-rpg .v150-logo-lockup')).toBeVisible();
     await expect(logo).toBeVisible();
     await expect(logo).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
     await expect(page.locator('.v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
     await expect(logo).not.toContainText(/Roads of Ashmere/i);
     await expect(page.locator('.v136-corner-sigil img')).toHaveCount(0);
+    const menuIcons = await page.locator('.title-v136-rpg .v136-menu-icon').evaluateAll(nodes => nodes.map(node => ({
+      classes: Array.from(node.classList).filter(name => name.startsWith('runway-icon-')),
+      width: node.getBoundingClientRect().width,
+      height: node.getBoundingClientRect().height,
+      overflow: getComputedStyle(node).overflow,
+      hasImageChild: Boolean(node.querySelector('img'))
+    })));
+    expect(menuIcons.length).toBeGreaterThanOrEqual(5);
+    expect(menuIcons.every(icon => icon.classes.length === 1)).toBe(true);
+    expect(new Set(menuIcons.map(icon => icon.classes[0])).size).toBe(menuIcons.length);
+    expect(menuIcons.every(icon => icon.width <= 30 && icon.height <= 30 && icon.overflow === 'hidden' && !icon.hasImageChild)).toBe(true);
   });
 
   test('game opens directly on the actual title menu without the redundant Ashmere Gate screen', async ({ page }) => {
