@@ -7,10 +7,10 @@
 .ash100-destination-icon,
 .ash100-route-strip-icon {
   border:0!important;
-  border-radius:50%!important;
+  border-radius:3px!important;
   background:transparent!important;
   box-shadow:none!important;
-  overflow:visible!important;
+  overflow:hidden!important;
 }
 .ash099-icon.ash099-raster-icon,
 .ash099-icon.ash099-asset-icon {
