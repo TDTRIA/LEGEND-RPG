@@ -820,47 +820,47 @@
   background-position: var(--runway-x) var(--runway-y), center center !important;
   background-color: rgba(6, 11, 8, .94) !important;
 }
-.title-v136-rpg .runway-icon-compass {
+.runway-icon-compass {
   --runway-x: 0%;
   --runway-y: 0%;
   --runway-icon-fallback: url('assets/generated/ui/icons/service-map.webp');
 }
-.title-v136-rpg .runway-icon-journal {
+.runway-icon-journal {
   --runway-x: 50%;
   --runway-y: 0%;
   --runway-icon-fallback: url('assets/generated/ui/icons/service-journal.webp');
 }
-.title-v136-rpg .runway-icon-traveler {
+.runway-icon-traveler {
   --runway-x: 100%;
   --runway-y: 0%;
   --runway-icon-fallback: url('assets/generated/ui/icons/service-traveler.webp');
 }
-.title-v136-rpg .runway-icon-inn {
+.runway-icon-inn {
   --runway-x: 0%;
   --runway-y: 50%;
   --runway-icon-fallback: url('assets/generated/ui/icons/service-inn.webp');
 }
-.title-v136-rpg .runway-icon-market {
+.runway-icon-market {
   --runway-x: 50%;
   --runway-y: 50%;
   --runway-icon-fallback: url('assets/generated/ui/icons/service-market.webp');
 }
-.title-v136-rpg .runway-icon-forge {
+.runway-icon-forge {
   --runway-x: 100%;
   --runway-y: 50%;
   --runway-icon-fallback: url('assets/generated/ui/icons/service-blacksmith.webp');
 }
-.title-v136-rpg .runway-icon-road {
+.runway-icon-road {
   --runway-x: 0%;
   --runway-y: 100%;
   --runway-icon-fallback: url('assets/generated/ui/icons/service-gatehouse.webp');
 }
-.title-v136-rpg .runway-icon-settings {
+.runway-icon-settings {
   --runway-x: 50%;
   --runway-y: 100%;
   --runway-icon-fallback: url('assets/generated/ui/icons/service-gatehouse.webp');
 }
-.title-v136-rpg .runway-icon-milestone {
+.runway-icon-milestone {
   --runway-x: 100%;
   --runway-y: 100%;
   --runway-icon-fallback: url('assets/generated/ui/icons/service-milestone.webp');
@@ -875,3 +875,36 @@
 @media (prefers-reduced-motion: reduce) {
   .title-v136-rpg .v136-menu-icon { transition: none !important; }
 }
+
+/* Reuse the distinct Runway icon cells in Ashmere's contextual place picker. */
+.lws-place-option-icon.runway-icon {
+  overflow: hidden !important;
+  font-size: 0 !important;
+  background-image: url('https://dnznrvs05pmza.cloudfront.net/599635b6-376d-48ab-b7f7-e91b6292c34f.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjg3NjhjNzJlZGNhMzdmNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzMzMTQ0Mn0.X9lxxrrkyutJLOjc6cZnCpS2p4X-jFY4DhA7JZX5OHI'), var(--runway-icon-fallback) !important;
+  background-size: 300% 300%, contain !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: var(--runway-x) var(--runway-y), center center !important;
+  background-color: #0a110c !important;
+}
+.lws-selected-place .lws-btn-icon.runway-icon {
+  display: inline-block !important;
+  flex: 0 0 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  overflow: hidden !important;
+  font-size: 0 !important;
+  background-image: url('https://dnznrvs05pmza.cloudfront.net/599635b6-376d-48ab-b7f7-e91b6292c34f.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJra2V5SGFzaCI6ImI4NzZjNzczMmRjYTM3ZjUiLCJidWNrZXQiOiJydW53YXktdGFzay1hcnRpZmFjdHMiLCJzdGFnZSI6InByb2QiLCJleHAiOjE3OTMzMzE0NDJ9.X9lxxrrkyutJLOjc6cZnCpS2p4X-jFY4DhA7JZX5OHI'), var(--runway-icon-fallback) !important;
+  background-size: 300% 300%, contain !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: var(--runway-x) var(--runway-y), center center !important;
+  background-color: #0a110c !important;
+  border-radius: 3px !important;
+}
+.lws-place-option-icon.runway-icon-inn { --runway-x: 0%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-inn.webp'); }
+.lws-place-option-icon.runway-icon-market { --runway-x: 50%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-market.webp'); }
+.lws-place-option-icon.runway-icon-forge { --runway-x: 100%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-blacksmith.webp'); }
+.lws-place-option-icon.runway-icon-road { --runway-x: 0%; --runway-y: 100%; --runway-icon-fallback: url('assets/generated/ui/icons/service-gatehouse.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-inn { --runway-x: 0%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-inn.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-market { --runway-x: 50%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-market.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-forge { --runway-x: 100%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-blacksmith.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-road { --runway-x: 0%; --runway-y: 100%; --runway-icon-fallback: url('assets/generated/ui/icons/service-gatehouse.webp'); }
