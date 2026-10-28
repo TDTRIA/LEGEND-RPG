@@ -14,10 +14,12 @@
     function enemyArt(enemy, assets) {
       const name = String(enemy?.name || '').toLowerCase();
       const enemies = assets.enemies || {};
-      return (name.includes('wolf') ? enemies.blackrootWolf
+      return enemy?.art || (name.includes('wolf') ? enemies.blackrootWolf
         : name.includes('goblin') ? enemies.roadGoblin
         : name.includes('wisp') ? enemies.lanternWisp
         : name.includes('sentinel') ? enemies.mireboundSentinel
+        : name.includes('bandit') ? assets.classes?.Thief
+        : name.includes('raider') ? assets.classes?.Ranger
         : '') || assets.byName?.(enemy?.name) || '';
     }
 

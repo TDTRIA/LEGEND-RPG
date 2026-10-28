@@ -25,7 +25,7 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
         savePlayer: () => { events.saves += 1; },
         getAssets: () => ({ enemies: {}, classes: {}, byName: () => '' }),
         getWeapon: () => ({ name: 'Wooden Sword', min: 2, max: 4 }),
-        getArmor: () => ({ name: 'Cloth Armor', defense: 2 }),
+        getArmor: () => overrides.armor || ({ name: 'Cloth Armor', defense: 2 }),
         score: () => 0,
         ensureState: () => state,
         hpPercent: pl => Math.max(0, Math.min(100, Math.round(pl.hp / Math.max(1, pl.maxHp) * 100))),
@@ -201,4 +201,58 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     }]);
     await expect(page.locator('.v152-combat-results')).toContainText('Driven Back');
   });
+
+  test('bandits telegraph a readable guard-break and the battlefield retains an action ledger', async ({ page }) => {
+    await startCombat(page, {
+      enemy: { name: 'Roadside Bandit', behavior: 'bandit', turn: 0, intent: null, damage: [5, 5] },
+    });
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-guardbreak/);
+    await expect(page.locator('.rpg-battlefield')).toHaveAttribute('data-arena', 'road');
+    await page.locator('#guard').click();
+    await expect(page.locator('.rpg-battle-log')).toContainText(/Roadside Bandit|guard turns/i);
+    await expect(page.locator('.rpg-dialogue')).toContainText(/damage|guard/i);
+  });
+
+  test('configured encounter XP, coin and bonus materials are awarded and shown in the debrief', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 100, maxHp: 100, gold: 0 },
+      state: { stage: 1, pressure: 30 },
+      enemy: {
+        name: 'Roadside Bandit', behavior: 'bandit', hp: 1, maxHp: 1,
+        reward: 'clothScrap', xp: 34, goldDrop: [4, 12],
+        bonusDrop: { item: 'roadToken', chance: 100, amount: [1, 1] },
+      },
+    });
+    await page.locator('#strike').click();
+    const result = await page.evaluate(() => window.__combatContract);
+    expect(result.player.inventory.clothScrap).toBe(1);
+    expect(result.player.inventory.roadToken).toBe(1);
+    expect(result.player.gold).toBe(4);
+    expect(result.events.progress).toEqual([38]);
+    await expect(page.locator('.v152-combat-results')).toContainText('clothScrap');
+    await expect(page.locator('.v152-combat-results')).toContainText('roadToken');
+    expect(result.events.results[0]).toMatchObject({ result: 'victory', rewardName: 'clothScrap · roadToken', xpGained: 38 });
+  });
+
+  test('high-tier armor reduces damage without preserving the old overpowered defense scale', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 50, maxHp: 100 },
+      armor: { name: 'Iron Armor', defense: 68 },
+      enemy: { hp: 99, maxHp: 99, intent: 'attack', damage: [12, 12] },
+    });
+    await page.locator('#strike').click();
+    const result = await page.evaluate(() => window.__combatContract);
+    expect(result.player.hp).toBe(46);
+  });
+  test('combat exchanges animate a hit, recoil, and counter without idle shaking', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 100, maxHp: 100 },
+      enemy: { name: 'Roadside Bandit', behavior: 'bandit', hp: 99, maxHp: 99, turn: 1, intent: 'attack', damage: [5, 5] },
+    });
+    await page.locator('#strike').click();
+    const motion = await page.locator('.rpg-foe-sprite').evaluate(el => getComputedStyle(el).animationName);
+    expect(motion).toBe('rpg-round-exchange-v200');
+    await expect(page.locator('.rpg-battle-log')).toContainText('strike lands');
+  });
+
 });

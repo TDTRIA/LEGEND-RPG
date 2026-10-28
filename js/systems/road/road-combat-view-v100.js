@@ -40,7 +40,10 @@ function render(pl, enemy, note = '', w, a, technique) {
  const foeIntentClass=enemy.snared?'snared':enemy.intent==='heavy'?'heavy':enemy.intent==='guardbreak'?'guardbreak':'attack';
  const foeIntentLabel=foeIntentClass==='heavy'?'HEAVY WIND-UP':foeIntentClass==='guardbreak'?'GUARD BREAK':foeIntentClass==='snared'?'SNARED':'OPPONENT';
  const stableEnemies=A().enemies||{},legacyArt=A().byName?.(enemy.name)||'',enemyName=String(enemy.name||'').toLowerCase();
- const art=(enemyName.includes('wolf')?stableEnemies.blackrootWolf:enemyName.includes('goblin')?stableEnemies.roadGoblin:enemyName.includes('wisp')?stableEnemies.lanternWisp:enemyName.includes('sentinel')?stableEnemies.mireboundSentinel:'')||legacyArt;
+ const location=String(encounterLocation(pl,enemy)||'').toLowerCase();
+ const arenaKey=enemy.greyfenMarshV160||location.includes('greyfen')?'greyfen':enemy.dungeonV100||location.includes('cellar')?'cellar':'road';
+ const art=enemy.art||(enemyName.includes('wolf')?stableEnemies.blackrootWolf:enemyName.includes('goblin')?stableEnemies.roadGoblin:enemyName.includes('wisp')?stableEnemies.lanternWisp:enemyName.includes('sentinel')?stableEnemies.mireboundSentinel:enemyName.includes('bandit')?A().classes?.Thief:enemyName.includes('raider')?A().classes?.Ranger:'')||legacyArt;
+ const battleLog=(Array.isArray(enemy.combatLog)?enemy.combatLog:[]).slice(-4);
  const heroArt=A().travelerPortrait?.(pl)||A().classes?.[pl.className]||'',health=hpPct(pl);
  const playerHit=/hits you for|blow|damage taken/i.test(note),foeHit=/lands for|attack lands|Heavy Strike lands|Rune Bolt lands|Cleave lands|Trap Shot lands|Swipe lands/i.test(note);
  const turnNumber=Number(enemy.turn||0)+1;
@@ -49,7 +52,7 @@ function render(pl, enemy, note = '', w, a, technique) {
  
  shell('<section class="exp100-panel exp100-combat rpg-battle rpg-intent-'+foeIntentClass+(openingEncounter?' rpg-opening-awakening':'')+' '+(playerHit?'rpg-player-hit ':'')+(foeHit?'rpg-foe-hit':'')+'" aria-label="Turn-based battle">'+
   '<div class="rpg-battle-topline"><div><span class="rpg-overline">'+esc(encounterLocation(pl, enemy) || 'THE OLD ROAD')+'</span><strong>ENCOUNTER <i> / </i> TURN '+turnNumber+'</strong></div><button class="rpg-sound-toggle" id="battleSound" type="button" aria-label="Toggle battle music and sound">'+(soundOn()?'♫ SOUND ON':'♫ SOUND OFF')+'</button></div>'+
-  '<div class="rpg-battlefield"><div class="rpg-battle-moon" aria-hidden="true"></div><div class="rpg-battle-orbit" aria-hidden="true"></div><div class="rpg-ground-haze" aria-hidden="true"></div>'+
+  '<div class="rpg-battlefield" data-arena="'+arenaKey+'"><div class="rpg-battle-moon" aria-hidden="true"></div><div class="rpg-battle-orbit" aria-hidden="true"></div><div class="rpg-ground-haze" aria-hidden="true"></div>'+
    '<div class="rpg-foe-side"><div class="rpg-foe-nameplate rpg-foe-intent-'+foeIntentClass+'"><span>'+foeIntentLabel+'</span><strong>'+esc(enemy.name)+'</strong><small>'+Math.max(0,Number(enemy.hp))+' / '+Number(enemy.maxHp)+' HP</small><div class="rpg-foe-hp"><i style="width:'+clamp(Math.round(Number(enemy.hp)/Math.max(1,Number(enemy.maxHp))*100),0,100)+'%"></i></div></div>'+
    '<div class="rpg-foe-sprite">'+(art?'<img class="rpg-foe-art" src="'+esc(art)+'" alt="'+esc(enemy.name)+'">':'<span class="rpg-foe-unknown" aria-hidden="true">✦</span>')+'<i class="rpg-foe-shadow"></i></div></div>'+
    '<div class="rpg-target-arrow" aria-hidden="true">‹</div></div>'+
@@ -58,6 +61,7 @@ function render(pl, enemy, note = '', w, a, technique) {
    '<div class="rpg-hero-vitals"><div class="rpg-vital-label"><span>HP</span><strong>'+Number(pl.hp||0)+' <i>/</i> '+Number(pl.maxHp||1)+'</strong></div><div class="rpg-hero-hp"><i style="width:'+health+'%"></i></div></div>'+
    '<div class="rpg-hero-resources"><span>WEAPON <b>'+esc(w.name)+'</b></span><span>ARMOR <b>'+esc(a.name)+'</b></span><span>POTIONS <b>'+Number(pl.inventory?.potion||0)+'</b></span><span>GOLD <b>'+Number(pl.gold||0)+'g</b></span></div></div></div>'+
   '<div class="rpg-dialogue" aria-live="polite"><span class="rpg-dialogue-star" aria-hidden="true">✦</span><div><span class="rpg-dialogue-kicker">'+(note?'BATTLE LOG':'A HOSTILE APPROACHES')+'</span><p>'+(note?esc(note):esc(enemy.name+' blocks the road. Read its intent, then choose your move.'))+'</p></div></div>'+
+  '<ol class="rpg-battle-log" aria-label="Recent battle log">'+(battleLog.length?battleLog.map(entry=>'<li>'+esc(entry)+'</li>').join(''):'<li class="is-muted">The encounter is waiting for your first command.</li>')+'</ol>'+
   '<div class="rpg-enemy-tell"><span class="rpg-tell-mark" aria-hidden="true">!</span><div><small>ENEMY INTENT</small><span class="exp100-intent">'+intentText+'</span></div></div>'+
   '<div class="rpg-turn-heading"><div><span>YOUR TURN</span><strong>'+(openingEncounter?'The voice calls for an answer':'Choose a command')+'</strong></div><small>'+(openingEncounter?'Use ACT to answer “Awaken.”':'One action gives the enemy its turn.')+'</small></div>'+
   '<div class="rpg-command-grid" role="group" aria-label="Battle commands">'+
