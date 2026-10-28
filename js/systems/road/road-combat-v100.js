@@ -84,6 +84,10 @@ function combat(enemy,note=''){
  enemy.turn=Number(enemy.turn||0);
  enemy.intent=enemy.intent||enemyIntent(enemy);
  enemy.combatLog=Array.isArray(enemy.combatLog)?enemy.combatLog:[];
+ if(note&&enemy.combatLog[enemy.combatLog.length-1]!==note){
+  enemy.combatLog.push(note);
+  enemy.combatLog=enemy.combatLog.slice(-4);
+ }
  startBattleMusic();
  if(combatView?.render){
   return combatView.render(pl,enemy,note,weapon(pl),armor(pl),classTechnique(pl));
