@@ -333,7 +333,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     })));
     expect(placeIcons).toHaveLength(4);
     expect(new Set(placeIcons.map(icon => icon.classes[0])).size).toBe(4);
-    expect(placeIcons.every(icon => icon.size <= 32 && icon.backgroundImage.includes('599635b6-376d-48ab-b7f7-e91b6292c34f.png'))).toBe(true);
+    expect(placeIcons.every(icon => icon.size <= 32 && icon.backgroundImage.includes('legend-runway-icon-atlas.webp'))).toBe(true);
     await page.locator('.lws-panel-right [data-world-place="market"]').click();
     await expect(page.locator('.lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('.lws-selected-place h3')).toHaveText('Market');
