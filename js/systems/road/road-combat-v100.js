@@ -56,7 +56,9 @@ const ENEMY_INTENT_PATTERNS = Object.freeze({
  // Wolves press forward twice before briefly committing to a heavier lunge.
  predator: Object.freeze(['attack','heavy','attack']),
  // Wisps telegraph a strange surge, then try to break a steady guard.
- flicker: Object.freeze(['heavy','guardbreak','attack'])
+ flicker: Object.freeze(['heavy','guardbreak','attack']),
+ // Ancient marsh sentinels commit to a heavy blow, test the guard, then strike quickly.
+ sentinel: Object.freeze(['heavy','guardbreak','attack'])
 });
 const LEGACY_INTENT_PATTERN = Object.freeze(['heavy','attack','guardbreak']);
 
