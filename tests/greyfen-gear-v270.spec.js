@@ -32,7 +32,7 @@ async function openForge(page, region) {
       unlockedRegions: ['Ashmere', 'Greyfen']
     };
     window.LegendRuntimeV120.savePlayer(player);
-    window.LegendAshmereV099.route('forge');
+    window.LegendAshmereV099.route('smith');
   }, region);
   await expect(page.locator('.ash099-forge-console')).toBeVisible();
   await page.locator('[data-forge-tab="armor"]').click();
@@ -80,7 +80,7 @@ test.describe('Greyfen regional gear — v0.27.0', () => {
       player.town = 'Ashmere';
       player.armor = 'clothArmor';
       window.LegendRuntimeV120.savePlayer(player);
-      window.LegendAshmereV099.route('forge');
+      window.LegendAshmereV099.route('smith');
     });
     await page.locator('[data-forge-tab="armor"]').click();
     const ownedCoat = page.locator('[data-gear="marshguardCoat"]');
