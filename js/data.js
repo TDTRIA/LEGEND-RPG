@@ -26,7 +26,7 @@ window.LEGEND_DATA = {
     'Dull Knife':{bonus:{thieving:2},text:'Bad steel, good enough for a lock.'},
     'Cooked Ration':{items:{food:5},text:'A small meal from before the road darkened.'}
   },
-  itemNames: {roadPoultice:'Road Poultice',roadHerb:'Road Herb',clothScrap:'Cloth Scrap',tornHide:'Torn Hide',wolfFang:'Wolf Fang',wispAsh:'Wisp Ash',oil:'Lamp Oil',woodScrap:'Wood Scrap',peatBrick:'Dry Peat Brick',gmail:'Goblin Mail',hbone:'Huge Bones',rtab:'Runic Tablets',food:'Food',rfood:'Raw Food',bait:'Bait',potion:'Potions',camp:'Camp Supplies',fur:'Furs',gem:'Gemstones',log:'Logs',ore:'Ore',morb:'Magic Orbs',codeFragment:'Code Fragments',bellFragment:'Bell Fragments',roadToken:'Road Tokens'},
+  itemNames: {roadPoultice:'Road Poultice',roadHerb:'Road Herb',clothScrap:'Cloth Scrap',tornHide:'Torn Hide',wolfFang:'Wolf Fang',wispAsh:'Wisp Ash',oil:'Lamp Oil',woodScrap:'Wood Scrap',peatBrick:'Dry Peat Brick',marshParcel:'Peat-Wrapped Parcel',gmail:'Goblin Mail',hbone:'Huge Bones',rtab:'Runic Tablets',food:'Food',rfood:'Raw Food',bait:'Bait',potion:'Potions',camp:'Camp Supplies',fur:'Furs',gem:'Gemstones',log:'Logs',ore:'Ore',morb:'Magic Orbs',codeFragment:'Code Fragments',bellFragment:'Bell Fragments',roadToken:'Road Tokens'},
   prices: {gmail:300,hbone:550,rtab:250,food:100,rfood:60,bait:2,potion:200,camp:90,fur:200,gem:1000,log:275,ore:500,morb:15000,codeFragment:0,bellFragment:0,roadToken:0},
   regions: {
     Ashmere:{id:'Ashmere',name:'Ashmere',type:'home',unlocked:true,travelCost:0,description:'Lantern Town and the safe heart of your journey.'},

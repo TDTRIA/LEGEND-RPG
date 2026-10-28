@@ -91,6 +91,7 @@ The repository contains Greyfen-specific hub/art/service patterns, the Bellkeepe
 - [x] Give the marsh expedition its own connected map and discoveries while reusing the production save framework (Phase 4 / PR #49).
 - [ ] Add field activities and a small optional delve/site suited to the marsh (for example, a partially flooded storage or drainage location; the final name and exact layout are proposed, not locked).
 - [ ] Extend the local resource loop around peat, salvage, fishing/ferry supplies, and repairs so the materials actually feed trade, crafting, equipment, or quest requirements.
+  Phase 8 starts this work with a Greyfen-only Peat-Wrapped Parcel recipe that converts two Dry Peat Bricks and one Cloth Scrap into a sellable 34g-base-value Float Market parcel. The broader resource loop remains open.
 - [ ] Complete the evidence chain consistently with the locked Greyfen direction: the Landing Warden reopened the lower crossing early under trade pressure, left the change unsigned because the crossing still needed inspection, and is a sympathetic wrong-doer rather than a villain. Build toward a player choice and practical consequence rather than inventing an unrelated culprit.
 - [ ] Make both outcomes of “A Dry Crossing” reliable: the safer path remains a dependable route to completion; the shortcut clearly states its probability, cost, and reward. A miss must leave the quest recoverable.
 - [ ] Verify region gating: Greyfen-specific jobs, NPCs, resources, and story only appear in Greyfen; Ashmere-only content must not run by accident.
