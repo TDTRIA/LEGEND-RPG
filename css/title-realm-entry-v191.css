@@ -28,7 +28,7 @@ body:has(.title-v136-rpg) {
 
 .title-v136-rpg .v120-title-backdrop {
   object-position: 59% center !important;
-  filter: saturate(.94) contrast(1.09) brightness(.75) !important;
+  filter: saturate(.96) contrast(1.06) brightness(.82) !important;
   transform: scale(1.025) !important;
   animation: legendOpeningLandscape 46s ease-in-out infinite alternate !important;
 }
