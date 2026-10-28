@@ -490,3 +490,38 @@ body:has(.title-v136-rpg) {
     transform: none !important;
   }
 }
+
+
+/* Launcher direction: keep the menu anchored in the scene, not inside a website-like card.
+   The right-hand realm ledger remains framed as a separate in-world information panel. */
+@media (min-width: 981px) {
+  .title-v136-rpg .v120-title-hero {
+    padding: clamp(15px, 1.8vw, 25px) 12px clamp(16px, 2vw, 28px) clamp(22px, 2.4vw, 38px) !important;
+    border: 0 !important;
+    border-left: 1px solid rgba(230,194,115,.48) !important;
+    border-radius: 0 !important;
+    background: linear-gradient(90deg, rgba(2,6,4,.54), rgba(2,6,4,.24) 54%, rgba(2,6,4,.02) 100%) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+  .title-v136-rpg .v120-title-hero:before {
+    inset: 0 auto 0 0 !important;
+    width: 1px !important;
+    border: 0 !important;
+    background: linear-gradient(180deg, transparent, rgba(236,202,121,.9) 12%, rgba(236,202,121,.40) 85%, transparent) !important;
+  }
+  .title-v136-rpg .v120-title-hero .v120-legend-logo {
+    width: min(100%, 460px) !important;
+    max-height: clamp(105px, 17vh, 160px) !important;
+    margin-bottom: 15px !important;
+  }
+  .title-v136-rpg .v120-traveler-line {
+    padding: 10px 0 !important;
+    border: 0 !important;
+    border-top: 1px solid rgba(229,190,110,.30) !important;
+    border-bottom: 1px solid rgba(229,190,110,.30) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
