@@ -22,6 +22,16 @@ async function openTitle(page) {
   await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
 }
 
+async function expectNoHorizontalOverflow(page) {
+  const width = await page.evaluate(() => ({
+    viewport: window.innerWidth,
+    document: document.documentElement.scrollWidth,
+    body: document.body.scrollWidth
+  }));
+  expect(width.document, JSON.stringify(width)).toBeLessThanOrEqual(width.viewport);
+  expect(width.body, JSON.stringify(width)).toBeLessThanOrEqual(width.viewport);
+}
+
 async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
