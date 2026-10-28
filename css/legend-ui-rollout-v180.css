@@ -489,3 +489,92 @@
   background-position: center center, center center !important;
   background-color: rgba(6, 11, 8, .94) !important;
 }
+
+
+/* Phase 6 — illustrated world-shell overlays.
+   Keep the overlay functionality save-backed while using the local generated item and UI art. */
+#legend-world-shell-modal-root .lws-modal-heading {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+#legend-world-shell-modal-root .lws-modal-header .lws-modal-emblem {
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  flex: 0 0 42px !important;
+  margin: 1px 0 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid var(--legend-ui-edge-strong) !important;
+  border-radius: 3px !important;
+  background-image: var(--runway-icon-image), var(--runway-icon-fallback) !important;
+  background-size: contain, contain !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: center center, center center !important;
+  background-color: rgba(6, 11, 8, .94) !important;
+  font-size: 0 !important;
+  letter-spacing: 0 !important;
+}
+#legend-world-shell-modal-root img.lws-item-art {
+  display: block;
+  box-sizing: border-box;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  padding: 2px;
+  object-fit: contain;
+  border-radius: 3px;
+  background: rgba(0,0,0,.18);
+}
+#legend-world-shell-modal-root .lws-equipped-list .lws-equipped-item {
+  align-items: center;
+  gap: 9px;
+}
+#legend-world-shell-modal-root .lws-equipped-value {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+}
+#legend-world-shell-modal-root .lws-equipped-art {
+  display: block;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  padding: 2px;
+  object-fit: contain;
+  border: 1px solid var(--legend-ui-edge-soft);
+  border-radius: 3px;
+  background: rgba(0,0,0,.22);
+}
+#legend-world-shell-modal-root .lws-equipped-value strong {
+  min-width: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 560px) {
+  #legend-world-shell-modal-root .lws-modal-header {
+    gap: 10px;
+    padding: 16px 16px 12px;
+  }
+  #legend-world-shell-modal-root .lws-modal-header .lws-modal-emblem {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    flex-basis: 32px !important;
+  }
+  #legend-world-shell-modal-root .lws-modal-header .lws-close-btn {
+    width: 30px;
+    height: 30px;
+  }
+  #legend-world-shell-modal-root img.lws-item-art {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+  }
+}
