@@ -537,4 +537,28 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('world-scene backdrops stay readable in Ashmere and on the Old Road', async ({ page }) => {
+    await enterAshmere(page, 'SceneBrightnessQA');
+
+    const town = await page.evaluate(() => ({
+      filter: getComputedStyle(document.body, '::before').filter,
+      vignette: getComputedStyle(document.body, '::after').boxShadow,
+      image: getComputedStyle(document.body, '::before').backgroundImage
+    }));
+    expect(town.filter).toContain('brightness(1.04)');
+    expect(town.vignette).toContain('rgba(0, 0, 0, 0.1)');
+    expect(town.image).toContain('ashmere-town.webp');
+
+    await seedRoad(page, 1, 'ridge');
+    const road = await page.evaluate(() => ({
+      filter: getComputedStyle(document.body, '::before').filter,
+      vignette: getComputedStyle(document.body, '::after').boxShadow,
+      image: getComputedStyle(document.body, '::before').backgroundImage
+    }));
+    expect(road.filter).toContain('brightness(0.72)');
+    expect(road.vignette).toContain('rgba(0, 0, 0, 0.2)');
+    expect(road.image).toContain('location_old_road_main_v1.jpg');
+    await expectNoHorizontalOverflow(page);
+  });
+
 });
