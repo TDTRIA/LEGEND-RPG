@@ -467,3 +467,25 @@
   background-position: center center, center center !important;
   background-color: rgba(6, 11, 8, .94) !important;
 }
+
+
+/* Phase 5 — Old Road shell action art.
+   Reuse the generated local raster set in contextual and bottom-bar controls. */
+.lws-btn .lws-btn-icon.runway-icon {
+  display: block !important;
+  box-sizing: border-box !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  flex: 0 0 20px !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  border-radius: 3px !important;
+  font-size: 0 !important;
+  background-image: var(--runway-icon-image), var(--runway-icon-fallback) !important;
+  background-size: contain, contain !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: center center, center center !important;
+  background-color: rgba(6, 11, 8, .94) !important;
+}

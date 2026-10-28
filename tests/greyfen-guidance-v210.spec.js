@@ -108,4 +108,77 @@ test.describe('Greyfen story guidance v0.24.1', () => {
     await page.locator('.ash100-route-strip button').click();
     await expect(page.getByRole('heading', { name: 'Where will the road take you?' })).toBeVisible();
   });
+
+  test('evidence guidance survives reload across regional handoffs', async ({ page }) => {
+    await startFreshCharacter(page, 'GreyfenPersistenceQA');
+
+    const saveStage = async (region, flags) => {
+      await page.evaluate(({ region, flags }) => {
+        const runtime = window.LegendRuntimeV120;
+        const player = runtime.loadPlayer();
+        if (!player) throw new Error('The saved traveler is missing.');
+        player.currentRegion = region;
+        player.discoveredRegions = ['Ashmere', 'Greyfen'];
+        player.flags = { ...(player.flags || {}), ...flags };
+        runtime.savePlayer(player);
+      }, { region, flags });
+    };
+
+    const reloadAndReadGoal = async () => {
+      await page.reload();
+      await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+      await expect.poll(() => page.evaluate(() =>
+        typeof window.LegendAshmereGuidanceV099?.getGoal === 'function'
+      )).toBe(true);
+      return page.evaluate(() => {
+        const player = window.LegendRuntimeV120.loadPlayer();
+        const goal = window.LegendAshmereGuidanceV099.getGoal(player);
+        return {
+          region: player.currentRegion, title: goal.title, view: goal.view, cta: goal.cta,
+          hasLedgerFlag: Boolean(player.flags?.greyfenLedgerCompared),
+          hasWeeklyReturn: Boolean(player.flags?.greyfenWeeklyReturnFound),
+          hasWeeklyReturnReport: Boolean(player.flags?.greyfenWeeklyReturnReported)
+        };
+      });
+    };
+
+    await saveStage('Greyfen', { greyfenLedgerCompared: true });
+    let goal = await reloadAndReadGoal();
+    expect(goal).toMatchObject({
+      region: 'Greyfen', title: 'Find the Earlier Weekly Return',
+      view: 'regions', cta: 'Return to Ashmere', hasLedgerFlag: true
+    });
+
+    await saveStage('Ashmere', { greyfenLedgerCompared: true });
+    goal = await reloadAndReadGoal();
+    expect(goal).toMatchObject({
+      region: 'Ashmere', title: 'Find the Earlier Weekly Return',
+      view: 'road', cta: 'Search the Old Road', hasLedgerFlag: true
+    });
+
+    await saveStage('Greyfen', {
+      greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true
+    });
+    goal = await reloadAndReadGoal();
+    expect(goal).toMatchObject({
+      region: 'Greyfen', title: 'Report the Earlier Weekly Return',
+      view: 'brenn', cta: 'Speak to Old Brenn', hasWeeklyReturn: true
+    });
+
+    await saveStage('Greyfen', {
+      greyfenLedgerCompared: true,
+      greyfenWeeklyReturnFound: true,
+      greyfenWeeklyReturnReported: true
+    });
+    goal = await reloadAndReadGoal();
+    expect(goal).toMatchObject({
+      region: 'Greyfen', title: 'File the Crossing Evidence',
+      view: 'mara', cta: 'Speak to Mara', hasWeeklyReturn: true, hasWeeklyReturnReport: true
+    });
+
+    await page.evaluate(() => window.LegendAshmereV099.renderAshmere());
+    await expect(page.locator('.ash100-route-strip strong')).toHaveText('File the Crossing Evidence');
+    await expect(page.locator('.ash100-route-strip button')).toContainText('Speak to Mara');
+  });
+
 });

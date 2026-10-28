@@ -385,4 +385,61 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+
+  test('Old Road shell actions use distinct local Runway raster icons', async ({ page }) => {
+    await enterAshmere(page, 'OldRoadRunwayIcons');
+    await seedRoad(page, 1, 'ridge');
+
+    const iconSnapshot = await page.locator('#lws-panel-right [data-world-action] .lws-btn-icon.runway-icon').evaluateAll(nodes =>
+      nodes.map(node => {
+        const action = node.closest('[data-world-action]')?.getAttribute('data-world-action') || '';
+        const iconClass = Array.from(node.classList).find(name => name.startsWith('runway-icon-')) || '';
+        const bounds = node.getBoundingClientRect();
+        const style = getComputedStyle(node);
+        return {
+          action, iconClass, width: bounds.width, height: bounds.height,
+          overflow: style.overflow, backgroundImage: style.backgroundImage,
+          hasText: Boolean(node.textContent.trim())
+        };
+      })
+    );
+
+    const expected = {
+      'continue-road': 'runway-icon-road',
+      'search-road': 'runway-icon-compass',
+      'read-road': 'runway-icon-journal',
+      map: 'runway-icon-compass',
+      journal: 'runway-icon-journal'
+    };
+    for (const [action, iconClass] of Object.entries(expected)) {
+      const icon = iconSnapshot.find(item => item.action === action);
+      expect(icon, 'missing Runway icon for ' + action).toBeTruthy();
+      expect(icon.iconClass).toBe(iconClass);
+      expect(icon.width).toBe(20);
+      expect(icon.height).toBe(20);
+      expect(icon.overflow).toBe('hidden');
+      expect(icon.backgroundImage).toContain('legend-icon-' + iconClass.replace('runway-icon-', '') + '.webp');
+      expect(icon.hasText).toBe(false);
+    }
+
+    expect(new Set(iconSnapshot.map(icon => icon.iconClass)).size).toBeGreaterThanOrEqual(3);
+
+    const bottomIcons = await page.locator('.lws-bottom-bar [data-world-action] .lws-btn-icon.runway-icon').evaluateAll(nodes =>
+      nodes.map(node => {
+        const action = node.closest('[data-world-action]')?.getAttribute('data-world-action') || '';
+        const iconClass = Array.from(node.classList).find(name => name.startsWith('runway-icon-')) || '';
+        const bounds = node.getBoundingClientRect();
+        return { action, iconClass, width: bounds.width, height: bounds.height, backgroundImage: getComputedStyle(node).backgroundImage };
+      })
+    );
+    expect(bottomIcons).toHaveLength(6);
+    expect(new Set(bottomIcons.map(icon => icon.iconClass)).size).toBe(6);
+    for (const icon of bottomIcons) {
+      expect(icon.width).toBe(20);
+      expect(icon.height).toBe(20);
+      expect(icon.backgroundImage).toContain('legend-icon-' + icon.iconClass.replace('runway-icon-', '') + '.webp');
+    }
+    await expectNoHorizontalOverflow(page);
+  });
+
 });
