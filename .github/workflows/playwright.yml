@@ -30,36 +30,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Stage Runway icon atlas as a local raster asset
-        run: |
-          set -euo pipefail
-          curl --fail --location --retry 2 --silent --show-error \
-            'https://dnznrvs05pmza.cloudfront.net/599635b6-376d-48ab-b7f7-e91b6292c34f.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjg3NjhjNzJlZGNhMzdmNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzMzMTQ0Mn0.X9lxxrrkyutJLOjc6cZnCpS2p4X-jFY4DhA7JZX5OHI' \
-            -o /tmp/legend-runway-icon-atlas.png
-          python3 -m pip install --user pillow
-          mkdir -p assets/generated/ui/icons
-          python3 - <<'PY'
-          from PIL import Image
-          source = Image.open('/tmp/legend-runway-icon-atlas.png').convert('RGB')
-          import subprocess
-          # Capture the repository tree that this staging run checked out for the one-time binary commit.
-          with open('/tmp/legend-runway-icon-atlas-tree-sha.txt', 'w', encoding='utf-8') as tree_file:
-              tree_file.write(subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip())
-          # The icon renderer needs only 128 pixels per tile; reduce the atlas to a compact local asset.
-          source = source.resize((384, 384), Image.Resampling.LANCZOS)
-          source.save('assets/generated/ui/icons/legend-runway-icon-atlas.webp', 'WEBP', quality=88, method=6)
-          print('Prepared local atlas', source.size)
-          PY
-
-      - name: Upload staged Runway icon atlas
-        uses: actions/upload-artifact@v4
-        with:
-          name: runway-icon-atlas-staging
-          path: |
-            assets/generated/ui/icons/legend-runway-icon-atlas.webp
-            /tmp/legend-runway-icon-atlas-tree-sha.txt
-          retention-days: 1
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
