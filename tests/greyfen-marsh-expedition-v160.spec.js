@@ -367,7 +367,7 @@ test.describe('Greyfen Marsh Path v0.24.1', () => {
 
     await expect(page.locator('.rpg-foe-nameplate')).toContainText('Greyfen Marsh Raider');
     await expect(page.locator('.rpg-battlefield')).toHaveAttribute('data-arena', 'greyfen');
-    await page.locator('#retreat').click();
+    await page.locator('#flee').click();
     await expect(page.locator('.v152-combat-results')).toContainText('You Slip the Ambush');
 
     const state = await page.evaluate(() => {
@@ -388,7 +388,7 @@ test.describe('Greyfen Marsh Path v0.24.1', () => {
       pressure: 21
     });
 
-    await page.locator('#v152CombatContinue').click();
+    await page.locator('#v152CombatReturn').click();
     await expect(page.locator('#gfm160ReturnFromFerry')).toBeVisible();
     await expect(page.locator('.gfm160-panel')).toContainText('You avoided the Ferry ambush');
   });
