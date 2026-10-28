@@ -244,4 +244,15 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     const result = await page.evaluate(() => window.__combatContract);
     expect(result.player.hp).toBe(46);
   });
+  test('combat exchanges animate a hit, recoil, and counter without idle shaking', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 100, maxHp: 100 },
+      enemy: { name: 'Roadside Bandit', behavior: 'bandit', hp: 99, maxHp: 99, turn: 1, intent: 'attack', damage: [5, 5] },
+    });
+    await page.locator('#strike').click();
+    const motion = await page.locator('.rpg-foe-sprite').evaluate(el => getComputedStyle(el).animationName);
+    expect(motion).toBe('rpg-round-exchange-v200');
+    await expect(page.locator('.rpg-battle-log')).toContainText('strike lands');
+  });
+
 });
