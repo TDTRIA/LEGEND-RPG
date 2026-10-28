@@ -434,6 +434,8 @@
   function showFerryRaiderResults(payload = {}) {
     const pl = payload.player || player(); if (!pl) return false;
     const s = ensure(pl);
+    const foeName = String(payload.enemy?.name || 'Marsh Raider');
+    const isSentinel = payload.enemy?.id === 'greyfen-mirebound-sentinel-v200';
     const victory = payload.result !== 'defeat';
     const inventoryBefore = payload.enemy?.combatStartInventory || {};
     const recoveredItems = victory ? Object.keys(pl.inventory || {}).map(item => ({
@@ -442,9 +444,11 @@
     if (victory) {
       s.ferryRaiderDefeated = true;
       add(s.completedInteractionIds, 'fallen-ferry-raider');
-      discover(pl, s, 'fallen-ferry', 'The Ferry Ambush', 'A marsh raider tried to claim the salvage. The traveler drove them off and recovered the supplies.');
+      discover(pl, s, 'fallen-ferry', 'The Ferry Ambush', foeName + ' tried to claim the salvage. The traveler drove the threat off and recovered the supplies.');
       pl.stats = pl.stats || {};
-      pl.stats.greyfenMarshRaiderVictories = Number(pl.stats.greyfenMarshRaiderVictories || 0) + 1;
+      pl.stats.greyfenMarshThreatVictories = Number(pl.stats.greyfenMarshThreatVictories || 0) + 1;
+      if (isSentinel) pl.stats.greyfenMireboundSentinelVictories = Number(pl.stats.greyfenMireboundSentinelVictories || 0) + 1;
+      else pl.stats.greyfenMarshRaiderVictories = Number(pl.stats.greyfenMarshRaiderVictories || 0) + 1;
     } else {
       s.ferryRaiderAvoided = true;
       s.pressure = clamp(Number(s.pressure || 0) + (payload.wasRetreat ? 4 : 6), 0, 100);
@@ -461,9 +465,9 @@
       ...payload,
       locationName: 'GREYFEN · FALLEN FERRY',
       sceneArtKey: 'greyfenMarshWalkway',
-      resultTitle: payload.wasRetreat ? 'You Slip the Ambush' : victory ? 'The Ambusher Falls Back' : 'Driven Back',
+      resultTitle: payload.wasRetreat ? 'You Slip the Ambush' : victory ? (isSentinel ? 'The Sentinel Crumbles' : 'The Ambusher Falls Back') : 'Driven Back',
       resultSubtitle: victory
-        ? 'The raider wanted the ferry salvage. The path is clear, but Greyfen has more than one kind of threat.'
+        ? (isSentinel ? 'The Mirebound Sentinel breaks apart into peat and rust. The path is clear—for now.' : 'The raider wanted the ferry salvage. The path is clear, but Greyfen has more than one kind of threat.')
         : payload.wasRetreat
           ? 'You choose to live and retreat through the reeds. Road Pressure rises by 4.'
           : 'The raider forces you off the ferry. You survive, but the detour grows more dangerous.',
@@ -488,7 +492,17 @@
     if (!s.active || s.activeSideTrip !== 'fallen-ferry' || s.ferryRaiderDefeated || s.ferryRaiderAvoided) {
       return render('No marsh raider is waiting at the Fallen Ferry now.');
     }
-    const enemy = {
+    const useSentinel = Number(s.trips || 1) >= 2 && Number(pl.level || 1) >= 2;
+    const enemy = useSentinel ? {
+      id: 'greyfen-mirebound-sentinel-v200',
+      name: 'Mirebound Sentinel',
+      behavior: 'sentinel',
+      hp: 70, maxHp: 70, damage: [10, 16],
+      reward: 'peatBrick', xp: 48, goldDrop: [8, 17],
+      bonusDrop: { item: 'wispAsh', chance: 25, amount: [1, 1] },
+      turn: 0, intent: 'heavy', specialEncounterV200: true,
+      art: 'assets/generated/enemies/mirebound-sentinel.webp'
+    } : {
       id: 'greyfen-ferry-raider-v201',
       name: 'Greyfen Marsh Raider',
       behavior: 'bandit',
@@ -624,7 +638,7 @@
     let actions = '';
     if (activeFerry) {
       const raiderNote = s.ferryRaiderDefeated
-        ? '<p class="gfm160-note" role="status">The Marsh Raider has fled. Their trail is recorded in your field journal.</p>'
+        ? '<p class="gfm160-note" role="status">The threat at the ferry has been dealt with. Its trail is recorded in your field journal.</p>'
         : s.ferryRaiderAvoided
           ? '<p class="gfm160-note" role="status">You avoided the Ferry ambush. Its danger is marked, and the detour is now complete.</p>'
           : '<p>Fresh bootprints cross the deck. Someone else is searching the wreck—and they may not leave the salvage to you.</p><div class="gfm160-action-row"><button class="gfm160-action is-primary" id="gfm160FaceRaider" type="button">Confront the Marsh Raider</button><button class="gfm160-action" id="gfm160AvoidRaider" type="button">Slip away · +4 Pressure</button></div>';
