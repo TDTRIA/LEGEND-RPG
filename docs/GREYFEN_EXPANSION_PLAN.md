@@ -18,19 +18,25 @@ Greyfen is a working lowland marsh settlement: raised timber walks, stilted home
 
 Reuse existing town, market, smithy, archive, inventory, quest, and travel systems. Prefer existing data patterns over a parallel implementation.
 
-## Optional delve — The Silted Storehouse (Phase 7 preview)
+## Optional delve — The Silted Storehouse (Phase 7 merged)
 
-The current implementation is on the stacked feature branch for [PR #59](https://github.com/TDTRIA/LEGEND-RPG/pull/59); it is **not on main and is not release-complete yet**.
+Merged into `main` in commit [`c09f09d`](https://github.com/TDTRIA/LEGEND-RPG/commit/c09f09d9a05826c505029df8147e583ddcab0b79).
 
-- The location is gated by the existing `greyfenDryCrossingComplete` flag, so it does not unlock ahead of the first signature contract.
+- The location is gated by the existing `greyfenDryCrossingComplete` flag.
 - The loading walk offers a safer upper-shelf route or a riskier cargo-sump route. The sump costs 6 HP (never below 1) and awards a Road Herb.
-- The records bay has two optional interactions: preserve a damp dispatch whose authorization leaf is missing, and recover one Dry Peat Brick plus Lamp Oil from a sealed crate.
-- The inner bay uses the production dungeon combat handlers for victory, defeat, and retreat. Its state is saved separately in `flags.greyfenStorehouseV170`, without resetting or advancing the Old Road expedition.
+- The records bay can preserve a damp dispatch whose authorization leaf is missing and recover one Dry Peat Brick plus Lamp Oil from a sealed crate. The salvage reward is one-time across attempts and reloads.
+- The inner bay uses production dungeon combat handlers for victory, defeat, and retreat. State is saved separately in `flags.greyfenStorehouseV170`, without resetting or advancing Old Road state.
 - After the main crossing evidence is filed, Mara can append the dispatch as supplemental context. It does not identify who authorized the temporary route exception.
-- The current scene reuses the committed local Greyfen Marsh Walkway art; a dedicated storehouse illustration and manual desktop/mobile visual review remain polish tasks.
+- Current production presentation reuses the committed Greyfen Marsh Walkway art. A dedicated Storehouse illustration and manual desktop/mobile visual review remain polish tasks.
 
-**Acceptance gate:** merge only after the integrated current-head Playwright suite passes the new lock/unlock, route/reward, save/load, combat-retreat, victory, and supplemental-evidence tests. Until then, keep the release checklist below open.
+The delve is playable, but does not by itself complete Greyfen’s town, resource economy, story chain, or release acceptance.
 
+## Phase 8 — Greyfen resource-to-market loop
+
+- The Greyfen Marsh Workbench now offers a region-only `Peat-Wrapped Parcel` recipe for 2 Dry Peat Bricks and 1 Cloth Scrap. The finished parcel sells for 34g at base value, giving locally gathered peat a more useful outlet than raw sale.
+- The parcel uses the existing inventory normalization, trade-bundle raster art, and market sell transaction. No new currency, save key, combat rule, or parallel crafting system is introduced.
+- Playwright coverage verifies the recipe is visible only in Greyfen, ingredients are consumed exactly once, the parcel sells for the promised base value, and the resulting inventory/purse survive reload.
+- This is one resource sink, not completion of the full regional loop. Fishing/ferry supplies, repairs, additional side activities, and the full Greyfen evidence/service acceptance sweep remain open.
 
 ## First signature contract: A Dry Crossing
 The Landing Warden asks the traveler to recover a route marker washed loose from a raised path. Offer two understandable approaches: follow old posts (safer, slower, modest reward) or cross the reed bed (riskier, faster, chance at a marsh resource). Show risks and rewards before commitment. Return to Greyfen with a reward and a rumor that the route changed after the water rose. Reuse the current expedition/choice framework where possible.

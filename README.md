@@ -6,7 +6,9 @@ The project is now in its **full RPG development phase**. The old recovery/remak
 
 ## Current Build
 
-**v0.21.0 — Immersive world-interface preview (feature branch; not merged).** The current preview rebuilds the expedition presentation around the live road scene, compact journey tracker, contextual actions, and focused Road Map / Field Journal views. A persistent `flags.roadFieldJournalV150` record stores visited stops, route decisions, and investigated discoveries while retaining the existing save key, player record, road action handlers, combat, pressure, search, camp/rest, crafting, and secured return. Ashmere navigation now sits directly below the town panorama, with constrained service-art boxes. The title and scene-transition wordmarks use the current **LEGEND / THE AWAKENING** identity without SVG logo artwork. Browser regression validation is pending on the review branch.
+**Production main: v0.25.0 — Greyfen Silted Storehouse delve and persistent world-shell presentation.** The live build includes a three-room optional Storehouse delve gated behind “A Dry Crossing,” with safe/risky routes, persistent discoveries, a production-combat keeper, defeat/retreat recovery, one-time salvage protection, and a supplemental dispatch handoff to Mara. The Phase 7 merge is deployed; automated Pages deployment succeeded, while the post-merge full Playwright workflow was still running at the last recorded checkpoint. Dedicated Storehouse art integration and manual desktop/mobile visual acceptance remain open.
+
+Phase 8 extends Greyfen’s resource loop with a region-only peat-to-market crafting recipe. The wider Greyfen service/evidence acceptance gate remains open, and Ironpass should not become playable until that gate is satisfied.
 
 ## Development Roadmap
 

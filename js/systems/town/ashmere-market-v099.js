@@ -19,7 +19,7 @@ function renderTrader(tab='buy'){
     const pl=p();
     const greyfen=String(pl.currentRegion||'Ashmere')==='Greyfen';
     const goods=[['food','Rations',60,'A day’s food for the road.'],['potion','Healing Potion',120,'Restore your strength in a fight.'],['camp','Camp Supplies',90,'Prepare a safe stop beyond the gate.'],['clothScrap','Cloth Scrap',34,'Material for field medicine.'],['oil','Lamp Oil',70,'Fuel for lanterns and preparations.']];
-    const sellables=[['wolfFang',12],['tornHide',8],['roadHerb',10],['wispAsh',22],['goblinTrinket',16],['blackrootThorn',14],['woodScrap',7],['peatBrick',6],['clothScrap',9],['ore',24],['tradeBundle',72],['brokenBellShard',60]];
+    const sellables=[['wolfFang',12],['tornHide',8],['roadHerb',10],['wispAsh',22],['goblinTrinket',16],['blackrootThorn',14],['woodScrap',7],['peatBrick',6],['marshParcel',34],['clothScrap',9],['ore',24],['tradeBundle',72],['brokenBellShard',60]];
     const sellAllValue=sellables.reduce((sum,[k,v])=>sum+(owned(pl,k)*salePrice(pl,v)),0);
     const itemCard=(k,name,price,desc,action,disabled,tail)=>{
       const art=itemIcon(k)||A().items?.roadToken||'';

@@ -10,6 +10,9 @@
 - Singular wording for "1 Road Token" and "1 discovery".
 - New Playwright coverage: `tests/playtest-fixes-v0222.spec.js`.
 
+- Phase 8 adds a Greyfen-only `Peat-Wrapped Parcel` recipe (2 Dry Peat Bricks + 1 Cloth Scrap) with a 34g base sale value, connecting local salvage to crafting and the existing Float Market sale flow. It reuses the existing trade-bundle art family and save/inventory pipeline.
+- Correct the CSS cascade contract after Phase 7 added the Storehouse stylesheet: assert its placement in the stack and the current count of 39 instead of the stale count of 38. Add Greyfen resource-loop regression coverage for region gating, ingredient consumption, sale value, and reload persistence.
+
 ## v0.22.0 — Realm boot sequence, game-client title screen, and cinematic transitions
 
 - Add a real browser boot sequence before the title menu. The progress readout follows script load/error events, then checks the game manifest, core screen/runtime APIs, saved-traveler presence, and opening-scene artwork before revealing the realm. This is a static browser game, so the sequence reports loading and linking systems rather than claiming that production files are compiled at runtime.
