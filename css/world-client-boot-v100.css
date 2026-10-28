@@ -93,3 +93,116 @@ body.legend-booting{overflow:hidden!important}
 .a11y-reduced-motion #legend-boot-screen,.a11y-reduced-motion #legend-boot-screen.is-closing{transition:none!important}
 .a11y-reduced-motion #legend-scene-curtain,.a11y-reduced-motion #legend-scene-curtain span{transition:none!important}
 .a11y-reduced-motion #legend-scene-curtain .legend-transition-scene{animation:none!important}
+
+
+/* LEGEND v0.27.1 — cinematic, world-first boot presentation. */
+#legend-boot-screen {
+  background-position: 50% 55%;
+  animation: legendBootBackdropDriftV192 44s ease-in-out infinite alternate;
+}
+#legend-boot-screen:before {
+  background:
+    linear-gradient(90deg, rgba(1,3,2,.78), rgba(1,3,2,.45) 28%, rgba(1,3,2,.32) 50%, rgba(1,3,2,.55) 75%, rgba(1,3,2,.86)),
+    linear-gradient(180deg, rgba(1,3,2,.58), transparent 20%, rgba(1,3,2,.08) 47%, rgba(1,3,2,.70)),
+    radial-gradient(ellipse at 52% 42%, transparent 0%, rgba(0,0,0,.10) 42%, rgba(0,0,0,.56) 100%);
+}
+#legend-boot-screen:after {
+  inset: clamp(8px, 1.4vw, 18px);
+  border-color: rgba(226,194,117,.26);
+  background:
+    linear-gradient(90deg,rgba(226,194,117,.45),transparent 75%) top left/48px 1px no-repeat,
+    linear-gradient(180deg,rgba(226,194,117,.45),transparent 75%) top left/1px 48px no-repeat,
+    linear-gradient(270deg,rgba(226,194,117,.45),transparent 75%) top right/48px 1px no-repeat,
+    linear-gradient(180deg,rgba(226,194,117,.45),transparent 75%) top right/1px 48px no-repeat,
+    linear-gradient(90deg,rgba(226,194,117,.45),transparent 75%) bottom left/48px 1px no-repeat,
+    linear-gradient(0deg,rgba(226,194,117,.45),transparent 75%) bottom left/1px 48px no-repeat,
+    linear-gradient(270deg,rgba(226,194,117,.45),transparent 75%) bottom right/48px 1px no-repeat,
+    linear-gradient(0deg,rgba(226,194,117,.45),transparent 75%) bottom right/1px 48px no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(226,194,117,.035), inset 0 0 120px rgba(0,0,0,.22);
+}
+.legend-boot-frame {
+  width: min(700px,100%);
+  padding: clamp(22px,4vw,45px) clamp(18px,3vw,34px);
+  border: 0;
+  background: linear-gradient(180deg,rgba(3,7,4,.06),rgba(3,7,4,.28) 28%,rgba(3,7,4,.48) 100%);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.legend-boot-sigil {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  border-radius: 2px;
+  background: linear-gradient(145deg,rgba(24,32,21,.78),rgba(2,6,3,.8));
+  box-shadow: 0 0 36px rgba(231,192,102,.13),inset 0 0 18px rgba(231,192,102,.07);
+}
+.legend-boot-sigil span { text-shadow: 0 0 18px rgba(244,211,132,.5); }
+.legend-boot-sigil i {
+  inset: -7px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+  border-color: rgba(230,196,115,.22);
+}
+.legend-boot-kicker {
+  margin-bottom: 11px;
+  font-size: .64rem;
+  letter-spacing: .25em;
+  text-shadow: 0 2px 12px rgba(0,0,0,.9);
+}
+.legend-boot-wordmark {
+  width: min(440px,100%);
+  max-height: clamp(100px,17vh,150px);
+  margin-bottom: 12px;
+}
+.legend-boot-subtitle {
+  max-width: 540px;
+  margin: 0 auto 28px;
+  color: #e0dfd0;
+  text-shadow: 0 2px 14px rgba(0,0,0,.92);
+}
+.legend-boot-status-row { max-width: 620px; margin: 0 auto 9px; }
+.legend-boot-progress {
+  max-width: 620px;
+  height: 6px;
+  margin: 0 auto;
+  border: 1px solid rgba(217,190,123,.34);
+  background: rgba(0,0,0,.66);
+}
+.legend-boot-checklist {
+  max-width: 620px;
+  margin: 22px auto 0;
+  gap: 9px 23px;
+}
+.legend-boot-checklist>div {
+  padding: 9px 1px;
+  border: 0;
+  border-top: 1px solid rgba(187,198,171,.19);
+  background: transparent;
+}
+.legend-boot-checklist>div.is-ready {
+  border-color: rgba(204,190,126,.40);
+  background: linear-gradient(90deg,rgba(46,48,31,.18),transparent 78%);
+}
+.legend-boot-step-index { color: #ddbf74; }
+.legend-boot-step-name { font-size: .68rem; letter-spacing: .025em; }
+.legend-boot-checklist b { font-size: .53rem; letter-spacing: .12em; }
+.legend-boot-footnote { margin-top: 24px; color: #c3af79; letter-spacing: .24em; }
+@keyframes legendBootBackdropDriftV192 {
+  from { background-position: 48% 56%; }
+  to { background-position: 53% 49%; }
+}
+@media(max-width:760px) {
+  #legend-boot-screen:after { inset: 7px; }
+  .legend-boot-frame {
+    padding: 18px 11px;
+    background: linear-gradient(180deg,rgba(3,7,4,.05),rgba(3,7,4,.50));
+  }
+  .legend-boot-wordmark { max-height: 100px; }
+  .legend-boot-checklist { gap: 5px 12px; margin-top: 17px; }
+  .legend-boot-checklist>div { padding: 7px 0; }
+  .legend-boot-step-name { font-size: .60rem; }
+  .legend-boot-footnote { margin-top: 17px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  #legend-boot-screen { animation: none !important; background-position: center 55% !important; }
+}

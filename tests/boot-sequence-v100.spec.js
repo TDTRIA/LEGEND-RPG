@@ -9,6 +9,21 @@ test.describe('LEGEND v0.22.0 boot and realm presentation', () => {
     await expect(boot).toBeVisible();
     await expect(page.locator('#legend-boot-progress')).toHaveAttribute('role', 'progressbar');
     await expect(page.locator('.legend-boot-checklist')).toContainText('Realm manifest');
+    const bootPresentation = await page.evaluate(() => {
+      const screen = document.querySelector('#legend-boot-screen');
+      const frame = document.querySelector('.legend-boot-frame');
+      return {
+        background: getComputedStyle(screen).backgroundImage,
+        frameShadow: getComputedStyle(frame).boxShadow,
+        frameBackdrop: getComputedStyle(frame).backdropFilter,
+        frameWidth: Math.round(frame.getBoundingClientRect().width)
+      };
+    });
+    expect(bootPresentation.background).toContain('title-ashmere-road.webp');
+    expect(bootPresentation.frameShadow).toBe('none');
+    expect(bootPresentation.frameBackdrop).toBe('none');
+    expect(bootPresentation.frameWidth).toBeLessThanOrEqual(700);
+
     await expect(page.locator('.v120-title')).toBeVisible();
 
     await expect.poll(() => page.evaluate(() => window.__legendBootSequenceV100?.finishedAt || 0), {
@@ -22,7 +37,7 @@ test.describe('LEGEND v0.22.0 boot and realm presentation', () => {
       systemsReady: window.__legendBootSequenceV100?.checks?.systemsReady,
       artworkChecked: typeof window.__legendBootSequenceV100?.checks?.artwork === 'boolean'
     }));
-    expect(result.durationMs).toBeGreaterThanOrEqual(3200);
+    expect(result.durationMs).toBeGreaterThanOrEqual(4100);
     expect(result.manifest).toBe(true);
     expect(result.systemsReady).toBe(true);
     expect(result.artworkChecked).toBe(true);

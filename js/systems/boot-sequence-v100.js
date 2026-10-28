@@ -53,7 +53,7 @@
     try { saveFound = dataReady && Boolean(window.localStorage.getItem(window.LEGEND_DATA.SAVE_KEY)); } catch (_) { /* Storage may be blocked; the title still works as a fresh journey. */ }
     mark('traveler', saveFound ? 'FOUND' : 'NEW JOURNEY', true);
 
-    paint(91, 'Preparing the opening scene', 'Checking title art and scene links');
+    paint(91, 'Kindling the opening scene', 'Settling the title art and world paths');
     await waitForOpeningArt();
     const titleBackdrop = document.querySelector('#root .v120-title-backdrop');
     const titleLogo = document.querySelector('#root .v120-legend-logo');
@@ -62,7 +62,7 @@
     state.checks.artwork = artReady;
     mark('scene', artReady ? 'READY' : 'FALLBACK OK', true);
 
-    const minimumVisibleMs = state.reducedMotion?.() ? 700 : 3300;
+    const minimumVisibleMs = state.reducedMotion?.() ? 700 : 4200;
     const elapsed = performance.now() - state.startedAt;
     if (elapsed < minimumVisibleMs) await wait(minimumVisibleMs - elapsed);
 
