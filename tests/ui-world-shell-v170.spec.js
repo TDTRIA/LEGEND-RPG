@@ -36,6 +36,8 @@ async function enterAshmere(page, name = 'WorldShellQA') {
   });
   await expect(page.locator('.ash100-town')).toBeVisible();
   await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+  await expect(page.locator('body')).toHaveClass(/legend-world-scene-town/);
+  await expect(page.locator('body')).toHaveClass(/legend-world-region-ashmere/);
 }
 
 async function seedRoad(page, stage = 1, route = 'ridge') {
@@ -56,6 +58,7 @@ async function seedRoad(page, stage = 1, route = 'ridge') {
   }, { stage, route });
   await expect(page.locator('.exp150-world-page')).toBeVisible();
   await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+  await expect(page.locator('body')).toHaveClass(/legend-world-scene-road/);
 }
 
 async function expectNoHorizontalOverflow(page) {
