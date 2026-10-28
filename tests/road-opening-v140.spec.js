@@ -69,6 +69,8 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(prologue).toContainText('Blackroot ditch');
     await expect(prologue).toContainText('No second toll');
     await expect(page.locator('.opening-road-v140-bg')).toBeVisible();
+    const openingCinematic = await page.locator('.opening-road-v140-prologue-card h1').evaluate(el => getComputedStyle(el).animationName);
+    expect(openingCinematic).toBe('legendOpeningTitle201');
     await expect(page.getByRole('button', { name: 'Lift your head' })).toBeVisible();
     await page.getByRole('button', { name: 'Lift your head' }).click();
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();

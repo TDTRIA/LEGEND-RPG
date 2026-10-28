@@ -43,9 +43,10 @@ test.describe('LEGEND UI cascade contract v190', () => {
     expect(position('css/legend-world-shell-v170.css')).toBeGreaterThan(position('css/legend-ui-system-v160.css'));
     expect(position('css/legend-ui-rollout-v180.css')).toBeGreaterThan(position('css/legend-world-shell-v170.css'));
     expect(position('css/opening-cinematic-v170.css')).toBeGreaterThan(position('css/legend-ui-rollout-v180.css'));
+    expect(position('css/opening-story-cinematic-v201.css')).toBeGreaterThan(position('css/title-realm-entry-v191.css'));
     expect(position('css/greyfen-storehouse-v170.css')).toBeGreaterThan(position('css/greyfen-marsh-v160.css'));
     expect(position('css/legend-ui-system-v160.css')).toBeGreaterThan(position('css/greyfen-storehouse-v170.css'));
-    expect(files).toHaveLength(40);
+    expect(files).toHaveLength(42);
 
     const responses = await Promise.all(files.map(async file => ({
       file,
@@ -57,6 +58,50 @@ test.describe('LEGEND UI cascade contract v190', () => {
     }
   });
 
+  test('title realm fills desktop as a game menu and lets the footer flow on smaller screens', async ({ page }) => {
+    await openTitle(page, { width: 1440, height: 900 });
+    const desktop = await page.evaluate(() => {
+      const shell = document.querySelector('.title-v136-rpg');
+      const main = shell?.querySelector('.v120-title-main');
+      const realm = shell?.querySelector('.v140-realm-overview');
+      const footer = shell?.querySelector('.portal100-footer');
+      return {
+        viewport: window.innerHeight,
+        shellHeight: shell?.getBoundingClientRect().height || 0,
+        pageHeight: document.documentElement.scrollHeight,
+        mainPosition: main ? getComputedStyle(main).position : '',
+        realmPosition: realm ? getComputedStyle(realm).position : '',
+        footerPosition: footer ? getComputedStyle(footer).position : '',
+        portalRing: shell ? getComputedStyle(shell, '::before').display : ''
+      };
+    });
+    expect(Math.abs(desktop.shellHeight - desktop.viewport)).toBeLessThanOrEqual(2);
+    expect(desktop.pageHeight).toBeLessThanOrEqual(desktop.viewport + 2);
+    expect(desktop.mainPosition).toBe('absolute');
+    expect(desktop.realmPosition).toBe('absolute');
+    expect(desktop.footerPosition).toBe('absolute');
+    expect(desktop.portalRing).toBe('none');
+
+    for (const viewport of [{ width: 820, height: 900 }, { width: 390, height: 844 }]) {
+      await page.setViewportSize(viewport);
+      await expectNoHorizontalOverflow(page);
+      const responsive = await page.evaluate(() => {
+        const shell = document.querySelector('.title-v136-rpg');
+        const realm = shell?.querySelector('.v140-realm-overview');
+        const footer = shell?.querySelector('.portal100-footer');
+        return {
+          viewport: window.innerHeight,
+          shellHeight: shell?.getBoundingClientRect().height || 0,
+          realmPosition: realm ? getComputedStyle(realm).position : '',
+          footerPosition: footer ? getComputedStyle(footer).position : ''
+        };
+      });
+      expect(responsive.shellHeight).toBeGreaterThan(responsive.viewport - 2);
+      expect(responsive.realmPosition).toBe('relative');
+      expect(responsive.footerPosition).toBe('relative');
+    }
+  });
+
   test('production title stays readable and within desktop and 390px touch viewports', async ({ page }) => {
     await openTitle(page, { width: 1440, height: 900 });
     const titleComputed = await page.locator('.v120-title-hero').evaluate(element => ({
@@ -64,7 +109,7 @@ test.describe('LEGEND UI cascade contract v190', () => {
       logoSrc: element.querySelector('.v120-legend-logo')?.getAttribute('src') || '',
       title: element.querySelector('h1')?.textContent || ''
     }));
-    expect(titleComputed.radius).toBe('3px');
+    expect(titleComputed.radius).toBe('0px');
     expect(titleComputed.logoSrc).toMatch(/\.png(?:\?.*)?$/);
     expect(titleComputed.title).toMatch(/LEGEND/i);
     await expectNoHorizontalOverflow(page);
