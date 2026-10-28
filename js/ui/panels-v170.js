@@ -229,11 +229,26 @@
     let actions = '';
     if (context?.kind === 'road') {
       intro = 'Actions use the live expedition handlers. Unavailable choices stay unavailable.';
+      const roadIconByAction = Object.freeze({
+        'continue-road': 'road',
+        'search-road': 'compass',
+        'read-road': 'journal',
+        'camp-rest': 'inn',
+        'camp-craft': 'forge',
+        'camp-watch': 'milestone',
+        map: 'compass',
+        journal: 'journal',
+        'leave-road': 'road'
+      });
       const action = (id, icon, title, detail, selector, primary = false) => {
         const target = selector ? root?.querySelector(selector) : null;
         if (!target) return '';
         const disabled = target.disabled || target.getAttribute('aria-disabled') === 'true';
-        return '<button class="lws-btn ' + (primary ? 'primary' : '') + '" type="button" data-world-action="' + id + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '><span class="lws-btn-icon" aria-hidden="true">' + icon + '</span><span class="lws-btn-copy"><strong>' + title + '</strong><small>' + detail + '</small></span></button>';
+        const iconName = roadIconByAction[id];
+        const iconMarkup = iconName
+          ? '<span class="lws-btn-icon runway-icon runway-icon-' + iconName + '" aria-hidden="true"></span>'
+          : '<span class="lws-btn-icon" aria-hidden="true">' + icon + '</span>';
+        return '<button class="lws-btn ' + (primary ? 'primary' : '') + '" type="button" data-world-action="' + id + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '>' + iconMarkup + '<span class="lws-btn-copy"><strong>' + title + '</strong><small>' + detail + '</small></span></button>';
       };
       const state = player?.flags?.roadExpeditionV100 || {};
       const isCamp = !!root?.querySelector('#campRest, #campCraft, #campWatch');
@@ -294,8 +309,21 @@
     const active = context?.kind || 'town';
     const lockNavigation = active === 'combat' || active === 'combat-results';
     const worldTitle = active === 'road' ? 'Town' : active === 'dungeon' ? 'Retreat' : active === 'expedition-results' ? 'Return' : active === 'combat' || active === 'combat-results' ? 'Encounter' : 'World';
-    const button = (action, icon, title, primary = false, disabled = false) =>
-      '<button type="button" class="lws-btn ' + (primary ? 'primary' : 'quiet') + '" data-world-action="' + action + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '><span class="lws-btn-icon" aria-hidden="true">' + icon + '</span><span class="lws-btn-copy"><strong>' + title + '</strong></span></button>';
+    const bottomIconByAction = Object.freeze({
+      world: 'inn',
+      inventory: 'traveler',
+      journal: 'journal',
+      map: 'compass',
+      combat: 'milestone',
+      settings: 'settings'
+    });
+    const button = (action, icon, title, primary = false, disabled = false) => {
+      const iconName = bottomIconByAction[action];
+      const iconMarkup = iconName
+        ? '<span class="lws-btn-icon runway-icon runway-icon-' + iconName + '" aria-hidden="true"></span>'
+        : '<span class="lws-btn-icon" aria-hidden="true">' + icon + '</span>';
+      return '<button type="button" class="lws-btn ' + (primary ? 'primary' : 'quiet') + '" data-world-action="' + action + '"' + (disabled ? ' disabled aria-disabled="true"' : '') + '>' + iconMarkup + '<span class="lws-btn-copy"><strong>' + title + '</strong></span></button>';
+    };
     const combatAvailable = active === 'combat';
     return button('world', '⌂', worldTitle, false, lockNavigation) +
       button('inventory', '◇', 'Inventory', true) +

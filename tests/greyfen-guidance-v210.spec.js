@@ -108,4 +108,74 @@ test.describe('Greyfen story guidance v0.24.1', () => {
     await page.locator('.ash100-route-strip button').click();
     await expect(page.getByRole('heading', { name: 'Where will the road take you?' })).toBeVisible();
   });
+
+  test('evidence guidance survives reload across regional handoffs', async ({ page }) => {
+    test.setTimeout(90000);
+    await startFreshCharacter(page, 'GreyfenPersistenceQA');
+
+    const snapshots = await page.evaluate(() => {
+      const getGoal = window.LegendAshmereGuidanceV099.getGoal;
+      const pick = (region, flags = {}) => {
+        const goal = getGoal({ currentRegion: region, inventory: { roadToken: 0 }, flags });
+        return { view: goal.view, title: goal.title, cta: goal.cta };
+      };
+      return {
+        greyfenLedger: pick('Greyfen', { greyfenLedgerCompared: true }),
+        ashmereroad: pick('Ashmere', { greyfenLedgerCompared: true }),
+        reportReturn: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true }),
+        fileEvidence: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true, greyfenWeeklyReturnReported: true }),
+        filedArchive: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true, greyfenWeeklyReturnReported: true, greyfenEvidenceFiled: true })
+      };
+    });
+    expect(snapshots.greyfenLedger).toMatchObject({ view: 'regions', title: 'Find the Earlier Weekly Return', cta: 'Return to Ashmere' });
+    expect(snapshots.ashmereroad).toMatchObject({ view: 'road', title: 'Find the Earlier Weekly Return', cta: 'Search the Old Road' });
+    expect(snapshots.reportReturn).toMatchObject({ view: 'brenn', title: 'Report the Earlier Weekly Return', cta: 'Speak to Old Brenn' });
+    expect(snapshots.fileEvidence).toMatchObject({ view: 'mara', title: 'File the Crossing Evidence', cta: 'Speak to Mara' });
+    expect(snapshots.filedArchive).toMatchObject({ view: 'archive', title: 'Review the Preserved Evidence' });
+
+    await page.evaluate(() => {
+      const runtime = window.LegendRuntimeV120;
+      const player = runtime.loadPlayer();
+      player.currentRegion = 'Greyfen';
+      player.discoveredRegions = ['Ashmere', 'Greyfen'];
+      player.flags = {
+        ...(player.flags || {}),
+        greyfenLedgerCompared: true,
+        greyfenWeeklyReturnFound: true,
+        greyfenWeeklyReturnReported: true,
+        greyfenEvidenceFiled: true
+      };
+      runtime.savePlayer(player);
+    });
+    await page.reload();
+    await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 30000 });
+    await expect.poll(() => page.evaluate(() =>
+      typeof window.LegendAshmereGuidanceV099?.getGoal === 'function'
+    ), { timeout: 15000 }).toBe(true);
+    const persisted = await page.evaluate(() => {
+      const runtime = window.LegendRuntimeV120;
+      const player = runtime.loadPlayer();
+      const goal = window.LegendAshmereGuidanceV099.getGoal(player);
+      return {
+        region: player.currentRegion,
+        title: goal.title,
+        view: goal.view,
+        ledger: Boolean(player.flags?.greyfenLedgerCompared),
+        returnFound: Boolean(player.flags?.greyfenWeeklyReturnFound),
+        returnReported: Boolean(player.flags?.greyfenWeeklyReturnReported),
+        evidenceFiled: Boolean(player.flags?.greyfenEvidenceFiled)
+      };
+    });
+    expect(persisted).toMatchObject({
+      region: 'Greyfen',
+      title: 'Review the Preserved Evidence',
+      view: 'archive',
+      ledger: true,
+      returnFound: true,
+      returnReported: true,
+      evidenceFiled: true
+    });
+    await page.evaluate(() => window.LegendAshmereV099.renderAshmere());
+    await expect(page.locator('.ash100-route-strip strong')).toHaveText('Review the Preserved Evidence');
+  });
 });
