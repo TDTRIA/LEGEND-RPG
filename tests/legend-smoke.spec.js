@@ -293,8 +293,14 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect.poll(() => backdrop.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     const logo = page.locator('.v150-logo-lockup');
     await expect(page.locator('.v136-corner-sigil')).toHaveCount(0);
-    await expect(page.locator('.title-v136-rpg .v150-legend-wordmark::before')).toHaveCount(0);
     await expect(page.locator('.title-v136-rpg .v150-logo-lockup')).toBeVisible();
+    const ringStyles = await page.locator('.title-v136-rpg .v150-logo-lockup').evaluate(node =>
+      ['::before', '::after'].map(pseudo => {
+        const style = getComputedStyle(node, pseudo);
+        return { display: style.display, content: style.content };
+      })
+    );
+    expect(ringStyles.every(style => style.display === 'none' || style.content === 'none')).toBe(true);
     await expect(logo).toBeVisible();
     await expect(logo).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
     await expect(page.locator('.v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
@@ -305,12 +311,14 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       width: node.getBoundingClientRect().width,
       height: node.getBoundingClientRect().height,
       overflow: getComputedStyle(node).overflow,
-      hasImageChild: Boolean(node.querySelector('img'))
+      hasImageChild: Boolean(node.querySelector('img')),
+      backgroundImage: getComputedStyle(node).backgroundImage
     })));
     expect(menuIcons.length).toBeGreaterThanOrEqual(5);
     expect(menuIcons.every(icon => icon.classes.length === 1)).toBe(true);
     expect(new Set(menuIcons.map(icon => icon.classes[0])).size).toBe(menuIcons.length);
     expect(menuIcons.every(icon => icon.width <= 30 && icon.height <= 30 && icon.overflow === 'hidden' && !icon.hasImageChild)).toBe(true);
+    expect(menuIcons.every(icon => icon.backgroundImage.includes('599635b6-376d-48ab-b7f7-e91b6292c34f.png'))).toBe(true);
   });
 
   test('game opens directly on the actual title menu without the redundant Ashmere Gate screen', async ({ page }) => {
