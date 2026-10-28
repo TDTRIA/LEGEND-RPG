@@ -6,9 +6,9 @@ The project is now in its **full RPG development phase**. The old recovery/remak
 
 ## Current Build
 
-**Production main: v0.25.0 — Greyfen Silted Storehouse delve and persistent world-shell presentation.** The live build includes a three-room optional Storehouse delve gated behind “A Dry Crossing,” with safe/risky routes, persistent discoveries, a production-combat keeper, defeat/retreat recovery, one-time salvage protection, and a supplemental dispatch handoff to Mara. The Phase 7 merge is deployed; automated Pages deployment succeeded, while the post-merge full Playwright workflow was still running at the last recorded checkpoint. Dedicated Storehouse art integration and manual desktop/mobile visual acceptance remain open.
+**Production main: v0.26.0 — Greyfen resource loop and crossing-response slice.** Main includes the optional three-room Silted Storehouse delve gated behind “A Dry Crossing,” safe/risky routes, persistent discoveries, production-combat keeper, retreat recovery, one-time salvage, the supplemental dispatch handoff, and the Greyfen-only Peat-Wrapped Parcel recipe. The crossing report now offers a saved player choice: post a provisional safety notice for one Wood Scrap to reduce the next Marsh Path route's added pressure by up to 5 once, or keep the report sealed pending the missing closure order.
 
-Phase 8 extends Greyfen’s resource loop with a region-only peat-to-market crafting recipe. The wider Greyfen service/evidence acceptance gate remains open, and Ironpass should not become playable until that gate is satisfied.
+The wider Greyfen acceptance gate remains open: dedicated Storehouse art integration, manual desktop/mobile visual review, the Warden's full story resolution, and the missing closure order. Ironpass should not become playable until Greyfen's services, economy, story, and regional loop are coherent.
 
 ## Development Roadmap
 

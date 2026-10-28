@@ -38,6 +38,14 @@ The delve is playable, but does not by itself complete Greyfen’s town, resourc
 - Playwright coverage verifies the recipe is visible only in Greyfen, ingredients are consumed exactly once, the parcel sells for the promised base value, and the resulting inventory/purse survive reload.
 - This is one resource sink, not completion of the full regional loop. Fishing/ferry supplies, repairs, additional side activities, and the full Greyfen evidence/service acceptance sweep remain open.
 
+## Phase 9 — Greyfen crossing response
+
+- Once the main crossing evidence is filed and any discovered gauge/storehouse record has been reported, the Boundary Archive offers a player decision. Post a provisional safety notice for 1 Wood Scrap, or keep the evidence sealed until the missing closure order is found.
+- The notice states that the lower crossing record is uncertain; it names no author and does not claim the missing order has been recovered. On the next Marsh Path trip, the first selected route gains up to 5 less Road Pressure once.
+- Keeping the report sealed costs no material and grants no pressure credit. Both choices persist a memory and a response flag, survive reload, and remain reversible only through a future story event—not repeated clicks.
+- Playwright coverage checks the resource cost, saved outcome, unavailable notice without Wood Scrap, one-time effect, and Ashmere/Greyfen save persistence.
+- **Still open:** the missing closure order, the Warden's full story resolution, dedicated Storehouse scene art integration, and manual desktop/mobile visual acceptance. This response is a meaningful interim decision, not the end of Greyfen.
+
 ## First signature contract: A Dry Crossing
 The Landing Warden asks the traveler to recover a route marker washed loose from a raised path. Offer two understandable approaches: follow old posts (safer, slower, modest reward) or cross the reed bed (riskier, faster, chance at a marsh resource). Show risks and rewards before commitment. Return to Greyfen with a reward and a rumor that the route changed after the water rose. Reuse the current expedition/choice framework where possible.
 
