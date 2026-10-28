@@ -167,21 +167,22 @@ body.legend-world-shell-active {
 body.legend-world-shell-active::before {
   position: fixed; z-index: 0; inset: -2.5%; content: ""; pointer-events: none;
   background-image:
-    linear-gradient(90deg, rgba(1,4,3,.82), rgba(2,5,4,.22) 31%, rgba(2,5,4,.20) 69%, rgba(1,3,2,.82)),
-    linear-gradient(180deg, rgba(2,5,4,.22), transparent 34%, rgba(1,3,2,.62)),
+    linear-gradient(90deg, rgba(1,4,3,.58), rgba(2,5,4,.12) 31%, rgba(2,5,4,.12) 69%, rgba(1,3,2,.58)),
+    linear-gradient(180deg, rgba(2,5,4,.10), transparent 34%, rgba(1,3,2,.42)),
     url("../assets/locations/ashmere/location_ashmere_mainstreet_v1.jpg");
   background-position: center, center, center 48%;
   background-size: cover; background-repeat: no-repeat;
-  filter: saturate(.58) contrast(1.13) brightness(.42);
+  /* Shared scene brightness: .42 crushed town, road, combat and dungeon art. */
+  filter: saturate(.82) contrast(1.08) brightness(.72);
   transform: scale(1.035);
   animation: legendWorldAmbientDrift 74s ease-in-out infinite alternate;
 }
 body.legend-world-shell-active::after {
   position: fixed; z-index: 0; inset: 0; content: ""; pointer-events: none;
   background:
-    radial-gradient(ellipse at 50% 42%, transparent 12%, rgba(0,0,0,.2) 52%, rgba(0,0,0,.7) 100%),
-    linear-gradient(180deg, rgba(0,0,0,.17), transparent 24%, transparent 77%, rgba(0,0,0,.48));
-  box-shadow: inset 0 0 120px 18px rgba(0,0,0,.55);
+    radial-gradient(ellipse at 50% 42%, transparent 24%, rgba(0,0,0,.08) 62%, rgba(0,0,0,.42) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.08), transparent 24%, transparent 77%, rgba(0,0,0,.30));
+  box-shadow: inset 0 0 120px 18px rgba(0,0,0,.20);
 }
 body.legend-world-shell-active #root { background: transparent !important; }
 body.legend-world-scene-road::before,
@@ -189,8 +190,8 @@ body.legend-world-scene-combat::before,
 body.legend-world-scene-combat-results::before,
 body.legend-world-scene-expedition-results::before {
   background-image:
-    linear-gradient(90deg, rgba(1,4,3,.84), rgba(2,5,4,.24) 34%, rgba(2,5,4,.3) 70%, rgba(1,3,2,.84)),
-    linear-gradient(180deg, rgba(2,5,4,.26), transparent 32%, rgba(1,3,2,.68)),
+    linear-gradient(90deg, rgba(1,4,3,.62), rgba(2,5,4,.14) 34%, rgba(2,5,4,.18) 70%, rgba(1,3,2,.62)),
+    linear-gradient(180deg, rgba(2,5,4,.12), transparent 32%, rgba(1,3,2,.46)),
     url("../assets/locations/roads/location_old_road_main_v1.jpg");
   background-position: center, center, center 53%;
 }
@@ -201,15 +202,15 @@ body.legend-world-region-greyfen.legend-world-scene-combat::before,
 body.legend-world-region-greyfen.legend-world-scene-combat-results::before,
 body.legend-world-region-greyfen.legend-world-scene-expedition-results::before {
   background-image:
-    linear-gradient(90deg, rgba(1,4,3,.84), rgba(2,5,4,.24) 34%, rgba(2,5,4,.3) 70%, rgba(1,3,2,.84)),
-    linear-gradient(180deg, rgba(2,5,4,.24), transparent 35%, rgba(1,3,2,.68)),
+    linear-gradient(90deg, rgba(1,4,3,.62), rgba(2,5,4,.14) 34%, rgba(2,5,4,.18) 70%, rgba(1,3,2,.62)),
+    linear-gradient(180deg, rgba(2,5,4,.12), transparent 35%, rgba(1,3,2,.46)),
     url("../assets/generated/locations/greyfen-marsh-walkway.webp");
   background-position: center, center, center 54%;
 }
 body.legend-world-scene-dungeon::before {
   background-image:
-    linear-gradient(90deg, rgba(1,3,2,.82), rgba(2,4,3,.24) 50%, rgba(1,3,2,.86)),
-    linear-gradient(180deg, rgba(0,0,0,.28), transparent 29%, rgba(0,0,0,.74)),
+    linear-gradient(90deg, rgba(1,3,2,.60), rgba(2,4,3,.14) 50%, rgba(1,3,2,.64)),
+    linear-gradient(180deg, rgba(0,0,0,.14), transparent 29%, rgba(0,0,0,.48)),
     url("../assets/generated/locations/bell-cellar-undercroft.webp");
   background-position: center, center, center;
 }
@@ -227,7 +228,7 @@ body.legend-world-shell-active #root .ash100-town .ash100-hero {
   box-shadow: 0 22px 48px rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,0,0,.5);
 }
 body.legend-world-shell-active #root .ash100-town .ash100-hero > img {
-  filter: saturate(.83) contrast(1.08) brightness(.87);
+  filter: saturate(.94) contrast(1.04) brightness(1.0);
   transform: scale(1.025); animation: legendTownSceneDrift 52s ease-in-out infinite alternate;
 }
 body.legend-world-shell-active #root .ash100-town .ash100-hero::before {
@@ -236,8 +237,8 @@ body.legend-world-shell-active #root .ash100-town .ash100-hero::before {
 }
 body.legend-world-shell-active #root .ash100-town .ash100-hero::after {
   background:
-    linear-gradient(90deg, rgba(2,5,3,.88), rgba(2,5,3,.47) 42%, rgba(2,5,3,.16) 72%, rgba(2,5,3,.54)),
-    linear-gradient(180deg, rgba(1,3,2,.16), transparent 35%, rgba(1,3,2,.78)),
+    linear-gradient(90deg, rgba(2,5,3,.70), rgba(2,5,3,.30) 42%, rgba(2,5,3,.08) 72%, rgba(2,5,3,.34)),
+    linear-gradient(180deg, rgba(1,3,2,.08), transparent 35%, rgba(1,3,2,.52)),
     radial-gradient(ellipse at 70% 35%, rgba(206,157,72,.12), transparent 45%);
 }
 body.legend-world-shell-active #root .ash100-town .ash100-hero-copy {
