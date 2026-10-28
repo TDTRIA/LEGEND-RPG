@@ -340,11 +340,12 @@ body:has(.title-v136-rpg) {
   }
 
   .title-v136-rpg .v120-title-backdrop {
-    position: absolute !important;
-    inset: 0 0 auto !important;
+    position: fixed !important;
+    inset: 0 !important;
     width: 100% !important;
-    height: max(100svh, 760px) !important;
+    height: 100dvh !important;
     min-height: 100svh !important;
+    pointer-events: none !important;
     object-position: 62% top !important;
     animation: legendOpeningLandscape 54s ease-in-out infinite alternate !important;
   }
