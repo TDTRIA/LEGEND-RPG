@@ -560,12 +560,12 @@ test.describe('LEGEND persistent world shell v170', () => {
         shellShade: getComputedStyle(shell, '::before').backgroundImage
       };
     });
-    expect(road.filter).toContain('brightness(0.72)');
+    expect(road.filter).toContain('brightness(0.82)');
     expect(road.vignette).toContain('rgba(0, 0, 0, 0.2)');
     expect(road.image).toContain('location_old_road_main_v1.jpg');
-    expect(road.shellCanvas).toContain('0.18');
-    expect(road.shellCanvas).toContain('0.32');
-    expect(road.shellShade).toContain('0.08');
+    expect(road.shellCanvas).toContain('0.12');
+    expect(road.shellCanvas).toContain('0.22');
+    expect(road.shellShade).toContain('0.05');
     await expectNoHorizontalOverflow(page);
   });
 
