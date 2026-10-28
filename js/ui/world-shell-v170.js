@@ -19,6 +19,28 @@
   let renderQueued = false;
   let lastContext = null;
   let toastTimer = null;
+  const SCENE_KINDS = Object.freeze([
+    'town', 'road', 'combat', 'combat-results',
+    'expedition-results', 'dungeon', 'service'
+  ]);
+  const ATMOSPHERE_CLASSES = Object.freeze([
+    'legend-world-scene-town', 'legend-world-scene-road',
+    'legend-world-scene-combat', 'legend-world-scene-combat-results',
+    'legend-world-scene-expedition-results', 'legend-world-scene-dungeon',
+    'legend-world-scene-service', 'legend-world-region-ashmere',
+    'legend-world-region-greyfen'
+  ]);
+
+  function syncSceneAtmosphere(player, context) {
+    const body = document.body;
+    body.classList.remove(...ATMOSPHERE_CLASSES);
+    if (!context || !SCENE_KINDS.includes(context.kind)) return;
+    body.classList.add('legend-world-scene-' + context.kind);
+    const region = String(player?.currentRegion || player?.town || 'Ashmere').trim().toLowerCase() === 'greyfen'
+      ? 'greyfen'
+      : 'ashmere';
+    body.classList.add('legend-world-region-' + region);
+  }
 
   function loadPlayer() {
     return STORAGE().loadPlayer?.() || RT().loadPlayer?.() || null;
@@ -195,6 +217,7 @@
     shell.hidden = false;
     lastContext = context;
     document.body.classList.add('legend-world-shell-active');
+    syncSceneAtmosphere(player, context);
     refreshMobileToggleState(shell);
   }
 
@@ -221,6 +244,7 @@
     const shell = document.getElementById(SHELL_ID);
     if (shell) shell.hidden = true;
     document.body.classList.remove('legend-world-shell-active', 'legend-shell-left-open', 'legend-shell-right-open');
+    syncSceneAtmosphere(null, null);
     lastContext = null;
   }
 
