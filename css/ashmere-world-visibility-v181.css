@@ -4,36 +4,38 @@
 
 body.legend-world-region-ashmere.legend-world-scene-town::before {
   background-image:
-    linear-gradient(90deg, rgba(2,5,3,.45) 0%, rgba(2,5,4,.08) 28%, rgba(2,5,4,.06) 70%, rgba(1,3,2,.30) 100%),
-    linear-gradient(180deg, rgba(2,5,4,.08), transparent 32%, rgba(1,3,2,.18)),
+    linear-gradient(90deg, rgba(2,5,3,.32) 0%, rgba(2,5,4,.035) 28%, rgba(2,5,4,.025) 70%, rgba(1,3,2,.20) 100%),
+    linear-gradient(180deg, rgba(2,5,4,.025), transparent 32%, rgba(1,3,2,.10)),
     url("../assets/generated/locations/ashmere-town.webp");
   background-position: center, center, center 48%;
   background-size: cover;
   background-repeat: no-repeat;
-  filter: saturate(.84) contrast(1.06) brightness(.80);
+  /* The previous .80 filter left the scene looking dim even with the shell
+     made translucent. Bring the painting close to its original luminance. */
+  filter: saturate(.94) contrast(1.04) brightness(1.04);
 }
 
 body.legend-world-region-ashmere.legend-world-scene-town::after {
   background:
-    radial-gradient(ellipse at 50% 42%, transparent 20%, rgba(0,0,0,.08) 62%, rgba(0,0,0,.34) 100%),
-    linear-gradient(180deg, rgba(0,0,0,.06), transparent 24%, transparent 77%, rgba(0,0,0,.23));
-  box-shadow: inset 0 0 82px 10px rgba(0,0,0,.19);
+    radial-gradient(ellipse at 50% 42%, transparent 24%, rgba(0,0,0,.04) 68%, rgba(0,0,0,.20) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.025), transparent 24%, transparent 77%, rgba(0,0,0,.14));
+  box-shadow: inset 0 0 82px 10px rgba(0,0,0,.10);
 }
 
 /* The shell is a frame above the real game. Its canvas must stay translucent
    over Ashmere or it will cover the town art underneath. */
 body.legend-world-region-ashmere.legend-world-scene-town #legend-world-shell-root {
-  background: linear-gradient(180deg, rgba(5,9,7,.08), rgba(3,6,5,.12)) !important;
+  background: linear-gradient(180deg, rgba(5,9,7,.045), rgba(3,6,5,.065)) !important;
 }
 
 body.legend-world-region-ashmere.legend-world-scene-town #legend-world-shell-root::before {
-  background: linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.055), rgba(0,0,0,.025)) !important;
+  background: linear-gradient(180deg, rgba(0,0,0,.025), rgba(0,0,0,.035), rgba(0,0,0,.015)) !important;
 }
 
 /* Keep the Ashmere title legible without letting the gradient swallow the scene. */
 body.legend-world-region-ashmere.legend-world-scene-town #root .ash100-town .ash100-hero::after {
   background:
-    linear-gradient(90deg, rgba(2,5,3,.67), rgba(2,5,3,.26) 42%, rgba(2,5,3,.07) 72%, rgba(2,5,3,.30)),
-    linear-gradient(180deg, rgba(1,3,2,.07), transparent 35%, rgba(1,3,2,.52)),
-    radial-gradient(ellipse at 70% 35%, rgba(206,157,72,.13), transparent 45%);
+    linear-gradient(90deg, rgba(2,5,3,.59), rgba(2,5,3,.20) 42%, rgba(2,5,3,.045) 72%, rgba(2,5,3,.22)),
+    linear-gradient(180deg, rgba(1,3,2,.04), transparent 35%, rgba(1,3,2,.34)),
+    radial-gradient(ellipse at 70% 35%, rgba(206,157,72,.16), transparent 45%);
 }
