@@ -119,9 +119,9 @@ function roadCombatContext(){
   awardProgress:(player,amount)=>window.LegendProgressionV100?.award(player,amount),
   showCombatResults:payload=>combatResultsView?.render(payload)===true,
   onOpeningEncounterWin:(player,enemy,progress)=>window.LegendRoadOpeningV140?.afterAmbushWin?.(player,enemy,progress),
-  onDungeonEncounterWin:(player,enemy,progress)=>window.LegendBellVaultV100?.afterCombatWin?.(player,enemy,progress),
-  onDungeonEncounterDefeat:(player,enemy)=>window.LegendBellVaultV100?.afterCombatDefeat?.(player,enemy),
-  onDungeonEncounterRetreat:(player,enemy)=>window.LegendBellVaultV100?.afterCombatRetreat?.(player,enemy)
+  onDungeonEncounterWin:(player,enemy,progress)=>enemy?.greyfenStorehouseV170 ? window.LegendGreyfenStorehouseV170?.afterCombatWin?.(player,enemy,progress) : window.LegendBellVaultV100?.afterCombatWin?.(player,enemy,progress),
+  onDungeonEncounterDefeat:(player,enemy)=>enemy?.greyfenStorehouseV170 ? window.LegendGreyfenStorehouseV170?.afterCombatDefeat?.(player,enemy) : window.LegendBellVaultV100?.afterCombatDefeat?.(player,enemy),
+  onDungeonEncounterRetreat:(player,enemy)=>enemy?.greyfenStorehouseV170 ? window.LegendGreyfenStorehouseV170?.afterCombatRetreat?.(player,enemy) : window.LegendBellVaultV100?.afterCombatRetreat?.(player,enemy)
  };
 }
 function combat(enemy,note=''){
