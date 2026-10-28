@@ -76,7 +76,7 @@ test('the traveler portrait follows the chosen form, not the class art', async (
   });
   expect(forms.woman).toMatch(/class-adventurer\.webp/);
   expect(forms.nonbinary).toMatch(/class-mage\.webp/);
-  expect(forms.unspoken).toMatch(/service-traveler\.webp/);
+  expect(forms.unspoken).toMatch(/legend-icon-traveler\.webp/);
   expect(forms.legacy).toMatch(/class-ranger\.webp/);
 });
 

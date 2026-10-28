@@ -797,12 +797,19 @@
 .title-v136-rpg .v136-menu-icon {
   box-sizing: border-box !important;
   position: relative !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  flex: 0 0 28px !important;
   overflow: hidden !important;
+  clip-path: inset(0 round 3px) !important;
   contain: paint !important;
   isolation: isolate !important;
   padding: 0 !important;
   border-radius: 3px !important;
-  flex-shrink: 0 !important;
 }
 .title-v136-rpg .v136-menu-icon img,
 .title-v136-rpg .v136-menu-icon svg {
