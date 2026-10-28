@@ -30,16 +30,6 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Record branch tree for icon-crop import
-        run: git rev-parse 'HEAD^{tree}' > /tmp/legend-branch-tree-sha.txt
-
-      - name: Upload branch tree reference
-        uses: actions/upload-artifact@v4
-        with:
-          name: icon-crop-tree-reference
-          path: /tmp/legend-branch-tree-sha.txt
-          retention-days: 1
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
