@@ -1,0 +1,252 @@
+/* LEGEND v0.27.3 — grounded turn-based combat staging.
+   Purposeful actor staging and tactical tells; no continuous idle dancing. */
+.rpg-battle {
+  width: min(1180px, 100%);
+  max-width: none;
+  padding: clamp(10px, 1.8vw, 22px);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(9,13,10,.94), rgba(4,7,5,.97));
+  box-shadow: 0 25px 80px rgba(0,0,0,.4), inset 0 1px rgba(238,220,171,.05);
+}
+.rpg-battle-topline { border-bottom-color: rgba(218,191,128,.22); }
+.rpg-battlefield {
+  min-height: clamp(330px, 38vw, 460px);
+  margin: 12px 0 10px;
+  border-radius: 2px;
+  border-color: rgba(220,195,131,.3);
+  background-color: #101610;
+  box-shadow: inset 0 -70px 92px rgba(0,0,0,.38), inset 0 0 0 1px rgba(255,245,210,.045);
+}
+.rpg-battlefield::before {
+  z-index: 1;
+  opacity: 1;
+  background:
+    linear-gradient(180deg, rgba(3,7,4,.22) 0%, rgba(3,7,4,.02) 24%, rgba(3,6,4,.04) 48%, rgba(2,5,3,.7) 100%),
+    linear-gradient(90deg, rgba(2,5,3,.28), transparent 22%, transparent 75%, rgba(2,5,3,.24));
+}
+.rpg-battlefield::after {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 24%;
+  content: "";
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, transparent, rgba(4,7,4,.55)),
+    linear-gradient(90deg, transparent 9%, rgba(208,178,112,.08) 50%, transparent 91%);
+  border-top: 1px solid rgba(220,195,131,.10);
+}
+.rpg-battle-moon, .rpg-battle-orbit, .rpg-ground-haze, .rpg-target-arrow { display: none !important; }
+.rpg-duel-ground {
+  position: absolute;
+  z-index: 1;
+  right: 10%;
+  bottom: 17%;
+  left: 10%;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(218,194,132,.25) 18%, rgba(218,194,132,.12) 50%, rgba(218,194,132,.25) 82%, transparent);
+  box-shadow: 0 14px 34px rgba(0,0,0,.25);
+}
+.rpg-hero-side, .rpg-foe-side { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.rpg-hero-stage-art {
+  position: absolute;
+  left: clamp(4px, 2.2vw, 28px);
+  bottom: -1%;
+  display: grid;
+  width: clamp(145px, 25vw, 300px);
+  height: clamp(210px, 34vw, 385px);
+  align-items: end;
+  justify-items: center;
+  transform-origin: 50% 90%;
+  pointer-events: none;
+}
+.rpg-hero-stage-art img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  transform: scaleX(-1);
+  filter: saturate(.86) contrast(1.05) drop-shadow(0 15px 20px rgba(0,0,0,.58));
+  -webkit-mask-image: radial-gradient(ellipse at 50% 43%, #000 30%, rgba(0,0,0,.94) 52%, transparent 79%);
+  mask-image: radial-gradient(ellipse at 50% 43%, #000 30%, rgba(0,0,0,.94) 52%, transparent 79%);
+}
+.rpg-hero-stage-art > span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: #e1c77f;
+  font-size: clamp(5rem, 12vw, 9rem);
+  text-shadow: 0 10px 40px #000;
+}
+.rpg-hero-stage-shadow {
+  position: absolute;
+  z-index: 0;
+  bottom: 2%;
+  left: 15%;
+  right: 15%;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0,0,0,.62);
+  filter: blur(9px);
+}
+.rpg-hero-stage-plate {
+  position: absolute;
+  z-index: 4;
+  top: clamp(12px, 2.3vw, 26px);
+  left: clamp(12px, 2.5vw, 30px);
+  width: min(36%, 260px);
+  padding: 9px 12px 10px;
+  border: 1px solid rgba(222,197,131,.38);
+  border-left: 3px solid rgba(205,174,105,.84);
+  border-radius: 2px;
+  background: linear-gradient(115deg, rgba(8,13,9,.88), rgba(8,12,8,.66));
+  box-shadow: 0 10px 24px rgba(0,0,0,.2);
+  backdrop-filter: blur(3px);
+}
+.rpg-hero-stage-plate > span, .rpg-foe-nameplate > span {
+  font-size: .53rem;
+  letter-spacing: .17em;
+}
+.rpg-hero-stage-plate > span { display: block; color: #d9bf7e; font-weight: 900; }
+.rpg-hero-stage-plate > strong {
+  display: block;
+  margin: 4px 0 3px;
+  color: #f3ead5;
+  font: 500 clamp(.95rem, 1.8vw, 1.18rem)/1.1 Georgia, "Times New Roman", serif;
+  overflow-wrap: anywhere;
+}
+.rpg-hero-stage-plate > small { color: #bbc2ae; font-size: .68rem; font-variant-numeric: tabular-nums; }
+.rpg-hero-stage-hp { height: 4px; margin-top: 7px; overflow: hidden; background: rgba(64,39,31,.95); }
+.rpg-hero-stage-hp > i { display: block; height: 100%; background: linear-gradient(90deg, #80976b, #d9c47e); }
+.rpg-foe-nameplate {
+  left: auto !important;
+  right: clamp(12px, 2.5vw, 30px);
+  top: clamp(12px, 2.3vw, 26px);
+  width: min(36%, 270px);
+  padding: 9px 12px 10px;
+  border-radius: 2px;
+  border-left-width: 1px;
+  border-right: 3px solid rgba(210,106,77,.86);
+  background: linear-gradient(245deg, rgba(8,13,9,.9), rgba(8,12,8,.65));
+  box-shadow: 0 10px 24px rgba(0,0,0,.22);
+}
+.rpg-foe-nameplate > strong { font-size: clamp(.95rem, 1.8vw, 1.2rem); }
+.rpg-foe-sprite {
+  right: clamp(4px, 2vw, 24px);
+  bottom: -1%;
+  width: clamp(155px, 27vw, 310px);
+  height: clamp(205px, 34vw, 390px);
+  animation: none;
+  transform-origin: 50% 90%;
+  filter: drop-shadow(0 18px 18px rgba(0,0,0,.46));
+}
+.rpg-foe-art {
+  object-position: center bottom;
+  filter: saturate(.92) contrast(1.06) drop-shadow(0 14px 18px rgba(0,0,0,.65));
+  -webkit-mask-image: radial-gradient(ellipse at 50% 43%, #000 30%, rgba(0,0,0,.95) 53%, transparent 79%);
+  mask-image: radial-gradient(ellipse at 50% 43%, #000 30%, rgba(0,0,0,.95) 53%, transparent 79%);
+}
+.rpg-battle.rpg-intent-heavy .rpg-foe-sprite {
+  animation: none !important;
+  transform: translateY(3px) scale(1.025);
+}
+.rpg-battle.rpg-intent-guardbreak .rpg-foe-sprite {
+  animation: none !important;
+  transform: rotate(-1deg) scale(.985);
+}
+.rpg-battle.rpg-intent-snared .rpg-foe-sprite {
+  animation: none !important;
+  transform: translateY(5px) scale(.96);
+}
+.rpg-battle .rpg-dialogue {
+  border: 1px solid rgba(220,190,117,.22);
+  border-left: 3px solid rgba(220,190,117,.65);
+  border-radius: 2px;
+  background: linear-gradient(105deg, rgba(23,30,22,.95), rgba(7,11,8,.96));
+  color: #eee5d1;
+  box-shadow: inset 0 1px rgba(255,255,255,.03);
+}
+.rpg-battle .rpg-dialogue-star { color: #d6ba72; }
+.rpg-battle .rpg-dialogue-kicker { color: #c5a866; }
+.rpg-battle .rpg-dialogue p { color: #ece5d5; }
+.rpg-battle .rpg-battle-log {
+  background: linear-gradient(90deg, rgba(21,28,21,.84), rgba(7,10,8,.54));
+  border-left-color: rgba(218,191,128,.44);
+}
+.rpg-battle .rpg-turn-heading {
+  padding: 12px 10px 10px;
+  border: 1px solid rgba(215,184,106,.2);
+  border-bottom: 0;
+  background: linear-gradient(95deg, rgba(28,32,24,.85), rgba(9,13,9,.8));
+}
+.rpg-battle .rpg-command-grid {
+  padding: 10px;
+  border: 1px solid rgba(215,184,106,.2);
+  border-top: 0;
+  background: rgba(3,6,4,.48);
+}
+.rpg-battle .rpg-command { border-radius: 2px; min-height: 73px; }
+.rpg-battle .rpg-utility-command { border-radius: 2px; }
+.rpg-battle .rpg-enemy-tell {
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(95,51,29,.3), rgba(7,10,8,.36));
+}
+.rpg-battle.rpg-foe-hit .rpg-hero-stage-art { animation: rpg-hero-strike-v210 .46s cubic-bezier(.22,.75,.22,1) both; }
+.rpg-battle.rpg-player-hit:not(.rpg-foe-hit) .rpg-hero-stage-art { animation: rpg-hero-impact-v210 .4s ease-out both; }
+.rpg-battle.rpg-foe-hit.rpg-player-hit .rpg-hero-stage-art { animation: rpg-hero-round-v210 .82s cubic-bezier(.2,.72,.25,1) both; }
+.rpg-battle.rpg-foe-hit .rpg-foe-sprite { animation: rpg-impact-flash .34s ease both !important; }
+.rpg-battle.rpg-player-hit:not(.rpg-foe-hit) .rpg-foe-sprite { animation: rpg-enemy-counter-v200 .44s cubic-bezier(.2,.7,.25,1) both !important; }
+.rpg-battle.rpg-foe-hit.rpg-player-hit .rpg-foe-sprite { animation: rpg-round-exchange-v200 .82s cubic-bezier(.2,.72,.25,1) both !important; }
+@keyframes rpg-hero-strike-v210 {
+  0% { transform: translateX(0) scale(1); }
+  38% { transform: translateX(28px) translateY(-3px) scale(1.025); filter: brightness(1.15) drop-shadow(0 0 15px rgba(224,190,110,.36)); }
+  68% { transform: translateX(12px) scale(1); }
+  100% { transform: translateX(0) scale(1); }
+}
+@keyframes rpg-hero-impact-v210 {
+  0%,100% { transform: translateX(0) scale(1); filter:none; }
+  28% { transform: translateX(-10px) translateY(2px) scale(.985); filter:brightness(1.3) sepia(.18); }
+  58% { transform: translateX(3px); }
+}
+@keyframes rpg-hero-round-v210 {
+  0%,100% { transform: translateX(0) scale(1); }
+  22% { transform: translateX(22px) translateY(-2px) scale(1.02); filter:brightness(1.15); }
+  48% { transform: translateX(0) scale(1); }
+  68% { transform: translateX(-8px) translateY(2px) scale(.985); filter:brightness(1.23) sepia(.12); }
+}
+@media(max-width:560px) {
+  .rpg-battle { padding: 9px; }
+  .rpg-battlefield { min-height: clamp(265px, 74vw, 340px); }
+  .rpg-hero-stage-plate, .rpg-foe-nameplate {
+    top: 9px;
+    width: min(46%, 165px);
+    padding: 7px 8px 8px;
+  }
+  .rpg-hero-stage-plate { left: 8px; }
+  .rpg-foe-nameplate { right: 8px; }
+  .rpg-hero-stage-plate > span, .rpg-foe-nameplate > span { font-size: .43rem; }
+  .rpg-hero-stage-plate > strong, .rpg-foe-nameplate > strong { font-size: .88rem; }
+  .rpg-hero-stage-plate > small, .rpg-foe-nameplate > small { font-size: .58rem; }
+  .rpg-hero-stage-art { left: -3%; width: clamp(116px, 39vw, 168px); height: clamp(175px, 56vw, 235px); bottom: 0; }
+  .rpg-foe-sprite { right: -3%; width: clamp(132px, 42vw, 180px); height: clamp(175px, 56vw, 235px); bottom: 0; }
+  .rpg-battle .rpg-dialogue { grid-template-columns: 20px minmax(0,1fr); gap: 7px; padding: 10px; }
+  .rpg-battle .rpg-turn-heading { align-items: flex-start; }
+}
+@media(max-width:380px) {
+  .rpg-battlefield { min-height: 248px; }
+  .rpg-hero-stage-plate, .rpg-foe-nameplate { width: calc(50% - 20px); padding: 6px; }
+  .rpg-hero-stage-art { left: -7%; width: 136px; height: 185px; }
+  .rpg-foe-sprite { right: -7%; width: 145px; height: 185px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .rpg-battle *, .rpg-battle *::before, .rpg-battle *::after { scroll-behavior: auto !important; }
+  .rpg-hero-stage-art, .rpg-foe-sprite, .rpg-foe-nameplate, .rpg-hero-portrait { animation: none !important; }
+  .rpg-command:not(:disabled) { transition: none !important; }
+}
