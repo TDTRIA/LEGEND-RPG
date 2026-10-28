@@ -34,7 +34,7 @@
             <h1 class="v120-title-accessible-name" id="legendTitleAccessibleName">LEGEND: The Awakening</h1>
             <div class="portal100-kicker">ONE BELL · NO TOWER</div>
             <div class="v150-logo-lockup" role="img" aria-label="LEGEND: The Awakening"><img class="v120-legend-logo v150-legend-logo" src="${esc(logoImage || 'assets/ui/logos/logo_legend_awakening_wordmark.png?v=0.21.0-local-raster-wordmark')}" alt="" aria-hidden="true" decoding="async" fetchpriority="high" loading="eager" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="v150-wordmark-fallback" hidden><strong>LEGEND</strong><em>THE AWAKENING</em></span></div>
-            <p>A bell rings where no tower stands. Beyond Ashmere’s lantern line, something on the Old Road has begun to wake.</p>
+            <p>A bell rings where no tower stands. Monsters press against the borders. The Old Road has begun to wake.</p>
             <div class="v120-divider"><span></span><b>THE OLD ROAD IS LISTENING</b><span></span></div>
             <div class="v120-traveler-line">
               <span class="v120-avatar" aria-hidden="true">${player ? esc(String(name).slice(0,1)).toUpperCase() : '<img src="assets/generated/ui/icons/service-traveler.webp" alt="" loading="lazy" decoding="async">'}</span>
