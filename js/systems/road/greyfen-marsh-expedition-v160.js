@@ -474,7 +474,7 @@
       secondaryHint: 'Bring the salvaged notes back to town',
       secondaryTransition: 'Returning to Greyfen',
       onContinue: () => render(victory ? 'The raider is gone. Return to the Reed Bed when ready.' : 'You escape the ferry ambush. Return to the Reed Bed when ready.'),
-      onReturn: () => settle(false),
+      onReturn: () => victory ? settle(false) : render('You escape the ferry ambush. Return to the Reed Bed when ready.'),
       onSecondary: () => settle(false)
     }) === true;
   }
