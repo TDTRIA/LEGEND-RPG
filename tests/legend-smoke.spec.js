@@ -326,6 +326,12 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       return icon.backgroundImage.includes('legend-icon-' + name + '.webp');
     })).toBe(true);
     await expect(page.locator('.title-v136-rpg .title-atmosphere')).toBeHidden();
+    const legacyRing = await page.locator('.title-v136-rpg.portal-v100').evaluate(node => {
+      const style = getComputedStyle(node, '::before');
+      return { display: style.display, content: style.content, boxShadow: style.boxShadow };
+    });
+    expect(legacyRing.display === 'none' || legacyRing.content === 'none').toBe(true);
+    expect(legacyRing.boxShadow === 'none').toBe(true);
     for (const name of ['compass', 'journal', 'traveler', 'inn', 'market', 'forge', 'road', 'settings', 'milestone']) {
       const response = await page.request.get('/assets/generated/ui/icons/legend-icon-' + name + '.webp');
       expect(response.ok()).toBe(true);
