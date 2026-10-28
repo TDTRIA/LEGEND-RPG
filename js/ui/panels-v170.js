@@ -12,6 +12,21 @@
     .trim()
     .replace(/\b\w/g, char => char.toUpperCase());
 
+  const RASTER_ICON_NAMES = Object.freeze([
+    'compass', 'journal', 'traveler', 'inn', 'market', 'forge', 'road', 'settings', 'milestone'
+  ]);
+  const DESTINATION_ICON_BY_VIEW = Object.freeze({
+    home: 'inn', people: 'traveler', inn: 'inn', trader: 'market', smith: 'forge',
+    work: 'milestone', dungeon: 'milestone', crossing: 'compass', craft: 'forge',
+    sheet: 'traveler', archive: 'journal', routes: 'compass', quests: 'journal',
+    road: 'road', regions: 'compass', profile: 'traveler'
+  });
+
+  function rasterIcon(name) {
+    const icon = RASTER_ICON_NAMES.includes(name) ? name : 'milestone';
+    return '<span class="lws-btn-icon runway-icon runway-icon-' + icon + '" aria-hidden="true"></span>';
+  }
+
   // Phase 4 Ashmere POI selection is presentation-only state. It never writes to
   // the traveler record; entering a place delegates to the real Ashmere route.
   const ASHMERE_POIS = Object.freeze({
@@ -22,17 +37,17 @@
     },
     market: {
       view: 'trader', name: 'Market', icon: '◇', eyebrow: 'TRADE & SUPPLIES',
-      detail: 'Buy essentials and sell road loot through Ashmere’s existing market.',
+      detail: 'Trade for provisions and sell what you have brought back from the road.',
       action: 'Visit the Market'
     },
     forge: {
       view: 'smith', name: 'Forge & Workshop', icon: '⚒', eyebrow: 'GEAR & CRAFT',
-      detail: 'Review weapons and armor, then use the existing workshop and crafting bench.',
+      detail: 'Choose weapons and armor, then put gathered materials to work at the bench.',
       action: 'Visit the Forge'
     },
     road: {
       view: 'road', name: 'Old Road Gate', icon: '➜', eyebrow: 'THE BORDERLANDS',
-      detail: 'Review the existing departure briefing before setting out on the Old Road.',
+      detail: 'Pass the gate, study the departure briefing, and take the Old Road into the borderlands.',
       action: 'Approach the Old Road Gate'
     }
   });
@@ -65,7 +80,7 @@
     }
     native.classList.add('lws-poi-active');
 
-    const noteHtml = '<span class="lws-poi-scene-kicker">' + esc(poi.eyebrow) + ' · SELECTED PLACE</span>' +
+    const noteHtml = '<span class="lws-poi-scene-kicker">' + esc(poi.eyebrow) + '</span>' +
       '<strong>' + esc(poi.name) + '</strong><p>' + esc(poi.detail) + '</p>';
     let note = town.querySelector('.lws-poi-scene-note');
     if (!note) {
@@ -93,17 +108,17 @@
       const native = root?.querySelector('.ash100-town-ashmere .ash100-destination[data-ash-view="' + poi.view + '"]');
       const disabled = !native || native.disabled || native.getAttribute('aria-disabled') === 'true';
       return '<button class="lws-place-option' + (selectedAshmerePoi === id ? ' is-selected' : '') + '" type="button" data-world-place="' + id + '" aria-pressed="' + String(selectedAshmerePoi === id) + '"' +
-        (disabled ? ' disabled aria-disabled="true"' : '') + '><span class="lws-place-option-icon runway-icon runway-icon-' + id + '" aria-hidden="true"></span><span class="lws-place-option-copy"><strong>' + esc(poi.name) + '</strong><small>' + esc(poi.eyebrow) + '</small></span><span class="lws-place-option-state">' + (selectedAshmerePoi === id ? 'Selected' : 'Inspect') + '</span></button>';
+        (disabled ? ' disabled aria-disabled="true"' : '') + '><span class="lws-place-option-icon runway-icon runway-icon-' + id + '" aria-hidden="true"></span><span class="lws-place-option-copy"><strong>' + esc(poi.name) + '</strong><small>' + esc(poi.eyebrow) + '</small></span><span class="lws-place-option-state">' + (selectedAshmerePoi === id ? 'In view' : 'Look closer') + '</span></button>';
     }).join('');
     const selectedMarkup = current
-      ? '<section class="lws-selected-place" aria-label="Selected place details"><span class="lws-panel-eyebrow">Selected location</span><h3>' + esc(current.name) + '</h3><p>' + esc(current.detail) + '</p><button type="button" class="lws-btn primary lws-visit-place" data-world-action="visit-selected-place"><span class="lws-btn-icon runway-icon runway-icon-' + selectedAshmerePoi + '" aria-hidden="true"></span><span class="lws-btn-copy"><strong>' + esc(current.action) + '</strong><small>Open the existing game service</small></span></button></section>'
-      : '<div class="lws-poi-hint"><strong>Choose a place to inspect it.</strong><p>The town scene stays in view. Enter a place only when you are ready to use its existing service.</p></div>';
+      ? '<section class="lws-selected-place" aria-label="Selected place details"><span class="lws-panel-eyebrow">Landmark in view</span><h3>' + esc(current.name) + '</h3><p>' + esc(current.detail) + '</p><button type="button" class="lws-btn primary lws-visit-place" data-world-action="visit-selected-place"><span class="lws-btn-icon runway-icon runway-icon-' + selectedAshmerePoi + '" aria-hidden="true"></span><span class="lws-btn-copy"><strong>' + esc(current.action) + '</strong><small>Enter this place</small></span></button></section>'
+      : '<div class="lws-poi-hint"><strong>Where will you go next?</strong><p>Choose a destination to learn what it offers before you step inside.</p></div>';
     const excluded = Object.values(ASHMERE_POIS).map(poi => poi.view);
     const otherDestinations = destinationButtons(root, excluded);
-    return '<div class="lws-panel-header"><div><span class="lws-panel-eyebrow">Ashmere · Town scene</span><h2>Places of Interest</h2><p>Inspect a destination, then enter through the existing game route.</p></div></div>' +
+    return '<div class="lws-panel-header"><div><span class="lws-panel-eyebrow">Ashmere · Under the lanterns</span><h2>Landmarks &amp; Services</h2><p>Find shelter, supplies, craft, and the roads that lead beyond the walls.</p></div></div>' +
       '<div class="lws-panel-scroll"><section class="lws-poi-picker" aria-label="Ashmere points of interest"><div class="lws-place-option-list">' + placeOptions + '</div>' + selectedMarkup + '</section>' +
-      (otherDestinations ? '<section class="lws-other-destinations"><div class="lws-section-title"><span>Other destinations</span><span>Town services</span></div><div class="lws-action-list">' + otherDestinations + '</div></section>' : '') +
-      '<button class="lws-btn quiet lws-town-routes" type="button" data-world-action="map"><span class="lws-btn-icon" aria-hidden="true">⌖</span><span class="lws-btn-copy"><strong>Town routes</strong><small>Open the existing route screen</small></span></button></div>';
+      (otherDestinations ? '<section class="lws-other-destinations"><div class="lws-section-title"><span>More of Ashmere</span></div><div class="lws-action-list">' + otherDestinations + '</div></section>' : '') +
+      '<button class="lws-btn quiet lws-town-routes" type="button" data-world-action="map">' + rasterIcon('compass') + '<span class="lws-btn-copy"><strong>Road Network</strong><small>Follow the marked roads beyond town</small></span></button></div>';
   }
 
   function objectiveFor(player, root, context) {
@@ -168,18 +183,18 @@
       ? quests.map((entry, index) => {
           const text = String(entry || '');
           const colon = text.indexOf(':');
-          const title = colon > 0 ? text.slice(0, colon) : (index === 0 ? 'Current Quest' : 'Quest Note');
+          const title = colon > 0 ? text.slice(0, colon) : (index === 0 ? 'Current lead' : 'Field note');
           const detail = colon > 0 ? text.slice(colon + 1).trim() : text;
           return '<li class="lws-quest-item"><strong>' + esc(title) + '</strong><p>' + esc(detail) + '</p></li>';
         }).join('')
-      : '<li class="lws-quest-item"><strong>No recorded quest yet</strong><p>Speak with the people of Ashmere to find a lead.</p></li>';
+      : '<li class="lws-quest-item"><strong>No active contract</strong><p>Check the work board or ask a local what needs doing.</p></li>';
 
     return '<div class="lws-panel-header"><div><span class="lws-panel-eyebrow">Traveler record</span><h2>' + name + '</h2><p>' + className + ' · Level ' + level + ' · Day ' + day + '</p></div><span class="lws-tag"><strong>' + roadTokens + '</strong> tokens</span></div>' +
       '<div class="lws-panel-scroll">' +
         '<section class="lws-section"><div class="lws-section-title"><span>Vitality</span><span>' + healthPercent + '%</span></div><div class="lws-health-line"><span>Health</span><strong>' + hp + ' / ' + maxHp + '</strong></div><div class="lws-meter" aria-label="Health ' + hp + ' of ' + maxHp + '"><span style="width:' + healthPercent + '%"></span></div><ul class="lws-small-list" style="margin-top:9px"><li><span>Gold</span><strong>' + Math.max(0, safeNumber(player?.gold)) + 'g</strong></li><li><span>Rations</span><strong>' + Math.max(0, safeNumber(inventory.food)) + '</strong></li><li><span>Healing potions</span><strong>' + Math.max(0, safeNumber(inventory.potion)) + '</strong></li></ul></section>' +
-        '<section class="lws-section"><div class="lws-section-title"><span>Active objective</span><span aria-hidden="true">✦</span></div><div class="lws-quest-item"><strong>' + objective + '</strong><p>' + (context?.kind === 'road' ? 'Your choices on the road are recorded by the expedition system.' : 'Your next step is drawn from the current traveler record.') + '</p></div></section>' +
+        '<section class="lws-section"><div class="lws-section-title"><span>' + (context?.kind === 'road' ? 'The road ahead' : 'Current lead') + '</span><span aria-hidden="true">✦</span></div><div class="lws-quest-item"><strong>' + objective + '</strong><p>' + (context?.kind === 'road' ? 'Every trail, find, and camp report leaves a mark in your field journal.' : 'Keep this lead close as you move through the borderlands.') + '</p></div></section>' +
         '<section class="lws-section"><div class="lws-section-title"><span>Quest log</span><span>' + quests.length + '</span></div><ul class="lws-small-list" style="display:block">' + questMarkup + '</ul></section>' +
-        '<section class="lws-section"><div class="lws-section-title"><span>Field journal</span><span>V150</span></div><ul class="lws-small-list"><li><span>Places visited</span><strong>' + visits + '</strong></li><li><span>Discoveries</span><strong>' + discoveries + '</strong></li><li><span>Routes recorded</span><strong>' + routes + '</strong></li><li><span>Camp reports</span><strong>' + reports + '</strong></li></ul><p class="lws-note" style="margin-top:8px">This panel reads the saved journal. It does not create or replace journal records.</p><button class="lws-btn quiet" type="button" data-world-action="journal" style="margin-top:9px"><span class="lws-btn-icon" aria-hidden="true">✧</span><span class="lws-btn-copy"><strong>Open journal</strong><small>Review existing notes</small></span></button></section>' +
+        '<section class="lws-section"><div class="lws-section-title"><span>Field journal</span><span>Road notes</span></div><ul class="lws-small-list"><li><span>Places visited</span><strong>' + visits + '</strong></li><li><span>Discoveries</span><strong>' + discoveries + '</strong></li><li><span>Routes recorded</span><strong>' + routes + '</strong></li><li><span>Camp reports</span><strong>' + reports + '</strong></li></ul><p class="lws-note" style="margin-top:8px">Landmarks, discoveries, and camp reports gathered beyond the gate.</p><button class="lws-btn quiet" type="button" data-world-action="journal" style="margin-top:9px"><span class="lws-btn-icon" aria-hidden="true">✧</span><span class="lws-btn-copy"><strong>Open journal</strong><small>Review existing notes</small></span></button></section>' +
       '</div>';
   }
 
