@@ -814,53 +814,62 @@
   overflow: hidden !important;
 }
 .title-v136-rpg .runway-icon {
-  background-image: url('../assets/generated/ui/icons/legend-runway-icon-atlas.webp'), var(--runway-icon-fallback) !important;
-  background-size: 300% 300%, contain !important;
+  background-image: var(--runway-icon-image), var(--runway-icon-fallback) !important;
+  background-size: contain, contain !important;
   background-repeat: no-repeat, no-repeat !important;
-  background-position: var(--runway-x) var(--runway-y), center center !important;
+  background-position: center center, center center !important;
   background-color: rgba(6, 11, 8, .94) !important;
 }
 .runway-icon-compass {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-compass.webp');
   --runway-x: 0%;
   --runway-y: 0%;
   --runway-icon-fallback: url('../assets/generated/ui/icons/service-map.webp');
 }
 .runway-icon-journal {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-journal.webp');
   --runway-x: 50%;
   --runway-y: 0%;
   --runway-icon-fallback: url('../assets/generated/ui/icons/service-journal.webp');
 }
 .runway-icon-traveler {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-traveler.webp');
   --runway-x: 100%;
   --runway-y: 0%;
   --runway-icon-fallback: url('../assets/generated/ui/icons/service-traveler.webp');
 }
 .runway-icon-inn {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-inn.webp');
   --runway-x: 0%;
   --runway-y: 50%;
   --runway-icon-fallback: url('../assets/generated/ui/icons/service-inn.webp');
 }
 .runway-icon-market {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-market.webp');
   --runway-x: 50%;
   --runway-y: 50%;
   --runway-icon-fallback: url('../assets/generated/ui/icons/service-market.webp');
 }
 .runway-icon-forge {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-forge.webp');
   --runway-x: 100%;
   --runway-y: 50%;
   --runway-icon-fallback: url('../assets/generated/ui/icons/service-blacksmith.webp');
 }
 .runway-icon-road {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-road.webp');
   --runway-x: 0%;
   --runway-y: 100%;
   --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp');
 }
 .runway-icon-settings {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-settings.webp');
   --runway-x: 50%;
   --runway-y: 100%;
   --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp');
 }
 .runway-icon-milestone {
+  --runway-icon-image: url('../assets/generated/ui/icons/legend-icon-milestone.webp');
   --runway-x: 100%;
   --runway-y: 100%;
   --runway-icon-fallback: url('../assets/generated/ui/icons/service-milestone.webp');
@@ -880,10 +889,10 @@
 .lws-place-option-icon.runway-icon {
   overflow: hidden !important;
   font-size: 0 !important;
-  background-image: url('../assets/generated/ui/icons/legend-runway-icon-atlas.webp'), var(--runway-icon-fallback) !important;
-  background-size: 300% 300%, contain !important;
+  background-image: var(--runway-icon-image), var(--runway-icon-fallback) !important;
+  background-size: contain, contain !important;
   background-repeat: no-repeat, no-repeat !important;
-  background-position: var(--runway-x) var(--runway-y), center center !important;
+  background-position: center center, center center !important;
   background-color: #0a110c !important;
 }
 .lws-selected-place .lws-btn-icon.runway-icon {
@@ -893,10 +902,10 @@
   height: 20px !important;
   overflow: hidden !important;
   font-size: 0 !important;
-  background-image: url('../assets/generated/ui/icons/legend-runway-icon-atlas.webp'), var(--runway-icon-fallback) !important;
-  background-size: 300% 300%, contain !important;
+  background-image: var(--runway-icon-image), var(--runway-icon-fallback) !important;
+  background-size: contain, contain !important;
   background-repeat: no-repeat, no-repeat !important;
-  background-position: var(--runway-x) var(--runway-y), center center !important;
+  background-position: center center, center center !important;
   background-color: #0a110c !important;
   border-radius: 3px !important;
 }
@@ -908,3 +917,21 @@
 .lws-selected-place .lws-btn-icon.runway-icon-market { --runway-x: 50%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-market.webp'); }
 .lws-selected-place .lws-btn-icon.runway-icon-forge { --runway-x: 100%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-blacksmith.webp'); }
 .lws-selected-place .lws-btn-icon.runway-icon-road { --runway-x: 0%; --runway-y: 100%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp'); }
+
+
+/* Title cleanup: the landscape art is the only atmospheric layer. Remove legacy halo/fog/ember circles. */
+.title-v136-rpg .title-atmosphere,
+.title-v136-rpg .title-atmosphere::before,
+.title-v136-rpg .title-atmosphere::after,
+.title-v136-rpg .title-embers,
+.title-v136-rpg .title-fog {
+  display: none !important;
+  visibility: hidden !important;
+  content: none !important;
+  opacity: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  filter: none !important;
+  pointer-events: none !important;
+}
