@@ -43,9 +43,10 @@ test.describe('LEGEND UI cascade contract v190', () => {
     expect(position('css/legend-world-shell-v170.css')).toBeGreaterThan(position('css/legend-ui-system-v160.css'));
     expect(position('css/legend-ui-rollout-v180.css')).toBeGreaterThan(position('css/legend-world-shell-v170.css'));
     expect(position('css/opening-cinematic-v170.css')).toBeGreaterThan(position('css/legend-ui-rollout-v180.css'));
+    expect(position('css/opening-story-cinematic-v201.css')).toBeGreaterThan(position('css/title-realm-entry-v191.css'));
     expect(position('css/greyfen-storehouse-v170.css')).toBeGreaterThan(position('css/greyfen-marsh-v160.css'));
     expect(position('css/legend-ui-system-v160.css')).toBeGreaterThan(position('css/greyfen-storehouse-v170.css'));
-    expect(files).toHaveLength(41);
+    expect(files).toHaveLength(42);
 
     const responses = await Promise.all(files.map(async file => ({
       file,
