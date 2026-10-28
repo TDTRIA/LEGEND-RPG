@@ -174,12 +174,17 @@ function battleEvent(){
  const pl=p();if(!pl)return;
  const s=ensure(pl),catalog=road().enemies||[],pressure=Number(s.pressure||0),route=s.routeChoice;
  if(!catalog.length)return eventCheck('survival',2);
- // Pressure changes both who finds the traveler and how dangerous the encounter is.
+ // Route tells influence which threats can appear; pressure still escalates the known danger.
+ const availableCatalog=catalog.filter(enemy=>
+  !(route==='ridge'&&enemy.id==='wisp') &&
+  !(route==='reeds'&&enemy.id==='bandit'&&pressure<45)
+ );
+ const pool=availableCatalog.length?availableCatalog:catalog;
  let base=null;
  if(pressure>=82&&route==='reeds')base=catalog.find(enemy=>enemy.id==='wisp')||null;
  if(pressure>=82&&!base)base=catalog.find(enemy=>enemy.id==='wolf')||null;
  if(pressure>=72&&!base&&route==='reeds')base=catalog.find(enemy=>enemy.id==='wolf')||null;
- base=base||pick(catalog);
+ base=base||pick(pool);
  const tier=pressure>=82?'severe':pressure>=72?'high':'rising';
  const hpScale=tier==='severe'?1.3:tier==='high'?1.16:1;
  const damageBonus=tier==='severe'?2:tier==='high'?1:0;
