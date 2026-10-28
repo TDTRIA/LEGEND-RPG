@@ -142,18 +142,18 @@
     if (shell) return shell;
     shell = document.createElement('div');
     shell.id = SHELL_ID;
-    shell.setAttribute('aria-label', 'Persistent world interface');
+    shell.setAttribute('aria-label', 'The Borderlands — traveler and location controls');
     shell.innerHTML =
       '<header class="lws-hud" aria-label="Traveler status">' +
         '<div class="lws-hud-left">' +
           '<button type="button" class="lws-btn compact quiet lws-mobile-toggle" data-world-action="toggle-left" aria-controls="lws-panel-left" aria-expanded="false">Journal</button>' +
-          '<div class="lws-hud-brand"><span class="lws-brand-mark" aria-hidden="true">✦</span><div class="lws-brand-copy"><strong>LEGEND</strong><span>THE AWAKENING · WORLD FRAME</span></div></div>' +
+          '<div class="lws-hud-brand"><span class="lws-brand-mark" aria-hidden="true">✦</span><div class="lws-brand-copy"><strong>LEGEND</strong><span>BEYOND THE LANTERN LINE</span></div></div>' +
           '<div class="lws-location"><span>Current location</span><strong id="lws-current-location">Ashmere</strong></div>' +
         '</div>' +
-        '<div class="lws-hud-center"><div class="lws-objective"><span class="lws-objective-label">Current objective</span><strong id="lws-current-objective">Find your next lead in town</strong></div></div>' +
+        '<div class="lws-hud-center"><div class="lws-objective"><span class="lws-objective-label">Your next lead</span><strong id="lws-current-objective">Ask a local or check the work board for a lead.</strong></div></div>' +
         '<div class="lws-hud-right">' +
           '<div class="lws-hud-vitals"><div class="lws-vital health"><span>Health</span><strong id="lws-hud-health">— / —</strong></div><div class="lws-vital gold"><span>Gold</span><strong id="lws-hud-gold">—</strong></div></div>' +
-          '<button type="button" class="lws-btn compact lws-hud-save" data-world-action="save" aria-label="Save traveler"><span class="lws-btn-icon" aria-hidden="true">⌑</span><span class="lws-btn-copy"><strong>Save</strong></span></button>' +
+          '<button type="button" class="lws-btn compact lws-hud-save" data-world-action="save" aria-label="Save traveler"><span class="lws-btn-icon runway-icon runway-icon-journal" aria-hidden="true"></span><span class="lws-btn-copy"><strong>Save</strong></span></button>' +
           '<button type="button" class="lws-btn compact quiet lws-mobile-toggle" data-world-action="toggle-right" aria-controls="lws-panel-right" aria-expanded="false">Actions</button>' +
         '</div>' +
       '</header>' +
@@ -171,7 +171,7 @@
       modal = document.createElement('div');
       modal.id = MODAL_ID;
       modal.hidden = true;
-      modal.setAttribute('aria-label', 'Game overlay');
+      modal.setAttribute('aria-label', 'Traveler records and tools');
       document.body.appendChild(modal);
     }
     return modal;
