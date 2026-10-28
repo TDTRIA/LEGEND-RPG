@@ -51,6 +51,8 @@
 const ENEMY_INTENT_PATTERNS = Object.freeze({
  // Goblins feint past a guard, take a quick strike, then commit to a heavy blow.
  raider: Object.freeze(['guardbreak','attack','heavy']),
+ // Bandits alternate a guard-breaking feint with a committed strike.
+ bandit: Object.freeze(['guardbreak','heavy','attack']),
  // Wolves press forward twice before briefly committing to a heavier lunge.
  predator: Object.freeze(['attack','heavy','attack']),
  // Wisps telegraph a strange surge, then try to break a steady guard.
@@ -81,6 +83,7 @@ function combat(enemy,note=''){
  if(enemy.combatStartLevel==null)enemy.combatStartLevel=Math.max(1,Number(pl.level||1));
  enemy.turn=Number(enemy.turn||0);
  enemy.intent=enemy.intent||enemyIntent(enemy);
+ enemy.combatLog=Array.isArray(enemy.combatLog)?enemy.combatLog:[];
  startBattleMusic();
  if(combatView?.render){
   return combatView.render(pl,enemy,note,weapon(pl),armor(pl),classTechnique(pl));
@@ -152,7 +155,10 @@ function combatAction(enemy,action){
  const base=enemy.damage||[3,7];
  const rawBase=enemy.intent==='heavy'?Number(base[1]||7)+3:enemy.intent==='guardbreak'?Number(base[0]||3)+2:rand(Number(base[0]||3),Number(base[1]||7));
  const raw=rawBase+(action==='heavy'?4:0)-(enemy.snared?7:0);
- const armorValue=Math.max(0,Number(a.defense||0));
+ const listedArmor=Math.max(0,Number(a.defense||0));
+ // Old armor scores were much larger than the new road damage scale. Convert
+ // them to a bounded mitigation value so gear matters without making enemies harmless.
+ const armorValue=listedArmor<=4?listedArmor:Math.min(12,Math.round(listedArmor*.25));
  const reduction=enemy.intent==='guardbreak'?Math.floor(armorValue*.4)+(guarding?5:0):armorValue+(guarding?(enemy.intent==='heavy'?8:5):0);
  const incoming=Math.max(0,raw-reduction);pl.hp=Math.max(0,Number(pl.hp||1)-incoming);
  if(enemy.snared){note+=' The trap weakens the counterattack.';enemy.snared=false;}
@@ -160,6 +166,11 @@ function combatAction(enemy,action){
  if(action!=='skill')enemy.skillCooldown=Math.max(0,Number(enemy.skillCooldown||0)-1);
  note+=(guarding?' Your guard turns the blow aside.':' '+enemy.name+' hits you for '+incoming+' damage.')+(action==='heavy'?' Your heavy swing leaves you exposed.':'');
  if(incoming>0)playBattleFx('hit');
+ if(note){
+  enemy.combatLog=Array.isArray(enemy.combatLog)?enemy.combatLog:[];
+  enemy.combatLog.push(note);
+  enemy.combatLog=enemy.combatLog.slice(-4);
+ }
  if(pl.hp<=0){
   pl.hp=1;
   if(enemy.dungeonV100&&typeof context.onDungeonEncounterDefeat==='function'){save(pl);stopBattleMusic();return context.onDungeonEncounterDefeat(pl,enemy)}
@@ -172,8 +183,23 @@ function combatAction(enemy,action){
 }
 function win(enemy){
  stopBattleMusic();playBattleFx('victory');tone('success');
- const pl=p();if(!pl)return;const s=ensure(pl);inv(pl,enemy.reward||'fur',1);
- const progress=context.awardProgress?.(pl,25+Math.min(20,Number(s.stage||0)*4));
+ const pl=p();if(!pl)return;const s=ensure(pl);
+ const drops=[{item:enemy.reward||'fur',count:1}];
+ const bonusDrop=enemy.bonusDrop;
+ if(bonusDrop&&bonusDrop.item&&rand(1,100)<=Math.max(0,Math.min(100,Number(bonusDrop.chance||0)))){
+  const amount=Array.isArray(bonusDrop.amount)?rand(Number(bonusDrop.amount[0]||1),Number(bonusDrop.amount[1]||bonusDrop.amount[0]||1)):Math.max(1,Number(bonusDrop.amount||1));
+  drops.push({item:bonusDrop.item,count:amount});
+ }
+ drops.forEach(drop=>inv(pl,drop.item,drop.count));
+ if(Array.isArray(enemy.goldDrop)&&enemy.goldDrop.length>=2){
+  pl.gold=Number(pl.gold||0)+Math.max(0,rand(Number(enemy.goldDrop[0]||0),Number(enemy.goldDrop[1]||0)));
+ }
+ const xpBase=Number(enemy.xp==null?25:enemy.xp);
+ const stageBonus=Math.min(20,Number(s.stage||0)*4);
+ const tierBonus=enemy.pressureTier==='severe'?12:enemy.pressureTier==='high'?6:0;
+ const progress=context.awardProgress?.(pl,xpBase+stageBonus+tierBonus);
+ const earnedItems=drops.map(drop=>itemName(drop.item)+(drop.count>1?' ×'+drop.count:''));
+ const rewardLabel=earnedItems.join(' · ');
  if(enemy.openingEncounterV140){
   pl.stats=pl.stats||{};
   pl.stats.monstersDefeated=Number(pl.stats.monstersDefeated||0)+1;
@@ -185,7 +211,7 @@ function win(enemy){
  if(enemy.dungeonV100){pl.stats=pl.stats||{};pl.stats.monstersDefeated=Number(pl.stats.monstersDefeated||0)+1;pl.stats.dungeonVictories=Number(pl.stats.dungeonVictories||0)+1;save(pl);if(typeof context.onDungeonEncounterWin==='function')return context.onDungeonEncounterWin(pl,enemy,progress);return outcome('The Sentinel Falls','The cellar encounter is won and its combat rewards are saved.','DUNGEON ENCOUNTER')}
  s.stage=clamp(s.stage+1,0,5);s.pressure=clamp(s.pressure-8,0,100);pl.stats=pl.stats||{};pl.stats.monstersDefeated=Number(pl.stats.monstersDefeated||0)+1;pl.stats.roadVictories=Number(pl.stats.roadVictories||0)+1;
  save(pl);
- const result={player:pl,enemy,result:'victory',progress:progress||{gained:0,levels:0,level:Number(pl.level||1)},rewardName:itemName(enemy.reward||'fur'),goldGained:Math.max(0,Number(pl.gold||0)-Number(enemy.combatStartGold||0)),routeStage:Number(s.stage||0),pressure:Number(s.pressure||0)};
+ const result={player:pl,enemy,result:'victory',progress:progress||{gained:0,levels:0,level:Number(pl.level||1)},rewardName:rewardLabel,goldGained:Math.max(0,Number(pl.gold||0)-Number(enemy.combatStartGold||0)),routeStage:Number(s.stage||0),pressure:Number(s.pressure||0)};
  if(typeof showCombatResults==='function'&&showCombatResults(result))return;
  renderExpedition(enemy.name+' defeated. You recover '+itemName(enemy.reward||'fur')+'. '+(progress?'XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'. ':'')+'You continue along the Old Road.');
 }
