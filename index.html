@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="css/opening-road-v140.css?v=0.20.40-opening-road">
   <link rel="stylesheet" href="css/immersive-world-v150.css?v=0.24.1-title-ring-removed-5">
   <link rel="stylesheet" href="css/bell-vault-v100.css?v=0.21.0-first-delve">
-  <link rel="stylesheet" href="css/world-client-boot-v100.css?v=0.22.1-runway-bg">
+  <link rel="stylesheet" href="css/world-client-boot-v100.css?v=0.27.1-cinematic-boot-1">
   <link rel="stylesheet" href="css/runway-art-pass-v151.css?v=0.24.1-runway-icon-square-1">
   <link rel="stylesheet" href="css/progression-results-v152.css?v=0.23.0-growth-results">
   <link rel="stylesheet" href="css/greyfen-marsh-v160.css?v=0.24.0-marsh-path">
@@ -52,7 +52,7 @@
     <div class="legend-boot-vignette" aria-hidden="true"></div>
     <section class="legend-boot-frame" aria-labelledby="legend-boot-title">
       <div class="legend-boot-sigil" aria-hidden="true"><span>✦</span><i></i></div>
-      <p id="legend-boot-title" class="legend-boot-kicker">REALM INITIALIZATION · v0.27.0</p>
+      <p id="legend-boot-title" class="legend-boot-kicker">AWAKENING THE REALM · v0.27.1</p>
       <img class="legend-boot-wordmark" src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
       <div class="legend-boot-wordmark-fallback" hidden><strong>LEGEND</strong><span>THE AWAKENING</span></div>
       <p class="legend-boot-subtitle">The roads remember. The realm is waking.</p>
@@ -70,7 +70,7 @@
         <div data-boot-step="traveler"><span class="legend-boot-step-index">03</span><span class="legend-boot-step-name">Traveler archive</span><b>WAITING</b></div>
         <div data-boot-step="scene"><span class="legend-boot-step-index">04</span><span class="legend-boot-step-name">Opening scene</span><b>WAITING</b></div>
       </div>
-      <p class="legend-boot-footnote">INITIALIZING THE BORDERLANDS</p>
+      <p class="legend-boot-footnote">THE BORDERLANDS AWAIT</p>
     </section>
   </div>
   <script>
@@ -114,10 +114,10 @@
         state.totalScripts = document.querySelectorAll('script[src]').length || state.totalScripts;
         const ratio = state.loadedScripts / Math.max(1, state.totalScripts);
         const percent = Math.min(86, 6 + ratio * 80);
-        let message = 'Reading the realm manifest';
-        if (ratio >= .22) message = 'Linking world systems';
-        if (ratio >= .52) message = 'Checking traveler records';
-        if (ratio >= .82) message = 'Preparing the opening scene';
+        let message = 'Listening for the first bell';
+        if (ratio >= .22) message = 'Waking the world';
+        if (ratio >= .52) message = 'Seeking your traveler record';
+        if (ratio >= .82) message = 'Kindling the opening scene';
         const detail = state.failedScripts
           ? (state.loadedScripts + ' linked · ' + state.failedScripts + ' unavailable')
           : (state.loadedScripts + ' / ' + Math.max(state.totalScripts, state.loadedScripts) + ' world files linked');
@@ -130,7 +130,7 @@
       state.markStep = markStep;
       state.reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ||
         document.body.classList.contains('a11y-reduced-motion');
-      paintProgress(4, 'Reading the realm manifest', 'Opening local world files');
+      paintProgress(4, 'Listening for the first bell', 'Gathering signs of a waking realm');
     })();
   </script>
   <div id="root"></div>
