@@ -16,8 +16,11 @@
 
   function renderSmith(tab='weapon'){
     const pl=p(),assets=A().items||{};
-    const weapons=(D().weapons||[]).filter(w=>w.id!=='hand'),armors=(D().armors||[]).filter(a=>a.id!=='none');
-    const equippedWeapon=weapons.find(w=>w.id===pl.weapon),equippedArmor=armors.find(a=>a.id===pl.armor);
+    const weapons=(D().weapons||[]).filter(w=>w.id!=='hand');
+    const allArmors=(D().armors||[]).filter(a=>a.id!=='none');
+    const region=String(pl.currentRegion||'Ashmere');
+    const armors=allArmors.filter(a=>!a.region||a.region===region||Number(pl.ownedArmor?.[a.id]||0)>0);
+    const equippedWeapon=weapons.find(w=>w.id===pl.weapon),equippedArmor=allArmors.find(a=>a.id===pl.armor);
     const portrait=A().travelerPortrait?.(pl)||A().classes?.[pl.className]||'';
     const loadoutItem=(name,detail,art,kind)=>'<div class="ash099-loadout-slot">'+(kind==='weapon'?weaponArtSvg(p()?.weapon):(armorArt(p()?.armor)?'<img src="'+esc(armorArt(p()?.armor))+'" alt="" aria-hidden="true" onerror="this.onerror=null;this.style.display=\'none\'">':icon('sheet')))+'<span><small>'+(kind==='weapon'?'WEAPON':'ARMOR')+'</small><strong>'+esc(name)+'</strong><em>'+esc(detail)+'</em></span></div>';
     const list=tab==='weapon'?weapons:armors;
@@ -89,6 +92,7 @@ function buyGear(id,kind){
     const list=kind==='weapon'?D().weapons:D().armors,item=(list||[]).find(x=>x.id===id);
     if(!item||kind!=='weapon'&&kind!=='armor')return renderSmith();
     const level=Number(pl.level||1),required=Number(item.level||1),ownedMap=kind==='weapon'?(pl.ownedWeapons=pl.ownedWeapons||{}):(pl.ownedArmor=pl.ownedArmor||{});
+    if(item.region&&String(pl.currentRegion||'Ashmere')!==item.region&&!Number(ownedMap[id]||0))return note(item.name+' is only sold at the '+item.region+' smithy.');
     if(level<required&&!Number(ownedMap[id]||0))return note('You need level '+required+' to use '+item.name+'.');
     if(Number(ownedMap[id]||0)>0){
       if(kind==='weapon')pl.weapon=id;else pl.armor=id;

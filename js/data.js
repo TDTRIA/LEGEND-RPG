@@ -1,6 +1,6 @@
 // LEGEND v0.25.0 — player growth, expedition results, Greyfen Marsh Path, and Silted Storehouse.
 window.LEGEND_DATA = {
-  VERSION: 'v0.26.0',
+  VERSION: 'v0.27.0',
   SAVE_KEY: 'legend-roads-of-ashmere-v09',
   classes: {
     Adventurer:{hp:110,gold:120,mod:{survival:1,luck:1},move:'Lucky Strike',desc:'Balanced survivor. Good for a first run.'},
@@ -44,7 +44,7 @@ window.LEGEND_DATA = {
     {id:'steelSword',name:'Steel Sword',min:48,max:108,cost:1400,level:7,perk:'keenEdge',passive:'Keen Edge · 20% critical chance for 1.5× damage'}
   ],
   armors: [
-    {id:'none',name:'No Armor',defense:0,cost:0,level:1},{id:'clothArmor',name:'Cloth Armor',defense:10,cost:80,level:1},{id:'chainArmor',name:'Chain Armor',defense:22,cost:180,level:1},{id:'bronzeArmor',name:'Bronze Armor',defense:42,cost:380,level:2},{id:'ironArmor',name:'Iron Armor',defense:68,cost:850,level:4}
+    {id:'none',name:'No Armor',defense:0,cost:0,level:1},{id:'clothArmor',name:'Cloth Armor',defense:10,cost:80,level:1},{id:'chainArmor',name:'Chain Armor',defense:22,cost:180,level:1},{id:'bronzeArmor',name:'Bronze Armor',defense:42,cost:380,level:2},{id:'ironArmor',name:'Iron Armor',defense:68,cost:850,level:4},{id:'marshguardCoat',name:'Marshguard Coat',defense:32,cost:280,level:2,region:'Greyfen'}
   ],
   enemies: [
     {name:'Goblin',glyph:'👺',maxDamage:22,hp:[50,85],drop:['gmail',1,'Goblin Mail'],trait:'Sneaky',intent:['eyes your coin pouch','slashes wildly','looks ready to flee']},

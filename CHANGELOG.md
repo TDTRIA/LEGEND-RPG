@@ -14,6 +14,8 @@
 - Correct the CSS cascade contract after Phase 7 added the Storehouse stylesheet: assert its placement in the stack and the current count of 39 instead of the stale count of 38. Add Greyfen resource-loop regression coverage for region gating, ingredient consumption, sale value, and reload persistence.
 - Phase 9 adds a saved Greyfen crossing-response choice: spend one Wood Scrap to post a provisional, non-accusatory safety notice and reduce the first chosen Marsh Path route's added Road Pressure by up to 5 once, or keep the report sealed until the missing closure order is found. Neither choice names an author or resolves the missing order.
 - Synchronize the displayed/runtime version to v0.26.0 and refresh the cache keys for the changed archive, guidance, evidence, and marsh modules. Add regression coverage for both outcomes, resource cost, save/reload, and the one-time pressure effect.
+- Phase 10 adds the Greyfen-only Marshguard Coat (level 2, 32 defense, 280g) to the existing smithy, guards its purchase by region, and allows already-owned regional gear to be re-equipped in another town. Its current icon is a temporary reuse of the local chain-armor art; a unique raster remains open.
+- Synchronize the displayed/runtime version to v0.27.0, refresh data/forge/art cache keys, and cover regional visibility, purchase/equip, defense data, and save persistence with Playwright.
 
 ## v0.22.0 — Realm boot sequence, game-client title screen, and cinematic transitions
 

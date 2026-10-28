@@ -4,7 +4,7 @@
 
 **Target scope:** Ashmere, the Old Road, Greyfen, and Ironpass. Blackwood and the Ruined March may remain visible as future destinations, but must not offer broken or misleading travel actions in this release.
 
-**Status note (2026-10-28):** this remains a production release plan, not a claim that the first three towns are complete. Phases 7 and 8 are merged to main; Phase 9 adds a practical Greyfen crossing-response choice and a one-time Marsh Path pressure benefit tied to a paid provisional safety notice. Dedicated Storehouse artwork integration, manual desktop/mobile review, the remaining Greyfen economy/story/service acceptance gate, and Ironpass implementation remain open.
+**Status note (2026-10-28):** this remains a production release plan, not a claim that the first three towns are complete. Phases 7–10 are merged to main: the Silted Storehouse delve, peat-to-market parcel recipe, crossing-response choice with one-time route-pressure relief, and Greyfen-only Marshguard Coat. Dedicated Storehouse/coat artwork, manual desktop/mobile review, the remaining Greyfen economy/story/service acceptance gate, and Ironpass implementation remain open.
 
 ## 1. Design rules
 
@@ -92,6 +92,7 @@ The repository contains Greyfen-specific hub/art/service patterns, the Bellkeepe
 - [ ] Add field activities and a small optional delve/site suited to the marsh (for example, a partially flooded storage or drainage location; the final name and exact layout are proposed, not locked).
 - [ ] Extend the local resource loop around peat, salvage, fishing/ferry supplies, and repairs so the materials actually feed trade, crafting, equipment, or quest requirements.
   Phase 8 starts this work with a Greyfen-only Peat-Wrapped Parcel recipe that converts two Dry Peat Bricks and one Cloth Scrap into a sellable 34g-base-value Float Market parcel. The broader resource loop remains open.
+  Phase 10 adds one Greyfen-exclusive armor purchase through the existing smithy: the level-2 Marshguard Coat (32 Defense for 280g). This improves local gear progression, but the broader resource loop and dedicated item art remain open.
 - [ ] Complete the evidence chain consistently with the locked Greyfen direction: the Landing Warden reopened the lower crossing early under trade pressure, left the change unsigned because the crossing still needed inspection, and is a sympathetic wrong-doer rather than a villain. Build toward a player choice and practical consequence rather than inventing an unrelated culprit.
   Phase 9 starts that consequence with the provisional notice versus sealed-report decision. The Warden's full resolution and missing closure order remain open; neither response declares the Warden guilty or supplies a missing author.
 - [ ] Make both outcomes of “A Dry Crossing” reliable: the safer path remains a dependable route to completion; the shortcut clearly states its probability, cost, and reward. A miss must leave the quest recoverable.
