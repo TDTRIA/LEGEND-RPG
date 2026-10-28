@@ -8,6 +8,9 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
   await expect(page.locator('.v120-title')).toBeVisible();
+  const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
+    .evaluate(element => getComputedStyle(element).filter);
+  expect(titleBackdropFilter).toContain('brightness(0.82)');
 }
 
 async function enterAshmere(page, name = 'WorldShellQA') {
@@ -28,6 +31,13 @@ async function enterAshmere(page, name = 'WorldShellQA') {
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
   await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+  const openingBackdropFilter = await page.evaluate(() => {
+    const backdrop = document.querySelector(
+      '.opening-road-v140-prologue-bg, .opening-road-v140-prologue .opening-road-v140-bg, .opening-road-v140-bg'
+    );
+    return backdrop ? getComputedStyle(backdrop).filter : '';
+  });
+  expect(openingBackdropFilter).toContain('brightness(0.62)');
   await page.getByRole('button', { name: 'Lift your head' }).click();
   await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
