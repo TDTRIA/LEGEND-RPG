@@ -455,3 +455,15 @@
   max-height: 0 !important;
   overflow: hidden !important;
 }
+
+
+/* Phase 4 Runway icon imagery — resist legacy background shorthand.
+   Keep the local generated cell art visible after the shared UI layers load. */
+.title-v100 .v136-menu-icon.runway-icon,
+.title-v136-rpg .v136-menu-icon.runway-icon {
+  background-image: var(--runway-icon-image), var(--runway-icon-fallback) !important;
+  background-size: contain, contain !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: center center, center center !important;
+  background-color: rgba(6, 11, 8, .94) !important;
+}
