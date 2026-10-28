@@ -54,6 +54,8 @@ async function startFreshCharacter(page, name = 'QATraveler', options = {}) {
   await page.locator('#v094Next').click();
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
+  await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+  await page.getByRole('button', { name: 'Lift your head' }).click();
   if (options.stopAtIntro) {
     await expect(page.locator('.opening-road-v140')).toBeVisible();
     return;

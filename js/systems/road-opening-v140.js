@@ -43,23 +43,43 @@
     fresh.flags = fresh.flags || {};
     fresh.flags.openingRoadV140 = { phase: 'oric', response: null, completed: false, awakened: false, version: 1 };
     save(fresh);
-    renderOric(fresh);
+    renderPrologue(fresh);
+  }
+  function renderPrologue(player) {
+    const state = openingState(player);
+    if (!state) return;
+    ROOT().innerHTML =
+      "<main class='opening-road-v140 opening-road-v140-prologue' aria-labelledby='openingPrologueTitle'>" +
+        "<img class='opening-road-v140-bg' src='assets/locations/roads/location_old_road_main_v1.jpg' alt='' aria-hidden='true' onerror='this.style.display=\"none\"'>" +
+        "<div class='opening-road-v140-shade' aria-hidden='true'></div>" +
+        "<div class='opening-road-v140-prologue-light' aria-hidden='true'></div>" +
+        "<section class='opening-road-v140-prologue-card'>" +
+          "<div class='opening-road-v140-kicker'>ASHMERE’S WESTERN REACH · BEFORE DAWN</div>" +
+          "<h1 id='openingPrologueTitle'>One Bell. No Tower.</h1>" +
+          "<p class='opening-road-v140-prologue-lede'>A single bronze note rolls through the fog—low enough to tremble in the mud. It comes from beyond Ashmere’s lantern line, from a stretch of road where no tower stands.</p>" +
+          "<div class='opening-road-v140-prologue-rule'><span>THE OLD ROAD</span><i aria-hidden='true'></i></div>" +
+          "<p>The sound is gone before the gate can answer. An iron lantern hangs cold above a broken milestone. Your pack lies open in the grass, and heavy tracks cross the road from the Blackroot ditch.</p>" +
+          "<blockquote><strong>THEN—SILENCE</strong><p>No tower. No second toll. Something has crossed the road, and the road has kept its secret.</p></blockquote>" +
+          "<div class='opening-road-v140-actions'><button class='opening-road-v140-primary' id='openingPrologueContinue' type='button'>Lift your head <span aria-hidden='true'>→</span></button></div>" +
+          "<p class='opening-road-v140-footnote'>A new journey begins beyond the lanterns. The road does not wait for you to remember.</p>" +
+        "</section></main>";
+    ROOT().querySelector('#openingPrologueContinue')?.addEventListener('click', () => renderOric(player));
   }
   function renderOric(player) {
     const state = openingState(player);
     if (!state) return;
     state.phase = 'oric';
     ROOT().innerHTML =
-      "<main class='opening-road-v140'>" +
+      "<main class='opening-road-v140 opening-road-v140-oric'>" +
         "<img class='opening-road-v140-bg' src='assets/locations/roads/location_old_road_main_v1.jpg' alt='' aria-hidden='true' onerror='this.style.display=\"none\"'>" +
         "<div class='opening-road-v140-shade' aria-hidden='true'></div>" +
         "<section class='opening-road-v140-card' aria-labelledby='openingRoadTitle'>" +
           "<div class='opening-road-v140-kicker'>THE OLD ROAD · BEFORE DAWN</div>" +
           "<h1 id='openingRoadTitle'>Beneath the Dead Lantern</h1>" +
-          "<p class='opening-road-v140-lede'>You wake in wet grass beneath a lantern that has gone cold. Mud clings to your boots. The road behind you disappears into fog.</p>" +
-          "<div class='opening-road-v140-scene-note'><span>CAPTAIN ORIC · ASHMERE WATCH</span><p>Bootsteps stop beside you. A guarded figure holds a lantern low, studying your face before the sword at his side.</p></div>" +
-          "<blockquote><strong>Oric</strong><p>“You're outside my gate beneath a dead lantern, with no companion and no clear trail. Tell me straight—friend or foe?”</p></blockquote>" +
-          "<p class='opening-road-v140-prompt'>You search for a memory. The fog gives you nothing. What do you tell him?</p>" +
+          "<p class='opening-road-v140-lede'>Cold mud. A dead lantern. The bell’s single note still seems to tremble in the stones, though no tower stands on this stretch of road. Heavy tracks cross the wet road from the Blackroot ditch and vanish into the fog.</p>" +
+          "<div class='opening-road-v140-scene-note'><span>CAPTAIN ORIC · ASHMERE WATCH</span><p>A boot grinds to a halt beside your hand. Captain Oric’s lantern throws an amber line across wet steel. He checks the road before he looks at you; his sword is already loose in its sheath.</p></div>" +
+          "<blockquote><strong>CAPTAIN ORIC</strong><p>“I heard the bell from the gate. There’s no tower out here. I find you beneath a dead lantern with tracks from the Blackroot ditch. Keep your hands where I can see them. Friend or foe?”</p></blockquote>" +
+          "<p class='opening-road-v140-prompt'>The fog offers nothing about how you arrived. The tracks are fresh; whatever crossed from the ditch may still be close. What do you tell him?</p>" +
           "<div class='opening-road-v140-choices' role='group' aria-label='Your answer to Captain Oric'>" +
             "<button type='button' class='opening-road-v140-choice' data-oric-response='honest'><strong>I don't remember how I got here.</strong><span>Tell him what little you know.</span></button>" +
             "<button type='button' class='opening-road-v140-choice' data-oric-response='peaceful'><strong>I'm not looking for a fight.</strong><span>Try to lower the tension.</span></button>" +
@@ -87,7 +107,7 @@
   }
   function battleText(player) {
     const line = responses[player?.flags?.openingRoadV140?.response] || responses.honest;
-    return line.oric + ' A shape bursts from the ditch: a Blackroot Wolf catches Oric from the blind side and throws him against the road stones. Before you can think, a voice with no direction whispers: “Awaken.”';
+    return line.oric + ' Brush splits behind him. A Blackroot Wolf lunges from the ditch—not at you, but at Oric’s unguarded side. He hits the road stones hard. Rain swallows his shout. Then a voice with no direction, close as breath inside your skull, whispers: “Awaken.”';
   }
   function afterAmbushWin(player, enemy, progress) {
     const fresh = load() || player;
@@ -114,9 +134,9 @@
         "<div class='opening-road-v140-shade' aria-hidden='true'></div>" +
         "<section class='opening-road-v140-card opening-road-v140-aftermath' aria-labelledby='openingRoadAftermathTitle'>" +
           "<div class='opening-road-v140-kicker'>AN UNEXPECTED AWAKENING</div><h1 id='openingRoadAftermathTitle'>Oric saw what you did.</h1>" +
-          "<p class='opening-road-v140-lede'>The wolf collapses into the mud. The voice is gone as quickly as it came, leaving only the sound of rain and Oric's uneven breath.</p>" +
+          "<p class='opening-road-v140-lede'>The wolf hits the road and its growl cuts off. The voice vanishes. Rain returns to the silence; Oric’s lantern sputters in the mud while he forces air back into his lungs.</p>" +
           "<div class='opening-road-v140-scene-note'><span>CAPTAIN ORIC</span><p>" + esc(line.after) + "</p></div>" +
-          "<p>Oric gets his feet beneath him and looks down the road. “That thing came from beyond the fork. I have to warn the gate. Follow the tracks, choose your route, and bring back something I can use. Then we'll speak in Ashmere.”</p>" +
+          "<p>Oric gets his feet beneath him and turns toward the fork. “That thing came from beyond the marker. I have to warn the gate before anything else follows it. If you can move, follow the tracks and bring back proof. Or take the road straight to Ashmere. We’ll speak there.”</p>" +
           "<div class='opening-road-v140-actions'><button class='opening-road-v140-primary' id='openingRoadContinue' type='button'>Follow the road</button><button class='opening-road-v140-secondary' id='openingRoadSkip' type='button'>Go straight to Ashmere</button></div>" +
         "</section></main>";
     ROOT().querySelector('#openingRoadContinue')?.addEventListener('click', beginRoad);

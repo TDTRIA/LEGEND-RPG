@@ -35,6 +35,8 @@ async function startFreshTraveler(page) {
   await page.locator('#v094Next').click();
   await expect(page.getByRole('heading', { name: 'FieldJournalQA', exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
+  await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+  await page.getByRole('button', { name: 'Lift your head' }).click();
   await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
     window.LegendRoadOpeningV140.complete(player, 'abandoned');

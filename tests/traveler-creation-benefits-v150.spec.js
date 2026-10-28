@@ -50,6 +50,8 @@ test('every traveler choice has its own art and gameplay effects are visible and
   await expect(page.locator('.v094-confirm-benefits')).toContainText('+1 Force on strength and physical challenge checks');
   await expect(page.locator('.v094-confirm-benefits')).toContainText('HP 140');
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
+  await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+  await page.getByRole('button', { name: 'Lift your head' }).click();
 
   const saved = await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
