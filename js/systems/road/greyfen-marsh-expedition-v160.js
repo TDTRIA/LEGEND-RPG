@@ -458,7 +458,7 @@
       renderShell: html => { const host = root(); if (host) host.innerHTML = html; },
       getAssets: A,
       escapeHtml: esc,
-      onContinue: () => render(victory ? 'The raider is gone. Return to the Reed Bed when ready.' : 'You escape the ferry ambush. Return to the Reed Bed when ready.'),
+      onContinue: () => render(victory ? foeName + ' is gone. Return to the Reed Bed when ready.' : 'You escape the ferry ambush. Return to the Reed Bed when ready.'),
       onReturnToTown: () => settle(false)
     });
     return view?.render({
@@ -470,7 +470,7 @@
         ? (isSentinel ? 'The Mirebound Sentinel breaks apart into peat and rust. The path is clear—for now.' : 'The raider wanted the ferry salvage. The path is clear, but Greyfen has more than one kind of threat.')
         : payload.wasRetreat
           ? 'You choose to live and retreat through the reeds. Road Pressure rises by 4.'
-          : 'The raider forces you off the ferry. You survive, but the detour grows more dangerous.',
+          : foeName + ' forces you off the ferry. You survive, but the detour grows more dangerous.',
       progressLabel: 'OPTIONAL DETOUR',
       progressValue: victory ? 'CLEARED' : 'WITHDRAWN',
       progressHint: victory ? 'Ferry salvage secured' : 'You can continue the survey',
@@ -481,7 +481,7 @@
       secondaryTitle: victory ? 'Return to Greyfen' : 'End the outing',
       secondaryHint: 'Bring the salvaged notes back to town',
       secondaryTransition: 'Returning to Greyfen',
-      onContinue: () => render(victory ? 'The raider is gone. Return to the Reed Bed when ready.' : 'You escape the ferry ambush. Return to the Reed Bed when ready.'),
+      onContinue: () => render(victory ? foeName + ' is gone. Return to the Reed Bed when ready.' : 'You escape the ferry ambush. Return to the Reed Bed when ready.'),
       onReturn: () => victory ? settle(false) : render('You escape the ferry ambush. Return to the Reed Bed when ready.'),
       onSecondary: () => settle(false)
     }) === true;
