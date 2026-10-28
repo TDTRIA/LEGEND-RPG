@@ -81,6 +81,7 @@ function combat(enemy,note=''){
  ensure(pl);
  if(enemy.combatStartGold==null)enemy.combatStartGold=Number(pl.gold||0);
  if(enemy.combatStartLevel==null)enemy.combatStartLevel=Math.max(1,Number(pl.level||1));
+ if(!enemy.combatStartInventory)enemy.combatStartInventory={...(pl.inventory||{})};
  enemy.turn=Number(enemy.turn||0);
  enemy.intent=enemy.intent||enemyIntent(enemy);
  enemy.combatLog=Array.isArray(enemy.combatLog)?enemy.combatLog:[];
