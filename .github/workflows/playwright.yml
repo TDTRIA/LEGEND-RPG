@@ -41,6 +41,10 @@ jobs:
           python3 - <<'PY'
           from PIL import Image
           source = Image.open('/tmp/legend-runway-icon-atlas.png').convert('RGB')
+          import subprocess
+          # Capture the repository tree that this staging run checked out for the one-time binary commit.
+          with open('/tmp/legend-runway-icon-atlas-tree-sha.txt', 'w', encoding='utf-8') as tree_file:
+              tree_file.write(subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip())
           # The icon renderer needs only 128 pixels per tile; reduce the atlas to a compact local asset.
           source = source.resize((384, 384), Image.Resampling.LANCZOS)
           source.save('assets/generated/ui/icons/legend-runway-icon-atlas.webp', 'WEBP', quality=88, method=6)
@@ -51,7 +55,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: runway-icon-atlas-staging
-          path: assets/generated/ui/icons/legend-runway-icon-atlas.webp
+          path: |
+            assets/generated/ui/icons/legend-runway-icon-atlas.webp
+            /tmp/legend-runway-icon-atlas-tree-sha.txt
           retention-days: 1
 
       - name: Set up Node.js
