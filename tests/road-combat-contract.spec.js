@@ -23,7 +23,7 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
       const context = {
         getPlayer: () => player,
         savePlayer: () => { events.saves += 1; },
-        getAssets: () => ({ enemies: {}, classes: {}, byName: () => '' }),
+        getAssets: () => ({ enemies: {}, classes: { Ranger: 'assets/generated/classes/class-ranger.webp' }, travelerPortrait: () => 'assets/generated/classes/class-ranger.webp', byName: () => '' }),
         getWeapon: () => ({ name: 'Wooden Sword', min: 2, max: 4 }),
         getArmor: () => overrides.armor || ({ name: 'Cloth Armor', defense: 2 }),
         score: () => 0,
@@ -253,6 +253,32 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     const motion = await page.locator('.rpg-foe-sprite').evaluate(el => getComputedStyle(el).animationName);
     expect(motion).toBe('rpg-round-exchange-v200');
     await expect(page.locator('.rpg-battle-log')).toContainText('strike lands');
+  });
+
+  
+  test('battle stages traveler and enemy in the location and removes idle dancing', async ({ page }) => {
+    await startCombat(page, {
+      enemy: { name: 'Roadside Bandit', behavior: 'bandit', turn: 0, intent: null, damage: [5, 5] },
+    });
+
+    await expect(page.locator('.rpg-hero-stage-art')).toBeVisible();
+    await expect(page.locator('.rpg-hero-stage-art img')).toHaveAttribute('src', 'assets/generated/classes/class-ranger.webp');
+    await expect(page.locator('.rpg-hero-stage-plate')).toContainText('CombatQA');
+    await expect(page.locator('.rpg-foe-nameplate')).toContainText('Roadside Bandit');
+    await expect(page.locator('.rpg-duel-ground')).toBeVisible();
+
+    const staging = await page.evaluate(() => ({
+      playerMotion: getComputedStyle(document.querySelector('.rpg-hero-stage-art')).animationName,
+      enemyMotion: getComputedStyle(document.querySelector('.rpg-foe-sprite')).animationName,
+      scene: getComputedStyle(document.querySelector('.rpg-battlefield')).backgroundImage,
+      dialogue: getComputedStyle(document.querySelector('.rpg-dialogue')).backgroundImage,
+      enemyPlate: getComputedStyle(document.querySelector('.rpg-foe-nameplate')).right,
+    }));
+    expect(staging.playerMotion).toBe('none');
+    expect(staging.enemyMotion).toBe('none');
+    expect(staging.scene).toContain('old-road-south-fork.webp');
+    expect(staging.dialogue).toContain('linear-gradient');
+    expect(staging.enemyPlate).not.toBe('auto');
   });
 
 });
