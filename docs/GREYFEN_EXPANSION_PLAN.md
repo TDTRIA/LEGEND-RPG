@@ -46,6 +46,13 @@ The delve is playable, but does not by itself complete Greyfen’s town, resourc
 - Playwright coverage checks the resource cost, saved outcome, unavailable notice without Wood Scrap, one-time effect, and Ashmere/Greyfen save persistence.
 - **Still open:** the missing closure order, the Warden's full story resolution, dedicated Storehouse scene art integration, and manual desktop/mobile visual acceptance. This response is a meaningful interim decision, not the end of Greyfen.
 
+## Phase 10 — Greyfen regional gear
+
+- The Drowned Anvil/Causeway Smithy sells the **Marshguard Coat** for 280g at level 2 with 32 Defense, using the existing armor catalog, purchase/equip actions, save pipeline, and stat comparisons.
+- Purchase is limited to Greyfen so the regional smithy has a useful gear identity. Once the traveler owns the coat, it remains visible for re-equipping in other regions.
+- Regression coverage checks Greyfen/Ashmere availability, the purchase cost, equipped armor and defense, and cross-region save persistence.
+- The coat currently reuses the local chain-armor raster for its icon. A unique Runway-made coat icon and desktop/mobile art review remain open; the item is mechanically playable but its dedicated art is not finished.
+
 ## First signature contract: A Dry Crossing
 The Landing Warden asks the traveler to recover a route marker washed loose from a raised path. Offer two understandable approaches: follow old posts (safer, slower, modest reward) or cross the reed bed (riskier, faster, chance at a marsh resource). Show risks and rewards before commitment. Return to Greyfen with a reward and a rumor that the route changed after the water rose. Reuse the current expedition/choice framework where possible.
 

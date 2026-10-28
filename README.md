@@ -6,9 +6,9 @@ The project is now in its **full RPG development phase**. The old recovery/remak
 
 ## Current Build
 
-**Production main: v0.26.0 — Greyfen resource loop and crossing-response slice.** Main includes the optional three-room Silted Storehouse delve gated behind “A Dry Crossing,” safe/risky routes, persistent discoveries, production-combat keeper, retreat recovery, one-time salvage, the supplemental dispatch handoff, and the Greyfen-only Peat-Wrapped Parcel recipe. The crossing report now offers a saved player choice: post a provisional safety notice for one Wood Scrap to reduce the next Marsh Path route's added pressure by up to 5 once, or keep the report sealed pending the missing closure order.
+**Production main: v0.27.0 — Greyfen resource, story-response, and equipment progression.** Main includes the optional three-room Silted Storehouse delve gated behind “A Dry Crossing,” persistent discoveries and one-time salvage, the supplemental dispatch handoff, the Greyfen-only Peat-Wrapped Parcel recipe, the saved crossing-report choice, and the Greyfen-only level-2 Marshguard Coat (32 Defense for 280g).
 
-The wider Greyfen acceptance gate remains open: dedicated Storehouse art integration, manual desktop/mobile visual review, the Warden's full story resolution, and the missing closure order. Ironpass should not become playable until Greyfen's services, economy, story, and regional loop are coherent.
+The crossing choice can spend one Wood Scrap to post a provisional notice that reduces the next Marsh Path route's added pressure by up to 5 once, or keep the report sealed pending the missing closure order. The coat is mechanically integrated but temporarily reuses the chain-armor raster; dedicated Storehouse/coat art, manual desktop/mobile review, the complete Greyfen story/economy/service gate, and Ironpass are still open.
 
 ## Development Roadmap
 

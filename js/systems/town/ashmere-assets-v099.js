@@ -22,7 +22,7 @@
         food:'food', ration:'rationBundle', rationBundle:'rationBundle', potion:'potion', roadPoultice:'potion', blackrootTonic:'blackrootTonicIngredients',
         roadToken:'roadToken', bellFragment:'bellFragmentCraft', camp:'camp', campSupply:'camp', roadHerb:'roadHerbBundle', huntersCharm:'huntersCharm', wispLanternWick:'lampOil',
         reinforcedBuckle:'reinforcedBuckle', woodenSword:'shortSword', stoneSword:'shortSword', bronzeSword:'shortSword', ironSword:'shortSword', steelSword:'shortSword', shortSword:'shortSword', bow:'bow', huntingBow:'bow', shield:'shield',
-        none:'shield', clothArmor:'clothArmorIcon', chainArmor:'chainArmorIcon', bronzeArmor:'bronzeArmorIcon', ironArmor:'ironArmorIcon', woodScrap:'armorRepairKit', peatBrick:'camp', clothScrap:'armorRepairKit', wolfFang:'huntersCharm', tornHide:'tornHide', ore:'ironOreChunk', wispAsh:'bellFragmentCraft', oil:'lampOil', goblinTrinket:'tradeBundle', blackrootThorn:'blackrootTonicIngredients', tradeBundle:'tradeBundle', marshParcel:'tradeBundle'
+        none:'shield', clothArmor:'clothArmorIcon', chainArmor:'chainArmorIcon', bronzeArmor:'bronzeArmorIcon', ironArmor:'ironArmorIcon', marshguardCoat:'chainArmorIcon', woodScrap:'armorRepairKit', peatBrick:'camp', clothScrap:'armorRepairKit', wolfFang:'huntersCharm', tornHide:'tornHide', ore:'ironOreChunk', wispAsh:'bellFragmentCraft', oil:'lampOil', goblinTrinket:'tradeBundle', blackrootThorn:'blackrootTonicIngredients', tradeBundle:'tradeBundle', marshParcel:'tradeBundle'
       };
       return items[aliases[key] || key] || items.pelt || '';
     };
@@ -78,7 +78,7 @@
     };
     const armorArt = id => {
       const items = getAssets().items || {};
-      const keys = {clothArmor:'clothArmorIcon', chainArmor:'chainArmorIcon', bronzeArmor:'bronzeArmorIcon', ironArmor:'ironArmorIcon', none:'shield'};
+      const keys = {clothArmor:'clothArmorIcon', chainArmor:'chainArmorIcon', bronzeArmor:'bronzeArmorIcon', ironArmor:'ironArmorIcon', marshguardCoat:'chainArmorIcon', none:'shield'};
       return items[keys[id] || id] || items.shield || items.camp || '';
     };
     const serviceArt = (key, fallback = '') => {
