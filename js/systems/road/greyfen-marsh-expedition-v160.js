@@ -38,6 +38,8 @@
     s.sluiceCleared = Boolean(s.sluiceCleared);
     s.encounterAvoided = Boolean(s.encounterAvoided);
     s.encounterRetreated = Boolean(s.encounterRetreated);
+    s.ferryRaiderDefeated = Boolean(s.ferryRaiderDefeated);
+    s.ferryRaiderAvoided = Boolean(s.ferryRaiderAvoided);
     s.shelterRested = Boolean(s.shelterRested);
     s.gaugeInspected = Boolean(s.gaugeInspected);
     return s;
@@ -130,6 +132,8 @@
     s.sluiceCleared = false;
     s.encounterAvoided = false;
     s.encounterRetreated = false;
+    s.ferryRaiderDefeated = false;
+    s.ferryRaiderAvoided = false;
     s.shelterRested = false;
     s.gaugeInspected = false;
     s.failed = false;
@@ -427,6 +431,118 @@
       onSecondary: () => victory ? settle(false) : start()
     }) === true;
   }
+  function showFerryRaiderResults(payload = {}) {
+    const pl = payload.player || player(); if (!pl) return false;
+    const s = ensure(pl);
+    const victory = payload.result !== 'defeat';
+    if (victory) {
+      s.ferryRaiderDefeated = true;
+      add(s.completedInteractionIds, 'fallen-ferry-raider');
+      discover(pl, s, 'fallen-ferry', 'The Ferry Ambush', 'A marsh raider tried to claim the salvage. The traveler drove them off and recovered the supplies.');
+      pl.stats = pl.stats || {};
+      pl.stats.greyfenMarshRaiderVictories = Number(pl.stats.greyfenMarshRaiderVictories || 0) + 1;
+    } else {
+      s.ferryRaiderAvoided = true;
+      s.pressure = clamp(Number(s.pressure || 0) + (payload.wasRetreat ? 4 : 6), 0, 100);
+    }
+    save(pl);
+    const view = window.LegendRoadCombatResultsViewV152?.create({
+      renderShell: html => { const host = root(); if (host) host.innerHTML = html; },
+      getAssets: A,
+      escapeHtml: esc,
+      onContinue: () => render(victory ? 'The raider is gone. Return to the Reed Bed when ready.' : 'You escape the ferry ambush. Return to the Reed Bed when ready.'),
+      onReturnToTown: () => settle(false)
+    });
+    return view?.render({
+      ...payload,
+      locationName: 'GREYFEN · FALLEN FERRY',
+      sceneArtKey: 'greyfenMarshWalkway',
+      resultTitle: payload.wasRetreat ? 'You Slip the Ambush' : victory ? 'The Ambusher Falls Back' : 'Driven Back',
+      resultSubtitle: victory
+        ? 'The raider wanted the ferry salvage. The path is clear, but Greyfen has more than one kind of threat.'
+        : payload.wasRetreat
+          ? 'You choose to live and retreat through the reeds. Road Pressure rises by 4.'
+          : 'The raider forces you off the ferry. You survive, but the detour grows more dangerous.',
+      progressLabel: 'OPTIONAL DETOUR',
+      progressValue: victory ? 'CLEARED' : 'WITHDRAWN',
+      progressHint: victory ? 'Ferry salvage secured' : 'You can continue the survey',
+      rewardName: victory ? (payload.rewardName || 'Marsh Salvage') : '',
+      primaryTitle: 'Return to the Fallen Ferry',
+      primaryHint: 'The waterline survey remains ahead',
+      primaryTransition: 'Returning to the Fallen Ferry',
+      secondaryTitle: victory ? 'Return to Greyfen' : 'End the outing',
+      secondaryHint: 'Bring the salvaged notes back to town',
+      secondaryTransition: 'Returning to Greyfen',
+      onContinue: () => render(victory ? 'The raider is gone. Return to the Reed Bed when ready.' : 'You escape the ferry ambush. Return to the Reed Bed when ready.'),
+      onReturn: () => settle(false),
+      onSecondary: () => settle(false)
+    }) === true;
+  }
+  function startFerryAmbush() {
+    const pl = player(); if (!pl) return;
+    const s = ensure(pl);
+    if (!s.active || s.activeSideTrip !== 'fallen-ferry' || s.ferryRaiderDefeated || s.ferryRaiderAvoided) {
+      return render('No marsh raider is waiting at the Fallen Ferry now.');
+    }
+    const enemy = {
+      id: 'greyfen-ferry-raider-v201',
+      name: 'Greyfen Marsh Raider',
+      behavior: 'bandit',
+      hp: 56, maxHp: 56, damage: [8, 13],
+      reward: 'tornHide', xp: 36, goldDrop: [5, 14],
+      bonusDrop: { item: 'marshParcel', chance: 18, amount: [1, 1] },
+      turn: 0, intent: 'guardbreak', specialEncounterV200: true,
+      art: 'assets/generated/classes/class-ranger.webp'
+    };
+    const context = {
+      getPlayer: player,
+      savePlayer: save,
+      getAssets: A,
+      getLocationLabel: () => 'GREYFEN · FALLEN FERRY',
+      getWeapon: record => rules?.weapon(record) || { name: 'Hands', min: 1, max: 3 },
+      getArmor: record => rules?.armor(record) || { name: 'No Armor', defense: 0 },
+      score: (record, skill) => rules?.score(record, skill) || 0,
+      ensureState: () => ({ stage: 1, pressure: Number(s.pressure || 0), poiUsed: {} }),
+      hpPercent: record => rules?.hpPercent(record) ?? 100,
+      escapeHtml: esc, clamp, randomInt: rand, addInventory,
+      itemName: id => rules?.itemName(id) || D().itemNames?.[id] || id,
+      renderShell: html => { const host = root(); if (host) host.innerHTML = html; },
+      renderExpedition: note => render(note || ''),
+      outcome: (title, text, kicker) => render(String(title || 'Encounter') + ': ' + String(text || kicker || '')),
+      soundOn: () => audio().soundOn?.() ?? true,
+      startMusic: () => audio().startBattleMusic?.(),
+      stopMusic: () => audio().stopBattleMusic?.(),
+      playBattleFx: kind => audio().playBattleFx?.(kind),
+      tone: kind => audio().tone?.(kind),
+      toggleSound: () => audio().toggleSound?.(),
+      awardProgress: (record, amount) => window.LegendProgressionV100?.award(record, amount),
+      showCombatResults: payload => showFerryRaiderResults(payload),
+      onSpecialEncounterWin: (record, foe, progress) => showFerryRaiderResults({
+        player: record, enemy: foe, result: 'victory', progress,
+        rewardName: (D().itemNames?.[foe.reward] || foe.reward || 'Marsh Salvage'),
+        goldGained: Math.max(0, Number(record.gold || 0) - Number(foe.combatStartGold || 0))
+      }),
+      onSpecialEncounterDefeat: (record, foe) => showFerryRaiderResults({
+        player: record, enemy: foe, result: 'defeat', progress: { gained: 0, levels: 0, level: Number(record.level || 1) },
+        rewardName: '', goldGained: 0
+      }),
+      onSpecialEncounterRetreat: (record, foe) => showFerryRaiderResults({
+        player: record, enemy: foe, result: 'defeat', wasRetreat: true,
+        progress: { gained: 0, levels: 0, level: Number(record.level || 1) },
+        rewardName: '', goldGained: 0
+      })
+    };
+    return window.LegendRoadCombatV100?.start(context, enemy, 'Wet bootprints run from the wreck into the reeds. A Greyfen Marsh Raider steps out to claim the salvage.');
+  }
+  function avoidFerryAmbush() {
+    const pl = player(); if (!pl) return;
+    const s = ensure(pl);
+    if (!s.active || s.activeSideTrip !== 'fallen-ferry' || s.ferryRaiderDefeated || s.ferryRaiderAvoided) return render();
+    s.ferryRaiderAvoided = true;
+    s.pressure = clamp(Number(s.pressure || 0) + 4, 0, 100);
+    save(pl);
+    return render('You slip away from the raider without a fight. Road Pressure rises by 4.');
+  }
   function startEncounter() {
     const pl = player(); if (!pl) return;
     const s = ensure(pl);
@@ -503,7 +619,12 @@
     const activeFerry = s.activeSideTrip === 'fallen-ferry';
     let actions = '';
     if (activeFerry) {
-      actions = '<section class="gfm160-panel"><span class="gfm160-kicker">OPTIONAL DETOUR · SALVAGE RECORDED</span><h2>Fallen Ferry</h2><p>You recovered one Cloth Scrap above the waterline. The rest of the ferry remains submerged; no name or owner can be read from the boards.</p><button class="gfm160-action is-primary" id="gfm160ReturnFromFerry" type="button">Return to the Reed Bed <span aria-hidden="true">→</span></button></section>';
+      const raiderNote = s.ferryRaiderDefeated
+        ? '<p class="gfm160-note" role="status">The Marsh Raider has fled. Their trail is recorded in your field journal.</p>'
+        : s.ferryRaiderAvoided
+          ? '<p class="gfm160-note" role="status">You avoided the Ferry ambush. Its danger is marked, and the detour is now complete.</p>'
+          : '<p>Fresh bootprints cross the deck. Someone else is searching the wreck—and they may not leave the salvage to you.</p><div class="gfm160-action-row"><button class="gfm160-action is-primary" id="gfm160FaceRaider" type="button">Confront the Marsh Raider</button><button class="gfm160-action" id="gfm160AvoidRaider" type="button">Slip away · +4 Pressure</button></div>';
+      actions = '<section class="gfm160-panel"><span class="gfm160-kicker">OPTIONAL DETOUR · SALVAGE RECORDED</span><h2>Fallen Ferry</h2><p>You recovered one Cloth Scrap above the waterline. The rest of the ferry remains submerged; no name or owner can be read from the boards.</p>' + raiderNote + '<button class="gfm160-action is-primary" id="gfm160ReturnFromFerry" type="button">Return to the Reed Bed <span aria-hidden="true">→</span></button></section>';
     } else if (Number(s.stage) === 0) {
       actions = '<section class="gfm160-panel"><span class="gfm160-kicker">DEPARTURE</span><h2>The Split Causeway lies ahead.</h2><p>Both routes rejoin at the Flooded Sluice. The Waterline Gauge is the authored survey objective; the optional ferry is never required.</p><button class="gfm160-action is-primary" id="gfm160Begin" type="button">Leave Greyfen Landing <span aria-hidden="true">→</span></button></section>';
     } else if (Number(s.stage) === 1) {
@@ -589,6 +710,8 @@
     document.getElementById('gfm160ChooseRaised')?.addEventListener('click', () => chooseRoute('raised'));
     document.getElementById('gfm160ChooseReeds')?.addEventListener('click', () => chooseRoute('reeds'));
     document.getElementById('gfm160VisitFerry')?.addEventListener('click', visitFerry);
+    document.getElementById('gfm160FaceRaider')?.addEventListener('click', startFerryAmbush);
+    document.getElementById('gfm160AvoidRaider')?.addEventListener('click', avoidFerryAmbush);
     document.getElementById('gfm160ReturnFromFerry')?.addEventListener('click', returnFromFerry);
     document.getElementById('gfm160Continue')?.addEventListener('click', moveToSluice);
     document.getElementById('gfm160FaceWisp')?.addEventListener('click', startEncounter);
