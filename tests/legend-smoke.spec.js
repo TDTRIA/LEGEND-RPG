@@ -288,6 +288,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('title background and raster wordmark render without circular title decorations or SVG logo artwork', async ({ page }) => {
     await openTitle(page);
+    const atlasResponse = await page.request.get('/assets/generated/ui/icons/legend-runway-icon-atlas.webp');
+    expect(atlasResponse.ok()).toBe(true);
+    expect(atlasResponse.headers()['content-type']).toContain('image/webp');
     const backdrop = page.locator('.v120-title-backdrop');
     await expect(backdrop).toHaveAttribute('src', /title-ashmere-road\.webp/);
     await expect.poll(() => backdrop.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
@@ -318,7 +321,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(menuIcons.every(icon => icon.classes.length === 1)).toBe(true);
     expect(new Set(menuIcons.map(icon => icon.classes[0])).size).toBe(menuIcons.length);
     expect(menuIcons.every(icon => icon.width <= 30 && icon.height <= 30 && icon.overflow === 'hidden' && !icon.hasImageChild)).toBe(true);
-    expect(menuIcons.every(icon => icon.backgroundImage.includes('599635b6-376d-48ab-b7f7-e91b6292c34f.png'))).toBe(true);
+    expect(menuIcons.every(icon => icon.backgroundImage.includes('legend-runway-icon-atlas.webp'))).toBe(true);
   });
 
   test('game opens directly on the actual title menu without the redundant Ashmere Gate screen', async ({ page }) => {
