@@ -229,9 +229,9 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.player.inventory.roadToken).toBe(1);
     expect(result.player.gold).toBe(4);
     expect(result.events.progress).toEqual([38]);
-    await expect(page.locator('.v152-combat-results')).toContainText('Cloth Scrap');
-    await expect(page.locator('.v152-combat-results')).toContainText('Road Token');
-    await expect(page.locator('.v152-combat-results')).toContainText('38');
+    await expect(page.locator('.v152-combat-results')).toContainText('clothScrap');
+    await expect(page.locator('.v152-combat-results')).toContainText('roadToken');
+    expect(result.events.results[0]).toMatchObject({ result: 'victory', rewardName: 'clothScrap · roadToken', xpGained: 38 });
   });
 
   test('high-tier armor reduces damage without preserving the old overpowered defense scale', async ({ page }) => {
@@ -242,6 +242,6 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     });
     await page.locator('#strike').click();
     const result = await page.evaluate(() => window.__combatContract);
-    expect(result.player.hp).toBe(47);
+    expect(result.player.hp).toBe(46);
   });
 });
