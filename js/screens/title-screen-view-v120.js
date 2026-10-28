@@ -32,10 +32,10 @@
         <main class="v120-title-main">
           <section class="v120-title-hero" aria-labelledby="legendTitleAccessibleName">
             <h1 class="v120-title-accessible-name" id="legendTitleAccessibleName">LEGEND: The Awakening</h1>
-            <div class="portal100-kicker">A DARK FANTASY RPG</div>
+            <div class="portal100-kicker">ONE BELL · NO TOWER</div>
             <div class="v150-logo-lockup" role="img" aria-label="LEGEND: The Awakening"><img class="v120-legend-logo v150-legend-logo" src="${esc(logoImage || 'assets/ui/logos/logo_legend_awakening_wordmark.png?v=0.21.0-local-raster-wordmark')}" alt="" aria-hidden="true" decoding="async" fetchpriority="high" loading="eager" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="v150-wordmark-fallback" hidden><strong>LEGEND</strong><em>THE AWAKENING</em></span></div>
-            <p>Monsters press against the borders. Old magic stirs beneath a wounded realm.</p>
-            <div class="v120-divider"><span></span><b>THE BORDERLANDS ARE WAKING</b><span></span></div>
+            <p>A bell rings where no tower stands. Beyond Ashmere’s lantern line, something on the Old Road has begun to wake.</p>
+            <div class="v120-divider"><span></span><b>THE OLD ROAD IS LISTENING</b><span></span></div>
             <div class="v120-traveler-line">
               <span class="v120-avatar" aria-hidden="true">${player ? esc(String(name).slice(0,1)).toUpperCase() : '<img src="assets/generated/ui/icons/service-traveler.webp" alt="" loading="lazy" decoding="async">'}</span>
               <div><small>${player ? 'CURRENT TRAVELER' : 'YOUR STORY BEGINS HERE'}</small><strong>${player ? esc(name) : 'No journey has begun'}</strong><span>${player ? `${esc(cls)} · Day ${day} · ${tokens} Road Tokens` : 'Create a traveler and discover what the road remembers.'}</span></div>
@@ -54,16 +54,16 @@
           </section>
         </main>
         <aside class="v140-realm-overview v151-realm-art" aria-label="Realm overview">
-          <div class="v140-realm-overview-head"><span>THE KNOWN REALM</span><small>BUILD <b>${esc(buildVersion)}</b></small></div>
+          <div class="v140-realm-overview-head"><span>BEYOND THE LANTERN LINE</span><small>BUILD <b>${esc(buildVersion)}</b></small></div>
           <section class="v151-realm-feature">
             <img src="assets/generated/locations/ashmere-town.webp" alt="Lantern-lit streets of Ashmere" loading="eager" decoding="async">
             <div class="v151-realm-feature-shade"></div>
-            <div class="v151-realm-feature-copy"><span>YOUR HOME REGION</span><h2>Ashmere</h2><p>A warm lantern town at the edge of an old and dangerous road.</p></div>
+            <div class="v151-realm-feature-copy"><span>THE LAST WARM LIGHT</span><h2>Ashmere</h2><p>The lamps still burn. Beyond the gate, the Old Road has gone quiet.</p></div>
           </section>
           <div class="v151-realm-destinations" aria-label="Nearby destinations">
             <article class="v151-realm-destination">
               <img src="assets/generated/locations/old-road-south-fork.webp" alt="" loading="lazy" decoding="async">
-              <div><small>THE FRONTIER</small><strong>The Old Road</strong><span>Expeditions · Discoveries · Encounters</span></div>
+              <div><small>THE ROAD THAT ANSWERS</small><strong>The Old Road</strong><span>Worn markers · Blackroot tracks · Unquiet things</span></div>
             </article>
             <article class="v151-realm-destination">
               <img src="assets/generated/locations/bell-cellar-undercroft.webp" alt="" loading="lazy" decoding="async">

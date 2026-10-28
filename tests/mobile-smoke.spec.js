@@ -95,6 +95,8 @@ async function startFreshCharacter(page, name) {
   await tap(page, page.locator('#v094Next'));
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await tap(page, page.getByRole('button', { name: /Let Me Wake/i }));
+    await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+    await tap(page, page.getByRole('button', { name: 'Lift your head' }));
   await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
     window.LegendRoadOpeningV140.complete(player, 'abandoned');
@@ -141,6 +143,8 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     const wake = page.getByRole('button', { name: /Let Me Wake/i });
     await expect.poll(() => wake.evaluate(el => getComputedStyle(el).transform)).toBe('none');
     await tap(page, wake);
+    await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+    await tap(page, page.getByRole('button', { name: 'Lift your head' }));
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await tap(page, page.locator('[data-oric-response="honest"]'));
@@ -231,6 +235,8 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await tap(page, page.locator('#v094Next'));
     await expect(page.getByRole('heading', { name: 'MobileOpeningRoadQA', exact: true })).toBeVisible();
     await tap(page, page.getByRole('button', { name: /Let Me Wake/i }));
+    await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+    await tap(page, page.getByRole('button', { name: 'Lift your head' }));
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
     await expectNoHorizontalOverflow(page);
 

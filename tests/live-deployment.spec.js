@@ -109,6 +109,8 @@ test.describe('LEGEND live GitHub Pages smoke test', () => {
     await page.locator('#v094Next').click();
     await expect(page.getByRole('heading', { name: travelerName, exact: true })).toBeVisible();
     await page.getByRole('button', { name: /Let Me Wake/i }).click();
+    await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+    await page.getByRole('button', { name: 'Lift your head' }).click();
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
     await page.locator('[data-oric-response="honest"]').click();
     await expect(page.locator('.rpg-battle')).toBeVisible();

@@ -22,7 +22,17 @@ async function openTitle(page) {
   await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
 }
 
-async function createTravelerToLantern(page, name = 'VeilRoadQA') {
+async function expectNoHorizontalOverflow(page) {
+  const width = await page.evaluate(() => ({
+    viewport: window.innerWidth,
+    document: document.documentElement.scrollWidth,
+    body: document.body.scrollWidth
+  }));
+  expect(width.document, JSON.stringify(width)).toBeLessThanOrEqual(width.viewport);
+  expect(width.body, JSON.stringify(width)).toBeLessThanOrEqual(width.viewport);
+}
+
+async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
   await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
@@ -42,10 +52,31 @@ async function createTravelerToLantern(page, name = 'VeilRoadQA') {
   await page.locator('#v094Next').click();
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
+  await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+  if (options.stopAtPrologue) return;
+  await page.getByRole('button', { name: 'Lift your head' }).click();
   await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
 }
 
 test.describe('LEGEND v' + version + ' road-born opening', () => {
+  test('title and Dead Lantern prologue establish the bell, the road, and danger before Oric', async ({ page }) => {
+    await openTitle(page);
+    await expect(page.locator('.v120-title-hero')).toContainText('ONE BELL · NO TOWER');
+    await expect(page.locator('.v120-title-hero')).toContainText('The Old Road has begun to wake');
+    await createTravelerToLantern(page, 'DeadLanternCinematicQA', { stopAtPrologue: true });
+    const prologue = page.locator('.opening-road-v140-prologue-card');
+    await expect(prologue).toContainText('One Bell. No Tower.');
+    await expect(prologue).toContainText('Blackroot ditch');
+    await expect(prologue).toContainText('No second toll');
+    await expect(page.locator('.opening-road-v140-bg')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Lift your head' })).toBeVisible();
+    await page.getByRole('button', { name: 'Lift your head' }).click();
+    await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
+    await expect(page.locator('.opening-road-v140-card')).toContainText('I heard the bell from the gate');
+    await expect(page.getByRole('group', { name: 'Your answer to Captain Oric' })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await test.info().attach('dead-lantern-prologue.png', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
+  });
   test('title logo fallback keeps the correct title if the raster cannot load', async ({ page }) => {
     await openTitle(page);
     await page.locator('.v120-legend-logo').evaluate(img => img.dispatchEvent(new Event('error')));

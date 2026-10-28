@@ -31,6 +31,8 @@ async function createTraveler(page, { name = 'PlaytestQA', gender = 'man', class
   await page.locator('#v094Next').click();
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
+  await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+  await page.getByRole('button', { name: 'Lift your head' }).click();
   await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
 }
 
