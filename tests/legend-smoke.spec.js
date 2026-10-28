@@ -321,7 +321,16 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(menuIcons.every(icon => icon.classes.length === 1)).toBe(true);
     expect(new Set(menuIcons.map(icon => icon.classes[0])).size).toBe(menuIcons.length);
     expect(menuIcons.every(icon => icon.width <= 30 && icon.height <= 30 && icon.overflow === 'hidden' && !icon.hasImageChild)).toBe(true);
-    expect(menuIcons.every(icon => icon.backgroundImage.includes('legend-runway-icon-atlas.webp'))).toBe(true);
+    expect(menuIcons.every(icon => {
+      const name = icon.classes[0].replace('runway-icon-', '');
+      return icon.backgroundImage.includes('legend-icon-' + name + '.webp');
+    })).toBe(true);
+    await expect(page.locator('.title-v136-rpg .title-atmosphere')).toBeHidden();
+    for (const name of ['compass', 'journal', 'traveler', 'inn', 'market', 'forge', 'road', 'settings', 'milestone']) {
+      const response = await page.request.get('/assets/generated/ui/icons/legend-icon-' + name + '.webp');
+      expect(response.ok()).toBe(true);
+      expect(response.headers()['content-type']).toContain('image/webp');
+    }
   });
 
   test('game opens directly on the actual title menu without the redundant Ashmere Gate screen', async ({ page }) => {
