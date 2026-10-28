@@ -36,6 +36,11 @@ async function enterAshmere(page, name = 'WorldShellQA') {
   });
   await expect(page.locator('.ash100-town')).toBeVisible();
   await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+  await expect(page.locator('#legend-world-shell-root .lws-brand-copy span')).toHaveText('BEYOND THE LANTERN LINE');
+  await expect(page.locator('#lws-panel-left')).not.toContainText('V150');
+  await expect(page.locator('#lws-panel-left')).not.toContainText('does not create or replace journal records');
+  await expect(page.locator('#lws-panel-right')).not.toContainText('existing game service');
+  await expect(page.locator('#lws-panel-right .lws-btn-icon:not(.runway-icon)')).toHaveCount(0);
   await expect(page.locator('body')).toHaveClass(/legend-world-scene-town/);
   await expect(page.locator('body')).toHaveClass(/legend-world-region-ashmere/);
 }
