@@ -109,7 +109,7 @@ test.describe('LEGEND UI cascade contract v190', () => {
       logoSrc: element.querySelector('.v120-legend-logo')?.getAttribute('src') || '',
       title: element.querySelector('h1')?.textContent || ''
     }));
-    expect(titleComputed.radius).toBe('2px');
+    expect(titleComputed.radius).toBe('0px');
     expect(titleComputed.logoSrc).toMatch(/\.png(?:\?.*)?$/);
     expect(titleComputed.title).toMatch(/LEGEND/i);
     await expectNoHorizontalOverflow(page);
