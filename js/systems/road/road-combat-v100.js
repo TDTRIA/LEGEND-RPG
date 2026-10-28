@@ -162,7 +162,7 @@ function combatAction(enemy,action){
  const listedArmor=Math.max(0,Number(a.defense||0));
  // Old armor scores were much larger than the new road damage scale. Convert
  // them to a bounded mitigation value so gear matters without making enemies harmless.
- const armorValue=listedArmor<=4?listedArmor:Math.min(12,Math.round(listedArmor*.25));
+ const armorValue=listedArmor<=4?listedArmor:Math.min(8,Math.round(listedArmor*.18));
  const reduction=enemy.intent==='guardbreak'?Math.floor(armorValue*.4)+(guarding?5:0):armorValue+(guarding?(enemy.intent==='heavy'?8:5):0);
  const incoming=Math.max(0,raw-reduction);pl.hp=Math.max(0,Number(pl.hp||1)-incoming);
  if(enemy.snared){note+=' The trap weakens the counterattack.';enemy.snared=false;}
