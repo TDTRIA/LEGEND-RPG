@@ -88,11 +88,12 @@
     if (status) status.textContent = message;
   }
 
-  function openModal({ eyebrow = 'Realm overlay', title, description = '', content = '', footer = '' } = {}) {
+  function openModal({ eyebrow = 'Realm overlay', title, description = '', content = '', footer = '', icon = 'journal' } = {}) {
     const root = ensureRoot();
     previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const iconName = MODAL_ICON_CLASSES.includes(icon) ? icon : 'journal';
     root.innerHTML = '<section class="lws-modal" role="dialog" aria-modal="true" aria-labelledby="lws-modal-title" aria-describedby="lws-modal-description" tabindex="-1">' +
-      '<header class="lws-modal-header"><div><span>' + esc(eyebrow) + '</span><h2 id="lws-modal-title">' + esc(title || 'Realm') + '</h2><p id="lws-modal-description">' + esc(description) + '</p></div><button class="lws-close-btn" type="button" data-shell-modal-close aria-label="Close overlay">×</button></header>' +
+      '<header class="lws-modal-header"><span class="lws-modal-emblem runway-icon runway-icon-' + iconName + '" aria-hidden="true"></span><div class="lws-modal-heading"><span>' + esc(eyebrow) + '</span><h2 id="lws-modal-title">' + esc(title || 'Realm') + '</h2><p id="lws-modal-description">' + esc(description) + '</p></div><button class="lws-close-btn" type="button" data-shell-modal-close aria-label="Close overlay">×</button></header>' +
       '<div class="lws-modal-content">' + content + '<p class="lws-note" style="margin-top:12px" data-shell-modal-status aria-live="polite"></p></div>' +
       (footer ? '<footer class="lws-modal-footer">' + footer + '</footer>' : '') +
       '</section>';
@@ -121,11 +122,57 @@
     return item?.name || data?.itemNames?.[key] || humanize(key);
   }
 
+
+  function itemArtFor(key, label) {
+    const value = (String(key || '') + ' ' + String(label || ''))
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+    const has = pattern => pattern.test(value);
+
+    if (has(/iron short sword|iron sword/)) return 'assets/generated/items/equipment/iron-short-sword.webp';
+    if (has(/woodcutters axe|woodcutter axe/)) return 'assets/generated/items/equipment/woodcutters-axe.webp';
+    if (has(/hunting bow v2/)) return 'assets/generated/items/equipment/hunting-bow-v2.webp';
+    if (has(/reinforced round shield/)) return 'assets/generated/items/equipment/reinforced-round-shield.webp';
+    if (has(/iron helmet/)) return 'assets/generated/items/equipment/iron-helmet.webp';
+    if (has(/leather bracers/)) return 'assets/generated/items/equipment/leather-bracers.webp';
+    if (has(/blackroot tonic ingredients/)) return 'assets/generated/items/materials/blackroot-tonic-ingredients.webp';
+    if (has(/bell fragment/)) return 'assets/generated/items/bell-fragment.webp';
+    if (has(/road token|token/)) return 'assets/generated/items/road-token.webp';
+    if (has(/marsh herb/)) return 'assets/generated/items/materials/marsh-herbs.webp';
+    if (has(/road herb|herb/)) return 'assets/generated/items/road-herbs.webp';
+    if (has(/cloth scrap|wood scrap|trade bundle|goblin mail|code fragment|runic tablet/)) return 'assets/generated/items/materials/trade-bundle.webp';
+    if (has(/lamp oil|oil/)) return 'assets/generated/items/materials/lamp-oil.webp';
+    if (has(/ration|food/)) return 'assets/generated/items/ration-bundle.webp';
+    if (has(/camp supplies|camp/)) return 'assets/generated/items/camp-supplies.webp';
+    if (has(/iron ore|ore/)) return 'assets/generated/items/materials/iron-ore.webp';
+    if (has(/animal hide/)) return 'assets/generated/items/materials/animal-hide.webp';
+    if (has(/torn hide|pelt|fur/)) return 'assets/generated/items/materials/torn-hide.webp';
+    if (has(/hunter.?s charm|charm/)) return 'assets/generated/items/materials/hunters-charm.webp';
+    if (has(/healing potion|potion|road poultice|heal/)) return 'assets/generated/items/healing-potion.webp';
+    if (has(/wooden sword|short sword|stone sword|bronze sword|iron sword|sword|blade/)) return 'assets/generated/items/short-sword.webp';
+    if (has(/hunting bow|bow/)) return 'assets/generated/items/hunting-bow.webp';
+    if (has(/shield/)) return 'assets/generated/items/round-shield.webp';
+    if (has(/cloth armor/)) return 'assets/generated/items/armor/cloth-armor.webp';
+    if (has(/chain armor/)) return 'assets/generated/items/armor/chain-armor.webp';
+    if (has(/bronze armor/)) return 'assets/generated/items/armor/bronze-armor.webp';
+    if (has(/iron armor/)) return 'assets/generated/items/armor/iron-armor.webp';
+    if (has(/leather reinforced armor/)) return 'assets/generated/items/armor/leather-reinforced-armor.webp';
+    if (has(/leather armor/)) return 'assets/generated/items/armor/leather-reinforced-armor.webp';
+    if (has(/kettle helmet|helmet/)) return 'assets/generated/items/armor/kettle-helmet.webp';
+    if (has(/armor repair kit/)) return 'assets/generated/items/armor/armor-repair-kit.webp';
+    return '';
+  }
+
+  const MODAL_ICON_CLASSES = Object.freeze(['traveler', 'settings', 'milestone', 'road', 'journal']);
+
   function openInventory(player = readPlayer()) {
     if (!player) {
       return openModal({
         eyebrow: 'Traveler archive',
         title: 'Inventory unavailable',
+        icon: 'traveler',
         description: 'No saved traveler record could be read.',
         content: '<div class="lws-empty-state">Create or load a traveler before opening the inventory.</div>',
         footer: '<button type="button" class="lws-btn quiet" data-shell-modal-close>Close</button>'
@@ -139,8 +186,12 @@
     const markup = entries.length
       ? '<div class="lws-inventory-grid">' + entries.map(([key, value]) => {
           const label = itemName(key, data);
+          const art = itemArtFor(key, label);
           const marker = /potion|heal/i.test(label) ? '✚' : /herb|cloth|scrap|material|token|ration|food|camp/i.test(label) ? '✧' : /weapon|sword|bow|staff|blade/i.test(label) ? '⚔' : '◇';
-          return '<article class="lws-inventory-card"><span class="lws-item-sigil" aria-hidden="true">' + marker + '</span><div><strong>' + esc(label) + '</strong><small>Carried: ' + esc(value) + '</small></div></article>';
+          const icon = art
+            ? '<img class="lws-item-sigil lws-item-art" data-item-art="' + esc(key) + '" src="' + art + '" alt="" decoding="async">'
+            : '<span class="lws-item-sigil" aria-hidden="true">' + marker + '</span>';
+          return '<article class="lws-inventory-card">' + icon + '<div><strong>' + esc(label) + '</strong><small>Carried: ' + esc(value) + '</small></div></article>';
         }).join('') + '</div>'
       : '<div class="lws-empty-state">Your pack is currently empty. Items found on the road or acquired through existing town systems will appear here.</div>';
     const equipment = [
@@ -148,12 +199,18 @@
       ['Armor', player.armor || player.equipment?.armor || '']
     ].filter(([, value]) => String(value).trim());
     const equipmentMarkup = equipment.length
-      ? '<section class="lws-section" style="margin-top:16px"><div class="lws-section-title">Equipped</div><ul class="lws-small-list">' + equipment.map(([label, value]) => '<li><span>' + esc(label) + '</span><strong>' + esc(itemName(value, data)) + '</strong></li>').join('') + '</ul></section>'
+      ? '<section class="lws-section" style="margin-top:16px"><div class="lws-section-title">Equipped</div><ul class="lws-small-list lws-equipped-list">' + equipment.map(([label, value]) => {
+          const name = itemName(value, data);
+          const art = itemArtFor(value, name);
+          const image = art ? '<img class="lws-equipped-art" src="' + art + '" alt="" decoding="async">' : '';
+          return '<li class="lws-equipped-item"><span>' + esc(label) + '</span><span class="lws-equipped-value">' + image + '<strong>' + esc(name) + '</strong></span></li>';
+        }).join('') + '</ul></section>'
       : '';
     const footer = '<button type="button" class="lws-btn quiet" data-shell-modal-close>Return to the world</button><button type="button" class="lws-btn primary" data-world-action="traveler-sheet"><span class="lws-btn-copy"><strong>Open traveler sheet</strong><small>Use the full existing character screen</small></span></button>';
     return openModal({
       eyebrow: 'Traveler archive',
       title: 'Inventory',
+      icon: 'traveler',
       description: 'A read-only view of the saved pack. Item use, crafting, and rewards remain owned by the existing game systems.',
       content: markup + equipmentMarkup,
       footer
@@ -168,6 +225,7 @@
     return openModal({
       eyebrow: 'Realm preferences',
       title: 'Settings',
+      icon: 'settings',
       description: 'Changes are written through LEGEND’s existing settings storage and accessibility handler.',
       content: markup,
       footer: '<button type="button" class="lws-btn primary" data-shell-modal-close>Return to the world</button>'
@@ -181,6 +239,7 @@
     return openModal({
       eyebrow: 'Encounter state',
       title: active ? 'Combat encounter' : 'No active encounter',
+      icon: 'milestone',
       description: active
         ? 'The live encounter is owned by the existing combat system. Close this panel to use its combat actions.'
         : 'Combat begins through real road or dungeon encounters. This shell does not spawn enemies or change combat state.',
@@ -195,6 +254,7 @@
     return openModal({
       eyebrow: 'World action',
       title,
+      icon: 'road',
       description,
       content: '<div class="lws-empty-state">' + esc(message || '') + '</div>',
       footer: '<button type="button" class="lws-btn primary" data-shell-modal-close>Close</button>'

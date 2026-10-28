@@ -132,26 +132,81 @@ test.describe('LEGEND persistent world shell v170', () => {
       const player = window.LegendStorage.loadPlayer();
       player.inventory.roadHerb = 2;
       player.inventory.clothScrap = 1;
+      player.inventory.potion = 1;
+      player.inventory.roadToken = 1;
+      player.inventory.bellFragment = 1;
+      player.inventory.food = 1;
+      player.weapon = 'woodenSword';
+      player.armor = 'clothArmor';
       window.LegendStorage.savePlayer(player);
-      return { roadHerb: player.inventory.roadHerb, clothScrap: player.inventory.clothScrap };
+      return {
+        roadHerb: player.inventory.roadHerb,
+        clothScrap: player.inventory.clothScrap,
+        potion: player.inventory.potion,
+        roadToken: player.inventory.roadToken,
+        bellFragment: player.inventory.bellFragment,
+        food: player.inventory.food,
+        weapon: player.weapon,
+        armor: player.armor
+      };
     });
 
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('.lws-bottom-bar [data-world-action="inventory"]').click();
     const dialog = page.getByRole('dialog', { name: 'Inventory' });
     await expect(dialog).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    const modalBounds = await dialog.boundingBox();
+    expect(modalBounds.x).toBeGreaterThanOrEqual(0);
+    expect(modalBounds.x + modalBounds.width).toBeLessThanOrEqual(390);
+    await expect(dialog.locator('.lws-modal-emblem')).toHaveClass(/runway-icon-traveler/);
     await expect(dialog).toContainText('Road Herb');
     await expect(dialog).toContainText('Carried: 2');
     await expect(dialog).toContainText('Cloth Scrap');
+    await expect(dialog.locator('.lws-equipped-art')).toHaveCount(2);
+
+    const itemArt = await dialog.locator('img.lws-item-art').evaluateAll(images =>
+      images.map(image => image.getAttribute('src'))
+    );
+    for (const asset of [
+      'assets/generated/items/road-herbs.webp',
+      'assets/generated/items/materials/trade-bundle.webp',
+      'assets/generated/items/healing-potion.webp',
+      'assets/generated/items/road-token.webp',
+      'assets/generated/items/bell-fragment.webp',
+      'assets/generated/items/ration-bundle.webp'
+    ]) {
+      expect(itemArt, 'missing illustration ' + asset).toContain(asset);
+      const response = await page.request.get('/' + asset);
+      expect(response.status(), asset).toBe(200);
+      expect(response.headers()['content-type'] || '', asset).toContain('image/webp');
+    }
+
+    const equipmentArt = await dialog.locator('img.lws-equipped-art').evaluateAll(images =>
+      images.map(image => image.getAttribute('src'))
+    );
+    expect(equipmentArt).toContain('assets/generated/items/short-sword.webp');
+    expect(equipmentArt).toContain('assets/generated/items/armor/cloth-armor.webp');
     await expect(page.locator('.ash100-town')).toBeVisible();
 
     await dialog.getByRole('button', { name: /Return to the world/i }).click();
     await expect(dialog).toHaveCount(0);
     const after = await page.evaluate(() => {
       const player = window.LegendStorage.loadPlayer();
-      return { roadHerb: player.inventory.roadHerb, clothScrap: player.inventory.clothScrap };
+      return {
+        roadHerb: player.inventory.roadHerb,
+        clothScrap: player.inventory.clothScrap,
+        potion: player.inventory.potion,
+        roadToken: player.inventory.roadToken,
+        bellFragment: player.inventory.bellFragment,
+        food: player.inventory.food,
+        weapon: player.weapon,
+        armor: player.armor
+      };
     });
     expect(after).toEqual(before);
     await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+    await expectNoHorizontalOverflow(page);
   });
 
   test('Old Road shell actions open the existing field journal and do not replace expedition state', async ({ page }) => {
@@ -260,6 +315,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     await page.locator('.lws-bottom-bar [data-world-action="settings"]').click();
     const dialog = page.getByRole('dialog', { name: 'Settings' });
     await expect(dialog).toBeVisible();
+    await expect(dialog.locator('.lws-modal-emblem')).toHaveClass(/runway-icon-settings/);
     const reducedMotion = dialog.locator('[data-world-setting="reducedMotion"]');
     const original = await reducedMotion.isChecked();
     await reducedMotion.setChecked(!original);
@@ -439,6 +495,35 @@ test.describe('LEGEND persistent world shell v170', () => {
       expect(icon.height).toBe(20);
       expect(icon.backgroundImage).toContain('legend-icon-' + icon.iconClass.replace('runway-icon-', '') + '.webp');
     }
+    await expectNoHorizontalOverflow(page);
+  });
+
+
+  test('combat and world-notice overlays show different generated emblems', async ({ page }) => {
+    await enterAshmere(page, 'ModalEmblemQA');
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    await page.evaluate(() => window.LegendWorldShellModalsV170.openCombat());
+    const combatDialog = page.getByRole('dialog', { name: 'No active encounter' });
+    await expect(combatDialog).toBeVisible();
+    await expect(combatDialog.locator('.lws-modal-emblem')).toHaveClass(/runway-icon-milestone/);
+    const combatBackground = await combatDialog.locator('.lws-modal-emblem').evaluate(node => getComputedStyle(node).backgroundImage);
+    expect(combatBackground).toContain('legend-icon-milestone.webp');
+    await expectNoHorizontalOverflow(page);
+    await combatDialog.locator('[data-shell-modal-close]').click();
+    await expect(combatDialog).toHaveCount(0);
+
+    await page.evaluate(() => window.LegendWorldShellModalsV170.openNotice(
+      'A Saved Lead', 'Field note', 'The record is preserved in your journal.'
+    ));
+    const noticeDialog = page.getByRole('dialog', { name: 'A Saved Lead' });
+    await expect(noticeDialog).toBeVisible();
+    await expect(noticeDialog.locator('.lws-modal-emblem')).toHaveClass(/runway-icon-road/);
+    const noticeBackground = await noticeDialog.locator('.lws-modal-emblem').evaluate(node => getComputedStyle(node).backgroundImage);
+    expect(noticeBackground).toContain('legend-icon-road.webp');
+    const bounds = await noticeDialog.boundingBox();
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(390);
     await expectNoHorizontalOverflow(page);
   });
 
