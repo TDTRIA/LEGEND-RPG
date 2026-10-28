@@ -30,7 +30,9 @@
   overflow: clip;
   background:
     radial-gradient(1200px 520px at 50% 0%, rgba(191, 160, 100, .06), transparent 60%),
-    linear-gradient(180deg, rgba(5, 9, 7, .84), rgba(3, 6, 5, .96));
+    /* Keep the persistent frame as glass over every scene; local panels own their
+       opaque surfaces, not the full viewport canvas. */
+    linear-gradient(180deg, rgba(5, 9, 7, .18), rgba(3, 6, 5, .32));
 }
 #legend-world-shell-root::before,
 #legend-world-shell-root::after {
@@ -40,7 +42,7 @@
   pointer-events: none;
 }
 #legend-world-shell-root::before {
-  background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.18), rgba(0,0,0,.05));
+  background: linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.08), rgba(0,0,0,.03));
 }
 #legend-world-shell-root::after {
   background:
