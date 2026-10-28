@@ -421,3 +421,37 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Phase 4 title icon frame — final cascade guard.
+   runway-art-pass and the shared v160 layer both define legacy circular/34px icons.
+   This file is loaded last, so keep the generated raster art in the intended square frame. */
+.title-v100 .v136-menu-icon,
+.title-v136-rpg .v136-menu-icon {
+  display: grid !important;
+  box-sizing: border-box !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  flex: 0 0 28px !important;
+  overflow: hidden !important;
+  clip-path: inset(0 round 3px) !important;
+  contain: paint !important;
+  border-radius: 3px !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+.title-v100 .v136-menu-icon img,
+.title-v136-rpg .v136-menu-icon img,
+.title-v100 .v136-menu-icon svg,
+.title-v136-rpg .v136-menu-icon svg {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+}
