@@ -156,3 +156,319 @@
   }
   .title-v136-rpg .v136-menu-btn{transition:none!important;transform:none!important}
 }
+
+
+/* Dark-fantasy framing for the real game shell. Existing shipped art is reused;
+   only the live scene presentation changes. */
+body.legend-world-shell-active {
+  background: #030604 !important;
+  isolation: isolate;
+}
+body.legend-world-shell-active::before {
+  position: fixed; z-index: 0; inset: -2.5%; content: ""; pointer-events: none;
+  background-image:
+    linear-gradient(90deg, rgba(1,4,3,.82), rgba(2,5,4,.22) 31%, rgba(2,5,4,.20) 69%, rgba(1,3,2,.82)),
+    linear-gradient(180deg, rgba(2,5,4,.22), transparent 34%, rgba(1,3,2,.62)),
+    url("../assets/locations/ashmere/location_ashmere_mainstreet_v1.jpg");
+  background-position: center, center, center 48%;
+  background-size: cover; background-repeat: no-repeat;
+  filter: saturate(.58) contrast(1.13) brightness(.42);
+  transform: scale(1.035);
+  animation: legendWorldAmbientDrift 74s ease-in-out infinite alternate;
+}
+body.legend-world-shell-active::after {
+  position: fixed; z-index: 0; inset: 0; content: ""; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 42%, transparent 12%, rgba(0,0,0,.2) 52%, rgba(0,0,0,.7) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.17), transparent 24%, transparent 77%, rgba(0,0,0,.48));
+  box-shadow: inset 0 0 120px 18px rgba(0,0,0,.55);
+}
+body.legend-world-shell-active #root { background: transparent !important; }
+body.legend-world-scene-road::before,
+body.legend-world-scene-combat::before,
+body.legend-world-scene-combat-results::before,
+body.legend-world-scene-expedition-results::before {
+  background-image:
+    linear-gradient(90deg, rgba(1,4,3,.84), rgba(2,5,4,.24) 34%, rgba(2,5,4,.3) 70%, rgba(1,3,2,.84)),
+    linear-gradient(180deg, rgba(2,5,4,.26), transparent 32%, rgba(1,3,2,.68)),
+    url("../assets/locations/roads/location_old_road_main_v1.jpg");
+  background-position: center, center, center 53%;
+}
+body.legend-world-region-greyfen.legend-world-scene-town::before,
+body.legend-world-region-greyfen.legend-world-scene-service::before,
+body.legend-world-region-greyfen.legend-world-scene-road::before,
+body.legend-world-region-greyfen.legend-world-scene-combat::before,
+body.legend-world-region-greyfen.legend-world-scene-combat-results::before,
+body.legend-world-region-greyfen.legend-world-scene-expedition-results::before {
+  background-image:
+    linear-gradient(90deg, rgba(1,4,3,.84), rgba(2,5,4,.24) 34%, rgba(2,5,4,.3) 70%, rgba(1,3,2,.84)),
+    linear-gradient(180deg, rgba(2,5,4,.24), transparent 35%, rgba(1,3,2,.68)),
+    url("../assets/generated/locations/greyfen-marsh-walkway.webp");
+  background-position: center, center, center 54%;
+}
+body.legend-world-scene-dungeon::before {
+  background-image:
+    linear-gradient(90deg, rgba(1,3,2,.82), rgba(2,4,3,.24) 50%, rgba(1,3,2,.86)),
+    linear-gradient(180deg, rgba(0,0,0,.28), transparent 29%, rgba(0,0,0,.74)),
+    url("../assets/generated/locations/bell-cellar-undercroft.webp");
+  background-position: center, center, center;
+}
+
+/* Let the actual town painting carry the central screen instead of another
+   opaque webpage card. */
+body.legend-world-shell-active #root .ash100-town {
+  position: relative; max-width: none !important; min-height: 100%; margin: 0 !important;
+  padding: 7px 0 22px !important; color: #eee6d1 !important; background: transparent !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-hero {
+  min-height: clamp(260px, 36vh, 390px) !important;
+  border: 1px solid rgba(224,190,112,.38) !important; border-radius: 3px !important;
+  background: #080d09 !important; isolation: isolate;
+  box-shadow: 0 22px 48px rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,0,0,.5);
+}
+body.legend-world-shell-active #root .ash100-town .ash100-hero > img {
+  filter: saturate(.83) contrast(1.08) brightness(.87);
+  transform: scale(1.025); animation: legendTownSceneDrift 52s ease-in-out infinite alternate;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-hero::before {
+  position: absolute; z-index: 1; inset: 9px; content: "";
+  border: 1px solid rgba(226,198,130,.21); pointer-events: none;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-hero::after {
+  background:
+    linear-gradient(90deg, rgba(2,5,3,.88), rgba(2,5,3,.47) 42%, rgba(2,5,3,.16) 72%, rgba(2,5,3,.54)),
+    linear-gradient(180deg, rgba(1,3,2,.16), transparent 35%, rgba(1,3,2,.78)),
+    radial-gradient(ellipse at 70% 35%, rgba(206,157,72,.12), transparent 45%);
+}
+body.legend-world-shell-active #root .ash100-town .ash100-hero-copy {
+  left: clamp(18px, 2.2vw, 34px) !important; right: 18px !important;
+  bottom: clamp(18px, 3vh, 32px) !important; max-width: min(620px, 88%) !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-hero-copy .ash099-kicker {
+  color: #e0bf78 !important; font-size: .61rem !important; font-weight: 800 !important;
+  letter-spacing: .21em !important; text-shadow: 0 2px 12px rgba(0,0,0,.95);
+}
+body.legend-world-shell-active #root .ash100-town .ash100-hero-copy h1 {
+  margin: 6px 0 10px !important; color: #f3e8ca !important;
+  font: 500 clamp(2.65rem, 6.5vw, 4.35rem)/.98 Georgia, "Times New Roman", serif !important;
+  letter-spacing: -.035em !important;
+  text-shadow: 0 4px 26px rgba(0,0,0,.92), 0 0 28px rgba(215,168,79,.13);
+}
+body.legend-world-shell-active #root .ash100-town .ash100-hero-copy p {
+  max-width: 39rem; color: #e0dfd0 !important; font-size: clamp(.88rem, 1.2vw, 1rem);
+  line-height: 1.65 !important; text-shadow: 0 2px 14px rgba(0,0,0,.95);
+}
+body.legend-world-shell-active #root .ash100-town .ash099-topnav {
+  gap: 4px !important; margin: 10px 0 12px !important; padding: 5px !important;
+  border: 1px solid rgba(220,190,117,.27) !important; border-radius: 2px !important;
+  background: linear-gradient(180deg, rgba(8,13,9,.91), rgba(3,6,4,.9)) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.2), inset 0 1px rgba(255,242,200,.04) !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-footer-item {
+  min-height: 48px !important; border-radius: 2px !important; color: #a8ac9b !important;
+  font-size: .64rem !important; letter-spacing: .035em;
+}
+body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-footer-item.active {
+  border-color: rgba(228,196,119,.35) !important;
+  background: linear-gradient(180deg, rgba(169,126,52,.16), rgba(20,24,16,.72)) !important;
+  color: #ead6a2 !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-status {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 0 !important;
+  margin: 9px 0 17px !important; border-top: 1px solid rgba(220,190,117,.26);
+  border-bottom: 1px solid rgba(220,190,117,.22);
+  background: linear-gradient(100deg, rgba(8,13,9,.83), rgba(4,8,5,.74));
+  box-shadow: inset 0 1px rgba(255,243,208,.025);
+}
+body.legend-world-shell-active #root .ash100-town .ash100-status > div {
+  min-width: 0; padding: 10px clamp(8px, 1vw, 14px) !important; border: 0 !important;
+  border-right: 1px solid rgba(220,190,117,.15) !important; border-radius: 0 !important;
+  background: transparent !important; box-shadow: none !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-status > div:last-child { border-right: 0 !important; }
+body.legend-world-shell-active #root .ash100-town .ash100-status span,
+body.legend-world-shell-active #root .ash100-town .ash100-status small {
+  color: #aeb4a4 !important; font-size: .61rem !important; letter-spacing: .09em;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-status strong {
+  color: #efe5cb !important; font-family: Georgia, "Times New Roman", serif; font-size: .98rem !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-status i { border-radius: 0 !important; }
+body.legend-world-shell-active #root .ash100-town .ash100-destination-section { margin-top: 3px; }
+body.legend-world-shell-active #root .ash100-town .ash100-section-head h2 {
+  color: #eee3c5 !important; font: 500 clamp(1.25rem, 2vw, 1.65rem)/1.2 Georgia, "Times New Roman", serif !important;
+  letter-spacing: -.015em;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-destination {
+  min-height: 96px !important; padding: 11px !important; gap: 10px !important;
+  border: 1px solid rgba(220,190,117,.2) !important; border-left: 2px solid rgba(220,190,117,.43) !important;
+  border-radius: 2px !important;
+  background: linear-gradient(125deg, rgba(20,27,20,.94), rgba(5,9,6,.9)) !important;
+  box-shadow: inset 0 1px rgba(255,245,210,.03), 0 7px 18px rgba(0,0,0,.16) !important;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-destination:hover,
+body.legend-world-shell-active #root .ash100-town .ash100-destination:focus-visible {
+  transform: translateY(-2px); border-color: rgba(230,198,125,.58) !important;
+  border-left-color: #e2c17a !important; outline-color: rgba(230,198,125,.65);
+  background: linear-gradient(125deg, rgba(45,43,28,.94), rgba(7,12,8,.95)) !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-destination.featured {
+  border-color: rgba(226,192,112,.45) !important; border-left-color: #d8b36c !important;
+  background: linear-gradient(125deg, rgba(51,44,27,.94), rgba(7,12,8,.94)) !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-destination-icon {
+  border-radius: 2px !important; border: 1px solid rgba(220,190,117,.2);
+  background: linear-gradient(145deg, rgba(130,98,39,.12), rgba(0,0,0,.22)) !important; overflow: hidden;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-destination-icon img,
+body.legend-world-shell-active #root .ash100-town .ash100-destination-icon svg {
+  display: block; max-width: 100% !important; max-height: 100% !important; object-fit: contain;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-destination-copy strong {
+  color: #f0e6ce !important; font-family: Georgia, "Times New Roman", serif !important;
+  font-size: .92rem !important; line-height: 1.2;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-destination-copy small {
+  color: #aeb5a5 !important; font-size: .68rem !important; line-height: 1.45;
+}
+body.legend-world-shell-active #root .ash100-town .ash100-destination > em {
+  color: #dfbd75 !important; font-size: .59rem !important; letter-spacing: .07em; text-transform: uppercase;
+}
+
+/* The frame should feel like iron and dark timber, not another dashboard. */
+#legend-world-shell-root .lws-hud {
+  border-bottom-color: rgba(224,190,112,.31);
+  background: linear-gradient(180deg, rgba(3,7,5,.96), rgba(5,9,6,.87)),
+    radial-gradient(ellipse at 50% 0, rgba(191,160,100,.12), transparent 64%);
+  box-shadow: 0 14px 36px rgba(0,0,0,.42), inset 0 -1px rgba(255,239,190,.05);
+  backdrop-filter: blur(8px) saturate(.72);
+}
+#legend-world-shell-root .lws-brand-mark {
+  border-color: rgba(226,193,119,.62);
+  background: linear-gradient(145deg, rgba(150,113,45,.23), rgba(3,7,5,.88));
+  box-shadow: inset 0 0 0 3px rgba(0,0,0,.24), 0 0 22px rgba(215,168,79,.06);
+}
+#legend-world-shell-root .lws-location strong { text-shadow: 0 0 18px rgba(221,176,86,.13); }
+#legend-world-shell-root .lws-panel {
+  border-color: rgba(220,190,117,.27); border-radius: 2px;
+  background: linear-gradient(145deg, rgba(16,23,17,.91), rgba(3,7,4,.90) 72%),
+    repeating-linear-gradient(0deg, rgba(255,241,194,.012) 0 1px, transparent 1px 5px);
+  box-shadow: 0 24px 60px rgba(0,0,0,.52), inset 0 0 0 1px rgba(0,0,0,.40), inset 0 1px rgba(255,241,198,.045);
+  backdrop-filter: blur(8px) saturate(.72);
+}
+#legend-world-shell-root .lws-panel::before {
+  position: absolute; top: 0; right: 14px; left: 14px; height: 1px; content: ""; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(226,193,119,.48), transparent);
+}
+#legend-world-shell-root .lws-panel-header { border-bottom-color: rgba(220,190,117,.19); }
+#legend-world-shell-root .lws-panel-header h2,
+#legend-world-shell-root .lws-section-title,
+#legend-world-shell-root .lws-quest-item strong,
+#legend-world-shell-root .lws-selected-place h3,
+#legend-world-shell-root .lws-place-option-copy strong,
+#legend-world-shell-modal-root .lws-modal-header h2 {
+  font-family: Georgia, "Times New Roman", serif; letter-spacing: .005em;
+}
+#legend-world-shell-root .lws-bottom-bar {
+  border-color: rgba(220,190,117,.3); border-radius: 2px;
+  background: linear-gradient(180deg, rgba(13,19,13,.96), rgba(3,6,4,.97));
+  box-shadow: 0 13px 38px rgba(0,0,0,.48), inset 0 1px rgba(255,245,210,.045);
+}
+#legend-world-shell-root .lws-btn {
+  border-radius: 1px; border-color: rgba(220,190,117,.21);
+  background: linear-gradient(130deg, rgba(29,37,27,.94), rgba(5,9,6,.96));
+}
+#legend-world-shell-root .lws-btn.primary {
+  border-color: rgba(229,194,115,.6);
+  background: linear-gradient(130deg, rgba(87,67,31,.95), rgba(15,18,11,.98));
+  box-shadow: inset 0 1px rgba(255,244,205,.09), 0 7px 18px rgba(0,0,0,.23);
+}
+#legend-world-shell-root .lws-place-option,
+#legend-world-shell-root .lws-selected-place { border-radius: 2px; }
+#legend-world-shell-modal-root {
+  background: rgba(1,3,2,.83); backdrop-filter: blur(13px) saturate(.62);
+}
+#legend-world-shell-modal-root .lws-modal {
+  border-radius: 2px;
+  background: linear-gradient(145deg, rgba(21,28,21,.98), rgba(3,7,4,.99) 74%), var(--lws-night);
+  box-shadow: 0 36px 100px rgba(0,0,0,.68), inset 0 0 0 4px rgba(0,0,0,.40);
+}
+
+/* Scene changes: existing navigation keeps its behavior; the curtain gets a
+   contextual landscape, a slight camera move, and more tactile edge lighting. */
+#legend-scene-curtain { isolation: isolate; overflow: hidden; background: #020403 !important; }
+#legend-scene-curtain::before {
+  position: absolute; z-index: 0; inset: -3%; content: ""; pointer-events: none;
+  background-image: linear-gradient(90deg, rgba(1,3,2,.56), rgba(1,3,2,.18) 45%, rgba(1,3,2,.7)),
+    linear-gradient(180deg, rgba(1,3,2,.1), rgba(1,3,2,.28) 42%, rgba(1,3,2,.72)),
+    url("../assets/generated/title/title-ashmere-road.webp");
+  background-size: cover; background-position: center; opacity: .84;
+  filter: saturate(.58) contrast(1.12) brightness(.6); transform: scale(1.045);
+  animation: legendWorldAmbientDrift 26s ease-in-out infinite alternate;
+}
+body.legend-world-scene-road #legend-scene-curtain::before,
+body.legend-world-scene-combat #legend-scene-curtain::before,
+body.legend-world-scene-combat-results #legend-scene-curtain::before,
+body.legend-world-scene-expedition-results #legend-scene-curtain::before {
+  background-image: linear-gradient(90deg, rgba(1,3,2,.56), rgba(1,3,2,.18) 45%, rgba(1,3,2,.7)),
+    linear-gradient(180deg, rgba(1,3,2,.1), rgba(1,3,2,.28) 42%, rgba(1,3,2,.72)),
+    url("../assets/locations/roads/location_old_road_main_v1.jpg");
+}
+body.legend-world-region-greyfen #legend-scene-curtain::before {
+  background-image: linear-gradient(90deg, rgba(1,3,2,.56), rgba(1,3,2,.18) 45%, rgba(1,3,2,.7)),
+    linear-gradient(180deg, rgba(1,3,2,.1), rgba(1,3,2,.28) 42%, rgba(1,3,2,.72)),
+    url("../assets/generated/locations/greyfen-marsh-walkway.webp");
+}
+body.legend-world-scene-dungeon #legend-scene-curtain::before {
+  background-image: linear-gradient(90deg, rgba(1,3,2,.56), rgba(1,3,2,.18) 45%, rgba(1,3,2,.7)),
+    linear-gradient(180deg, rgba(1,3,2,.1), rgba(1,3,2,.28) 42%, rgba(1,3,2,.72)),
+    url("../assets/generated/locations/bell-cellar-undercroft.webp");
+}
+#legend-scene-curtain::after {
+  position: absolute; z-index: 0; inset: 0; content: ""; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 42%, transparent 8%, rgba(0,0,0,.23) 54%, rgba(0,0,0,.76) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.08), transparent 37%, rgba(0,0,0,.68));
+}
+#legend-scene-curtain .legend-transition-scene {
+  z-index: 1; max-width: min(460px, 90vw); padding: clamp(24px, 4vw, 42px);
+  border: 1px solid rgba(225,190,110,.28); border-left: 2px solid rgba(225,190,110,.68);
+  background: linear-gradient(110deg, rgba(4,9,6,.88), rgba(4,9,6,.60));
+  box-shadow: 0 28px 88px rgba(0,0,0,.42), inset 0 1px rgba(255,245,210,.045);
+  backdrop-filter: blur(4px);
+}
+#legend-scene-curtain .legend-transition-location {
+  letter-spacing: .22em; color: #e3c27a; text-shadow: 0 2px 16px #000;
+}
+#legend-scene-curtain .legend-transition-rule { background: linear-gradient(90deg, rgba(225,190,110,.8), transparent); }
+#legend-scene-curtain .legend-transition-caption { color: #c7cbbb; letter-spacing: .2em; }
+#legend-world-shell-root .lws-panel,
+#legend-world-shell-root .lws-panel * { -webkit-font-smoothing: antialiased; }
+.title-v136-rpg .title-atmosphere { overflow: hidden; opacity: .44 !important; clip-path: inset(0); }
+
+@keyframes legendWorldAmbientDrift {
+  from { transform: scale(1.035) translate3d(0,0,0); }
+  to { transform: scale(1.065) translate3d(-.45%,-.22%,0); }
+}
+@keyframes legendTownSceneDrift {
+  from { transform: scale(1.025) translate3d(0,0,0); }
+  to { transform: scale(1.065) translate3d(-.35%,-.25%,0); }
+}
+@media (max-width: 680px) {
+  body.legend-world-shell-active #root .ash100-town .ash100-status { grid-template-columns: repeat(3, minmax(0,1fr)) !important; }
+  body.legend-world-shell-active #root .ash100-town .ash100-status > div { padding: 8px 6px !important; }
+  body.legend-world-shell-active #root .ash100-town .ash100-status span,
+  body.legend-world-shell-active #root .ash100-town .ash100-status small { font-size: .56rem !important; letter-spacing: .045em; }
+  body.legend-world-shell-active #root .ash100-town .ash100-status strong { font-size: .84rem !important; }
+  body.legend-world-shell-active #root .ash100-town .ash100-destinations { grid-template-columns: minmax(0,1fr) !important; }
+  body.legend-world-shell-active #root .ash100-town .ash100-hero { min-height: clamp(230px,38svh,330px) !important; }
+  body.legend-world-shell-active #root .ash100-town .ash100-hero-copy h1 { font-size: clamp(2.45rem,10.5vw,3.3rem) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.legend-world-shell-active::before,
+  body.legend-world-shell-active #root .ash100-town .ash100-hero > img,
+  #legend-scene-curtain::before {
+    animation: none !important; transform: none !important; will-change: auto;
+  }
+  .title-v136-rpg .title-atmosphere { animation: none !important; }
+}
