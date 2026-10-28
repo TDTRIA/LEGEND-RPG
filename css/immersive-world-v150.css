@@ -814,7 +814,7 @@
   overflow: hidden !important;
 }
 .title-v136-rpg .runway-icon {
-  background-image: url('https://dnznrvs05pmza.cloudfront.net/599635b6-376d-48ab-b7f7-e91b6292c34f.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJra2V5SGFzaCI6ImI4NzZjNzczMmRjYTM3ZjUiLCJidWNrZXQiOiJydW53YXktdGFzay1hcnRpZmFjdHMiLCJzdGFnZSI6InByb2QiLCJleHAiOjE3OTMzMzE0NDJ9.X9lxxrrkyutJLOjc6cZnCpS2p4X-jFY4DhA7JZX5OHI'), var(--runway-icon-fallback) !important;
+  background-image: url('../assets/generated/ui/icons/legend-runway-icon-atlas.webp'), var(--runway-icon-fallback) !important;
   background-size: 300% 300%, contain !important;
   background-repeat: no-repeat, no-repeat !important;
   background-position: var(--runway-x) var(--runway-y), center center !important;
@@ -823,47 +823,47 @@
 .runway-icon-compass {
   --runway-x: 0%;
   --runway-y: 0%;
-  --runway-icon-fallback: url('assets/generated/ui/icons/service-map.webp');
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-map.webp');
 }
 .runway-icon-journal {
   --runway-x: 50%;
   --runway-y: 0%;
-  --runway-icon-fallback: url('assets/generated/ui/icons/service-journal.webp');
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-journal.webp');
 }
 .runway-icon-traveler {
   --runway-x: 100%;
   --runway-y: 0%;
-  --runway-icon-fallback: url('assets/generated/ui/icons/service-traveler.webp');
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-traveler.webp');
 }
 .runway-icon-inn {
   --runway-x: 0%;
   --runway-y: 50%;
-  --runway-icon-fallback: url('assets/generated/ui/icons/service-inn.webp');
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-inn.webp');
 }
 .runway-icon-market {
   --runway-x: 50%;
   --runway-y: 50%;
-  --runway-icon-fallback: url('assets/generated/ui/icons/service-market.webp');
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-market.webp');
 }
 .runway-icon-forge {
   --runway-x: 100%;
   --runway-y: 50%;
-  --runway-icon-fallback: url('assets/generated/ui/icons/service-blacksmith.webp');
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-blacksmith.webp');
 }
 .runway-icon-road {
   --runway-x: 0%;
   --runway-y: 100%;
-  --runway-icon-fallback: url('assets/generated/ui/icons/service-gatehouse.webp');
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp');
 }
 .runway-icon-settings {
   --runway-x: 50%;
   --runway-y: 100%;
-  --runway-icon-fallback: url('assets/generated/ui/icons/service-gatehouse.webp');
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp');
 }
 .runway-icon-milestone {
   --runway-x: 100%;
   --runway-y: 100%;
-  --runway-icon-fallback: url('assets/generated/ui/icons/service-milestone.webp');
+  --runway-icon-fallback: url('../assets/generated/ui/icons/service-milestone.webp');
 }
 @media (max-width: 760px) {
   .title-v136-rpg .v136-menu-icon {
@@ -880,7 +880,7 @@
 .lws-place-option-icon.runway-icon {
   overflow: hidden !important;
   font-size: 0 !important;
-  background-image: url('https://dnznrvs05pmza.cloudfront.net/599635b6-376d-48ab-b7f7-e91b6292c34f.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMjg3NjhjNzJlZGNhMzdmNSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzMzMTQ0Mn0.X9lxxrrkyutJLOjc6cZnCpS2p4X-jFY4DhA7JZX5OHI'), var(--runway-icon-fallback) !important;
+  background-image: url('../assets/generated/ui/icons/legend-runway-icon-atlas.webp'), var(--runway-icon-fallback) !important;
   background-size: 300% 300%, contain !important;
   background-repeat: no-repeat, no-repeat !important;
   background-position: var(--runway-x) var(--runway-y), center center !important;
@@ -893,18 +893,18 @@
   height: 20px !important;
   overflow: hidden !important;
   font-size: 0 !important;
-  background-image: url('https://dnznrvs05pmza.cloudfront.net/599635b6-376d-48ab-b7f7-e91b6292c34f.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJra2V5SGFzaCI6ImI4NzZjNzczMmRjYTM3ZjUiLCJidWNrZXQiOiJydW53YXktdGFzay1hcnRpZmFjdHMiLCJzdGFnZSI6InByb2QiLCJleHAiOjE3OTMzMzE0NDJ9.X9lxxrrkyutJLOjc6cZnCpS2p4X-jFY4DhA7JZX5OHI'), var(--runway-icon-fallback) !important;
+  background-image: url('../assets/generated/ui/icons/legend-runway-icon-atlas.webp'), var(--runway-icon-fallback) !important;
   background-size: 300% 300%, contain !important;
   background-repeat: no-repeat, no-repeat !important;
   background-position: var(--runway-x) var(--runway-y), center center !important;
   background-color: #0a110c !important;
   border-radius: 3px !important;
 }
-.lws-place-option-icon.runway-icon-inn { --runway-x: 0%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-inn.webp'); }
-.lws-place-option-icon.runway-icon-market { --runway-x: 50%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-market.webp'); }
-.lws-place-option-icon.runway-icon-forge { --runway-x: 100%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-blacksmith.webp'); }
-.lws-place-option-icon.runway-icon-road { --runway-x: 0%; --runway-y: 100%; --runway-icon-fallback: url('assets/generated/ui/icons/service-gatehouse.webp'); }
-.lws-selected-place .lws-btn-icon.runway-icon-inn { --runway-x: 0%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-inn.webp'); }
-.lws-selected-place .lws-btn-icon.runway-icon-market { --runway-x: 50%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-market.webp'); }
-.lws-selected-place .lws-btn-icon.runway-icon-forge { --runway-x: 100%; --runway-y: 50%; --runway-icon-fallback: url('assets/generated/ui/icons/service-blacksmith.webp'); }
-.lws-selected-place .lws-btn-icon.runway-icon-road { --runway-x: 0%; --runway-y: 100%; --runway-icon-fallback: url('assets/generated/ui/icons/service-gatehouse.webp'); }
+.lws-place-option-icon.runway-icon-inn { --runway-x: 0%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-inn.webp'); }
+.lws-place-option-icon.runway-icon-market { --runway-x: 50%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-market.webp'); }
+.lws-place-option-icon.runway-icon-forge { --runway-x: 100%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-blacksmith.webp'); }
+.lws-place-option-icon.runway-icon-road { --runway-x: 0%; --runway-y: 100%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-inn { --runway-x: 0%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-inn.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-market { --runway-x: 50%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-market.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-forge { --runway-x: 100%; --runway-y: 50%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-blacksmith.webp'); }
+.lws-selected-place .lws-btn-icon.runway-icon-road { --runway-x: 0%; --runway-y: 100%; --runway-icon-fallback: url('../assets/generated/ui/icons/service-gatehouse.webp'); }
