@@ -173,7 +173,7 @@ body.legend-world-shell-active::before {
   background-position: center, center, center 48%;
   background-size: cover; background-repeat: no-repeat;
   /* Shared scene brightness: .42 crushed town, road, combat and dungeon art. */
-  filter: saturate(.82) contrast(1.08) brightness(.72);
+  filter: saturate(.86) contrast(1.06) brightness(.82);
   transform: scale(1.035);
   animation: legendWorldAmbientDrift 74s ease-in-out infinite alternate;
 }
