@@ -767,3 +767,111 @@
   .exp160-map-node-head strong{font-size:.72rem}
 }
 @media(prefers-reduced-motion:reduce){.exp160-map-action{transition:none!important;animation:none!important}}
+
+
+/* Phase 4 title polish: use the generated icon atlas and remove protruding circular decorations. */
+.title-v136-rpg .v136-corner-sigil.v150-corner-sigil {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+  pointer-events: none !important;
+}
+.title-v136-rpg .v150-legend-wordmark::before,
+.title-v136-rpg .v150-legend-wordmark::after,
+.title-v136-rpg .v150-logo-lockup::before,
+.title-v136-rpg .v150-logo-lockup::after {
+  content: none !important;
+  display: none !important;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+.title-v136-rpg .v136-menu-icon {
+  box-sizing: border-box !important;
+  position: relative !important;
+  overflow: hidden !important;
+  contain: paint !important;
+  isolation: isolate !important;
+  padding: 0 !important;
+  border-radius: 3px !important;
+  flex-shrink: 0 !important;
+}
+.title-v136-rpg .v136-menu-icon img,
+.title-v136-rpg .v136-menu-icon svg {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  overflow: hidden !important;
+}
+.title-v136-rpg .runway-icon {
+  background-image: url('https://dnznrvs05pmza.cloudfront.net/599635b6-376d-48ab-b7f7-e91b6292c34f.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJra2V5SGFzaCI6ImI4NzZjNzczMmRjYTM3ZjUiLCJidWNrZXQiOiJydW53YXktdGFzay1hcnRpZmFjdHMiLCJzdGFnZSI6InByb2QiLCJleHAiOjE3OTMzMzE0NDJ9.X9lxxrrkyutJLOjc6cZnCpS2p4X-jFY4DhA7JZX5OHI'), var(--runway-icon-fallback) !important;
+  background-size: 300% 300%, contain !important;
+  background-repeat: no-repeat, no-repeat !important;
+  background-position: var(--runway-x) var(--runway-y), center center !important;
+  background-color: rgba(6, 11, 8, .94) !important;
+}
+.title-v136-rpg .runway-icon-compass {
+  --runway-x: 0%;
+  --runway-y: 0%;
+  --runway-icon-fallback: url('assets/generated/ui/icons/service-map.webp');
+}
+.title-v136-rpg .runway-icon-journal {
+  --runway-x: 50%;
+  --runway-y: 0%;
+  --runway-icon-fallback: url('assets/generated/ui/icons/service-journal.webp');
+}
+.title-v136-rpg .runway-icon-traveler {
+  --runway-x: 100%;
+  --runway-y: 0%;
+  --runway-icon-fallback: url('assets/generated/ui/icons/service-traveler.webp');
+}
+.title-v136-rpg .runway-icon-inn {
+  --runway-x: 0%;
+  --runway-y: 50%;
+  --runway-icon-fallback: url('assets/generated/ui/icons/service-inn.webp');
+}
+.title-v136-rpg .runway-icon-market {
+  --runway-x: 50%;
+  --runway-y: 50%;
+  --runway-icon-fallback: url('assets/generated/ui/icons/service-market.webp');
+}
+.title-v136-rpg .runway-icon-forge {
+  --runway-x: 100%;
+  --runway-y: 50%;
+  --runway-icon-fallback: url('assets/generated/ui/icons/service-blacksmith.webp');
+}
+.title-v136-rpg .runway-icon-road {
+  --runway-x: 0%;
+  --runway-y: 100%;
+  --runway-icon-fallback: url('assets/generated/ui/icons/service-gatehouse.webp');
+}
+.title-v136-rpg .runway-icon-settings {
+  --runway-x: 50%;
+  --runway-y: 100%;
+  --runway-icon-fallback: url('assets/generated/ui/icons/service-gatehouse.webp');
+}
+.title-v136-rpg .runway-icon-milestone {
+  --runway-x: 100%;
+  --runway-y: 100%;
+  --runway-icon-fallback: url('assets/generated/ui/icons/service-milestone.webp');
+}
+@media (max-width: 760px) {
+  .title-v136-rpg .v136-menu-icon {
+    overflow: hidden !important;
+    contain: paint !important;
+    border-radius: 3px !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .title-v136-rpg .v136-menu-icon { transition: none !important; }
+}
