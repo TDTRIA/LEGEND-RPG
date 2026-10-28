@@ -194,7 +194,7 @@
               : context.kind === 'dungeon'
                 ? context.location
                 : (context.sublocation || context.location);
-    const objective = panels.objectiveFor?.(player, rootNode, context) || 'Find your next lead in town';
+    const objective = panels.objectiveFor?.(player, rootNode, context) || 'Ask a local or check the work board for a lead.';
     const hp = Math.max(0, Number(player.hp || 0));
     const maxHp = Math.max(1, Number(player.maxHp || 1));
     const heading = shell.querySelector('#lws-current-location');
