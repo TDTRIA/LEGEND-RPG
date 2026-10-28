@@ -31,6 +31,7 @@
       dungeon: () => renderFeature('renderBellVault'),
       crossing: () => renderFeature('renderDryCrossing'),
       marsh: () => typeof renderMarsh === 'function' ? renderMarsh() : renderHome(),
+      storehouse: () => renderFeature('renderGreyfenStorehouse'),
       craft: () => renderFeature('renderCrafting'),
       sheet: () => renderFeature('renderSheet'),
       archive: () => renderFeature('renderArchive'),

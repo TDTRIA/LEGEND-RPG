@@ -147,6 +147,17 @@
       });
     }
 
+    if (flags.greyfenEvidenceFiled && flags.greyfenStorehouseDispatchFound && !flags.greyfenStorehouseDispatchReported) {
+      return regionalStoryGoal(player, 'Greyfen', {
+        view: 'mara',
+        title: 'Report the Silted Storehouse Dispatch',
+        text: 'The storehouse dispatch records a temporary supply exception through the lower crossing after the flood’s retreat. Its authorization leaf is missing, so it adds context but does not name who approved the route. Bring it to Mara for preservation alongside the filed evidence.',
+        cta: 'Speak to Mara',
+        icon: 'journal',
+        tasks: ['Preserve the dispatch date and route note', 'Ask Mara to append it to the Boundary Archive', 'Keep the missing authorization leaf unresolved']
+      });
+    }
+
     if (flags.greyfenEvidenceFiled) {
       return regionalStoryGoal(player, 'Greyfen', {
         view: 'archive',

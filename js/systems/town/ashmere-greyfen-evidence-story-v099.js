@@ -8,7 +8,13 @@
     if (!player || !dialogue || typeof setBellQuestObjective !== 'function') return false;
     const pl = player;
     const n = dialogue;
-    if(greyfen&&id==='mara'&&pl.flags?.greyfenWaterlineGaugeRead&&!pl.flags?.greyfenWaterlineGaugeReported){
+    if(greyfen&&id==='mara'&&pl.flags?.greyfenEvidenceFiled&&pl.flags?.greyfenStorehouseDispatchFound&&!pl.flags?.greyfenStorehouseDispatchReported&&!(pl.flags?.greyfenWaterlineGaugeRead&&!pl.flags?.greyfenWaterlineGaugeReported)){
+      n.lines=[
+        'This storehouse dispatch confirms that a load of supplies was routed through the lower crossing as a temporary exception after the flood’s retreat.',
+        'The authorization leaf is missing. It tells us there was pressure to keep goods moving, but it does not identify who approved the exception or whether they understood the risk.',
+        'I will preserve it alongside the crossing records. We still need the missing closure order before drawing a conclusion about the route change.'
+      ];
+    }else if(greyfen&&id==='mara'&&pl.flags?.greyfenWaterlineGaugeRead&&!pl.flags?.greyfenWaterlineGaugeReported){
       n.lines=[
         'The gauge gives us a height and a clean, hand-cut notch. I will preserve the measurement in the Boundary Archive as an observation, not an accusation.',
         'The notch itself does not identify who cut it or explain why. We need a dated comparison before assigning it to any route change.',
@@ -107,6 +113,14 @@
       const memory='Mara compared the Blackroot seal record with the Greyfen boundary stone. The older bell-mark continues beneath a newer groove turned toward the reed bed; the evidence shows alteration, but not who ordered it.';
       if(!pl.memories.includes(memory))pl.memories.push(memory);
       setBellQuestObjective(pl,'Find a dated record or physical sign showing when the newer Greyfen cut was made.');
+    }
+
+    if(greyfen&&id==='mara'&&pl.flags?.greyfenEvidenceFiled&&pl.flags?.greyfenStorehouseDispatchFound&&!pl.flags?.greyfenStorehouseDispatchReported&&!(pl.flags?.greyfenWaterlineGaugeRead&&!pl.flags?.greyfenWaterlineGaugeReported)){
+      pl.flags.greyfenStorehouseDispatchReported=true;
+      pl.memories=Array.isArray(pl.memories)?pl.memories:[];
+      const memory='Mara added the Silted Storehouse dispatch to the Boundary Archive. It records a temporary supply exception through the lower crossing, but its authorization leaf is missing and it does not identify who approved the route.';
+      if(!pl.memories.includes(memory))pl.memories.push(memory);
+      setBellQuestObjective(pl,'Review the preserved Boundary Archive records and continue seeking the missing closure order.');
     }
 
     return true;

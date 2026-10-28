@@ -6,7 +6,7 @@
   function forRegion(regionId, currentView, flags = {}) {
     const greyfen = String(regionId || 'Ashmere') === 'Greyfen';
     if (greyfen) {
-      return [
+      const destinations = [
         { view: 'inn', title: 'Reedlight Inn', desc: 'Rest, recover, and hear what the lowland travelers whisper.', cta: 'Rest & prepare', iconKey: 'inn', featured: currentView === 'inn' },
         { view: 'trader', title: 'Marsh Market', desc: 'Trade road loot for rations, medicine, and useful supplies.', cta: 'Trade', iconKey: 'trader', shopKey: 'greyfenMarket', featured: false },
         { view: 'smith', title: 'Causeway Smithy', desc: 'Equip better gear and turn gathered materials into useful things.', cta: 'Gear & craft', iconKey: 'smith', shopKey: 'greyfenForge', featured: false },
@@ -15,8 +15,18 @@
         { view: 'marsh', title: 'The Marsh Path', desc: flags.greyfenMarshPathComplete ? 'The waterline report is saved. Take another trip to gather more field notes and supplies.' : 'Choose the raised posts or pay a ration to take the reed-bed route. Face or avoid a marsh encounter, rest at a shelter, and record the Waterline Gauge.', cta: 'Set out', iconKey: 'road', featured: currentView === 'marsh' },
         { view: 'work', title: 'Bellkeeper’s Hall', desc: 'Take practical work while learning the rhythms of Greyfen.', cta: 'Find work', iconKey: 'work', featured: currentView === 'work' },
         { view: 'regions', title: 'Road Network', desc: 'Return to Ashmere or travel between lands you have unlocked.', cta: 'Travel', iconKey: 'regions', featured: currentView === 'regions' },
-  
       ];
+      if (flags.greyfenDryCrossingComplete) {
+        destinations.splice(6, 0, {
+          view: 'storehouse',
+          title: 'The Silted Storehouse',
+          desc: 'Enter an optional three-room lowland delve, choose a safer or riskier approach, preserve a damp dispatch, and recover useful supplies.',
+          cta: 'Explore the storehouse',
+          iconKey: 'dungeon',
+          featured: currentView === 'storehouse'
+        });
+      }
+      return destinations;
     }
     const destinations = [
       { view: 'inn', title: 'Ashmere Inn', desc: 'Rest, recover, buy supplies, and hear what travelers are saying.', cta: 'Rest & prepare', iconKey: 'inn', shopKey: 'ashmereInn', featured: currentView === 'inn' },

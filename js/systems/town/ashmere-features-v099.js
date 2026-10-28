@@ -205,6 +205,18 @@
         '<p>The cellar is unavailable. Your traveler and saved progress are safe.</p>');
     }
 
+    function renderGreyfenStorehouse() {
+      const storehouse = window.LegendGreyfenStorehouseV170;
+      if (storehouse?.create) {
+        const instance = storehouse.create({
+          getPlayer, savePlayer, getData, escapeHtml: esc, head, screen, locationInterior, renderTown
+        });
+        if (instance?.render) return instance.render();
+      }
+      screen(head('GREYFEN · STOREHOUSE', 'The Silted Storehouse', 'The optional delve did not load. Your saved traveler and supplies are safe.', locationInterior('market'), 'dungeon'),
+        '<p>The storehouse is unavailable. Return to Greyfen and refresh before trying again.</p>');
+    }
+
     function renderArchive() {
       const records = window.LegendAshmereRecordsV099;
       if (records?.renderArchive) {
@@ -230,6 +242,7 @@
       renderInn,
       renderWorkBoard,
       renderBellVault,
+      renderGreyfenStorehouse,
       renderTrader,
       renderCrafting,
       renderSmith,
