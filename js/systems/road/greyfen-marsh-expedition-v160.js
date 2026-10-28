@@ -435,6 +435,10 @@
     const pl = payload.player || player(); if (!pl) return false;
     const s = ensure(pl);
     const victory = payload.result !== 'defeat';
+    const inventoryBefore = payload.enemy?.combatStartInventory || {};
+    const recoveredItems = victory ? Object.keys(pl.inventory || {}).map(item => ({
+      item, count: Number(pl.inventory[item] || 0) - Number(inventoryBefore[item] || 0)
+    })).filter(drop => drop.count > 0).map(drop => (D().itemNames?.[drop.item] || drop.item) + (drop.count > 1 ? ' ×' + drop.count : '')) : [];
     if (victory) {
       s.ferryRaiderDefeated = true;
       add(s.completedInteractionIds, 'fallen-ferry-raider');
@@ -466,7 +470,7 @@
       progressLabel: 'OPTIONAL DETOUR',
       progressValue: victory ? 'CLEARED' : 'WITHDRAWN',
       progressHint: victory ? 'Ferry salvage secured' : 'You can continue the survey',
-      rewardName: victory ? (payload.rewardName || 'Marsh Salvage') : '',
+      rewardName: victory ? (recoveredItems.join(' · ') || payload.rewardName || 'Marsh Salvage') : '',
       primaryTitle: 'Return to the Fallen Ferry',
       primaryHint: 'The waterline survey remains ahead',
       primaryTransition: 'Returning to the Fallen Ferry',
