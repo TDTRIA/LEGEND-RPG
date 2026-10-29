@@ -525,3 +525,16 @@ body.legend-world-shell-active #root .bell-vault-v100 {
   background: linear-gradient(145deg, rgba(23,33,24,.84), rgba(6,11,7,.90)) !important;
 }
 
+/* Profile keeps the same committed landscape, but its old .94/.50/.90 overlay
+   hid almost all of the art. Keep a darker footing behind the heading without
+   making the entire account hero read as a black panel. */
+body:not(.legend-world-shell-active) #root .account09x-hero::before {
+  background:
+    linear-gradient(90deg, rgba(2,4,3,.68), rgba(2,4,3,.26) 48%, rgba(2,4,3,.58)),
+    linear-gradient(0deg, rgba(2,4,3,.38), transparent 68%),
+    url("../assets/generated/title/title-ashmere-road.webp") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  filter: saturate(.94) contrast(1.05) brightness(1.03) !important;
+}
+
