@@ -473,3 +473,55 @@ body.legend-world-scene-dungeon #legend-scene-curtain::before {
   }
   .title-v136-rpg .title-atmosphere { animation: none !important; }
 }
+
+/* Let scene artwork carry non-title screens too. The older wrappers used opaque
+   near-black fills, which hid the world even after the global backdrop was
+   brightened. Keep UI panels dark enough for contrast, but make their surfaces
+   translucent so the location reads through the game shell. */
+body.legend-world-shell-active #root .exp100,
+body.legend-world-shell-active #root .reg100,
+body.legend-world-shell-active #root .ash099-terminal,
+body.legend-world-shell-active #root .ash099-v1-terminal {
+  background: transparent !important;
+}
+
+body.legend-world-shell-active #root .ash099-screen {
+  background:
+    radial-gradient(ellipse at 15% 0%, rgba(185,148,69,.09), transparent 45%),
+    linear-gradient(180deg, rgba(17,24,19,.86), rgba(8,13,10,.90)) !important;
+}
+
+body.legend-world-shell-active #root .reg100-head,
+body.legend-world-shell-active #root .reg100-panel,
+body.legend-world-shell-active #root .exp100-head,
+body.legend-world-shell-active #root .exp100-panel,
+body.legend-world-shell-active #root .exp150-world-page .exp100-poi,
+body.legend-world-shell-active #root .exp150-world-page .exp100-camp {
+  background: linear-gradient(145deg, rgba(23,33,24,.86), rgba(6,11,7,.90)) !important;
+  backdrop-filter: blur(4px);
+}
+
+body.legend-world-shell-active #root .rpg-battle {
+  background: linear-gradient(180deg, rgba(9,13,10,.86), rgba(4,7,5,.90)) !important;
+}
+
+body.legend-world-shell-active #root .v152-combat-results {
+  background: transparent !important;
+}
+
+body.legend-world-shell-active #root .v152-results-backdrop img {
+  opacity: .52 !important;
+  filter: saturate(.84) brightness(.88) !important;
+  transform: scale(1.025);
+}
+
+body.legend-world-shell-active #root .v152-results-backdrop > div {
+  background:
+    linear-gradient(180deg, rgba(7,12,9,.28), rgba(8,13,10,.54) 55%, rgba(8,13,10,.74) 100%),
+    radial-gradient(ellipse at 50% 10%, rgba(184,155,71,.10), transparent 65%) !important;
+}
+
+body.legend-world-shell-active #root .bell-vault-v100 {
+  background: linear-gradient(145deg, rgba(23,33,24,.84), rgba(6,11,7,.90)) !important;
+}
+
