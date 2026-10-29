@@ -56,8 +56,8 @@ test('Ashmere town artwork remains visible under the persistent shell', async ({
   });
 
   expect(visual.townImage).toContain('ashmere-town.webp');
-  expect(visual.worldBrightness).toContain('brightness(1.1)');
-  expect(visual.vignette).toContain('0.06');
+  expect(visual.worldBrightness).toContain('brightness(1.24)');
+  expect(visual.vignette).toContain('0.035');
   expect(visual.shellCanvas).toContain('0.025');
   expect(visual.townHeroOverlay).toContain('0.24');
   expect(visual.imageSrc).toContain('ashmere-town.webp');
