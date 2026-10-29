@@ -120,7 +120,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     });
     await expect(page.getByRole('button', { name: /The Bell Cellar/i })).toHaveCount(1);
     await expect(page.locator('.lws-panel-right [data-world-route="dungeon"]')).toHaveCount(1);
-    await expect(page.getByRole('button', { name: /Road Network/i })).toHaveCount(1);
+    await expect(page.locator('.lws-town-routes')).toHaveCount(1);
     const viewportLayout = await page.evaluate(() => {
       const root = document.getElementById('root').getBoundingClientRect();
       const left = document.querySelector('.lws-panel-left').getBoundingClientRect();
@@ -286,7 +286,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     await page.locator('.lws-bottom-bar [data-world-action="combat"]').click();
     const dialog = page.getByRole('dialog', { name: 'Combat encounter' });
     await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText('live encounter');
+    await expect(dialog).toContainText('The fight is underway');
     await dialog.getByRole('button', { name: /Return to encounter/i }).click();
     await expect(page.locator('#skill')).toBeEnabled();
     await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'combat');
@@ -428,7 +428,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     await page.locator('.lws-panel-right [data-world-place="market"]').click();
     await expect(page.locator('.lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('.lws-selected-place h3')).toHaveText('Market');
-    await expect(page.locator('.lws-selected-place')).toContainText('Buy essentials and sell road loot');
+    await expect(page.locator('.lws-selected-place')).toContainText('Trade for provisions and sell what you have brought back from the road.');
     await expect(page.locator('.lws-poi-scene-note')).toContainText('Market');
     await expect(page.locator('.lws-poi-scene-note')).toContainText('TRADE & SUPPLIES');
     await expect(page.locator('.ash100-town-ashmere .ash100-destination[data-ash-view="trader"]')).toHaveClass(/lws-poi-active/);
@@ -542,7 +542,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     const combatBackground = await combatDialog.locator('.lws-modal-emblem').evaluate(node => getComputedStyle(node).backgroundImage);
     expect(combatBackground).toContain('legend-icon-milestone.webp');
     await expectNoHorizontalOverflow(page);
-    await combatDialog.getByRole('button', { name: 'Close overlay' }).click();
+    await combatDialog.getByRole('button', { name: 'Close panel' }).click();
     await expect(combatDialog).toHaveCount(0);
 
     await page.evaluate(() => window.LegendWorldShellModalsV170.openNotice(

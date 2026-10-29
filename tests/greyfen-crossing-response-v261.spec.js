@@ -126,6 +126,10 @@ test.describe('Greyfen crossing response v0.26.0', () => {
     });
     await page.reload();
     await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+    await page.evaluate(() => {
+      window.LegendGameBootstrap.continueGame();
+      window.LegendAshmereV099.route('archive');
+    });
     await expect(page.locator('.ash099-crossing-response')).toContainText('REPORT SEALED');
     await expect(page.locator('[data-greyfen-crossing-response]')).toHaveCount(0);
   });

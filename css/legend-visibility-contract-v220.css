@@ -524,3 +524,87 @@ body.legend-world-shell-active #root .bell-vault-room-card,
 body.legend-world-shell-active #root .bell-vault-clue,
 body.legend-world-shell-active #root .bell-vault-treasure,
 body.legend-world-shell-active #root .bell-vault-choice { background:linear-gradient(140deg,rgba(33,45,33,.42),rgba(8,13,9,.30)) !important; }
+
+
+/* v0.27.6.4 — remove the screen-wide black veil from active gameplay views.
+   These deliberately outrank the older shell contracts so backgrounds and art show
+   through on the town, road, combat, service, and modal screens. */
+body.legend-world-shell-active #root #legend-world-shell-root {
+  background:linear-gradient(180deg,rgba(5,9,7,.015),rgba(3,6,5,.025)) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root::before {
+  background:linear-gradient(180deg,rgba(0,0,0,.004),rgba(0,0,0,.009),rgba(0,0,0,.004)) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root::after {
+  background:radial-gradient(ellipse at 50% 100%,rgba(179,150,94,.018),transparent 43%) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-hud {
+  background:linear-gradient(180deg,rgba(20,30,21,.46),rgba(8,14,10,.32)) !important;
+  backdrop-filter:blur(1px) !important;
+  box-shadow:0 5px 18px rgba(0,0,0,.12) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-panel {
+  background:linear-gradient(150deg,rgba(30,43,30,.36),rgba(8,15,10,.24) 70%) !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.12) !important;
+  backdrop-filter:blur(1px) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-bottom-bar {
+  background:linear-gradient(180deg,rgba(22,31,22,.38),rgba(7,12,8,.26)) !important;
+  backdrop-filter:blur(1px) !important;
+  box-shadow:0 6px 18px rgba(0,0,0,.12) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-selected-place,
+body.legend-world-shell-active #root #legend-world-shell-root .lws-poi-hint,
+body.legend-world-shell-active #root #legend-world-shell-root .lws-poi-scene-note {
+  background:linear-gradient(145deg,rgba(37,47,32,.34),rgba(8,14,9,.22)) !important;
+  box-shadow:inset 0 1px rgba(255,246,211,.025),0 4px 12px rgba(0,0,0,.08) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-place-option {
+  background:linear-gradient(120deg,rgba(31,43,31,.32),rgba(8,14,9,.22)) !important;
+  backdrop-filter:blur(1px) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-place-option:hover,
+body.legend-world-shell-active #root #legend-world-shell-root .lws-place-option:focus-visible,
+body.legend-world-shell-active #root #legend-world-shell-root .lws-place-option.is-selected {
+  background:linear-gradient(120deg,rgba(52,65,45,.48),rgba(11,19,12,.32)) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-modal-root .lws-modal {
+  background:linear-gradient(145deg,rgba(30,42,30,.52),rgba(7,13,9,.40)) !important;
+  backdrop-filter:blur(2px) !important;
+  box-shadow:0 12px 34px rgba(0,0,0,.18) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-modal-root .lws-modal-content {
+  background:linear-gradient(180deg,rgba(23,33,24,.28),rgba(6,11,7,.20)) !important;
+}
+body.legend-world-shell-active #root .ash099-screen {
+  background:linear-gradient(145deg,rgba(10,17,11,.24),rgba(5,10,6,.16)),
+    url("../assets/generated/locations/ashmere-town.webp") center 48%/cover no-repeat !important;
+  box-shadow:0 10px 26px rgba(0,0,0,.12),inset 0 0 0 1px rgba(231,201,130,.07) !important;
+  backdrop-filter:blur(1px) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-service-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-choice,
+body.legend-world-shell-active #root .ash099-screen .ash099-market-item,
+body.legend-world-shell-active #root .ash099-screen .ash099-gear-item,
+body.legend-world-shell-active #root .ash099-screen .ash099-craft-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-npc-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-contract-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-challenge,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-sequence,
+body.legend-world-shell-active #root .ash099-screen .ash099-forge-loadout,
+body.legend-world-shell-active #root .ash099-screen .ash099-traveler-profile-top {
+  background:linear-gradient(145deg,rgba(32,45,32,.34),rgba(7,13,9,.22)) !important;
+  box-shadow:inset 0 1px rgba(255,246,211,.025),0 4px 12px rgba(0,0,0,.07) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-lines,
+body.legend-world-shell-active #root .ash099-screen .ash099-note,
+body.legend-world-shell-active #root .ash099-screen .ash099-craft-feedback,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-result,
+body.legend-world-shell-active #root .ash099-screen .ash099-result {
+  background:linear-gradient(145deg,rgba(14,22,15,.18),rgba(4,8,5,.11)) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-btn,
+body.legend-world-shell-active #root .ash099-screen button.ash099-btn {
+  background:linear-gradient(100deg,rgba(36,47,34,.38),rgba(9,15,10,.26)) !important;
+}

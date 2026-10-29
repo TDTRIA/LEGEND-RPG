@@ -588,7 +588,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.getByRole('heading', { name: 'A Dry Crossing' })).toBeVisible();
     await page.evaluate(() => { Math.random = () => 0.9; });
     await page.locator('[data-crossing-choice="reeds"]').click();
-    await expect(page.getByRole('heading', { name: 'The reeds turn you back' })).toBeVisible();
+    await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'The reeds turn you back' })).toBeVisible();
 
     const miss = await page.evaluate(() => {
       const pl = window.LegendRuntimeV120.loadPlayer();
@@ -941,7 +941,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'PeopleQA');
     await expect(page.locator('.ash100-destinations')).toContainText('Town Square');
     await page.locator('.ash100-destinations .ash100-destination[data-ash-view="people"]').click();
-    await expect(page.getByRole('heading', { name: 'People of Ashmere' })).toBeVisible();
+    await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'People of Ashmere' })).toBeVisible();
     const oricCard = page.locator('.ash099-npc-card[data-ash-view="oric"] img');
     await expect(oricCard).toBeVisible();
     await expect(oricCard).toHaveAttribute('src', /assets\/generated\/npcs\/captain-oric\.webp$/);
