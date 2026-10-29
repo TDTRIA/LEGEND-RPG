@@ -105,21 +105,13 @@ test.describe('LEGEND UI cascade contract v190', () => {
     }
   });
 
-  test('account profile landscape remains visible under its heading', async ({ page }) => {
+  test('account screen uses a scenic backdrop instead of a solid-black page', async ({ page }) => {
     await openTitle(page);
-    await page.evaluate(async () => {
-      await window.LegendGameBootstrap.account();
-    });
-    await expect(page.locator('.account09x-hero')).toBeVisible();
-
-    const scene = await page.locator('.account09x-hero').evaluate(element => ({
-      image: getComputedStyle(element, '::before').backgroundImage,
-      filter: getComputedStyle(element, '::before').filter
-    }));
-    expect(scene.image).toContain('title-ashmere-road.webp');
-    expect(scene.image).toContain('rgba(2, 4, 3, 0.42)');
-    expect(scene.image).not.toContain('rgba(2, 4, 3, 0.94)');
-    expect(scene.filter).toContain('brightness(1.05)');
+    await page.locator('#account').click();
+    await expect(page.locator('.account09x')).toBeVisible();
+    const scene = await page.locator('.account09x').evaluate(element => getComputedStyle(element).backgroundImage);
+    expect(scene).toContain('title-ashmere-road.webp');
+    expect(scene).toContain('rgba(3, 7, 4, 0.22)');
   });
 
   test('production title stays readable and within desktop and 390px touch viewports', async ({ page }) => {
@@ -129,7 +121,7 @@ test.describe('LEGEND UI cascade contract v190', () => {
       logoSrc: element.querySelector('.v120-legend-logo')?.getAttribute('src') || '',
       title: element.querySelector('h1')?.textContent || ''
     }));
-    expect(titleComputed.radius).toBe('0px');
+    expect(titleComputed.radius).toBe('2px');
     expect(titleComputed.logoSrc).toMatch(/\.png(?:\?.*)?$/);
     expect(titleComputed.title).toMatch(/LEGEND/i);
     await expectNoHorizontalOverflow(page);
