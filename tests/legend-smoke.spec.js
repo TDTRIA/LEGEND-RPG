@@ -946,6 +946,20 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(oricCard).toBeVisible();
     await expect(oricCard).toHaveAttribute('src', /assets\/generated\/npcs\/captain-oric\.webp$/);
     await expect.poll(() => oricCard.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    const portraitLayout = await oricCard.evaluate(img => {
+      const style = getComputedStyle(img);
+      const rect = img.getBoundingClientRect();
+      return {
+        width: rect.width,
+        height: rect.height,
+        objectFit: style.objectFit,
+        objectPosition: style.objectPosition
+      };
+    });
+    expect(portraitLayout.width).toBeLessThanOrEqual(100);
+    expect(portraitLayout.height).toBeLessThanOrEqual(140);
+    expect(portraitLayout.objectFit).toBe('cover');
+    expect(portraitLayout.objectPosition).toContain('18%');
     await page.locator('[data-ash-view="oric"]').click();
     await expect(page.getByRole('heading', { name: 'Captain Oric' })).toBeVisible();
     const oricDialoguePortrait = page.locator('.ash099-head img');

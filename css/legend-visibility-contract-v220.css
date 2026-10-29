@@ -720,3 +720,188 @@ body.legend-world-shell-active #legend-world-shell-modal-root .lws-modal-content
   opacity: 1 !important;
   filter: none !important;
 }
+
+
+/* v0.27.8 — keep readable text surfaces distinct from environmental art. */
+#root .title-v136-rpg button#continue.v136-menu-primary,
+#root .title-v136-rpg button#newPrimary.v136-menu-primary,
+#root .title-v136-rpg button.v136-menu-primary,
+#root .title-v136-rpg button.v136-menu-primary:hover,
+#root .title-v136-rpg button.v136-menu-primary:focus-visible {
+  background:linear-gradient(115deg,#ffe6a1 0%,#dca850 66%,#b97839 100%) !important;
+  background-color:#dca850 !important;
+  border:1px solid #fff0c5 !important;
+  color:#241707 !important;
+  opacity:1 !important;
+  filter:none !important;
+  mix-blend-mode:normal !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 1px rgba(255,250,222,.72) !important;
+}
+#root .title-v136-rpg button.v136-menu-primary .v136-menu-copy strong,
+#root .title-v136-rpg button.v136-menu-primary .v136-menu-copy small,
+#root .title-v136-rpg button.v136-menu-primary .v136-menu-arrow {
+  color:#241707 !important;
+  text-shadow:none !important;
+  opacity:1 !important;
+}
+#root .title-v136-rpg button.v136-menu-primary .v136-menu-icon {
+  opacity:1 !important;
+  filter:none !important;
+}
+
+/* Townsfolk portraits were being shown as 186px-high crops in wide cards.
+   A compact portrait column leaves room for the name and role and keeps faces in frame. */
+#root .ash099-screen .ash099-npc-grid .ash099-npc-card {
+  display:grid !important;
+  grid-template-columns:96px minmax(0,1fr) !important;
+  grid-template-rows:auto 1fr !important;
+  align-items:start !important;
+  align-content:start !important;
+  gap:7px 11px !important;
+  min-height:146px !important;
+  padding:10px !important;
+  text-align:left !important;
+  background:linear-gradient(145deg,rgba(12,19,13,.94),rgba(5,9,6,.97)) !important;
+}
+#root .ash099-screen .ash099-npc-grid .ash099-npc-card > img {
+  grid-column:1 !important;
+  grid-row:1 / span 2 !important;
+  display:block !important;
+  width:96px !important;
+  max-width:96px !important;
+  height:138px !important;
+  min-height:0 !important;
+  margin:0 !important;
+  object-fit:cover !important;
+  object-position:50% 18% !important;
+  align-self:start !important;
+  border-radius:4px !important;
+  box-shadow:0 4px 12px rgba(0,0,0,.22) !important;
+}
+#root .ash099-screen .ash099-npc-grid .ash099-npc-card > strong {
+  grid-column:2 !important;
+  grid-row:1 !important;
+  align-self:end !important;
+  min-width:0 !important;
+  color:#f0dfb3 !important;
+  font-size:1rem !important;
+  line-height:1.2 !important;
+  overflow-wrap:anywhere !important;
+}
+#root .ash099-screen .ash099-npc-grid .ash099-npc-card > small {
+  grid-column:2 !important;
+  grid-row:2 !important;
+  align-self:start !important;
+  min-width:0 !important;
+  color:#c5d0c2 !important;
+  font-size:.76rem !important;
+  line-height:1.42 !important;
+  overflow-wrap:anywhere !important;
+}
+@media (max-width:560px) {
+  #root .ash099-screen .ash099-npc-grid .ash099-npc-card {
+    grid-template-columns:86px minmax(0,1fr) !important;
+    min-height:130px !important;
+    gap:6px 9px !important;
+    padding:9px !important;
+  }
+  #root .ash099-screen .ash099-npc-grid .ash099-npc-card > img {
+    width:86px !important;
+    max-width:86px !important;
+    height:120px !important;
+  }
+}
+
+/* Keep road text readable without dimming the scenic expedition canvas itself. */
+body.legend-world-shell-active #root .exp100-head,
+body.legend-world-shell-active #root .exp100-panel:not(.rpg-battle),
+body.legend-world-shell-active #root .exp100-area,
+body.legend-world-shell-active #root .exp100-poi,
+body.legend-world-shell-active #root .exp100-result,
+body.legend-world-shell-active #root .exp100-stats > div,
+body.legend-world-shell-active #root .exp100-choice,
+body.legend-world-shell-active #root .exp100-btn,
+body.legend-world-shell-active #root .exp100-dock-action,
+body.legend-world-shell-active #root .exp100-discovery-beat,
+body.legend-world-shell-active #root .exp150-world-page .exp100-camp,
+body.legend-world-shell-active #root .exp150-world-page .exp150-aside-card {
+  background:linear-gradient(145deg,rgba(8,14,9,.94),rgba(3,7,4,.90)) !important;
+  color:#eee8d8 !important;
+  border-color:rgba(215,184,106,.24) !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 1px rgba(255,246,211,.025) !important;
+}
+body.legend-world-shell-active #root .exp150-world-page .exp100-choice,
+body.legend-world-shell-active #root .exp150-world-page .exp150-action {
+  background:linear-gradient(135deg,rgba(12,19,13,.96),rgba(4,8,5,.94)) !important;
+  color:#f2eddf !important;
+  border-color:rgba(215,184,106,.26) !important;
+}
+body.legend-world-shell-active #root .exp150-world-page .exp100-poi {
+  background:linear-gradient(135deg,rgba(24,30,20,.96),rgba(6,11,7,.94)) !important;
+}
+body.legend-world-shell-active #root .exp150-world-page .exp100-panel h2,
+body.legend-world-shell-active #root .exp150-world-page .exp100-panel h3,
+body.legend-world-shell-active #root .exp150-world-page .exp100-choice strong,
+body.legend-world-shell-active #root .exp150-world-page .exp150-aside-card h2,
+body.legend-world-shell-active #root .exp150-world-page .exp150-aside-card strong,
+body.legend-world-shell-active #root .exp150-world-page .exp150-action strong {
+  color:#f4edda !important;
+}
+body.legend-world-shell-active #root .exp150-world-page .exp100-panel p,
+body.legend-world-shell-active #root .exp150-world-page .exp100-choice span,
+body.legend-world-shell-active #root .exp150-world-page .exp100-choice small,
+body.legend-world-shell-active #root .exp150-world-page .exp150-aside-card p,
+body.legend-world-shell-active #root .exp150-world-page .exp150-action small {
+  color:#cad4c7 !important;
+}
+
+/* Combat retains a visible battlefield, but text cards use a stable dark backing.
+   A pale dialogue surface paired with pale text was the worst contrast offender. */
+body.legend-world-shell-active #root .rpg-battle {
+  background:linear-gradient(180deg,rgba(8,13,9,.94),rgba(3,7,4,.92)) !important;
+  border-color:rgba(215,184,106,.34) !important;
+  box-shadow:0 14px 38px rgba(0,0,0,.20),inset 0 1px rgba(238,220,171,.04) !important;
+}
+body.legend-world-shell-active #root .rpg-combat-status {
+  background:linear-gradient(110deg,rgba(10,17,11,.92),rgba(4,8,5,.90)) !important;
+}
+body.legend-world-shell-active #root .rpg-foe-nameplate {
+  background:rgba(3,8,5,.90) !important;
+  backdrop-filter:blur(2px) !important;
+  box-shadow:0 6px 18px rgba(0,0,0,.25) !important;
+}
+body.legend-world-shell-active #root .rpg-battle-log {
+  background:linear-gradient(90deg,rgba(8,14,9,.92),rgba(3,7,4,.88)) !important;
+  color:#e8e4d7 !important;
+}
+body.legend-world-shell-active #root .rpg-command {
+  background:linear-gradient(115deg,rgba(12,20,13,.96),rgba(4,8,5,.92)) !important;
+  color:#f1ecdf !important;
+  border-color:rgba(215,184,106,.32) !important;
+}
+body.legend-world-shell-active #root .rpg-command-fight {
+  background:linear-gradient(110deg,rgba(34,24,16,.96),rgba(10,12,8,.94)) !important;
+}
+body.legend-world-shell-active #root .rpg-utility-command {
+  background:rgba(7,13,9,.94) !important;
+  color:#ede7d8 !important;
+}
+body.legend-world-shell-active #root .rpg-enemy-tell {
+  background:linear-gradient(100deg,rgba(25,18,13,.92),rgba(5,9,6,.90)) !important;
+  color:#f0e7d4 !important;
+}
+body.legend-world-shell-active #root .rpg-turn-heading {
+  background:linear-gradient(95deg,rgba(9,15,10,.94),rgba(4,8,5,.92)) !important;
+}
+body.legend-world-shell-active #root .rpg-battle .rpg-dialogue {
+  background:linear-gradient(105deg,rgba(15,23,16,.97),rgba(5,10,6,.95)) !important;
+  color:#ece5d5 !important;
+  border:1px solid rgba(215,184,106,.28) !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.22) !important;
+}
+body.legend-world-shell-active #root .rpg-battle .rpg-dialogue p {
+  color:#f0eadf !important;
+}
+body.legend-world-shell-active #root .rpg-battle .rpg-dialogue-kicker {
+  color:#e3c67b !important;
+}
