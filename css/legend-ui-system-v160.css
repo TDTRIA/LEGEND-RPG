@@ -227,9 +227,9 @@
   border: 1px solid rgba(231,201,130,.43) !important; border-radius: 3px !important; background: #101711 !important;
   box-shadow: 0 18px 44px rgba(0,0,0,.34),inset 0 0 0 3px rgba(0,0,0,.20) !important;
 }
-.ash100-hero > img { object-position: center 56% !important; filter: saturate(.87) contrast(1.08) brightness(.87) !important; }
+.ash100-hero > img { object-position: center 56% !important; filter: saturate(.96) contrast(1.03) brightness(1.12) !important; }
 .ash100-hero::after {
-  background: linear-gradient(90deg,rgba(3,7,4,.86),rgba(3,7,4,.30) 58%,rgba(3,7,4,.10)),linear-gradient(0deg,rgba(2,6,4,.93),rgba(2,6,4,.04) 68%) !important;
+  background: linear-gradient(90deg,rgba(3,7,4,.24),rgba(3,7,4,.08) 58%,rgba(3,7,4,.025)),linear-gradient(0deg,rgba(2,6,4,.22),rgba(2,6,4,.025) 68%) !important;
 }
 .ash100-hero-copy { left: clamp(18px,3.3vw,42px) !important; bottom: clamp(18px,3.2vw,34px) !important; max-width: min(580px,83%) !important; }
 .ash100-hero-copy .ash099-kicker { color: var(--legend-ui-amber) !important; letter-spacing: .22em !important; }
@@ -241,7 +241,7 @@
 .ash100-town .ash099-topnav {
   grid-template-columns: repeat(6,minmax(0,1fr)) !important; gap: 4px !important; margin: 10px 0 14px !important; padding: 5px !important;
   border: 1px solid rgba(231,201,130,.32) !important; border-radius: 3px !important;
-  background: linear-gradient(180deg,rgba(26,35,25,.97),rgba(6,11,7,.97)) !important;
+  background: linear-gradient(180deg,rgba(26,35,25,.58),rgba(6,11,7,.46)) !important;
   box-shadow: 0 8px 25px rgba(0,0,0,.28),inset 0 1px rgba(255,246,211,.06) !important;
 }
 .ash100-town .ash099-topnav .ash099-footer-item {
@@ -262,7 +262,7 @@
 .ash100-town .ash100-route-strip {
   grid-template-columns: 42px minmax(0,1fr) auto !important; gap: 12px !important; padding: 13px 15px !important;
   border: 1px solid rgba(231,201,130,.42) !important; border-left: 3px solid var(--legend-ui-amber) !important; border-radius: 2px !important;
-  background: linear-gradient(105deg,rgba(49,45,29,.92),rgba(15,22,15,.97) 50%,rgba(7,12,8,.97)) !important;
+  background: linear-gradient(105deg,rgba(49,45,29,.62),rgba(15,22,15,.48) 50%,rgba(7,12,8,.40)) !important;
   box-shadow: 0 9px 24px rgba(0,0,0,.25),inset 0 1px rgba(255,246,211,.07) !important;
 }
 .ash100-town .ash100-route-strip-icon {
@@ -291,7 +291,7 @@
 .ash100-town .ash100-destination {
   position: relative !important; box-sizing: border-box !important; min-height: 103px !important; padding: 13px !important;
   border: 1px solid rgba(215,194,139,.27) !important; border-radius: 2px !important;
-  background: linear-gradient(110deg,rgba(31,42,30,.92),rgba(8,13,9,.96)) !important;
+  background: linear-gradient(110deg,rgba(31,42,30,.54),rgba(8,13,9,.42)) !important;
   box-shadow: inset 0 1px rgba(255,246,211,.045),0 5px 17px rgba(0,0,0,.16) !important;
   transition: border-color .16s ease,background .16s ease,transform .16s ease !important;
 }
@@ -302,10 +302,10 @@
 .ash100-town .ash100-destination:hover,
 .ash100-town .ash100-destination:focus-visible {
   border-color: rgba(255,230,160,.75) !important;
-  background: linear-gradient(110deg,rgba(54,61,40,.97),rgba(14,21,14,.98)) !important;
+  background: linear-gradient(110deg,rgba(54,61,40,.68),rgba(14,21,14,.56)) !important;
   transform: translateY(-1px) !important;
 }
-.ash100-town .ash100-destination.featured { border-color: rgba(231,201,130,.66) !important; background: linear-gradient(115deg,rgba(64,53,31,.89),rgba(12,19,12,.98)) !important; }
+.ash100-town .ash100-destination.featured { border-color: rgba(231,201,130,.66) !important; background: linear-gradient(115deg,rgba(64,53,31,.62),rgba(12,19,12,.46)) !important; }
 .ash100-town .ash100-destination-icon {
   width: 39px !important; height: 39px !important; border: 1px solid rgba(231,201,130,.26) !important; border-radius: 2px !important;
   background: linear-gradient(145deg,rgba(191,160,100,.10),rgba(0,0,0,.25)) !important; color: var(--legend-ui-amber) !important;
@@ -318,7 +318,7 @@
   box-sizing: border-box !important; width: min(1120px,calc(100% - 24px)) !important;
   margin: clamp(12px,2vw,24px) auto 58px !important; padding: clamp(16px,2.5vw,31px) !important;
   border: 1px solid rgba(231,201,130,.44) !important; border-radius: 3px !important; color: var(--legend-ui-parchment) !important;
-  background: linear-gradient(145deg,rgba(29,39,28,.97),rgba(9,14,9,.985) 64%) !important;
+  background: linear-gradient(145deg,rgba(29,39,28,.58),rgba(9,14,9,.46) 64%) !important;
   box-shadow: 0 20px 54px rgba(0,0,0,.38),inset 0 0 0 3px rgba(0,0,0,.20),inset 0 1px rgba(255,246,211,.08) !important;
 }
 .ash099-screen .ash099-head {
@@ -340,12 +340,12 @@
 .ash099-screen .ash099-cards, .ash099-screen .ash099-actions, .ash099-screen .ash099-group-grid { gap: 9px !important; }
 .ash099-screen .ash099-btn, .ash099-screen button.ash099-btn, .ash099-screen .ash099-card {
   min-height: 45px !important; border: 1px solid rgba(215,194,139,.30) !important; border-radius: 2px !important;
-  background: linear-gradient(100deg,rgba(36,47,34,.96),rgba(9,15,10,.98)) !important;
+  background: linear-gradient(100deg,rgba(36,47,34,.62),rgba(9,15,10,.48)) !important;
   box-shadow: inset 0 1px rgba(255,246,211,.05) !important; color: var(--legend-ui-parchment) !important;
 }
 .ash099-screen .ash099-btn:hover, .ash099-screen .ash099-card:hover,
 .ash099-screen .ash099-btn:focus-visible, .ash099-screen .ash099-card:focus-visible {
-  border-color: rgba(255,230,160,.75) !important; background: linear-gradient(100deg,rgba(55,63,41,.98),rgba(16,24,16,.98)) !important;
+  border-color: rgba(255,230,160,.75) !important; background: linear-gradient(100deg,rgba(55,63,41,.72),rgba(16,24,16,.58)) !important;
 }
 .ash099-screen .ash099-btn.primary { border-color: rgba(255,230,160,.76) !important; background: linear-gradient(105deg,#e2c582,#ad8c4f) !important; color: #241d0f !important; }
 .ash099-screen .ash099-btn:disabled, .ash099-screen button:disabled { opacity: .52 !important; filter: none !important; }
