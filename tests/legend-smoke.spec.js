@@ -1852,6 +1852,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('traveler creation shapes a soul with an unnamed presence and raster LEGEND wordmark', async ({ page }) => {
     await openTitle(page);
     await page.locator('#newPrimary').click();
+    await page.getByRole('button', { name: /Skip the annals/i }).click();
     await expect(page.locator('.v140-creation')).toBeVisible();
     await expect(page.locator('.v140-creation-brand .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
     await expect(page.locator('.v140-creation-brand img')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
