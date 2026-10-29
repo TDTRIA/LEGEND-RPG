@@ -577,7 +577,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     const road = await page.evaluate(() => {
       const shell = document.getElementById('legend-world-shell-root');
       const world = document.querySelector('#root .exp100');
-      const panel = document.querySelector('#root .exp150-world-page .exp100-head');
+      const panel = document.querySelector('#root .exp100-head');
       return {
         filter: getComputedStyle(document.body, '::before').filter,
         vignette: getComputedStyle(document.body, '::after').boxShadow,
