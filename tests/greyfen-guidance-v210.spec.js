@@ -64,7 +64,9 @@ test.describe('Greyfen story guidance v0.24.1', () => {
           greyfenWeeklyReturnFound: true,
           greyfenWeeklyReturnReported: true,
           greyfenWaterlineGaugeRead: true,
-          greyfenWaterlineGaugeReported: true
+          greyfenWaterlineGaugeReported: true,
+          greyfenCrossingResponseV261: 'provisional-notice',
+          greyfenNoticePressureCreditV261: false
         }),
         defaultGreyfen: pick('Greyfen')
       };
@@ -146,7 +148,9 @@ test.describe('Greyfen story guidance v0.24.1', () => {
         greyfenLedgerCompared: true,
         greyfenWeeklyReturnFound: true,
         greyfenWeeklyReturnReported: true,
-        greyfenEvidenceFiled: true
+        greyfenEvidenceFiled: true,
+        greyfenCrossingResponseV261: 'provisional-notice',
+        greyfenNoticePressureCreditV261: false
       };
       runtime.savePlayer(player);
     });
