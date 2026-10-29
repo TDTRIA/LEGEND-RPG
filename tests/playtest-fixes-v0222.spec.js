@@ -65,7 +65,7 @@ test('the name error clears as soon as the player types, and Enter submits', asy
 test('the traveler portrait follows the chosen form, not the class art', async ({ page }) => {
   // Adventurer class art is a woman; a traveler who chose "Man" must not see it.
   await createTraveler(page, { gender: 'man', className: 'Adventurer' });
-  await page.getByRole('button', { name: /If I wanted trouble/i }).click();
+  await page.locator('[data-oric-response="defiant"]').click();
   const portrait = page.locator('.rpg-hero-portrait img');
   await expect(portrait).toHaveAttribute('src', /class-warrior\.webp/);
 
