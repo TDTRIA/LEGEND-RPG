@@ -278,8 +278,8 @@ test.describe('LEGEND persistent world shell v170', () => {
       field: getComputedStyle(document.querySelector('.rpg-battlefield')).backgroundImage,
       filter: getComputedStyle(document.querySelector('.rpg-battlefield')).filter
     }));
-    expect(battleVisual.battle).toContain('0.48');
-    expect(battleVisual.battle).toContain('0.4');
+    expect(battleVisual.battle).toContain('0.42');
+    expect(battleVisual.battle).toContain('0.32');
     expect(battleVisual.field).toContain('old-road-south-fork.webp');
     expect(battleVisual.filter).toContain('brightness(1.22)');
 

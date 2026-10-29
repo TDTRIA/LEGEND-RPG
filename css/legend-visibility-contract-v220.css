@@ -417,3 +417,110 @@ body.legend-world-shell-active.legend-world-scene-dungeon::before {
 #root .v152-growth-backdrop { background:radial-gradient(ellipse at 50% 15%,rgba(94,83,50,.15),rgba(3,7,5,.34) 72%) !important; backdrop-filter:blur(1px) !important; }
 #root .dispatches-v140-feature { background:linear-gradient(110deg,rgba(17,28,20,.52),rgba(5,10,7,.40)) !important; }
 #root .dispatches-v140-card { background:linear-gradient(180deg,rgba(16,25,19,.50),rgba(5,10,7,.38)) !important; }
+
+/* v0.27.6.3 — match the specificity of older active-shell rules. */
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-town::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-service::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-road::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-combat::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-combat-results::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-expedition-results::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-town::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-service::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-road::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-combat::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-combat-results::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-expedition-results::after {
+  background:radial-gradient(ellipse at 50% 42%,transparent 42%,rgba(0,0,0,.02) 82%,rgba(0,0,0,.055) 100%),
+    linear-gradient(180deg,rgba(0,0,0,.008),transparent 24%,transparent 77%,rgba(0,0,0,.035)) !important;
+  box-shadow:inset 0 0 72px 6px rgba(0,0,0,.035) !important;
+}
+/* Town services kept an older .54/.48 fill because its selector outranked #root-only fixes. */
+body.legend-world-shell-active #root .ash099-screen {
+  background:linear-gradient(145deg,rgba(10,17,11,.42),rgba(5,10,6,.30)),
+    url("../assets/generated/locations/ashmere-town.webp") center 48%/cover no-repeat !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.14),inset 0 0 0 1px rgba(231,201,130,.07) !important;
+  backdrop-filter:blur(1px) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-service-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-choice,
+body.legend-world-shell-active #root .ash099-screen .ash099-market-item,
+body.legend-world-shell-active #root .ash099-screen .ash099-gear-item,
+body.legend-world-shell-active #root .ash099-screen .ash099-craft-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-npc-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-contract-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-challenge,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-sequence,
+body.legend-world-shell-active #root .ash099-screen .ash099-forge-loadout,
+body.legend-world-shell-active #root .ash099-screen .ash099-traveler-profile-top {
+  background:linear-gradient(145deg,rgba(30,42,30,.48),rgba(7,13,9,.34)) !important;
+  box-shadow:inset 0 1px rgba(255,246,211,.025),0 5px 12px rgba(0,0,0,.08) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-lines,
+body.legend-world-shell-active #root .ash099-screen .ash099-note,
+body.legend-world-shell-active #root .ash099-screen .ash099-craft-feedback,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-result,
+body.legend-world-shell-active #root .ash099-screen .ash099-result {
+  background:linear-gradient(145deg,rgba(14,22,15,.26),rgba(4,8,5,.17)) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-btn,
+body.legend-world-shell-active #root .ash099-screen button.ash099-btn {
+  background:linear-gradient(100deg,rgba(36,47,34,.48),rgba(9,15,10,.34)) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-btn.primary {
+  background:linear-gradient(105deg,#e2c582,#ad8c4f) !important;color:#241d0f !important;
+}
+/* Active-world region and road panels must win over the older .54/.44 surfaces. */
+body.legend-world-shell-active #root .reg100-head,
+body.legend-world-shell-active #root .reg100-panel,
+body.legend-world-shell-active #root .reg100-card,
+body.legend-world-shell-active #root .exp100-head,
+body.legend-world-shell-active #root .exp100-panel:not(.rpg-battle),
+body.legend-world-shell-active #root .exp150-world-page .exp100-poi,
+body.legend-world-shell-active #root .exp150-world-page .exp100-camp {
+  background:linear-gradient(145deg,rgba(30,42,30,.42),rgba(7,13,9,.30)) !important;
+  backdrop-filter:blur(1px) !important;box-shadow:0 7px 18px rgba(0,0,0,.10) !important;
+}
+body.legend-world-shell-active #root .exp100-scene-live .exp100-scene-shade {
+  background:linear-gradient(180deg,rgba(6,13,10,.012) 12%,rgba(6,13,10,.045) 50%,rgba(4,7,5,.22) 100%) !important;
+}
+/* The battle field, status card and command tray each had more-specific dark fills. */
+body.legend-world-shell-active #root .rpg-battle {
+  background:linear-gradient(180deg,rgba(18,28,20,.42),rgba(5,10,7,.32)) !important;
+  box-shadow:0 14px 38px rgba(0,0,0,.16),inset 0 1px rgba(238,220,171,.04) !important;
+}
+body.legend-world-shell-active #root .rpg-battlefield {
+  background-image:linear-gradient(180deg,rgba(5,9,7,.005) 12%,rgba(5,8,7,.02) 42%,rgba(3,6,5,.065) 100%),url("../assets/generated/locations/old-road-south-fork.webp") !important;
+  filter:saturate(1) contrast(1.02) brightness(1.22) !important;
+}
+body.legend-world-shell-active #root .rpg-battlefield[data-arena="greyfen"] {
+  background-image:linear-gradient(180deg,rgba(5,9,7,.005) 10%,rgba(5,8,7,.02) 44%,rgba(3,6,5,.07) 100%),url("../assets/generated/locations/greyfen-marsh-walkway.webp") !important;
+  filter:saturate(1) contrast(1.02) brightness(1.20) !important;
+}
+body.legend-world-shell-active #root .rpg-battlefield[data-arena="cellar"] {
+  background-image:linear-gradient(180deg,rgba(5,9,7,.01) 8%,rgba(5,8,7,.025) 44%,rgba(3,6,5,.09) 100%),url("../assets/generated/locations/bell-cellar-undercroft.webp") !important;
+  filter:saturate(.98) contrast(1.02) brightness(1.18) !important;
+}
+body.legend-world-shell-active #root .rpg-battlefield::before { background:linear-gradient(180deg,rgba(3,7,4,.01),transparent 24%,rgba(2,5,3,.025) 100%) !important; }
+body.legend-world-shell-active #root .rpg-battlefield::after { background:linear-gradient(180deg,transparent,rgba(4,7,4,.035)) !important; }
+body.legend-world-shell-active #root .rpg-combat-status { background:linear-gradient(110deg,rgba(32,39,27,.48),rgba(10,15,11,.34)) !important; }
+body.legend-world-shell-active #root .rpg-foe-nameplate { background:rgba(4,9,6,.48) !important;backdrop-filter:blur(1px) !important; }
+body.legend-world-shell-active #root .rpg-battle-log { background:linear-gradient(90deg,rgba(22,27,23,.30),rgba(7,10,8,.22)) !important; }
+body.legend-world-shell-active #root .rpg-command { background:linear-gradient(115deg,rgba(28,40,32,.54),rgba(12,19,14,.38)) !important; }
+body.legend-world-shell-active #root .rpg-command-fight { background:linear-gradient(110deg,rgba(63,39,30,.50),rgba(17,18,13,.35)) !important; }
+body.legend-world-shell-active #root .rpg-utility-command { background:rgba(15,22,17,.38) !important; }
+body.legend-world-shell-active #root .rpg-enemy-tell { background:linear-gradient(100deg,rgba(61,38,28,.34),rgba(12,13,9,.24)) !important; }
+body.legend-world-shell-active #root .rpg-dialogue { background:linear-gradient(100deg,rgba(235,227,205,.94),rgba(214,206,181,.90)) !important; }
+body.legend-world-shell-active #root .v152-results-duel,
+body.legend-world-shell-active #root .v152-results-rewards,
+body.legend-world-shell-active #root .v152-results-section { background:linear-gradient(145deg,rgba(20,30,21,.44),rgba(4,8,5,.32)) !important; }
+body.legend-world-shell-active #root .v152-levelup-overlay { background:rgba(0,0,0,.18) !important;backdrop-filter:blur(1px) !important; }
+body.legend-world-shell-active #root .v152-levelup-panel { background:linear-gradient(145deg,rgba(24,33,24,.60),rgba(7,12,9,.48) 72%) !important; }
+body.legend-world-shell-active #root .bell-vault-banner {
+  background:linear-gradient(90deg,rgba(3,8,6,.15),rgba(4,10,7,.05) 57%,rgba(4,8,6,.025)),linear-gradient(0deg,rgba(3,7,5,.12),transparent 70%),var(--bell-vault-scene) center 48%/cover,#080d09 !important;
+}
+body.legend-world-shell-active #root .bell-vault-room-card,
+body.legend-world-shell-active #root .bell-vault-clue,
+body.legend-world-shell-active #root .bell-vault-treasure,
+body.legend-world-shell-active #root .bell-vault-choice { background:linear-gradient(140deg,rgba(33,45,33,.42),rgba(8,13,9,.30)) !important; }

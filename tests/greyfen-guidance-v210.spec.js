@@ -129,7 +129,7 @@ test.describe('Greyfen story guidance v0.24.1', () => {
         ashmereroad: pick('Ashmere', { greyfenLedgerCompared: true }),
         reportReturn: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true }),
         fileEvidence: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true, greyfenWeeklyReturnReported: true }),
-        filedArchive: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true, greyfenWeeklyReturnReported: true, greyfenEvidenceFiled: true })
+        filedArchive: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true, greyfenWeeklyReturnReported: true, greyfenEvidenceFiled: true, greyfenCrossingResponseV261: 'provisional-notice', greyfenNoticePressureCreditV261: false })
       };
     });
     expect(snapshots.greyfenLedger).toMatchObject({ view: 'regions', title: 'Find the Earlier Weekly Return', cta: 'Return to Ashmere' });

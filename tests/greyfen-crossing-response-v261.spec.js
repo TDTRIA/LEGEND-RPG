@@ -42,6 +42,7 @@ async function openGreyfenArchive(page, { woodScrap = 1, flags = {} } = {}) {
       quests: {}
     };
     window.LegendRuntimeV120.savePlayer(player);
+    window.LegendGameBootstrap.continueGame();
     window.LegendAshmereV099.route('archive');
   }, { woodScrap, flags });
 
