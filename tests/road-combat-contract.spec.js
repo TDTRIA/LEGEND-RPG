@@ -278,8 +278,8 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(staging.playerMotion).toBe('none');
     expect(staging.enemyMotion).toBe('none');
     expect(staging.scene).toContain('old-road-south-fork.webp');
-    expect(staging.scene).toContain('0.66');
-    expect(staging.sceneTint).toContain('0.42');
+    expect(staging.scene).toContain('0.38');
+    expect(staging.sceneTint).toContain('0.22');
     expect(staging.dialogue).toContain('linear-gradient');
     expect(staging.enemyPlate).not.toBe('auto');
   });
