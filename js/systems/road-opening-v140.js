@@ -81,9 +81,9 @@
           "<blockquote><strong>CAPTAIN ORIC</strong><p>“Saints alive—don't move too quickly. I was taking your boots off. Found you under a dead lantern, cold as the stones and still as the others. Thought the road had given me another body. Then you breathed.”</p></blockquote>" +
           "<p class='opening-road-v140-prompt'>Oric looks genuinely shaken for a moment, then turns practical again. “There's a sound I can't explain, and tracks out of the Blackroot ditch. Tell me what you remember. Anything at all.”</p>" +
           "<div class='opening-road-v140-choices' role='group' aria-label='Your answer to Captain Oric'>" +
-            "<button type='button' class='opening-road-v140-choice' data-oric-response='honest'><strong>I don't remember how I got here.</strong><span>Tell him what little you know.</span></button>" +
-            "<button type='button' class='opening-road-v140-choice' data-oric-response='peaceful'><strong>I'm not looking for a fight.</strong><span>Try to lower the tension.</span></button>" +
-            "<button type='button' class='opening-road-v140-choice' data-oric-response='defiant'><strong>If I wanted trouble, you wouldn't be asking.</strong><span>Meet suspicion with defiance.</span></button>" +
+            "<button type='button' class='opening-road-v140-choice' data-oric-response='honest'><strong>I remember a bell. Nothing else.</strong><span>The sound was there when I woke.</span></button>" +
+            "<button type='button' class='opening-road-v140-choice' data-oric-response='peaceful'><strong>Why were you taking my boots?</strong><span>Ask the one question that makes sense.</span></button>" +
+            "<button type='button' class='opening-road-v140-choice' data-oric-response='defiant'><strong>What came out of that ditch?</strong><span>Fresh tracks lead to Blackroot.</span></button>" +
           "</div><p class='opening-road-v140-footnote'>Your answer changes this first exchange. It does not lock your class, origin, or future choices.</p>" +
         "</section></main>";
     ROOT().querySelectorAll('[data-oric-response]').forEach(button => button.addEventListener('click', () => chooseResponse(button.dataset.oricResponse)));
