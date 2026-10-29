@@ -90,3 +90,41 @@ body:not(.legend-world-shell-active) #root .dispatches-v140-backdrop {
 #root .v152-levelup-overlay .v152-growth-confirm {
   background:linear-gradient(145deg,rgba(18,27,19,.82),rgba(5,10,6,.78)) !important;
 }
+
+/* Match legacy shell selector specificity: older rules used body...#root...!important. */
+body.legend-world-shell-active #root .ash099-screen {
+  background:linear-gradient(145deg,rgba(10,17,11,.70),rgba(5,10,6,.66)) !important;
+  box-shadow:0 16px 40px rgba(0,0,0,.22) !important;
+  backdrop-filter:blur(2px) !important;
+}
+body.legend-world-shell-active #root .reg100-head,
+body.legend-world-shell-active #root .reg100-panel,
+body.legend-world-shell-active #root .reg100-card,
+body.legend-world-shell-active #root .exp100-head,
+body.legend-world-shell-active #root .exp100-panel:not(.rpg-battle),
+body.legend-world-shell-active #root .exp150-world-page .exp100-poi,
+body.legend-world-shell-active #root .exp150-world-page .exp100-camp,
+body.legend-world-shell-active #root .bell-vault-v100 {
+  background:linear-gradient(145deg,rgba(14,23,15,.72),rgba(5,10,6,.68)) !important;
+  backdrop-filter:blur(3px) !important;
+}
+body.legend-world-shell-active #root .rpg-battle {
+  background:linear-gradient(180deg,rgba(9,13,10,.56),rgba(4,7,5,.62)) !important;
+}
+body.legend-world-shell-active #root .v152-combat-results { background:transparent !important; }
+body.legend-world-shell-active #root .v152-results-backdrop img {
+  opacity:.76 !important; filter:saturate(.92) brightness(1.02) !important;
+}
+body.legend-world-shell-active #root .v152-results-backdrop > div {
+  background:linear-gradient(180deg,rgba(7,12,9,.14),rgba(8,13,10,.34) 55%,rgba(8,13,10,.48) 100%) !important;
+}
+body.legend-world-shell-active #root .exp100:has(.exp150-world-page) .exp150-modal-layer {
+  background:rgba(2,5,3,.34) !important; backdrop-filter:blur(2px) !important;
+}
+body:not(.legend-world-shell-active) #root .account09x-hero::before {
+  background:linear-gradient(90deg,rgba(2,4,3,.42),rgba(2,4,3,.14) 48%,rgba(2,4,3,.34)),
+            linear-gradient(0deg,rgba(2,4,3,.20),transparent 68%),
+            url("../assets/generated/title/title-ashmere-road.webp") !important;
+  background-size:cover !important; background-position:center !important;
+  filter:saturate(.95) contrast(1.03) brightness(1.05) !important;
+}
