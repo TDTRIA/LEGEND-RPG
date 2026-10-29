@@ -40,7 +40,7 @@ async function enterAshmere(page, name = 'WorldShellQA') {
     const backdrop = document.querySelector('.opening-road-v140-prologue .opening-road-v140-bg');
     return backdrop ? getComputedStyle(backdrop).filter : '';
   });
-  expect(openingBackdropFilter).toContain('brightness(0.98)');
+  expect(openingBackdropFilter).toContain('brightness(1.08)');
   await page.getByRole('button', { name: 'Lift your head' }).click();
   await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
