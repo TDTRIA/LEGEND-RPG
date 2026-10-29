@@ -1,0 +1,22 @@
+/* LEGEND v0.27.5 — title screen renewal: bright landscape, restrained RPG menu frame. */
+.title-v136-rpg{background:#10140f!important}
+.title-v136-rpg .v120-title-backdrop{object-position:center 52%!important;filter:saturate(.96) contrast(1.04) brightness(1.03)!important;opacity:1!important;transform:scale(1.015)!important}
+.title-v136-rpg:after{background:linear-gradient(90deg,rgba(2,6,4,.50) 0%,rgba(3,8,6,.34) 23%,rgba(3,8,6,.14) 43%,rgba(3,8,6,.015) 69%,rgba(2,6,5,.08) 100%),linear-gradient(180deg,rgba(1,4,3,.18),transparent 22%,transparent 67%,rgba(1,4,3,.28)),radial-gradient(ellipse at 66% 42%,rgba(231,185,99,.12),transparent 36%)!important}
+.title-v136-rpg .title-atmosphere{opacity:.40!important}
+.title-v136-rpg .v120-title-main{justify-content:flex-start!important;padding-left:clamp(20px,6vw,92px)!important;padding-right:clamp(20px,4vw,58px)!important}
+.title-v136-rpg .v120-title-hero{width:min(510px,46vw)!important;max-width:510px!important;padding:clamp(18px,2.2vw,30px) clamp(17px,2vw,27px)!important;border:1px solid rgba(228,197,125,.46)!important;border-left:2px solid rgba(238,202,123,.88)!important;border-radius:2px!important;background:linear-gradient(145deg,rgba(8,14,9,.78),rgba(5,9,6,.64) 72%)!important;box-shadow:0 20px 55px rgba(0,0,0,.32),inset 0 0 0 1px rgba(255,243,205,.045)!important;backdrop-filter:blur(3px) saturate(.9)!important}
+.title-v136-rpg .v120-title-hero:before{inset:8px!important;border:1px solid rgba(229,190,110,.18)!important;background:linear-gradient(90deg,rgba(229,190,110,.24),transparent 60%) top left/28px 1px no-repeat,linear-gradient(180deg,rgba(229,190,110,.24),transparent 60%) top left/1px 28px no-repeat,linear-gradient(270deg,rgba(229,190,110,.24),transparent 60%) top right/28px 1px no-repeat,linear-gradient(180deg,rgba(229,190,110,.24),transparent 60%) top right/1px 28px no-repeat!important}
+.title-v136-rpg .v120-title-hero .v120-legend-logo{width:min(100%,440px)!important;max-height:clamp(92px,14vh,142px)!important;margin-bottom:12px!important;filter:drop-shadow(0 5px 14px rgba(0,0,0,.48))!important}
+.title-v136-rpg .v120-title-hero>p{color:#f0f1e8!important;font-size:clamp(.92rem,1vw,1.03rem)!important;line-height:1.52!important;text-shadow:0 1px 5px rgba(0,0,0,.45)!important}
+.title-v136-rpg .v120-traveler-line{background:rgba(5,10,7,.22)!important;border-color:rgba(229,190,110,.30)!important;box-shadow:inset 0 0 15px rgba(0,0,0,.08)!important}
+.title-v136-rpg .v136-menu-list{gap:6px!important}
+.title-v136-rpg .v136-menu-btn{background:linear-gradient(100deg,rgba(17,27,19,.80),rgba(5,10,7,.70))!important;border-color:rgba(223,192,121,.30)!important;backdrop-filter:blur(2px);box-shadow:inset 0 1px rgba(255,255,255,.025),0 5px 15px rgba(0,0,0,.12)!important}
+.title-v136-rpg .v136-menu-btn:hover,.title-v136-rpg .v136-menu-btn:focus-visible{background:linear-gradient(100deg,rgba(36,48,34,.89),rgba(9,15,10,.80))!important;border-color:rgba(244,213,143,.76)!important}
+.title-v136-rpg .v136-menu-primary{background:linear-gradient(180deg,#f0d695,#bd8a3c)!important;border-color:#f8dea1!important;color:#211808!important;box-shadow:0 6px 24px rgba(0,0,0,.20),inset 0 1px rgba(255,255,255,.54)!important}
+.title-v136-rpg .v136-menu-primary .v136-menu-copy strong,.title-v136-rpg .v136-menu-primary .v136-menu-copy small,.title-v136-rpg .v136-menu-primary .v136-menu-arrow{color:#261b08!important}
+.title-v136-rpg .v136-menu-icon{opacity:.88!important;filter:brightness(1.08) drop-shadow(0 2px 4px rgba(0,0,0,.18))!important}
+.title-v136-rpg .portal100-header{background:linear-gradient(180deg,rgba(2,6,4,.32),transparent)!important}
+.title-v136-rpg .portal100-footer{background:linear-gradient(0deg,rgba(1,3,2,.36),transparent)!important}
+@media(max-width:980px){.title-v136-rpg .v120-title-main{padding:100px 18px 20px!important}.title-v136-rpg .v120-title-hero{width:min(620px,100%)!important;margin:auto!important}}
+@media(max-width:560px){.title-v136-rpg .v120-title-main{padding:72px 10px 12px!important}.title-v136-rpg .v120-title-hero{padding:12px 10px!important;border-left-width:1px!important}.title-v136-rpg .v120-title-hero .v120-legend-logo{max-height:78px!important}.title-v136-rpg .v136-menu-list{gap:4px!important}.title-v136-rpg .v136-menu-btn{min-height:44px!important}.title-v136-rpg .v136-menu-primary{min-height:48px!important}.title-v136-rpg .v120-traveler-line{margin:0 0 8px!important}}
+@media(prefers-reduced-motion:reduce){.title-v136-rpg .v120-title-backdrop{animation:none!important;transform:none!important}}

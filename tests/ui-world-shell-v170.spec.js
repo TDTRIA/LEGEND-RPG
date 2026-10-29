@@ -10,7 +10,7 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await expect(page.locator('.v120-title')).toBeVisible();
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
-  expect(titleBackdropFilter).toContain('brightness(0.82)');
+  expect(titleBackdropFilter).toContain('brightness(1.04)');
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
   expect(titleSceneOverlay).toContain('rgba(2, 5, 3, 0.68)');
@@ -20,6 +20,7 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
 async function enterAshmere(page, name = 'WorldShellQA') {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+  await page.getByRole('button', { name: /Skip the annals/i }).click();
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();
@@ -39,7 +40,7 @@ async function enterAshmere(page, name = 'WorldShellQA') {
     const backdrop = document.querySelector('.opening-road-v140-prologue .opening-road-v140-bg');
     return backdrop ? getComputedStyle(backdrop).filter : '';
   });
-  expect(openingBackdropFilter).toContain('brightness(0.62)');
+  expect(openingBackdropFilter).toContain('brightness(0.98)');
   await page.getByRole('button', { name: 'Lift your head' }).click();
   await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
@@ -588,7 +589,7 @@ test.describe('LEGEND persistent world shell v170', () => {
         contentPanel: getComputedStyle(panel).backgroundImage
       };
     });
-    expect(road.filter).toContain('brightness(0.82)');
+    expect(road.filter).toContain('brightness(1.04)');
     expect(road.vignette).toContain('rgba(0, 0, 0, 0.2)');
     expect(road.image).toContain('location_old_road_main_v1.jpg');
     expect(road.shellCanvas).toContain('0.12');

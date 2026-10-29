@@ -50,8 +50,8 @@
 
   function actionButtons({ back = false, next = true, label = 'Continue' } = {}) {
     return '<div class="v094-actions">' +
-      (next ? '<button class="v094-btn primary" id="v094Next" data-legend-scene-transition="A memory returns" type="button">' + escapeHtml(label) + '</button>' : '') +
-      (back ? '<button class="v094-btn" id="v094Back" data-legend-scene-transition="Returning to an earlier memory" type="button">Back</button>' : '') +
+      (next ? '<button class="v094-btn primary" id="v094Next" type="button">' + escapeHtml(label) + '</button>' : '') +
+      (back ? '<button class="v094-btn" id="v094Back" type="button">Back</button>' : '') +
       '</div>';
   }
 
@@ -98,8 +98,12 @@
         const classPortrait = key === 'class' ? classPortraits?.[item.id] : '';
         const artCell = key !== 'class' && Array.isArray(item.artCell) ? item.artCell : null;
         const atlas = item.artSource || '';
+        const artColumns = Math.max(1, Number(item.artColumns || 5));
+        const artRows = Math.max(1, Number(item.artRows || 5));
         const atlasArt = atlas
-          ? '<span class="v094-choice-art" aria-hidden="true"><img ' + (artCell ? 'src="' + escapeHtml(atlas) + '" style="left:-' + (Number(artCell[0]) * 100) + '%;top:-' + (Number(artCell[1]) * 100) + '%"' : 'class="v094-choice-art-image" src="' + escapeHtml(atlas) + '"') + ' alt="" aria-hidden="true" loading="lazy" decoding="async"></span>'
+          ? '<span class="v094-choice-art" aria-hidden="true"><img ' + (artCell
+            ? 'src="' + escapeHtml(atlas) + '" style="width:' + (artColumns * 100) + '%;height:' + (artRows * 100) + '%;left:-' + (Number(artCell[0]) * 100) + '%;top:-' + (Number(artCell[1]) * 100) + '%"'
+            : 'class="v094-choice-art-image" src="' + escapeHtml(atlas) + '"') + ' alt="" aria-hidden="true" loading="lazy" decoding="async"></span>'
           : '';
         return '<button class="v094-choice' + (active ? ' is-selected' : '') + ((classPortrait || atlasArt) ? ' v094-choice-has-art' : '') +
           '" data-' + key + '="' + escapeHtml(item.id) + '" aria-pressed="' + active + '">' +

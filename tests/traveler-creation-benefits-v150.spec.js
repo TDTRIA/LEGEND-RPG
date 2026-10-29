@@ -12,6 +12,7 @@ test('every traveler choice has its own art and gameplay effects are visible and
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
   await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }' });
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+  await page.getByRole('button', { name: /Skip the annals/i }).click();
   await page.locator('#v094Name').fill('MemoryQA');
   await page.locator('#v094Next').click();
 

@@ -1,0 +1,39 @@
+/* LEGEND v0.27.5 — final scene-visibility contract, loaded after every earlier visual layer. */
+body.legend-world-shell-active::before{filter:saturate(.94) contrast(1.03) brightness(1.04)!important}
+body.legend-world-shell-active::after{background:radial-gradient(ellipse at 50% 42%,transparent 34%,rgba(0,0,0,.07) 78%,rgba(0,0,0,.16) 100%),linear-gradient(180deg,rgba(0,0,0,.025),transparent 24%,transparent 77%,rgba(0,0,0,.10))!important;box-shadow:inset 0 0 72px 6px rgba(0,0,0,.08)!important}
+#root{background:transparent!important}
+#legend-world-shell-root{background:linear-gradient(180deg,rgba(5,9,7,.035),rgba(3,6,5,.06))!important}
+#legend-world-shell-root::before{background:linear-gradient(180deg,rgba(0,0,0,.01),rgba(0,0,0,.02),rgba(0,0,0,.01))!important}
+#legend-world-shell-root::after{background:radial-gradient(ellipse at 50% 100%,rgba(179,150,94,.035),transparent 43%),radial-gradient(ellipse at 20% 18%,rgba(200,170,100,.025),transparent 24%)!important}
+#legend-world-shell-modal-root{background:transparent!important}
+#legend-world-shell-root .lws-panel,#legend-world-shell-modal-root .lws-modal,#legend-world-shell-modal-root .lws-modal-content{background:linear-gradient(145deg,rgba(13,21,14,.80),rgba(5,10,6,.76))!important;backdrop-filter:blur(3px)!important;box-shadow:0 14px 44px rgba(0,0,0,.28)!important}
+body.legend-world-shell-active #root .ash100-town,body.legend-world-shell-active #root .exp100,body.legend-world-shell-active #root .reg100,body.legend-world-shell-active #root .ash099-terminal,body.legend-world-shell-active #root .ash099-v1-terminal{background:transparent!important}
+#root .ash099-screen{background:linear-gradient(145deg,rgba(10,17,11,.70),rgba(5,10,6,.66))!important;backdrop-filter:blur(2px)!important;box-shadow:0 16px 40px rgba(0,0,0,.22)!important}
+#root .ash099-screen .ash099-card,#root .ash099-screen .ash099-service-card,#root .ash099-screen .ash099-job-choice,#root .ash099-screen .ash099-market-item,#root .ash099-screen .ash099-gear-item,#root .ash099-screen .ash099-craft-card,#root .ash099-screen .ash099-npc-card{background-color:rgba(4,9,5,.38)!important}
+#root .reg100-head,#root .reg100-panel,#root .reg100-card,#root .exp100-head,#root .exp100-panel:not(.rpg-battle),#root .exp150-world-page .exp100-poi,#root .exp150-world-page .exp100-camp,#root .bell-vault-v100{background:linear-gradient(145deg,rgba(14,23,15,.72),rgba(5,10,6,.68))!important;backdrop-filter:blur(3px)!important}
+#root .exp100:has(.exp150-world-page) .exp150-modal-layer{background:rgba(2,5,3,.34)!important;backdrop-filter:blur(2px)!important}
+#root .rpg-battle{background:linear-gradient(180deg,rgba(9,13,10,.56),rgba(4,7,5,.62))!important;box-shadow:0 14px 42px rgba(0,0,0,.22),inset 0 1px rgba(238,220,171,.05)!important}
+#root .rpg-battlefield{background-image:linear-gradient(180deg,rgba(5,9,7,0) 12%,rgba(5,8,7,.025) 42%,rgba(3,6,5,.09) 100%),url("../assets/generated/locations/old-road-south-fork.webp")!important;filter:saturate(.98) contrast(1.03) brightness(1.10)!important}
+#root .rpg-battlefield[data-arena="greyfen"]{background-image:linear-gradient(180deg,rgba(5,9,7,0) 10%,rgba(5,8,7,.02) 44%,rgba(3,6,5,.12) 100%),url("../assets/generated/locations/greyfen-marsh-walkway.webp")!important}
+#root .rpg-battlefield[data-arena="cellar"]{background-image:linear-gradient(180deg,rgba(5,9,7,0) 8%,rgba(5,8,7,.025) 44%,rgba(3,6,5,.14) 100%),url("../assets/generated/locations/bell-cellar-undercroft.webp")!important}
+#root .rpg-battlefield::before{background:linear-gradient(180deg,rgba(3,7,4,.02) 0%,transparent 24%,rgba(3,6,4,.01) 48%,rgba(2,5,3,.07) 100%),linear-gradient(90deg,rgba(2,5,3,.045),transparent 22%,transparent 75%,rgba(2,5,3,.045))!important}
+#root .rpg-battlefield::after{background:linear-gradient(180deg,transparent,rgba(4,7,4,.06)),linear-gradient(90deg,transparent 9%,rgba(208,178,112,.025) 50%,transparent 91%)!important}
+#root .v152-combat-results{background:transparent!important}
+#root .v152-combat-results .v152-results-duel,#root .v152-combat-results .v152-results-rewards,#root .v152-combat-results .v152-results-section{background:linear-gradient(145deg,rgba(9,15,10,.70),rgba(4,8,5,.66))!important}
+#root .v152-results-backdrop img{opacity:.76!important;filter:saturate(.92) brightness(1.02)!important}
+#root .v152-results-backdrop>div{background:linear-gradient(180deg,rgba(7,12,9,.14),rgba(8,13,10,.34) 55%,rgba(8,13,10,.48) 100%)!important}
+#root .v094-beginning-bg{background-image:linear-gradient(90deg,rgba(3,6,4,.28),rgba(4,8,5,.08) 43%,rgba(3,6,4,.22)),linear-gradient(180deg,rgba(3,6,4,.025),rgba(3,6,4,.23)),url("../assets/generated/title/title-ashmere-road.webp")!important;filter:saturate(.94) contrast(1.03) brightness(1.06)!important;opacity:1!important}
+#root .v140-creation .v094-beginning-card{background:linear-gradient(180deg,rgba(10,17,12,.70),rgba(4,8,5,.64))!important;box-shadow:0 18px 46px rgba(0,0,0,.24),inset 0 0 0 1px rgba(226,194,119,.07)!important;backdrop-filter:blur(2px)!important}
+#root .v140-creation .v094-choice{background:linear-gradient(145deg,rgba(18,27,19,.72),rgba(6,11,7,.62))!important}
+#root .v140-creation .v140-dialogue-box{background:linear-gradient(155deg,rgba(18,25,18,.76),rgba(5,9,6,.68))!important;box-shadow:0 10px 26px rgba(0,0,0,.22)!important}
+#root .v140-creation.legend-scene-arriving,#root .v140-creation.legend-scene-arrived{animation:none!important;opacity:1!important;transform:none!important}
+#root .opening-road-v140:not(.opening-road-v140-prologue) .opening-road-v140-bg{filter:saturate(.96) contrast(1.03) brightness(1.00)!important;opacity:1!important}
+#root .opening-road-v140:not(.opening-road-v140-prologue) .opening-road-v140-shade{background:linear-gradient(90deg,rgba(2,6,4,.24),rgba(2,6,4,.06) 49%,rgba(2,6,4,.20)),linear-gradient(180deg,rgba(2,4,3,.025),rgba(2,5,4,.30))!important}
+#root .opening-road-v140:not(.opening-road-v140-prologue) .opening-road-v140-card{background:linear-gradient(90deg,rgba(9,15,10,.74),rgba(4,8,5,.58) 75%,rgba(4,8,5,.32))!important;box-shadow:0 18px 42px rgba(0,0,0,.22),inset 0 0 0 1px rgba(226,194,119,.07)!important;backdrop-filter:blur(2px)!important}
+#root .opening-road-v140-prologue .opening-road-v140-bg{filter:saturate(.91) contrast(1.03) brightness(.98)!important;opacity:1!important}
+#root .opening-road-v140-prologue .opening-road-v140-shade{background:linear-gradient(90deg,rgba(1,3,2,.28),rgba(1,4,3,.13) 29%,rgba(2,5,3,.06) 61%,rgba(1,3,2,.20)),linear-gradient(180deg,rgba(1,3,2,.025),rgba(1,3,2,.04) 38%,rgba(1,3,2,.22) 100%),radial-gradient(ellipse at 68% 45%,rgba(207,157,72,.10),transparent 41%)!important}
+#root .opening-road-v140-prologue::before,#root .opening-road-v140-prologue::after{background:linear-gradient(180deg,rgba(0,0,0,.52),rgba(0,0,0,.25))!important}
+#root .opening-road-v140-prologue-card{background:linear-gradient(90deg,rgba(2,6,4,.40),rgba(2,6,4,.16) 69%,transparent)!important}
+#root .opening-lore-v220-backdrop{filter:saturate(.92) contrast(1.02) brightness(1.03)!important}
+#root .account09x-hero::before{filter:saturate(.95) contrast(1.03) brightness(1.05)!important;background:linear-gradient(90deg,rgba(2,4,3,.42),rgba(2,4,3,.14) 48%,rgba(2,4,3,.34)),linear-gradient(0deg,rgba(2,4,3,.20),transparent 68%),url("../assets/generated/title/title-ashmere-road.webp")!important;background-size:cover!important;background-position:center!important}
+#root .settings09x-hero,#root .account09x-panel,#root .dispatches-v140-card,#root .gss170-page{background-color:rgba(6,11,8,.68)!important}

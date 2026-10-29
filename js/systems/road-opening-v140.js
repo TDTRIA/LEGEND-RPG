@@ -12,19 +12,19 @@
   };
   const responses = Object.freeze({
     honest: {
-      label: "I don't remember how I got here.",
-      oric: "Oric searches your face for a lie. “Convenient. But fear isn't proof of guilt. Keep your hands where I can see them.”",
-      after: "“You said you couldn't remember,” Oric says, staring at the fallen wolf. “Maybe you can't. But that was no ordinary reflex.”"
+      label: "I remember a bell. Nothing else.",
+      oric: "“One bell. No tower,” Oric says. “That's what brought me out here. You're the first thing I found that was still breathing.”",
+      after: "“You heard it too,” Oric says, staring at the fallen wolf. “No tower, no second toll. I'll put that aside until we're somewhere safer.”"
     },
     peaceful: {
-      label: "I'm not looking for a fight.",
-      oric: "His sword lowers an inch, though his hand stays on the hilt. “Then don't give me a reason to draw it.”",
-      after: "“So much for nobody looking for a fight,” Oric mutters, then looks at you again. “You stopped it before I could even draw. How?”"
+      label: "Why were you taking my boots?",
+      oric: "Oric glances at your muddy boots, then away. “Because I thought you were dead. You were cold and still. I was checking you over before the road took another body. I'm sorry.”",
+      after: "“I was certain you were gone,” Oric mutters, looking at his hands. “Then you moved before I could even draw. That wolf wasn't the only impossible thing on this road.”"
     },
     defiant: {
-      label: "If I wanted trouble, you wouldn't be asking.",
-      oric: "Oric's expression hardens. “Good. Then you understand why I have to be careful.”",
-      after: "“You spoke like you knew the danger,” Oric says, steadying himself against the milestone. “You may have just saved my life. I still intend to find out who you are.”"
+      label: "Something came out of the ditch.",
+      oric: "Oric turns toward the Blackroot ditch. “Tracks crossed here. I was going to follow them when you opened your eyes. Whatever made them may still be close.”",
+      after: "“You saw it before I did,” Oric says, steadying himself against the milestone. “You may have saved my life. We'll talk about the rest in Ashmere.”"
     }
   });
   function openingState(player) {
@@ -77,9 +77,9 @@
           "<div class='opening-road-v140-kicker'>THE OLD ROAD · BEFORE DAWN</div>" +
           "<h1 id='openingRoadTitle'>Beneath the Dead Lantern</h1>" +
           "<p class='opening-road-v140-lede'>Cold mud. A dead lantern. The bell’s single note still seems to tremble in the stones, though no tower stands on this stretch of road. Heavy tracks cross the wet road from the Blackroot ditch and vanish into the fog.</p>" +
-          "<div class='opening-road-v140-scene-note'><span>CAPTAIN ORIC · ASHMERE WATCH</span><p>A boot grinds to a halt beside your hand. Captain Oric’s lantern throws an amber line across wet steel. He checks the road before he looks at you; his sword is already loose in its sheath.</p></div>" +
-          "<blockquote><strong>CAPTAIN ORIC</strong><p>“I heard the bell from the gate. There’s no tower out here. I find you beneath a dead lantern with tracks from the Blackroot ditch. Keep your hands where I can see them. Friend or foe?”</p></blockquote>" +
-          "<p class='opening-road-v140-prompt'>The fog offers nothing about how you arrived. The tracks are fresh; whatever crossed from the ditch may still be close. What do you tell him?</p>" +
+          "<div class='opening-road-v140-scene-note'><span>CAPTAIN ORIC · ASHMERE WATCH</span><p>Oric kneels in the cold mud beside you. One hand still grips the heel of your boot; the other holds his lantern low, trying to catch the rise and fall of your chest. He had begun stripping the dead for whatever might keep someone else alive. Then your fingers moved.</p></div>" +
+          "<blockquote><strong>CAPTAIN ORIC</strong><p>“Saints alive—don't move too quickly. I was taking your boots off. Found you under a dead lantern, cold as the stones and still as the others. Thought the road had given me another body. Then you breathed.”</p></blockquote>" +
+          "<p class='opening-road-v140-prompt'>Oric looks genuinely shaken for a moment, then turns practical again. “There's a sound I can't explain, and tracks out of the Blackroot ditch. Tell me what you remember. Anything at all.”</p>" +
           "<div class='opening-road-v140-choices' role='group' aria-label='Your answer to Captain Oric'>" +
             "<button type='button' class='opening-road-v140-choice' data-oric-response='honest'><strong>I don't remember how I got here.</strong><span>Tell him what little you know.</span></button>" +
             "<button type='button' class='opening-road-v140-choice' data-oric-response='peaceful'><strong>I'm not looking for a fight.</strong><span>Try to lower the tension.</span></button>" +

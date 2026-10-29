@@ -9,6 +9,7 @@ async function enterAshmere(page) {
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
   await expect(page.locator('.v120-title')).toBeVisible();
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+  await page.getByRole('button', { name: /Skip the annals/i }).click();
   await page.locator('#v094Name').fill('AshmereLightQA');
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();

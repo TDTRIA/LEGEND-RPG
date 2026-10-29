@@ -20,13 +20,9 @@
       progress: 'The body is the first outline of a self.',
       scene: 'Dark water reflects a shape before there is a face to it. It seems familiar. Does it feel like you?',
       getItems: context => {
-        const classes = context.assets?.classes || {};
-        const traveler = context.assets?.ui?.serviceIcons?.traveler || '';
-        const art = [classes.Adventurer, classes.Warrior, classes.Mage, traveler];
-        return (context.genderOptions || []).map((option, index) => ({
-          ...option,
-          artSource: art[index] || traveler,
-          artCell: null,
+        const travelerEmblem = context.assets?.creation?.atlas || '';
+        return (context.genderOptions || []).map(option => ({
+          ...option, artSource: travelerEmblem, artCell: null,
           effect: option.effect || 'Identity only; your form never weakens your character.'
         }));
       }
@@ -41,19 +37,10 @@
       progress: 'Something in you remembers how it endured.',
       scene: 'A hand reaching out. A door closing. A choice in the dark. You cannot place the moment, but the feeling remains.',
       getItems: context => {
-        const items = context.assets?.items || {};
-        const icons = context.assets?.ui?.serviceIcons || {};
-        const art = {
-          kind: items.rationBundle,
-          grim: items.armorRepairKit,
-          bold: items.shortSword,
-          clever: icons.journal,
-          quiet: icons.traveler
-        };
+        const atlas = context.assets?.items?.iconSheet || '';
+        const cells = { kind:[2,2], grim:[0,2], bold:[1,1], clever:[1,0], quiet:[0,0] };
         return (context.personalityOptions || []).map(option => ({
-          ...option,
-          artSource: art[option.id] || icons.traveler || '',
-          artCell: null
+          ...option, artSource:atlas, artCell:cells[option.id] || [1,2], artColumns:3, artRows:3
         }));
       }
     }),
@@ -67,23 +54,14 @@
       progress: 'The edges of a life return before the whole story.',
       scene: 'Rain on a window. Smoke in the air. The sensation of belonging somewhere. No face comes with the memory yet. Where does it lead?', 
       getItems: context => Object.entries(context.data?.origins || {}).map(([id, record]) => {
-        const classes = context.assets?.classes || {};
-        const items = context.assets?.items || {};
-        const icons = context.assets?.ui?.serviceIcons || {};
-        const art = {
-          'Lost Squire':classes.Warrior,
-          'Runaway Apprentice':classes.Mage,
-          'Debt-Bound Thief':classes.Thief,
-          "Archivist's Child":icons.journal,
-          'Wandering Cook':items.rationBundle,
-          'Failed Monster Hunter':classes.Ranger
-        };
+        const atlas = context.assets?.items?.iconSheet || '';
+        const cells = {'Lost Squire':[1,1],'Runaway Apprentice':[2,0],'Debt-Bound Thief':[1,0],"Archivist's Child":[1,2],'Wandering Cook':[0,1],'Failed Monster Hunter':[0,2]};
         const effects = [];
         const stats = bonusText(record.bonus);
         if (stats) effects.push(stats);
         if (record.gold) effects.push('+' + record.gold + ' starting gold');
         Object.entries(record.items || {}).forEach(([item, amount]) => effects.push('+' + amount + ' ' + (item === 'food' ? 'rations' : item)));
-        return { id, label:id, text:record.text, tag:effects.join(' · ') || 'Story memory', effect: effects.length ? 'Starting advantage: ' + effects.join(', ') + '.' : 'A story memory that shapes how Ashmere sees you.', artSource:art[id] || icons.traveler || '', artCell:null };
+        return { id, label:id, text:record.text, tag:effects.join(' · ') || 'Story memory', effect: effects.length ? 'Starting advantage: ' + effects.join(', ') + '.' : 'A story memory that shapes how Ashmere sees you.', artSource:atlas, artCell:cells[id] || [1,2], artColumns:3, artRows:3 };
       })
     }),
     class: Object.freeze({
@@ -112,22 +90,14 @@
       progress: 'A single object catches the light in the dark.',
       scene: 'You cannot remember packing it. Still, your hand knows how to reach for it. What do you choose to carry?', 
       getItems: context => Object.entries(context.data?.keepsakes || {}).map(([id, record]) => {
-        const items = context.assets?.items || {};
-        const icons = context.assets?.ui?.serviceIcons || {};
-        const art = {
-          'Rusty Charm':items.huntersCharm,
-          'Old Map':icons.map,
-          'Bent Coin':items.roadToken,
-          'Cracked Tablet':items.bellFragment,
-          'Dull Knife':items.shortSword,
-          'Cooked Ration':items.rationBundle
-        };
+        const atlas = context.assets?.items?.iconSheet || '';
+        const cells = {'Rusty Charm':[1,0],'Old Map':[1,2],'Bent Coin':[1,0],'Cracked Tablet':[0,0],'Dull Knife':[1,1],'Cooked Ration':[0,1]};
         const effects = [];
         const stats = bonusText(record.bonus);
         if (stats) effects.push(stats);
         if (record.sellBonus) effects.push('+' + Math.round(record.sellBonus * 100) + '% sale value');
         Object.entries(record.items || {}).forEach(([item, amount]) => effects.push('+' + amount + ' ' + (item === 'food' ? 'rations' : item === 'rtab' ? 'Runic Tablets' : item)));
-        return { id, label:id, text:record.text, tag:effects.join(' · ') || 'Memory fragment', effect:effects.length ? 'Keepsake benefit: ' + effects.join(', ') + '.' : 'A personal memory with no combat modifier.', artSource:art[id] || icons.traveler || '', artCell:null };
+        return { id, label:id, text:record.text, tag:effects.join(' · ') || 'Memory fragment', effect:effects.length ? 'Keepsake benefit: ' + effects.join(', ') + '.' : 'A personal memory with no combat modifier.', artSource:atlas, artCell:cells[id] || [1,2], artColumns:3, artRows:3 };
       })
     })
   });
