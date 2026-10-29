@@ -95,6 +95,7 @@ test.describe('LEGEND live GitHub Pages smoke test', () => {
     // Use the visible creation UI. Each run is isolated by Playwright's browser context.
     const travelerName = 'LiveQA' + Date.now().toString().slice(-5);
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+  await page.getByRole('button', { name: /Skip the annals/i }).click();
     await page.locator('#v094Name').fill(travelerName);
     await page.locator('#v094Next').click();
     await page.locator('[data-gender="unspoken"]').click();

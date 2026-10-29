@@ -71,9 +71,13 @@
   }
 
   function newTraveler(){
-    if(window.LegendBeginningV094?.startCreation) return window.LegendBeginningV094.startCreation();
-    root().innerHTML = `<div class="shell"><section class="panel"><h2>Traveler creation is loading...</h2><p>Try a hard refresh if this screen does not change.</p><div class="actions"><button class="btn primary" id="backTitle">Back to Title</button></div></section></div>`;
-    document.getElementById('backTitle').onclick = title;
+    const beginCreation = () => {
+      if(window.LegendBeginningV094?.startCreation) return window.LegendBeginningV094.startCreation();
+      root().innerHTML = `<div class="shell"><section class="panel"><h2>Traveler creation is loading...</h2><p>Try a hard refresh if this screen does not change.</p><div class="actions"><button class="btn primary" id="backTitle">Back to Title</button></div></section></div>`;
+      document.getElementById('backTitle').onclick = title;
+    };
+    if (window.LegendOpeningPrologueV220?.start) return window.LegendOpeningPrologueV220.start(beginCreation);
+    return beginCreation();
   }
 
   function account(){

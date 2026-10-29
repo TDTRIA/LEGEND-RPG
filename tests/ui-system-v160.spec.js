@@ -17,6 +17,7 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
 async function enterAshmere(page, name = 'UIProofQA') {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+  await page.getByRole('button', { name: /Skip the annals/i }).click();
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();
@@ -92,7 +93,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       radius: getComputedStyle(element).borderRadius
     }));
     expect(computed.amber).toBe('#e7c982');
-    expect(computed.radius).toBe('3px');
+    expect(computed.radius).toBe('2px');
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-title-desktop.png');
   });

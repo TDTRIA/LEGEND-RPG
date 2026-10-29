@@ -12,6 +12,7 @@ async function openTitle(page) {
 async function startFreshCharacter(page, name = 'GreyfenGuideQA') {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+  await page.getByRole('button', { name: /Skip the annals/i }).click();
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();
@@ -63,7 +64,9 @@ test.describe('Greyfen story guidance v0.24.1', () => {
           greyfenWeeklyReturnFound: true,
           greyfenWeeklyReturnReported: true,
           greyfenWaterlineGaugeRead: true,
-          greyfenWaterlineGaugeReported: true
+          greyfenWaterlineGaugeReported: true,
+          greyfenCrossingResponseV261: 'provisional-notice',
+          greyfenNoticePressureCreditV261: false
         }),
         defaultGreyfen: pick('Greyfen')
       };
@@ -126,7 +129,7 @@ test.describe('Greyfen story guidance v0.24.1', () => {
         ashmereroad: pick('Ashmere', { greyfenLedgerCompared: true }),
         reportReturn: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true }),
         fileEvidence: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true, greyfenWeeklyReturnReported: true }),
-        filedArchive: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true, greyfenWeeklyReturnReported: true, greyfenEvidenceFiled: true })
+        filedArchive: pick('Greyfen', { greyfenLedgerCompared: true, greyfenWeeklyReturnFound: true, greyfenWeeklyReturnReported: true, greyfenEvidenceFiled: true, greyfenCrossingResponseV261: 'provisional-notice', greyfenNoticePressureCreditV261: false })
       };
     });
     expect(snapshots.greyfenLedger).toMatchObject({ view: 'regions', title: 'Find the Earlier Weekly Return', cta: 'Return to Ashmere' });
@@ -145,7 +148,9 @@ test.describe('Greyfen story guidance v0.24.1', () => {
         greyfenLedgerCompared: true,
         greyfenWeeklyReturnFound: true,
         greyfenWeeklyReturnReported: true,
-        greyfenEvidenceFiled: true
+        greyfenEvidenceFiled: true,
+        greyfenCrossingResponseV261: 'provisional-notice',
+        greyfenNoticePressureCreditV261: false
       };
       runtime.savePlayer(player);
     });

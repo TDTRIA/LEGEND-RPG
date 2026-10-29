@@ -14,15 +14,30 @@
   margin: 12px 0 10px;
   border-radius: 2px;
   border-color: rgba(220,195,131,.3);
-  background-color: #101610;
-  box-shadow: inset 0 -70px 92px rgba(0,0,0,.38), inset 0 0 0 1px rgba(255,245,210,.045);
+  background-color: #151d14;
+  background-image: linear-gradient(180deg, rgba(5,9,7,.04) 12%, rgba(5,8,7,.07) 42%, rgba(3,6,5,.38) 100%), url("../assets/generated/locations/old-road-south-fork.webp");
+  background-size: cover;
+  background-position: center 54%;
+  box-shadow: inset 0 -48px 70px rgba(0,0,0,.12), inset 0 0 0 1px rgba(255,245,210,.045);
 }
+
+/* Regional battle art keeps its own lighter vignette; the old base gradient
+   combined with the staging overlay and made the ground almost pure black. */
+.rpg-battlefield[data-arena="greyfen"] {
+  background-image: linear-gradient(180deg, rgba(5,9,7,.05) 10%, rgba(5,8,7,.08) 44%, rgba(3,6,5,.46) 100%), url("../assets/generated/locations/greyfen-marsh-walkway.webp");
+  background-position: center 58%;
+}
+.rpg-battlefield[data-arena="cellar"] {
+  background-image: linear-gradient(180deg, rgba(5,9,7,.04) 8%, rgba(5,8,7,.09) 44%, rgba(3,6,5,.50) 100%), url("../assets/generated/locations/bell-cellar-undercroft.webp");
+  background-position: center 54%;
+}
+
 .rpg-battlefield::before {
   z-index: 1;
   opacity: 1;
   background:
-    linear-gradient(180deg, rgba(3,7,4,.22) 0%, rgba(3,7,4,.02) 24%, rgba(3,6,4,.04) 48%, rgba(2,5,3,.7) 100%),
-    linear-gradient(90deg, rgba(2,5,3,.28), transparent 22%, transparent 75%, rgba(2,5,3,.24));
+    linear-gradient(180deg, rgba(3,7,4,.10) 0%, rgba(3,7,4,.01) 24%, rgba(3,6,4,.02) 48%, rgba(2,5,3,.22) 100%),
+    linear-gradient(90deg, rgba(2,5,3,.12), transparent 22%, transparent 75%, rgba(2,5,3,.12));
 }
 .rpg-battlefield::after {
   position: absolute;
@@ -34,8 +49,8 @@
   content: "";
   pointer-events: none;
   background:
-    linear-gradient(180deg, transparent, rgba(4,7,4,.55)),
-    linear-gradient(90deg, transparent 9%, rgba(208,178,112,.08) 50%, transparent 91%);
+    linear-gradient(180deg, transparent, rgba(4,7,4,.14)),
+    linear-gradient(90deg, transparent 9%, rgba(208,178,112,.05) 50%, transparent 91%);
   border-top: 1px solid rgba(220,195,131,.10);
 }
 .rpg-battle-moon, .rpg-battle-orbit, .rpg-ground-haze, .rpg-target-arrow { display: none !important; }

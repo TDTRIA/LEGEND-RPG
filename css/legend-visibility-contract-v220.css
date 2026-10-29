@@ -1,0 +1,615 @@
+/* LEGEND v0.27.5 — final scene-visibility contract, loaded after every earlier visual layer. */
+body.legend-world-shell-active::before{filter:saturate(.94) contrast(1.03) brightness(1.04)!important}
+body.legend-world-shell-active::after{background:radial-gradient(ellipse at 50% 42%,transparent 34%,rgba(0,0,0,.07) 78%,rgba(0,0,0,.16) 100%),linear-gradient(180deg,rgba(0,0,0,.025),transparent 24%,transparent 77%,rgba(0,0,0,.10))!important;box-shadow:inset 0 0 72px 6px rgba(0,0,0,.08)!important}
+#root{background:transparent!important}
+#legend-world-shell-root{background:linear-gradient(180deg,rgba(5,9,7,.035),rgba(3,6,5,.06))!important}
+#legend-world-shell-root::before{background:linear-gradient(180deg,rgba(0,0,0,.01),rgba(0,0,0,.02),rgba(0,0,0,.01))!important}
+#legend-world-shell-root::after{background:radial-gradient(ellipse at 50% 100%,rgba(179,150,94,.035),transparent 43%),radial-gradient(ellipse at 20% 18%,rgba(200,170,100,.025),transparent 24%)!important}
+#legend-world-shell-modal-root{background:transparent!important}
+#legend-world-shell-root .lws-panel,#legend-world-shell-modal-root .lws-modal,#legend-world-shell-modal-root .lws-modal-content{background:linear-gradient(145deg,rgba(13,21,14,.80),rgba(5,10,6,.76))!important;backdrop-filter:blur(3px)!important;box-shadow:0 14px 44px rgba(0,0,0,.28)!important}
+body.legend-world-shell-active #root .ash100-town,body.legend-world-shell-active #root .exp100,body.legend-world-shell-active #root .reg100,body.legend-world-shell-active #root .ash099-terminal,body.legend-world-shell-active #root .ash099-v1-terminal{background:transparent!important}
+#root .ash099-screen{background:linear-gradient(145deg,rgba(10,17,11,.70),rgba(5,10,6,.66))!important;backdrop-filter:blur(2px)!important;box-shadow:0 16px 40px rgba(0,0,0,.22)!important}
+#root .ash099-screen .ash099-card,#root .ash099-screen .ash099-service-card,#root .ash099-screen .ash099-job-choice,#root .ash099-screen .ash099-market-item,#root .ash099-screen .ash099-gear-item,#root .ash099-screen .ash099-craft-card,#root .ash099-screen .ash099-npc-card{background-color:rgba(4,9,5,.38)!important}
+#root .reg100-head,#root .reg100-panel,#root .reg100-card,#root .exp100-head,#root .exp100-panel:not(.rpg-battle),#root .exp150-world-page .exp100-poi,#root .exp150-world-page .exp100-camp,#root .bell-vault-v100{background:linear-gradient(145deg,rgba(14,23,15,.72),rgba(5,10,6,.68))!important;backdrop-filter:blur(3px)!important}
+#root .exp100:has(.exp150-world-page) .exp150-modal-layer{background:rgba(2,5,3,.34)!important;backdrop-filter:blur(2px)!important}
+#root .rpg-battle{background:linear-gradient(180deg,rgba(9,13,10,.56),rgba(4,7,5,.62))!important;box-shadow:0 14px 42px rgba(0,0,0,.22),inset 0 1px rgba(238,220,171,.05)!important}
+#root .rpg-battlefield{background-image:linear-gradient(180deg,rgba(5,9,7,0) 12%,rgba(5,8,7,.025) 42%,rgba(3,6,5,.09) 100%),url("../assets/generated/locations/old-road-south-fork.webp")!important;filter:saturate(.98) contrast(1.03) brightness(1.10)!important}
+#root .rpg-battlefield[data-arena="greyfen"]{background-image:linear-gradient(180deg,rgba(5,9,7,0) 10%,rgba(5,8,7,.02) 44%,rgba(3,6,5,.12) 100%),url("../assets/generated/locations/greyfen-marsh-walkway.webp")!important}
+#root .rpg-battlefield[data-arena="cellar"]{background-image:linear-gradient(180deg,rgba(5,9,7,0) 8%,rgba(5,8,7,.025) 44%,rgba(3,6,5,.14) 100%),url("../assets/generated/locations/bell-cellar-undercroft.webp")!important}
+#root .rpg-battlefield::before{background:linear-gradient(180deg,rgba(3,7,4,.02) 0%,transparent 24%,rgba(3,6,4,.01) 48%,rgba(2,5,3,.07) 100%),linear-gradient(90deg,rgba(2,5,3,.045),transparent 22%,transparent 75%,rgba(2,5,3,.045))!important}
+#root .rpg-battlefield::after{background:linear-gradient(180deg,transparent,rgba(4,7,4,.06)),linear-gradient(90deg,transparent 9%,rgba(208,178,112,.025) 50%,transparent 91%)!important}
+#root .v152-combat-results{background:transparent!important}
+#root .v152-combat-results .v152-results-duel,#root .v152-combat-results .v152-results-rewards,#root .v152-combat-results .v152-results-section{background:linear-gradient(145deg,rgba(9,15,10,.70),rgba(4,8,5,.66))!important}
+#root .v152-results-backdrop img{opacity:.76!important;filter:saturate(.92) brightness(1.02)!important}
+#root .v152-results-backdrop>div{background:linear-gradient(180deg,rgba(7,12,9,.14),rgba(8,13,10,.34) 55%,rgba(8,13,10,.48) 100%)!important}
+#root .v094-beginning-bg{background-image:linear-gradient(90deg,rgba(3,6,4,.28),rgba(4,8,5,.08) 43%,rgba(3,6,4,.22)),linear-gradient(180deg,rgba(3,6,4,.025),rgba(3,6,4,.23)),url("../assets/generated/title/title-ashmere-road.webp")!important;filter:saturate(.94) contrast(1.03) brightness(1.06)!important;opacity:1!important}
+#root .v140-creation .v094-beginning-card{background:linear-gradient(180deg,rgba(10,17,12,.70),rgba(4,8,5,.64))!important;box-shadow:0 18px 46px rgba(0,0,0,.24),inset 0 0 0 1px rgba(226,194,119,.07)!important;backdrop-filter:blur(2px)!important}
+#root .v140-creation .v094-choice{background:linear-gradient(145deg,rgba(18,27,19,.72),rgba(6,11,7,.62))!important}
+#root .v140-creation .v140-dialogue-box{background:linear-gradient(155deg,rgba(18,25,18,.76),rgba(5,9,6,.68))!important;box-shadow:0 10px 26px rgba(0,0,0,.22)!important}
+#root .v140-creation.legend-scene-arriving,#root .v140-creation.legend-scene-arrived{animation:none!important;opacity:1!important;transform:none!important}
+#root .opening-road-v140:not(.opening-road-v140-prologue) .opening-road-v140-bg{filter:saturate(.96) contrast(1.03) brightness(1.00)!important;opacity:1!important}
+#root .opening-road-v140:not(.opening-road-v140-prologue) .opening-road-v140-shade{background:linear-gradient(90deg,rgba(2,6,4,.24),rgba(2,6,4,.06) 49%,rgba(2,6,4,.20)),linear-gradient(180deg,rgba(2,4,3,.025),rgba(2,5,4,.30))!important}
+#root .opening-road-v140:not(.opening-road-v140-prologue) .opening-road-v140-card{background:linear-gradient(90deg,rgba(9,15,10,.74),rgba(4,8,5,.58) 75%,rgba(4,8,5,.32))!important;box-shadow:0 18px 42px rgba(0,0,0,.22),inset 0 0 0 1px rgba(226,194,119,.07)!important;backdrop-filter:blur(2px)!important}
+#root .opening-road-v140-prologue .opening-road-v140-bg{filter:saturate(.91) contrast(1.03) brightness(.98)!important;opacity:1!important}
+#root .opening-road-v140-prologue .opening-road-v140-shade{background:linear-gradient(90deg,rgba(1,3,2,.28),rgba(1,4,3,.13) 29%,rgba(2,5,3,.06) 61%,rgba(1,3,2,.20)),linear-gradient(180deg,rgba(1,3,2,.025),rgba(1,3,2,.04) 38%,rgba(1,3,2,.22) 100%),radial-gradient(ellipse at 68% 45%,rgba(207,157,72,.10),transparent 41%)!important}
+#root .opening-road-v140-prologue::before,#root .opening-road-v140-prologue::after{background:linear-gradient(180deg,rgba(0,0,0,.52),rgba(0,0,0,.25))!important}
+#root .opening-road-v140-prologue-card{background:linear-gradient(90deg,rgba(2,6,4,.40),rgba(2,6,4,.16) 69%,transparent)!important}
+#root .opening-lore-v220-backdrop{filter:saturate(.92) contrast(1.02) brightness(1.03)!important}
+#root .account09x-hero::before{filter:saturate(.95) contrast(1.03) brightness(1.05)!important;background:linear-gradient(90deg,rgba(2,4,3,.42),rgba(2,4,3,.14) 48%,rgba(2,4,3,.34)),linear-gradient(0deg,rgba(2,4,3,.20),transparent 68%),url("../assets/generated/title/title-ashmere-road.webp")!important;background-size:cover!important;background-position:center!important}
+#root .settings09x-hero,#root .account09x-panel,#root .dispatches-v140-card,#root .gss170-page{background-color:rgba(6,11,8,.68)!important}
+
+/* Standalone menus and submenus use their own older page backgrounds.
+   Give those pages the same readable scene treatment instead of painting them solid black. */
+body:not(.legend-world-shell-active) #root .settings09x,
+body:not(.legend-world-shell-active) #root .account09x,
+body:not(.legend-world-shell-active) #root .dispatches-v140,
+body:not(.legend-world-shell-active) #root .gss170-page {
+  background:
+    linear-gradient(90deg,rgba(3,7,4,.28),rgba(3,7,4,.10) 48%,rgba(3,7,4,.22)),
+    linear-gradient(180deg,rgba(3,7,4,.08),rgba(3,7,4,.30)),
+    url("../assets/generated/title/title-ashmere-road.webp") center 54%/cover no-repeat !important;
+}
+body:not(.legend-world-shell-active) #root .dispatches-v140-backdrop {
+  background:
+    linear-gradient(180deg,rgba(2,7,5,.22),rgba(3,8,6,.40)),
+    url("../assets/generated/title/title-ashmere-road.webp") center/cover no-repeat !important;
+  filter:saturate(.92) brightness(1.02) !important;
+}
+#root .settings09x-hero,
+#root .settings09x-toggle,
+#root .settings09x-actions,
+#root .settings09x-note,
+#root .account09x-hero,
+#root .account09x-panel,
+#root .account09x-slot,
+#root .account09x-note,
+#root .account09x-actions,
+#root .account09x-auth-box {
+  background:linear-gradient(145deg,rgba(10,17,11,.74),rgba(5,10,6,.68)) !important;
+  backdrop-filter:blur(3px) !important;
+  box-shadow:0 14px 40px rgba(0,0,0,.22) !important;
+}
+#root .settings09x-hero { background:linear-gradient(100deg,rgba(8,14,9,.74),rgba(5,10,6,.42)) !important; }
+#root .account09x-hero { background:linear-gradient(100deg,rgba(8,14,9,.20),rgba(5,10,6,.10)) !important; }
+#root .dispatches-v140-feature {
+  background:linear-gradient(110deg,rgba(17,28,20,.76),rgba(5,10,7,.68)) !important;
+  box-shadow:0 18px 46px rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,236,184,.04) !important;
+}
+#root .dispatches-v140-card {
+  background:linear-gradient(180deg,rgba(16,25,19,.74),rgba(5,10,7,.68)) !important;
+}
+#root .dispatches-v140 button { background:rgba(12,20,14,.78) !important; }
+#root .dispatches-v140 button:hover { background:rgba(32,43,31,.86) !important; }
+#root .dispatches-v140-roadmap .dispatches-v140-card { background:linear-gradient(180deg,rgba(20,30,22,.76),rgba(6,12,8,.70)) !important; }
+
+/* Result and level-up panels remain readable without covering their scene completely. */
+#root .v152-levelup-overlay { background:rgba(0,0,0,.46) !important; backdrop-filter:blur(2px) !important; }
+#root .v152-levelup-overlay .v152-levelup-panel,
+#root .v152-levelup-overlay .v152-growth-pointbar,
+#root .v152-levelup-overlay .v152-growth-card,
+#root .v152-levelup-overlay .v152-growth-confirm {
+  background:linear-gradient(145deg,rgba(18,27,19,.82),rgba(5,10,6,.78)) !important;
+}
+
+/* Match legacy shell selector specificity: older rules used body...#root...!important. */
+body.legend-world-shell-active #root .ash099-screen {
+  background:linear-gradient(145deg,rgba(10,17,11,.70),rgba(5,10,6,.66)) !important;
+  box-shadow:0 16px 40px rgba(0,0,0,.22) !important;
+  backdrop-filter:blur(2px) !important;
+}
+body.legend-world-shell-active #root .reg100-head,
+body.legend-world-shell-active #root .reg100-panel,
+body.legend-world-shell-active #root .reg100-card,
+body.legend-world-shell-active #root .exp100-head,
+body.legend-world-shell-active #root .exp100-panel:not(.rpg-battle),
+body.legend-world-shell-active #root .exp150-world-page .exp100-poi,
+body.legend-world-shell-active #root .exp150-world-page .exp100-camp,
+body.legend-world-shell-active #root .bell-vault-v100 {
+  background:linear-gradient(145deg,rgba(14,23,15,.72),rgba(5,10,6,.68)) !important;
+  backdrop-filter:blur(3px) !important;
+}
+body.legend-world-shell-active #root .rpg-battle {
+  background:linear-gradient(180deg,rgba(9,13,10,.56),rgba(4,7,5,.62)) !important;
+}
+body.legend-world-shell-active #root .v152-combat-results { background:transparent !important; }
+body.legend-world-shell-active #root .v152-results-backdrop img {
+  opacity:.76 !important; filter:saturate(.92) brightness(1.02) !important;
+}
+body.legend-world-shell-active #root .v152-results-backdrop > div {
+  background:linear-gradient(180deg,rgba(7,12,9,.14),rgba(8,13,10,.34) 55%,rgba(8,13,10,.48) 100%) !important;
+}
+body.legend-world-shell-active #root .exp100:has(.exp150-world-page) .exp150-modal-layer {
+  background:rgba(2,5,3,.34) !important; backdrop-filter:blur(2px) !important;
+}
+body:not(.legend-world-shell-active) #root .account09x-hero::before {
+  background:linear-gradient(90deg,rgba(2,4,3,.42),rgba(2,4,3,.14) 48%,rgba(2,4,3,.34)),
+            linear-gradient(0deg,rgba(2,4,3,.20),transparent 68%),
+            url("../assets/generated/title/title-ashmere-road.webp") !important;
+  background-size:cover !important; background-position:center !important;
+  filter:saturate(.95) contrast(1.03) brightness(1.05) !important;
+}
+
+/* v0.27.6 global visibility contract: environment art stays visible beneath UI. */
+:root{--legend-ui-panel-fill:linear-gradient(145deg,rgba(23,33,24,.62),rgba(6,11,7,.54));--legend-ui-control-fill:linear-gradient(105deg,rgba(37,48,34,.78),rgba(8,14,9,.68))}
+body.legend-world-shell-active::before{filter:saturate(.98) contrast(1.02) brightness(1.10)!important}
+body.legend-world-shell-active::after{background:radial-gradient(ellipse at 50% 42%,transparent 34%,rgba(0,0,0,.04) 78%,rgba(0,0,0,.10) 100%),linear-gradient(180deg,rgba(0,0,0,.015),transparent 24%,transparent 77%,rgba(0,0,0,.07))!important;box-shadow:inset 0 0 72px 6px rgba(0,0,0,.06)!important}
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-town::before,body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-service::before{background-image:linear-gradient(90deg,rgba(2,5,3,.20),rgba(2,5,4,.035) 28%,rgba(2,5,4,.025) 70%,rgba(1,3,2,.14)),linear-gradient(180deg,rgba(2,5,4,.015),transparent 32%,rgba(1,3,2,.08)),url("../assets/generated/locations/ashmere-town.webp")!important;background-position:center,center,center 48%!important;background-size:cover!important;filter:saturate(.98) contrast(1.02) brightness(1.10)!important}
+body.legend-world-shell-active.legend-world-scene-road::before,body.legend-world-shell-active.legend-world-scene-combat::before,body.legend-world-shell-active.legend-world-scene-combat-results::before,body.legend-world-shell-active.legend-world-scene-expedition-results::before{background-image:linear-gradient(90deg,rgba(1,4,3,.20),rgba(2,5,4,.035) 34%,rgba(2,5,4,.04) 70%,rgba(1,3,2,.18)),linear-gradient(180deg,rgba(2,5,4,.025),transparent 32%,rgba(1,3,2,.12)),url("../assets/locations/roads/location_old_road_main_v1.jpg")!important;background-position:center,center,center 53%!important;background-size:cover!important;filter:saturate(.98) contrast(1.02) brightness(1.10)!important}
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-town::before,body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-service::before,body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-road::before,body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-combat::before,body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-combat-results::before,body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-expedition-results::before{background-image:linear-gradient(90deg,rgba(1,4,3,.20),rgba(2,5,4,.035) 34%,rgba(2,5,4,.04) 70%,rgba(1,3,2,.18)),linear-gradient(180deg,rgba(2,5,4,.025),transparent 35%,rgba(1,3,2,.14)),url("../assets/generated/locations/greyfen-marsh-walkway.webp")!important;background-position:center,center,center 54%!important;background-size:cover!important;filter:saturate(.98) contrast(1.02) brightness(1.10)!important}
+body.legend-world-shell-active.legend-world-scene-dungeon::before{background-image:linear-gradient(90deg,rgba(1,3,2,.22),rgba(2,4,3,.04) 50%,rgba(1,3,2,.22)),linear-gradient(180deg,rgba(0,0,0,.03),transparent 29%,rgba(0,0,0,.16)),url("../assets/generated/locations/bell-cellar-undercroft.webp")!important;background-position:center,center,center!important;background-size:cover!important;filter:saturate(.96) contrast(1.02) brightness(1.08)!important}
+#legend-world-shell-root{background:linear-gradient(180deg,rgba(5,9,7,.015),rgba(3,6,5,.025))!important}#legend-world-shell-root::before{background:linear-gradient(180deg,rgba(0,0,0,.005),rgba(0,0,0,.012),rgba(0,0,0,.006))!important}#legend-world-shell-root::after{background:radial-gradient(ellipse at 50% 100%,rgba(179,150,94,.025),transparent 43%)!important}
+#legend-world-shell-root .lws-hud{background:linear-gradient(180deg,rgba(5,9,6,.78),rgba(7,11,8,.60))!important;backdrop-filter:blur(3px)!important}
+#legend-world-shell-root .lws-panel{background:linear-gradient(150deg,rgba(17,24,17,.58),rgba(7,12,8,.48) 70%)!important;box-shadow:0 12px 30px rgba(0,0,0,.22)!important;backdrop-filter:blur(2px)!important}
+#legend-world-shell-root .lws-bottom-bar{background:linear-gradient(180deg,rgba(15,21,15,.62),rgba(6,10,7,.52))!important;backdrop-filter:blur(3px)!important}
+#legend-world-shell-modal-root{background:rgba(3,6,4,.28)!important;backdrop-filter:blur(1px)!important}
+#legend-world-shell-modal-root .lws-modal{background:linear-gradient(155deg,rgba(25,33,24,.72),rgba(7,12,8,.62) 68%)!important;box-shadow:0 24px 64px rgba(0,0,0,.30)!important}
+#legend-world-shell-modal-root .lws-modal-content{background:rgba(5,10,6,.16)!important}
+body.legend-world-shell-active #root .ash100-town,body.legend-world-shell-active #root .exp100,body.legend-world-shell-active #root .reg100,body.legend-world-shell-active #root .ash099-terminal,body.legend-world-shell-active #root .ash099-v1-terminal{background:transparent!important}
+body.legend-world-shell-active #root .ash099-screen{background:linear-gradient(145deg,rgba(10,17,11,.54),rgba(5,10,6,.48))!important;backdrop-filter:blur(2px)!important}
+#root .ash099-screen .ash099-card,#root .ash099-screen .ash099-service-card,#root .ash099-screen .ash099-job-choice,#root .ash099-screen .ash099-market-item,#root .ash099-screen .ash099-gear-item,#root .ash099-screen .ash099-craft-card,#root .ash099-screen .ash099-npc-card{background-color:rgba(4,9,5,.22)!important}
+body.legend-world-shell-active #root .reg100-head,body.legend-world-shell-active #root .reg100-panel,body.legend-world-shell-active #root .exp100-head,body.legend-world-shell-active #root .exp100-panel:not(.rpg-battle),body.legend-world-shell-active #root .exp150-world-page .exp100-poi,body.legend-world-shell-active #root .exp150-world-page .exp100-camp{background:linear-gradient(145deg,rgba(14,23,15,.54),rgba(5,10,6,.44))!important;backdrop-filter:blur(2px)!important}
+body.legend-world-shell-active #root .reg100-card{background:linear-gradient(145deg,rgba(22,32,23,.56),rgba(7,12,8,.46))!important}
+#root .exp100,#root .exp100:has(.rpg-battle){background:transparent!important}
+body.legend-world-shell-active #root .exp100-scene-live .exp100-scene-shade{background:linear-gradient(180deg,rgba(6,13,10,.025) 12%,rgba(6,13,10,.08) 50%,rgba(4,7,5,.30) 100%)!important}
+body.legend-world-shell-active #root .rpg-battle{background:linear-gradient(180deg,rgba(9,13,10,.58),rgba(4,7,5,.50))!important}
+body.legend-world-shell-active #root .rpg-battlefield{background-image:linear-gradient(180deg,rgba(5,9,7,.015) 12%,rgba(5,8,7,.04) 42%,rgba(3,6,5,.12) 100%),url("../assets/generated/locations/old-road-south-fork.webp")!important;filter:saturate(1) contrast(1.02) brightness(1.14)!important}
+body.legend-world-shell-active #root .rpg-battlefield[data-arena="greyfen"]{background-image:linear-gradient(180deg,rgba(5,9,7,.015),rgba(5,8,7,.04) 44%,rgba(3,6,5,.14)),url("../assets/generated/locations/greyfen-marsh-walkway.webp")!important}
+body.legend-world-shell-active #root .rpg-battlefield[data-arena="cellar"]{background-image:linear-gradient(180deg,rgba(5,9,7,.015),rgba(5,8,7,.04) 44%,rgba(3,6,5,.16)),url("../assets/generated/locations/bell-cellar-undercroft.webp")!important}
+body.legend-world-shell-active #root .rpg-battlefield::before{background:linear-gradient(180deg,rgba(3,7,4,.015),transparent 24%,rgba(2,5,3,.035) 100%)!important}body.legend-world-shell-active #root .rpg-battlefield::after{background:linear-gradient(180deg,transparent,rgba(4,7,4,.045))!important}
+body.legend-world-shell-active #root .v152-combat-results{background:transparent!important}body.legend-world-shell-active #root .v152-results-backdrop img{opacity:1!important;filter:saturate(.95) brightness(1.06)!important}body.legend-world-shell-active #root .v152-results-backdrop>div{background:linear-gradient(180deg,rgba(7,12,9,.08),rgba(8,13,10,.22) 55%,rgba(8,13,10,.34))!important}
+body.legend-world-shell-active #root .v152-results-duel,body.legend-world-shell-active #root .v152-results-rewards,body.legend-world-shell-active #root .v152-results-section{background:linear-gradient(145deg,rgba(9,15,10,.58),rgba(4,8,5,.48))!important}
+body.legend-world-shell-active #root .v152-levelup-overlay{background:rgba(0,0,0,.30)!important;backdrop-filter:blur(1px)!important}.v152-levelup-overlay .v152-levelup-panel{background:linear-gradient(145deg,rgba(18,27,19,.72),rgba(5,10,6,.62))!important}
+#root .v140-creation .v094-beginning-card{background:linear-gradient(180deg,rgba(10,17,12,.58),rgba(4,8,5,.50))!important}#root .v140-creation .v094-choice{background:linear-gradient(145deg,rgba(18,27,19,.50),rgba(6,11,7,.40))!important}#root .v140-creation .v140-dialogue-box{background:linear-gradient(155deg,rgba(18,25,18,.62),rgba(5,9,6,.52))!important}
+#root .opening-road-v140:not(.opening-road-v140-prologue) .opening-road-v140-bg{filter:saturate(.98) contrast(1.02) brightness(1.08)!important;opacity:1!important}#root .opening-road-v140:not(.opening-road-v140-prologue) .opening-road-v140-shade{background:linear-gradient(90deg,rgba(2,6,4,.18),rgba(2,6,4,.035) 49%,rgba(2,6,4,.14)),linear-gradient(180deg,rgba(2,4,3,.015),rgba(2,5,4,.18))!important}#root .opening-road-v140:not(.opening-road-v140-prologue) .opening-road-v140-card{background:linear-gradient(90deg,rgba(9,15,10,.56),rgba(4,8,5,.42) 75%,rgba(4,8,5,.28))!important}
+#root .opening-road-v140-prologue .opening-road-v140-bg{filter:saturate(.98) contrast(1.02) brightness(1.08)!important;opacity:1!important}#root .opening-road-v140-prologue .opening-road-v140-shade{background:linear-gradient(90deg,rgba(1,3,2,.18),rgba(1,4,3,.07) 29%,rgba(2,5,3,.035) 61%,rgba(1,3,2,.13)),linear-gradient(180deg,rgba(1,3,2,.015),rgba(1,3,2,.025) 38%,rgba(1,3,2,.16) 100%)!important}
+#root .opening-lore-v220-backdrop{filter:saturate(.96) contrast(1.02) brightness(1.10)!important}
+#root .title-v136-rpg .v120-title-backdrop{filter:saturate(1) contrast(1.02) brightness(1.10)!important}#root .title-v136-rpg::after{background:linear-gradient(90deg,rgba(2,6,4,.30),rgba(3,8,6,.18) 23%,rgba(3,8,6,.07) 43%,rgba(3,8,6,.015) 69%,rgba(2,6,5,.06)),linear-gradient(180deg,rgba(1,4,3,.10),transparent 22%,transparent 67%,rgba(1,4,3,.14))!important}
+#root .title-v136-rpg .title-atmosphere{opacity:.24!important}#root .title-v136-rpg .v120-title-hero{background:linear-gradient(145deg,rgba(8,14,9,.68),rgba(5,9,6,.52) 72%)!important;backdrop-filter:blur(2px)!important}#root .title-v136-rpg .v136-menu-btn{background:linear-gradient(100deg,rgba(17,27,19,.62),rgba(5,10,7,.48))!important}
+body:not(.legend-world-shell-active) #root .settings09x,body:not(.legend-world-shell-active) #root .account09x,body:not(.legend-world-shell-active) #root .dispatches-v140,body:not(.legend-world-shell-active) #root .gss170-page{background:linear-gradient(90deg,rgba(3,7,4,.22),rgba(3,7,4,.08) 48%,rgba(3,7,4,.16)),linear-gradient(180deg,rgba(3,7,4,.05),rgba(3,7,4,.22)),url("../assets/generated/title/title-ashmere-road.webp") center 54%/cover no-repeat!important}
+#root .settings09x-hero,#root .settings09x-toggle,#root .settings09x-actions,#root .settings09x-note,#root .account09x-profile-card,#root .account09x-panel,#root .account09x-slot,#root .account09x-note,#root .account09x-actions,#root .account09x-auth-box{background:linear-gradient(145deg,rgba(10,17,11,.54),rgba(5,10,6,.44))!important;backdrop-filter:blur(2px)!important}
+#root .dispatches-v140-feature{background:linear-gradient(110deg,rgba(17,28,20,.58),rgba(5,10,7,.48))!important}#root .dispatches-v140-card{background:linear-gradient(180deg,rgba(16,25,19,.56),rgba(5,10,7,.46))!important}
+
+/* v0.27.6.1 — close the remaining opaque inner panels and region-specific vignettes. */
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-town::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-service::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-town::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-service::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-road::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-combat::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-combat-results::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-expedition-results::after {
+  background:radial-gradient(ellipse at 50% 42%,transparent 36%,rgba(0,0,0,.035) 80%,rgba(0,0,0,.10) 100%),
+    linear-gradient(180deg,rgba(0,0,0,.015),transparent 24%,transparent 77%,rgba(0,0,0,.07)) !important;
+  box-shadow:inset 0 0 72px 6px rgba(0,0,0,.06) !important;
+}
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-town #root .ash100-town .ash100-hero::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-service #root .ash100-town .ash100-hero::after {
+  background:linear-gradient(90deg,rgba(2,5,3,.24),rgba(2,5,3,.08) 42%,rgba(2,5,3,.025) 72%,rgba(2,5,3,.10)),
+    linear-gradient(180deg,rgba(1,3,2,.025),transparent 35%,rgba(1,3,2,.16)),
+    radial-gradient(ellipse at 70% 35%,rgba(206,157,72,.10),transparent 45%) !important;
+}
+#root .exp100-area { background:linear-gradient(135deg,rgba(32,39,28,.46),rgba(10,16,12,.34)) !important; }
+#root .exp100-poi { background:linear-gradient(130deg,rgba(37,39,25,.50),rgba(12,19,15,.42)) !important; }
+#root .exp100-result { background:linear-gradient(145deg,rgba(18,27,19,.48),rgba(5,10,6,.36)) !important; }
+#root .exp100-choice,#root .exp100-btn { background:linear-gradient(110deg,rgba(27,37,27,.72),rgba(6,11,7,.58)) !important; }
+#root .exp100-dock-action { background:linear-gradient(110deg,rgba(27,37,27,.72),rgba(6,11,7,.58)) !important; }
+#root .exp100-discovery-beat { background:linear-gradient(125deg,rgba(51,48,29,.62),rgba(13,20,15,.48)) !important; }
+#root .exp100-stage-3 img,#root .exp100-stage-4 img { filter:saturate(.92) contrast(1.03) brightness(1.00) !important; }
+
+/* Combat cards have their own high-specificity backgrounds after the world art. */
+body.legend-world-shell-active #root .rpg-combat-status { background:linear-gradient(110deg,rgba(32,39,27,.62),rgba(10,15,11,.48)) !important; }
+body.legend-world-shell-active #root .rpg-foe-nameplate { background:rgba(4,9,6,.68) !important; backdrop-filter:blur(2px) !important; }
+body.legend-world-shell-active #root .rpg-battle-log { background:linear-gradient(90deg,rgba(22,27,23,.48),rgba(7,10,8,.34)) !important; }
+body.legend-world-shell-active #root .rpg-command { background:linear-gradient(115deg,rgba(28,40,32,.76),rgba(12,19,14,.62)) !important; }
+body.legend-world-shell-active #root .rpg-command-fight { background:linear-gradient(110deg,rgba(63,39,30,.70),rgba(17,18,13,.64)) !important; }
+body.legend-world-shell-active #root .rpg-utility-command { background:rgba(15,22,17,.66) !important; }
+body.legend-world-shell-active #root .rpg-enemy-tell { background:linear-gradient(100deg,rgba(61,38,28,.48),rgba(12,13,9,.34)) !important; }
+
+/* Bell-cellar, Storehouse and progression backdrops were separately almost opaque. */
+body.legend-world-shell-active #root .bell-vault-v100 { background:linear-gradient(145deg,rgba(23,33,24,.56),rgba(6,11,7,.46)) !important; }
+body.legend-world-shell-active #root .bell-vault-banner { background:linear-gradient(90deg,rgba(3,8,6,.28),rgba(4,10,7,.12) 57%,rgba(4,8,6,.08)),linear-gradient(0deg,rgba(3,7,5,.24),transparent 70%),var(--bell-vault-scene) center 48%/cover,#080d09 !important; }
+body.legend-world-shell-active #root .bell-vault-room-card,
+body.legend-world-shell-active #root .bell-vault-clue,
+body.legend-world-shell-active #root .bell-vault-treasure,
+body.legend-world-shell-active #root .bell-vault-choice,
+body.legend-world-shell-active #root .gss170-page { background:linear-gradient(140deg,rgba(33,45,33,.50),rgba(8,13,9,.38)) !important; }
+body.legend-world-shell-active #root .v152-growth-backdrop { background:radial-gradient(ellipse at 50% 15%,rgba(94,83,50,.20),rgba(3,7,5,.44) 72%) !important; backdrop-filter:blur(2px) !important; }
+
+/* v0.27.6.2 — scene-first visibility pass.
+   Keep the dark-fantasy palette, but stop stacking opaque black surfaces over dark art. */
+body.legend-world-shell-active::before {
+  filter:saturate(.98) contrast(1.03) brightness(1.24) !important;
+}
+body.legend-world-shell-active::after {
+  background:radial-gradient(ellipse at 50% 42%,transparent 42%,rgba(0,0,0,.025) 82%,rgba(0,0,0,.07) 100%),
+    linear-gradient(180deg,rgba(0,0,0,.01),transparent 24%,transparent 77%,rgba(0,0,0,.045)) !important;
+  box-shadow:inset 0 0 72px 6px rgba(0,0,0,.035) !important;
+}
+/* Lighter scene washes. Previous left/right gradients were themselves dark screens. */
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-town::before,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-service::before {
+  background-image:linear-gradient(90deg,rgba(2,5,3,.075),rgba(2,5,4,.015) 28%,rgba(2,5,4,.01) 70%,rgba(1,3,2,.06)),
+    linear-gradient(180deg,rgba(2,5,4,.01),transparent 32%,rgba(1,3,2,.045)),
+    url("../assets/generated/locations/ashmere-town.webp") !important;
+  background-position:center,center,center 48% !important;
+  background-size:cover !important;
+  filter:saturate(.98) contrast(1.03) brightness(1.24) !important;
+}
+body.legend-world-shell-active.legend-world-scene-road::before,
+body.legend-world-shell-active.legend-world-scene-combat::before,
+body.legend-world-shell-active.legend-world-scene-combat-results::before,
+body.legend-world-shell-active.legend-world-scene-expedition-results::before {
+  background-image:linear-gradient(90deg,rgba(1,4,3,.08),rgba(2,5,4,.015) 34%,rgba(2,5,4,.02) 70%,rgba(1,3,2,.07)),
+    linear-gradient(180deg,rgba(2,5,4,.01),transparent 32%,rgba(1,3,2,.055)),
+    url("../assets/locations/roads/location_old_road_main_v1.jpg") !important;
+  background-position:center,center,center 53% !important;
+  background-size:cover !important;
+  filter:saturate(.98) contrast(1.03) brightness(1.22) !important;
+}
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-town::before,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-service::before,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-road::before,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-combat::before,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-combat-results::before,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-expedition-results::before {
+  background-image:linear-gradient(90deg,rgba(1,4,3,.08),rgba(2,5,4,.015) 34%,rgba(2,5,4,.02) 70%,rgba(1,3,2,.07)),
+    linear-gradient(180deg,rgba(2,5,4,.01),transparent 35%,rgba(1,3,2,.06)),
+    url("../assets/generated/locations/greyfen-marsh-walkway.webp") !important;
+  background-position:center,center,center 54% !important;
+  background-size:cover !important;
+  filter:saturate(.98) contrast(1.03) brightness(1.22) !important;
+}
+body.legend-world-shell-active.legend-world-scene-dungeon::before {
+  background-image:linear-gradient(90deg,rgba(1,3,2,.10),rgba(2,4,3,.02) 50%,rgba(1,3,2,.10)),
+    linear-gradient(180deg,rgba(0,0,0,.015),transparent 29%,rgba(0,0,0,.08)),
+    url("../assets/generated/locations/bell-cellar-undercroft.webp") !important;
+  background-position:center,center,center !important;
+  background-size:cover !important;
+  filter:saturate(.98) contrast(1.03) brightness(1.20) !important;
+}
+
+/* Shell panels no longer inherit an almost-solid fallback beneath a translucent gradient. */
+#legend-world-shell-root .lws-hud {
+  background:linear-gradient(180deg,rgba(5,9,6,.60),rgba(7,11,8,.44)) !important;
+  backdrop-filter:blur(2px) !important;
+  box-shadow:0 6px 18px rgba(0,0,0,.12) !important;
+}
+#legend-world-shell-root .lws-panel {
+  background:linear-gradient(150deg,rgba(22,32,22,.42),rgba(8,14,9,.32) 70%) !important;
+  backdrop-filter:blur(1px) !important;
+  box-shadow:0 12px 28px rgba(0,0,0,.16),inset 0 0 0 1px rgba(0,0,0,.06) !important;
+}
+#legend-world-shell-root .lws-panel .lws-section,
+#legend-world-shell-root .lws-panel .lws-selected-place,
+#legend-world-shell-root .lws-panel .lws-poi-hint,
+#legend-world-shell-root .lws-panel .lws-poi-scene-note {
+  background:linear-gradient(145deg,rgba(32,41,28,.48),rgba(8,14,9,.32)) !important;
+  backdrop-filter:none !important;
+}
+#legend-world-shell-root .lws-panel .lws-place-option {
+  background:linear-gradient(110deg,rgba(29,40,30,.58),rgba(8,14,9,.42)) !important;
+}
+#legend-world-shell-root .lws-bottom-bar {
+  background:linear-gradient(180deg,rgba(15,23,16,.48),rgba(6,10,7,.36)) !important;
+  backdrop-filter:blur(2px) !important;
+  box-shadow:0 8px 20px rgba(0,0,0,.14) !important;
+}
+#legend-world-shell-modal-root { background:rgba(3,6,4,.20) !important; backdrop-filter:blur(1px) !important; }
+#legend-world-shell-modal-root .lws-modal {
+  background:linear-gradient(155deg,rgba(29,39,28,.58),rgba(7,12,8,.46) 68%) !important;
+  backdrop-filter:blur(2px) !important;
+  box-shadow:0 20px 48px rgba(0,0,0,.22) !important;
+}
+
+/* Ashmere hero, top tabs and destination cards: the original .87 image filter and
+   .93 floor gradient darkened the focal scene even before the shell was drawn. */
+#root .ash100-hero > img {
+  filter:saturate(.96) contrast(1.03) brightness(1.14) !important;
+}
+#root .ash100-hero::after {
+  background:linear-gradient(90deg,rgba(3,7,4,.20),rgba(3,7,4,.06) 58%,rgba(3,7,4,.02)),
+    linear-gradient(0deg,rgba(2,6,4,.18),rgba(2,6,4,.02) 68%),
+    radial-gradient(ellipse at 70% 35%,rgba(206,157,72,.12),transparent 45%) !important;
+}
+#root .ash100-town .ash099-topnav {
+  background:linear-gradient(180deg,rgba(26,35,25,.56),rgba(6,11,7,.42)) !important;
+  box-shadow:0 5px 16px rgba(0,0,0,.14) !important;
+}
+#root .ash100-town .ash100-route-strip {
+  background:linear-gradient(105deg,rgba(49,45,29,.60),rgba(15,22,15,.45) 50%,rgba(7,12,8,.36)) !important;
+  box-shadow:0 6px 18px rgba(0,0,0,.14) !important;
+}
+#root .ash100-town .ash100-destination {
+  background:linear-gradient(110deg,rgba(31,42,30,.54),rgba(8,13,9,.40)) !important;
+  box-shadow:inset 0 1px rgba(255,246,211,.045),0 4px 12px rgba(0,0,0,.10) !important;
+}
+#root .ash100-town .ash100-destination.featured {
+  background:linear-gradient(115deg,rgba(64,53,31,.60),rgba(12,19,12,.44)) !important;
+}
+#root .ash100-town .ash100-destination:hover,
+#root .ash100-town .ash100-destination:focus-visible {
+  background:linear-gradient(110deg,rgba(54,61,40,.68),rgba(14,21,14,.52)) !important;
+}
+
+/* Service pages: use a real local town backdrop and explicitly override background,
+   not just background-color (older card rules set background: ... !important). */
+#root .ash099-screen {
+  background:linear-gradient(145deg,rgba(10,17,11,.48),rgba(5,10,6,.36)),
+    url("../assets/generated/locations/ashmere-town.webp") center 48%/cover no-repeat !important;
+  box-shadow:0 14px 38px rgba(0,0,0,.18),inset 0 0 0 1px rgba(231,201,130,.09) !important;
+  backdrop-filter:blur(1px) !important;
+}
+#root .ash099-screen .ash099-card,
+#root .ash099-screen .ash099-service-card,
+#root .ash099-screen .ash099-job-choice,
+#root .ash099-screen .ash099-market-item,
+#root .ash099-screen .ash099-gear-item,
+#root .ash099-screen .ash099-craft-card,
+#root .ash099-screen .ash099-npc-card,
+#root .ash099-screen .ash099-contract-card,
+#root .ash099-screen .ash099-job-challenge,
+#root .ash099-screen .ash099-job-sequence,
+#root .ash099-screen .ash099-forge-loadout,
+#root .ash099-screen .ash099-traveler-profile-top {
+  background:linear-gradient(145deg,rgba(30,42,30,.56),rgba(7,13,9,.42)) !important;
+  box-shadow:inset 0 1px rgba(255,246,211,.035),0 5px 14px rgba(0,0,0,.10) !important;
+}
+#root .ash099-screen .ash099-card:hover,
+#root .ash099-screen .ash099-service-card:hover,
+#root .ash099-screen .ash099-market-item:hover,
+#root .ash099-screen .ash099-gear-item:hover,
+#root .ash099-screen .ash099-job-choice:hover {
+  background:linear-gradient(145deg,rgba(48,58,39,.64),rgba(12,20,13,.50)) !important;
+}
+#root .ash099-screen .ash099-btn,
+#root .ash099-screen button.ash099-btn {
+  background:linear-gradient(100deg,rgba(36,47,34,.58),rgba(9,15,10,.44)) !important;
+}
+#root .ash099-screen .ash099-btn.primary {
+  background:linear-gradient(105deg,#e2c582,#ad8c4f) !important;
+  color:#241d0f !important;
+}
+
+/* Road scenes/cards and battle panes have their own high-specificity backgrounds. */
+#root .exp100-head,
+#root .exp100-panel:not(.rpg-battle),
+#root .exp100-area,
+#root .exp100-poi,
+#root .exp100-result,
+#root .exp100-stats > div,
+#root .exp100-choice,
+#root .exp100-btn,
+#root .exp100-dock-action,
+#root .exp100-discovery-beat {
+  background:linear-gradient(145deg,rgba(30,42,30,.50),rgba(7,13,9,.36)) !important;
+  box-shadow:0 7px 18px rgba(0,0,0,.12) !important;
+}
+#root .rpg-battle { background:linear-gradient(180deg,rgba(18,28,20,.48),rgba(5,10,7,.40)) !important; }
+#root .rpg-battlefield {
+  filter:saturate(.98) contrast(1.03) brightness(1.22) !important;
+}
+#root .rpg-combat-status { background:linear-gradient(110deg,rgba(32,39,27,.52),rgba(10,15,11,.36)) !important; }
+#root .rpg-foe-nameplate { background:rgba(4,9,6,.56) !important; backdrop-filter:blur(1px) !important; }
+#root .rpg-battle-log { background:linear-gradient(90deg,rgba(22,27,23,.40),rgba(7,10,8,.28)) !important; }
+#root .rpg-command { background:linear-gradient(115deg,rgba(28,40,32,.60),rgba(12,19,14,.45)) !important; }
+#root .rpg-command-fight { background:linear-gradient(110deg,rgba(63,39,30,.56),rgba(17,18,13,.43)) !important; }
+#root .rpg-utility-command { background:rgba(15,22,17,.48) !important; }
+#root .rpg-enemy-tell { background:linear-gradient(100deg,rgba(61,38,28,.40),rgba(12,13,9,.28)) !important; }
+#root .rpg-dialogue { background:linear-gradient(100deg,rgba(235,227,205,.94),rgba(214,206,181,.90)) !important; }
+#root .v152-combat-results { background:transparent !important; }
+#root .v152-results-duel,#root .v152-results-rewards,#root .v152-results-section {
+  background:linear-gradient(145deg,rgba(20,30,21,.50),rgba(4,8,5,.38)) !important;
+}
+#root .v152-levelup-overlay { background:rgba(0,0,0,.22) !important; backdrop-filter:blur(1px) !important; }
+#root .v152-levelup-panel { background:linear-gradient(145deg,rgba(24,33,24,.70),rgba(7,12,9,.58) 72%) !important; }
+
+/* Bell Cellar/Storehouse and standalone account/settings screens. */
+#root .bell-vault-banner {
+  background:linear-gradient(90deg,rgba(3,8,6,.20),rgba(4,10,7,.08) 57%,rgba(4,8,6,.04)),
+    linear-gradient(0deg,rgba(3,7,5,.18),transparent 70%),var(--bell-vault-scene) center 48%/cover,#080d09 !important;
+}
+#root .bell-vault-room-card,#root .bell-vault-clue,#root .bell-vault-treasure,#root .bell-vault-choice,
+#root .gss170-page,#root .settings09x-hero,#root .settings09x-toggle,#root .settings09x-actions,#root .settings09x-note,
+#root .account09x-profile-card,#root .account09x-panel,#root .account09x-slot,#root .account09x-note,#root .account09x-actions,#root .account09x-auth-box {
+  background:linear-gradient(145deg,rgba(24,35,25,.52),rgba(6,11,7,.40)) !important;
+  backdrop-filter:blur(1px) !important;
+}
+#root .v152-growth-backdrop { background:radial-gradient(ellipse at 50% 15%,rgba(94,83,50,.15),rgba(3,7,5,.34) 72%) !important; backdrop-filter:blur(1px) !important; }
+#root .dispatches-v140-feature { background:linear-gradient(110deg,rgba(17,28,20,.52),rgba(5,10,7,.40)) !important; }
+#root .dispatches-v140-card { background:linear-gradient(180deg,rgba(16,25,19,.50),rgba(5,10,7,.38)) !important; }
+
+/* v0.27.6.3 — match the specificity of older active-shell rules. */
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-town::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-service::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-road::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-combat::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-combat-results::after,
+body.legend-world-shell-active.legend-world-region-ashmere.legend-world-scene-expedition-results::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-town::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-service::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-road::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-combat::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-combat-results::after,
+body.legend-world-shell-active.legend-world-region-greyfen.legend-world-scene-expedition-results::after {
+  background:radial-gradient(ellipse at 50% 42%,transparent 42%,rgba(0,0,0,.02) 82%,rgba(0,0,0,.055) 100%),
+    linear-gradient(180deg,rgba(0,0,0,.008),transparent 24%,transparent 77%,rgba(0,0,0,.035)) !important;
+  box-shadow:inset 0 0 72px 6px rgba(0,0,0,.035) !important;
+}
+/* Town services kept an older .54/.48 fill because its selector outranked #root-only fixes. */
+body.legend-world-shell-active #root .ash099-screen {
+  background:linear-gradient(145deg,rgba(10,17,11,.42),rgba(5,10,6,.30)),
+    url("../assets/generated/locations/ashmere-town.webp") center 48%/cover no-repeat !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.14),inset 0 0 0 1px rgba(231,201,130,.07) !important;
+  backdrop-filter:blur(1px) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-service-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-choice,
+body.legend-world-shell-active #root .ash099-screen .ash099-market-item,
+body.legend-world-shell-active #root .ash099-screen .ash099-gear-item,
+body.legend-world-shell-active #root .ash099-screen .ash099-craft-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-npc-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-contract-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-challenge,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-sequence,
+body.legend-world-shell-active #root .ash099-screen .ash099-forge-loadout,
+body.legend-world-shell-active #root .ash099-screen .ash099-traveler-profile-top {
+  background:linear-gradient(145deg,rgba(30,42,30,.48),rgba(7,13,9,.34)) !important;
+  box-shadow:inset 0 1px rgba(255,246,211,.025),0 5px 12px rgba(0,0,0,.08) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-lines,
+body.legend-world-shell-active #root .ash099-screen .ash099-note,
+body.legend-world-shell-active #root .ash099-screen .ash099-craft-feedback,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-result,
+body.legend-world-shell-active #root .ash099-screen .ash099-result {
+  background:linear-gradient(145deg,rgba(14,22,15,.26),rgba(4,8,5,.17)) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-btn,
+body.legend-world-shell-active #root .ash099-screen button.ash099-btn {
+  background:linear-gradient(100deg,rgba(36,47,34,.48),rgba(9,15,10,.34)) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-btn.primary {
+  background:linear-gradient(105deg,#e2c582,#ad8c4f) !important;color:#241d0f !important;
+}
+/* Active-world region and road panels must win over the older .54/.44 surfaces. */
+body.legend-world-shell-active #root .reg100-head,
+body.legend-world-shell-active #root .reg100-panel,
+body.legend-world-shell-active #root .reg100-card,
+body.legend-world-shell-active #root .exp100-head,
+body.legend-world-shell-active #root .exp100-panel:not(.rpg-battle),
+body.legend-world-shell-active #root .exp150-world-page .exp100-poi,
+body.legend-world-shell-active #root .exp150-world-page .exp100-camp {
+  background:linear-gradient(145deg,rgba(30,42,30,.42),rgba(7,13,9,.30)) !important;
+  backdrop-filter:blur(1px) !important;box-shadow:0 7px 18px rgba(0,0,0,.10) !important;
+}
+body.legend-world-shell-active #root .exp100-scene-live .exp100-scene-shade {
+  background:linear-gradient(180deg,rgba(6,13,10,.012) 12%,rgba(6,13,10,.045) 50%,rgba(4,7,5,.22) 100%) !important;
+}
+/* The battle field, status card and command tray each had more-specific dark fills. */
+body.legend-world-shell-active #root .rpg-battle {
+  background:linear-gradient(180deg,rgba(18,28,20,.42),rgba(5,10,7,.32)) !important;
+  box-shadow:0 14px 38px rgba(0,0,0,.16),inset 0 1px rgba(238,220,171,.04) !important;
+}
+body.legend-world-shell-active #root .rpg-battlefield {
+  background-image:linear-gradient(180deg,rgba(5,9,7,.005) 12%,rgba(5,8,7,.02) 42%,rgba(3,6,5,.065) 100%),url("../assets/generated/locations/old-road-south-fork.webp") !important;
+  filter:saturate(1) contrast(1.02) brightness(1.22) !important;
+}
+body.legend-world-shell-active #root .rpg-battlefield[data-arena="greyfen"] {
+  background-image:linear-gradient(180deg,rgba(5,9,7,.005) 10%,rgba(5,8,7,.02) 44%,rgba(3,6,5,.07) 100%),url("../assets/generated/locations/greyfen-marsh-walkway.webp") !important;
+  filter:saturate(1) contrast(1.02) brightness(1.20) !important;
+}
+body.legend-world-shell-active #root .rpg-battlefield[data-arena="cellar"] {
+  background-image:linear-gradient(180deg,rgba(5,9,7,.01) 8%,rgba(5,8,7,.025) 44%,rgba(3,6,5,.09) 100%),url("../assets/generated/locations/bell-cellar-undercroft.webp") !important;
+  filter:saturate(.98) contrast(1.02) brightness(1.18) !important;
+}
+body.legend-world-shell-active #root .rpg-battlefield::before { background:linear-gradient(180deg,rgba(3,7,4,.01),transparent 24%,rgba(2,5,3,.025) 100%) !important; }
+body.legend-world-shell-active #root .rpg-battlefield::after { background:linear-gradient(180deg,transparent,rgba(4,7,4,.035)) !important; }
+body.legend-world-shell-active #root .rpg-combat-status { background:linear-gradient(110deg,rgba(32,39,27,.48),rgba(10,15,11,.34)) !important; }
+body.legend-world-shell-active #root .rpg-foe-nameplate { background:rgba(4,9,6,.48) !important;backdrop-filter:blur(1px) !important; }
+body.legend-world-shell-active #root .rpg-battle-log { background:linear-gradient(90deg,rgba(22,27,23,.30),rgba(7,10,8,.22)) !important; }
+body.legend-world-shell-active #root .rpg-command { background:linear-gradient(115deg,rgba(28,40,32,.54),rgba(12,19,14,.38)) !important; }
+body.legend-world-shell-active #root .rpg-command-fight { background:linear-gradient(110deg,rgba(63,39,30,.50),rgba(17,18,13,.35)) !important; }
+body.legend-world-shell-active #root .rpg-utility-command { background:rgba(15,22,17,.38) !important; }
+body.legend-world-shell-active #root .rpg-enemy-tell { background:linear-gradient(100deg,rgba(61,38,28,.34),rgba(12,13,9,.24)) !important; }
+body.legend-world-shell-active #root .rpg-dialogue { background:linear-gradient(100deg,rgba(235,227,205,.94),rgba(214,206,181,.90)) !important; }
+body.legend-world-shell-active #root .v152-results-duel,
+body.legend-world-shell-active #root .v152-results-rewards,
+body.legend-world-shell-active #root .v152-results-section { background:linear-gradient(145deg,rgba(20,30,21,.44),rgba(4,8,5,.32)) !important; }
+body.legend-world-shell-active #root .v152-levelup-overlay { background:rgba(0,0,0,.18) !important;backdrop-filter:blur(1px) !important; }
+body.legend-world-shell-active #root .v152-levelup-panel { background:linear-gradient(145deg,rgba(24,33,24,.60),rgba(7,12,9,.48) 72%) !important; }
+body.legend-world-shell-active #root .bell-vault-banner {
+  background:linear-gradient(90deg,rgba(3,8,6,.15),rgba(4,10,7,.05) 57%,rgba(4,8,6,.025)),linear-gradient(0deg,rgba(3,7,5,.12),transparent 70%),var(--bell-vault-scene) center 48%/cover,#080d09 !important;
+}
+body.legend-world-shell-active #root .bell-vault-room-card,
+body.legend-world-shell-active #root .bell-vault-clue,
+body.legend-world-shell-active #root .bell-vault-treasure,
+body.legend-world-shell-active #root .bell-vault-choice { background:linear-gradient(140deg,rgba(33,45,33,.42),rgba(8,13,9,.30)) !important; }
+
+
+/* v0.27.6.4 — remove the screen-wide black veil from active gameplay views.
+   These deliberately outrank the older shell contracts so backgrounds and art show
+   through on the town, road, combat, service, and modal screens. */
+body.legend-world-shell-active #root #legend-world-shell-root {
+  background:linear-gradient(180deg,rgba(5,9,7,.015),rgba(3,6,5,.025)) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root::before {
+  background:linear-gradient(180deg,rgba(0,0,0,.004),rgba(0,0,0,.009),rgba(0,0,0,.004)) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root::after {
+  background:radial-gradient(ellipse at 50% 100%,rgba(179,150,94,.018),transparent 43%) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-hud {
+  background:linear-gradient(180deg,rgba(20,30,21,.46),rgba(8,14,10,.32)) !important;
+  backdrop-filter:blur(1px) !important;
+  box-shadow:0 5px 18px rgba(0,0,0,.12) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-panel {
+  background:linear-gradient(150deg,rgba(30,43,30,.36),rgba(8,15,10,.24) 70%) !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.12) !important;
+  backdrop-filter:blur(1px) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-bottom-bar {
+  background:linear-gradient(180deg,rgba(22,31,22,.38),rgba(7,12,8,.26)) !important;
+  backdrop-filter:blur(1px) !important;
+  box-shadow:0 6px 18px rgba(0,0,0,.12) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-selected-place,
+body.legend-world-shell-active #root #legend-world-shell-root .lws-poi-hint,
+body.legend-world-shell-active #root #legend-world-shell-root .lws-poi-scene-note {
+  background:linear-gradient(145deg,rgba(37,47,32,.34),rgba(8,14,9,.22)) !important;
+  box-shadow:inset 0 1px rgba(255,246,211,.025),0 4px 12px rgba(0,0,0,.08) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-place-option {
+  background:linear-gradient(120deg,rgba(31,43,31,.32),rgba(8,14,9,.22)) !important;
+  backdrop-filter:blur(1px) !important;
+}
+body.legend-world-shell-active #root #legend-world-shell-root .lws-place-option:hover,
+body.legend-world-shell-active #root #legend-world-shell-root .lws-place-option:focus-visible,
+body.legend-world-shell-active #root #legend-world-shell-root .lws-place-option.is-selected {
+  background:linear-gradient(120deg,rgba(52,65,45,.48),rgba(11,19,12,.32)) !important;
+}
+body.legend-world-shell-active #legend-world-shell-modal-root .lws-modal {
+  background:linear-gradient(145deg,rgba(30,42,30,.52),rgba(7,13,9,.40)) !important;
+  backdrop-filter:blur(2px) !important;
+  box-shadow:0 12px 34px rgba(0,0,0,.18) !important;
+}
+body.legend-world-shell-active #legend-world-shell-modal-root .lws-modal-content {
+  background:linear-gradient(180deg,rgba(23,33,24,.28),rgba(6,11,7,.20)) !important;
+}
+body.legend-world-shell-active #root .ash099-screen {
+  background:linear-gradient(145deg,rgba(10,17,11,.24),rgba(5,10,6,.16)),
+    url("../assets/generated/locations/ashmere-town.webp") center 48%/cover no-repeat !important;
+  box-shadow:0 10px 26px rgba(0,0,0,.12),inset 0 0 0 1px rgba(231,201,130,.07) !important;
+  backdrop-filter:blur(1px) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-service-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-choice,
+body.legend-world-shell-active #root .ash099-screen .ash099-market-item,
+body.legend-world-shell-active #root .ash099-screen .ash099-gear-item,
+body.legend-world-shell-active #root .ash099-screen .ash099-craft-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-npc-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-contract-card,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-challenge,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-sequence,
+body.legend-world-shell-active #root .ash099-screen .ash099-forge-loadout,
+body.legend-world-shell-active #root .ash099-screen .ash099-traveler-profile-top {
+  background:linear-gradient(145deg,rgba(32,45,32,.34),rgba(7,13,9,.22)) !important;
+  box-shadow:inset 0 1px rgba(255,246,211,.025),0 4px 12px rgba(0,0,0,.07) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-lines,
+body.legend-world-shell-active #root .ash099-screen .ash099-note,
+body.legend-world-shell-active #root .ash099-screen .ash099-craft-feedback,
+body.legend-world-shell-active #root .ash099-screen .ash099-job-result,
+body.legend-world-shell-active #root .ash099-screen .ash099-result {
+  background:linear-gradient(145deg,rgba(14,22,15,.18),rgba(4,8,5,.11)) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-btn,
+body.legend-world-shell-active #root .ash099-screen button.ash099-btn {
+  background:linear-gradient(100deg,rgba(36,47,34,.38),rgba(9,15,10,.26)) !important;
+}
+
+body.legend-world-shell-active #legend-world-shell-modal-root {
+  background:rgba(3,6,4,.15) !important;
+  backdrop-filter:blur(1px) !important;
+}

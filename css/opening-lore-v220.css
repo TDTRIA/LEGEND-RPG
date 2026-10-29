@@ -1,0 +1,30 @@
+/* LEGEND v0.27.5 — story-first annals before traveler creation. */
+.opening-lore-v220{position:fixed;inset:0;z-index:1200;isolation:isolate;overflow:auto;display:flex;flex-direction:column;min-height:100svh;padding:0 clamp(18px,5vw,76px);color:#f0e8d4;background:#10150f;font-family:Georgia,"Times New Roman",serif}
+.opening-lore-v220 *{box-sizing:border-box}
+.opening-lore-v220-backdrop{position:fixed;z-index:-2;inset:-2%;background:linear-gradient(90deg,rgba(4,8,5,.46),rgba(4,8,5,.16) 48%,rgba(4,8,5,.30)),linear-gradient(180deg,rgba(4,8,5,.06),rgba(4,8,5,.14) 45%,rgba(4,8,5,.42)),url("../assets/generated/title/title-ashmere-road.webp");background-size:cover;background-position:center 57%;filter:saturate(.88) contrast(1.03) brightness(1.02);transform:scale(1.035);animation:openingLoreDrift220 44s ease-in-out infinite alternate}
+.opening-lore-v220-grain{position:fixed;z-index:-1;inset:0;pointer-events:none;background:radial-gradient(ellipse at 72% 34%,rgba(201,158,81,.14),transparent 34%),linear-gradient(90deg,transparent,rgba(216,187,118,.025) 50%,transparent)}
+.opening-lore-v220-top{display:flex;justify-content:space-between;align-items:center;gap:16px;width:min(1280px,100%);margin:0 auto;padding:22px 0 17px;border-bottom:1px solid rgba(221,192,124,.25);color:#d7c28a;font:700 .64rem/1.4 system-ui,sans-serif;letter-spacing:.18em}
+.opening-lore-v220-brand{display:flex;align-items:baseline;gap:13px;color:#f0e5c5;letter-spacing:.19em}
+.opening-lore-v220-brand i{color:#c7ac68;font-size:.62rem;font-style:normal;letter-spacing:.16em}
+.opening-lore-v220-edition{color:#d8dccb;text-align:right;font-size:.54rem}
+.opening-lore-v220-content{display:grid;grid-template-columns:75px minmax(0,800px);gap:clamp(20px,4vw,56px);align-items:center;width:min(1150px,100%);margin:auto;padding:clamp(24px,6vh,72px) 0;animation:openingLoreReveal220 .52s cubic-bezier(.2,.7,.25,1) both}
+.opening-lore-v220-side{display:grid;align-content:center;justify-items:center;gap:15px;color:#d4b875}
+.opening-lore-v220-side span{font-size:clamp(3rem,6vw,5.7rem);font-weight:400;line-height:.8;color:rgba(221,191,119,.74)}
+.opening-lore-v220-side i{height:clamp(70px,13vh,150px);width:1px;background:linear-gradient(180deg,transparent,#d6ba72,transparent)}
+.opening-lore-v220-side small{color:#d1d5c3;font:700 .58rem/1 system-ui,sans-serif;letter-spacing:.18em}
+.opening-lore-v220-copy{min-width:0}
+.opening-lore-v220-kicker{color:#e0c780;font:800 .63rem/1.4 system-ui,sans-serif;letter-spacing:.24em}
+.opening-lore-v220-copy h1{margin:18px 0 24px;max-width:850px;color:#fff0cf;font-size:clamp(2.8rem,7vw,6.3rem);font-weight:500;letter-spacing:-.045em;line-height:.92;text-shadow:0 3px 24px rgba(0,0,0,.42)}
+.opening-lore-v220-copy p{max-width:780px;margin:0 0 17px;color:#f0f0e5;font-size:clamp(1rem,1.45vw,1.18rem);line-height:1.72;text-shadow:0 2px 10px rgba(0,0,0,.46)}
+.opening-lore-v220-copy blockquote{max-width:740px;margin:25px 0 0;padding:15px 0 15px 19px;border-left:2px solid rgba(222,189,109,.78);color:#ffe6b2;font-size:clamp(1.12rem,2vw,1.5rem);line-height:1.5}
+.opening-lore-v220-footer{display:grid;grid-template-columns:1fr minmax(100px,280px) auto;align-items:center;gap:clamp(12px,2vw,26px);width:min(1280px,100%);margin:0 auto;padding:17px 0 23px;border-top:1px solid rgba(221,192,124,.24)}
+.opening-lore-v220-skip,.opening-lore-v220-continue{min-height:48px;padding:12px 17px;border:1px solid rgba(221,192,124,.40);border-radius:2px;cursor:pointer;font:800 .7rem/1.35 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;transition:filter .18s ease,border-color .18s ease}
+.opening-lore-v220-skip{justify-self:start;border-color:transparent;background:transparent;color:#dedbca;text-decoration:underline;text-underline-offset:4px}
+.opening-lore-v220-continue{color:#231c0b;border-color:#e2c47e;background:linear-gradient(180deg,#f1d695,#bd8c3d);box-shadow:0 8px 24px rgba(0,0,0,.23),inset 0 1px rgba(255,255,255,.6)}
+.opening-lore-v220-skip:hover,.opening-lore-v220-continue:hover{filter:brightness(1.08)}
+.opening-lore-v220-progress{height:3px;overflow:hidden;background:rgba(220,200,143,.19)}
+.opening-lore-v220-progress i{display:block;height:100%;background:linear-gradient(90deg,#98804f,#e7c982);transition:width .25s ease}
+@keyframes openingLoreDrift220{from{transform:scale(1.025) translateX(-.3%)}to{transform:scale(1.07) translateX(.3%)}}
+@keyframes openingLoreReveal220{from{opacity:0;transform:translateY(12px);filter:blur(2px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@media(max-width:740px){.opening-lore-v220{padding:0 16px}.opening-lore-v220-top{align-items:flex-start;flex-direction:column;padding:16px 0;gap:5px}.opening-lore-v220-edition{text-align:left}.opening-lore-v220-content{grid-template-columns:36px minmax(0,1fr);gap:14px;padding:34px 0}.opening-lore-v220-side span{font-size:2.2rem}.opening-lore-v220-copy h1{margin:11px 0 18px;font-size:clamp(2.6rem,11vw,4.25rem)}.opening-lore-v220-copy p{font-size:.98rem;line-height:1.65}.opening-lore-v220-footer{grid-template-columns:minmax(0,1fr) auto;gap:10px}.opening-lore-v220-progress{grid-column:1/-1;grid-row:1}.opening-lore-v220-skip{grid-column:1;grid-row:2}.opening-lore-v220-continue{grid-column:2;grid-row:2;padding:11px 12px}}
+@media(prefers-reduced-motion:reduce){.opening-lore-v220-backdrop,.opening-lore-v220-content{animation:none!important}.opening-lore-v220-progress i{transition:none!important}}

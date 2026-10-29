@@ -8,11 +8,19 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
   await expect(page.locator('.v120-title')).toBeVisible();
+  const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
+    .evaluate(element => getComputedStyle(element).filter);
+  expect(titleBackdropFilter).toContain('brightness(1.1)');
+  const titleSceneOverlay = await page.locator('.title-v136-rpg')
+    .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
+  expect(titleSceneOverlay).toContain('rgba(2, 6, 4, 0.3)');
+  expect(titleSceneOverlay).not.toContain('rgba(2, 5, 3, 0.94)');
 }
 
 async function enterAshmere(page, name = 'WorldShellQA') {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+  await page.getByRole('button', { name: /Skip the annals/i }).click();
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();
@@ -28,6 +36,11 @@ async function enterAshmere(page, name = 'WorldShellQA') {
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
   await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+  const openingBackdropFilter = await page.evaluate(() => {
+    const backdrop = document.querySelector('.opening-road-v140-prologue .opening-road-v140-bg');
+    return backdrop ? getComputedStyle(backdrop).filter : '';
+  });
+  expect(openingBackdropFilter).toContain('brightness(1.08)');
   await page.getByRole('button', { name: 'Lift your head' }).click();
   await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
@@ -107,7 +120,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     });
     await expect(page.getByRole('button', { name: /The Bell Cellar/i })).toHaveCount(1);
     await expect(page.locator('.lws-panel-right [data-world-route="dungeon"]')).toHaveCount(1);
-    await expect(page.getByRole('button', { name: /Road Network/i })).toHaveCount(1);
+    await expect(page.locator('.lws-town-routes')).toHaveCount(1);
     const viewportLayout = await page.evaluate(() => {
       const root = document.getElementById('root').getBoundingClientRect();
       const left = document.querySelector('.lws-panel-left').getBoundingClientRect();
@@ -260,11 +273,20 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(page.locator('#lws-panel-right')).toContainText('Encounter in progress');
     await expect(page.locator('#strike')).toBeVisible();
     await expect(page.locator('#skill')).toBeVisible();
+    const battleVisual = await page.evaluate(() => ({
+      battle: getComputedStyle(document.querySelector('.rpg-battle')).backgroundImage,
+      field: getComputedStyle(document.querySelector('.rpg-battlefield')).backgroundImage,
+      filter: getComputedStyle(document.querySelector('.rpg-battlefield')).filter
+    }));
+    expect(battleVisual.battle).toContain('0.42');
+    expect(battleVisual.battle).toContain('0.32');
+    expect(battleVisual.field).toContain('old-road-south-fork.webp');
+    expect(battleVisual.filter).toContain('brightness(1.22)');
 
     await page.locator('.lws-bottom-bar [data-world-action="combat"]').click();
     const dialog = page.getByRole('dialog', { name: 'Combat encounter' });
     await expect(dialog).toBeVisible();
-    await expect(dialog).toContainText('live encounter');
+    await expect(dialog).toContainText('The fight is underway');
     await dialog.getByRole('button', { name: /Return to encounter/i }).click();
     await expect(page.locator('#skill')).toBeEnabled();
     await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'combat');
@@ -406,7 +428,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     await page.locator('.lws-panel-right [data-world-place="market"]').click();
     await expect(page.locator('.lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('.lws-selected-place h3')).toHaveText('Market');
-    await expect(page.locator('.lws-selected-place')).toContainText('Buy essentials and sell road loot');
+    await expect(page.locator('.lws-selected-place')).toContainText('Trade for provisions and sell what you have brought back from the road.');
     await expect(page.locator('.lws-poi-scene-note')).toContainText('Market');
     await expect(page.locator('.lws-poi-scene-note')).toContainText('TRADE & SUPPLIES');
     await expect(page.locator('.ash100-town-ashmere .ash100-destination[data-ash-view="trader"]')).toHaveClass(/lws-poi-active/);
@@ -520,7 +542,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     const combatBackground = await combatDialog.locator('.lws-modal-emblem').evaluate(node => getComputedStyle(node).backgroundImage);
     expect(combatBackground).toContain('legend-icon-milestone.webp');
     await expectNoHorizontalOverflow(page);
-    await combatDialog.getByRole('button', { name: 'Close overlay' }).click();
+    await combatDialog.getByRole('button', { name: 'Close panel' }).click();
     await expect(combatDialog).toHaveCount(0);
 
     await page.evaluate(() => window.LegendWorldShellModalsV170.openNotice(
@@ -534,6 +556,56 @@ test.describe('LEGEND persistent world shell v170', () => {
     const bounds = await noticeDialog.boundingBox();
     expect(bounds.x).toBeGreaterThanOrEqual(0);
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(390);
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test('world-scene backdrops stay readable in Ashmere and on the Old Road', async ({ page }) => {
+    await enterAshmere(page, 'SceneBrightnessQA');
+
+    const town = await page.evaluate(() => ({
+      filter: getComputedStyle(document.body, '::before').filter,
+      vignette: getComputedStyle(document.body, '::after').boxShadow,
+      image: getComputedStyle(document.body, '::before').backgroundImage
+    }));
+    expect(town.filter).toContain('brightness(1.24)');
+    expect(town.vignette).toContain('rgba(0, 0, 0, 0.035)');
+    expect(town.image).toContain('ashmere-town.webp');
+
+    // A town service used to paint a near-black terminal over the world image.
+    await page.locator('.lws-panel-right [data-world-place="inn"]').click();
+    await page.locator('.lws-panel-right [data-world-action="visit-selected-place"]').click();
+    await expect(page.locator('.ash099-screen')).toBeVisible();
+    const service = await page.evaluate(() => ({
+      terminal: getComputedStyle(document.querySelector('.ash099-terminal')).backgroundColor,
+      screen: getComputedStyle(document.querySelector('.ash099-screen')).backgroundImage
+    }));
+    expect(service.terminal).toBe('rgba(0, 0, 0, 0)');
+    expect(service.screen).toContain('0.42');
+    expect(service.screen).toContain('0.3');
+
+    await seedRoad(page, 1, 'ridge');
+    const road = await page.evaluate(() => {
+      const shell = document.getElementById('legend-world-shell-root');
+      const world = document.querySelector('#root .exp100');
+      const panel = document.querySelector('#root .exp100-head');
+      return {
+        filter: getComputedStyle(document.body, '::before').filter,
+        vignette: getComputedStyle(document.body, '::after').boxShadow,
+        image: getComputedStyle(document.body, '::before').backgroundImage,
+        shellCanvas: getComputedStyle(shell).backgroundImage,
+        shellShade: getComputedStyle(shell, '::before').backgroundImage,
+        worldWrapper: getComputedStyle(world).backgroundColor,
+        contentPanel: getComputedStyle(panel).backgroundImage
+      };
+    });
+    expect(road.filter).toContain('brightness(1.22)');
+    expect(road.vignette).toContain('rgba(0, 0, 0, 0.035)');
+    expect(road.image).toContain('location_old_road_main_v1.jpg');
+    expect(road.shellCanvas).toContain('0.015');
+    expect(road.shellCanvas).toContain('0.025');
+    expect(road.shellShade).toContain('0.012');
+    expect(road.worldWrapper).toBe('rgba(0, 0, 0, 0)');
+    expect(road.contentPanel).toContain('0.42');
     await expectNoHorizontalOverflow(page);
   });
 

@@ -46,7 +46,10 @@ test.describe('LEGEND UI cascade contract v190', () => {
     expect(position('css/opening-story-cinematic-v201.css')).toBeGreaterThan(position('css/title-realm-entry-v191.css'));
     expect(position('css/greyfen-storehouse-v170.css')).toBeGreaterThan(position('css/greyfen-marsh-v160.css'));
     expect(position('css/legend-ui-system-v160.css')).toBeGreaterThan(position('css/greyfen-storehouse-v170.css'));
-    expect(files).toHaveLength(42);
+    // New presentation layers may be added as narrowly-scoped stylesheets;
+    // lock their presence and cascade order rather than an obsolete total count.
+    expect(files).toContain('css/ashmere-world-visibility-v181.css');
+    expect(files).toContain('css/combat-scene-staging-v210.css');
 
     const responses = await Promise.all(files.map(async file => ({
       file,
@@ -102,6 +105,15 @@ test.describe('LEGEND UI cascade contract v190', () => {
     }
   });
 
+  test('account screen uses a scenic backdrop instead of a solid-black page', async ({ page }) => {
+    await openTitle(page);
+    await page.evaluate(() => window.LegendGameBootstrap.account());
+    await expect(page.locator('.account09x')).toBeVisible();
+    const scene = await page.locator('.account09x').evaluate(element => getComputedStyle(element).backgroundImage);
+    expect(scene).toContain('title-ashmere-road.webp');
+    expect(scene).toContain('rgba(3, 7, 4, 0.22)');
+  });
+
   test('production title stays readable and within desktop and 390px touch viewports', async ({ page }) => {
     await openTitle(page, { width: 1440, height: 900 });
     const titleComputed = await page.locator('.v120-title-hero').evaluate(element => ({
@@ -109,7 +121,7 @@ test.describe('LEGEND UI cascade contract v190', () => {
       logoSrc: element.querySelector('.v120-legend-logo')?.getAttribute('src') || '',
       title: element.querySelector('h1')?.textContent || ''
     }));
-    expect(titleComputed.radius).toBe('0px');
+    expect(titleComputed.radius).toBe('2px');
     expect(titleComputed.logoSrc).toMatch(/\.png(?:\?.*)?$/);
     expect(titleComputed.title).toMatch(/LEGEND/i);
     await expectNoHorizontalOverflow(page);

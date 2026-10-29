@@ -17,6 +17,7 @@ async function openTitle(page) {
 async function createTraveler(page, { name = 'PlaytestQA', gender = 'man', className = 'Adventurer' } = {}) {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+  await page.getByRole('button', { name: /Skip the annals/i }).click();
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="' + gender + '"]').click();
@@ -51,6 +52,7 @@ async function toAshmere(page) {
 test('the name error clears as soon as the player types, and Enter submits', async ({ page }) => {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+  await page.getByRole('button', { name: /Skip the annals/i }).click();
   await page.locator('#v094Next').click();
   await expect(page.locator('#v094NameError')).toHaveText('Please enter a traveler name.');
   await page.locator('#v094Name').pressSequentially('Skully');
@@ -63,7 +65,7 @@ test('the name error clears as soon as the player types, and Enter submits', asy
 test('the traveler portrait follows the chosen form, not the class art', async ({ page }) => {
   // Adventurer class art is a woman; a traveler who chose "Man" must not see it.
   await createTraveler(page, { gender: 'man', className: 'Adventurer' });
-  await page.getByRole('button', { name: /If I wanted trouble/i }).click();
+  await page.locator('[data-oric-response="defiant"]').click();
   const portrait = page.locator('.rpg-hero-portrait img');
   await expect(portrait).toHaveAttribute('src', /class-warrior\.webp/);
 

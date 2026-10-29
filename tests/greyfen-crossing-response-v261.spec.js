@@ -19,6 +19,7 @@ async function openGreyfenArchive(page, { woodScrap = 1, flags = {} } = {}) {
       maxHp: 110,
       gold: 100,
       currentRegion: 'Greyfen',
+      town: 'Greyfen',
       discoveredRegions: ['Ashmere', 'Greyfen'],
       unlockedRegions: ['Ashmere', 'Greyfen'],
       weapon: 'woodenSword',
@@ -41,6 +42,7 @@ async function openGreyfenArchive(page, { woodScrap = 1, flags = {} } = {}) {
       quests: {}
     };
     window.LegendRuntimeV120.savePlayer(player);
+    window.LegendGameBootstrap.continueGame();
     window.LegendAshmereV099.route('archive');
   }, { woodScrap, flags });
 
@@ -124,6 +126,10 @@ test.describe('Greyfen crossing response v0.26.0', () => {
     });
     await page.reload();
     await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+    await page.evaluate(() => {
+      window.LegendGameBootstrap.continueGame();
+      window.LegendAshmereV099.route('archive');
+    });
     await expect(page.locator('.ash099-crossing-response')).toContainText('REPORT SEALED');
     await expect(page.locator('[data-greyfen-crossing-response]')).toHaveCount(0);
   });

@@ -271,12 +271,15 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
       playerMotion: getComputedStyle(document.querySelector('.rpg-hero-stage-art')).animationName,
       enemyMotion: getComputedStyle(document.querySelector('.rpg-foe-sprite')).animationName,
       scene: getComputedStyle(document.querySelector('.rpg-battlefield')).backgroundImage,
+      sceneTint: getComputedStyle(document.querySelector('.rpg-battlefield'), '::before').backgroundImage,
       dialogue: getComputedStyle(document.querySelector('.rpg-dialogue')).backgroundImage,
       enemyPlate: getComputedStyle(document.querySelector('.rpg-foe-nameplate')).right,
     }));
     expect(staging.playerMotion).toBe('none');
     expect(staging.enemyMotion).toBe('none');
     expect(staging.scene).toContain('old-road-south-fork.webp');
+    expect(staging.scene).toContain('0.38');
+    expect(staging.sceneTint).toContain('0.22');
     expect(staging.dialogue).toContain('linear-gradient');
     expect(staging.enemyPlate).not.toBe('auto');
   });

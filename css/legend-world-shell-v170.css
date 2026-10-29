@@ -3,8 +3,8 @@
    It reads live player data and delegates gameplay actions to the current systems. */
 :root {
   --lws-night: #080d09;
-  --lws-panel: rgba(11, 16, 12, .96);
-  --lws-panel-soft: rgba(16, 23, 17, .92);
+  --lws-panel: rgba(11, 16, 12, .54);
+  --lws-panel-soft: rgba(16, 23, 17, .44);
   --lws-wood: #202a20;
   --lws-brass: #bfa064;
   --lws-amber: #e7c982;
@@ -30,7 +30,9 @@
   overflow: clip;
   background:
     radial-gradient(1200px 520px at 50% 0%, rgba(191, 160, 100, .06), transparent 60%),
-    linear-gradient(180deg, rgba(5, 9, 7, .84), rgba(3, 6, 5, .96));
+    /* Keep the persistent frame as glass over every scene; local panels own their
+       opaque surfaces, not the full viewport canvas. */
+    linear-gradient(180deg, rgba(5, 9, 7, .12), rgba(3, 6, 5, .22));
 }
 #legend-world-shell-root::before,
 #legend-world-shell-root::after {
@@ -40,7 +42,7 @@
   pointer-events: none;
 }
 #legend-world-shell-root::before {
-  background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.18), rgba(0,0,0,.05));
+  background: linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.05), rgba(0,0,0,.02));
 }
 #legend-world-shell-root::after {
   background:
@@ -94,7 +96,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   padding: 8px clamp(12px, 2vw, 28px);
   border-bottom: 1px solid var(--lws-line);
   background:
-    linear-gradient(180deg, rgba(5, 9, 6, .98), rgba(7, 11, 8, .88)),
+    linear-gradient(180deg, rgba(5, 9, 6, .80), rgba(7, 11, 8, .68)),
     radial-gradient(ellipse at 50% 0, rgba(191, 160, 100, .16), transparent 60%);
   box-shadow: 0 12px 32px rgba(0, 0, 0, .32), inset 0 -1px rgba(255, 245, 210, .035);
   backdrop-filter: blur(14px);
@@ -259,12 +261,10 @@ body.legend-world-shell-active #root .v152-combat-results {
   padding: 12px;
   overflow: hidden;
   border: 1px solid var(--lws-line);
-  background:
-    linear-gradient(150deg, rgba(17, 24, 17, .97), rgba(7, 12, 8, .95) 70%),
-    var(--lws-panel);
+  background: linear-gradient(150deg, rgba(17, 24, 17, .44), rgba(7, 12, 8, .34) 70%);
   box-shadow: 0 20px 55px rgba(0, 0, 0, .42), inset 0 0 0 3px rgba(0, 0, 0, .24), inset 0 0 32px rgba(191, 160, 100, .025);
   pointer-events: auto;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(2px);
 }
 .lws-panel-left { left: 12px; }
 .lws-panel-right { right: 12px; }
@@ -342,7 +342,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   gap: 7px;
   padding: 6px;
   border: 1px solid var(--lws-line);
-  background: linear-gradient(180deg, rgba(15, 21, 15, .97), rgba(6, 10, 7, .97));
+  background: linear-gradient(180deg, rgba(15, 21, 15, .68), rgba(6, 10, 7, .60));
   box-shadow: 0 10px 30px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.035);
   pointer-events: auto;
   backdrop-filter: blur(14px);
@@ -361,7 +361,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   transform: translateX(-50%);
   border: 1px solid rgba(231, 201, 130, .43);
   color: var(--lws-paper);
-  background: rgba(8, 13, 9, .97);
+  background: rgba(8, 13, 9, .68);
   box-shadow: 0 12px 35px rgba(0,0,0,.4);
   font-size: 12px;
   line-height: 1.45;
@@ -377,8 +377,8 @@ body.legend-world-shell-active #root .v152-combat-results {
   place-items: center;
   padding: clamp(12px, 3vw, 32px);
   color: var(--lws-paper);
-  background: rgba(3, 6, 4, .76);
-  backdrop-filter: blur(9px);
+  background: rgba(3, 6, 4, .30);
+  backdrop-filter: blur(2px);
 }
 #legend-world-shell-modal-root[hidden] { display: none; }
 .lws-modal {
@@ -389,9 +389,9 @@ body.legend-world-shell-active #root .v152-combat-results {
   flex-direction: column;
   border: 1px solid rgba(231, 201, 130, .54);
   background:
-    linear-gradient(155deg, rgba(25, 33, 24, .99), rgba(7, 12, 8, .99) 68%),
+    linear-gradient(155deg, rgba(25, 33, 24, .68), rgba(7, 12, 8, .58) 68%),
     var(--lws-night);
-  box-shadow: 0 35px 100px rgba(0,0,0,.62), inset 0 0 0 4px rgba(0,0,0,.42);
+  box-shadow: 0 24px 64px rgba(0,0,0,.28), inset 0 0 0 2px rgba(0,0,0,.14);
 }
 .lws-modal::before {
   position: absolute;
@@ -558,7 +558,7 @@ body.a11y-reduced-motion #legend-world-shell-modal-root *::after {
 .lws-place-option-copy strong { color: #f0ead9; font: 600 12px/1.25 Georgia, 'Times New Roman', serif; }
 .lws-place-option-copy small { color: var(--lws-muted); font-size: 9px; letter-spacing: .1em; line-height: 1.35; }
 .lws-place-option-state { flex: 0 0 auto; color: #c8b16f; font-size: 9px; letter-spacing: .04em; }
-.lws-selected-place { padding: 12px; border: 1px solid rgba(215, 184, 106, .28); border-radius: 10px; background: linear-gradient(145deg, rgba(39, 35, 23, .72), rgba(8, 13, 9, .9)); }
+.lws-selected-place { padding: 12px; border: 1px solid rgba(215, 184, 106, .28); border-radius: 10px; background: linear-gradient(145deg, rgba(39, 35, 23, .50), rgba(8, 13, 9, .40)); }
 .lws-selected-place h3 { margin: 5px 0 6px; color: #f4eddb; font: 600 16px/1.2 Georgia, 'Times New Roman', serif; }
 .lws-selected-place > p, .lws-poi-hint p { margin: 0 0 10px; color: var(--lws-muted); font-size: 11px; line-height: 1.55; }
 .lws-visit-place { width: 100%; margin-top: 3px; }
@@ -568,7 +568,7 @@ body.a11y-reduced-motion #legend-world-shell-modal-root *::after {
 .lws-other-destinations { margin-top: 15px; padding-top: 11px; border-top: 1px solid rgba(215, 184, 106, .12); }
 .lws-other-destinations .lws-section-title { margin-bottom: 8px; }
 .lws-town-routes { width: 100%; margin-top: 10px; }
-.lws-poi-scene-note { display: grid; gap: 4px; margin: 0 0 9px; padding: 12px 15px; border: 1px solid rgba(215, 184, 106, .27); border-radius: 2px; background: linear-gradient(105deg, rgba(35, 30, 18, .72), rgba(8, 13, 9, .9)); }
+.lws-poi-scene-note { display: grid; gap: 4px; margin: 0 0 9px; padding: 12px 15px; border: 1px solid rgba(215, 184, 106, .27); border-radius: 2px; background: linear-gradient(105deg, rgba(35, 30, 18, .48), rgba(8, 13, 9, .36)); }
 .lws-poi-scene-kicker { color: #cbb273; font-size: 9px; font-weight: 750; letter-spacing: .16em; }
 .lws-poi-scene-note > strong { color: #f0ead9; font: 600 16px/1.2 Georgia, 'Times New Roman', serif; }
 .lws-poi-scene-note > p { max-width: 760px; margin: 0; color: #b8c0b4; font-size: 12px; line-height: 1.45; }

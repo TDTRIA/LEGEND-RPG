@@ -3,8 +3,8 @@
 :root {
   --legend-ui-rollout-v180-active: 1;
   --legend-ui-frame-radius: 3px;
-  --legend-ui-panel-fill: linear-gradient(145deg, rgba(23,33,24,.98), rgba(6,11,7,.99));
-  --legend-ui-control-fill: linear-gradient(105deg, rgba(37,48,34,.98), rgba(8,14,9,.99));
+  --legend-ui-panel-fill: linear-gradient(145deg, rgba(23,33,24,.62), rgba(6,11,7,.54));
+  --legend-ui-control-fill: linear-gradient(105deg, rgba(37,48,34,.78), rgba(8,14,9,.68));
   --legend-ui-edge-strong: rgba(231,201,130,.58);
   --legend-ui-edge-soft: rgba(215,194,139,.24);
 }
@@ -45,7 +45,7 @@
 #root .opening-road-v140-choice:focus-visible { border-color: var(--legend-ui-edge-strong) !important; }
 #root .v140-creation .v140-dialogue-box {
   border-color: rgba(177,166,218,.42) !important;
-  background: linear-gradient(155deg,rgba(20,22,34,.98),rgba(5,7,12,.99)) !important;
+  background: linear-gradient(155deg,rgba(20,22,34,.72),rgba(5,7,12,.64)) !important;
 }
 
 /* The active save-backed inventory is rendered by the persistent world shell. */
@@ -108,7 +108,7 @@
 #root .rpg-enemy-tell,
 #root .rpg-command,
 #root .rpg-utility-command { border-radius: var(--legend-ui-frame-radius) !important; border-color: var(--legend-ui-edge-soft) !important; }
-#root .rpg-dialogue { background: linear-gradient(100deg,rgba(27,37,27,.98),rgba(6,11,7,.98)) !important; }
+#root .rpg-dialogue { background: linear-gradient(100deg,rgba(27,37,27,.84),rgba(6,11,7,.72)) !important; }
 #root .rpg-enemy-tell { background: linear-gradient(100deg,rgba(61,38,28,.72),rgba(12,13,9,.98)) !important; }
 #root .rpg-command:not(:disabled):hover,
 #root .rpg-utility-command:not(:disabled):hover { border-color: var(--legend-ui-edge-strong) !important; }
@@ -236,7 +236,7 @@
 }
 #root .reg100-card {
   border-color: var(--legend-ui-edge-soft) !important;
-  background: linear-gradient(145deg,rgba(22,32,23,.97),rgba(7,12,8,.99)) !important;
+  background: linear-gradient(145deg,rgba(22,32,23,.58),rgba(7,12,8,.49)) !important;
 }
 #root .reg100-card.current {
   border-color: var(--legend-ui-edge-strong) !important;
@@ -275,7 +275,7 @@
 }
 #root .ash099-screen {
   border-color: var(--legend-ui-edge-strong) !important;
-  background: linear-gradient(145deg,rgba(17,25,18,.98),rgba(5,10,6,.99)) !important;
+  background: linear-gradient(145deg,rgba(17,25,18,.56),rgba(5,10,6,.48)) !important;
   box-shadow: 0 22px 62px rgba(0,0,0,.46), inset 0 0 0 3px rgba(0,0,0,.20) !important;
 }
 #root .ash099-screen .ash099-card,
