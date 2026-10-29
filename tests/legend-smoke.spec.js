@@ -545,7 +545,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       return {gold:Number(pl.gold||0),herbs:Number(pl.inventory.roadHerb||0)};
     });
     await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
-    await expect(page.getByRole('heading', { name: 'A Dry Crossing' })).toBeVisible();
+    await expect(page.locator('.ash099-screen h1').filter({ hasText: 'A Dry Crossing' })).toBeVisible();
     await expect(page.locator('[data-crossing-choice="posts"]')).toContainText('35g and 1 Road Herb');
     await expect(page.locator('[data-crossing-choice="reeds"]')).toContainText('65% chance');
     await page.locator('[data-crossing-choice="posts"]').click();
