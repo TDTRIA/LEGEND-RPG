@@ -278,10 +278,10 @@ test.describe('LEGEND persistent world shell v170', () => {
       field: getComputedStyle(document.querySelector('.rpg-battlefield')).backgroundImage,
       filter: getComputedStyle(document.querySelector('.rpg-battlefield')).filter
     }));
-    expect(battleVisual.battle).toContain('0.58');
-    expect(battleVisual.battle).toContain('0.5');
+    expect(battleVisual.battle).toContain('0.48');
+    expect(battleVisual.battle).toContain('0.4');
     expect(battleVisual.field).toContain('old-road-south-fork.webp');
-    expect(battleVisual.filter).toContain('brightness(1.14)');
+    expect(battleVisual.filter).toContain('brightness(1.22)');
 
     await page.locator('.lws-bottom-bar [data-world-action="combat"]').click();
     const dialog = page.getByRole('dialog', { name: 'Combat encounter' });
@@ -567,8 +567,8 @@ test.describe('LEGEND persistent world shell v170', () => {
       vignette: getComputedStyle(document.body, '::after').boxShadow,
       image: getComputedStyle(document.body, '::before').backgroundImage
     }));
-    expect(town.filter).toContain('brightness(1.1)');
-    expect(town.vignette).toContain('rgba(0, 0, 0, 0.06)');
+    expect(town.filter).toContain('brightness(1.24)');
+    expect(town.vignette).toContain('rgba(0, 0, 0, 0.035)');
     expect(town.image).toContain('ashmere-town.webp');
 
     // A town service used to paint a near-black terminal over the world image.
@@ -580,8 +580,8 @@ test.describe('LEGEND persistent world shell v170', () => {
       screen: getComputedStyle(document.querySelector('.ash099-screen')).backgroundImage
     }));
     expect(service.terminal).toBe('rgba(0, 0, 0, 0)');
-    expect(service.screen).toContain('0.54');
     expect(service.screen).toContain('0.48');
+    expect(service.screen).toContain('0.36');
 
     await seedRoad(page, 1, 'ridge');
     const road = await page.evaluate(() => {
@@ -598,14 +598,14 @@ test.describe('LEGEND persistent world shell v170', () => {
         contentPanel: getComputedStyle(panel).backgroundImage
       };
     });
-    expect(road.filter).toContain('brightness(1.1)');
-    expect(road.vignette).toContain('rgba(0, 0, 0, 0.06)');
+    expect(road.filter).toContain('brightness(1.22)');
+    expect(road.vignette).toContain('rgba(0, 0, 0, 0.035)');
     expect(road.image).toContain('location_old_road_main_v1.jpg');
     expect(road.shellCanvas).toContain('0.015');
     expect(road.shellCanvas).toContain('0.025');
     expect(road.shellShade).toContain('0.012');
     expect(road.worldWrapper).toBe('rgba(0, 0, 0, 0)');
-    expect(road.contentPanel).toContain('0.54');
+    expect(road.contentPanel).toContain('0.50');
     await expectNoHorizontalOverflow(page);
   });
 
