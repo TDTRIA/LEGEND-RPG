@@ -11,6 +11,10 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
   expect(titleBackdropFilter).toContain('brightness(0.82)');
+  const titleSceneOverlay = await page.locator('.title-v136-rpg')
+    .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
+  expect(titleSceneOverlay).toContain('rgba(2, 5, 3, 0.68)');
+  expect(titleSceneOverlay).not.toContain('rgba(2, 5, 3, 0.94)');
 }
 
 async function enterAshmere(page, name = 'WorldShellQA') {
