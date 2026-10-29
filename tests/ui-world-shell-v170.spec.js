@@ -580,8 +580,8 @@ test.describe('LEGEND persistent world shell v170', () => {
       screen: getComputedStyle(document.querySelector('.ash099-screen')).backgroundImage
     }));
     expect(service.terminal).toBe('rgba(0, 0, 0, 0)');
-    expect(service.screen).toContain('0.48');
-    expect(service.screen).toContain('0.36');
+    expect(service.screen).toContain('0.42');
+    expect(service.screen).toContain('0.30');
 
     await seedRoad(page, 1, 'ridge');
     const road = await page.evaluate(() => {
@@ -605,7 +605,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     expect(road.shellCanvas).toContain('0.025');
     expect(road.shellShade).toContain('0.012');
     expect(road.worldWrapper).toBe('rgba(0, 0, 0, 0)');
-    expect(road.contentPanel).toContain('0.50');
+    expect(road.contentPanel).toContain('0.42');
     await expectNoHorizontalOverflow(page);
   });
 
