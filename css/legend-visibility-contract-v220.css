@@ -37,3 +37,56 @@ body.legend-world-shell-active #root .ash100-town,body.legend-world-shell-active
 #root .opening-lore-v220-backdrop{filter:saturate(.92) contrast(1.02) brightness(1.03)!important}
 #root .account09x-hero::before{filter:saturate(.95) contrast(1.03) brightness(1.05)!important;background:linear-gradient(90deg,rgba(2,4,3,.42),rgba(2,4,3,.14) 48%,rgba(2,4,3,.34)),linear-gradient(0deg,rgba(2,4,3,.20),transparent 68%),url("../assets/generated/title/title-ashmere-road.webp")!important;background-size:cover!important;background-position:center!important}
 #root .settings09x-hero,#root .account09x-panel,#root .dispatches-v140-card,#root .gss170-page{background-color:rgba(6,11,8,.68)!important}
+
+/* Standalone menus and submenus use their own older page backgrounds.
+   Give those pages the same readable scene treatment instead of painting them solid black. */
+body:not(.legend-world-shell-active) #root .settings09x,
+body:not(.legend-world-shell-active) #root .account09x,
+body:not(.legend-world-shell-active) #root .dispatches-v140,
+body:not(.legend-world-shell-active) #root .gss170-page {
+  background:
+    linear-gradient(90deg,rgba(3,7,4,.28),rgba(3,7,4,.10) 48%,rgba(3,7,4,.22)),
+    linear-gradient(180deg,rgba(3,7,4,.08),rgba(3,7,4,.30)),
+    url("../assets/generated/title/title-ashmere-road.webp") center 54%/cover no-repeat !important;
+}
+body:not(.legend-world-shell-active) #root .dispatches-v140-backdrop {
+  background:
+    linear-gradient(180deg,rgba(2,7,5,.22),rgba(3,8,6,.40)),
+    url("../assets/generated/title/title-ashmere-road.webp") center/cover no-repeat !important;
+  filter:saturate(.92) brightness(1.02) !important;
+}
+#root .settings09x-hero,
+#root .settings09x-toggle,
+#root .settings09x-actions,
+#root .settings09x-note,
+#root .account09x-hero,
+#root .account09x-panel,
+#root .account09x-slot,
+#root .account09x-note,
+#root .account09x-actions,
+#root .account09x-auth-box {
+  background:linear-gradient(145deg,rgba(10,17,11,.74),rgba(5,10,6,.68)) !important;
+  backdrop-filter:blur(3px) !important;
+  box-shadow:0 14px 40px rgba(0,0,0,.22) !important;
+}
+#root .settings09x-hero { background:linear-gradient(100deg,rgba(8,14,9,.74),rgba(5,10,6,.42)) !important; }
+#root .account09x-hero { background:linear-gradient(100deg,rgba(8,14,9,.20),rgba(5,10,6,.10)) !important; }
+#root .dispatches-v140-feature {
+  background:linear-gradient(110deg,rgba(17,28,20,.76),rgba(5,10,7,.68)) !important;
+  box-shadow:0 18px 46px rgba(0,0,0,.24),inset 0 0 0 1px rgba(255,236,184,.04) !important;
+}
+#root .dispatches-v140-card {
+  background:linear-gradient(180deg,rgba(16,25,19,.74),rgba(5,10,7,.68)) !important;
+}
+#root .dispatches-v140 button { background:rgba(12,20,14,.78) !important; }
+#root .dispatches-v140 button:hover { background:rgba(32,43,31,.86) !important; }
+#root .dispatches-v140-roadmap .dispatches-v140-card { background:linear-gradient(180deg,rgba(20,30,22,.76),rgba(6,12,8,.70)) !important; }
+
+/* Result and level-up panels remain readable without covering their scene completely. */
+#root .v152-levelup-overlay { background:rgba(0,0,0,.46) !important; backdrop-filter:blur(2px) !important; }
+#root .v152-levelup-overlay .v152-levelup-panel,
+#root .v152-levelup-overlay .v152-growth-pointbar,
+#root .v152-levelup-overlay .v152-growth-card,
+#root .v152-levelup-overlay .v152-growth-confirm {
+  background:linear-gradient(145deg,rgba(18,27,19,.82),rgba(5,10,6,.78)) !important;
+}
