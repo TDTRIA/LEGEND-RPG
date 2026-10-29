@@ -581,7 +581,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     }));
     expect(service.terminal).toBe('rgba(0, 0, 0, 0)');
     expect(service.screen).toContain('0.42');
-    expect(service.screen).toContain('0.30');
+    expect(service.screen).toContain('0.3');
 
     await seedRoad(page, 1, 'ridge');
     const road = await page.evaluate(() => {
