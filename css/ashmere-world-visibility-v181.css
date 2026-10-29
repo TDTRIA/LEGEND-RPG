@@ -6,20 +6,20 @@ body.legend-world-region-ashmere.legend-world-scene-town::before {
   background-image:
     linear-gradient(90deg, rgba(2,5,3,.32) 0%, rgba(2,5,4,.035) 28%, rgba(2,5,4,.025) 70%, rgba(1,3,2,.20) 100%),
     linear-gradient(180deg, rgba(2,5,4,.025), transparent 32%, rgba(1,3,2,.10)),
-    url("../assets/generated/locations/ashmere-town.webp");
-  background-position: center, center, center 48%;
-  background-size: cover;
-  background-repeat: no-repeat;
+    url("../assets/generated/locations/ashmere-town.webp") !important;
+  background-position: center, center, center 48% !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
   /* The previous .80 filter left the scene looking dim even with the shell
      made translucent. Bring the painting close to its original luminance. */
-  filter: saturate(.94) contrast(1.04) brightness(1.04);
+  filter: saturate(.94) contrast(1.04) brightness(1.04) !important;
 }
 
 body.legend-world-region-ashmere.legend-world-scene-town::after {
   background:
     radial-gradient(ellipse at 50% 42%, transparent 24%, rgba(0,0,0,.04) 68%, rgba(0,0,0,.20) 100%),
-    linear-gradient(180deg, rgba(0,0,0,.025), transparent 24%, transparent 77%, rgba(0,0,0,.14));
-  box-shadow: inset 0 0 82px 10px rgba(0,0,0,.10);
+    linear-gradient(180deg, rgba(0,0,0,.025), transparent 24%, transparent 77%, rgba(0,0,0,.14)) !important;
+  box-shadow: inset 0 0 82px 10px rgba(0,0,0,.10) !important;
 }
 
 /* The shell is a frame above the real game. Its canvas must stay translucent
