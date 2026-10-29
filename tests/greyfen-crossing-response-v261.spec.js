@@ -19,6 +19,7 @@ async function openGreyfenArchive(page, { woodScrap = 1, flags = {} } = {}) {
       maxHp: 110,
       gold: 100,
       currentRegion: 'Greyfen',
+      town: 'Greyfen',
       discoveredRegions: ['Ashmere', 'Greyfen'],
       unlockedRegions: ['Ashmere', 'Greyfen'],
       weapon: 'woodenSword',
