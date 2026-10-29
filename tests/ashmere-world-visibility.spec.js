@@ -50,6 +50,8 @@ test('Ashmere town artwork remains visible under the persistent shell', async ({
       worldBrightness: getComputedStyle(document.body, '::before').filter,
       vignette: getComputedStyle(document.body, '::after').boxShadow,
       shellCanvas: getComputedStyle(shell).backgroundImage,
+      shellCanvasColor: getComputedStyle(shell).backgroundColor,
+      shellShade: getComputedStyle(shell, '::before').backgroundImage,
       townHeroOverlay: getComputedStyle(hero, '::after').backgroundImage,
       imageSrc: document.querySelector('.ash100-hero > img').currentSrc
     };
@@ -58,7 +60,9 @@ test('Ashmere town artwork remains visible under the persistent shell', async ({
   expect(visual.townImage).toContain('ashmere-town.webp');
   expect(visual.worldBrightness).toContain('brightness(1.24)');
   expect(visual.vignette).toContain('0.035');
-  expect(visual.shellCanvas).toContain('0.025');
+  expect(visual.shellCanvas).toBe('none');
+  expect(visual.shellCanvasColor).toBe('rgba(0, 0, 0, 0)');
+  expect(visual.shellShade).toBe('none');
   expect(visual.townHeroOverlay).toContain('0.24');
   expect(visual.imageSrc).toContain('ashmere-town.webp');
 });

@@ -585,7 +585,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
 
     await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
-    await expect(page.getByRole('heading', { name: 'A Dry Crossing' })).toBeVisible();
+    await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'A Dry Crossing' })).toBeVisible();
     await page.evaluate(() => { Math.random = () => 0.9; });
     await page.locator('[data-crossing-choice="reeds"]').click();
     await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'The reeds turn you back' })).toBeVisible();
@@ -613,7 +613,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
     await page.evaluate(() => { Math.random = () => 0.1; });
     await page.locator('[data-crossing-choice="reeds"]').click();
-    await expect(page.getByRole('heading', { name: 'The shortcut pays off' })).toBeVisible();
+    await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'The shortcut pays off' })).toBeVisible();
 
     const success = await page.evaluate(() => {
       const pl = window.LegendRuntimeV120.loadPlayer();
@@ -861,7 +861,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Road Network opens regional map and stays on map', async ({ page }) => {
     await startFreshCharacter(page, 'MapQA');
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
-    await page.getByRole('button', { name: /Road Network/i }).click();
+    await page.locator('#root').getByRole('button', { name: /Road Network/i }).click();
     await expect(page.locator('#root').getByRole('heading', { name: 'Roads & Regions', exact: true })).toBeVisible();
     await expect(page.getByText('Greyfen', { exact: true })).toBeVisible();
     await expect(page.getByText('Ironpass', { exact: true })).toBeVisible();
@@ -946,11 +946,37 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(oricCard).toBeVisible();
     await expect(oricCard).toHaveAttribute('src', /assets\/generated\/npcs\/captain-oric\.webp$/);
     await expect.poll(() => oricCard.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    const portraitLayout = await oricCard.evaluate(img => {
+      const style = getComputedStyle(img);
+      const cardStyle = getComputedStyle(img.closest('.ash099-npc-card'));
+      const rect = img.getBoundingClientRect();
+      return {
+        width: rect.width,
+        height: rect.height,
+        objectFit: style.objectFit,
+        objectPosition: style.objectPosition,
+        cardBackground: cardStyle.backgroundImage
+      };
+    });
+    expect(portraitLayout.width).toBeLessThanOrEqual(100);
+    expect(portraitLayout.height).toBeLessThanOrEqual(140);
+    expect(portraitLayout.objectFit).toBe('cover');
+    expect(portraitLayout.objectPosition).toContain('18%');
+    expect(portraitLayout.cardBackground).toContain('0.94');
+    expect(portraitLayout.cardBackground).toContain('0.97');
     await page.locator('[data-ash-view="oric"]').click();
     await expect(page.getByRole('heading', { name: 'Captain Oric' })).toBeVisible();
     const oricDialoguePortrait = page.locator('.ash099-head img');
     await expect(oricDialoguePortrait).toHaveAttribute('src', /assets\/generated\/npcs\/captain-oric\.webp$/);
     await expect.poll(() => oricDialoguePortrait.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    const dialoguePortraitLayout = await oricDialoguePortrait.evaluate(img => {
+      const style = getComputedStyle(img);
+      const rect = img.getBoundingClientRect();
+      return { width: rect.width, height: rect.height, objectPosition: style.objectPosition };
+    });
+    expect(dialoguePortraitLayout.width).toBeLessThanOrEqual(160);
+    expect(dialoguePortraitLayout.height).toBeLessThanOrEqual(220);
+    expect(dialoguePortraitLayout.objectPosition).toContain('16%');
   });
 
   test('town job awards gold, favor, and progression XP', async ({ page }) => {

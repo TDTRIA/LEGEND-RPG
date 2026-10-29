@@ -125,10 +125,19 @@ test.describe('LEGEND persistent world shell v170', () => {
       const root = document.getElementById('root').getBoundingClientRect();
       const left = document.querySelector('.lws-panel-left').getBoundingClientRect();
       const right = document.querySelector('.lws-panel-right').getBoundingClientRect();
-      return { rootLeft: root.left, rootRight: root.right, leftRailRight: left.right, rightRailLeft: right.left };
+      return {
+        rootLeft: root.left, rootRight: root.right, rootHeight: root.height,
+        rootOverflowY: getComputedStyle(document.getElementById('root')).overflowY,
+        rootScrollHeight: document.getElementById('root').scrollHeight,
+        rootClientHeight: document.getElementById('root').clientHeight,
+        leftRailRight: left.right, rightRailLeft: right.left
+      };
     });
     expect(viewportLayout.rootLeft).toBeGreaterThanOrEqual(viewportLayout.leftRailRight);
     expect(viewportLayout.rootRight).toBeLessThanOrEqual(viewportLayout.rightRailLeft);
+    expect(viewportLayout.rootHeight).toBeLessThanOrEqual(760);
+    expect(viewportLayout.rootOverflowY).toBe('auto');
+    expect(viewportLayout.rootScrollHeight).toBeGreaterThan(viewportLayout.rootClientHeight);
     await expectNoHorizontalOverflow(page);
 
     // Exercise the shell's destination delegate while the town destination catalog is active.
@@ -232,6 +241,21 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('saved traveler retains a high-contrast Continue Journey action on the title screen', async ({ page }) => {
+    await enterAshmere(page, 'ContinueButtonContrastQA');
+    await page.evaluate(() => window.LegendGameBootstrap.title());
+    const continueButton = page.locator('#continue.v136-menu-primary');
+    await expect(continueButton).toBeVisible();
+    const cta = await continueButton.evaluate(button => {
+      const style = getComputedStyle(button);
+      return { background: style.backgroundImage, color: style.color, opacity: style.opacity };
+    });
+    expect(cta.background).toContain('255, 230, 161');
+    expect(cta.background).toContain('220, 168, 80');
+    expect(cta.color).toBe('rgb(36, 23, 7)');
+    expect(cta.opacity).toBe('1');
+  });
+
   test('Old Road shell actions open the existing field journal and do not replace expedition state', async ({ page }) => {
     await enterAshmere(page, 'RoadShellTraveler');
     await seedRoad(page, 1, 'ridge');
@@ -276,12 +300,19 @@ test.describe('LEGEND persistent world shell v170', () => {
     const battleVisual = await page.evaluate(() => ({
       battle: getComputedStyle(document.querySelector('.rpg-battle')).backgroundImage,
       field: getComputedStyle(document.querySelector('.rpg-battlefield')).backgroundImage,
-      filter: getComputedStyle(document.querySelector('.rpg-battlefield')).filter
+      filter: getComputedStyle(document.querySelector('.rpg-battlefield')).filter,
+      dialogue: getComputedStyle(document.querySelector('.rpg-dialogue')).backgroundImage,
+      dialogueText: getComputedStyle(document.querySelector('.rpg-dialogue p')).color,
+      command: getComputedStyle(document.querySelector('.rpg-command')).backgroundImage
     }));
-    expect(battleVisual.battle).toContain('0.42');
-    expect(battleVisual.battle).toContain('0.32');
+    expect(battleVisual.battle).toContain('0.94');
+    expect(battleVisual.battle).toContain('0.92');
     expect(battleVisual.field).toContain('old-road-south-fork.webp');
     expect(battleVisual.filter).toContain('brightness(1.22)');
+    expect(battleVisual.dialogue).toContain('0.97');
+    expect(battleVisual.dialogue).toContain('0.95');
+    expect(battleVisual.dialogueText).toBe('rgb(240, 234, 223)');
+    expect(battleVisual.command).toContain('0.96');
 
     await page.locator('.lws-bottom-bar [data-world-action="combat"]').click();
     const dialog = page.getByRole('dialog', { name: 'Combat encounter' });
@@ -580,8 +611,8 @@ test.describe('LEGEND persistent world shell v170', () => {
       screen: getComputedStyle(document.querySelector('.ash099-screen')).backgroundImage
     }));
     expect(service.terminal).toBe('rgba(0, 0, 0, 0)');
-    expect(service.screen).toContain('0.42');
-    expect(service.screen).toContain('0.3');
+    expect(service.screen).toContain('0.24');
+    expect(service.screen).toContain('0.16');
 
     await seedRoad(page, 1, 'ridge');
     const road = await page.evaluate(() => {
@@ -593,19 +624,24 @@ test.describe('LEGEND persistent world shell v170', () => {
         vignette: getComputedStyle(document.body, '::after').boxShadow,
         image: getComputedStyle(document.body, '::before').backgroundImage,
         shellCanvas: getComputedStyle(shell).backgroundImage,
+        shellCanvasColor: getComputedStyle(shell).backgroundColor,
         shellShade: getComputedStyle(shell, '::before').backgroundImage,
         worldWrapper: getComputedStyle(world).backgroundColor,
-        contentPanel: getComputedStyle(panel).backgroundImage
+        contentPanel: getComputedStyle(panel).backgroundImage,
+        forkPanel: getComputedStyle(document.querySelector('.exp150-world-page .exp100-choice')).backgroundImage
       };
     });
     expect(road.filter).toContain('brightness(1.22)');
     expect(road.vignette).toContain('rgba(0, 0, 0, 0.035)');
     expect(road.image).toContain('location_old_road_main_v1.jpg');
-    expect(road.shellCanvas).toContain('0.015');
-    expect(road.shellCanvas).toContain('0.025');
-    expect(road.shellShade).toContain('0.012');
+    expect(road.shellCanvas).toBe('none');
+    expect(road.shellCanvasColor).toBe('rgba(0, 0, 0, 0)');
+    expect(road.shellShade).toBe('none');
     expect(road.worldWrapper).toBe('rgba(0, 0, 0, 0)');
-    expect(road.contentPanel).toContain('0.42');
+    expect(road.contentPanel).toContain('0.94');
+    expect(road.contentPanel).toContain('0.90');
+    expect(road.forkPanel).toContain('0.96');
+    expect(road.forkPanel).toContain('0.94');
     await expectNoHorizontalOverflow(page);
   });
 
