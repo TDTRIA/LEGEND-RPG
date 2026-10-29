@@ -911,3 +911,35 @@ body.legend-world-shell-active #root .rpg-battle .rpg-dialogue-kicker {
 body.legend-world-shell-active #root .ash099-screen .ash099-npc-grid .ash099-npc-card {
   background:linear-gradient(145deg,rgba(12,19,13,.94),rgba(5,9,6,.97)) !important;
 }
+
+
+/* NPC dialogue headers reuse tall character art; keep that art portrait-shaped too.
+   The selector is asset-specific so landscape/service header images are unchanged. */
+#root .ash099-screen .ash099-head:has(> img[src*="/npcs/"]),
+body.legend-world-shell-active #root .ash099-screen .ash099-head:has(> img[src*="/npcs/"]) {
+  grid-template-columns:160px minmax(0,1fr) !important;
+  align-items:start !important;
+  gap:14px !important;
+}
+#root .ash099-screen .ash099-head:has(> img[src*="/npcs/"]) > img,
+body.legend-world-shell-active #root .ash099-screen .ash099-head:has(> img[src*="/npcs/"]) > img {
+  width:160px !important;
+  height:220px !important;
+  max-width:160px !important;
+  object-fit:cover !important;
+  object-position:50% 16% !important;
+  border-radius:5px !important;
+}
+@media (max-width:560px) {
+  #root .ash099-screen .ash099-head:has(> img[src*="/npcs/"]),
+  body.legend-world-shell-active #root .ash099-screen .ash099-head:has(> img[src*="/npcs/"]) {
+    grid-template-columns:88px minmax(0,1fr) !important;
+    gap:10px !important;
+  }
+  #root .ash099-screen .ash099-head:has(> img[src*="/npcs/"]) > img,
+  body.legend-world-shell-active #root .ash099-screen .ash099-head:has(> img[src*="/npcs/"]) > img {
+    width:88px !important;
+    height:122px !important;
+    max-width:88px !important;
+  }
+}

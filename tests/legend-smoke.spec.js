@@ -969,6 +969,14 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     const oricDialoguePortrait = page.locator('.ash099-head img');
     await expect(oricDialoguePortrait).toHaveAttribute('src', /assets\/generated\/npcs\/captain-oric\.webp$/);
     await expect.poll(() => oricDialoguePortrait.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    const dialoguePortraitLayout = await oricDialoguePortrait.evaluate(img => {
+      const style = getComputedStyle(img);
+      const rect = img.getBoundingClientRect();
+      return { width: rect.width, height: rect.height, objectPosition: style.objectPosition };
+    });
+    expect(dialoguePortraitLayout.width).toBeLessThanOrEqual(160);
+    expect(dialoguePortraitLayout.height).toBeLessThanOrEqual(220);
+    expect(dialoguePortraitLayout.objectPosition).toContain('16%');
   });
 
   test('town job awards gold, favor, and progression XP', async ({ page }) => {
