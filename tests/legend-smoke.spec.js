@@ -850,7 +850,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Routes opens route board instead of starting an expedition', async ({ page }) => {
     await startFreshCharacter(page, 'RoutesQA');
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
-    await expect(page.getByRole('heading', { name: 'Routes & Expeditions' })).toBeVisible();
+    await expect(page.locator('#root').getByRole('heading', { name: 'Routes & Expeditions', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: /The Old Road/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Road Network/i })).toBeVisible();
     await expect(page.locator('.ash100-town')).toHaveCount(0);
@@ -860,7 +860,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'MapQA');
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
     await page.getByRole('button', { name: /Road Network/i }).click();
-    await expect(page.getByRole('heading', { name: 'Roads & Regions' })).toBeVisible();
+    await expect(page.locator('#root').getByRole('heading', { name: 'Roads & Regions', exact: true })).toBeVisible();
     await expect(page.getByText('Greyfen', { exact: true })).toBeVisible();
     await expect(page.getByText('Ironpass', { exact: true })).toBeVisible();
     await expect(page.locator('.ash100-town')).toHaveCount(0);
@@ -876,7 +876,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
       window.LegendRegionsV100.render();
     });
-    await expect(page.getByRole('heading', { name: 'Roads & Regions' })).toBeVisible();
+    await expect(page.locator('#root').getByRole('heading', { name: 'Roads & Regions', exact: true })).toBeVisible();
     const greyfen=page.locator('.reg100-card').filter({ has: page.getByRole('heading', { name: 'Greyfen', exact: true }) });
     const ironpass=page.locator('.reg100-card').filter({ has: page.getByRole('heading', { name: 'Ironpass', exact: true }) });
     await expect(greyfen.locator('.reg100-card-scene img')).toHaveAttribute('src', /greyfen-marsh-walkway\.webp/);
@@ -960,7 +960,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
     });
     await page.locator('.ash100-destinations').getByRole('button', { name: /Work Board/i }).click();
-    await expect(page.getByRole('heading', { name: 'Work Board' })).toBeVisible();
+    await expect(page.locator('#root').getByRole('heading', { name: 'Work Board', exact: true })).toBeVisible();
     await page.locator('[data-job-open="wood"]').click();
     await page.locator('#jobStrike').click();
     await expect(page.locator('#jobResult')).toBeVisible();
