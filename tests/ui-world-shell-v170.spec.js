@@ -561,15 +561,31 @@ test.describe('LEGEND persistent world shell v170', () => {
     expect(town.vignette).toContain('rgba(0, 0, 0, 0.1)');
     expect(town.image).toContain('ashmere-town.webp');
 
+    // A town service used to paint a near-black terminal over the world image.
+    await page.locator('.lws-panel-right [data-world-place="inn"]').click();
+    await page.locator('.lws-panel-right [data-world-action="visit-selected-place"]').click();
+    await expect(page.locator('.ash099-screen')).toBeVisible();
+    const service = await page.evaluate(() => ({
+      terminal: getComputedStyle(document.querySelector('.ash099-terminal')).backgroundColor,
+      screen: getComputedStyle(document.querySelector('.ash099-screen')).backgroundImage
+    }));
+    expect(service.terminal).toBe('rgba(0, 0, 0, 0)');
+    expect(service.screen).toContain('0.86');
+    expect(service.screen).toContain('0.9');
+
     await seedRoad(page, 1, 'ridge');
     const road = await page.evaluate(() => {
       const shell = document.getElementById('legend-world-shell-root');
+      const world = document.querySelector('#root .exp100');
+      const panel = document.querySelector('#root .exp150-world-page .exp100-panel');
       return {
         filter: getComputedStyle(document.body, '::before').filter,
         vignette: getComputedStyle(document.body, '::after').boxShadow,
         image: getComputedStyle(document.body, '::before').backgroundImage,
         shellCanvas: getComputedStyle(shell).backgroundImage,
-        shellShade: getComputedStyle(shell, '::before').backgroundImage
+        shellShade: getComputedStyle(shell, '::before').backgroundImage,
+        worldWrapper: getComputedStyle(world).backgroundColor,
+        contentPanel: getComputedStyle(panel).backgroundImage
       };
     });
     expect(road.filter).toContain('brightness(0.82)');
@@ -578,6 +594,8 @@ test.describe('LEGEND persistent world shell v170', () => {
     expect(road.shellCanvas).toContain('0.12');
     expect(road.shellCanvas).toContain('0.22');
     expect(road.shellShade).toContain('0.05');
+    expect(road.worldWrapper).toBe('rgba(0, 0, 0, 0)');
+    expect(road.contentPanel).toContain('0.86');
     await expectNoHorizontalOverflow(page);
   });
 
