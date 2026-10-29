@@ -585,7 +585,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
 
     await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
-    await expect(page.getByRole('heading', { name: 'A Dry Crossing' })).toBeVisible();
+    await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'A Dry Crossing' })).toBeVisible();
     await page.evaluate(() => { Math.random = () => 0.9; });
     await page.locator('[data-crossing-choice="reeds"]').click();
     await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'The reeds turn you back' })).toBeVisible();
@@ -613,7 +613,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
     await page.evaluate(() => { Math.random = () => 0.1; });
     await page.locator('[data-crossing-choice="reeds"]').click();
-    await expect(page.getByRole('heading', { name: 'The shortcut pays off' })).toBeVisible();
+    await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'The shortcut pays off' })).toBeVisible();
 
     const success = await page.evaluate(() => {
       const pl = window.LegendRuntimeV120.loadPlayer();
@@ -861,7 +861,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Road Network opens regional map and stays on map', async ({ page }) => {
     await startFreshCharacter(page, 'MapQA');
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
-    await page.getByRole('button', { name: /Road Network/i }).click();
+    await page.locator('#root').getByRole('button', { name: /Road Network/i }).click();
     await expect(page.locator('#root').getByRole('heading', { name: 'Roads & Regions', exact: true })).toBeVisible();
     await expect(page.getByText('Greyfen', { exact: true })).toBeVisible();
     await expect(page.getByText('Ironpass', { exact: true })).toBeVisible();

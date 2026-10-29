@@ -613,3 +613,110 @@ body.legend-world-shell-active #legend-world-shell-modal-root {
   background:rgba(3,6,4,.15) !important;
   backdrop-filter:blur(1px) !important;
 }
+
+
+/* v0.27.7 — the persistent shell is a glass frame, not a dark veil.
+   Earlier overrides accidentally targeted #root's child even though the shell is
+   appended as a sibling. Match the real DOM hierarchy so these rules actually win. */
+body.legend-world-shell-active {
+  overflow: hidden !important;
+}
+body.legend-world-shell-active #root {
+  height: calc(100vh - 140px) !important;
+  max-height: calc(100vh - 140px) !important;
+  min-height: 0 !important;
+  overflow-x: clip !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(231,201,130,.34) transparent;
+}
+@supports (height: 100dvh) {
+  body.legend-world-shell-active #root {
+    height: calc(100dvh - 140px) !important;
+    max-height: calc(100dvh - 140px) !important;
+  }
+}
+@media (max-width: 1199px) {
+  body.legend-world-shell-active #root {
+    height: calc(100vh - 128px) !important;
+    max-height: calc(100vh - 128px) !important;
+    min-height: 0 !important;
+  }
+  @supports (height: 100dvh) {
+    body.legend-world-shell-active #root {
+      height: calc(100dvh - 128px) !important;
+      max-height: calc(100dvh - 128px) !important;
+    }
+  }
+}
+body.legend-world-shell-active #legend-world-shell-root {
+  background: transparent !important;
+}
+body.legend-world-shell-active #legend-world-shell-root::before {
+  background: none !important;
+}
+body.legend-world-shell-active #legend-world-shell-root::after {
+  background: radial-gradient(ellipse at 50% 100%,rgba(179,150,94,.018),transparent 43%) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-hud {
+  background: linear-gradient(180deg,rgba(26,37,27,.48),rgba(12,20,13,.34)) !important;
+  backdrop-filter: blur(1px) !important;
+  box-shadow: 0 5px 18px rgba(0,0,0,.10) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-panel {
+  background: linear-gradient(150deg,rgba(35,49,34,.34),rgba(13,21,14,.22) 70%) !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,.10) !important;
+  backdrop-filter: blur(1px) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-bottom-bar {
+  background: linear-gradient(180deg,rgba(30,42,30,.36),rgba(11,18,12,.24)) !important;
+  backdrop-filter: blur(1px) !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,.10) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-selected-place,
+body.legend-world-shell-active #legend-world-shell-root .lws-poi-hint,
+body.legend-world-shell-active #legend-world-shell-root .lws-poi-scene-note {
+  background: linear-gradient(145deg,rgba(42,54,36,.34),rgba(13,21,14,.22)) !important;
+  box-shadow: inset 0 1px rgba(255,246,211,.025),0 4px 12px rgba(0,0,0,.07) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-place-option {
+  background: linear-gradient(120deg,rgba(40,53,38,.34),rgba(13,21,14,.22)) !important;
+  backdrop-filter: blur(1px) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-place-option:hover,
+body.legend-world-shell-active #legend-world-shell-root .lws-place-option:focus-visible,
+body.legend-world-shell-active #legend-world-shell-root .lws-place-option.is-selected {
+  background: linear-gradient(120deg,rgba(57,70,46,.50),rgba(18,28,17,.32)) !important;
+}
+body.legend-world-shell-active #legend-world-shell-modal-root {
+  background: rgba(3,6,4,.12) !important;
+  backdrop-filter: blur(1px) !important;
+}
+body.legend-world-shell-active #legend-world-shell-modal-root .lws-modal {
+  background: linear-gradient(145deg,rgba(37,51,36,.54),rgba(12,20,13,.40)) !important;
+  backdrop-filter: blur(2px) !important;
+  box-shadow: 0 12px 34px rgba(0,0,0,.16) !important;
+}
+body.legend-world-shell-active #legend-world-shell-modal-root .lws-modal-content {
+  background: linear-gradient(180deg,rgba(31,43,32,.26),rgba(10,17,11,.18)) !important;
+}
+/* A more-specific background rule used to override the gold primary title CTA. */
+#root .title-v136-rpg .v136-menu-primary,
+#root .title-v136-rpg .v136-menu-primary:hover,
+#root .title-v136-rpg .v136-menu-primary:focus-visible {
+  background: linear-gradient(115deg,#ffe2a0 0%,#d9a650 67%,#a96e35 100%) !important;
+  border-color: #ffedbd !important;
+  color: #241707 !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,.20),inset 0 1px rgba(255,250,222,.72) !important;
+}
+#root .title-v136-rpg .v136-menu-primary .v136-menu-copy strong,
+#root .title-v136-rpg .v136-menu-primary .v136-menu-copy small,
+#root .title-v136-rpg .v136-menu-primary .v136-menu-arrow {
+  color: #241707 !important;
+  text-shadow: none !important;
+}
+#root .title-v136-rpg .v136-menu-primary .v136-menu-icon {
+  opacity: 1 !important;
+  filter: none !important;
+}
