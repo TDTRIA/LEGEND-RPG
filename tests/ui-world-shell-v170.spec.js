@@ -32,9 +32,7 @@ async function enterAshmere(page, name = 'WorldShellQA') {
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
   await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
   const openingBackdropFilter = await page.evaluate(() => {
-    const backdrop = document.querySelector(
-      '.opening-road-v140-prologue-bg, .opening-road-v140-prologue .opening-road-v140-bg, .opening-road-v140-bg'
-    );
+    const backdrop = document.querySelector('.opening-road-v140-prologue .opening-road-v140-bg');
     return backdrop ? getComputedStyle(backdrop).filter : '';
   });
   expect(openingBackdropFilter).toContain('brightness(0.62)');
