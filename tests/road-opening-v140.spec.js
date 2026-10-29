@@ -113,7 +113,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(page.getByRole('button', { name: 'Lift your head' })).toBeVisible();
     await page.getByRole('button', { name: 'Lift your head' }).click();
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
-    await expect(page.locator('.opening-road-v140-card')).toContainText('I heard the bell from the gate');
+    await expect(page.locator('.opening-road-v140-card')).toContainText('I was taking your boots off');
     await expect(page.getByRole('group', { name: 'Your answer to Captain Oric' })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await test.info().attach('dead-lantern-prologue.png', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });

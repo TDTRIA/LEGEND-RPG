@@ -117,9 +117,9 @@ test.describe('LEGEND UI cascade contract v190', () => {
       filter: getComputedStyle(element, '::before').filter
     }));
     expect(scene.image).toContain('title-ashmere-road.webp');
-    expect(scene.image).toContain('rgba(2, 4, 3, 0.68)');
+    expect(scene.image).toContain('rgba(2, 4, 3, 0.42)');
     expect(scene.image).not.toContain('rgba(2, 4, 3, 0.94)');
-    expect(scene.filter).toContain('brightness(1.03)');
+    expect(scene.filter).toContain('brightness(1.05)');
   });
 
   test('production title stays readable and within desktop and 390px touch viewports', async ({ page }) => {
