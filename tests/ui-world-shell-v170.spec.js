@@ -10,10 +10,10 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await expect(page.locator('.v120-title')).toBeVisible();
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
-  expect(titleBackdropFilter).toContain('brightness(1.04)');
+  expect(titleBackdropFilter).toContain('brightness(1.1)');
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
-  expect(titleSceneOverlay).toContain('rgba(2, 5, 3, 0.68)');
+  expect(titleSceneOverlay).toContain('rgba(2, 6, 4, 0.3)');
   expect(titleSceneOverlay).not.toContain('rgba(2, 5, 3, 0.94)');
 }
 
@@ -273,6 +273,15 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(page.locator('#lws-panel-right')).toContainText('Encounter in progress');
     await expect(page.locator('#strike')).toBeVisible();
     await expect(page.locator('#skill')).toBeVisible();
+    const battleVisual = await page.evaluate(() => ({
+      battle: getComputedStyle(document.querySelector('.rpg-battle')).backgroundImage,
+      field: getComputedStyle(document.querySelector('.rpg-battlefield')).backgroundImage,
+      filter: getComputedStyle(document.querySelector('.rpg-battlefield')).filter
+    }));
+    expect(battleVisual.battle).toContain('0.58');
+    expect(battleVisual.battle).toContain('0.5');
+    expect(battleVisual.field).toContain('old-road-south-fork.webp');
+    expect(battleVisual.filter).toContain('brightness(1.14)');
 
     await page.locator('.lws-bottom-bar [data-world-action="combat"]').click();
     const dialog = page.getByRole('dialog', { name: 'Combat encounter' });
@@ -558,8 +567,8 @@ test.describe('LEGEND persistent world shell v170', () => {
       vignette: getComputedStyle(document.body, '::after').boxShadow,
       image: getComputedStyle(document.body, '::before').backgroundImage
     }));
-    expect(town.filter).toContain('brightness(1.04)');
-    expect(town.vignette).toContain('rgba(0, 0, 0, 0.1)');
+    expect(town.filter).toContain('brightness(1.1)');
+    expect(town.vignette).toContain('rgba(0, 0, 0, 0.06)');
     expect(town.image).toContain('ashmere-town.webp');
 
     // A town service used to paint a near-black terminal over the world image.
@@ -571,8 +580,8 @@ test.describe('LEGEND persistent world shell v170', () => {
       screen: getComputedStyle(document.querySelector('.ash099-screen')).backgroundImage
     }));
     expect(service.terminal).toBe('rgba(0, 0, 0, 0)');
-    expect(service.screen).toContain('0.86');
-    expect(service.screen).toContain('0.9');
+    expect(service.screen).toContain('0.54');
+    expect(service.screen).toContain('0.48');
 
     await seedRoad(page, 1, 'ridge');
     const road = await page.evaluate(() => {
@@ -589,14 +598,14 @@ test.describe('LEGEND persistent world shell v170', () => {
         contentPanel: getComputedStyle(panel).backgroundImage
       };
     });
-    expect(road.filter).toContain('brightness(1.04)');
-    expect(road.vignette).toContain('rgba(0, 0, 0, 0.2)');
+    expect(road.filter).toContain('brightness(1.1)');
+    expect(road.vignette).toContain('rgba(0, 0, 0, 0.06)');
     expect(road.image).toContain('location_old_road_main_v1.jpg');
-    expect(road.shellCanvas).toContain('0.12');
-    expect(road.shellCanvas).toContain('0.22');
-    expect(road.shellShade).toContain('0.05');
+    expect(road.shellCanvas).toContain('0.015');
+    expect(road.shellCanvas).toContain('0.025');
+    expect(road.shellShade).toContain('0.012');
     expect(road.worldWrapper).toBe('rgba(0, 0, 0, 0)');
-    expect(road.contentPanel).toContain('0.86');
+    expect(road.contentPanel).toContain('0.54');
     await expectNoHorizontalOverflow(page);
   });
 
