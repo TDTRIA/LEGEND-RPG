@@ -905,3 +905,9 @@ body.legend-world-shell-active #root .rpg-battle .rpg-dialogue p {
 body.legend-world-shell-active #root .rpg-battle .rpg-dialogue-kicker {
   color:#e3c67b !important;
 }
+
+
+/* Active-shell NPC cards also need to outrank the original body/root-scoped fill. */
+body.legend-world-shell-active #root .ash099-screen .ash099-npc-grid .ash099-npc-card {
+  background:linear-gradient(145deg,rgba(12,19,13,.94),rgba(5,9,6,.97)) !important;
+}
