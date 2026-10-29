@@ -365,6 +365,8 @@ test.describe('Greyfen Silted Storehouse v0.25.0', () => {
       const applied = window.LegendAshmereGreyfenEvidenceStoryV099.apply(
         player, 'mara', true, dialogue, () => {}
       );
+      player.flags.greyfenCrossingResponseV261 = 'provisional-notice';
+      player.flags.greyfenNoticePressureCreditV261 = false;
       const goal = window.LegendAshmereGuidanceV099.getGoal(player);
       return {
         applied,
