@@ -105,6 +105,23 @@ test.describe('LEGEND UI cascade contract v190', () => {
     }
   });
 
+  test('account profile landscape remains visible under its heading', async ({ page }) => {
+    await openTitle(page);
+    await page.evaluate(async () => {
+      await window.LegendGameBootstrap.account();
+    });
+    await expect(page.locator('.account09x-hero')).toBeVisible();
+
+    const scene = await page.locator('.account09x-hero').evaluate(element => ({
+      image: getComputedStyle(element, '::before').backgroundImage,
+      filter: getComputedStyle(element, '::before').filter
+    }));
+    expect(scene.image).toContain('title-ashmere-road.webp');
+    expect(scene.image).toContain('rgba(2, 4, 3, 0.68)');
+    expect(scene.image).not.toContain('rgba(2, 4, 3, 0.94)');
+    expect(scene.filter).toContain('brightness(1.03)');
+  });
+
   test('production title stays readable and within desktop and 390px touch viewports', async ({ page }) => {
     await openTitle(page, { width: 1440, height: 900 });
     const titleComputed = await page.locator('.v120-title-hero').evaluate(element => ({
