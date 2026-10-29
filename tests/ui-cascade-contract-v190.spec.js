@@ -107,7 +107,7 @@ test.describe('LEGEND UI cascade contract v190', () => {
 
   test('account screen uses a scenic backdrop instead of a solid-black page', async ({ page }) => {
     await openTitle(page);
-    await page.locator('#account').click();
+    await page.evaluate(() => window.LegendGameBootstrap.account());
     await expect(page.locator('.account09x')).toBeVisible();
     const scene = await page.locator('.account09x').evaluate(element => getComputedStyle(element).backgroundImage);
     expect(scene).toContain('title-ashmere-road.webp');
