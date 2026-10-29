@@ -92,7 +92,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       radius: getComputedStyle(element).borderRadius
     }));
     expect(computed.amber).toBe('#e7c982');
-    expect(computed.radius).toBe('3px');
+    expect(computed.radius).toBe('0px');
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-title-desktop.png');
   });
