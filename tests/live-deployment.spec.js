@@ -92,6 +92,25 @@ test.describe('LEGEND live GitHub Pages smoke test', () => {
     const titleBounds = await page.locator('.v120-title-hero').boundingBox();
     expect(titleBounds && titleBounds.width, 'Desktop title panel should render').toBeGreaterThan(450);
 
+    // This deployment smoke follows a prior-road-experience traveler so it can
+    // verify the veteran-only shortcut. First-time mandatory guidance is covered
+    // by the full road-opening and mobile Playwright specs.
+    await page.evaluate(() => {
+      window.LegendStorage.savePlayer({
+        version: window.LEGEND_DATA.VERSION,
+        username: 'LiveQAPreviousTraveler',
+        town: 'Ashmere',
+        currentRegion: 'Ashmere',
+        level: 4,
+        hp: 80,
+        maxHp: 80,
+        gold: 40,
+        inventory: {},
+        stats: { roadVictories: 2, oldRoadClears: 1 },
+        flags: { firstRoadReturnSeen: true, introV094Complete: true }
+      });
+    });
+
     // Use the visible creation UI. Each run is isolated by Playwright's browser context.
     const travelerName = 'LiveQA' + Date.now().toString().slice(-5);
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
@@ -114,11 +133,14 @@ test.describe('LEGEND live GitHub Pages smoke test', () => {
     await page.getByRole('button', { name: 'Lift your head' }).click();
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
     await page.locator('[data-oric-response="honest"]').click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await expect(page.locator('.rpg-battle')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Help Oric' }).click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await expect(page.locator('#skill')).toContainText('Awaken');
     await page.locator('#skill').click();
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
-    await page.getByRole('button', { name: 'Go straight to Ashmere' }).click();
+    await page.getByRole('button', { name: 'Return to Ashmere (experienced player)' }).click();
     await expect(page.locator('.ash100-town')).toBeVisible();
 
     // Different jobs must render genuinely different controls.
