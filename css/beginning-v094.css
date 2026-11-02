@@ -257,3 +257,17 @@
 /* Standalone Runway raster art replaces the old SVG sprite atlas. */
 .v094-choice-art>img.v094-choice-art-image{left:0!important;top:0!important;width:100%!important;height:100%!important;max-width:none!important;object-fit:contain!important;box-sizing:border-box!important;padding:5px!important;mix-blend-mode:screen;filter:drop-shadow(0 3px 7px rgba(0,0,0,.3))}
 .v094-choice-art{border-color:rgba(215,184,106,.18);background:linear-gradient(145deg,rgba(11,18,13,.75),rgba(0,0,0,.2));border-radius:12px}
+
+
+/* v0.29.1 — crop traveler art using each source sheet's actual grid dimensions. */
+.v094-choice-art>img:not(.v094-choice-art-image){
+  width:var(--v094-atlas-width,500%)!important;
+  height:var(--v094-atlas-height,500%)!important;
+  max-width:none!important;
+  object-fit:fill!important;
+  image-rendering:auto;
+  transform:translateZ(0);
+}
+.v094-choice-art>img.v094-choice-art-image{
+  width:100%!important;height:100%!important;object-fit:contain!important;
+}
