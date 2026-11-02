@@ -115,7 +115,7 @@
     }
     function progress(player) {
       return window.LegendProgressionV100?.status?.(player) ||
-        { level: Math.max(1, Number(player.level || 1)), xp: Number(player.xp || 0), next: 100, progressPercent: 0 };
+        { level: Math.max(1, Number(player.level || 1)), xp: Number(player.xp || 0), next: Math.max(1, Number(player.level || 1)) * 150, progressPercent: 0 };
     }
     const PLACE_TITLE = 'The Bell Cellar';
     const PLACE_SUBTITLE = 'A sealed stair lies beneath the old archive. Something below has been answering the town bell.';
