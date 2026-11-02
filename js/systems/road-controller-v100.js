@@ -205,7 +205,7 @@ const roadResultsView=window.LegendRoadResultsViewV100?.create({
 });
 const roadResults=window.LegendRoadResultsV100?.create({
   getPlayer:p,savePlayer:save,ensureState:ensure,addInventory:inv,clamp,setBellQuestObjective,
-  awardProgress:(player,amount)=>window.LegendProgressionV100?.award(player,amount),
+  awardProgress:(player,amount)=>window.LegendProgressionV100?.award(player,amount),randomInt:rand,
   stopMusic:stopBattleMusic,renderHeader:header,renderShell:shell,escapeHtml:esc,getRoot:root,
   resultView:roadResultsView,
   returnToTown:returnToTownFromRoad,
