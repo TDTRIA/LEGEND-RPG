@@ -13,7 +13,9 @@ async function openTitle(page, viewport = { width: 390, height: 844 }) {
 async function createTravelerToLantern(page, name = 'PhaseTwoQA') {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
   // Capture the actual memory-shaping scene before continuing to the road.
   await expect(page.locator('.v094-beginning-card').first()).toHaveCSS('border-radius', '3px');
