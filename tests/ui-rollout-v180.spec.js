@@ -65,6 +65,8 @@ test.describe('LEGEND UI rollout v180 — Phase 2 screen families', () => {
     await expectNoHorizontalOverflow(page);
 
     await page.locator('[data-oric-response="honest"]').click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await page.getByRole('button', { name: 'Help Oric' }).click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await expect(page.locator('.rpg-battle')).toHaveCSS('border-radius', '3px');
     await expect(page.locator('.rpg-command-grid')).toBeVisible();
