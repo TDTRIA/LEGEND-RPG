@@ -81,7 +81,9 @@ async function tap(page, locator) {
 async function startFreshCharacter(page, name) {
   await openTitle(page);
   await tap(page, page.getByRole('button', { name: /Begin Your Journey/i }));
-    await page.getByRole('button', { name: /Skip the annals/i }).click();
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Name').fill(name);
   await tap(page, page.locator('#v094Next'));
   await tap(page, page.locator('[data-gender="unspoken"]'));
@@ -125,7 +127,9 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await expect.poll(() => page.evaluate(() => window.LEGEND_DATA?.VERSION)).toBe(`v${version}`);
     await expectNoHorizontalOverflow(page);
     await tap(page, page.getByRole('button', { name: /Begin Your Journey/i }));
-    await page.getByRole('button', { name: /Skip the annals/i }).click();
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
     await page.locator('#v094Name').fill('MobileCreationQA');
     await tap(page, page.locator('#v094Next'));
     await tap(page, page.locator('[data-gender="unspoken"]'));
@@ -227,7 +231,9 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await expectNoHorizontalOverflow(page);
 
     await tap(page, page.getByRole('button', { name: /Begin Your Journey/i }));
-    await page.getByRole('button', { name: /Skip the annals/i }).click();
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
     await page.locator('#v094Name').fill('MobileOpeningRoadQA');
     await tap(page, page.locator('#v094Next'));
     await tap(page, page.locator('[data-gender="unspoken"]'));
