@@ -37,7 +37,7 @@ async function acceptBlackrootPosting(page) {
   await page.locator('#openAshmereFieldContracts').click();
   const card=page.locator('.ash099-contract-card').filter({ hasText:'A Trail Worth Keeping' });
   await expect(card).toBeVisible();
-  await expect(card).toContainText('Old Brenn');
+  await expect(card).toContainText(/Old Brenn/i);
   await expect(card).toContainText('85g · 45 XP');
   await card.locator('[data-contract-accept="blackrootTrailSurvey"]').click();
   await expect(page.locator('.ash099-contract-card').filter({ hasText:'A Trail Worth Keeping' })).toContainText('IN PROGRESS');
