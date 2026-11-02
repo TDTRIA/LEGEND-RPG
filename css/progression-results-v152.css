@@ -153,3 +153,45 @@
   .v152-expedition-metrics>div:last-child{grid-column:1 / -1}
 }
 @media(prefers-reduced-motion:reduce){.v152-results-frame{animation:none}}
+
+
+/* In-world milestone presentation: the region remains visible behind the growth ritual. */
+.v152-growth-backdrop{overflow:hidden;background:#060a07}
+.v152-growth-backdrop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;opacity:.42;filter:saturate(.62) sepia(.15) contrast(1.06)}
+.v152-growth-backdrop span{position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,9,6,.58),rgba(4,8,5,.88)),radial-gradient(ellipse at 50% 18%,rgba(205,168,85,.2),transparent 63%)}
+.v152-levelup-panel{border-radius:3px!important;border:1px solid rgba(220,188,112,.72)!important;background:linear-gradient(145deg,rgba(19,26,19,.94),rgba(4,9,6,.96) 74%)!important;box-shadow:0 30px 110px #000d,inset 0 0 0 4px rgba(210,179,106,.055),inset 0 1px #fff2!important}
+.v152-levelup-panel:before,.v152-levelup-panel:after{content:"";position:absolute;pointer-events:none;width:38px;height:38px;border-color:#dfc078;opacity:.72}
+.v152-levelup-panel:before{left:7px;top:7px;border-left:1px solid;border-top:1px solid}
+.v152-levelup-panel:after{right:7px;bottom:7px;border-right:1px solid;border-bottom:1px solid}
+.v152-levelup-rule{position:relative;z-index:1;color:#e0c27b}
+.v152-levelup-portrait{border-radius:3px;border:1px solid #dec37f;box-shadow:0 0 0 3px #080d09,0 0 28px rgba(209,172,88,.24)}
+.v152-growth-pointbar,.v152-growth-card,.v152-growth-controls button,.v152-growth-confirm{border-radius:3px}
+.v152-growth-pointbar{background:linear-gradient(100deg,rgba(164,123,49,.14),rgba(7,14,9,.7))}
+.v152-growth-card{background:linear-gradient(155deg,rgba(26,36,27,.88),rgba(6,12,8,.86));border-color:rgba(202,181,124,.25)}
+.v152-growth-card.has-growth{border-color:#e0bf70;background:linear-gradient(155deg,rgba(67,57,30,.85),rgba(10,17,11,.92));box-shadow:inset 0 0 22px rgba(213,175,87,.1)}
+.v152-growth-monogram{border-radius:3px;background:rgba(186,146,61,.14)}
+.v152-growth-controls button{background:linear-gradient(180deg,#253126,#111a13);border-color:#9d8958}
+.v152-growth-confirm{border-radius:3px;background:linear-gradient(180deg,#efd99b,#ac7b37);box-shadow:0 0 26px rgba(193,148,57,.24)}
+.v152-expedition-summary{position:relative;overflow:hidden;border:1px solid rgba(216,187,112,.56);border-radius:3px;background:linear-gradient(145deg,rgba(18,27,20,.94),rgba(5,10,7,.94));box-shadow:0 18px 50px rgba(0,0,0,.42),inset 0 0 0 4px rgba(213,185,117,.045)}
+.v152-expedition-summary:before,.v152-expedition-summary:after{content:"";position:absolute;pointer-events:none;width:26px;height:26px;border-color:#d4b56d;opacity:.7}
+.v152-expedition-summary:before{top:5px;left:5px;border-top:1px solid;border-left:1px solid}
+.v152-expedition-summary:after{right:5px;bottom:5px;border-right:1px solid;border-bottom:1px solid}
+.v152-expedition-summary-head>span{color:#dfc27b;letter-spacing:.22em}
+.v152-expedition-summary-head>strong{font-size:clamp(1.5rem,3vw,2rem);text-shadow:0 2px 20px rgba(211,177,99,.16)}
+.v152-expedition-metrics>div{border-radius:3px;border-color:rgba(197,176,121,.23);background:linear-gradient(145deg,rgba(4,9,6,.85),rgba(16,25,17,.76))}
+.v152-expedition-metrics>div strong{color:#f4df9e}
+.v152-expedition-loot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0 16px;padding:12px;border:1px solid rgba(209,184,118,.4);border-radius:3px;background:linear-gradient(135deg,rgba(19,27,20,.96),rgba(5,10,7,.94))}
+.v152-expedition-loot-item{display:flex;align-items:center;gap:10px;min-width:0;padding:10px;border:1px solid rgba(198,179,121,.2);background:rgba(1,5,3,.48)}
+.v152-expedition-loot-glyph{display:grid;place-items:center;width:42px;height:42px;flex:0 0 42px;border:1px solid rgba(217,187,112,.4);background:rgba(162,127,51,.1);color:#e9ce83;font-size:1.3rem}
+.v152-expedition-loot-item small,.v152-expedition-loot-item strong,.v152-expedition-loot-item em{display:block;min-width:0}
+.v152-expedition-loot-item small{color:#99a791;font-size:.57rem;font-weight:900;letter-spacing:.13em}
+.v152-expedition-loot-item strong{margin-top:4px;color:#ead9ac;font-size:.87rem}
+.v152-expedition-loot-item em{margin-top:3px;color:#9aa995;font-size:.68rem;font-style:normal;line-height:1.3}
+.v152-expedition-loot-item.is-found{border-color:rgba(220,193,116,.58);background:linear-gradient(120deg,rgba(133,103,41,.19),rgba(4,8,5,.45))}
+.v152-expedition-loot-item.is-scarce{opacity:.78}
+.v152-expedition-growth{border-radius:3px;border-color:rgba(224,192,111,.48);background:linear-gradient(100deg,rgba(164,126,49,.16),rgba(7,13,8,.72))}
+.exp150-return-report{border-radius:3px;border-color:rgba(205,183,125,.35);background:linear-gradient(145deg,rgba(12,20,14,.9),rgba(4,9,6,.92))}
+.exp150-return-report-head{border-bottom-color:rgba(207,183,122,.22)}
+.exp150-return-report-columns>section{border-radius:3px;background:rgba(2,7,4,.38)}
+@media(max-width:660px){.v152-expedition-loot{grid-template-columns:1fr}.v152-expedition-loot-item{min-height:58px}}
+@media(prefers-reduced-motion:reduce){.v152-levelup-panel,.v152-growth-card,.v152-growth-point-track span{transition:none!important}}
