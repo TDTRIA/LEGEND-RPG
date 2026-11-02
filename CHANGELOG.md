@@ -1,3 +1,9 @@
+## v0.30.1 — Mandatory annals and release follow-through
+
+- Remove the leftover, non-functional “Skip the annals” control from the opening renderer. All three chapters now remain the only path from the opening lore into traveler creation.
+- Keep the production version labels and package metadata synchronized at v0.30.1; refresh game-data, opening-prologue, and runtime cache keys so clients receive the corrected renderer.
+- Preserve the existing three-chapter Playwright flow and the assertion that the skip control is absent.
+
 ## v0.30.0 — Old Road balance, mandatory annals, and Greyfen field slice
 
 - Make all three opening annals mandatory before traveler creation; remove the skip control and update the first-session Playwright flows.

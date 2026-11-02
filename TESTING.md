@@ -81,7 +81,7 @@ npm run test:e2e:report
 
 ## Current validation checkpoint (2026-11-02)
 
-Production main is **v0.30.0**, integrated by [PR #82](https://github.com/TDTRIA/LEGEND-RPG/pull/82) as commit [`8080350`](https://github.com/TDTRIA/LEGEND-RPG/commit/80803500edf748a57e8e631fe8e5fab5c0a90b86). The exact PR head passed the critical JavaScript syntax gate. The full browser suite had not completed when the merge was made to avoid blocking the requested playable main-branch delivery; do **not** describe that PR-head suite as green.
+Production main is **v0.30.1**, integrated by [PR #82](https://github.com/TDTRIA/LEGEND-RPG/pull/82) as commit [`8080350`](https://github.com/TDTRIA/LEGEND-RPG/commit/80803500edf748a57e8e631fe8e5fab5c0a90b86). The exact PR head passed the critical JavaScript syntax gate. The full browser suite had not completed when the merge was made to avoid blocking the requested playable main-branch delivery; do **not** describe that PR-head suite as green.
 
 Post-merge verification:
 - [Main Playwright workflow #41528945524](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41528945524) is running against merge commit `8080350`. Its result and the later main state must be checked before reporting the full regression suite as passed.
@@ -91,7 +91,7 @@ Post-merge verification:
 
 The default workflow runs the full regression suite on Desktop Chrome plus the touch-critical `mobile-smoke.spec.js` suite on Mobile Safari and Mobile Chrome. CI uses two workers and retries failing tests once; the optional full matrix adds Firefox and all tests on the mobile projects. Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) rather than relying on a historical count.
 
-Coverage added with v0.30.0 includes mandatory annals, rare Road Token and Bell Fragment outcomes, combat XP balance, fragment-aware return dialogue, Greyfen Ferry Nets, the saved Silted Storehouse detour, the Waterline Gauge handoff, and the right-panel expedition-return action.
+Coverage added with v0.30.0/v0.30.1 includes mandatory three-part annals with no skip control, rare Road Token and Bell Fragment outcomes, combat XP balance, fragment-aware return dialogue, Greyfen Ferry Nets, the saved Silted Storehouse detour, the Waterline Gauge handoff, and the right-panel expedition-return action.
 
 ## Remaining high-value test gaps
 
