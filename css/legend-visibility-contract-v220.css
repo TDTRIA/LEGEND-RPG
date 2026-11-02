@@ -1176,3 +1176,25 @@ body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon sv
   #root .v152-expedition-reward-line { grid-template-columns: 1fr; }
   #root .v152-expedition-banner { min-height: 154px; }
 }
+
+
+/* v0.30.2 — show rare route proof as an actual inventory item, not a text glyph. */
+#root .v152-expedition-reward-tile .v152-expedition-reward-art {
+  display: block;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 7px rgba(0,0,0,.45));
+}
+#root .v152-expedition-reward-tile.is-unfound .v152-expedition-reward-art {
+  opacity: .62;
+  filter: grayscale(.35) drop-shadow(0 2px 5px rgba(0,0,0,.35));
+}
+@media(max-width:620px) {
+  #root .v152-expedition-reward-tile .v152-expedition-reward-art {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+  }
+}
