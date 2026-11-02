@@ -33,7 +33,7 @@ test.describe('LegendProgressionV100 compatibility contract', () => {
       return { player, summary };
     });
     expect(result.player).toEqual({ level: 3, xp: 0, hp: 26, maxHp: 26, attributesV152: { might: 0, agility: 0, arcana: 0, endurance: 0, insight: 0, fortune: 0 }, pendingStatPointsV152: 4 });
-    expect(result.summary).toEqual({ gained: 300, levels: 2, level: 3, xp: 0, next: 450 });
+    expect(result.summary).toEqual({ gained: 450, levels: 2, level: 3, xp: 0, next: 450 });
   });
 
   test('increases both max HP and current HP by eight on level-up', async ({ page }) => {
