@@ -81,13 +81,12 @@ npm run test:e2e:report
 
 ## Current validation checkpoint (2026-11-02)
 
-Production main is **v0.30.1**, integrated by [PR #82](https://github.com/TDTRIA/LEGEND-RPG/pull/82) as commit [`8080350`](https://github.com/TDTRIA/LEGEND-RPG/commit/80803500edf748a57e8e631fe8e5fab5c0a90b86). The exact PR head passed the critical JavaScript syntax gate. The full browser suite had not completed when the merge was made to avoid blocking the requested playable main-branch delivery; do **not** describe that PR-head suite as green.
+Production main is **v0.30.1**. The v0.30.0 gameplay slice was integrated by [PR #82](https://github.com/TDTRIA/LEGEND-RPG/pull/82) as commit [`8080350`](https://github.com/TDTRIA/LEGEND-RPG/commit/80803500edf748a57e8e631fe8e5fab5c0a90b86). The mandatory-annals renderer/version/cache patch is on main at [`034ca72`](https://github.com/TDTRIA/LEGEND-RPG/commit/034ca72d44e4c6e8a65315dcd8b2ba97105b48fa), and deterministic Road Token tests were added at [`e0dd3ed`](https://github.com/TDTRIA/LEGEND-RPG/commit/e0dd3ed495336b4c363380ee57e475a9936bebf8).
 
 Post-merge verification:
-- [Main Playwright workflow #41528945524](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41528945524) is running against merge commit `8080350`. Its result and the later main state must be checked before reporting the full regression suite as passed.
-- [Pages deployment #41528944353](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41528944353) succeeded for merge commit `8080350`.
-- After the README, roadmap, changelog, and story-spine Markdown updates, [the latest Pages workflow #41529261571](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41529261571) is running for main commit `a8b8034`. These Markdown-only commits do not trigger the Playwright workflow.
-- The live GitHub Pages game is https://tdtria.github.io/LEGEND-RPG/. Verify the latest Pages run before claiming the final documentation commit is deployed.
+- [Main Playwright workflow #41530579050](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41530579050) is running on `e0dd3ed`. Setup, browser installation, and the critical JavaScript syntax gate passed; the full browser suite is still running. Do **not** call the full suite green until this run completes.
+- [Pages deployment #41530576562](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41530576562) succeeded for `e0dd3ed`.
+- The live GitHub Pages game is https://tdtria.github.io/LEGEND-RPG/.
 
 The default workflow runs the full regression suite on Desktop Chrome plus the touch-critical `mobile-smoke.spec.js` suite on Mobile Safari and Mobile Chrome. CI uses two workers and retries failing tests once; the optional full matrix adds Firefox and all tests on the mobile projects. Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) rather than relying on a historical count.
 

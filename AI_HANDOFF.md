@@ -1,12 +1,10 @@
 # AI Handoff — LEGEND: The Awakening
 
-Last updated: 2026-10-24. GitHub `main` is the source of truth; read this before changing code.
-
 Last updated: 2026-11-02. GitHub `main` is the source of truth; inspect current source and Actions before changing code.
 
 ## Current production checkpoint — v0.30.1
 
-- **Main release:** v0.30.0, integrated by [PR #82](https://github.com/TDTRIA/LEGEND-RPG/pull/82), squash commit [`8080350`](https://github.com/TDTRIA/LEGEND-RPG/commit/80803500edf748a57e8e631fe8e5fab5c0a90b86). Later Markdown-only documentation updates are on main at `a8b8034`.
+- **Main release:** v0.30.1. The v0.30.0 gameplay slice was integrated by [PR #82](https://github.com/TDTRIA/LEGEND-RPG/pull/82), squash commit [`8080350`](https://github.com/TDTRIA/LEGEND-RPG/commit/80803500edf748a57e8e631fe8e5fab5c0a90b86); the mandatory-annals renderer/version/cache patch is on main at [`034ca72`](https://github.com/TDTRIA/LEGEND-RPG/commit/034ca72d44e4c6e8a65315dcd8b2ba97105b48fa), and the deterministic token-reward regression was added at [`e0dd3ed`](https://github.com/TDTRIA/LEGEND-RPG/commit/e0dd3ed495336b4c363380ee57e475a9936bebf8).
 - **Open PRs:** none. The work previously split among #81, #80, #79, #78, #54, #41 and #7 was closed after documenting whether it was ported, superseded, stale, or intentionally unapproved.
 - **Runtime:** the existing classic-JavaScript browser game. Preserve save key `legend-roads-of-ashmere-v09`, traveler record structure, current combat system, and current script-loading architecture. No migration or engine reboot is authorized by this release.
 - **Progression balance:** five-stage Old Road; five Road Tokens still unlock Greyfen. A completed expedition has a 65% Road Token roll; early returns do not award a completion token. Five-stage baseline reward at Road Pressure 20 is 80g and 33 XP. Reed Cut Bell Fragment chance is 35%, recurring POI clue interaction chance is 25%, Lantern Wisp drop chance is 15%. The road forces an encounter after two travel stretches; higher pressure makes threats stronger.
@@ -14,7 +12,7 @@ Last updated: 2026-11-02. GitHub `main` is the source of truth; inspect current 
 - **Results/progression UI:** expedition debrief uses an illustrated field ledger and XP bar; level-up keeps the existing saved attribute-allocation overlay with an Old Road scene backdrop.
 - **Greyfen additions:** `Patch the Ferry Nets` Work Board contract; optional Silted Storehouse with a disclosed one-hour/+6 Pressure cost and one Dry Peat Brick, saved map/journal state, return to Mossbarrow and a report that does not block the Waterline Gauge.
 - **Story evidence:** the first Reed Cut return flag records whether a Bell Fragment was actually recovered (including a Wisp drop), so Mara/Brenn dialogue must not claim an object the player did not find. Older saves without that flag retain legacy dialogue behavior; no migration is required.
-- **Verification:** the PR head's critical JS syntax gate passed. The full PR-head Playwright suite was still in progress at merge. Post-merge [main Playwright run #41528945524](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41528945524) is running on `8080350`; [Pages deployment #41528944353](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41528944353) succeeded for that merge commit. [Latest Pages build #41529261571](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41529261571) is running for `a8b8034` after docs-only updates. Do not claim Playwright or latest Pages verification is complete until those runs finish.
+- **Verification:** the current main/test head is [`e0dd3ed`](https://github.com/TDTRIA/LEGEND-RPG/commit/e0dd3ed495336b4c363380ee57e475a9936bebf8). [Playwright run #41530579050](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41530579050) passed setup, browser installation, and the critical JavaScript syntax gate; its full browser suite is running. [Pages deployment #41530576562](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41530576562) succeeded for the same commit. Do not claim the full regression suite has passed until the Playwright run completes.
 - **Next high-value work:** watch those Actions runs; fix concrete test failures if they appear; test the Bell Cellar, Greyfen Marsh Path, and Silted Storehouse with a human playthrough; put the current demo in front of 3–5 players; review remaining asset/load performance. In particular, the Claude playtest's duplicated large wordmark/first-load weight was **not** addressed in v0.30.0.
 
 ## Compatibility and story guardrails
@@ -23,7 +21,7 @@ Read `docs/CANON.md` before lore changes. The Veil, Last Mercy/Hollow Saint rela
 
 ## Historical handoff notes
 
-The following sections are preserved for architectural and historical context only. Their old build versions, open-PR lists, pending-merge notices, and next-priority statements are superseded by the v0.30.0 checkpoint above.
+The following sections are preserved for architectural and historical context only. Their old build versions, open-PR lists, pending-merge notices, and next-priority statements are superseded by the v0.30.1 checkpoint above.
 
 ## Active PR — v0.22.1 Runway art pass, daily contracts, and Road Cache (PR #33)
 
