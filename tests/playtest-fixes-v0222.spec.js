@@ -66,6 +66,8 @@ test('the traveler portrait follows the chosen form, not the class art', async (
   // Adventurer class art is a woman; a traveler who chose "Man" must not see it.
   await createTraveler(page, { gender: 'man', className: 'Adventurer' });
   await page.locator('[data-oric-response="defiant"]').click();
+  await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+  await page.getByRole('button', { name: 'Help Oric' }).click();
   const portrait = page.locator('.rpg-hero-portrait img');
   await expect(portrait).toHaveAttribute('src', /class-warrior\.webp/);
 
@@ -80,7 +82,7 @@ test('the traveler portrait follows the chosen form, not the class art', async (
   });
   expect(forms.woman).toMatch(/class-adventurer\.webp/);
   expect(forms.nonbinary).toMatch(/class-mage\.webp/);
-  expect(forms.unspoken).toMatch(/legend-icon-traveler\.webp/);
+  expect(forms.unspoken).toMatch(/class-warrior\.webp/);
   expect(forms.legacy).toMatch(/class-ranger\.webp/);
 });
 
