@@ -67,7 +67,9 @@ async function startFreshCharacter(page, name = 'QATraveler', options = {}) {
     });
   }
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();
@@ -879,7 +881,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('blank traveler name shows inline validation without leaving creation', async ({ page }) => {
     await openTitle(page);
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
     await page.locator('#v094Next').click();
     await expect(page.locator('#v094NameError')).toHaveText('Please enter a traveler name.');
     await expect(page.getByRole('heading', { name: 'What name shall you carry?' })).toBeVisible();
@@ -1045,7 +1049,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('character creation choices are clearly selected and progress is explained', async ({ page }) => {
     await openTitle(page);
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
     await page.locator('#v094Name').fill('ChoiceQA');
     await page.locator('#v094Next').click();
     await expect(page.locator('.v094-stepper')).toContainText('STEP 2 OF 7');
@@ -1922,7 +1928,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('traveler creation shapes a soul with an unnamed presence and raster LEGEND wordmark', async ({ page }) => {
     await openTitle(page);
     await page.locator('#newPrimary').click();
-    await page.getByRole('button', { name: /Skip the annals/i }).click();
+    await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
     await expect(page.locator('.v140-creation')).toBeVisible();
     await expect(page.locator('.v140-creation-brand .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
     await expect(page.locator('.v140-creation-brand img')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
