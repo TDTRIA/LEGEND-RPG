@@ -1447,6 +1447,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
         seen: pl.flags.firstRoadReturnSeen,
         route: pl.flags.firstRoadReturnRoute,
         discovery: pl.flags.firstRoadReturnDiscovery,
+        fragmentFound: pl.flags.firstRoadReturnBellFragmentFound,
         objective: pl.questLog.find(item => item.startsWith('The Bell That Rang Once:'))
       };
     });
@@ -1544,7 +1545,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'StoryReedQA');
     await page.evaluate(() => window.LegendAshmereV099.route('routes'));
     await enterOldRoadFromDeparture(page);
-    await page.locator('#routeReeds').click();
+    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('routeReeds')?.click(); Math.random = random; });
     await page.evaluate(() => {
       const rt = window.LegendRuntimeV120;
       const pl = rt.loadPlayer();
@@ -1570,6 +1571,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
     expect(result.route).toBe('reeds');
     expect(result.discovery).toBe('marsh-watcher-tracks');
+    expect(result.fragmentFound).toBe(true);
     expect(result.objective).toMatch(/Blackroot Bend/i);
   });
 
