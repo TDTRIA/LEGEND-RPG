@@ -1,21 +1,16 @@
-## Unreleased — Playtest bug fixes (from a full live playthrough of v0.22.1)
+## Unreleased
 
-- The traveler's portrait now follows the form chosen at creation (the same image shown on that choice card) in combat, the Traveler record, and the Forge. Previously it always used the class art, so a "Man" Adventurer was shown as a woman. Saves without a form fall back to class art.
-- The Town Square NPC cards no longer let the 186px portraits spill over Mara, Brenn, and Oric's names.
-- The expedition return summary now shows the trip as it ended (stops reached and final Road Pressure) instead of the already-reset "0/5" state.
-- Resting by the fire is limited to once per stop (like Keep Watch), is recorded as a camp report in the field journal and return summary, and says plainly when you were already at full health. Previously it could be repeated to burn supplies and skip days with no healing.
-- The Bell Cellar banner art now loads (a relative `url()` in a CSS custom property resolved against `css/`), the place name is shown once in the header while the banner names the current room, the boss button no longer shows developer wording, and its battle is labeled "The Bell Cellar" instead of "The Old Road".
-- The name step clears its "Please enter a traveler name" error as you type, and Enter submits the name.
-- The locked search action at the first fork now says to choose a route first instead of "Inspect the marker first".
-- Singular wording for "1 Road Token" and "1 discovery".
-- New Playwright coverage: `tests/playtest-fixes-v0222.spec.js`.
+No production changes are currently recorded for a future release. Add merged work here only when it is not yet included in a numbered build.
 
-- Phase 8 adds a Greyfen-only `Peat-Wrapped Parcel` recipe (2 Dry Peat Bricks + 1 Cloth Scrap) with a 34g base sale value, connecting local salvage to crafting and the existing Float Market sale flow. It reuses the existing trade-bundle art family and save/inventory pipeline.
-- Correct the CSS cascade contract after Phase 7 added the Storehouse stylesheet: assert its placement in the stack and the current count of 39 instead of the stale count of 38. Add Greyfen resource-loop regression coverage for region gating, ingredient consumption, sale value, and reload persistence.
-- Phase 9 adds a saved Greyfen crossing-response choice: spend one Wood Scrap to post a provisional, non-accusatory safety notice and reduce the first chosen Marsh Path route's added Road Pressure by up to 5 once, or keep the report sealed until the missing closure order is found. Neither choice names an author or resolves the missing order.
-- Synchronize the displayed/runtime version to v0.26.0 and refresh the cache keys for the changed archive, guidance, evidence, and marsh modules. Add regression coverage for both outcomes, resource cost, save/reload, and the one-time pressure effect.
-- Phase 10 adds the Greyfen-only Marshguard Coat (level 2, 32 defense, 280g) to the existing smithy, guards its purchase by region, and allows already-owned regional gear to be re-equipped in another town. Its current icon is a temporary reuse of the local chain-armor art; a unique raster remains open.
-- Synchronize the displayed/runtime version to v0.27.0, refresh data/forge/art cache keys, and cover regional visibility, purchase/equip, defense data, and save persistence with Playwright.
+## v0.27.0 — Greyfen progression and world-shell stabilization (main, 2026-10-29)
+
+- Continue the production Greyfen loop with the Peat-Wrapped Parcel recipe, saved crossing-response choice, one-time route-pressure relief, and the regional level-2 Marshguard Coat (32 Defense, 280g). The coat currently reuses chain-armor art; dedicated raster artwork remains open.
+- Main includes the Greyfen Marsh Path, evidence/story handoffs, resource progression, Storehouse delve content, and Ashmere return/report systems. This is substantial Greyfen content, not proof that Greyfen or the first three towns are complete.
+- Integrate the title/Dead Lantern opening, persistent world-shell presentation, and global scene visibility changes while preserving the existing browser runtime, save key, and combat rules.
+- The October 29 follow-up fixes the persistent-shell DOM/canvas cascade, keeps the game viewport inside the HUD frame, restores a high-contrast title action, adjusts NPC portrait framing, and separates the environment image from text surfaces.
+- Regression status on the latest main commit [d098e57](https://github.com/TDTRIA/LEGEND-RPG/commit/d098e57bd01f99d60ad9d1512a09e941916f147c): syntax checks passed; Playwright reported **207 passed, 3 failed, 1 skipped** in [run 40937100701](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40937100701). The Pages deployment workflow succeeded in [run 40937098658](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40937098658), but the live smoke step was skipped because the Playwright job failed. Do not call this checkpoint fully verified.
+- Failure triage: one Ashmere visibility assertion requires `background:none` although the active shell intentionally uses a low-opacity gradient; one NPC portrait/name overlap measures 138px and needs a layout correction; one Old Road assertion compares `0.90` to a browser-serialized `0.9` and needs a robust computed-value assertion.
+- Follow-up issue [#76](https://github.com/TDTRIA/LEGEND-RPG/issues/76) tracks reducing the overly opaque Old Road/combat panel fills while preserving text contrast. Open PR [#54](https://github.com/TDTRIA/LEGEND-RPG/pull/54) adds one optional Storehouse salvage stop and is not part of main until merged.
 
 ## v0.22.0 — Realm boot sequence, game-client title screen, and cinematic transitions
 
