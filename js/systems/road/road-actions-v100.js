@@ -86,6 +86,7 @@ function startExpedition(){
  s.campRestUsed={};
  s.roadStepsSinceEncounterV290=0;
  s.routeChoice=null;
+ s.routeBellFragmentFoundV300=false;
  s.currentNodeIdV160=null;
  s.visitedNodeIdsV160=[];
  s.discoveredNodeIdsV160=[];
