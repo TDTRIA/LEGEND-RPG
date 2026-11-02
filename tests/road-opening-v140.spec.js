@@ -70,7 +70,9 @@ async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) 
     });
   }
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
@@ -99,6 +101,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await openTitle(page);
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
     await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Skip the annals/i })).toHaveCount(0);
     await expect(page.locator('.opening-lore-v220')).toContainText('human kingdoms and monster nations');
     await page.getByRole('button', { name: /^Continue$/ }).click();
     await expect(page.getByRole('heading', { name: 'The Pact Beneath the Stone' })).toBeVisible();
@@ -264,7 +267,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(page.locator('.exp100-head h1')).toHaveText('Reedwatch Shelter');
     await page.locator('#push').click();
     await expect(page.locator('.exp100-head h1')).toHaveText('Greyfen Approach');
-    await page.locator('#finish').click();
+    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
     await expect(page.getByRole('heading', { name: 'Expedition Secured' })).toBeVisible();
     await expect(page.getByRole('region', { name: 'Expedition field report' })).toContainText('High Ridge');
     await expect(page.getByRole('region', { name: 'Expedition field report' })).toContainText('The Split Milestone');
