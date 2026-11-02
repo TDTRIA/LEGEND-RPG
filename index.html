@@ -7,7 +7,7 @@
   <link rel="icon" type="image/webp" href="assets/generated/ui/icons/service-milestone.webp">
   <link rel="stylesheet" href="css/style.css?v=0.6.4">
   <link rel="stylesheet" href="css/game-ui-v090.css?v=0.22.1-runway-world-bg">
-  <link rel="stylesheet" href="css/beginning-v094.css?v=0.22.1-runway-choices-r2">
+  <link rel="stylesheet" href="css/beginning-v094.css?v=0.29.1-creator-atlas-crop">
   
   <link rel="stylesheet" href="css/road-combat-v093.css?v=0.9.3">
   <link rel="stylesheet" href="css/ashmere-v099.css?v=0.9.x-polish">
@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="css/realm-portal-gamefeel-v09x.css?v=0.9.x-gamefeel-1">
   <link rel="stylesheet" href="css/mobile-safety-v09x.css?v=0.9.x-mobile-safety-3">
   <link rel="stylesheet" href="css/road-expedition-v100.css?v=0.29.0-immersive-field-contracts">
-  <link rel="stylesheet" href="css/ashmere-town-v100.css?v=0.29.0-service-scene-headers">
+  <link rel="stylesheet" href="css/ashmere-town-v100.css?v=0.29.1-crisp-hub-icons">
   <link rel="stylesheet" href="css/ashmere-workshops-v100.css?v=0.29.0-rpg-service-panels">
   <link rel="stylesheet" href="css/region-travel-v100.css?v=0.22.1-ashmere-map-art">
   <link rel="stylesheet" href="css/title-cinematic-v120.css?v=0.21.0-runway-logo-fallback">
@@ -51,7 +51,7 @@
   <link rel="stylesheet" href="css/ashmere-world-visibility-v181.css?v=0.27.3-ashmere-brightness-fix-3">
   <link rel="stylesheet" href="css/combat-scene-staging-v210.css?v=0.27.4-combat-scene-brightness-2">
   <link rel="stylesheet" href="css/opening-lore-v220.css?v=0.27.5-annals-opening">
-  <link rel="stylesheet" href="css/title-screen-renewal-v220.css?v=0.27.6-global-visibility-1">
+  <link rel="stylesheet" href="css/title-screen-renewal-v220.css?v=0.29.1-realm-dispatch">
   <link rel="stylesheet" href="css/legend-visibility-contract-v220.css?v=0.27.8-readable-panels-1">
 </head>
 <body>
@@ -151,7 +151,7 @@
   <script defer src="js/systems/progression-v100.js?v=0.23.0-growth-choice"></script>
   <script defer src="js/systems/player/progression-level-up-v152.js?v=0.23.0-level-up"></script>
   <script defer src="js/systems/quest-log-v120.js?v=0.20.36-quest-log-service-1"></script>
-  <script defer src="js/systems/assets-v090.js?v=0.29.0-location-scenes"></script>
+  <script defer src="js/systems/assets-v090.js?v=0.29.1-town-icons"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="js/systems/supabase-config-v09x.js?v=0.9.x-auth-2"></script>
   <script defer src="js/systems/account/cloud-traveler-slots-v09x.js?v=0.20.36-account-cloud-extraction-1"></script>
@@ -163,8 +163,8 @@
   <script defer src="js/screens/settings-screen-v090.js?v=0.22.1-runway-settings-icons"></script>
   <script defer src="js/systems/title-audio-v120.js?v=0.20.36-title-audio-extraction-1"></script>
   <script defer src="js/screens/title-extras-v120.js?v=0.20.36-title-extras-extraction-1"></script>
-  <script defer src="js/screens/title-dispatches-v140.js?v=0.21.1-creation-field-contracts"></script>
-  <script defer src="js/screens/title-screen-view-v120.js?v=0.27.0-dead-lantern-title-copy-1"></script>
+  <script defer src="js/screens/title-dispatches-v140.js?v=0.29.1-current-roadmap"></script>
+  <script defer src="js/screens/title-screen-view-v120.js?v=0.29.1-realm-dispatch"></script>
   <script defer src="js/screens/title-screen-v120.js?v=0.21.1-loading-scenes"></script>
   <script defer src="js/game.js?v=0.20.40-dispatches-resume"></script>
   <script defer src="js/content/roads/old-road-v100.js?v=0.20.37-road-enemy-behavior"></script>
@@ -172,7 +172,7 @@
   <script defer src="js/systems/player/player-record-v094.js?v=0.22.1-cache-key"></script>
   <script defer src="js/systems/player/player-creation-options-v094.js?v=0.21.1-traveler-choice-benefits"></script>
   <script defer src="js/systems/player/player-creation-steps-v094.js?v=0.22.1-runway-choices"></script>
-  <script defer src="js/systems/player/player-creation-view-v094.js?v=0.22.1-runway-choices-r3"></script>
+  <script defer src="js/systems/player/player-creation-view-v094.js?v=0.29.1-atlas-crops"></script>
   <script defer src="js/systems/beginning-v094.js?v=0.21.1-traveler-choice-benefits"></script>
   <script defer src="js/systems/region-view-v100.js?v=0.22.1-ashmere-map-art-r3"></script>
   <script defer src="js/systems/region-service-v100.js?v=0.20.36-region-service-extraction-1"></script>
@@ -199,7 +199,7 @@
   <script defer src="js/systems/dungeons/bell-vault-v100.js?v=0.23.0-cellar-results"></script>
   <script defer src="js/systems/town/ashmere-view-v099.js?v=0.29.0-service-scene-header"></script>
   <script defer src="js/systems/town/ashmere-guidance-v099.js?v=0.26.0-crossing-response-guidance"></script>
-  <script defer src="js/systems/town/ashmere-destination-catalog-v099.js?v=0.25.0-storehouse-catalog"></script>
+  <script defer src="js/systems/town/ashmere-destination-catalog-v099.js?v=0.29.1-daily-board"></script>
   <script defer src="js/systems/town/ashmere-hub-v099.js?v=0.21.0-bell-vault"></script>
   <script defer src="js/systems/town/ashmere-routes-v099.js?v=0.20.36-routes-extraction-1"></script>
   <script defer src="js/systems/town/ashmere-navigation-v099.js?v=0.25.0-storehouse-route"></script>
@@ -215,8 +215,8 @@
   <script defer src="js/systems/road/road-decisions-v100.js?v=0.21.0-world-rework"></script>
   <script defer src="js/systems/road/road-poi-outcomes-v100.js?v=0.21.0-trip-records"></script>
   <script defer src="js/systems/road/road-discovery-v100.js?v=0.21.0-world-rework"></script>
-  <script defer src="js/systems/road/road-view-v100.js?v=0.29.0-stage-scenes-discovery"></script>
-  <script defer src="js/systems/road/road-actions-v100.js?v=0.21.0-pressure-encounters-clock"></script>
+  <script defer src="js/systems/road/road-view-v100.js?v=0.29.1-local-scene-fallbacks"></script>
+  <script defer src="js/systems/road/road-actions-v100.js?v=0.29.1-encounter-cadence"></script>
   <script defer src="js/systems/road/road-results-view-v100.js?v=0.23.0-expedition-debrief"></script>
   <script defer src="js/systems/road/road-results-v100.js?v=0.23.0-expedition-debrief"></script>
   <script defer src="js/systems/road/road-expedition-screen-v100.js?v=0.29.0-blackroot-field-contract"></script>
