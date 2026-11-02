@@ -8,7 +8,7 @@
         typeof context.savePlayer !== 'function' || typeof context.screen !== 'function') return;
     const p = () => context.getPlayer();
     const save = player => context.savePlayer(player);
-    const { screen, head, locationInterior, esc, gold, itemName, jobCatalog } = context;
+    const { screen, head, locationInterior, esc, gold, itemName, jobCatalog, openContracts } = context;
   function jobsForCurrentRegion(){
     return jobCatalog?.forRegion?.(p()?.currentRegion) || {};
   }
@@ -22,10 +22,19 @@
         '<p>Local jobs are unavailable. Refresh before continuing.</p>');
     }
     const greyfen=String(p()?.currentRegion||'Ashmere')==='Greyfen';
-    const jobs=jobsForCurrentRegion();
-    screen(head(greyfen?'Local Work':'Ashmere Jobs',greyfen?'Bellkeeper’s Hall':'Work Board',greyfen?'Take on lowland work with a mix of memory, judgment, clues, and careful handling.':'Every contract works a little differently: time a strike, decode a signal, solve a ledger clue, remember a work sequence, or choose the right approach.',locationInterior('archive'),'work'),`<div class="ash099-job-board"><div class="ash099-job-board-intro"><span>FIELD CONTRACTS</span><strong>${Object.keys(jobs).length} ways to earn your keep</strong><small>Clean work pays better. Thoughtful choices can earn supplies as well as coin.</small></div><div class="ash099-workboard-daily-entry" aria-label="Daily field contracts and earned caches"><div><span>DAILY FIELD BOARD · RESETS EACH DAY</span><strong>Three contracts. Earned cache keys.</strong><small>Track today’s road objectives and open supply caches with keys earned through play.</small></div><button type="button" class="ash099-btn primary" id="openDailyFieldBoard">View Daily Board</button></div><div class="ash099-cards">${Object.entries(jobs).map(([id,j])=>`<button class="ash099-btn ash099-card ash099-job-board-card" data-job-open="${id}"><span class="ash099-job-board-mode">${esc(jobModeName(j.mode))}</span><strong>${j.title}</strong><small>${j.desc}</small><em>${j.pay}g base pay</em></button>`).join('')}</div></div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
+    const player=p(),jobs=jobsForCurrentRegion();
+    const surveyAccepted=!!player?.flags?.sideContracts?.blackrootTrailSurvey;
+    const surveyReport=!!player?.flags?.roadContractsV290?.blackrootTrailSurvey?.choice;
+    const surveyComplete=!!player?.flags?.sideContracts?.blackrootTrailSurvey?.complete;
+    const surveyStatus=surveyComplete?'REPORT FILED':surveyReport?'READY TO REPORT':surveyAccepted?'IN THE FIELD':'AVAILABLE';
+    const surveyEntry=!greyfen?'<section class="ash099-field-posting" aria-label="Blackroot field contract"><div class="ash099-field-posting-art" role="img" aria-label="Blackroot Bend field posting"></div><div class="ash099-field-posting-copy"><span class="ash099-job-overline">FIELD POSTING · '+surveyStatus+'</span><h2>A Trail Worth Keeping</h2><p>Old Brenn needs a measured account of the tracks crossing Blackroot Bend. Accept the posting, take the Old Road, record what the ground shows, then return to his ledger.</p><div class="ash099-field-posting-reward"><strong>85g</strong><span>45 XP</span><span>2 Cloth Scrap</span></div></div><button type="button" class="ash099-btn primary" id="openAshmereFieldContracts">'+(surveyComplete?'Review filed report':surveyReport?'Report to Brenn':'Open field posting')+'</button></section>':'';
+    screen(head(greyfen?'Local Work':'Ashmere Jobs',greyfen?'Bellkeeper’s Hall':'Work Board',greyfen?'Take on lowland work with a mix of memory, judgment, clues, and careful handling.':'Take practical work at the board, or accept a field posting that sends you out into the Old Road and back with a report.',locationInterior('archive'),'work'),`<div class="ash099-job-board"><div class="ash099-job-board-intro"><span>LOCAL WORK</span><strong>${Object.keys(jobs).length} ways to earn your keep</strong><small>Workshop and town jobs reward careful handling. Field postings send you into the world to find and report something that matters.</small></div>${surveyEntry}<div class="ash099-workboard-daily-entry" aria-label="Daily field contracts and earned caches"><div><span>DAILY FIELD BOARD · RESETS EACH DAY</span><strong>Three contracts. Earned cache keys.</strong><small>Track today’s road objectives and open supply caches with keys earned through play.</small></div><button type="button" class="ash099-btn primary" id="openDailyFieldBoard">View Daily Board</button></div><div class="ash099-cards">${Object.entries(jobs).map(([id,j])=>`<button class="ash099-btn ash099-card ash099-job-board-card" data-job-open="${id}"><span class="ash099-job-board-mode">${esc(jobModeName(j.mode))}</span><strong>${j.title}</strong><small>${j.desc}</small><em>${j.pay}g base pay</em></button>`).join('')}</div></div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
     document.querySelectorAll('[data-job-open]').forEach(b=>b.onclick=()=>renderJobActivity(b.dataset.jobOpen));
     document.getElementById('openDailyFieldBoard')?.addEventListener('click',()=>window.LegendAshmereV099?.route?.('quests'));
+    document.getElementById('openAshmereFieldContracts')?.addEventListener('click',()=>{
+      if(typeof openContracts==='function')return openContracts();
+      return window.LegendAshmereV099?.route?.('quests');
+    });
   }
   function renderJobActivity(id){
     const greyfen=String(p()?.currentRegion||'Ashmere')==='Greyfen';
