@@ -17,7 +17,8 @@
     {id:'watchlightSurvey',title:'The Watchlight Survey',giver:'Captain Oric',description:'The watch captain needs fresh proof of what lies beyond the lantern line. Find one roadside point of interest after accepting this contract.',objective:'Investigate one new roadside discovery on the Old Road.',counter:'poi',gold:55,xp:25,item:'food',amount:1,completeText:'Oric studies your notes and marks a safer stretch of the lantern line.'},
     {id:'blackrootProof',title:'Proof from the Blackroot Road',giver:'Old Brenn',description:'Brenn will pay for proof that you can handle the dangers beyond Ashmere. Win a road battle after taking the posting.',objective:'Win one road battle after accepting this contract.',counter:'battle',gold:75,xp:35,item:'clothScrap',amount:1,completeText:'Brenn accepts your proof without asking how close the fight came.'},
     {id:'maraSafeReturn',title:'Mara’s Missing Road Ledger',giver:'Mara Vell',description:'Mara needs a complete field report, not another half-told rumor. Secure a five-stage expedition and return after accepting the posting.',objective:'Complete and secure one five-stage Old Road expedition.',counter:'return',gold:95,xp:50,item:'oil',amount:1,completeText:'Mara copies your route notes into the town archive and rewards the complete report.'},
-    {id:'movedCairn',title:'The Moved Cairn',giver:'Captain Oric',description:'Oric suspects the Ridgeway Cairn no longer points where it was meant to. Take the High Ridge, inspect the stone, then choose whether to restore it, record both alignments, or mark the hazard.',objective:'Investigate the Ridgeway Cairn and file a report on its shifted stone.',counter:'movedCairn',gold:70,xp:40,item:'roadHerb',amount:1,completeText:'Oric files your report as a real warning instead of another rumor.'}
+    {id:'movedCairn',title:'The Moved Cairn',giver:'Captain Oric',description:'Oric suspects the Ridgeway Cairn no longer points where it was meant to. Take the High Ridge, inspect the stone, then choose whether to restore it, record both alignments, or mark the hazard.',objective:'Investigate the Ridgeway Cairn and file a report on its shifted stone.',counter:'movedCairn',gold:70,xp:40,item:'roadHerb',amount:1,completeText:'Oric files your report as a real warning instead of another rumor.'},
+    {id:'blackrootTrailSurvey',title:'A Trail Worth Keeping',giver:'Old Brenn',description:'Brenn needs a proper field account of the tracks crossing Blackroot Bend. Measure what the ground shows before anyone disturbs it, then bring the report back to his ledger.',objective:'Reach Blackroot Bend, record the track evidence, and report your findings to Brenn.',counter:'blackrootTrailSurvey',gold:85,xp:45,item:'clothScrap',amount:2,completeText:'Brenn enters your measured field report beside the road ledger. The prints are recorded as evidence, not assigned to a person without proof.'}
   ];
   const dailyContracts=[
     {id:'survey',title:'Map the Lantern Line',description:'Inspect one roadside point of interest and record what the lantern light reveals.',counter:'poi',goal:1,gold:30,xp:20,keys:1},
@@ -58,6 +59,7 @@
     if(key==='battle')return Number(stats.roadVictories||0);
     if(key==='return')return Number(stats.oldRoadClears||0);
     if(key==='movedCairn')return pl?.flags?.sideContracts?.movedCairn?.decision?1:0;
+    if(key==='blackrootTrailSurvey')return pl?.flags?.roadContractsV290?.blackrootTrailSurvey?.choice?1:0;
     return 0;
   }
   function renderSideContracts(message=''){
@@ -164,6 +166,12 @@
       player.memories=Array.isArray(player.memories)?player.memories:[];
       player.memories.push('Completed side contract: '+q.title+'.');
       let completeText=q.completeText;
+      if(q.id==='blackrootTrailSurvey'){
+        const report=player.flags?.roadContractsV290?.blackrootTrailSurvey||{};
+        completeText=report.choice==='follow'
+          ?'Brenn reads your account of the prints beneath the roots and the herb pouch you recovered along the way. He marks the route as worth watching, not as proof of who passed.'
+          :'Brenn enters your measurements of the prints at Blackroot Bend. The report preserves depth and stride without guessing at the tracks’ maker.';
+      }
       if(q.id==='movedCairn'){
         player.flags.highRidgeCairnOutcome=state.decision||'record';
         completeText=state.decision==='restore'
