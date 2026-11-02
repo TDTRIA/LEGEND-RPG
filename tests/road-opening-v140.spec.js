@@ -22,6 +22,24 @@ async function openTitle(page) {
   await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
 }
 
+async function clearRoadBattle(page) {
+  const battle=page.locator('.rpg-battle');
+  if (await battle.count()) {
+    await page.evaluate(() => {
+      const player=window.LegendRuntimeV120.loadPlayer();
+      player.attributesV152=player.attributesV152||{};
+      player.attributesV152.might=250;
+      player.maxHp=Math.max(999,Number(player.maxHp||0));
+      player.hp=player.maxHp;
+      window.LegendRuntimeV120.savePlayer(player);
+    });
+    if (await battle.count()) await page.locator('#strike').click();
+    const result=page.locator('.v152-combat-results');
+    if (await result.count()) await page.locator('#v152CombatContinue').click();
+  }
+  await expect(battle).toHaveCount(0);
+}
+
 async function expectNoHorizontalOverflow(page) {
   const width = await page.evaluate(() => ({
     viewport: window.innerWidth,
@@ -233,6 +251,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await page.locator('#push').click();
     await expect(page.locator('.exp100-head h1')).toHaveText('Ridgeway Cairn');
     await page.locator('#push').click();
+    await clearRoadBattle(page);
     await expect(page.locator('.exp100-head h1')).toHaveText("Wayfarer's Camp");
     await expect(page.locator('.exp100-camp')).toBeVisible();
 
@@ -241,6 +260,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await page.locator('#push').click();
     await expect(page.locator('.exp100-head h1')).toHaveText('Blackroot Bend');
     await page.locator('#push').click();
+    await clearRoadBattle(page);
     await expect(page.locator('.exp100-head h1')).toHaveText('Reedwatch Shelter');
     await page.locator('#push').click();
     await expect(page.locator('.exp100-head h1')).toHaveText('Greyfen Approach');
