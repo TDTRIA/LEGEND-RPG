@@ -36,11 +36,14 @@ function finish(){
    setBellQuestObjective(pl,'Report the High Ridge route to Mara and ask what marker evidence to collect next.');
    routeReport=' You returned by the High Ridge. Mara can tell you what details to record on your next trip.';
   }else if(route==='reeds'&&discovery==='marsh-watcher-tracks'){
-   setBellQuestObjective(pl,'Ask Mara to compare the Bell Fragment and watcher tracks with Ashmere’s route records.');
-   routeReport=' Your report includes the tracks beneath the blue light. Their source remains unknown.';
-  }else if(route==='reeds'){
+   setBellQuestObjective(pl,s.routeBellFragmentFoundV300?'Ask Mara to compare the Bell Fragment and watcher tracks with Ashmere’s route records.':'Ask Mara to compare the blue light and watcher tracks with Ashmere’s route records.');
+   routeReport=s.routeBellFragmentFoundV300?' Your report includes the fragment and the tracks beneath the blue light. Their source remains unknown.':' Your report includes the tracks beneath the blue light. No fragment was recovered; their source remains unknown.';
+  }else if(route==='reeds'&&s.routeBellFragmentFoundV300){
    setBellQuestObjective(pl,'Report the Bell Fragment to Mara and record the watcher tracks on a later trip.');
-   routeReport=' You brought back a Bell Fragment. The tracks beneath the blue light still need a closer look.';
+   routeReport=' You recovered a Bell Fragment, but the tracks beneath the blue light still need a closer look.';
+  }else if(route==='reeds'){
+   setBellQuestObjective(pl,'Report the blue light and wet tracks to Mara; look for a fragment on a later trip.');
+   routeReport=' You returned with no Bell Fragment, but the blue light and wet tracks are worth recording.';
   }else{
    setBellQuestObjective(pl,'Report your expedition to Mara and ask what route evidence to look for next.');
    routeReport=' Mara can help identify what evidence would make the next report more useful.';
