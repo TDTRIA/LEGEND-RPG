@@ -49,6 +49,23 @@ async function openTitle(page) {
 
 async function startFreshCharacter(page, name = 'QATraveler', options = {}) {
   await openTitle(page);
+  if (options.previousRoadExperience) {
+    await page.evaluate(() => {
+      window.LegendStorage.savePlayer({
+        version: window.LEGEND_DATA.VERSION,
+        username: 'PreviousRoadVeteran',
+        town: 'Ashmere',
+        currentRegion: 'Ashmere',
+        level: 4,
+        hp: 80,
+        maxHp: 80,
+        gold: 40,
+        inventory: {},
+        stats: { roadVictories: 2, oldRoadClears: 1 },
+        flags: { firstRoadReturnSeen: true, introV094Complete: true }
+      });
+    });
+  }
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
   await page.getByRole('button', { name: /Skip the annals/i }).click();
   await page.locator('#v094Name').fill(name);
@@ -1927,21 +1944,28 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.getByRole('group', { name: 'Your answer to Captain Oric' })).toBeVisible();
     await expect(page.locator('.ash100-town')).toHaveCount(0);
     await page.locator('[data-oric-response="honest"]').click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await expect(page.locator('.rpg-battle')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Help Oric' }).click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await expect(page.locator('.rpg-battle')).toContainText('Blackroot Wolf');
     await expect(page.locator('#skill')).toContainText('Awaken');
     await expect(page.locator('#strike')).toBeDisabled();
     await page.locator('#skill').click();
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
+    await expect(page.locator('#openingRoadSkip')).toHaveCount(0);
   });
 
-  test('the opening can be skipped to Ashmere after the required ACT awakening', async ({ page }) => {
-    await startFreshCharacter(page, 'SkipOpeningQA', { stopAtIntro: true });
+  test('only a traveler with a prior road victory is offered the Ashmere shortcut', async ({ page }) => {
+    await startFreshCharacter(page, 'SkipOpeningQA', { stopAtIntro: true, previousRoadExperience: true });
     await page.locator('[data-oric-response="peaceful"]').click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await page.getByRole('button', { name: 'Help Oric' }).click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await page.locator('#skill').click();
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
-    await page.getByRole('button', { name: 'Go straight to Ashmere' }).click();
+    await expect(page.getByRole('button', { name: 'Return to Ashmere (experienced player)' })).toBeVisible();
+    await page.getByRole('button', { name: 'Return to Ashmere (experienced player)' }).click();
     await expect(page.locator('.ash100-town')).toBeVisible();
   });
 
