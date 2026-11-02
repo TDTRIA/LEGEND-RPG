@@ -79,11 +79,19 @@ npm run test:e2e:report
 
 ---
 
-## Current validation baseline (2026-10-19)
+## Current validation checkpoint (2026-11-02)
 
-Main workflow [#1498](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/39258094517) passed on deployed commit `8006281`: **97 branch-local tests passed, 0 failed, 1 skipped**, followed by **1/1 live GitHub Pages smoke tests passed**. Coverage includes title/version consistency, traveler creation and Ashmere entry, region and route behavior, Work Board activities, crafting, combat and progression contracts, reload/Continue persistence, combat defeat recovery, mobile touch-critical flows, browser errors, and deployment asset/version checks.
+Production main is **v0.30.0**, integrated by [PR #82](https://github.com/TDTRIA/LEGEND-RPG/pull/82) as commit [`8080350`](https://github.com/TDTRIA/LEGEND-RPG/commit/80803500edf748a57e8e631fe8e5fab5c0a90b86). The exact PR head passed the critical JavaScript syntax gate. The full browser suite had not completed when the merge was made to avoid blocking the requested playable main-branch delivery; do **not** describe that PR-head suite as green.
 
-The live smoke test is separate from pull-request branch runs; the one skipped test in the branch-local suite is expected because it is the dedicated live deployment test. Use the [latest Actions run](https://github.com/TDTRIA/LEGEND-RPG/actions) for current status rather than treating this document as a substitute for CI.
+Post-merge verification:
+- [Main Playwright workflow #41528945524](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41528945524) is running against merge commit `8080350`. Its result and the later main state must be checked before reporting the full regression suite as passed.
+- [Pages deployment #41528944353](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41528944353) succeeded for merge commit `8080350`.
+- After the README, roadmap, changelog, and story-spine Markdown updates, [the latest Pages workflow #41529261571](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41529261571) is running for main commit `a8b8034`. These Markdown-only commits do not trigger the Playwright workflow.
+- The live GitHub Pages game is https://tdtria.github.io/LEGEND-RPG/. Verify the latest Pages run before claiming the final documentation commit is deployed.
+
+The default workflow runs the full regression suite on Desktop Chrome plus the touch-critical `mobile-smoke.spec.js` suite on Mobile Safari and Mobile Chrome. CI uses two workers and retries failing tests once; the optional full matrix adds Firefox and all tests on the mobile projects. Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) rather than relying on a historical count.
+
+Coverage added with v0.30.0 includes mandatory annals, rare Road Token and Bell Fragment outcomes, combat XP balance, fragment-aware return dialogue, Greyfen Ferry Nets, the saved Silted Storehouse detour, the Waterline Gauge handoff, and the right-panel expedition-return action.
 
 ## Remaining high-value test gaps
 
