@@ -10,6 +10,8 @@
     if(!greyfen&&pl.flags?.firstRoadReturnSeen){
       const route=pl.flags.firstRoadReturnRoute||'unknown';
       const discovery=pl.flags.firstRoadReturnDiscovery||'none';
+      // Older saves predate the explicit recovery flag; preserve their original fragment-found dialogue.
+      const fragmentFound=typeof pl.flags.firstRoadReturnBellFragmentFound==='undefined'||pl.flags.firstRoadReturnBellFragmentFound===true;
       if(id==='mara'){
         if(pl.flags.greyfenArchiveRead){
           n.lines=[
@@ -35,10 +37,16 @@
             'I want the cairn’s mark recorded beside the old route sketches. A second account may show whether the line has been kept or changed.',
             'Next, inspect the bell-marked seal at Blackroot Bend and bring back what you can actually observe.'
           ];
-        }else if(route==='reeds'&&discovery==='marsh-watcher-tracks'){
+        }else if(route==='reeds'&&discovery==='marsh-watcher-tracks'&&fragmentFound){
           n.lines=[
             'The Bell Fragment is physical evidence, and the tracks beneath the blue light are another observation. Neither tells us who—or what—made them.',
             'I will record the fragment without assigning it a purpose. The route records disagree about the lower path.',
+            'Next, inspect the bell-marked seal at Blackroot Bend and bring back what you can actually observe.'
+          ];
+        }else if(route==='reeds'&&discovery==='marsh-watcher-tracks'){
+          n.lines=[
+            'The tracks beneath the blue light are worth recording, even without a fragment. We cannot enter an object in the ledger that you did not recover.',
+            'The absence does not explain the light or the tracks. I will keep both observations open until we find something that can be checked.',
             'Next, inspect the bell-marked seal at Blackroot Bend and bring back what you can actually observe.'
           ];
         }else if(route==='ridge'){
@@ -47,10 +55,16 @@
             'A safer passage is useful evidence; it is not an explanation for the single bell.',
             'Next, inspect the bell-marked seal at Blackroot Bend and bring back what you can actually observe.'
           ];
-        }else if(route==='reeds'){
+        }else if(route==='reeds'&&fragmentFound){
           n.lines=[
             'You brought back a Bell Fragment from the Reed Cut. That confirms the metal is real; it does not tell us why it lay beneath the blue light.',
             'I will leave the source of the tracks unassigned until we have a description that can be checked.',
+            'Next, inspect the bell-marked seal at Blackroot Bend and bring back what you can actually observe.'
+          ];
+        }else if(route==='reeds'){
+          n.lines=[
+            'You returned from the Reed Cut with observations, but no Bell Fragment. The blue light and the wet tracks still deserve a place in the record.',
+            'A difficult road does not promise a useful find. We will keep searching without inventing evidence.',
             'Next, inspect the bell-marked seal at Blackroot Bend and bring back what you can actually observe.'
           ];
         }else{
@@ -64,9 +78,12 @@
         n.lines=route==='ridge'?[
           'I have recorded your return from the High Ridge. A route report tells me where you went; it does not promise the path will stay safe.',
           'If a marker is moved, a tidy ledger can still be wrong. Tell me what you saw, not what you suspect.'
-        ]:route==='reeds'?[
+        ]:route==='reeds'&&fragmentFound?[
           'The Bell Fragment is entered in the ledger. That proves you brought back metal; it does not prove who placed it in the mud.',
           'I will leave the route report open until the tracks can be described and checked.'
+        ]:route==='reeds'?[
+          'I have recorded the Reed Cut report without a Bell Fragment. The tracks and blue light are observations, not proof of an object recovered.',
+          'The record remains open until the lower path can be described and checked.'
         ]:[
           'You are back with a report. I will record what you observed separately from what you believe it means.'
         ];
