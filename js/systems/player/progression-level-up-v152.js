@@ -35,6 +35,10 @@
     document.getElementById('legendLevelUpOverlay')?.remove();
     const allocations = Object.fromEntries(Object.keys(ATTRIBUTES).map(key => [key, 0]));
     const art = window.LegendAssetsV090?.travelerPortrait?.(player) || window.LegendAssetsV090?.classes?.[player.className] || '';
+    const region = String(player.currentRegion || player.town || 'Ashmere');
+    const backdrop = region === 'Greyfen'
+      ? 'assets/generated/locations/greyfen-town.webp'
+      : 'assets/generated/locations/ashmere-town.webp';
     const previousLevel = Math.max(1, Number(player.level || 1) - Math.max(1, Number(summary.levels || 1)));
     const levelLine = Number(summary.levels || 0) > 1
       ? 'Your journey carried you through ' + Number(summary.levels) + ' levels.'
@@ -60,9 +64,9 @@
     overlay.className = 'v152-levelup-overlay';
     overlay.setAttribute('role', 'presentation');
     overlay.innerHTML =
-      '<div class="v152-growth-backdrop" aria-hidden="true"></div>' +
+      '<div class="v152-growth-backdrop" aria-hidden="true"><img src="' + esc(backdrop) + '" alt="" loading="lazy"><span></span></div>' +
       '<section class="v152-levelup-panel" role="dialog" aria-modal="true" aria-labelledby="v152-levelup-title">' +
-        '<div class="v152-levelup-rule"><span></span><span>THE ROAD REMEMBERS</span><span></span></div>' +
+        '<div class="v152-levelup-rule"><span></span><span>THE ROAD REMEMBERS · A TRAVELER’S MILESTONE</span><span></span></div>' +
         '<div class="v152-levelup-hero">' +
           (art ? '<img src="' + esc(art) + '" alt="" class="v152-levelup-portrait">' : '') +
           '<div><span class="v152-levelup-kicker">TRAVELER GROWTH</span>' +
