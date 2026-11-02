@@ -150,14 +150,18 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await tap(page, page.locator('[data-oric-response="honest"]'));
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await expect(page.locator('.rpg-battle')).toHaveCount(0);
+    await tap(page, page.getByRole('button', { name: 'Help Oric' }));
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await expect(page.locator('#skill')).toContainText('Awaken');
     await tap(page, page.locator('#skill'));
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
+    await expect(page.locator('#openingRoadSkip')).toHaveCount(0);
     await expectNoHorizontalOverflow(page);
-    await tap(page, page.getByRole('button', { name: 'Go straight to Ashmere' }));
-    await expect(page.locator('.ash100-town')).toBeVisible();
-    await expect(page.getByRole('navigation', { name: 'Ashmere terminal navigation' })).toBeVisible();
+    await tap(page, page.getByRole('button', { name: 'Follow Oric onto the Old Road' }));
+    await expect(page.locator('.exp100-wrap')).toBeVisible();
+    await expect(page.locator('.opening-road-v140-guide')).toContainText('CAPTAIN ORIC');
     await expectNoHorizontalOverflow(page);
     expect(errors).toEqual([]);
   });
@@ -244,12 +248,15 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await expectNoHorizontalOverflow(page);
 
     await tap(page, page.locator('[data-oric-response="honest"]'));
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await tap(page, page.getByRole('button', { name: 'Help Oric' }));
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await tap(page, page.locator('#skill'));
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
+    await expect(page.locator('#openingRoadSkip')).toHaveCount(0);
     await expectNoHorizontalOverflow(page);
 
-    await tap(page, page.getByRole('button', { name: 'Follow the road' }));
+    await tap(page, page.getByRole('button', { name: 'Follow Oric onto the Old Road' }));
     await expect(page.locator('.exp100-wrap')).toBeVisible();
     await expect(page.locator('.opening-road-v140-guide')).toContainText('The road forks');
     await expect(page.locator('#routeRidge')).toBeVisible();
