@@ -53,6 +53,7 @@ test.describe('Title realm dispatch and town service access v0.29.1', () => {
     const tile=page.locator('.ash100-destination[data-ash-view="quests"]');
     await expect(tile).toBeVisible();
     await expect(tile).toContainText('Daily Field Board');
+    await expect.poll(() => tile.locator('.ash100-destination-icon img').evaluate(img=>img.complete&&img.naturalWidth>0&&img.naturalHeight>0)).toBe(true);
     const geometry=await tile.locator('.ash100-destination-icon').evaluate(icon=>{
       const box=icon.getBoundingClientRect();
       const img=icon.querySelector('img');
