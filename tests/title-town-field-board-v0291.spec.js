@@ -84,6 +84,10 @@ test.describe('Title realm dispatch and town service access v0.29.1', () => {
       const player=window.LegendRuntimeV120.loadPlayer();
       player.currentRegion='Greyfen';
       player.town='Greyfen';
+      player.unlockedRegions=['Ashmere','Greyfen'];
+      player.discoveredRegions=['Ashmere','Greyfen'];
+      player.flags=player.flags||{};
+      player.flags.firstRoadReturnSeen=true;
       window.LegendRuntimeV120.savePlayer(player);
       window.LegendAshmereV099.renderAshmere();
     });
