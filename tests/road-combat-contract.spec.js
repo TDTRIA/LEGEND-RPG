@@ -119,7 +119,8 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.player.hp).toBe(40);
     expect(result.events.saves).toBe(1);
     await expect(page.locator('.rpg-dialogue')).toContainText('guard turns the blow aside');
-    await expect(page.locator('.rpg-enemy-tell')).toContainText('Quick strike');
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-staggered/);
+    await expect(page.locator('.rpg-enemy-tell')).toContainText('Staggered');
   });
 
   test('Raider behavior opens with a guard-break feint, then a quick strike and heavy wind-up', async ({ page }) => {
@@ -158,8 +159,11 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     await expect(page.locator('.exp100-intent')).toContainText(/Heavy wind-up/i);
 
     await page.locator('#guard').click();
-    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-guardbreak/);
-    await expect(page.locator('.exp100-intent')).toContainText(/Guard-break/i);
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-staggered/);
+    await expect(page.locator('.exp100-intent')).toContainText(/Staggered/i);
+    await page.locator('#strike').click();
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-attack/);
+    await expect(page.locator('.exp100-intent')).toContainText(/Quick strike/i);
   });
 
   test('victory grants the configured drop and XP, updates counters, and advances the stage', async ({ page }) => {
