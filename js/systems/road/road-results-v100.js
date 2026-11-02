@@ -29,6 +29,7 @@ function finish(){
   pl.flags.firstRoadReturnSeen=true;
   pl.flags.firstRoadReturnRoute=route;
   pl.flags.firstRoadReturnDiscovery=discovery;
+  pl.flags.firstRoadReturnBellFragmentFound=route==='reeds'&&s.routeBellFragmentFoundV300===true;
   if(route==='ridge'&&discovery==='ridge-cairn'){
    setBellQuestObjective(pl,'Ask Mara to compare the Ridgeway Cairn’s marks with Ashmere’s route records.');
    routeReport=' Your report includes the Ridgeway Cairn: it marks a dry line, but does not explain the single bell.';
