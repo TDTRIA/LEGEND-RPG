@@ -17,7 +17,9 @@ async function openTitle(page) {
 async function createTraveler(page, { name = 'PlaytestQA', gender = 'man', className = 'Adventurer' } = {}) {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="' + gender + '"]').click();
@@ -52,7 +54,9 @@ async function toAshmere(page) {
 test('the name error clears as soon as the player types, and Enter submits', async ({ page }) => {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Next').click();
   await expect(page.locator('#v094NameError')).toHaveText('Please enter a traveler name.');
   await page.locator('#v094Name').pressSequentially('Skully');
