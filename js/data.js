@@ -1,6 +1,6 @@
-// LEGEND v0.25.0 — player growth, expedition results, Greyfen Marsh Path, and Silted Storehouse.
+// LEGEND v0.30.0 — balanced road progression, mandatory annals, and expanded Greyfen salvage.
 window.LEGEND_DATA = {
-  VERSION: 'v0.27.0',
+  VERSION: 'v0.30.0',
   SAVE_KEY: 'legend-roads-of-ashmere-v09',
   classes: {
     Adventurer:{hp:110,gold:120,mod:{survival:1,luck:1},move:'Lucky Strike',desc:'Balanced survivor. Good for a first run.'},
