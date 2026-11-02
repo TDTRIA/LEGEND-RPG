@@ -159,7 +159,7 @@
         woman: this.classes.Adventurer,
         man: this.classes.Warrior,
         nonbinary: this.classes.Mage,
-        unspoken: this.ui.serviceIcons.traveler
+        unspoken: this.classes[player?.className] || this.classes.Ranger
       };
       return byForm[form] || this.classes[player?.className] || this.ui.serviceIcons.traveler || '';
     }
