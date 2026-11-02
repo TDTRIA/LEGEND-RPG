@@ -29,10 +29,8 @@
       "<section class='opening-lore-v220-content'><div class='opening-lore-v220-side' aria-hidden='true'><span>"+numeral+"</span><i></i><small>"+(step+1)+" / 3</small></div>"+
       "<article class='opening-lore-v220-copy'><div class='opening-lore-v220-kicker'>"+s.chapter+"</div><h1 id='openingLoreTitle'>"+s.title+"</h1>"+
       s.paragraphs.map(p=>"<p>"+p+"</p>").join('')+"<blockquote>"+s.quote+"</blockquote></article></section>"+
-      "<footer class='opening-lore-v220-footer'><button id='openingLoreSkip' class='opening-lore-v220-skip' type='button'>Skip the annals</button>"+
-      "<div class='opening-lore-v220-progress' aria-label='Opening prologue progress'><i style='width:"+((step+1)/scenes.length*100)+"%'></i></div>"+
+      "<footer class='opening-lore-v220-footer'><div class='opening-lore-v220-progress' aria-label='Opening prologue progress'><i style='width:"+((step+1)/scenes.length*100)+"%'></i></div>"+
       "<button id='openingLoreContinue' class='opening-lore-v220-continue' type='button'>"+(step===scenes.length-1?'Shape the traveler':'Continue')+"<span aria-hidden='true'> →</span></button></footer></main>";
-    root.querySelector('#openingLoreSkip')?.addEventListener('click',finish);
     root.querySelector('#openingLoreContinue')?.addEventListener('click',()=>{if(step<scenes.length-1){step++;render();}else finish();});
   }
   function finish(){const cb=onContinue;onContinue=null;if(typeof cb==='function')cb();}
