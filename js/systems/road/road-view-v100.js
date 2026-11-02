@@ -18,7 +18,16 @@ function scene(stage=0,interactive=true){
  const art=A().locations||{};
  const stageNum=clamp(Number(stage||0),0,5),pl=p(),s=pl?ensure(pl):{},route=s.routeChoice;
  const fallback=art.oldRoad||art.highRidge||art.roadCamp||'assets/generated/locations/old-road-south-fork.webp';
- const path=stageNum===2?(art.roadCamp||art.oldRoad||fallback):stageNum===1&&route==='ridge'?(art.highRidge||art.oldRoad||fallback):stageNum===1&&route==='reeds'?(art.reedCut||art.oldRoad||fallback):(art.oldRoad||fallback);
+ const stageScenes={
+  0:{path:art.oldRoad||fallback,alt:'The Old Road opens at South Fork, where two muddy tracks leave the lantern line.'},
+  1:route==='ridge'?{path:art.highRidge||art.oldRoad||fallback,alt:'The exposed High Ridge climbs above the flooded lowland.'}:{path:art.reedCut||art.oldRoad||fallback,alt:'The Reed Cut winds through waterlogged reeds and poor sight lines.'},
+  2:{path:art.roadCamp||art.oldRoad||fallback,alt:'Wayfarer’s Camp rests in a sheltered clearing beside the Old Road.'},
+  3:{path:art.blackrootBend||art.oldRoad||fallback,alt:'Blackroot Bend, where ancient roots split the road around a weathered stone seal.'},
+  4:{path:art.reedwatchShelter||art.roadCamp||art.oldRoad||fallback,alt:'Reedwatch Shelter stands above the lowland route with its abandoned locker and watch lantern.'},
+  5:{path:art.greyfenBoundary||art.greyfenMarshWalkway||art.reedCut||fallback,alt:'The Greyfen boundary stone marks the last rise before the drowned lowlands.'}
+ };
+ const chosenScene=stageScenes[stageNum]||stageScenes[0];
+ const path=chosenScene.path;
  const point=roadDiscovery.pointOfInterest(stage),stageClass='exp100-stage-'+stageNum,sideTrip=s.activeSideTripV160;
  const sideInfo=sideTrip==='windbreak'?{label:'WINDBREAK',alt:'A sheltered rock shelf above the lowland tracks',path:art.highRidge||art.oldRoad||fallback}
   :sideTrip==='sunken-cart'?{label:'SUNKEN CART',alt:'A partly submerged cart beside the reed-choked road',path:art.reedCut||art.oldRoad||fallback}:null;
@@ -27,7 +36,7 @@ function scene(stage=0,interactive=true){
  const hotspots=interactive&&!sideTrip&&!poiDone
   ? '<div class="exp100-hotspots" aria-label="Discover the road"><button class="exp100-hotspot exp100-hotspot-find" data-hotspot="poi" style="--hx:'+point.x+'%;--hy:'+point.y+'%"><i>'+esc(point.icon)+'</i><span>Look closer</span></button></div>'
   : '<div class="exp100-hotspots" aria-hidden="true"></div>';
- return '<div class="exp100-scene exp100-scene-live '+stageClass+(sideTrip?' exp160-side-trip-scene':'')+'" data-stage="'+stageNum+'"><img src="'+esc(scenePath)+'" alt="'+esc(sideInfo?.alt||(stageNum===2?'A roadside camp beside the Old Road':'The Old Road winding through misty woodland'))+'" onerror="if(this.dataset.fallbackApplied){this.style.display=\'none\'}else{this.dataset.fallbackApplied=\'1\';this.src=\''+esc(fallback)+'\'}"><div class="exp100-scene-shade"></div>'+hotspots+'<span class="exp100-scene-label">THE OLD ROAD <i>•</i> '+esc((sideInfo?.label||areaForStage(stage).name).toUpperCase())+'</span><button class="exp100-sound" id="exp100-sound" type="button" aria-label="Toggle sound effects">Sound: '+(soundOn()?'On':'Off')+'</button></div>';
+ return '<div class="exp100-scene exp100-scene-live '+stageClass+(sideTrip?' exp160-side-trip-scene':'')+(poiDone?' exp160-scene-discovery-registered':'')+'" data-stage="'+stageNum+'" data-scene-location="'+esc(sideInfo?.label||areaForStage(stage).name)+'"><img src="'+esc(scenePath)+'" alt="'+esc(sideInfo?.alt||chosenScene.alt)+'" onerror="if(this.dataset.fallbackApplied){this.style.display=\'none\'}else{this.dataset.fallbackApplied=\'1\';this.src=\''+esc(fallback)+'\'}"><div class="exp100-scene-shade"></div>'+hotspots+'<span class="exp100-scene-label">THE OLD ROAD <i>•</i> '+esc((sideInfo?.label||areaForStage(stage).name).toUpperCase())+'</span><button class="exp100-sound" id="exp100-sound" type="button" aria-label="Toggle sound effects">Sound: '+(soundOn()?'On':'Off')+'</button></div>';
 }
 function shell(body){
  const host=root(),current=host.querySelector('.exp100-wrap');
@@ -75,6 +84,8 @@ function handleHotspotAction(btn){
   // The scene shell intentionally preserves its existing image node between renders;
   // inserting the panel beside the current scene avoids the preserved-DOM redraw path.
   roadDiscovery.reveal(stage);
+  const liveScene=wrap?.querySelector('.exp100-scene-live');
+  if(liveScene){liveScene.classList.remove('exp160-discovery-reveal');void liveScene.offsetWidth;liveScene.classList.add('exp160-discovery-reveal');}
   if(!wrap||wrap.querySelector('.exp100-discovery-beat'))return;
   const markup=roadDiscovery.pointOfInterestPanel(pl,s,stage);
   if(!markup)return;
