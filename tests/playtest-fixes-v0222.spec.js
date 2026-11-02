@@ -91,12 +91,20 @@ test('Town Square portraits do not cover the NPC names', async ({ page }) => {
   await page.locator('.ash099-btn, button').filter({ hasText: /^Town Square/ }).first().click();
   const card = page.locator('.ash099-npc-card[data-ash-view="mara"]');
   await expect(card).toBeVisible();
-  const overlap = await card.evaluate(el => {
+  const geometry = await card.evaluate(el => {
     const img = el.querySelector('img').getBoundingClientRect();
     const name = el.querySelector('strong').getBoundingClientRect();
-    return img.bottom - name.top;
+    const horizontalOverlap = Math.min(img.right, name.right) - Math.max(img.left, name.left);
+    const verticalOverlap = Math.min(img.bottom, name.bottom) - Math.max(img.top, name.top);
+    return {
+      intersects: horizontalOverlap > 0 && verticalOverlap > 0,
+      horizontalGap: name.left - img.right
+    };
   });
-  expect(overlap).toBeLessThanOrEqual(0);
+  // The portrait and name are deliberately placed in separate grid columns.
+  // Compare both axes; a vertical-only delta is not evidence of overlap.
+  expect(geometry.intersects).toBe(false);
+  expect(geometry.horizontalGap).toBeGreaterThanOrEqual(0);
 });
 
 test('a rest is limited to once per stop, is recorded, and the trip summary shows the final state', async ({ page }) => {
