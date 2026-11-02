@@ -1,7 +1,17 @@
 # Production architecture audit
-Updated: 2026-10-19
+Updated: 2026-11-02
 
 This is a working map of the production browser game. It is not a map of `prototypes/reboot/`. The code uses classic browser scripts and shared `window` namespaces, so script order and global names must be treated as runtime contracts.
+
+## Current production snapshot (2026-11-02)
+
+- Main is at commit [`d098e57`](https://github.com/TDTRIA/LEGEND-RPG/commit/d098e57bd01f99d60ad9d1512a09e941916f147c); app/runtime identity is `v0.27.0`.
+- The app is still a static browser game: `index.html` controls classic-script order, stylesheets, boot sequence, and asset cache keys. There is no production bundler or module migration.
+- The persistent presentation layer is implemented in `js/ui/world-shell-v170.js`, `js/ui/panels-v170.js`, and `js/ui/modals-v170.js`. It wraps existing town/road/combat systems and must continue delegating actions rather than duplicating gameplay state.
+- The active road path remains `js/systems/road-controller-v100.js` with focused `js/systems/road/` action, view, discovery, combat, and result modules. Greyfen uses its own region data and expedition controller under the same production save/runtime contracts.
+- The latest main Playwright run is not green (207 passed, 3 failed, 1 skipped); details and links are in [`docs/ROADMAP.md`](ROADMAP.md) and [`TESTING.md`](../TESTING.md). Do not rely on historical test counts lower in this document as current validation.
+
+The module-size table and extraction notes below are an architecture audit snapshot, not a claim that every listed line count remains current. Re-check the source before editing a module.
 
 ## Entry point and module model
 
