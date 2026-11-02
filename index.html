@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="css/bell-vault-v100.css?v=0.21.0-first-delve">
   <link rel="stylesheet" href="css/world-client-boot-v100.css?v=0.27.1-cinematic-boot-1">
   <link rel="stylesheet" href="css/runway-art-pass-v151.css?v=0.24.1-runway-icon-square-1">
-  <link rel="stylesheet" href="css/progression-results-v152.css?v=0.23.0-growth-results">
+  <link rel="stylesheet" href="css/progression-results-v152.css?v=0.29.2-loot-debrief-milestone">
   <link rel="stylesheet" href="css/greyfen-marsh-v160.css?v=0.24.0-marsh-path">
   <link rel="stylesheet" href="css/greyfen-storehouse-v170.css?v=0.25.0-storehouse-delve-1">
   <link rel="stylesheet" href="css/legend-ui-system-v160.css?v=0.27.6-scene-visibility-1">
@@ -148,8 +148,8 @@
   <script defer src="js/version-v090.js?v=0.27.0-greyfen-gear-version"></script>
   <script defer src="js/storage.js?v=0.20.36-player-normalizer-extraction-1"></script>
   <script defer src="js/core/game-runtime-v120.js?v=0.20.36-runtime-v120-1"></script>
-  <script defer src="js/systems/progression-v100.js?v=0.23.0-growth-choice"></script>
-  <script defer src="js/systems/player/progression-level-up-v152.js?v=0.23.0-level-up"></script>
+  <script defer src="js/systems/progression-v100.js?v=0.29.2-grind-threshold-150"></script>
+  <script defer src="js/systems/player/progression-level-up-v152.js?v=0.29.2-world-milestone"></script>
   <script defer src="js/systems/quest-log-v120.js?v=0.20.36-quest-log-service-1"></script>
   <script defer src="js/systems/assets-v090.js?v=0.29.2-town-icons-road-art"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -167,7 +167,7 @@
   <script defer src="js/screens/title-screen-view-v120.js?v=0.29.1-realm-dispatch"></script>
   <script defer src="js/screens/title-screen-v120.js?v=0.21.1-loading-scenes"></script>
   <script defer src="js/game.js?v=0.20.40-dispatches-resume"></script>
-  <script defer src="js/content/roads/old-road-v100.js?v=0.20.37-road-enemy-behavior"></script>
+  <script defer src="js/content/roads/old-road-v100.js?v=0.29.2-rare-road-loot"></script>
   <script defer src="js/content/roads/greyfen-marsh-v160.js?v=0.24.0-marsh-data"></script>
   <script defer src="js/systems/player/player-record-v094.js?v=0.22.1-cache-key"></script>
   <script defer src="js/systems/player/player-creation-options-v094.js?v=0.21.1-traveler-choice-benefits"></script>
@@ -196,7 +196,7 @@
   <script defer src="js/systems/town/ashmere-assets-v099.js?v=0.27.0-marshguard-art"></script>
   <script defer src="js/systems/dungeons/greyfen-storehouse-v170.js?v=0.25.0-storehouse-delve-1"></script>
   <script defer src="js/systems/town/ashmere-features-v099.js?v=0.29.0-contract-routing"></script>
-  <script defer src="js/systems/dungeons/bell-vault-v100.js?v=0.23.0-cellar-results"></script>
+  <script defer src="js/systems/dungeons/bell-vault-v100.js?v=0.29.2-progression-threshold"></script>
   <script defer src="js/systems/town/ashmere-view-v099.js?v=0.29.0-service-scene-header"></script>
   <script defer src="js/systems/town/ashmere-guidance-v099.js?v=0.26.0-crossing-response-guidance"></script>
   <script defer src="js/systems/town/ashmere-destination-catalog-v099.js?v=0.29.1-daily-board"></script>
@@ -211,18 +211,18 @@
   <script defer src="js/systems/road/road-state-v100.js?v=0.23.0-growth-attributes"></script>
   <script defer src="js/systems/quests/bell-road-evidence-v120.js?v=0.20.36-bell-road-evidence-1"></script>
   <script defer src="js/content/roads/road-poi-catalog-v100.js?v=0.20.36-road-poi-catalog-extraction-1"></script>
-  <script defer src="js/systems/road/road-discovery-view-v100.js?v=0.20.36-discovery-view-extraction-1"></script>
-  <script defer src="js/systems/road/road-decisions-v100.js?v=0.21.0-world-rework"></script>
-  <script defer src="js/systems/road/road-poi-outcomes-v100.js?v=0.21.0-trip-records"></script>
+  <script defer src="js/systems/road/road-discovery-view-v100.js?v=0.29.2-rare-fragment-label"></script>
+  <script defer src="js/systems/road/road-decisions-v100.js?v=0.29.2-rare-reed-fragment"></script>
+  <script defer src="js/systems/road/road-poi-outcomes-v100.js?v=0.29.2-rare-poi-fragments"></script>
   <script defer src="js/systems/road/road-discovery-v100.js?v=0.21.0-world-rework"></script>
   <script defer src="js/systems/road/road-view-v100.js?v=0.29.2-distinct-road-scenes"></script>
   <script defer src="js/systems/road/road-actions-v100.js?v=0.29.1-encounter-cadence"></script>
-  <script defer src="js/systems/road/road-results-view-v100.js?v=0.23.0-expedition-debrief"></script>
-  <script defer src="js/systems/road/road-results-v100.js?v=0.23.0-expedition-debrief"></script>
+  <script defer src="js/systems/road/road-results-view-v100.js?v=0.29.2-economy-debrief"></script>
+  <script defer src="js/systems/road/road-results-v100.js?v=0.29.2-grind-settlement"></script>
   <script defer src="js/systems/road/road-expedition-screen-v100.js?v=0.29.4-guided-tutorial-return-gate"></script>
-  <script defer src="js/systems/road-controller-v100.js?v=0.25.0-greyfen-storehouse-combat"></script>
+  <script defer src="js/systems/road-controller-v100.js?v=0.29.2-reward-rng-context"></script>
   <script defer src="js/systems/road-opening-v140.js?v=0.29.4-ambush-tutorial"></script>
-  <script defer src="js/systems/opening-prologue-v220.js?v=0.27.5-story-first-opening"></script>
+  <script defer src="js/systems/opening-prologue-v220.js?v=0.29.2-mandatory-annals"></script>
   <script defer src="js/systems/scene-transitions-v120.js?v=0.22.0-cinematic-transitions"></script>
   <script defer src="js/systems/boot-sequence-v100.js?v=0.27.1-cinematic-boot-1"></script>
   <script defer src="js/systems/road/greyfen-marsh-expedition-v160.js?v=0.26.0-crossing-response-pressure"></script>
