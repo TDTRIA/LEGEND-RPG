@@ -445,9 +445,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     const innIcon = page.locator('#rest .ash099-asset-icon img');
     const roadIcon = page.locator('#camp .ash099-asset-icon img');
     const journalIcon = page.locator('#rumor .ash099-asset-icon img');
-    await expect(innIcon).toHaveAttribute('src', /legend-icon-inn\.webp/);
-    await expect(roadIcon).toHaveAttribute('src', /legend-icon-milestone\.webp/);
-    await expect(journalIcon).toHaveAttribute('src', /legend-icon-journal\.webp/);
+    await expect(innIcon).toHaveAttribute('src', /service-inn\.webp/);
+    await expect(roadIcon).toHaveAttribute('src', /service-milestone\.webp/);
+    await expect(journalIcon).toHaveAttribute('src', /service-journal\.webp/);
     await expect.poll(async () => page.locator('.ash099-asset-icon img').evaluateAll(imgs =>
       imgs.length === 3 && imgs.every(img => img.complete && img.naturalWidth > 0)
     )).toBe(true);
