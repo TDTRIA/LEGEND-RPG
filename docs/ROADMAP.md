@@ -58,7 +58,7 @@ The town should feel like somewhere worth returning to. The road is where prepar
 - Correct the high-opacity Old Road surfaces (the last visibility stylesheet currently forces several large panels to 0.90–0.97 alpha).
 - Keep the world background and location-specific artwork visible behind the persistent shell, services, road choices, and combat.
 - Retain readable text and distinct buttons; do not solve darkness by making every panel transparent.
-- Fix the NPC portrait/name overlap and replace brittle CSS-string assertions with computed-value checks.
+- Replace the NPC portrait test's vertical-only measurement with a true two-dimensional intersection check, then replace brittle CSS-string assertions with computed-value checks.
 - Re-run the full Playwright workflow and the live Pages smoke. Inspect desktop and narrow/mobile screenshots when a browser is available.
 
 **Done means:** no main Playwright failures; title/opening/town/road/combat/results/dungeon/profile backgrounds are visibly distinct from the UI; all text and commands remain legible; desktop and mobile have no clipping/overlap; live smoke succeeds.
