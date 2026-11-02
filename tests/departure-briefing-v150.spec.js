@@ -11,7 +11,9 @@ async function createTravelerInAshmere(page) {
   await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }' });
   await expect(page.locator('.v120-title')).toBeVisible();
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Name').fill('DepartureQA');
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();
