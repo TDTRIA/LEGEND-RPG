@@ -943,3 +943,73 @@ body.legend-world-shell-active #root .ash099-screen .ash099-head:has(> img[src*=
     max-width:88px !important;
   }
 }
+
+
+/* v0.27.9 — final cascade guard for visible scenes and readable combat controls.
+   Older shell rollout selectors used .94–.97 fills that hid the world art. */
+body.legend-world-shell-active #root .exp100-head,
+body.legend-world-shell-active #root .exp100-panel:not(.rpg-battle),
+body.legend-world-shell-active #root .exp100-area,
+body.legend-world-shell-active #root .exp100-poi,
+body.legend-world-shell-active #root .exp100-result,
+body.legend-world-shell-active #root .exp100-stats > div,
+body.legend-world-shell-active #root .exp100-choice,
+body.legend-world-shell-active #root .exp100-btn,
+body.legend-world-shell-active #root .exp100-dock-action,
+body.legend-world-shell-active #root .exp100-discovery-beat,
+body.legend-world-shell-active #root .exp150-world-page .exp100-camp,
+body.legend-world-shell-active #root .exp150-world-page .exp150-aside-card {
+  background:linear-gradient(145deg,rgba(8,14,9,.72),rgba(3,7,4,.68)) !important;
+  color:#eee8d8 !important;
+  border-color:rgba(215,184,106,.26) !important;
+}
+body.legend-world-shell-active #root .exp150-world-page .exp100-choice,
+body.legend-world-shell-active #root .exp150-world-page .exp150-action {
+  background:linear-gradient(135deg,rgba(12,19,13,.80),rgba(4,8,5,.76)) !important;
+  color:#f2eddf !important;
+  border-color:rgba(215,184,106,.30) !important;
+}
+body.legend-world-shell-active #root .exp150-world-page .exp100-poi {
+  background:linear-gradient(135deg,rgba(24,30,20,.78),rgba(6,11,7,.72)) !important;
+}
+body.legend-world-shell-active #root .rpg-battle {
+  background:linear-gradient(180deg,rgba(8,13,9,.70),rgba(3,7,4,.68)) !important;
+}
+body.legend-world-shell-active #root .rpg-combat-status {
+  background:linear-gradient(110deg,rgba(10,17,11,.72),rgba(4,8,5,.68)) !important;
+}
+body.legend-world-shell-active #root .rpg-foe-nameplate {
+  background:rgba(3,8,5,.74) !important;
+  backdrop-filter:blur(2px) !important;
+}
+body.legend-world-shell-active #root .rpg-battle-log {
+  background:linear-gradient(90deg,rgba(8,14,9,.72),rgba(3,7,4,.68)) !important;
+  color:#e8e4d7 !important;
+}
+body.legend-world-shell-active #root .rpg-command {
+  background:linear-gradient(115deg,rgba(12,20,13,.80),rgba(4,8,5,.76)) !important;
+  color:#f1ecdf !important;
+  border-color:rgba(215,184,106,.34) !important;
+}
+body.legend-world-shell-active #root .rpg-command-fight {
+  background:linear-gradient(110deg,rgba(34,24,16,.80),rgba(10,12,8,.76)) !important;
+}
+body.legend-world-shell-active #root .rpg-utility-command {
+  background:rgba(7,13,9,.78) !important;
+  color:#ede7d8 !important;
+}
+body.legend-world-shell-active #root .rpg-enemy-tell {
+  background:linear-gradient(100deg,rgba(25,18,13,.78),rgba(5,9,6,.74)) !important;
+  color:#f0e7d4 !important;
+}
+body.legend-world-shell-active #root .rpg-turn-heading {
+  background:linear-gradient(95deg,rgba(9,15,10,.76),rgba(4,8,5,.72)) !important;
+}
+body.legend-world-shell-active #root .rpg-battle .rpg-dialogue {
+  background:linear-gradient(105deg,rgba(15,23,16,.82),rgba(5,10,6,.78)) !important;
+  color:#ece5d5 !important;
+  border:1px solid rgba(215,184,106,.32) !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.22) !important;
+}
+body.legend-world-shell-active #root .rpg-battle .rpg-dialogue p { color:#f0eadf !important; }
+body.legend-world-shell-active #root .rpg-battle .rpg-dialogue-kicker { color:#e3c67b !important; }
