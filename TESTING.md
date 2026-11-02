@@ -79,11 +79,16 @@ npm run test:e2e:report
 
 ---
 
-## Current validation baseline (2026-10-19)
+## Current validation baseline (2026-11-02)
 
-Main workflow [#1498](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/39258094517) passed on deployed commit `8006281`: **97 branch-local tests passed, 0 failed, 1 skipped**, followed by **1/1 live GitHub Pages smoke tests passed**. Coverage includes title/version consistency, traveler creation and Ashmere entry, region and route behavior, Work Board activities, crafting, combat and progression contracts, reload/Continue persistence, combat defeat recovery, mobile touch-critical flows, browser errors, and deployment asset/version checks.
+Latest production main is `d098e57bd01f99d60ad9d1512a09e941916f147c` (app version v0.27.0).
 
-The live smoke test is separate from pull-request branch runs; the one skipped test in the branch-local suite is expected because it is the dedicated live deployment test. Use the [latest Actions run](https://github.com/TDTRIA/LEGEND-RPG/actions) for current status rather than treating this document as a substitute for CI.
+- [Main Playwright workflow 40937100701](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40937100701): **207 passed, 3 failed, 1 skipped**. The JavaScript syntax check passed. The live Pages smoke step was skipped because the Playwright job failed.
+- [Pages deployment workflow 40937098658](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40937098658): completed successfully for the same main commit.
+- The three Playwright failures are: (1) an Ashmere shell assertion that expects `background:none` but receives the intended low-opacity gradient; (2) a real 138px NPC portrait/name overlap in `tests/playtest-fixes-v0222.spec.js`; and (3) a brittle Old Road alpha string check that expects `0.90` while Chromium serializes it as `0.9`.
+- The latest run is not a clean regression pass and does not include a live deployed smoke pass. Use [GitHub Actions](https://github.com/TDTRIA/LEGEND-RPG/actions) for newer evidence before release claims.
+
+The current visual follow-up is tracked in [issue #76](https://github.com/TDTRIA/LEGEND-RPG/issues/76). Keep the scenery visible behind translucent large panels while retaining readable text and distinct controls. Record manual desktop/mobile screenshot review only after it is actually performed.
 
 ## Remaining high-value test gaps
 
