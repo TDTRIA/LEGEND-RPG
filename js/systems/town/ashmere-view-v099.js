@@ -64,7 +64,8 @@
     }
 
     function head(kicker, title, description, art = '', fallbackIcon = 'quest') {
-      return `<div class="ash099-head ${art ? 'has-art' : 'no-art'}">${art ? img(art, title) : `<div class="ash099-head-icon">${icon(fallbackIcon)}</div>`}<div><div class="ash099-kicker">${esc(kicker)}</div><h1>${esc(title)}</h1><p>${esc(description)}</p></div></div>`;
+      const region=String(getPlayer()?.currentRegion||'Ashmere').toLowerCase();
+      return `<div class="ash099-head ${art ? 'has-art' : 'no-art'}" data-ash-service="${esc(fallbackIcon)}" data-ash-region="${esc(region)}">${art ? img(art, title) : `<div class="ash099-head-icon">${icon(fallbackIcon)}</div>`}<div><div class="ash099-kicker">${esc(kicker)}</div><h1>${esc(title)}</h1><p>${esc(description)}</p></div></div>`;
     }
 
     function screen(header, body, extra = '') {
