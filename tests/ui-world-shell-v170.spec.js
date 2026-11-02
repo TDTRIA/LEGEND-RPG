@@ -377,6 +377,9 @@ test.describe('LEGEND persistent world shell v170', () => {
     });
 
     await expect(page.locator('.exp150-return-report')).toBeVisible();
+    const tokenArt = page.locator('.v152-expedition-reward-tile.is-rare .v152-expedition-reward-art');
+    await expect(tokenArt).toHaveAttribute('src', 'assets/generated/items/road-token.webp');
+    await expect.poll(() => tokenArt.evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);
     await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'expedition-results');
     await expect(page.getByRole('button', { name: /Return to Ashmere/i })).toHaveCount(1);
     await expect(page.getByRole('button', { name: /Report to Mara/i })).toHaveCount(1);
