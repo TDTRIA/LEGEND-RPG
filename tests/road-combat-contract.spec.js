@@ -284,4 +284,25 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(staging.enemyPlate).not.toBe('auto');
   });
 
+  test('a clean guard against a heavy wind-up creates a one-hit stagger opening', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 40, maxHp: 100 },
+      enemy: { hp: 99, maxHp: 99, intent: 'heavy', damage: [3, 7] },
+    });
+
+    await page.locator('#guard').click();
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-staggered/);
+    await expect(page.locator('.rpg-foe-nameplate')).toContainText('STAGGERED');
+    await expect(page.locator('.exp100-intent')).toContainText(/strike now for bonus damage/i);
+    const afterGuard = await page.evaluate(() => window.__combatContract);
+    expect(afterGuard.player.hp).toBe(40);
+
+    await page.locator('#strike').click();
+    await expect(page.locator('.rpg-dialogue')).toContainText(/exploit the stagger for 2 bonus damage/i);
+    await expect(page.locator('.rpg-dialogue')).toContainText(/strike lands for 4 damage/i);
+    await expect(page.locator('.rpg-foe-nameplate')).not.toHaveClass(/rpg-foe-intent-staggered/);
+    const afterFollowUp = await page.evaluate(() => window.__combatContract);
+    expect(afterFollowUp.player.hp).toBe(39);
+  });
+
 });
