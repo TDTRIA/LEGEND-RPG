@@ -84,6 +84,7 @@ function startExpedition(){
  s.readUsed={};
  s.campWatchUsed={};
  s.campRestUsed={};
+ s.roadStepsSinceEncounterV290=0;
  s.routeChoice=null;
  s.currentNodeIdV160=null;
  s.visitedNodeIdsV160=[];
@@ -140,11 +141,13 @@ function resolveChoice(kind){
   const clockTotal=clamp(Number(s.roadClockHour??15),0,23)+3;
   pl.day=Math.max(1,Number(pl.day||1)+Math.floor(clockTotal/24));
   s.roadClockHour=clockTotal%24;
+  s.roadStepsSinceEncounterV290=Number(s.roadStepsSinceEncounterV290||0)+1;
  }
  const openingRoute=stageBefore===0?s.routeChoice:null;
  const travelPressure=openingRoute==='ridge'?4:openingRoute==='reeds'?16:12;
  s.pressure=clamp(s.pressure+travelPressure,0,100);
- if(s.pressure>=65){s.discoveryOpen=false;s.discoveryStage=null;save(pl);return battleEvent()}
+ const encounterDue=Number(s.roadStepsSinceEncounterV290||0)>=2;
+ if(s.pressure>=65||encounterDue){s.discoveryOpen=false;s.discoveryStage=null;save(pl);return battleEvent()}
  const roadSense=score(pl,'survival')+score(pl,'strength');
  s.stage=clamp(s.stage+1,0,5);
  s.activeSideTripV160=null;
@@ -173,6 +176,7 @@ function eventCheck(skill,bonus){
 function battleEvent(){
  const pl=p();if(!pl)return;
  const s=ensure(pl),catalog=road().enemies||[],pressure=Number(s.pressure||0),route=s.routeChoice;
+ const cadenceReached=Number(s.roadStepsSinceEncounterV290||0)>=2;
  if(!catalog.length)return eventCheck('survival',2);
  // Route tells influence which threats can appear; pressure still escalates the known danger.
  const availableCatalog=catalog.filter(enemy=>
@@ -180,11 +184,14 @@ function battleEvent(){
   !(route==='reeds'&&enemy.id==='bandit'&&pressure<45)
  );
  const pool=availableCatalog.length?availableCatalog:catalog;
+ const freshPool=pool.filter(enemy=>enemy.name!==s.lastEncounterEnemy);
+ const variedPool=freshPool.length?freshPool:pool;
  let base=null;
  if(pressure>=82&&route==='reeds')base=catalog.find(enemy=>enemy.id==='wisp')||null;
  if(pressure>=82&&!base)base=catalog.find(enemy=>enemy.id==='wolf')||null;
  if(pressure>=72&&!base&&route==='reeds')base=catalog.find(enemy=>enemy.id==='wolf')||null;
- base=base||pick(pool);
+ if(base?.name===s.lastEncounterEnemy&&variedPool.length>1)base=null;
+ base=base||pick(variedPool);
  const tier=pressure>=82?'severe':pressure>=72?'high':'rising';
  const hpScale=tier==='severe'?1.3:tier==='high'?1.16:1;
  const damageBonus=tier==='severe'?2:tier==='high'?1:0;
@@ -200,9 +207,12 @@ function battleEvent(){
   encounterNote=route==='reeds'
    ?'Water moves on both sides of the road. Something circles through the reeds before choosing its moment; this encounter is sharpened by the pressure you have carried.'
    :'You hear the creature before you see it. Your trail is easy to follow now, and the encounter is more dangerous than it would have been in daylight.';
+ }else if(cadenceReached&&pressure<65){
+  encounterNote='Two stretches of road have passed since the last clash. The Old Road closes around you before you can slip by unseen.';
  }else{
   encounterNote='A shape breaks from the roadside as pressure builds behind you. The road has noticed your pace.';
  }
+ s.roadStepsSinceEncounterV290=0;
  s.battles=Number(s.battles||0)+1;
  s.lastEncounterPressure=pressure;s.lastEncounterTier=tier;s.lastEncounterEnemy=enemy.name;
  save(pl);combat(enemy,encounterNote);
