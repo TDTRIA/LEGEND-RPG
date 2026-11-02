@@ -14,8 +14,8 @@
   <div class="runner-shell">
     <section class="panel">
       <p class="kicker">QA Runner</p>
-      <h2>LEGEND PRODUCTION QA RUNNER</h2>
-      <p>This runner performs lightweight file, asset, and production-entry checks for the active v0.20.36 path. Use the browser-based playtest for actual interaction coverage; this page is not a substitute for exercising the game.</p>
+      <h2>LEGEND MANUAL PLAYTEST CHECKLIST</h2>
+      <p>This is a lightweight legacy smoke-check page, not the authoritative regression suite. Production main is v0.27.0. Use the <a href="TESTING.md">Testing Guide</a> and <a href="https://github.com/TDTRIA/LEGEND-RPG/actions">GitHub Actions</a> for current Playwright results and live Pages smoke checks. Static checks on this page may lag behind the modular production code.</p>
       <a class="btn primary" href="index.html?v=0.9x-qa-open" target="_blank" rel="noopener">Open Game Normally</a>
       <a class="btn" href="blog.html?v=0.9x-qa-open" target="_blank" rel="noopener">Read Devlog</a>
       <a class="btn" href="feedback.html?v=0.9x-qa-open" target="_blank" rel="noopener">Send Feedback</a>
@@ -25,16 +25,16 @@
       <button id="runAssets">Check Ashmere Art Assets</button>
       <div class="manual">
         <h3>Manual Playtest Checklist</h3>
-        <label><input type="checkbox"> Title screen uses the current icon-based v0.10.x menu and does not show the old fullscreen v089 replacement.</label>
+        <label><input type="checkbox"> Title screen shows LEGEND: The Awakening with the committed raster wordmark and no oversized stray shapes.</label>
         <label><input type="checkbox"> Menu subtitles are readable and separated from button labels.</label>
         <label><input type="checkbox"> Settings / Accessibility uses polished toggle cards and saves correctly.</label>
-        <label><input type="checkbox"> New Traveler flow asks for name, identity, personality, origin, class, and keepsake.</label>
-        <label><input type="checkbox"> Enter Ashmere renders Ashmere directly without kicking back to title.</label>
-        <label><input type="checkbox"> Ashmere hub uses the v099 RPG menu with town art, icons, and traveler panel.</label>
+        <label><input type="checkbox"> Traveler creation presents the memory/soul-shaping flow and preserves the chosen name, identity, personality, origin, class, and keepsake.</label>
+        <label><input type="checkbox"> The new traveler begins on the Old Road beneath the Dead Lantern before reaching Ashmere.</label>
+        <label><input type="checkbox"> Ashmere hub keeps its town artwork visible behind the persistent world shell and offers working place/service actions.</label>
         <label><input type="checkbox"> Town Square, Mara, Brenn, Oric, Inn, Trader, Blacksmith, Sheet, and Archive work.</label>
-        <label><input type="checkbox"> Old Road expedition starts from the Ashmere Gate and presents five stages.</label>
+        <label><input type="checkbox"> The Old Road presents route choices, discoveries, pressure, camps, combat, a journal/map, and a clear return.</label>
         <label><input type="checkbox"> Every Old Road state has a clear Return to Ashmere path.</label>
-        <label><input type="checkbox"> No visible historical build branding appears in the main flow.</label>
+        <label><input type="checkbox"> Combat, results, the Bell Cellar, and Greyfen remain navigable; no unfinished Ironpass action is presented as playable.</label>
       </div>
       <div id="status" class="status"><div class="entry info">Ready. Run Smoke Test first, then use the manual checklist.</div></div>
       <textarea id="report" readonly placeholder="Copyable QA report appears here."></textarea>
