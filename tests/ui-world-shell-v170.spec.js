@@ -1,5 +1,15 @@
 const { test, expect } = require('@playwright/test');
 
+function cssBackgroundAlphas(value) {
+  return Array.from(String(value || '').matchAll(/rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/g), match => Number(match[1]));
+}
+
+function expectBackgroundAlphaAtMost(value, maximum) {
+  const alphas = cssBackgroundAlphas(value);
+  expect(alphas.length, 'expected an rgba background layer in: ' + value).toBeGreaterThan(0);
+  expect(Math.max(...alphas)).toBeLessThanOrEqual(maximum);
+}
+
 async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await page.setViewportSize(viewport);
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -305,14 +315,12 @@ test.describe('LEGEND persistent world shell v170', () => {
       dialogueText: getComputedStyle(document.querySelector('.rpg-dialogue p')).color,
       command: getComputedStyle(document.querySelector('.rpg-command')).backgroundImage
     }));
-    expect(battleVisual.battle).toContain('0.94');
-    expect(battleVisual.battle).toContain('0.92');
+    expectBackgroundAlphaAtMost(battleVisual.battle, 0.74);
     expect(battleVisual.field).toContain('old-road-south-fork.webp');
     expect(battleVisual.filter).toContain('brightness(1.22)');
-    expect(battleVisual.dialogue).toContain('0.97');
-    expect(battleVisual.dialogue).toContain('0.95');
+    expectBackgroundAlphaAtMost(battleVisual.dialogue, 0.86);
     expect(battleVisual.dialogueText).toBe('rgb(240, 234, 223)');
-    expect(battleVisual.command).toContain('0.96');
+    expectBackgroundAlphaAtMost(battleVisual.command, 0.84);
 
     await page.locator('.lws-bottom-bar [data-world-action="combat"]').click();
     const dialog = page.getByRole('dialog', { name: 'Combat encounter' });
@@ -634,14 +642,12 @@ test.describe('LEGEND persistent world shell v170', () => {
     expect(road.filter).toContain('brightness(1.22)');
     expect(road.vignette).toContain('rgba(0, 0, 0, 0.035)');
     expect(road.image).toContain('location_old_road_main_v1.jpg');
-    expect(road.shellCanvas).toBe('none');
+    expectBackgroundAlphaAtMost(road.shellCanvas, 0.08);
     expect(road.shellCanvasColor).toBe('rgba(0, 0, 0, 0)');
     expect(road.shellShade).toBe('none');
     expect(road.worldWrapper).toBe('rgba(0, 0, 0, 0)');
-    expect(road.contentPanel).toContain('0.94');
-    expect(road.contentPanel).toContain('0.90');
-    expect(road.forkPanel).toContain('0.96');
-    expect(road.forkPanel).toContain('0.94');
+    expectBackgroundAlphaAtMost(road.contentPanel, 0.76);
+    expectBackgroundAlphaAtMost(road.forkPanel, 0.84);
     await expectNoHorizontalOverflow(page);
   });
 
