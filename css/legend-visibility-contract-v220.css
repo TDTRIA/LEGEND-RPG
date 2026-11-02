@@ -761,7 +761,7 @@ body.legend-world-shell-active #legend-world-shell-modal-root .lws-modal-content
   min-height:146px !important;
   padding:10px !important;
   text-align:left !important;
-  background:linear-gradient(145deg,rgba(12,19,13,.94),rgba(5,9,6,.97)) !important;
+  background:linear-gradient(145deg,rgba(12,19,13,.74),rgba(5,9,6,.66)) !important;
 }
 #root .ash099-screen .ash099-npc-grid .ash099-npc-card > img {
   grid-column:1 !important;
@@ -812,7 +812,7 @@ body.legend-world-shell-active #legend-world-shell-modal-root .lws-modal-content
   }
 }
 
-/* Keep road text readable without dimming the scenic expedition canvas itself. */
+/* Translucent road surfaces keep the scene readable as a place, not a black page. Text remains high-contrast. */
 body.legend-world-shell-active #root .exp100-head,
 body.legend-world-shell-active #root .exp100-panel:not(.rpg-battle),
 body.legend-world-shell-active #root .exp100-area,
@@ -825,19 +825,19 @@ body.legend-world-shell-active #root .exp100-dock-action,
 body.legend-world-shell-active #root .exp100-discovery-beat,
 body.legend-world-shell-active #root .exp150-world-page .exp100-camp,
 body.legend-world-shell-active #root .exp150-world-page .exp150-aside-card {
-  background:linear-gradient(145deg,rgba(8,14,9,.94),rgba(3,7,4,.90)) !important;
+  background:linear-gradient(145deg,rgba(8,14,9,.74),rgba(3,7,4,.66)) !important;
   color:#eee8d8 !important;
   border-color:rgba(215,184,106,.24) !important;
   box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 1px rgba(255,246,211,.025) !important;
 }
 body.legend-world-shell-active #root .exp150-world-page .exp100-choice,
 body.legend-world-shell-active #root .exp150-world-page .exp150-action {
-  background:linear-gradient(135deg,rgba(12,19,13,.96),rgba(4,8,5,.94)) !important;
+  background:linear-gradient(135deg,rgba(12,19,13,.82),rgba(4,8,5,.74)) !important;
   color:#f2eddf !important;
   border-color:rgba(215,184,106,.26) !important;
 }
 body.legend-world-shell-active #root .exp150-world-page .exp100-poi {
-  background:linear-gradient(135deg,rgba(24,30,20,.96),rgba(6,11,7,.94)) !important;
+  background:linear-gradient(135deg,rgba(24,30,20,.82),rgba(6,11,7,.74)) !important;
 }
 body.legend-world-shell-active #root .exp150-world-page .exp100-panel h2,
 body.legend-world-shell-active #root .exp150-world-page .exp100-panel h3,
@@ -855,46 +855,45 @@ body.legend-world-shell-active #root .exp150-world-page .exp150-action small {
   color:#cad4c7 !important;
 }
 
-/* Combat retains a visible battlefield, but text cards use a stable dark backing.
-   A pale dialogue surface paired with pale text was the worst contrast offender. */
+/* Combat controls and dialogue retain a dark readable backing without hiding the battlefield. */
 body.legend-world-shell-active #root .rpg-battle {
-  background:linear-gradient(180deg,rgba(8,13,9,.94),rgba(3,7,4,.92)) !important;
+  background:linear-gradient(180deg,rgba(8,13,9,.72),rgba(3,7,4,.64)) !important;
   border-color:rgba(215,184,106,.34) !important;
   box-shadow:0 14px 38px rgba(0,0,0,.20),inset 0 1px rgba(238,220,171,.04) !important;
 }
 body.legend-world-shell-active #root .rpg-combat-status {
-  background:linear-gradient(110deg,rgba(10,17,11,.92),rgba(4,8,5,.90)) !important;
+  background:linear-gradient(110deg,rgba(10,17,11,.80),rgba(4,8,5,.72)) !important;
 }
 body.legend-world-shell-active #root .rpg-foe-nameplate {
-  background:rgba(3,8,5,.90) !important;
+  background:rgba(3,8,5,.76) !important;
   backdrop-filter:blur(2px) !important;
   box-shadow:0 6px 18px rgba(0,0,0,.25) !important;
 }
 body.legend-world-shell-active #root .rpg-battle-log {
-  background:linear-gradient(90deg,rgba(8,14,9,.92),rgba(3,7,4,.88)) !important;
+  background:linear-gradient(90deg,rgba(8,14,9,.78),rgba(3,7,4,.68)) !important;
   color:#e8e4d7 !important;
 }
 body.legend-world-shell-active #root .rpg-command {
-  background:linear-gradient(115deg,rgba(12,20,13,.96),rgba(4,8,5,.92)) !important;
+  background:linear-gradient(115deg,rgba(12,20,13,.82),rgba(4,8,5,.74)) !important;
   color:#f1ecdf !important;
   border-color:rgba(215,184,106,.32) !important;
 }
 body.legend-world-shell-active #root .rpg-command-fight {
-  background:linear-gradient(110deg,rgba(34,24,16,.96),rgba(10,12,8,.94)) !important;
+  background:linear-gradient(110deg,rgba(34,24,16,.82),rgba(10,12,8,.74)) !important;
 }
 body.legend-world-shell-active #root .rpg-utility-command {
-  background:rgba(7,13,9,.94) !important;
+  background:rgba(7,13,9,.78) !important;
   color:#ede7d8 !important;
 }
 body.legend-world-shell-active #root .rpg-enemy-tell {
-  background:linear-gradient(100deg,rgba(25,18,13,.92),rgba(5,9,6,.90)) !important;
+  background:linear-gradient(100deg,rgba(25,18,13,.80),rgba(5,9,6,.72)) !important;
   color:#f0e7d4 !important;
 }
 body.legend-world-shell-active #root .rpg-turn-heading {
-  background:linear-gradient(95deg,rgba(9,15,10,.94),rgba(4,8,5,.92)) !important;
+  background:linear-gradient(95deg,rgba(9,15,10,.78),rgba(4,8,5,.68)) !important;
 }
 body.legend-world-shell-active #root .rpg-battle .rpg-dialogue {
-  background:linear-gradient(105deg,rgba(15,23,16,.97),rgba(5,10,6,.95)) !important;
+  background:linear-gradient(105deg,rgba(15,23,16,.84),rgba(5,10,6,.78)) !important;
   color:#ece5d5 !important;
   border:1px solid rgba(215,184,106,.28) !important;
   box-shadow:0 8px 24px rgba(0,0,0,.22) !important;
@@ -907,9 +906,9 @@ body.legend-world-shell-active #root .rpg-battle .rpg-dialogue-kicker {
 }
 
 
-/* Active-shell NPC cards also need to outrank the original body/root-scoped fill. */
+/* Town NPC cards remain legible while allowing their scene to show through. */
 body.legend-world-shell-active #root .ash099-screen .ash099-npc-grid .ash099-npc-card {
-  background:linear-gradient(145deg,rgba(12,19,13,.94),rgba(5,9,6,.97)) !important;
+  background:linear-gradient(145deg,rgba(12,19,13,.74),rgba(5,9,6,.66)) !important;
 }
 
 
