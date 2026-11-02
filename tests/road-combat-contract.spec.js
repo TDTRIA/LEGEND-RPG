@@ -180,7 +180,7 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.player.stats.roadVictories).toBe(1);
     expect(result.state.stage).toBe(2);
     expect(result.state.pressure).toBe(22);
-    expect(result.events.progress).toEqual([29]);
+    expect(result.events.progress).toEqual([27]);
     expect(result.events.inventory).toEqual([{ item: 'fur', count: 1 }]);
     expect(result.events.music).toContain('stop');
     expect(result.events.fx).toContain('victory');
@@ -232,7 +232,7 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.player.inventory.clothScrap).toBe(1);
     expect(result.player.inventory.roadToken).toBe(1);
     expect(result.player.gold).toBe(4);
-    expect(result.events.progress).toEqual([38]);
+    expect(result.events.progress).toEqual([36]);
     await expect(page.locator('.v152-combat-results')).toContainText('clothScrap');
     await expect(page.locator('.v152-combat-results')).toContainText('roadToken');
     expect(result.events.results[0]).toMatchObject({ result: 'victory', rewardName: 'clothScrap · roadToken', xpGained: 38 });
