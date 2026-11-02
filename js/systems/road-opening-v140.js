@@ -116,7 +116,7 @@
     const line = responses[state.response] || responses.honest;
     ROOT().innerHTML =
       "<main class='opening-road-v140 opening-road-v140-ambush' aria-labelledby='openingAmbushTitle'>" +
-        "<img class='opening-road-v140-bg' src='assets/locations/roads/location_old_road_main_v1.jpg' alt='' aria-hidden='true' onerror='this.style.display=\\"none\\"'>" +
+        "<img class='opening-road-v140-bg' src='assets/locations/roads/location_old_road_main_v1.jpg' alt='' aria-hidden='true' onerror='this.hidden=true'>" +
         "<div class='opening-road-v140-shade' aria-hidden='true'></div>" +
         "<section class='opening-road-v140-card opening-road-v140-ambush-card'>" +
           "<div class='opening-road-v140-kicker'>THE OLD ROAD · A SOUND IN THE BRUSH</div>" +
