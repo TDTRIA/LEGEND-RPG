@@ -81,16 +81,18 @@ npm run test:e2e:report
 
 ## Current validation checkpoint (2026-11-02)
 
-Production main is **v0.30.2**. The v0.30.0 gameplay slice was integrated by [PR #82](https://github.com/TDTRIA/LEGEND-RPG/pull/82) as commit [`8080350`](https://github.com/TDTRIA/LEGEND-RPG/commit/80803500edf748a57e8e631fe8e5fab5c0a90b86). The mandatory-annals renderer/version/cache patch is on main at [`034ca72`](https://github.com/TDTRIA/LEGEND-RPG/commit/034ca72d44e4c6e8a65315dcd8b2ba97105b48fa), and deterministic Road Token tests were added at [`e0dd3ed`](https://github.com/TDTRIA/LEGEND-RPG/commit/e0dd3ed495336b4c363380ee57e475a9936bebf8).
+Production main is **v0.30.3** at [bb77a6e](https://github.com/TDTRIA/LEGEND-RPG/commit/bb77a6ea267952035c15f8cb86a156947ecdfc62). The code/test correction commit is [8bde87e](https://github.com/TDTRIA/LEGEND-RPG/commit/8bde87e79b541989b7975b3cbc8b3d0e6fe0e36a); the public-site and store-copy refresh is [bb77a6e](https://github.com/TDTRIA/LEGEND-RPG/commit/bb77a6ea267952035c15f8cb86a156947ecdfc62).
 
 Post-merge verification:
-- [Main Playwright workflow #41530579050](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41530579050) is running on `e0dd3ed`. Setup, browser installation, and the critical JavaScript syntax gate passed; the full browser suite is still running. Do **not** call the full suite green until this run completes.
-- [Pages deployment #41530576562](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41530576562) succeeded for `e0dd3ed`.
-- The live GitHub Pages game is https://tdtria.github.io/LEGEND-RPG/.
+- [Final-head Playwright workflow #41540785980](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41540785980) is running on bb77a6e. Dependency installation and the critical JavaScript syntax gate have passed; the full browser suite is executing. Do **not** mark the suite green until its run completes.
+- [GitHub Pages deployment #41540782943](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41540782943) succeeded for bb77a6e.
+- The live game is https://tdtria.github.io/LEGEND-RPG/. The development chronicle is https://tdtria.github.io/LEGEND-RPG/blog.html and the updated dispatch is https://tdtria.github.io/LEGEND-RPG/updates.html.
 
-The default workflow runs the full regression suite on Desktop Chrome plus the touch-critical `mobile-smoke.spec.js` suite on Mobile Safari and Mobile Chrome. CI uses two workers and retries failing tests once; the optional full matrix adds Firefox and all tests on the mobile projects. Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) rather than relying on a historical count.
+The earlier v0.30.2 Playwright run #41531298438 failed with 15 test failures. The main causes were the runtime version file overwriting v0.30.2 with v0.27.0, tests still clicking the removed annals skip control, stale expected counts/data, missing navigation setup in one standalone contract test, and unseeded random token reward assertions. Those source/test issues were corrected in v0.30.3; this final-head run is the authoritative check.
 
-Coverage added with v0.30.0–v0.30.2 includes mandatory three-part annals with no skip control, rare Road Token and Bell Fragment outcomes, combat XP balance, fragment-aware return dialogue, Greyfen Ferry Nets, the saved Silted Storehouse detour, the Waterline Gauge handoff, and the right-panel expedition-return action, and the generated Road Token reward-art asset load.
+Coverage in the current release includes mandatory three-part annals with no skip control, four distinct traveler identity emblems, rare Road Token and Bell Fragment outcomes, road encounter cadence, result and level progression, fragment-aware return dialogue, Greyfen Ferry Nets, the saved Silted Storehouse detour, and the Waterline Gauge handoff.
+
+The default workflow runs the full regression suite on Desktop Chrome plus the touch-critical mobile-smoke.spec.js suite on Mobile Safari and Mobile Chrome. CI uses two workers and retries failing tests once; the optional full matrix adds Firefox and all tests on the mobile projects. Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) rather than relying on a historical count.
 
 ## Remaining high-value test gaps
 
