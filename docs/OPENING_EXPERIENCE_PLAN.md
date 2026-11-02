@@ -21,11 +21,13 @@ The seven-step creator keeps the current record builder, option IDs, class portr
 
 Choosing **Let Me Wake** saves the new traveler and begins outside Ashmere, on the Old Road. Captain Oric finds them under an unlit lantern and asks whether they are friend or foe. The player chooses a response—honest, peaceful or defiant—which is saved as a memory and changes Oric's follow-up dialogue.
 
-A Blackroot Wolf attacks Oric from the blind side. The unknown voice whispers **“Awaken.”** The production combat interface presents the ACT command with that label and makes it the only enabled action for this one-HP scripted encounter. It is a teaching encounter, not a replacement combat system; normal battle mechanics, enemy patterns, rewards and existing saves should remain unchanged. Afterward, Oric admits he has questions, warns the gate, and gives the player a choice: follow the tracks or go straight to Ashmere.
+After the player answers, Oric reacts and begins to investigate the tracks. Before combat opens, a separate ambush beat shows the Blackroot Wolf slamming into him, knocking his lantern away, and leaving him calling for help. Only after the player chooses **Help Oric** does the production combat interface appear. The unknown voice whispers **“Awaken.”** ACT is the only enabled action for this one-HP scripted encounter. It is a teaching encounter, not a replacement combat system; normal battle mechanics, enemy patterns, rewards and existing saves remain unchanged.
+
+Afterward, Oric takes responsibility for the first expedition and personally teaches the player how to read the fork, inspect a marker, search for supplies, travel, watch enemy intent, use a camp, and bring evidence home. A new player is not offered a shortcut to Ashmere until this first trip is secured. A **Return to Ashmere** shortcut is shown only when the previous saved traveler has evidence of road experience (a road victory, cleared expedition, or prior return); that experience is carried forward as a small flag when a new traveler is created. This keeps the normal save format and mandatory first-session path intact.
 
 ### 3. The first Old Road — learn the existing gameplay loop
 
-The guided route uses the production five-stage expedition, not a mock scene. It teaches one step at a time:
+Captain Oric appears as the speaker in the expedition guide and gives a location-specific instruction at each stage. The guided route uses the production five-stage expedition, not a mock scene. It teaches one step at a time:
 
 1. Choose the safer High Ridge or the riskier Reed Cut at the fork.
 2. Use the road-scene **Look closer** hotspot and inspect the marker.
