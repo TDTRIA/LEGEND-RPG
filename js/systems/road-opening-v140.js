@@ -35,13 +35,20 @@
   }
   function isActive(player) {
     const state = player?.flags?.openingRoadV140;
-    return !!state && !state.completed && ['oric', 'combat', 'aftermath', 'road'].includes(state.phase);
+    return !!state && !state.completed && ['oric', 'ambush', 'combat', 'aftermath', 'road'].includes(state.phase);
   }
   function start(player) {
     const fresh = load() || player;
     if (!fresh) return;
     fresh.flags = fresh.flags || {};
-    fresh.flags.openingRoadV140 = { phase: 'oric', response: null, completed: false, awakened: false, version: 1 };
+    fresh.flags.openingRoadV140 = {
+      phase: 'oric',
+      response: null,
+      completed: false,
+      awakened: false,
+      veteranSkipUnlocked: fresh.flags.veteranRoadSkipUnlocked === true,
+      version: 1
+    };
     save(fresh);
     renderPrologue(fresh);
   }
@@ -95,19 +102,49 @@
     const state = openingState(player);
     if (!player || !state || !line || state.phase !== 'oric') return;
     state.response = id;
-    state.phase = 'combat';
+    state.phase = 'ambush';
     const memory = 'When Captain Oric found you beneath the dead lantern, you answered: “' + line.label + '”';
     player.memories = Array.isArray(player.memories) ? player.memories : [];
     if (!player.memories.includes(memory)) player.memories.push(memory);
     save(player);
-    if (typeof window.LegendRoadControllerV100?.startOpeningEncounter === 'function') return window.LegendRoadControllerV100.startOpeningEncounter();
-    state.phase = 'oric';
+    renderAmbush(player);
+  }
+  function renderAmbush(player) {
+    const state = openingState(player);
+    if (!state) return;
+    state.phase = 'ambush';
+    const line = responses[state.response] || responses.honest;
+    ROOT().innerHTML =
+      "<main class='opening-road-v140 opening-road-v140-ambush' aria-labelledby='openingAmbushTitle'>" +
+        "<img class='opening-road-v140-bg' src='assets/locations/roads/location_old_road_main_v1.jpg' alt='' aria-hidden='true' onerror='this.style.display=\\"none\\"'>" +
+        "<div class='opening-road-v140-shade' aria-hidden='true'></div>" +
+        "<section class='opening-road-v140-card opening-road-v140-ambush-card'>" +
+          "<div class='opening-road-v140-kicker'>THE OLD ROAD · A SOUND IN THE BRUSH</div>" +
+          "<h1 id='openingAmbushTitle'>Oric is hit.</h1>" +
+          "<div class='opening-road-v140-scene-note'><span>CAPTAIN ORIC</span><p>" + esc(line.oric) + "</p></div>" +
+          "<p class='opening-road-v140-ambush-beat'>Oric starts to turn toward the tracks. The brush behind him explodes. A Blackroot Wolf slams into his side and drives him off his feet. His lantern skids across the stones and goes dark.</p>" +
+          "<blockquote><strong>CAPTAIN ORIC</strong><p>“Get it off me! Move, damn you!”</p></blockquote>" +
+          "<p class='opening-road-v140-ambush-beat'>The wolf wheels toward you, jaws wet with rain. Oric is down and cannot reach his blade. Then a voice with no direction—close as breath inside your skull—whispers:</p>" +
+          "<blockquote class='opening-road-v140-awaken-line'><strong>???</strong><p>“Awaken.”</p></blockquote>" +
+          "<div class='opening-road-v140-actions'><button class='opening-road-v140-primary' id='openingRoadHelpOric' type='button'>Help Oric <span aria-hidden='true'>→</span></button></div>" +
+          "<p class='opening-road-v140-footnote'>The wolf turns its attention to you. Read its intent and answer the voice with ACT.</p>" +
+        "</section></main>";
+    ROOT().querySelector('#openingRoadHelpOric')?.addEventListener('click', beginAmbushEncounter);
     save(player);
-    renderOric(player);
+  }
+  function beginAmbushEncounter() {
+    const player = load();
+    const state = openingState(player);
+    if (!player || !state || state.phase !== 'ambush') return;
+    state.phase = 'combat';
+    save(player);
+    if (typeof window.LegendRoadControllerV100?.startOpeningEncounter === 'function') return window.LegendRoadControllerV100.startOpeningEncounter();
+    state.phase = 'ambush';
+    save(player);
+    renderAmbush(player);
   }
   function battleText(player) {
-    const line = responses[player?.flags?.openingRoadV140?.response] || responses.honest;
-    return line.oric + ' Brush splits behind him. A Blackroot Wolf lunges from the ditch—not at you, but at Oric’s unguarded side. He hits the road stones hard. Rain swallows his shout. Then a voice with no direction, close as breath inside your skull, whispers: “Awaken.”';
+    return 'The Blackroot Wolf turns from Oric and squares itself between you and the fallen captain. The voice still rings in your skull: “Awaken.” Use ACT to answer.';
   }
   function afterAmbushWin(player, enemy, progress) {
     const fresh = load() || player;
@@ -136,8 +173,10 @@
           "<div class='opening-road-v140-kicker'>AN UNEXPECTED AWAKENING</div><h1 id='openingRoadAftermathTitle'>Oric saw what you did.</h1>" +
           "<p class='opening-road-v140-lede'>The wolf hits the road and its growl cuts off. The voice vanishes. Rain returns to the silence; Oric’s lantern sputters in the mud while he forces air back into his lungs.</p>" +
           "<div class='opening-road-v140-scene-note'><span>CAPTAIN ORIC</span><p>" + esc(line.after) + "</p></div>" +
-          "<p>Oric gets his feet beneath him and turns toward the fork. “That thing came from beyond the marker. I have to warn the gate before anything else follows it. If you can move, follow the tracks and bring back proof. Or take the road straight to Ashmere. We’ll speak there.”</p>" +
-          "<div class='opening-road-v140-actions'><button class='opening-road-v140-primary' id='openingRoadContinue' type='button'>Follow the road</button><button class='opening-road-v140-secondary' id='openingRoadSkip' type='button'>Go straight to Ashmere</button></div>" +
+          "<p>Oric gets one knee beneath him, breath ragged. “Stay close. The wolf came out of Blackroot, and I need to know why. I’ll take you along the Old Road myself. First we read the fork, then we check the marker and search for anything it left behind. We turn back together once we have enough proof.”</p>" +
+          "<div class='opening-road-v140-actions'><button class='opening-road-v140-primary' id='openingRoadContinue' type='button'>Follow Oric onto the Old Road</button>" +
+          (state.veteranSkipUnlocked === true ? "<button class='opening-road-v140-secondary' id='openingRoadSkip' type='button'>Return to Ashmere (experienced player)</button>" : "") +
+          "</div>" +
         "</section></main>";
     ROOT().querySelector('#openingRoadContinue')?.addEventListener('click', beginRoad);
     ROOT().querySelector('#openingRoadSkip')?.addEventListener('click', skipToAshmere);
@@ -155,7 +194,7 @@
   function skipToAshmere() {
     const player = load();
     const state = openingState(player);
-    if (!player || !state) return;
+    if (!player || !state || state.veteranSkipUnlocked !== true) return;
     state.completed = true;
     state.phase = 'skipped';
     player.flags.introV094Complete = true;
@@ -170,6 +209,7 @@
     const state = fresh?.flags?.openingRoadV140;
     if (!fresh || !state || state.completed) return false;
     if (state.phase === 'oric') renderOric(fresh);
+    else if (state.phase === 'ambush') renderAmbush(fresh);
     else if (state.phase === 'combat') window.LegendRoadControllerV100?.startOpeningEncounter?.();
     else if (state.phase === 'aftermath') renderAftermath(fresh);
     else if (state.phase === 'road') {
@@ -185,28 +225,51 @@
     const hasSearch = !!roadState.searchUsed?.[0];
     let title = 'Read the road.';
     let copy = 'Your choices change the danger, the discoveries, and what you can bring back. Follow one instruction at a time; the rest of the road is yours to explore.';
+    let spoken = '“Keep your head up and stay close. I’ll show you what to look for.”';
     let number = 'ROAD LESSON';
     if (Number(stage) >= 5) {
-      number = 'LAST STEP'; title = 'Secure what you found.';
-      copy = 'You have reached the end of this stretch. Return to Ashmere to secure your rewards and report what happened.';
+      number = '06 · RETURN'; title = 'We have enough. Head home.';
+      copy = 'You have reached Greyfen Approach. The first lesson is complete: return to Ashmere with the field report, then we can decide what to do with what you found.';
+      spoken = '“That’s far enough for a first outing. We have proof and a route to report. Turn back with me; the gate will want to hear this.”';
     } else if (Number(stage) === 0 && !route) {
       number = '01 · CHOOSE'; title = 'The road forks.';
       copy = 'Choose the safer High Ridge or risk the Reed Cut for a strange clue. This choice changes Road Pressure and what you may discover.';
+      spoken = '“Stay where I can see you. High Ridge is the clearer line; Reed Cut is quicker, but I would not take it blind.”';
     } else if (Number(stage) === 0 && route && !hasDiscovery) {
       number = '02 · DISCOVER'; title = 'Look closer.';
       copy = 'Use the glowing hotspot in the scene, then inspect the roadside marker. Discoveries can reveal evidence, supplies, or a safer line.';
+      spoken = '“There—by the marker. Use the scene to get a closer look, then inspect what you find. Don’t disturb it first.”';
     } else if (Number(stage) === 0 && route && hasDiscovery && !hasSearch) {
       number = '03 · SCAVENGE'; title = 'Search the roadside.';
       copy = 'Use Search the roadside to look for supplies. Searching can help your pack, but it can also raise Road Pressure.';
+      spoken = '“Good. Now check the verge for anything useful. Keep it quick; every minute out here gives the things in the ditch time to find us.”';
+    } else if (Number(stage) === 1) {
+      number = '04 · TRAVEL'; title = 'Keep moving, keep watch.';
+      copy = 'Travel advances the expedition. Road Pressure rises as danger builds; read enemy intent before you act, and use GUARD against a heavy wind-up.';
+      spoken = '“A road marker tells you where you are, not what is waiting ahead. Watch the brush, and watch what an enemy is about to do.”';
     } else if (Number(stage) === 2) {
-      number = '04 · WAYSTATION'; title = 'A moment to recover.';
-      copy = 'At a waystation, Rest by the Fire spends one Camp Supply or Ration to recover health and lower Road Pressure. You are not hurt badly yet, so resting is optional—continue when ready.';
+      number = '05 · WAYSTATION'; title = 'A moment to recover.';
+      copy = 'At Wayfarer’s Camp, Rest by the Fire spends one Camp Supply or Ration to recover health and lower Road Pressure. Rest once if you need it, then continue.';
+      spoken = '“We can breathe here. A camp kit or ration buys us a little strength and quiet. Use it when you need it; supplies are not endless.”';
+    } else if (Number(stage) === 3) {
+      number = 'ON THE ROAD'; title = 'Blackroot Bend.';
+      copy = 'Look over the bend for tracks and field evidence. If you accepted a posting in Ashmere, this is where you can gather the proof it asks for.';
+      spoken = '“This is where the tracks crossed. Look before you touch anything. A good report starts with what you can prove.”';
+    } else if (Number(stage) === 4) {
+      number = 'ON THE ROAD'; title = 'Reedwatch Shelter.';
+      copy = 'Check the shelter and the ground around it. Make sure you have what you need before the last stretch toward Greyfen.';
+      spoken = '“The shelter is a chance to check your pack and the trail. We are close now, but close is no reason to hurry.”';
     } else if (Number(stage) > 0) {
       number = 'ON THE ROAD'; title = 'Keep moving, keep watch.';
       copy = 'Travel advances the expedition. Road Pressure rises as danger builds; inspect useful landmarks, watch enemy intent in combat, and return at the final marker to secure your rewards.';
+      spoken = '“Keep your eyes open. Every stop can teach you something, but the road never stops moving behind us.”';
     }
-    return "<aside class='opening-road-v140-guide' aria-label='Road tutorial'><div class='opening-road-v140-guide-mark'>✦</div><div><span>YOUR FIRST EXPEDITION · " +
-      esc(number) + "</span><strong>" + esc(title) + "</strong><p>" + esc(copy) + "</p></div></aside>";
+    const oricArt = window.LegendAssetsV090?.npcs?.oric || 'assets/generated/npcs/captain-oric.webp';
+    return "<aside class='opening-road-v140-guide' aria-label='Captain Oric first expedition tutorial'>" +
+      "<img class='opening-road-v140-guide-portrait' src='" + esc(oricArt) + "' alt='Captain Oric' loading='lazy'>" +
+      "<div class='opening-road-v140-guide-copy'><span>CAPTAIN ORIC · FIRST EXPEDITION · " +
+      esc(number) + "</span><strong>" + esc(title) + "</strong><p>" + esc(copy) + "</p><blockquote>" +
+      esc(spoken) + "</blockquote></div></aside>";
   }
   function travelGate(player, roadState, stage) {
     if (!isActive(player) || player.flags.openingRoadV140.phase !== 'road' || Number(stage) !== 0) return {allowed: true};
