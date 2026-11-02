@@ -20,6 +20,7 @@ const roadDecisions=window.LegendRoadDecisionsV100?.create({
  ensureState:ensure,
  addInventory:inv,
  clamp,
+ randomInt:rand,
  renderExpedition
 });
 
@@ -38,7 +39,7 @@ const roadDiscovery=window.LegendRoadDiscoveryV100.create({
  roadDecisions,
  renderExpedition,
  tone,
- createPoiOutcomes:context=>window.LegendRoadPoiOutcomesV100?.create(context),
+ createPoiOutcomes:context=>window.LegendRoadPoiOutcomesV100?.create({...context,randomInt:rand}),
  createDiscoveryView:context=>window.LegendRoadDiscoveryViewV100?.create(context)
 });
 
@@ -203,7 +204,7 @@ const roadResultsView=window.LegendRoadResultsViewV100?.create({
    onReportToMara:reportToMaraFromRoad
 });
 const roadResults=window.LegendRoadResultsV100?.create({
-  getPlayer:p,savePlayer:save,ensureState:ensure,addInventory:inv,clamp,setBellQuestObjective,
+  getPlayer:p,savePlayer:save,ensureState:ensure,addInventory:inv,clamp,setBellQuestObjective,randomInt:rand,
   awardProgress:(player,amount)=>window.LegendProgressionV100?.award(player,amount),
   stopMusic:stopBattleMusic,renderHeader:header,renderShell:shell,escapeHtml:esc,getRoot:root,
   resultView:roadResultsView,
