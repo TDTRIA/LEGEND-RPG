@@ -22,9 +22,9 @@ function scene(stage=0,interactive=true){
   0:{path:art.oldRoad||fallback,alt:'The Old Road opens at South Fork, where two muddy tracks leave the lantern line.'},
   1:route==='ridge'?{path:art.highRidge||art.oldRoad||fallback,alt:'The exposed High Ridge climbs above the flooded lowland.'}:{path:art.reedCut||art.oldRoad||fallback,alt:'The Reed Cut winds through waterlogged reeds and poor sight lines.'},
   2:{path:art.roadCamp||art.oldRoad||fallback,alt:'Wayfarer’s Camp rests in a sheltered clearing beside the Old Road.'},
-  3:{path:art.blackrootBend||art.oldRoad||fallback,alt:'Blackroot Bend, where ancient roots split the road around a weathered stone seal.'},
-  4:{path:art.reedwatchShelter||art.roadCamp||art.oldRoad||fallback,alt:'Reedwatch Shelter stands above the lowland route with its abandoned locker and watch lantern.'},
-  5:{path:art.greyfenBoundary||art.greyfenMarshWalkway||art.reedCut||fallback,alt:'The Greyfen boundary stone marks the last rise before the drowned lowlands.'}
+  3:{path:art.oldRoad||art.highRidge||fallback,alt:'Blackroot Bend, where ancient roots split the road around a weathered stone seal.'},
+  4:{path:art.greyfenMarshWalkway||art.reedCut||art.roadCamp||fallback,alt:'Reedwatch Shelter stands above the lowland route with its abandoned locker and watch lantern.'},
+  5:{path:art.greyfenMarshWalkway||art.reedCut||fallback,alt:'The Greyfen boundary stone marks the last rise before the drowned lowlands.'}
  };
  const chosenScene=stageScenes[stageNum]||stageScenes[0];
  const path=chosenScene.path;
