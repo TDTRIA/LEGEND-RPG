@@ -204,7 +204,7 @@ function win(enemy){
   const amount=Array.isArray(bonusDrop.amount)?rand(Number(bonusDrop.amount[0]||1),Number(bonusDrop.amount[1]||bonusDrop.amount[0]||1)):Math.max(1,Number(bonusDrop.amount||1));
   drops.push({item:bonusDrop.item,count:amount});
  }
-   if(drops.some(drop=>drop.item==='bellFragment'))s.routeBellFragmentFoundV300=true;
+  if(drops.some(drop=>drop.item==='bellFragment'))s.routeBellFragmentFoundV300=true;
 drops.forEach(drop=>inv(pl,drop.item,drop.count));
  if(Array.isArray(enemy.goldDrop)&&enemy.goldDrop.length>=2){
   pl.gold=Number(pl.gold||0)+Math.max(0,rand(Number(enemy.goldDrop[0]||0),Number(enemy.goldDrop[1]||0)));
