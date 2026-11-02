@@ -1,4 +1,4 @@
-/* LEGEND v0.27.5 — story-first opening annals.
+/* LEGEND v0.30.1 — mandatory story-first opening annals.
  * Runs before traveler creation, then hands directly into the production soul-shaping flow.
  * The narration does not reveal the traveler's hidden nature.
  */
