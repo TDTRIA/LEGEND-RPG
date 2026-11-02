@@ -209,8 +209,8 @@ function win(enemy){
   pl.gold=Number(pl.gold||0)+Math.max(0,rand(Number(enemy.goldDrop[0]||0),Number(enemy.goldDrop[1]||0)));
  }
  const xpBase=Number(enemy.xp==null?25:enemy.xp);
- const stageBonus=Math.min(20,Number(s.stage||0)*4);
- const tierBonus=enemy.pressureTier==='severe'?12:enemy.pressureTier==='high'?6:0;
+ const stageBonus=Math.min(10,Number(s.stage||0)*2);
+ const tierBonus=enemy.pressureTier==='severe'?8:enemy.pressureTier==='high'?4:0;
  const progress=context.awardProgress?.(pl,xpBase+stageBonus+tierBonus);
  const earnedItems=drops.map(drop=>itemName(drop.item)+(drop.count>1?' ×'+drop.count:''));
  const rewardLabel=earnedItems.join(' · ');
