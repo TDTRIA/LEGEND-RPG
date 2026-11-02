@@ -55,14 +55,14 @@
          :'You collect the herbs tucked behind the Ridgeway Cairn and follow its dry trail marks. +1 Road Herb; Road Pressure falls by 3.';
      }
      else if(stage===1&&s.routeChoice==='reeds'){inv(pl,'roadHerb',1);s.pressure=clamp(s.pressure+4,0,100);note='You recover the torn herb pouch, but the tracks circle closer as you leave. +1 Road Herb; Road Pressure rises by 4.';}
-     else if(stage===1){inv(pl,'bellFragment',1);s.pressure=clamp(s.pressure+2,0,100);note='The blue glow fades into a Bell Fragment in your palm. The ditch feels less quiet now. +1 Bell Fragment.';}
+     else if(stage===1){const foundFragment=Math.random()<.25;if(foundFragment)inv(pl,'bellFragment',1);s.pressure=clamp(s.pressure+2,0,100);note=foundFragment?'The blue glow fades, leaving a Bell Fragment in your palm. The ditch feels less quiet now. +1 Bell Fragment.':'The blue glow fades before you can catch it. The ditch feels less quiet, but no fragment remains.';}
      else if(stage===2){
       inv(pl,'food',1);inv(pl,'roadHerb',1);
       note=foundGreyfenWeeklyReturn
        ?'The oilskin return is damp but legible: the lower crossing was closed pending inspection, then changed to open in darker ink without initials. You wrap it separately for Brenn. +1 Ration, +1 Road Herb.'
        :'You recover a sealed ration and a usable Road Herb from the cold ashes. +1 Ration, +1 Road Herb.';
      }
-     else if(stage===3){s.pressure=clamp(s.pressure-8,0,100);inv(pl,'bellFragment',1);note='The seal’s pattern matches an old Ashmere mark. You take a Bell Fragment and learn a safer way around the roots. +1 Bell Fragment; Road Pressure falls by 8.';}
+     else if(stage===3){s.pressure=clamp(s.pressure-8,0,100);const foundFragment=Math.random()<.25;if(foundFragment){inv(pl,'bellFragment',1);note='The seal’s pattern matches an old Ashmere mark. A sliver breaks free from the stone. +1 Bell Fragment; Road Pressure falls by 8.';}else{note='The seal’s pattern matches an old Ashmere mark, but the stone holds fast. You learn a safer way around the roots; Road Pressure falls by 8.';}}
      else if(stage===4){
       inv(pl,'clothScrap',1);inv(pl,'roadHerb',1);
       note=foundGreyfenFieldNote
