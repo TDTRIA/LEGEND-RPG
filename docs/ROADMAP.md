@@ -1,6 +1,6 @@
 # LEGEND: The Awakening — Product Roadmap
 
-**Last updated:** 2026-10-29  
+**Last updated:** 2026-11-02  
 **Purpose:** One shared source of truth for what we are building next, why it matters, and how we decide each slice is finished. This is a player-impact order, not a date promise.
 
 ## The north star
@@ -35,7 +35,7 @@ The story and the systems should reinforce that loop. Town is a place the player
 ## Roadmap — in priority order
 
 ### Phase 0 — Stabilize the current build and visibility fix
-**Status: in progress; PR #73 is open and not ready to merge.**
+**Status: merged in v0.30.0; post-merge CI and live deployment verification are tracked separately.**
 
 Fix the cross-screen scene darkness without creating new visual regressions. Cover the title, opening, Ashmere, Old Road, region view, combat, results, dungeon, and profile scenes. Keep the HUD and content legible while letting the artwork show through.
 
@@ -45,10 +45,10 @@ Fix the cross-screen scene darkness without creating new visual regressions. Cov
 - Desktop and narrow-screen layouts remain usable.
 - The change is reviewed and merged before we treat it as part of production.
 
-**Current blocker:** workflow [#1981](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40873791952) failed with 188 passed, 19 failed, and 1 flaky test. Some failures share an opening-backdrop selector/expectation problem; others include fixture and locator failures. Triage them against the current markup and behavior before merging. The live browser review was not completed in the last pass.
+**Current checkpoint:** v0.30.0 integrates the translucent world-shell surfaces, the corrected two-dimensional portrait geometry assertion, and related CSS-alpha regression checks. The PR-level syntax gate passed; use the current `main` Actions run for the authoritative post-merge browser and Pages status. Keep scene art visible without sacrificing text contrast.
 
 ### Phase 1 — Make the title and opening feel like the start of a game
-**Priority: highest player-facing feature after Phase 0 is stable.**
+**Status: core flow shipped in v0.30.0; first-player comprehension still needs human playtesting.**
 
 Replace the current unsatisfying title/menu experience with a deliberate fantasy-RPG composition and make the first minutes feel like an opening scene, not a form flow.
 
@@ -57,12 +57,14 @@ Scope:
 - Show an atmospheric, visible world scene with subtle motion and lighting; remove awkward oversized shapes and other accidental decorations.
 - Give Continue/Begin a clear primary place in the menu. Keep New Traveler, Profile, Settings, and Credits secondary but accessible.
 - Use the anonymous soul-shaping/fragmented-memory character creation as a story moment where choices have understandable effects.
-- Deliver the dead-lantern road opening with **???**, Oric, the bell, and the Blackroot Wolf. Let the player skip or continue cleanly without breaking saved state.
+- Deliver the dead-lantern road opening with **???**, Oric, the bell, and the Blackroot Wolf. The three annals are mandatory: every new traveler receives the opening world/history context before character creation and the first road journey.
 - Transition from the opening into the real game shell rather than landing on a separate-looking website page.
 
 **Done means:** a new player can start from the title, create a traveler, experience the road opening and first encounter, and arrive at the next playable step without dead ends, broken branding, or static placeholder screens.
 
 ### Phase 2 — Make the world shell consistent and alive
+**Status: shared shell and visibility pass shipped in v0.30.0; continue only for observed defects.**
+
 **Goal:** one cohesive presentation across Ashmere, the Old Road, and regional scenes.
 
 Scope:
@@ -75,6 +77,8 @@ Scope:
 **Done means:** changing a panel or taking an action does not make the game feel like a different website; the scene remains readable, controls are consistent, and existing state/persistence tests pass.
 
 ### Phase 3 — Make combat feel like an actual turn-based battle
+**Status: tactical foundation and Guard/stagger follow-through are implemented; balance and human playtest feedback remain.**
+
 **Goal:** improve the presentation and decisions without replacing the production combat rules.
 
 Scope:
@@ -87,6 +91,8 @@ Scope:
 **Done means:** a player can tell whose turn it is, what the enemy is about to do, what their action accomplished, and what changed after the fight—while deterministic combat and reward tests remain green.
 
 ### Phase 4 — Close the first-session progression loop
+**Status: first loop shipped in v0.30.0; monitor long-run reward pacing and upgrade costs.**
+
 **Goal:** make the first journey pay off in the rest of the game.
 
 Scope:
@@ -110,7 +116,7 @@ Each town/region should have:
 - Region-specific progression rewards that connect to equipment, crafting, preparation, or unlocks.
 - Save/load coverage and desktop/mobile checks.
 
-Greyfen already has active story, resource, equipment, and Storehouse content, but its full story/economy/service gate and dedicated art still need review. Ironpass remains future content. A region is not “complete” merely because its hub screen exists.
+Greyfen now includes the Ferry Nets work contract, the optional Silted Storehouse stop, and the existing Marsh Path survey, alongside earlier story/resource/equipment content. Its full story/economy/service gate and dedicated art still need review. Ironpass remains future content. A region is not “complete” merely because its hub screen exists.
 
 **Done means:** the player can spend time in the region, take a meaningful quest or expedition, gain something region-specific, return to use it, and unlock the next step without hitting placeholder systems.
 
