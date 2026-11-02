@@ -6,9 +6,11 @@ The project is now in its **full RPG development phase**. The old recovery/remak
 
 ## Current Build
 
-**Production main: v0.27.0 — Greyfen resource, story-response, and equipment progression.** Main includes the optional three-room Silted Storehouse delve gated behind “A Dry Crossing,” persistent discoveries and one-time salvage, the supplemental dispatch handoff, the Greyfen-only Peat-Wrapped Parcel recipe, the saved crossing-report choice, and the Greyfen-only level-2 Marshguard Coat (32 Defense for 280g).
+**Production main: v0.30.0 — balanced Old Road progression and the Ashmere → Greyfen field slice.** Main now includes mandatory three-part opening annals, the road-first Oric/Wolf tutorial, recurring Old Road encounters, tactical Guard/stagger follow-through, a rare-token reward roll, uncommon Bell Fragment sources, an illustrated expedition ledger, XP progress, and the saved attribute-allocation level-up. Greyfen now also includes **Patch the Ferry Nets** and the optional **Silted Storehouse** salvage stop. The existing save key, player records, combat foundation, expedition length, and five-token Greyfen gate are preserved.
 
-The crossing choice can spend one Wood Scrap to post a provisional notice that reduces the next Marsh Path route's added pressure by up to 5 once, or keep the report sealed pending the missing closure order. The coat is mechanically integrated but temporarily reuses the chain-armor raster; dedicated Storehouse/coat art, manual desktop/mobile review, the complete Greyfen story/economy/service gate, and Ironpass are still open.
+**Progression balance:** a completed five-stage expedition pays 80g and 33 XP at the baseline pressure of 20, plus a 65% chance to recover a Road Token. Early returns award no completion token. Rare Bandit/Road Cache drops remain possible. Bell Fragments are not guaranteed: the Reed Cut roll is 35%, recurring clue interactions are 25%, and a Lantern Wisp drop is 15%. Higher Road Pressure can increase the settlement payment, but also sharpens the threats. The Old Road now forces an encounter after two travel stretches even when careful play keeps pressure low.
+
+The first-session story cannot be skipped through the annals. The expedition report presents the route, discoveries, gold, XP, token outcome, and current-level progress as an in-world field ledger; a level-up keeps the existing saved stat-allocation choices. Greyfen remains an active partial region, not a claim that the first three towns or Ironpass are complete. Long-run economy tuning and human playtesting remain important next checks.
 
 ## Development Roadmap
 
@@ -39,7 +41,7 @@ The intended loop is:
 
 **Ashmere → prepare → choose an expedition → survive encounters → bring home loot and proof → improve the traveler → unlock more of Ashmere and the road → go farther**
 
-The Old Road now has named route stops, including two waystations where travelers can spend supplies to recover or craft healing potions from gathered materials. The expedition still uses stages, pressure, meaningful choices, combat, discoveries, rewards, and a clear return to town.
+The Old Road has six distinct journey scenes, route choices, optional discoveries, camps, field notes, Road Pressure, and turn-based encounters. A completed run is not a guaranteed safe trip or token payout: two travel stretches force danger, pressure sharpens enemies, and rare resources require repeated expeditions and luck. Preparation, supplies, gear, and deliberate route choices make survival more reliable, not automatic.
 
 The earlier skill-check philosophy remains useful under the hood, but the player-facing experience is moving toward **choices first, resolution second**. Stats, gear, traits, supplies, and preparation should influence outcomes without making every interaction feel like a tabletop dice prompt.
 
