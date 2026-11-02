@@ -5,24 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LEGEND Development Updates</title>
   <style>
-    :root{--bg:#060807;--bg-soft:#0d1813;--panel:rgba(10,18,15,.94);--panel-2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border-soft:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--shadow:rgba(0,0,0,.42)}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--bg-soft),var(--bg));padding:24px}.shell{width:min(980px,100%);margin:0 auto}header,.card{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px rgba(0,0,0,.42);border-radius:18px;padding:clamp(20px,4vw,38px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0;color:var(--accent);font-size:clamp(2.35rem,9vw,6rem);letter-spacing:.1em;line-height:.88;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:0 0 12px;color:var(--accent);font-size:1.5rem}h3{margin:0 0 8px;color:var(--gold);font-size:1.2rem}p{color:var(--text);line-height:1.65;margin:0 0 12px}.muted{color:var(--muted)}nav,.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.signup-box,.status-card,.update-card{border:1px solid var(--border-soft);background:var(--panel-2);border-radius:16px;padding:18px;margin-top:18px}.placeholder-note{border-left:3px solid var(--gold);background:rgba(255,211,105,.07);border-radius:10px;padding:12px 14px;margin-top:14px;color:#fff0c2}.update-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.update-card strong{color:var(--gold);display:block;margin-bottom:6px}.signup-form{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px;margin-top:18px}.signup-form input{min-height:46px;border:1px solid rgba(132,255,178,.28);border-radius:12px;background:rgba(0,0,0,.42);color:var(--text);padding:0 14px;font:inherit;outline:none}.signup-form button{border:1px solid rgba(255,211,105,.46);border-radius:12px;background:linear-gradient(180deg,#ffe29a,#d69f32);color:#241803;font-weight:900;min-height:46px;padding:0 16px;cursor:pointer}.archive-link{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,211,105,.35)}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:820px){.update-grid{grid-template-columns:1fr}}@media(max-width:720px){body{padding:12px}nav,.actions{flex-direction:column}.btn{width:100%}.signup-form{grid-template-columns:1fr}.signup-form button{width:100%}}
+    :root{--bg:#060807;--bg-soft:#0d1813;--panel:rgba(10,18,15,.94);--panel-2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border-soft:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--bg-soft),var(--bg));padding:24px}.shell{width:min(1040px,100%);margin:0 auto}header,.card{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px rgba(0,0,0,.42);border-radius:18px;padding:clamp(20px,4vw,38px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0;color:var(--accent);font-size:clamp(2.2rem,8vw,5.4rem);letter-spacing:.08em;line-height:.94;text-shadow:0 0 22px rgba(125,255,173,.24)}h2{margin:0 0 12px;color:var(--accent);font-size:1.5rem}h3{margin:0 0 8px;color:var(--gold);font-size:1.12rem}p{color:var(--text);line-height:1.65;margin:0 0 12px}.muted{color:var(--muted)}nav,.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.signup-box,.status-card,.update-card{border:1px solid var(--border-soft);background:var(--panel-2);border-radius:16px;padding:18px;margin-top:14px}.update-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.update-card strong{color:var(--gold);display:block;margin-bottom:6px}.signup-form{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px;margin-top:18px}.signup-form input{min-height:46px;border:1px solid rgba(132,255,178,.28);border-radius:12px;background:rgba(0,0,0,.42);color:var(--text);padding:0 14px;font:inherit;outline:none}.signup-form button{border:1px solid rgba(255,211,105,.46);border-radius:12px;background:linear-gradient(180deg,#ffe29a,#d69f32);color:#241803;font-weight:900;min-height:46px;padding:0 16px;cursor:pointer}.archive-link{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,211,105,.35)}.feature-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;padding:0;list-style:none}.feature-list li{border:1px solid var(--border-soft);background:var(--panel-2);border-radius:12px;padding:12px 14px;line-height:1.5}.status-tag{display:inline-block;border:1px solid rgba(255,211,105,.35);border-radius:999px;padding:4px 9px;color:#ffe6a0;font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;font-weight:800;margin-bottom:8px}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:820px){.update-grid{grid-template-columns:1fr}}@media(max-width:720px){body{padding:12px}nav,.actions{flex-direction:column}.btn{width:100%}.signup-form{grid-template-columns:1fr}.signup-form button{width:100%}}
   </style>
 </head>
 <body>
   <div class="shell">
     <header>
-      <p class="kicker">LEGEND Development Dispatch</p>
-      <h1>FOLLOW LEGEND</h1>
-      <p>Follow the development of <strong>LEGEND: The Awakening</strong> as it grows into a desktop-first fantasy RPG with mobile compatibility, a living town, expedition progression, road encounters, crafting, gear, story, and connected systems.</p>
-      <nav><a class="btn primary" href="index.html">Play Legend</a><a class="btn" href="playtest.html">Legacy QA Runner</a><a class="btn" href="save.html">Save Vault</a><a class="btn" href="feedback.html">Playtest Feedback</a><a class="btn" href="blog.html">Read the Devlog</a><a class="btn" href="CHANGELOG.md">Changelog</a><a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a></nav>
+      <p class="kicker">LEGEND Development Dispatch · v0.30.3</p>
+      <h1>FOLLOW THE ROAD</h1>
+      <p>Follow <strong>LEGEND: The Awakening</strong> as the browser RPG grows from its road-born opening into a connected fantasy world of towns, expeditions, encounters, discoveries, gear, and progression.</p>
+      <nav>
+        <a class="btn primary" href="index.html">Play the Current Build</a>
+        <a class="btn" href="blog.html">Read the Devlog</a>
+        <a class="btn" href="CHANGELOG.md">Changelog</a>
+        <a class="btn" href="docs/ROADMAP.md">Roadmap</a>
+        <a class="btn" href="feedback.html">Playtest Feedback</a>
+        <a class="btn" href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+      </nav>
     </header>
     <main>
-      <section class="card"><h2>Newsletter Signup</h2><p>The newsletter is used for major updates, devlogs, design notes, screenshots, playable build announcements, and release milestones as LEGEND grows.</p><div class="signup-box"><h3>Join the LEGEND Development Dispatch</h3><p class="muted">Enter your email to follow LEGEND updates through Buttondown.</p><form class="signup-form" action="https://buttondown.com/api/emails/embed-subscribe/Legend-RPG" method="post" target="popupwindow" onsubmit="window.open('https://buttondown.com/Legend-RPG', 'popupwindow')"><label class="label" for="bd-email" style="position:absolute;left:-9999px">Email address</label><input id="bd-email" type="email" name="email" placeholder="you@example.com" required><button type="submit">Join the Newsletter</button></form><p class="muted" style="margin-top:12px">You can also open the public newsletter page at <a class="archive-link" href="https://buttondown.com/Legend-RPG" target="_blank" rel="noopener">buttondown.com/Legend-RPG</a>.</p></div><div class="placeholder-note"><strong>Current focus:</strong> the title and opening experience are being aligned with LEGEND: The Awakening, followed by incremental stability and RPG progression work.</div></section>
-      <section class="card"><h2>What You’ll Get</h2><div class="update-grid"><div class="update-card"><strong>Build Updates</strong><p class="muted">New version announcements, patch notes, and playable release links.</p></div><div class="update-card"><strong>Devlogs</strong><p class="muted">Behind-the-scenes thoughts about systems, story, UI, balancing, accessibility, and design choices.</p></div><div class="update-card"><strong>World & Story</strong><p class="muted">Notes about Ashmere, Eldermere, Lacoyx, The Hollow Keep, and The Lost Build.</p></div></div></section>
-      <section class="card"><h2>Current Project Status</h2><div class="status-card"><h3>Current branch preview: LEGEND: The Awakening v0.20.40 — road-first opening</h3><p>The combined draft keeps the anonymous soul-shaping creator, raster LEGEND wordmark and Ashmere service art, then starts new travelers beneath the dead lantern outside Ashmere. Captain Oric asks whether the traveler is friend or foe, a Blackroot Wolf ambush teaches ACT / “Awaken,” and the player enters the existing guided Old Road loop. The title menu now includes News &amp; Roadmap. This is a PR preview only, pending CI, desktop/mobile review and deployed smoke validation.</p><div class="actions"><a class="btn primary" href="index.html">Play the Current Build</a><a class="btn" href="playtest.html">Open Legacy QA Runner</a><a class="btn" href="blog.html">Read the Devlog</a></div></div><div class="status-card"><h3>Next focus</h3><p>Complete the final-head Playwright suite, inspect the title and road opening at desktop and mobile sizes, and verify the deployed GitHub Pages smoke check before merge. Next gameplay work should deepen road consequences and the return-to-town debrief. The older QA runner is retained for reference.</p></div></section>
+      <section class="card">
+        <h2>Newsletter Signup</h2>
+        <p>The Development Dispatch is for major build updates, devlogs, design notes, screenshots, playable announcements, and release milestones.</p>
+        <div class="signup-box">
+          <h3>Join the LEGEND Development Dispatch</h3>
+          <p class="muted">Enter your email to follow development through Buttondown.</p>
+          <form class="signup-form" action="https://buttondown.com/api/emails/embed-subscribe/Legend-RPG" method="post" target="popupwindow" onsubmit="window.open('https://buttondown.com/Legend-RPG', 'popupwindow')">
+            <label for="bd-email" style="position:absolute;left:-9999px">Email address</label>
+            <input id="bd-email" type="email" name="email" placeholder="you@example.com" required>
+            <button type="submit">Join the Newsletter</button>
+          </form>
+          <p class="muted" style="margin-top:12px">Or visit <a class="archive-link" href="https://buttondown.com/Legend-RPG" target="_blank" rel="noopener">buttondown.com/Legend-RPG</a>.</p>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Current Production Build</h2>
+        <div class="status-card">
+          <span class="status-tag">Live on GitHub Pages</span>
+          <h3>LEGEND: The Awakening · v0.30.3</h3>
+          <p>The current build contains the mandatory three-part opening annals, the dead-lantern road opening, Captain Oric and the Blackroot Wolf tutorial, traveler creation with meaningful starting choices, turn-based road encounters, and the five-stage Old Road expedition.</p>
+          <p>The road tracks route choices, discoveries, camp reports, time, and Road Pressure. Two travel stretches bring an encounter even on a careful route. Completed five-stage trips have a 65% Road Token roll; early returns do not receive the completion token. The illustrated return ledger shows gold, XP, rare-token outcome, and the field report.</p>
+          <div class="actions">
+            <a class="btn primary" href="index.html">Play LEGEND</a>
+            <a class="btn" href="posts/013-from-road-rework-to-rpg.html">Read the Development Catch-Up</a>
+            <a class="btn" href="docs/STORE_PAGE_COPY_2026-11.md">Store Page Copy</a>
+          </div>
+        </div>
+      </section>
+      <section class="card">
+        <h2>What Is Playable Now</h2>
+        <ul class="feature-list">
+          <li><strong>A road-born opening</strong><br>Three mandatory annals, an unnamed voice, Oric, and the first wolf encounter.</li>
+          <li><strong>Ashmere hub</strong><br>Town services, work board, trading, crafting, equipment, people, records, and preparation.</li>
+          <li><strong>Old Road expeditions</strong><br>Five stages, two route branches, landmarks, camps, danger, tactical encounters, and a saved journal.</li>
+          <li><strong>Traveler progression</strong><br>XP, earned levels, saved attribute allocation, gear, inventory, and expedition rewards.</li>
+          <li><strong>Greyfen frontier content</strong><br>Marsh Path activity, Ferry Nets contract, local progression pieces, and the optional Silted Storehouse detour.</li>
+          <li><strong>Desktop-first browser play</strong><br>The live HTML5 game is developed for desktop and includes responsive mobile compatibility.</li>
+        </ul>
+      </section>
+      <section class="card">
+        <h2>Project Status</h2>
+        <div class="update-grid">
+          <div class="update-card"><strong>Ashmere & the Old Road</strong><p class="muted">The opening-to-first-expedition loop is in the production build. More balance and real-player feedback are still needed.</p></div>
+          <div class="update-card"><strong>Greyfen</strong><p class="muted">Several local systems are playable, but the complete story, services, and economy acceptance pass remains in progress.</p></div>
+          <div class="update-card"><strong>Ironpass</strong><p class="muted">Future region. It is not represented as a complete playable town yet.</p></div>
+        </div>
+        <p class="muted" style="margin-top:16px">The first three towns remain a development target. LEGEND is actively in development; this page does not claim a finished 1.0 release.</p>
+      </section>
+      <section class="card">
+        <h2>What Comes Next</h2>
+        <p>Current work is focused on cleaning up the first-session experience, validating the live build, improving results and progression presentation, and finishing the next coherent pieces of Greyfen without rushing an unfinished region into the game.</p>
+        <p class="muted">Follow the <a class="archive-link" href="blog.html">development chronicle</a> for the recent catch-up and the <a class="archive-link" href="docs/ROADMAP.md">roadmap</a> for active release gates.</p>
+      </section>
     </main>
-    <footer>LEGEND: The Awakening / LEGEND Development Dispatch</footer>
+    <footer>LEGEND: The Awakening / Development Dispatch</footer>
   </div>
 </body>
 </html>

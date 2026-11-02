@@ -1,58 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LEGEND: The Awakening — Development Log</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LEGEND: The Awakening — Development Chronicle</title>
   <link rel="icon" type="image/webp" href="assets/generated/ui/icons/service-milestone.webp">
-  <link rel="stylesheet" href="css/legend-site-v090.css?v=0.9.0">
+  <link rel="stylesheet" href="css/legend-site-v090.css?v=0.30.3-devlog">
+  <style>
+    .legend-hero{align-items:stretch}.legend-sidebox{min-width:245px}.post-list{display:grid;gap:12px;margin-top:18px}.post-card{display:block;padding:18px;border:1px solid rgba(215,188,116,.22);border-radius:15px;background:linear-gradient(145deg,rgba(20,29,22,.86),rgba(5,10,7,.78));color:inherit;text-decoration:none}.post-card:hover{border-color:rgba(215,188,116,.65);transform:translateY(-1px)}.post-card h3{margin:5px 0 8px;color:#f3dfaa}.post-card p{margin:0;color:#c7d0c2;line-height:1.6}.post-meta{color:#d7b86a;font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}.post-card.featured{border-color:rgba(215,188,116,.46);background:linear-gradient(110deg,rgba(53,47,29,.46),rgba(8,15,10,.84))}.roadmap-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.roadmap-item{padding:15px;border:1px solid rgba(215,188,116,.2);border-radius:13px;background:rgba(3,9,6,.4)}.roadmap-item h3{color:#f0d99a}.legend-small{font-size:.86rem;color:#aebba9}@media(max-width:760px){.legend-hero{display:block}.legend-sidebox{margin-top:16px}}
+  </style>
 </head>
 <body>
   <div class="shell">
     <header class="legend-hero">
       <div>
-        <p class="legend-kicker">Roads of Ashmere Chronicle</p>
-        <h1>LEGEND DEVLOG</h1>
-        <p>Development notes, patch updates, design thoughts, and worldbuilding for <strong>LEGEND: The Awakening</strong>, a medieval fantasy road RPG about towns, travel, monsters, supplies, and the choices you carry between settlements.</p>
+        <p class="legend-kicker">LEGEND Development Chronicle · v0.30.3</p>
+        <h1>THE ROAD REMEMBERS</h1>
+        <p>Development notes for <strong>LEGEND: The Awakening</strong> — a dark-fantasy browser RPG about a traveler waking on a dangerous road, finding a place in Ashmere, and carrying the consequences of each expedition back into the world.</p>
         <nav aria-label="Main navigation">
-          <a class="btn primary" href="index.html?v=0.9.0-site-theme">Play LEGEND</a>
-          <a class="btn" href="playtest.html?v=0.9.0-site-theme">Run Playtest</a>
-          <a class="btn" href="feedback.html?v=0.9.0-site-theme">Feedback</a>
-          <a class="btn" href="updates.html">Newsletter</a>
+          <a class="btn primary" href="index.html">Play LEGEND</a>
+          <a class="btn" href="updates.html">Development Updates</a>
           <a class="btn" href="CHANGELOG.md">Changelog</a>
-          <a class="btn" href="https://discord.gg/htbBvvY9N" target="_blank" rel="noopener">Discord</a>
-          <a class="btn" href="https://github.com/tdtria/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn" href="docs/ROADMAP.md">Roadmap</a>
+          <a class="btn" href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
         </nav>
       </div>
       <aside class="legend-sidebox">
-        <p class="kicker">Current Direction</p>
-        <h3>Fantasy Identity Pivot</h3>
-        <p class="muted">LEGEND is now in its mobile-first RPG development phase: a living town, structured expeditions, connected progression, and a stronger long-term game loop.</p>
+        <p class="kicker">Current Build</p>
+        <h3>v0.30.3</h3>
+        <p class="muted">The road-first opening, mandatory annals, five-stage expedition loop, Ashmere return, and the first Greyfen activities are in the production browser build.</p>
+        <p class="legend-small">Desktop-first · Mobile-compatible · In active development</p>
       </aside>
     </header>
-
     <main>
       <section class="card">
-        <h2>Latest Posts</h2>
-        <p class="muted">Follow the game as Ashmere becomes a true first town, the Old Road becomes a real adventure route, and the early game grows into a stronger 1.0 foundation.</p>
+        <h2>Development Catch-Up</h2>
+        <p class="muted">The old posts document the recovered game and the first town/road redesign. These newer entries bring the chronicle up to the current production build.</p>
         <div class="post-list">
-          <a class="post-card featured" href="posts/010-ashmere-road-rework.html"><span class="post-meta">Devlog 010 / v0.10.x</span><h3>Ashmere and the Old Road Rework</h3><p>The first major step into the next phase: a clearer Ashmere base camp, a finite Old Road expedition, Road Pressure, choice-driven resolution, mobile-first menus, and a plan for deeper progression.</p></a>
-          <a class="post-card featured" href="posts/009-interface-encounter-update.html"><span class="post-meta">Devlog 009 / Interface & Encounter Update</span><h3>Interface & Encounter Update</h3><p>Ashmere and the Old Road are being rebuilt around a clearer progression loop: five town destinations, five-stage expeditions, Road Pressure, meaningful choices, combat, discoveries, and reliable return paths.</p></a>
-          <article class="post-card featured"><span class="post-meta">Current Work / Roads of Ashmere v0.10.x</span><h3>Town, Road, and Identity Refactor</h3><p>The current direction is now a full mobile-first RPG loop. Ashmere is being organized as the player's base camp, the Old Road is becoming a finite expedition, and progression is being connected across gear, skills, jobs, crafting, rewards, and story.</p></article>
-          <article class="post-card"><span class="post-meta">Devlog 008 / Stability Refactor and Road Systems</span><h3>Stability Refactor and Road Systems</h3><p>v0.6.4 was the safety pass after the public build push. The main game file was restored after an accidental stub overwrite, shared version labels reported correctly, Save Vault caught up, and new refactor files were checked before being activated.</p><p>The goal was stability first: keep LEGEND playable while preparing modular systems for tutorial, Sella, NPC metadata, Old Road events, and future travel expansion.</p></article>
-          <article class="post-card"><span class="post-meta">Devlog 007 / Refactor and Accessibility</span><h3>Refactor and Accessibility</h3><p>v0.6 moved LEGEND out of one giant file, added progressive menu unlocks, and introduced accessibility settings for readability, contrast, motion, spacing, and ASCII display.</p></article>
-          <a class="post-card" href="posts/006-first-road-balance.html"><span class="post-meta">Devlog 006 / First Road Balance</span><h3>First Road Balance</h3><p>v0.5.1 tightened public playtest pacing with faster Road Token progress, clearer Bell Shard timing, better Old Road rewards, and a feedback-ready main menu link.</p></a>
-          <a class="post-card" href="posts/005-the-first-road.html"><span class="post-meta">Devlog 005 / The First Road</span><h3>The First Road</h3><p>v0.5 deepened the first route with Road Tokens, Ashmere Inn, camp supplies, steadier weapon damage, enemy traits, mastery perks, and clearer quest tracking.</p></a>
-          <a class="post-card" href="posts/004-mobile-polish.html"><span class="post-meta">Devlog 004 / Mobile Polish</span><h3>Mobile Polish</h3><p>v0.4.1 improved phone play with better tap targets, sticky action buttons, compact mobile HUD behavior, safer viewport handling, and responsive ASCII.</p></a>
-          <a class="post-card" href="posts/003-voices-of-ashmere.html"><span class="post-meta">Devlog 003 / Voices of Ashmere</span><h3>Voices of Ashmere</h3><p>v0.4 gave Ashmere named NPCs, dialogue, the first true questline, enemy intent, Guard, class moves, Momentum, camp choices, and a browser tab icon.</p></a>
-          <a class="post-card" href="posts/002-roads-beyond-ashmere.html"><span class="post-meta">Devlog 002 / Roads Beyond Ashmere</span><h3>The Roads Beyond Ashmere</h3><p>v0.3 gave Legend an original world identity, deeper character creation, ASCII scenes, exploration routes, D20-style checks, the Trading Post, and the Backroad Dealer.</p></a>
-          <a class="post-card" href="posts/001-recovered-build.html"><span class="post-meta">Devlog 001 / Project Origin</span><h3>I Recovered My First Game</h3><p>The origin story of LegendTFC, the surviving batch file, and why this remake became the starting point for a larger fantasy road RPG.</p></a>
+          <a class="post-card featured" href="posts/013-from-road-rework-to-rpg.html">
+            <span class="post-meta">Devlog 013 · v0.30.3 · November 2, 2026</span>
+            <h3>From Road Rework to a Living RPG Loop</h3>
+            <p>A catch-up on the major work since the early Ashmere rework: the new opening, traveler creation, tactical encounters, expedition journal, progression, Greyfen systems, and the current release state.</p>
+          </a>
+          <a class="post-card featured" href="posts/011-the-first-journey.html">
+            <span class="post-meta">Devlog 011 · v0.30.3 · November 2, 2026</span>
+            <h3>The First Journey: A Road That Can Bite Back</h3>
+            <p>The mandatory annals, the dead lantern, Oric and the Blackroot Wolf, the five-stage Old Road, encounter cadence, field ledger, and a deliberately rare Road Token reward.</p>
+          </a>
+          <a class="post-card" href="posts/012-greyfen-in-progress.html">
+            <span class="post-meta">Devlog 012 · Greyfen Development · November 2, 2026</span>
+            <h3>Greyfen Is Taking Shape — But It Is Not Finished Yet</h3>
+            <p>Ferry work, marsh routes, salvage, the Storehouse detour, local crafting and gear, and what still needs to come together before Greyfen can be called complete.</p>
+          </a>
         </div>
       </section>
-
-      <section class="card"><h2>Roadmap</h2><div class="roadmap-grid"><div class="roadmap-item"><h3>Current: v0.10.x Ashmere & Old Road Rework</h3><p>Focus: fantasy identity, title/menu redesign, Ashmere town framework, Old Road controller, objective clarity, and early-game polish.</p></div><div class="roadmap-item"><h3>Next: Traveler Progression & Deeper Road Tiers</h3><p>Make the first session feel alive: better intro, stronger character creation, meaningful town actions, NPC dialogue, pub/shop depth, and a cleaner first road loop.</p></div></div></section>
+      <section class="card">
+        <h2>Earlier Chronicle</h2>
+        <div class="post-list">
+          <a class="post-card" href="posts/010-ashmere-road-rework.html"><span class="post-meta">Devlog 010 · v0.10.x</span><h3>Ashmere and the Old Road Rework</h3><p>The early redesign that organized Ashmere as a base camp and the Old Road as a finite expedition.</p></a>
+          <a class="post-card" href="posts/009-interface-encounter-update.html"><span class="post-meta">Devlog 009 · Interface & Encounter Update</span><h3>Interface & Encounter Update</h3><p>The earlier push toward clearer town destinations, expedition choices, pressure, combat, and return paths.</p></a>
+          <a class="post-card" href="posts/007-refactor-and-accessibility.html"><span class="post-meta">Devlog 007 · Stability & Accessibility</span><h3>Refactor and Accessibility</h3><p>The modularization and accessibility work that helped stabilize the recovered browser game.</p></a>
+          <a class="post-card" href="posts/006-first-road-balance.html"><span class="post-meta">Devlog 006 · First Road Balance</span><h3>First Road Balance</h3><p>An earlier pass on early-game pacing and Old Road rewards.</p></a>
+          <a class="post-card" href="posts/005-the-first-road.html"><span class="post-meta">Devlog 005 · The First Road</span><h3>The First Road</h3><p>The first deeper route, camp, supply, and mastery experiments.</p></a>
+          <a class="post-card" href="posts/004-mobile-polish.html"><span class="post-meta">Devlog 004 · Mobile Polish</span><h3>Mobile Polish</h3><p>Early responsive layout and touch-target improvements.</p></a>
+          <a class="post-card" href="posts/003-voices-of-ashmere.html"><span class="post-meta">Devlog 003 · Voices of Ashmere</span><h3>Voices of Ashmere</h3><p>The first named NPCs, dialogue, quests, and combat intent.</p></a>
+          <a class="post-card" href="posts/002-roads-beyond-ashmere.html"><span class="post-meta">Devlog 002 · Roads Beyond Ashmere</span><h3>The Roads Beyond Ashmere</h3><p>The early world identity, character creation, exploration, and D20-style checks.</p></a>
+          <a class="post-card" href="posts/001-recovered-build.html"><span class="post-meta">Devlog 001 · Project Origin</span><h3>I Recovered My First Game</h3><p>The original recovery story and the Windows Batch RPG that started the project.</p></a>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Where Development Stands</h2>
+        <div class="roadmap-grid">
+          <div class="roadmap-item"><h3>Ashmere & the Old Road</h3><p>The first-session loop is in the production build: the road-born opening, Oric tutorial, route choices, danger, discoveries, journal, return report, and rewards. Balance and longer human playtesting continue.</p></div>
+          <div class="roadmap-item"><h3>Greyfen</h3><p>Greyfen has a distinct marsh setting and several playable systems, including Ferry Nets work and the optional Silted Storehouse. Its full story, services, and progression loop still need completion and validation.</p></div>
+          <div class="roadmap-item"><h3>Ironpass & Beyond</h3><p>Ironpass is not yet a complete playable town. It remains future content until its hub, expedition, quest, rewards, and return loop are ready.</p></div>
+        </div>
+        <p class="muted" style="margin-top:16px">The first three towns are a development target, not a feature claim: only content that is actually playable is described as shipped.</p>
+        <nav aria-label="Project links">
+          <a class="btn" href="docs/ROADMAP.md">Full Roadmap</a>
+          <a class="btn" href="docs/STORE_PAGE_COPY_2026-11.md">Store Page Copy</a>
+          <a class="btn" href="feedback.html">Send Playtest Feedback</a>
+        </nav>
+      </section>
     </main>
-    <footer>LEGEND: The Awakening / HTML5 Fantasy Road RPG</footer>
+    <footer>LEGEND: The Awakening · Development Chronicle</footer>
   </div>
 </body>
 </html>

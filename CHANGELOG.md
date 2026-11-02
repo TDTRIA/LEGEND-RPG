@@ -1,3 +1,11 @@
+## v0.30.3 — Traveler identity emblems and release information catch-up
+
+- Replace the generic repeated traveler-creation art with four distinct, accessible identity emblems for Woman, Man, Nonbinary, and Keep It Unspoken. Identity selection remains cosmetic and pronoun-related; it does not change stats or save structure.
+- Correct the runtime version synchronizer and HTML title so the published game consistently reports v0.30.3 rather than silently reverting to v0.27.0.
+- Repair stale browser-regression expectations and setup: mandatory annals remain mandatory, result tests seed the rare reward deterministically, the dialogue contract reflects all 17 authored scenarios, and journal tests assert recorded places rather than camp/shelter nodes that are tracked separately.
+- Refresh the public development chronicle and newsletter page, add catch-up devlogs for the first journey and Greyfen, and prepare accurate Game Jolt / itch.io copy.
+- Preserve the classic browser runtime, save key, traveler record structure, current combat and expedition rules; no gameplay reward or save migration is introduced.
+
 ## v0.30.2 — Illustrated rare expedition rewards
 
 - Replace the expedition ledger's generic rare-reward glyph with the existing generated Road Token inventory art.
