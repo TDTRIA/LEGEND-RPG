@@ -43,7 +43,7 @@
         {label:'“Looking for work.”', trait:'Practical Arrival', desc:'You sound useful before you sound dangerous.', effects:{gold:20, memory:'At the gate, you told Ashmere you were looking for honest work.'}},
         {label:'“Looking for answers.”', trait:'Answer-Seeker', desc:'Mara will want to hear that.', effects:{bonus:'lore', townTrust:1, memory:'At the gate, you admitted you were looking for answers.'}},
         {label:'“Trying to survive.”', trait:'Honest Survivor', desc:'The guard believes that more than a brave speech.', effects:{maxHp:4, items:{food:1}, memory:'At the gate, you told the truth: you were trying to survive.'}},
-        {label:'Say nothing. Show your keepsake.', trait:'Quiet Omen', desc:'The bell answers before the guard does.', effects:{items:{bellFragment:1}, memory:'At the gate, you showed your keepsake and the bell answered once.'}}
+        {label:'Say nothing. Show your keepsake.', trait:'Quiet Omen', desc:'The bell answers before the guard does.', effects:{bonus:'lore',townTrust:1,memory:'At the gate, you showed your keepsake and the bell answered once.'}}
       ]
     },
     {
