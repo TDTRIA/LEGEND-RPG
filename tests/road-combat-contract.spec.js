@@ -238,6 +238,27 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.events.results[0]).toMatchObject({ result: 'victory', rewardName: 'clothScrap · roadToken', xpGained: 38 });
   });
 
+  test('a Lantern Wisp fragment drop is recorded for the expedition return report', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 100, maxHp: 100, gold: 0 },
+      state: { stage: 1, pressure: 30 },
+      enemy: {
+        name: 'Lantern Wisp', behavior: 'flicker', hp: 1, maxHp: 1,
+        reward: 'wispAsh', xp: 22,
+        bonusDrop: { item: 'bellFragment', chance: 100, amount: [1, 1] },
+      },
+    });
+    await page.locator('#strike').click();
+    const result = await page.evaluate(() => window.__combatContract);
+    expect(result.player.inventory.wispAsh).toBe(1);
+    expect(result.player.inventory.bellFragment).toBe(1);
+    expect(result.state.routeBellFragmentFoundV300).toBe(true);
+    expect(result.events.inventory).toEqual([
+      { item: 'wispAsh', count: 1 },
+      { item: 'bellFragment', count: 1 },
+    ]);
+  });
+
   test('high-tier armor reduces damage without preserving the old overpowered defense scale', async ({ page }) => {
     await startCombat(page, {
       player: { hp: 50, maxHp: 100 },
