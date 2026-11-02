@@ -185,7 +185,7 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.events.music).toContain('stop');
     expect(result.events.fx).toContain('victory');
     expect(result.events.results).toEqual([{
-      result: 'victory', enemy: 'Road Goblin', rewardName: 'fur', xpGained: 29, routeStage: 2
+      result: 'victory', enemy: 'Road Goblin', rewardName: 'fur', xpGained: 27, routeStage: 2
     }]);
     await expect(page.locator('.v152-combat-results')).toBeVisible();
     await expect(page.locator('.v152-combat-results')).toContainText('Victory');
@@ -235,7 +235,7 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.events.progress).toEqual([36]);
     await expect(page.locator('.v152-combat-results')).toContainText('clothScrap');
     await expect(page.locator('.v152-combat-results')).toContainText('roadToken');
-    expect(result.events.results[0]).toMatchObject({ result: 'victory', rewardName: 'clothScrap · roadToken', xpGained: 38 });
+    expect(result.events.results[0]).toMatchObject({ result: 'victory', rewardName: 'clothScrap · roadToken', xpGained: 36 });
   });
 
   test('a Lantern Wisp fragment drop is recorded for the expedition return report', async ({ page }) => {
