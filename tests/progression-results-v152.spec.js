@@ -25,7 +25,7 @@ test.describe('LEGEND level-up and road results v0.23.0', () => {
         level: 1,
         hp: 20,
         maxHp: 50,
-        xp: 99,
+        xp: 149,
         gold: 10,
         weapon: 'hand',
         armor: 'none',
@@ -69,7 +69,7 @@ test.describe('LEGEND level-up and road results v0.23.0', () => {
       };
     });
     expect(persisted.level).toBe(2);
-    expect(persisted.summary).toMatchObject({ gained: 1, levels: 1, level: 2, xp: 0, next: 200 });
+    expect(persisted.summary).toMatchObject({ gained: 1, levels: 1, level: 2, xp: 0, next: 300 });
     expect(persisted.hp).toBe(31);
     expect(persisted.maxHp).toBe(61);
     expect(persisted.attributes).toEqual({ might: 1, agility: 0, arcana: 0, endurance: 1, insight: 0, fortune: 0 });
