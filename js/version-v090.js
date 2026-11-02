@@ -1,4 +1,4 @@
-// LEGEND v0.27.0 — Greyfen regional armor and service progression.
+// LEGEND v0.30.0 — Greyfen regional armor and service progression.
 // Existing saves remain compatible; this file only synchronizes runtime identity.
 (() => {
   if (!window.LEGEND_DATA) return;
