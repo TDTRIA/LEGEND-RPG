@@ -14,7 +14,7 @@
   const header=renderHeader,shell=renderShell;
 function finish(){
  const pl=p();if(!pl)return;
- const s=ensure(pl),stageCount=Number(s.stage||0),complete=stageCount>=5,reward=30+stageCount*20+Math.floor(s.pressure/20)*10;
+ const s=ensure(pl),stageCount=Number(s.stage||0),complete=stageCount>=5,reward=20+stageCount*12+Math.floor(Number(s.pressure||0)/25)*6;
  const levelBefore=Math.max(1,Number(pl.level||1)),pressureBefore=Number(s.pressure||0),trip=Number(s.trips||0);
  const routeName=s.routeChoice==='ridge'?'High Ridge':s.routeChoice==='reeds'?'Reed Cut':'Route unrecorded';
  const journal=pl.flags?.roadFieldJournalV150||{};
@@ -49,8 +49,9 @@ function finish(){
  const opening=pl.flags?.openingRoadV140;
  if(complete&&opening?.phase==='road'&&!opening.completed){opening.phase='complete';opening.completed=true;pl.flags.introV094Complete=true;pl.flags.tutorialStep='people';}
  pl.gold=Number(pl.gold||0)+reward;
- if(complete)inv(pl,'roadToken',1);
- const progress=awardProgress(pl,15+Number(s.stage||0)*10);
+ const tokenEarned=complete&&Math.random()<.65?1:0;
+ if(tokenEarned)inv(pl,'roadToken',1);
+ const progress=awardProgress(pl,8+stageCount*5);
  pl.stats=pl.stats||{};
  pl.stats.oldRoadClears=Number(pl.stats.oldRoadClears||0)+1;
  const pressureAfter=clamp(Math.floor(s.pressure*.35),0,100);
@@ -59,10 +60,10 @@ function finish(){
  const endedState={...s};
  s.stage=0;s.pressure=pressureAfter;
  save(pl);
- const details={type:'expedition',complete,stagesCompleted:stageCount,rewardGold:reward,roadTokens:complete?1:0,
+ const details={type:'expedition',complete,stagesCompleted:stageCount,rewardGold:reward,roadTokens:tokenEarned,
   xpGained:Number(progress?.gained||0),levelsGained:Number(progress?.levels||0),levelBefore,levelAfter:Math.max(1,Number(pl.level||1)),
   routeName,discoveriesThisTrip,campsThisTrip,pressureBefore,pressureAfter,trip};
- outcome(complete?'Expedition Secured':'Field Report Secured',(complete?'You bring the expedition home: ':'You return early with: ')+reward+'g'+(complete?' and a Road Token. The Road Tokens can now open a new region.':'.')+(progress?' XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'.':'')+routeReport,'Return',null,null,details,endedState)
+ outcome(complete?'Expedition Secured':'Field Report Secured',(complete?'You bring the expedition home: ':'You return early with: ')+reward+'g'+(tokenEarned?' and a rare Road Token was recovered.':(complete?' and your field report.':'.'))+(progress?' XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'.':'')+routeReport,'Return',null,null,details,endedState)
 }
 function outcome(title,text,kicker,skill,modifier,details,viewState){
  stopMusic();
