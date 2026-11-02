@@ -2,13 +2,13 @@ const { test, expect } = require('@playwright/test');
 
 
 async function expectAtlasScale(page, key, expectedScale) {
-  await expect.poll(() => page.locator('.v094-choice[data-' + key + '] .v094-choice-art img').evaluateAll(images => images.length > 0 && images.every(image => {
+  await expect.poll(() => page.locator('.v094-choice[data-' + key + '] .v094-choice-art img').evaluateAll((images, scale) => images.length > 0 && images.every(image => {
     const frame=image.closest('.v094-choice-art');
     const frameBox=frame?.getBoundingClientRect();
     const imageBox=image.getBoundingClientRect();
-    return !!frameBox?.width && Math.abs(imageBox.width/frameBox.width-expectedScale)<0.04 &&
-      Math.abs(imageBox.height/frameBox.height-expectedScale)<0.04;
-  }))).toBe(true);
+    return !!frameBox?.width && Math.abs(imageBox.width/frameBox.width-scale)<0.04 &&
+      Math.abs(imageBox.height/frameBox.height-scale)<0.04;
+  }), expectedScale)).toBe(true);
 }
 
 async function choose(page, selector) {
