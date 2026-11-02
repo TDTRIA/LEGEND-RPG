@@ -78,4 +78,23 @@ test.describe('Title realm dispatch and town service access v0.29.1', () => {
     await expect(daily.locator('.ash099-daily-card')).toHaveCount(3);
     await expect(page.locator('.ash099-contract-ledger')).toBeVisible();
   });
+  test('Greyfen hub exposes the same daily field board as a regional service', async ({ page }) => {
+    await startFreshCharacter(page, 'GreyfenBoardQA');
+    await page.evaluate(() => {
+      const player=window.LegendRuntimeV120.loadPlayer();
+      player.currentRegion='Greyfen';
+      player.town='Greyfen';
+      window.LegendRuntimeV120.savePlayer(player);
+      window.LegendAshmereV099.renderAshmere();
+    });
+    await expect(page.locator('.ash100-town-greyfen')).toBeVisible();
+    const tile=page.locator('.ash100-destination[data-ash-view="quests"]');
+    await expect(tile).toContainText('Daily Field Board');
+    await expect.poll(() => tile.locator('.ash100-destination-icon img').evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
+    await expect(tile.locator('.ash100-destination-icon img')).toHaveAttribute('src',/service-job-board\.webp/);
+    await tile.click();
+    await expect(page.locator('.ash099-daily-board')).toBeVisible();
+    await expect(page.locator('.ash099-daily-card')).toHaveCount(3);
+  });
+
 });
