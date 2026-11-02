@@ -7,8 +7,8 @@ window.ROAD_EVENTS = [
     title:'Broken Milestone',
     description:'A ruined milestone blocks the road. Moss hides the loose stones, and the path asks whether you know how to move carefully.',
     check:'survival',
-    dc:7,
-    success:{xp:45,items:[{key:'roadToken',qty:1}],message:'You cross safely and pry a Road Token from beneath the marker.'},
+    dc:10,
+    success:{xp:30,items:[{key:'roadToken',qty:1}],message:'You cross safely and pry a Road Token from beneath the marker.'},
     failure:{fatigue:1,message:'You slip on the broken stones. The road takes a little more out of you.'},
     tutorialMessage:'Some road events test skills. Survival checks help Rangers and careful travelers avoid fatigue.'
   },
@@ -27,7 +27,7 @@ window.ROAD_EVENTS = [
     title:'Bell Echo',
     description:'The sound of a bell drifts across the empty road, though Ashmere is far behind you.',
     check:'lore',
-    dc:8,
+    dc:12,
     success:{items:[{key:'bellFragment',qty:1}],message:'You follow the echo to a buried Bell Fragment.'},
     failure:{roadDanger:1,message:'The echo leads you in circles. The road feels more awake now.'},
     tutorialMessage:'Lore and magic checks are useful for strange events tied to Ashmere and the Lost Build.'
