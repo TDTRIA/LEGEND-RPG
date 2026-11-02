@@ -1,4 +1,14 @@
 const { test, expect } = require('@playwright/test');
+
+function cssBackgroundAlphas(value) {
+  return Array.from(String(value || '').matchAll(/rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/g), match => Number(match[1]));
+}
+
+function expectBackgroundAlphaAtMost(value, maximum) {
+  const alphas = cssBackgroundAlphas(value);
+  expect(alphas.length, 'expected an rgba background layer in: ' + value).toBeGreaterThan(0);
+  expect(Math.max(...alphas)).toBeLessThanOrEqual(maximum);
+}
 const fs = require('fs');
 const path = require('path');
 const dataSource = fs.readFileSync(path.join(__dirname, '../js/data.js'), 'utf8');
@@ -962,8 +972,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(portraitLayout.height).toBeLessThanOrEqual(140);
     expect(portraitLayout.objectFit).toBe('cover');
     expect(portraitLayout.objectPosition).toContain('18%');
-    expect(portraitLayout.cardBackground).toContain('0.94');
-    expect(portraitLayout.cardBackground).toContain('0.97');
+    expectBackgroundAlphaAtMost(portraitLayout.cardBackground, 0.80);
     await page.locator('[data-ash-view="oric"]').click();
     await expect(page.getByRole('heading', { name: 'Captain Oric' })).toBeVisible();
     const oricDialoguePortrait = page.locator('.ash099-head img');
