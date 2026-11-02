@@ -14,6 +14,7 @@
         { view: 'crossing', title: 'A Dry Crossing', desc: flags.greyfenDryCrossingComplete ? 'The washed route marker is recovered and recorded.' : 'Recover a washed route marker. Choose the raised posts or risk the reed bed. ', cta: flags.greyfenDryCrossingComplete ? 'Review contract' : 'Take contract', iconKey: 'route', featured: currentView === 'crossing' },
         { view: 'marsh', title: 'The Marsh Path', desc: flags.greyfenMarshPathComplete ? 'The waterline report is saved. Take another trip to gather more field notes and supplies.' : 'Choose the raised posts or pay a ration to take the reed-bed route. Face or avoid a marsh encounter, rest at a shelter, and record the Waterline Gauge.', cta: 'Set out', iconKey: 'road', featured: currentView === 'marsh' },
         { view: 'work', title: 'Bellkeeper’s Hall', desc: 'Take practical work while learning the rhythms of Greyfen.', cta: 'Find work', iconKey: 'work', featured: currentView === 'work' },
+        { view: 'quests', title: 'Daily Field Board', desc: 'Three daily road objectives, earned cache keys, and local field contracts.', cta: 'View daily work', iconKey: 'quest', featured: currentView === 'quests' },
         { view: 'regions', title: 'Road Network', desc: 'Return to Ashmere or travel between lands you have unlocked.', cta: 'Travel', iconKey: 'regions', featured: currentView === 'regions' },
       ];
       if (flags.greyfenDryCrossingComplete) {
@@ -34,6 +35,7 @@
       { view: 'smith', title: 'Forge & Workshop', desc: 'Upgrade weapons and armor, then use the crafting bench for road finds.', cta: 'Gear & craft', iconKey: 'smith', shopKey: 'ashmereForge', featured: false },
       { view: 'people', title: 'Town Square', desc: 'Talk with Mara Vell, Old Brenn, and Captain Oric. Hear warnings and follow local stories.', cta: 'Meet the town', iconKey: 'people', featured: ['people', 'mara', 'brenn', 'oric'].includes(currentView) },
       { view: 'work', title: 'Work Board', desc: 'Take paid jobs, test your timing, and earn gold plus useful supplies.', cta: 'Browse jobs', iconKey: 'work', featured: currentView === 'work' },
+      { view: 'quests', title: 'Daily Field Board', desc: 'Three daily road objectives, earned cache keys, and local field contracts.', cta: 'View daily work', iconKey: 'quest', featured: currentView === 'quests' },
       { view: 'road', title: 'Old Road Gate', desc: 'Begin the expedition; find clues, face danger, and bring proof home.', cta: 'Begin expedition', iconKey: 'road', featured: currentView === 'road' },
       { view: 'regions', title: 'Road Network', desc: 'Unlock new regions with Road Tokens, then travel between places you know for gold.', cta: 'Open map', iconKey: 'regions', featured: currentView === 'regions' },
 
