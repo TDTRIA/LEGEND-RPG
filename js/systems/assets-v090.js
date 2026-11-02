@@ -57,15 +57,15 @@
         greyfenApothecary: 'assets/generated/ui/region-shops/greyfen-apothecary.webp'
       },
       serviceIcons: {
-        inn: 'assets/generated/ui/icons/legend-icon-inn.webp',
-        market: 'assets/generated/ui/icons/legend-icon-market.webp',
-        blacksmith: 'assets/generated/ui/icons/legend-icon-forge.webp',
-        journal: 'assets/generated/ui/icons/legend-icon-journal.webp',
-        map: 'assets/generated/ui/icons/legend-icon-compass.webp',
-        jobBoard: 'assets/generated/ui/icons/legend-icon-milestone.webp',
-        traveler: 'assets/generated/ui/icons/legend-icon-traveler.webp',
-        milestone: 'assets/generated/ui/icons/legend-icon-milestone.webp',
-        gatehouse: 'assets/generated/ui/icons/legend-icon-road.webp'
+        inn: 'assets/generated/ui/icons/service-inn.webp',
+        market: 'assets/generated/ui/icons/service-market.webp',
+        blacksmith: 'assets/generated/ui/icons/service-blacksmith.webp',
+        journal: 'assets/generated/ui/icons/service-journal.webp',
+        map: 'assets/generated/ui/icons/service-map.webp',
+        jobBoard: 'assets/generated/ui/icons/service-job-board.webp',
+        traveler: 'assets/generated/ui/icons/service-traveler.webp',
+        milestone: 'assets/generated/ui/icons/service-milestone.webp',
+        gatehouse: 'assets/generated/ui/icons/service-gatehouse.webp'
       }
     },
     skills: {
