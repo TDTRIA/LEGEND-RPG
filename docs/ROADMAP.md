@@ -34,7 +34,7 @@ The town should feel like somewhere worth returning to. The road is where prepar
 - The main Playwright workflow completed with **207 passed, 3 failed, 1 skipped**: [run 40937100701](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40937100701). The JavaScript syntax check passed. The live GitHub Pages smoke step was skipped because the test job failed.
 - Failure triage from the workflow log:
   1. `tests/ashmere-world-visibility.spec.js` expects the shell canvas background to be `none`; the current computed style is a low-opacity translucent gradient. The assertion must describe the real contract rather than require no gradient.
-  2. `tests/playtest-fixes-v0222.spec.js` detects a **138px NPC portrait/name overlap**. This is a real layout issue and must be fixed.
+  2. `tests/playtest-fixes-v0222.spec.js` reports a **138px vertical delta**, but the portrait and name occupy separate grid columns. The old assertion ignored horizontal separation, so this is a test-geometry false positive rather than proof of a visual collision. PR [#79](https://github.com/TDTRIA/LEGEND-RPG/pull/79) checks true 2D rectangle intersection.
   3. `tests/ui-world-shell-v170.spec.js` expects the string `0.90`, while the browser serializes the same alpha as `0.9`. Make the assertion robust to CSS serialization; do not alter visual values just to satisfy string formatting.
 - A deployed browser visual review is not recorded for this checkpoint. Do not call the latest build fully verified until the failures are resolved and the live smoke step passes.
 
