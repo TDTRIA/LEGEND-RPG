@@ -33,7 +33,7 @@ The opening does not need a large cast or a long cutscene. It needs a few well-w
 - Old Brenn values proof and records what Ashmere owes returning travelers.
 - The gate captain is named Captain Oric in the current source. Some project notes have used “Olric”; settle the spelling before a lore-heavy release and do not create two characters.
 - The first Old Road trip offers High Ridge and Reed Cut.
-- High Ridge has a calmer first stretch and a Ridgeway Cairn discovery. Reed Cut gives a Bell Fragment and leads to tracks beneath the blue light, with more pressure.
+- High Ridge reduces the first stretch's immediate pressure and reveals the Ridgeway Cairn, but does not make the road safe; an encounter still comes after two travel stretches. Reed Cut is riskier and can yield a Bell Fragment on a 35% route roll, while the tracks beneath the blue light remain a discovery even when no fragment is recovered.
 - Later waystation narration reflects the route selected.
 - Greyfen is a working settlement organized around raised paths, flood marks, salvage, water routes, and a distinct local contract called “A Dry Crossing.”
 
@@ -100,11 +100,11 @@ Give each person a different response to the phrase “the bell rang once.” Ma
 
 ### Movement IV — The road tests the traveler's judgment
 
-**Implemented structure:** The Old Road is a five-stage expedition with Road Pressure, events, battle, finds, points of interest, camps, and an explicit return.
+**Implemented structure:** The Old Road is a five-stage expedition with Road Pressure, events, battle, finds, points of interest, camps, and an explicit return. A clash is due after two travel stretches even when pressure stays low; higher pressure makes later encounters stronger.
 
 **First major choice:**
-- **High Ridge:** Safer, firmer ground. Its first payoff is reduced immediate pressure and a Ridgeway Cairn clue.
-- **Reed Cut:** Riskier low ground. Its immediate reward is a Bell Fragment; its follow-up exposes tracks beneath the blue light and raises pressure.
+- **High Ridge:** Firmer, more cautious ground. Its first payoff is reduced immediate pressure and a Ridgeway Cairn clue, not immunity from encounters.
+- **Reed Cut:** Riskier low ground. A Bell Fragment is a 35% chance, not a guaranteed reward; its follow-up exposes tracks beneath the blue light and raises pressure.
 
 The player should understand the tradeoff before choosing. It is not a good choice if one route is secretly the right answer and the other only punishes a curious player. The safer route should reward careful preparation; the riskier route should reward curiosity with an interesting, visibly priced consequence.
 
