@@ -10,6 +10,7 @@
       ensureState,
       addInventory,
       clamp: clampInput,
+      randomInt,
       renderExpedition
     } = context;
 
@@ -69,13 +70,16 @@
      journal.discoveries=Array.isArray(journal.discoveries)?journal.discoveries:[];
      journal.routes=Array.isArray(journal.routes)?journal.routes:[];
      const routeTitle=route==='ridge'?'High Ridge':'Reed Cut';
-     const routeNote=route==='ridge'?'Chose firmer, calmer ground; the road feels a little less watchful.':'Followed the strange blue light through the reeds; the trail is riskier, but a Bell Fragment was recovered.';
+     const routeNote=route==='ridge'?'Chose firmer, calmer ground; the road feels a little less watchful.':'Followed the strange blue light through the reeds. The trail is riskier, and a fragment may lie beneath the water.';
      s.routeChoice=route;
      if(!journal.routes.some(entry=>entry.trip===Number(s.trips||0)&&entry.place==='South Fork')){
       journal.routes.push({trip:Number(s.trips||0),place:'South Fork',title:routeTitle,note:routeNote,day:Number(pl.day||1)});
      }
      if(route==='ridge'){s.pressure=clamp(s.pressure-8,0,100);save(pl);return renderExpedition('You choose the High Ridge. The ground firms beneath your boots, and the road feels a little less watchful. Road Pressure falls by 8.');}
-     inv(pl,'bellFragment',1);s.pressure=clamp(s.pressure+10,0,100);save(pl);return renderExpedition('You slip into the Reed Cut and pluck a Bell Fragment from the mud beside the blue light. Something stirs deeper in the reeds. +1 Bell Fragment; Road Pressure rises by 10.');
+     const fragmentFound=typeof randomInt==='function'?randomInt(1,100)<=30:Math.random()<0.30;
+     if(fragmentFound)inv(pl,'bellFragment',1);
+     s.pressure=clamp(s.pressure+10,0,100);save(pl);
+     return renderExpedition('You slip into the Reed Cut and follow the cold blue light. '+(fragmentFound?'A Bell Fragment breaks free from the mud beneath it. +1 Bell Fragment.':'The mud yields only a warped marker; no fragment comes free.')+' Something stirs deeper in the reeds. Road Pressure rises by 10.');
     }
 
     return Object.freeze({ chooseMovedCairnDecision, chooseRoadRoute });
