@@ -109,6 +109,8 @@ test.describe('LegendRoadActionsV100 compatibility contract', () => {
 
 
 test('a careful traveler still meets a road encounter after two travel stretches', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForFunction(() => typeof window.LegendRoadStateV100?.create === 'function' && typeof window.LegendRoadActionsV100?.create === 'function');
   const result = await page.evaluate(() => {
     const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
     const rules=window.LegendRoadStateV100.create({getData:()=>window.LEGEND_DATA,clamp});

@@ -66,7 +66,7 @@ test('first secured field report can be handed directly to Mara to advance the n
     window.LegendRoadControllerV100.renderExpedition();
   });
 
-  await page.locator('#finish').click();
+  await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
   await expect(page.getByRole('region', { name: 'Expedition results' })).toBeVisible();
   await expect(page.getByRole('region', { name: 'Expedition results' })).toContainText('5 / 5');
   await expect(page.getByRole('region', { name: 'Expedition results' })).toContainText('Road Token');

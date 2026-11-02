@@ -7,7 +7,9 @@ async function startAshmereTraveler(page) {
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout:10000 });
   await page.addStyleTag({ content:'*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}' });
   await page.getByRole('button', { name:/Begin Your Journey/i }).click();
-  await page.getByRole('button', { name:/Skip the annals/i }).click();
+  await page.getByRole('button', { name:/^Continue$/ }).click();
+  await page.getByRole('button', { name:/^Continue$/ }).click();
+  await page.getByRole('button', { name:/Shape the traveler/i }).click();
   await page.locator('#v094Name').fill('RoadSceneVarietyQA');
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();

@@ -1566,6 +1566,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       return {
         route: pl.flags.firstRoadReturnRoute,
         discovery: pl.flags.firstRoadReturnDiscovery,
+        fragmentFound: pl.flags.firstRoadReturnBellFragmentFound,
         objective: pl.questLog.find(item => item.startsWith('The Bell That Rang Once:'))
       };
     });
@@ -1578,7 +1579,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('The Moved Cairn offers three decisions, can be reported, and changes future route clues', async ({ page }) => {
     await startFreshCharacter(page, 'MovedCairnQA');
     await page.evaluate(() => window.LegendAshmereV099.route('quests'));
-    await expect(page.locator('.ash099-contract-card')).toHaveCount(4);
+    await expect(page.locator('.ash099-contract-card')).toHaveCount(5);
     await page.locator('[data-contract-accept="movedCairn"]').click();
 
     await page.evaluate(() => window.LegendAshmereV099.route('routes'));
@@ -2040,7 +2041,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
         readUsed: {}
       };
       rt.savePlayer(player);
-      window.LegendRoadControllerV100.renderHub();
+      window.LegendRoadControllerV100.renderExpedition();
       return {
         gold: Number(player.gold || 0),
         xp: Number(player.xp || 0),

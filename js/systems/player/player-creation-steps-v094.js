@@ -19,13 +19,13 @@
       nextLabel: 'Choose Personality',
       progress: 'The body is the first outline of a self.',
       scene: 'Dark water reflects a shape before there is a face to it. It seems familiar. Does it feel like you?',
-      getItems: context => {
-        const travelerEmblem = context.assets?.creation?.atlas || '';
-        return (context.genderOptions || []).map(option => ({
-          ...option, artSource: travelerEmblem, artCell: null,
-          effect: option.effect || 'Identity only; your form never weakens your character.'
-        }));
-      }
+      getItems: context => (context.genderOptions || []).map(option => ({
+        ...option,
+        artSource: '',
+        artCell: null,
+        identityGlyph: option.glyph,
+        effect: option.effect || 'Identity only; your form never weakens your character.'
+      }))
     }),
     personality: Object.freeze({
       step: 3,

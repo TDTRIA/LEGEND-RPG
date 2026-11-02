@@ -30,9 +30,12 @@ test('every traveler choice has its own art and gameplay effects are visible and
   await page.locator('#v094Next').click();
 
   await expect(page.locator('.v094-choice[data-gender]')).toHaveCount(4);
-  await expect(page.locator('.v094-choice-art img')).toHaveCount(4);
-  await expect.poll(() => page.locator('.v094-choice-art img').evaluateAll(imgs => imgs.every(img => img.complete && img.naturalWidth > 0))).toBe(true);
-  await expectAtlasScale(page, 'gender', 1);
+  await expect(page.locator('.v094-gender-emblem')).toHaveCount(4);
+  await expect(page.locator('.v094-choice[data-gender] .v094-choice-art')).toHaveCount(0);
+  await expect(page.locator('[data-gender="woman"] .v094-gender-emblem')).toHaveText('♀');
+  await expect(page.locator('[data-gender="man"] .v094-gender-emblem')).toHaveText('♂');
+  await expect(page.locator('[data-gender="nonbinary"] .v094-gender-emblem')).toHaveText('⚧');
+  await expect(page.locator('[data-gender="unspoken"] .v094-gender-emblem')).toHaveText('◌');
   await choose(page, '[data-gender="woman"]');
 
   await expect(page.locator('.v094-choice[data-personality]')).toHaveCount(5);

@@ -90,7 +90,7 @@ test.describe('Ashmere first-road-return dialogue contract', () => {
       });
     });
 
-    expect(results).toHaveLength(14);
+    expect(results).toHaveLength(17);
     for (const result of results) {
       expect(result.applied, result.id + ' dialogue service should apply').toBe(true);
       expect(result.matched, result.id + ' should preserve phrase: ' + result.phrase).toBe(true);

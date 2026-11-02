@@ -1,6 +1,6 @@
 {
   "name": "legend-the-awakening",
-  "version": "0.30.2",
+  "version": "0.30.3",
   "private": true,
   "description": "Browser game support and Playwright regression tooling for LEGEND: The Awakening.",
   "scripts": {
