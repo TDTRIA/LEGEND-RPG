@@ -3,6 +3,10 @@ const { test, expect } = require('@playwright/test');
 test.describe('LegendRoadActionsV100 compatibility contract', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    await page.waitForFunction(() =>
+      typeof window.LegendRoadStateV100?.create === 'function' &&
+      typeof window.LegendRoadActionsV100?.create === 'function'
+    );
   });
 
   test('expedition kickoff resets trip-local state, increments trips, and applies wick-sensitive pressure', async ({ page }) => {
