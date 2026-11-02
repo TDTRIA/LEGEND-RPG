@@ -99,6 +99,23 @@ async function startFreshCharacter(page, name = 'QATraveler', options = {}) {
 }
 
 
+async function clearRoadBattle(page) {
+  const battle=page.locator('.rpg-battle');
+  if (await battle.count()) {
+    await page.evaluate(() => {
+      const player=window.LegendRuntimeV120.loadPlayer();
+      player.attributesV152=player.attributesV152||{};
+      player.attributesV152.might=250;
+      player.maxHp=Math.max(999,Number(player.maxHp||0));
+      player.hp=player.maxHp;
+      window.LegendRuntimeV120.savePlayer(player);
+    });
+    if (await battle.count()) await page.locator('#strike').click();
+    if (await page.locator('.v152-combat-results').count()) await page.locator('#v152CombatContinue').click();
+  }
+  await expect(battle).toHaveCount(0);
+}
+
 async function enterOldRoadFromDeparture(page) {
   await page.getByRole('button', { name: /The Old Road/i }).click();
   await expect(page.locator('.ash100-departure')).toBeVisible();
@@ -1876,6 +1893,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('.exp100-hotspot-find').click();
     await page.locator('#poiInspect').click();
     await page.locator('#push').click();
+    await clearRoadBattle(page);
     await expect(page.locator('.exp100-head')).toContainText(/wet reeds cling to your boots/i);
     await expect(page.locator('.exp100-head')).toContainText(/something followed you out/i);
   });
