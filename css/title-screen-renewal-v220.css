@@ -20,3 +20,26 @@
 @media(max-width:980px){.title-v136-rpg .v120-title-main{padding:100px 18px 20px!important}.title-v136-rpg .v120-title-hero{width:min(620px,100%)!important;margin:auto!important}}
 @media(max-width:560px){.title-v136-rpg .v120-title-main{padding:72px 10px 12px!important}.title-v136-rpg .v120-title-hero{padding:12px 10px!important;border-left-width:1px!important}.title-v136-rpg .v120-title-hero .v120-legend-logo{max-height:78px!important}.title-v136-rpg .v136-menu-list{gap:4px!important}.title-v136-rpg .v136-menu-btn{min-height:44px!important}.title-v136-rpg .v136-menu-primary{min-height:48px!important}.title-v136-rpg .v120-traveler-line{margin:0 0 8px!important}}
 @media(prefers-reduced-motion:reduce){.title-v136-rpg .v120-title-backdrop{animation:none!important;transform:none!important}}
+
+
+/* v0.29.1 — title-side panel is a living realm dispatch, not a task checklist. */
+.title-v136-rpg .v151-realm-dispatch{
+  position:relative;display:grid;gap:12px;margin-top:12px;padding:15px 16px 14px;
+  border:1px solid rgba(223,192,121,.32);
+  border-left:2px solid rgba(238,202,123,.82);
+  background:linear-gradient(135deg,rgba(17,27,20,.84),rgba(5,10,7,.78));
+  box-shadow:inset 0 1px rgba(255,255,255,.035),0 12px 30px rgba(0,0,0,.2);
+}
+.title-v136-rpg .v151-realm-dispatch-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:8px;border-bottom:1px solid rgba(223,192,121,.2)}
+.title-v136-rpg .v151-realm-dispatch-head span{color:#e5c780;font-size:.59rem;font-weight:900;letter-spacing:.2em}
+.title-v136-rpg .v151-realm-dispatch-head small{color:#a9b5a8;font-size:.55rem;letter-spacing:.09em}
+.title-v136-rpg .v151-realm-dispatch-latest,.title-v136-rpg .v151-realm-dispatch-next{display:grid;gap:4px}
+.title-v136-rpg .v151-realm-dispatch-latest>span,.title-v136-rpg .v151-realm-dispatch-next>span{color:#d8bd7a;font-size:.55rem;font-weight:850;letter-spacing:.14em}
+.title-v136-rpg .v151-realm-dispatch h3{margin:0;color:#f2e5c5;font:500 1.16rem/1.15 Georgia,'Times New Roman',serif}
+.title-v136-rpg .v151-realm-dispatch p{margin:0;color:#bec9bd;font-size:.72rem;line-height:1.48}
+.title-v136-rpg .v151-realm-dispatch-next{padding-top:9px;border-top:1px solid rgba(223,192,121,.14)}
+.title-v136-rpg .v151-realm-dispatch-next strong{color:#e8d6ad;font-size:.84rem}
+.title-v136-rpg .v151-realm-dispatch a{justify-self:start;color:#e8c982;text-decoration:none;font-size:.67rem;font-weight:800;border-bottom:1px solid rgba(229,190,110,.38);padding-bottom:3px}
+.title-v136-rpg .v151-realm-dispatch a:hover,.title-v136-rpg .v151-realm-dispatch a:focus-visible{color:#fff0c3;border-color:#fff0c3}
+@media(max-width:980px){.title-v136-rpg .v151-realm-dispatch{max-width:620px;margin:12px auto 0}}
+@media(max-width:560px){.title-v136-rpg .v151-realm-dispatch{padding:12px;gap:9px}.title-v136-rpg .v151-realm-dispatch p{font-size:.69rem}}
