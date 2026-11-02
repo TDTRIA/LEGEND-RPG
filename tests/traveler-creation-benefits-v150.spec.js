@@ -1,5 +1,16 @@
 const { test, expect } = require('@playwright/test');
 
+
+async function expectAtlasScale(page, key, expectedScale) {
+  await expect.poll(() => page.locator('.v094-choice[data-' + key + '] .v094-choice-art img').evaluateAll(images => images.length > 0 && images.every(image => {
+    const frame=image.closest('.v094-choice-art');
+    const frameBox=frame?.getBoundingClientRect();
+    const imageBox=image.getBoundingClientRect();
+    return !!frameBox?.width && Math.abs(imageBox.width/frameBox.width-expectedScale)<0.04 &&
+      Math.abs(imageBox.height/frameBox.height-expectedScale)<0.04;
+  }))).toBe(true);
+}
+
 async function choose(page, selector) {
   await page.locator(selector).first().click();
   await page.locator('#v094Next').click();
@@ -19,17 +30,20 @@ test('every traveler choice has its own art and gameplay effects are visible and
   await expect(page.locator('.v094-choice[data-gender]')).toHaveCount(4);
   await expect(page.locator('.v094-choice-art img')).toHaveCount(4);
   await expect.poll(() => page.locator('.v094-choice-art img').evaluateAll(imgs => imgs.every(img => img.complete && img.naturalWidth > 0))).toBe(true);
+  await expectAtlasScale(page, 'gender', 5);
   await choose(page, '[data-gender="woman"]');
 
   await expect(page.locator('.v094-choice[data-personality]')).toHaveCount(5);
   await expect(page.locator('.v094-choice-art img')).toHaveCount(5);
   await expect.poll(() => page.locator('.v094-choice-art img').evaluateAll(imgs => imgs.every(img => img.complete && img.naturalWidth > 0))).toBe(true);
+  await expectAtlasScale(page, 'personality', 3);
   await expect(page.locator('.v094-choice[data-personality="bold"]')).toContainText('+1 Force');
   await choose(page, '[data-personality="bold"]');
 
   await expect(page.locator('.v094-choice[data-origin]')).toHaveCount(6);
   await expect(page.locator('.v094-choice-art img')).toHaveCount(6);
   await expect.poll(() => page.locator('.v094-choice-art img').evaluateAll(imgs => imgs.every(img => img.complete && img.naturalWidth > 0))).toBe(true);
+  await expectAtlasScale(page, 'origin', 3);
   await expect(page.locator('.v094-choice[data-origin="Wandering Cook"]')).toContainText('+3 rations');
   await expect(page.locator('.v094-choice[data-origin="Debt-Bound Thief"]')).toContainText('+40 starting gold');
   await choose(page, '[data-origin="Lost Squire"]');
@@ -43,6 +57,7 @@ test('every traveler choice has its own art and gameplay effects are visible and
   await expect(page.locator('.v094-choice[data-keepsake]')).toHaveCount(6);
   await expect(page.locator('.v094-choice-art img')).toHaveCount(6);
   await expect.poll(() => page.locator('.v094-choice-art img').evaluateAll(imgs => imgs.every(img => img.complete && img.naturalWidth > 0))).toBe(true);
+  await expectAtlasScale(page, 'keepsake', 3);
   await expect(page.locator('.v094-choice[data-keepsake="Bent Coin"]')).toContainText('+12% sale value');
   await expect(page.locator('.v094-choice[data-keepsake="Cooked Ration"]')).toContainText('+5 rations');
   await choose(page, '[data-keepsake="Rusty Charm"]');
