@@ -81,7 +81,7 @@ npm run test:e2e:report
 
 ## Current validation checkpoint (2026-11-02)
 
-Production main is **v0.30.1**. The v0.30.0 gameplay slice was integrated by [PR #82](https://github.com/TDTRIA/LEGEND-RPG/pull/82) as commit [`8080350`](https://github.com/TDTRIA/LEGEND-RPG/commit/80803500edf748a57e8e631fe8e5fab5c0a90b86). The mandatory-annals renderer/version/cache patch is on main at [`034ca72`](https://github.com/TDTRIA/LEGEND-RPG/commit/034ca72d44e4c6e8a65315dcd8b2ba97105b48fa), and deterministic Road Token tests were added at [`e0dd3ed`](https://github.com/TDTRIA/LEGEND-RPG/commit/e0dd3ed495336b4c363380ee57e475a9936bebf8).
+Production main is **v0.30.2**. The v0.30.0 gameplay slice was integrated by [PR #82](https://github.com/TDTRIA/LEGEND-RPG/pull/82) as commit [`8080350`](https://github.com/TDTRIA/LEGEND-RPG/commit/80803500edf748a57e8e631fe8e5fab5c0a90b86). The mandatory-annals renderer/version/cache patch is on main at [`034ca72`](https://github.com/TDTRIA/LEGEND-RPG/commit/034ca72d44e4c6e8a65315dcd8b2ba97105b48fa), and deterministic Road Token tests were added at [`e0dd3ed`](https://github.com/TDTRIA/LEGEND-RPG/commit/e0dd3ed495336b4c363380ee57e475a9936bebf8).
 
 Post-merge verification:
 - [Main Playwright workflow #41530579050](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41530579050) is running on `e0dd3ed`. Setup, browser installation, and the critical JavaScript syntax gate passed; the full browser suite is still running. Do **not** call the full suite green until this run completes.
@@ -90,7 +90,7 @@ Post-merge verification:
 
 The default workflow runs the full regression suite on Desktop Chrome plus the touch-critical `mobile-smoke.spec.js` suite on Mobile Safari and Mobile Chrome. CI uses two workers and retries failing tests once; the optional full matrix adds Firefox and all tests on the mobile projects. Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) rather than relying on a historical count.
 
-Coverage added with v0.30.0/v0.30.1 includes mandatory three-part annals with no skip control, rare Road Token and Bell Fragment outcomes, combat XP balance, fragment-aware return dialogue, Greyfen Ferry Nets, the saved Silted Storehouse detour, the Waterline Gauge handoff, and the right-panel expedition-return action.
+Coverage added with v0.30.0–v0.30.2 includes mandatory three-part annals with no skip control, rare Road Token and Bell Fragment outcomes, combat XP balance, fragment-aware return dialogue, Greyfen Ferry Nets, the saved Silted Storehouse detour, the Waterline Gauge handoff, and the right-panel expedition-return action, and the generated Road Token reward-art asset load.
 
 ## Remaining high-value test gaps
 

@@ -1,6 +1,6 @@
 // LEGEND v0.30.0 — balanced road progression, mandatory annals, and expanded Greyfen salvage.
 window.LEGEND_DATA = {
-  VERSION: 'v0.30.1',
+  VERSION: 'v0.30.2',
   SAVE_KEY: 'legend-roads-of-ashmere-v09',
   classes: {
     Adventurer:{hp:110,gold:120,mod:{survival:1,luck:1},move:'Lucky Strike',desc:'Balanced survivor. Good for a first run.'},

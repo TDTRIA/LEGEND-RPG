@@ -1,3 +1,9 @@
+## v0.30.2 — Illustrated rare expedition rewards
+
+- Replace the expedition ledger's generic rare-reward glyph with the existing generated Road Token inventory art.
+- Dim the item art when a completed expedition does not recover a token, keeping the miss legible without implying a reward.
+- Add Playwright coverage for the generated image source and successful asset load; synchronize runtime/data/package versions and the related cache keys at v0.30.2.
+
 ## v0.30.1 — Mandatory annals and release follow-through
 
 - Remove the leftover, non-functional “Skip the annals” control from the opening renderer. All three chapters now remain the only path from the opening lore into traveler creation.
