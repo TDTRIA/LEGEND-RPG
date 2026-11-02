@@ -1,138 +1,128 @@
 # LEGEND: The Awakening — Product Roadmap
 
-**Last updated:** 2026-10-29  
-**Purpose:** One shared source of truth for what we are building next, why it matters, and how we decide each slice is finished. This is a player-impact order, not a date promise.
+**Last updated:** 2026-11-02  
+**Source of truth:** the production `main` branch, checked against current source, open pull requests, and the latest available GitHub Actions results. This is a player-impact order, not a date promise.
 
 ## The north star
 
 LEGEND should feel like a dark-fantasy RPG taking place in a continuous world—not a collection of unrelated website screens. The player should see a place, make a decision in that place, see a consequence, and carry the result forward.
 
-The intended presentation borrows the *clarity* of a traditional RPG: a strong title scene, a persistent world view, contextual actions, readable HUD and journal, tactile dialogue, tactical turn-based combat, visible rewards, and transitions that feel intentional. It is not a plan to turn the project into an MMO or to replace the existing game with a large engine rewrite.
+**Core loop:** prepare in town → choose a road → explore and make choices → face danger → bring home loot, evidence, and discoveries → improve the traveler → unlock more of the world → prepare to go farther.
 
-**The core loop is:**
+The town should feel like somewhere worth returning to. The road is where preparation, equipment, and player choices are tested.
 
-**Prepare in town → choose a road → explore and make choices → face danger → bring back loot, evidence, and discoveries → improve the traveler → unlock more of the world → prepare to go farther.**
+## Verified project snapshot
 
-The story and the systems should reinforce that loop. Town is a place the player wants to return to; the road is where their choices are tested.
+| Area | Current state on main |
+|---|---|
+| Production build | **v0.27.0**, main commit [d098e57](https://github.com/TDTRIA/LEGEND-RPG/commit/d098e57bd01f99d60ad9d1512a09e941916f147c) |
+| Runtime | Existing browser game using ordered classic JavaScript scripts; no production engine migration |
+| Boot, title, and creation | Integrated: realm boot, raster LEGEND wordmark, title menu, traveler creation, anonymous opening voice |
+| Opening | Integrated road-first Dead Lantern sequence, Captain Oric, Blackroot Wolf, ACT/Awaken tutorial, and transition into the production road loop |
+| Ashmere | Town hub, NPCs, dialogue, services, Work Board/contracts, trade, equipment, crafting, profile, and shell presentation are integrated |
+| Old Road | Five-stage expedition, route choices, discoveries, pressure/time, camps, journal/map, combat, results, and return flow are integrated |
+| Combat and progression | Turn-based command flow, enemy intent, combat/results, XP, level-up, and attribute allocation are integrated |
+| First dungeon | Bell Cellar compact delve is integrated |
+| Greyfen | Marsh Path, evidence/story handoffs, resources, Storehouse content, parcel recipe, saved crossing-response choice, and regional coat are integrated; **not release-complete** |
+| Ironpass | Region entry is gated; **not playable on main** |
+| Three-town release | **Not complete.** Do not advertise it as shipped |
 
-## The player experience we are aiming for
+### Current verification checkpoint
 
-1. **The title draws the player into the world.** The correct title is **LEGEND: The Awakening**. The old “Roads of Ashmere” wordmark must not return. The menu should look like a fantasy RPG menu over a living scene, not a generic landing page.
-2. **The opening makes the player curious.** A traveler wakes beneath a dead lantern on the Old Road. An unnamed voice (**???**) awakens them; its identity is not revealed yet. Captain Oric is tired, wary, and practical. A bell, the road, and a wolf attack establish the danger. Character choices should affect the traveler or dialogue rather than being cosmetic-only.
-3. **The first tutorial teaches the real game.** The player should make a road choice, inspect a discovery, search, rest or prepare, fight using the actual turn-based commands, and understand how to return safely. Avoid replacing these actions with long instructional screens.
-4. **Ashmere becomes a useful home.** Recovery, supplies, rumors, work, trading, crafting, equipment, journal, and expedition preparation should be easy to find. Rewards from a trip should create a meaningful next decision.
-5. **The world expands one complete region at a time.** Ashmere, Greyfen, then Ironpass are the first three-town target. Each region needs its own identity and a complete loop, not just a backdrop and a few links.
+- Latest main commit: [d098e57](https://github.com/TDTRIA/LEGEND-RPG/commit/d098e57bd01f99d60ad9d1512a09e941916f147c), October 29, 2026.
+- The Pages build/deployment workflow for that commit succeeded: [run 40937098658](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40937098658).
+- The main Playwright workflow completed with **207 passed, 3 failed, 1 skipped**: [run 40937100701](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40937100701). The JavaScript syntax check passed. The live GitHub Pages smoke step was skipped because the test job failed.
+- Failure triage from the workflow log:
+  1. `tests/ashmere-world-visibility.spec.js` expects the shell canvas background to be `none`; the current computed style is a low-opacity translucent gradient. The assertion must describe the real contract rather than require no gradient.
+  2. `tests/playtest-fixes-v0222.spec.js` detects a **138px NPC portrait/name overlap**. This is a real layout issue and must be fixed.
+  3. `tests/ui-world-shell-v170.spec.js` expects the string `0.90`, while the browser serializes the same alpha as `0.9`. Make the assertion robust to CSS serialization; do not alter visual values just to satisfy string formatting.
+- A deployed browser visual review is not recorded for this checkpoint. Do not call the latest build fully verified until the failures are resolved and the live smoke step passes.
 
 ## Non-negotiable guardrails
 
-- **Protect the production game.** The current browser game is the source of truth while we improve it. Preserve existing save keys and player state. Do not replace gameplay systems, change combat formulas, reset saves, or alter account/cloud-save behavior as a shortcut. Any required migration must be deliberate, documented, and tested.
-- **Use the current project incrementally.** Favor changes to the existing controllers and presentation layers over a broad rewrite. The isolated reboot/engine prototype is an experiment only; production migration is not approved by this roadmap.
-- **Use approved raster art.** Follow the Runway-based art direction for new visual assets. Do not create an SVG title logo or use homemade geometric placeholders in place of character/world art. Keep menu labels and UI text as real accessible text, not baked into artwork. Do not ship watermarked preview images.
-- **Keep the world visible.** World artwork should remain readable behind contextual panels. Scene lighting can be moody, but “dark fantasy” must not mean scenes are black or important art disappears. Keep text/cards readable without covering the whole environment in opaque layers.
-- **Desktop first, mobile supported.** Target desktop around 1440×900 and check critical flows around 390px wide. No horizontal overflow, hover-only controls, or trapped menus.
-- **Prove changes.** Source edits alone do not mean a task is done. Run focused tests and the relevant Playwright regression suite; inspect desktop/mobile screenshots when browser preview is available. Record any testing that could not be done.
+- Preserve the active save key `legend-roads-of-ashmere-v09`, player record, cloud/account behavior, combat formulas, item/economy rules, and existing navigation unless a focused change requires otherwise.
+- Keep production on the current browser runtime. The isolated reboot prototype is an experiment, not permission to replace the game or migrate saves.
+- Use committed, watermark-free raster art for new production visuals. No replacement SVG logo, placeholder geometry, or temporary signed image URL.
+- Keep the world scene visible. “Dark fantasy” must not mean scenes are black or important art disappears. Large shell and content surfaces should be translucent; text, dialogue, and controls must retain readable contrast.
+- Keep the opening voice labelled `???`. Canonical story facts and reveal limits are governed by [CANON.md](CANON.md).
+- Desktop-first at roughly 1440×900; retain mobile compatibility around 360–430px. No hover-only actions or horizontal overflow.
+- A branch, commit, or deployment is not a verification pass. Record source status, tests, browser review, merge, and deployment separately.
 
-## Roadmap — in priority order
+## Priority order
 
-### Phase 0 — Stabilize the current build and visibility fix
-**Status: in progress; PR #73 is open and not ready to merge.**
+### Phase 0 — Stabilize scene visibility and regression
 
-Fix the cross-screen scene darkness without creating new visual regressions. Cover the title, opening, Ashmere, Old Road, region view, combat, results, dungeon, and profile scenes. Keep the HUD and content legible while letting the artwork show through.
+**Status: in progress.** Main's October 29 global visibility pass was merged in [PR #73](https://github.com/TDTRIA/LEGEND-RPG/pull/73), but the follow-up main workflow still has the three failures listed above. Issue [#76](https://github.com/TDTRIA/LEGEND-RPG/issues/76) tracks the next focused translucency correction on branch `fix/scene-surface-translucency-v0279`.
 
-**Done means:**
-- The latest-head Playwright run passes, or every remaining failure is investigated and resolved—not just bypassed.
-- The title, prologue, town, road, combat, results, and profile visibility assertions match the actual rendered DOM/CSS.
-- Desktop and narrow-screen layouts remain usable.
-- The change is reviewed and merged before we treat it as part of production.
+**Work:**
+- Correct the high-opacity Old Road surfaces (the last visibility stylesheet currently forces several large panels to 0.90–0.97 alpha).
+- Keep the world background and location-specific artwork visible behind the persistent shell, services, road choices, and combat.
+- Retain readable text and distinct buttons; do not solve darkness by making every panel transparent.
+- Fix the NPC portrait/name overlap and replace brittle CSS-string assertions with computed-value checks.
+- Re-run the full Playwright workflow and the live Pages smoke. Inspect desktop and narrow/mobile screenshots when a browser is available.
 
-**Current blocker:** workflow [#1981](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40873791952) failed with 188 passed, 19 failed, and 1 flaky test. Some failures share an opening-backdrop selector/expectation problem; others include fixture and locator failures. Triage them against the current markup and behavior before merging. The live browser review was not completed in the last pass.
+**Done means:** no main Playwright failures; title/opening/town/road/combat/results/dungeon/profile backgrounds are visibly distinct from the UI; all text and commands remain legible; desktop and mobile have no clipping/overlap; live smoke succeeds.
 
-### Phase 1 — Make the title and opening feel like the start of a game
-**Priority: highest player-facing feature after Phase 0 is stable.**
+### Phase 1 — Finish the scene-first town and road interaction
 
-Replace the current unsatisfying title/menu experience with a deliberate fantasy-RPG composition and make the first minutes feel like an opening scene, not a form flow.
+The persistent world shell is integrated, and the current tests cover contextual actions and Ashmere point-of-interest selection. Reconcile open issue [#55](https://github.com/TDTRIA/LEGEND-RPG/issues/55) against current `main` before adding more shell code: much of its selection/Visit behavior appears in the current shell regression tests. Close it only if every acceptance item is satisfied; otherwise implement the specific remaining gap.
 
-Scope:
-- Keep the exact product title **LEGEND: The Awakening** and the approved raster wordmark.
-- Show an atmospheric, visible world scene with subtle motion and lighting; remove awkward oversized shapes and other accidental decorations.
-- Give Continue/Begin a clear primary place in the menu. Keep New Traveler, Profile, Settings, and Credits secondary but accessible.
-- Use the anonymous soul-shaping/fragmented-memory character creation as a story moment where choices have understandable effects.
-- Deliver the dead-lantern road opening with **???**, Oric, the bell, and the Blackroot Wolf. Let the player skip or continue cleanly without breaking saved state.
-- Transition from the opening into the real game shell rather than landing on a separate-looking website page.
+**Work:**
+- Keep Ashmere's Inn, Market, Forge, and Old Road Gate visibly located in the town scene.
+- Selection should change contextual detail and highlight the corresponding in-scene location; Visit must delegate to the existing town navigation.
+- Keep selection transient, keyboard-operable, and independent of saved gameplay state.
+- Ensure town services, inventory, journal, character sheet, and dialogs preserve the same world context and return path.
 
-**Done means:** a new player can start from the title, create a traveler, experience the road opening and first encounter, and arrive at the next playable step without dead ends, broken branding, or static placeholder screens.
+**Done means:** the player can understand where each town action belongs, enter it, and return without a new disconnected menu or save mutation.
 
-### Phase 2 — Make the world shell consistent and alive
-**Goal:** one cohesive presentation across Ashmere, the Old Road, and regional scenes.
+### Phase 2 — Complete Greyfen as the second release-ready region
 
-Scope:
-- Keep the current scene visible while journal, inventory, character sheet, services, dialogue, and settings open as consistent overlays or contextual panels.
-- Standardize scene framing, lighting, panel transparency, typography, transitions, and action hierarchy.
-- Make the route map and field journal reflect real saved discoveries and choices.
-- Make travel/camp/return transitions deliberate and readable without forcing the player through unnecessary loading screens.
-- Keep location actions contextual: town actions in town, expedition actions on the road, battle commands only during combat.
+Greyfen already has a substantial playable foundation, but it is not yet a complete town release. Open PR [#54](https://github.com/TDTRIA/LEGEND-RPG/pull/54) adds one optional salvage stop off Mossbarrow Shelter. It is **not merged**, is not the full multi-room delve, and must pass its own PR-head CI before integration.
 
-**Done means:** changing a panel or taking an action does not make the game feel like a different website; the scene remains readable, controls are consistent, and existing state/persistence tests pass.
+**Work:**
+- Finish the local story chain and NPC handoffs, keeping observed evidence separate from speculation and respecting the locked crossing-record canon.
+- Complete the useful service/economy loop: gathered materials should connect to crafting, equipment, trade, repairs, or quests.
+- Review the Silted Storehouse route, its optional detours, unique encounter, rewards, failure/retreat, map state, and secured return.
+- Create and integrate dedicated raster art for the Storehouse and Marshguard Coat; the coat currently reuses chain-armor artwork.
+- Ensure the crossing-response decision, parcel recipe, regional gear, and expedition discoveries produce visible, saved consequences on later trips.
+- Complete fresh-save, existing-save, reload, mobile, and full regression coverage.
 
-### Phase 3 — Make combat feel like an actual turn-based battle
-**Goal:** improve the presentation and decisions without replacing the production combat rules.
+**Done means:** Greyfen is a place with working services, local characters and jobs, a coherent story, a complete expedition/delve, region-specific rewards, and a meaningful return loop—not merely a destination card and one road.
 
-Scope:
-- Preserve the established turn-based command structure and current formulas.
-- Make enemy intent clear before the player acts; give each action a readable wind-up, strike/impact, reaction, and recovery where the available art supports it.
-- Make Fight, Act, Item, Guard, retreat, enemy turns, and status/results understandable in the battle scene.
-- Use scene framing, layered character art, brief impact feedback, sound where available, and restrained motion. Do not rely on characters merely “dancing” in place or on effects that obscure the action.
-- Make victory, defeat, retreat, loot, and return hand back to the world with clear consequences.
+### Phase 3 — Make the first-session progression loop satisfying
 
-**Done means:** a player can tell whose turn it is, what the enemy is about to do, what their action accomplished, and what changed after the fight—while deterministic combat and reward tests remain green.
+Once Phase 0 is stable, tune the end-to-end route from traveler creation through Oric's tutorial, the Old Road, Ashmere preparation, and the Greyfen unlock. Use one complete playthrough as the acceptance path.
 
-### Phase 4 — Close the first-session progression loop
-**Goal:** make the first journey pay off in the rest of the game.
+**Work:**
+- Make the expedition debrief accurately explain stops, route, pressure/time, discoveries, injuries, gold, items, XP, and level changes.
+- Make the next useful town action obvious without forcing a tutorial wall of text.
+- Make the first meaningful equipment, crafting, job, or preparation choice affect the following trip.
+- Verify Continue Journey and reload at the opening, expedition, results, and town.
 
-Scope:
-- Connect the first road choices, encounters, discoveries, and evidence to actual journal/quest goals.
-- Make the expedition report explain rewards, injuries, discoveries, and the next useful lead.
-- Make gear, consumables, crafting, jobs, and preparation feed back into the next trip.
-- Add clear level-up/results presentation when a real level is gained, including a deliberate stat/point-allocation choice if the current progression data supports it.
-- Ensure player choices and progress survive reloads and another expedition.
+### Phase 4 — Build Ironpass as the third town
 
-**Done means:** from the opening, the player can complete a meaningful road trip, return to a town, understand what they earned, make at least one useful preparation/progression decision, and see that decision affect the next journey.
+Ironpass is not playable on main today. Do not enable travel as a working destination until its town identity, NPCs, services, local story, expedition/delve, rewards, and tests exist.
 
-### Phase 5 — Finish the first three towns one at a time
-**Target order: Ashmere → Greyfen → Ironpass.** Do not open the next region as a travel destination until it offers a real, coherent experience.
+**Done means:** the player can begin in Ashmere, progress through Greyfen, and reach a complete Ironpass loop without placeholders, blocked mandatory objectives, or dead-end rewards.
 
-Each town/region should have:
-- Distinct generated scene art and a clear mood.
-- Working services and a coherent local economy.
-- Named NPCs, readable dialogue, and at least one connected local story thread.
-- Meaningful jobs/quests and choices that change a later encounter, discovery, or reward.
-- A complete expedition or dungeon route with unique landmarks, threats, loot, and a return path.
-- Region-specific progression rewards that connect to equipment, crafting, preparation, or unlocks.
-- Save/load coverage and desktop/mobile checks.
+### Phase 5 — Expand after the first three-town foundation
 
-Greyfen already has active story, resource, equipment, and Storehouse content, but its full story/economy/service gate and dedicated art still need review. Ironpass remains future content. A region is not “complete” merely because its hub screen exists.
+Only after Ashmere, Greyfen, and Ironpass each offer a coherent loop should we add deeper regions, more enemy families, skills/magic, companions, and wider dungeon progression. The isolated reboot prototype can answer a specific presentation/engine question, but production migration requires an explicitly approved plan and proven save compatibility.
 
-**Done means:** the player can spend time in the region, take a meaningful quest or expedition, gain something region-specific, return to use it, and unlock the next step without hitting placeholder systems.
+## How we work
 
-### Phase 6 — Expand only after the foundation proves itself
-After the opening, world shell, combat, first-session progression, and first three towns work as a cohesive experience, add more enemy families, deeper dungeons, skills/magic, companions, and further regions based on what the playable loop actually needs.
+1. One active player-facing slice per branch. Read current source and open PR ownership before editing.
+2. Fix blockers before adding breadth. Do not stack new features on a broken scene, transition, save flow, or test suite.
+3. Prefer targeted changes over new versioned copies or broad refactors. Update the cache key for a changed production asset/script/CSS file in `index.html`.
+4. Add tests for behavior and visible contracts. Do not weaken a test merely to make CI green.
+5. Update the roadmap when a phase moves. Distinguish implemented, tested, visually reviewed, merged, and deployed.
+6. Keep dependencies free/low-cost unless the owner approves a paid service.
 
-The isolated reboot prototype can continue to answer specific questions about persistent animation or engine suitability. Do not migrate production data or swap engines just because a prototype looks promising; first demonstrate a complete playable slice and document a safe save/data migration plan.
-
-## How we work from here
-
-1. **One active player-facing slice at a time.** Keep its scope small enough to finish and test. New ideas go into a later phase rather than interrupting the active slice.
-2. **Fix blockers before stacking polish on top.** A dark scene, broken transition, or failing core flow takes precedence over adding more features.
-3. **Keep this file current.** When work starts, update its status and acceptance criteria. When the slice is verified, check it off and name the next priority. Avoid leaving old preview versions at the top as if they were current production work.
-4. **Report the real state.** Separate code committed, tests passed, browser-reviewed, merged to main, and deployed. Do not describe a branch as live production until it has actually shipped.
-
-## Supporting design documents
-
-These contain deeper specifications, not competing task orders:
+## Supporting documents
 
 - [Art Direction](ART-DIRECTION.md) — palette, composition, raster assets, and integration rules.
-- [Opening Experience Redesign](OPENING_EXPERIENCE_REDESIGN.md) — detailed title, character creation, and opening beats.
-- [First-Session Story Spine](ASHMERE_STORY_SPINE.md) — story continuity and the early journey.
+- [UI Screen Inventory](UI_SCREEN_INVENTORY.md) — reachable screens and coverage; reconcile it after open PR #54.
+- [First Three Towns Release Plan](FIRST_THREE_TOWNS_RELEASE_PLAN.md) — regional content and release gates.
+- [Opening Experience Redesign](OPENING_EXPERIENCE_REDESIGN.md) and [Ashmere Story Spine](ASHMERE_STORY_SPINE.md) — opening beats and continuity.
 - [World Bible](LEGEND_WORLD_BIBLE.md) and [Canon](CANON.md) — approved lore versus open proposals.
 - [Architecture](ARCHITECTURE.md) and [Save Data Contract](SAVE_DATA_CONTRACT.md) — implementation and persistence boundaries.
-- [Game Reboot Plan](LEGEND_GAME_REBOOT_PLAN.md) — an isolated future-facing proposal, not permission to replace production.
