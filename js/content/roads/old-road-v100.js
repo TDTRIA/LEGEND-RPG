@@ -78,14 +78,14 @@
       {id:'study', title:'Old Stones Beside the Road', text:'Three stones lean together, each carved with a bell mark worn almost smooth.', skill:'lore', risk:'Low', success:'You understand enough to mark the place for Brenn.', fail:'The mark means nothing yet, but the silence around it does.'}
     ],
     enemies: [
-      {id:'goblin', behavior:'raider', name:'Road Goblin', hp:[40,55], damage:[7,12], reward:'gmail', xp:22, goldDrop:[0,3], bonusDrop:{item:'tornHide',chance:22,amount:[1,1]}, text:'A hunched goblin slips from behind a mile-marker, knife low and eyes bright.'},
-      {id:'wolf', behavior:'predator', name:'Blackroot Wolf', hp:[44,62], damage:[8,13], reward:'tornHide', xp:27, bonusDrop:{item:'wolfFang',chance:30,amount:[1,1]}, text:'A lean wolf follows your shadow until the road narrows.'},
-      {id:'wisp', behavior:'flicker', name:'Lantern Wisp', hp:[34,48], damage:[7,12], reward:'bellFragment', xp:30, bonusDrop:{item:'wispAsh',chance:24,amount:[1,1]}, text:'A pale light leaves an old lantern and drifts across your path.'},
-      {id:'bandit', behavior:'bandit', name:'Roadside Bandit', hp:[48,64], damage:[8,14], reward:'clothScrap', xp:34, goldDrop:[4,12], bonusDrop:{item:'roadToken',chance:20,amount:[1,1]}, text:'A desperate ambusher steps from behind a broken cart, buckler raised and one eye on your purse.'}
+      {id:'goblin', behavior:'raider', name:'Road Goblin', hp:[40,55], damage:[7,12], reward:'gmail', xp:16, goldDrop:[0,2], bonusDrop:{item:'tornHide',chance:22,amount:[1,1]}, text:'A hunched goblin slips from behind a mile-marker, knife low and eyes bright.'},
+      {id:'wolf', behavior:'predator', name:'Blackroot Wolf', hp:[44,62], damage:[8,13], reward:'tornHide', xp:20, bonusDrop:{item:'wolfFang',chance:30,amount:[1,1]}, text:'A lean wolf follows your shadow until the road narrows.'},
+      {id:'wisp', behavior:'flicker', name:'Lantern Wisp', hp:[34,48], damage:[7,12], reward:'wispAsh', xp:22, bonusDrop:{item:'bellFragment',chance:15,amount:[1,1]}, text:'A pale light leaves an old lantern and drifts across your path.'},
+      {id:'bandit', behavior:'bandit', name:'Roadside Bandit', hp:[48,64], damage:[8,14], reward:'clothScrap', xp:25, goldDrop:[3,8], bonusDrop:{item:'roadToken',chance:10,amount:[1,1]}, text:'A desperate ambusher steps from behind a broken cart, buckler raised and one eye on your purse.'}
     ],
     finds: [
       {id:'cache', title:'Roadside Cache', text:'A loose stone hides old traveler supplies.', item:'food', amount:1},
-      {id:'token', title:'Mile-Marker Token', text:'A small stamped token hangs from a nail in the post.', item:'roadToken', amount:1},
+      {id:'oil', title:'Sealed Oil Flask', text:'A stoppered flask of lantern oil rests beneath the mile-marker.', item:'oil', amount:1},
       {id:'wood', title:'Fallen Branches', text:'Dry enough to carry, valuable enough not to ignore.', item:'log', amount:2},
       {id:'herbs', title:'Roadside Herbs', text:'You find hardy herbs growing beneath a broken mile-marker.', item:'roadHerb', amount:1},
       {id:'cloth', title:'Abandoned Supply Wrap', text:'A torn bundle contains usable cloth and a few clean strips.', item:'clothScrap', amount:1}

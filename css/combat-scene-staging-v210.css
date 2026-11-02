@@ -265,3 +265,30 @@
   .rpg-hero-stage-art, .rpg-foe-sprite, .rpg-foe-nameplate, .rpg-hero-portrait { animation: none !important; }
   .rpg-command:not(:disabled) { transition: none !important; }
 }
+
+
+/* v0.29.3 — a correctly guarded heavy wind-up creates a readable punish window. */
+.rpg-battle.rpg-intent-staggered .rpg-foe-nameplate {
+  border-right-color: rgba(231,196,111,.98);
+  box-shadow: 0 0 0 1px rgba(231,196,111,.14), 0 0 22px rgba(231,196,111,.18), 0 10px 24px rgba(0,0,0,.22);
+}
+.rpg-battle.rpg-intent-staggered .rpg-foe-nameplate > span { color: #f0d58e; }
+.rpg-battle.rpg-intent-staggered .rpg-foe-sprite {
+  transform: translateY(6px) rotate(-2deg) scale(.975);
+  filter: drop-shadow(0 0 16px rgba(231,196,111,.28)) drop-shadow(0 18px 18px rgba(0,0,0,.46));
+}
+.rpg-battle.rpg-intent-staggered .rpg-enemy-tell {
+  border-color: rgba(231,196,111,.40);
+  background: linear-gradient(90deg, rgba(116,88,37,.42), rgba(7,10,8,.38));
+}
+.rpg-battle.rpg-intent-staggered .rpg-enemy-tell .rpg-tell-mark { color: #f0d58e; }
+@keyframes rpg-stagger-reel-v291 {
+  0% { transform: translateY(0) rotate(0) scale(1); }
+  35% { transform: translateY(8px) rotate(-3deg) scale(.97); }
+  70% { transform: translateY(4px) rotate(1deg) scale(.985); }
+  100% { transform: translateY(6px) rotate(-2deg) scale(.975); }
+}
+.rpg-battle.rpg-intent-staggered .rpg-foe-sprite { animation: rpg-stagger-reel-v291 .36s ease-out both; }
+@media(prefers-reduced-motion:reduce) {
+  .rpg-battle.rpg-intent-staggered .rpg-foe-sprite { animation: none !important; }
+}

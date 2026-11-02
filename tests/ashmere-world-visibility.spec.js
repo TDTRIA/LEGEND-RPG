@@ -1,5 +1,15 @@
 const { test, expect } = require('@playwright/test');
 
+function cssBackgroundAlphas(value) {
+  return Array.from(String(value || '').matchAll(/rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/g), match => Number(match[1]));
+}
+
+function expectBackgroundAlphaAtMost(value, maximum) {
+  const alphas = cssBackgroundAlphas(value);
+  expect(alphas.length, 'expected an rgba background layer in: ' + value).toBeGreaterThan(0);
+  expect(Math.max(...alphas)).toBeLessThanOrEqual(maximum);
+}
+
 async function enterAshmere(page) {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -9,7 +19,9 @@ async function enterAshmere(page) {
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
   await expect(page.locator('.v120-title')).toBeVisible();
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Name').fill('AshmereLightQA');
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();
@@ -60,9 +72,9 @@ test('Ashmere town artwork remains visible under the persistent shell', async ({
   expect(visual.townImage).toContain('ashmere-town.webp');
   expect(visual.worldBrightness).toContain('brightness(1.24)');
   expect(visual.vignette).toContain('0.035');
-  expect(visual.shellCanvas).toBe('none');
+  expectBackgroundAlphaAtMost(visual.shellCanvas, 0.08);
   expect(visual.shellCanvasColor).toBe('rgba(0, 0, 0, 0)');
-  expect(visual.shellShade).toBe('none');
+  expectBackgroundAlphaAtMost(visual.shellShade, 0.04);
   expect(visual.townHeroOverlay).toContain('0.24');
   expect(visual.imageSrc).toContain('ashmere-town.webp');
 });

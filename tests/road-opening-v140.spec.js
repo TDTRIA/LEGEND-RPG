@@ -22,6 +22,24 @@ async function openTitle(page) {
   await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
 }
 
+async function clearRoadBattle(page) {
+  const battle=page.locator('.rpg-battle');
+  if (await battle.count()) {
+    await page.evaluate(() => {
+      const player=window.LegendRuntimeV120.loadPlayer();
+      player.attributesV152=player.attributesV152||{};
+      player.attributesV152.might=250;
+      player.maxHp=Math.max(999,Number(player.maxHp||0));
+      player.hp=player.maxHp;
+      window.LegendRuntimeV120.savePlayer(player);
+    });
+    if (await battle.count()) await page.locator('#strike').click();
+    const result=page.locator('.v152-combat-results');
+    if (await result.count()) await page.locator('#v152CombatContinue').click();
+  }
+  await expect(battle).toHaveCount(0);
+}
+
 async function expectNoHorizontalOverflow(page) {
   const width = await page.evaluate(() => ({
     viewport: window.innerWidth,
@@ -34,8 +52,27 @@ async function expectNoHorizontalOverflow(page) {
 
 async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) {
   await openTitle(page);
+  if (options.previousRoadExperience) {
+    await page.evaluate(() => {
+      window.LegendStorage.savePlayer({
+        version: window.LEGEND_DATA.VERSION,
+        username: 'PreviousRoadVeteran',
+        town: 'Ashmere',
+        currentRegion: 'Ashmere',
+        level: 4,
+        hp: 80,
+        maxHp: 80,
+        gold: 40,
+        inventory: {},
+        stats: { roadVictories: 2, oldRoadClears: 1 },
+        flags: { firstRoadReturnSeen: true, introV094Complete: true }
+      });
+    });
+  }
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
@@ -64,6 +101,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await openTitle(page);
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
     await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Skip the annals/i })).toHaveCount(0);
     await expect(page.locator('.opening-lore-v220')).toContainText('human kingdoms and monster nations');
     await page.getByRole('button', { name: /^Continue$/ }).click();
     await expect(page.getByRole('heading', { name: 'The Pact Beneath the Stone' })).toBeVisible();
@@ -149,6 +187,12 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(page.getByRole('group', { name: 'Your answer to Captain Oric' })).toBeVisible();
     await expect(page.locator('.ash100-town')).toHaveCount(0);
     await page.locator('[data-oric-response="honest"]').click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await expect(page.locator('.opening-road-v140-ambush')).toContainText('Oric is hit.');
+    await expect(page.locator('.opening-road-v140-ambush')).toContainText('A Blackroot Wolf slams into his side');
+    await expect(page.locator('.opening-road-v140-ambush')).toContainText('Get it off me');
+    await expect(page.locator('.rpg-battle')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Help Oric' }).click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await expect(page.locator('.rpg-battle')).toContainText('Blackroot Wolf');
     await expect(page.locator('.rpg-battle')).toContainText('Awaken');
@@ -158,15 +202,22 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
 
     await page.locator('#skill').click();
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
+    await expect(page.locator('#openingRoadSkip')).toHaveCount(0);
+    await expect(page.getByRole('button', { name: 'Follow Oric onto the Old Road' })).toBeVisible();
     await expect.poll(() => page.evaluate(() => {
       const p = window.LegendRuntimeV120.loadPlayer();
       return p.memories.some(m => m.includes('A voice without a face whispered')) &&
         p.stats.roadVictories === 1 && p.flags.openingRoadV140.awakened === true;
     })).toBe(true);
 
-    await page.getByRole('button', { name: 'Follow the road' }).click();
+    await page.getByRole('button', { name: 'Follow Oric onto the Old Road' }).click();
     await expect(page.locator('.exp100-wrap')).toBeVisible();
+    await expect(page.locator('.opening-road-v140-guide')).toContainText('CAPTAIN ORIC');
     await expect(page.locator('.opening-road-v140-guide')).toContainText('The road forks');
+    await expect(page.locator('.opening-road-v140-guide-portrait')).toHaveAttribute('src', /captain-oric\.webp/);
+    await expect(page.locator('.opening-road-v140-guide-portrait')).toBeVisible();
+    await expect(page.locator('#town')).toHaveCount(0);
+    await expect(page.locator('.exp150-abandon-hint')).toContainText('Oric is guiding your first outing');
     await expect(page.locator('#routeRidge')).toBeVisible();
     await expect(page.locator('#search')).toBeDisabled();
     await expect(page.locator('#push')).toBeDisabled();
@@ -203,6 +254,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await page.locator('#push').click();
     await expect(page.locator('.exp100-head h1')).toHaveText('Ridgeway Cairn');
     await page.locator('#push').click();
+    await clearRoadBattle(page);
     await expect(page.locator('.exp100-head h1')).toHaveText("Wayfarer's Camp");
     await expect(page.locator('.exp100-camp')).toBeVisible();
 
@@ -211,10 +263,11 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await page.locator('#push').click();
     await expect(page.locator('.exp100-head h1')).toHaveText('Blackroot Bend');
     await page.locator('#push').click();
+    await clearRoadBattle(page);
     await expect(page.locator('.exp100-head h1')).toHaveText('Reedwatch Shelter');
     await page.locator('#push').click();
     await expect(page.locator('.exp100-head h1')).toHaveText('Greyfen Approach');
-    await page.locator('#finish').click();
+    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
     await expect(page.getByRole('heading', { name: 'Expedition Secured' })).toBeVisible();
     await expect(page.getByRole('region', { name: 'Expedition field report' })).toContainText('High Ridge');
     await expect(page.getByRole('region', { name: 'Expedition field report' })).toContainText('The Split Milestone');
@@ -241,18 +294,50 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     expect(errors).toEqual([]);
   });
 
+  test('the Ashmere shortcut is only offered after a prior traveler has road experience', async ({ page }) => {
+    await createTravelerToLantern(page, 'VeteranShortcutQA', { previousRoadExperience: true });
+    await page.locator('[data-oric-response="defiant"]').click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await page.getByRole('button', { name: 'Help Oric' }).click();
+    await expect(page.locator('.rpg-battle')).toBeVisible();
+    await page.locator('#skill').click();
+    await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Return to Ashmere (experienced player)' })).toBeVisible();
+    await page.getByRole('button', { name: 'Return to Ashmere (experienced player)' }).click();
+    await expect(page.locator('.ash100-town')).toBeVisible();
+    const flags = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().flags);
+    expect(flags.openingRoadV140.phase).toBe('skipped');
+    expect(flags.openingRoadV140.veteranSkipUnlocked).toBe(true);
+  });
+
+  test('a road-experienced traveler may leave the first expedition early', async ({ page }) => {
+    await createTravelerToLantern(page, 'VeteranRoadExitQA', { previousRoadExperience: true });
+    await page.locator('[data-oric-response="honest"]').click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await page.getByRole('button', { name: 'Help Oric' }).click();
+    await page.locator('#skill').click();
+    await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
+    await page.getByRole('button', { name: 'Follow Oric onto the Old Road' }).click();
+    await expect(page.locator('.exp100-wrap')).toBeVisible();
+    await expect(page.locator('#town')).toBeVisible();
+    await page.locator('#town').click();
+    await expect(page.locator('.ash100-town')).toBeVisible();
+  });
+
   test('an unfinished lantern conversation resumes safely after reload', async ({ page }) => {
     await createTravelerToLantern(page, 'OpeningResumeQA');
     await page.locator('[data-oric-response="peaceful"]').click();
-    await expect(page.locator('.rpg-battle')).toBeVisible();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
     await page.reload();
     await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
     await expect(page.locator('.v120-title')).toBeVisible();
     await page.getByRole('button', { name: /Continue Journey/i }).click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    const phase = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().flags.openingRoadV140.phase);
+    expect(phase).toBe('ambush');
+    await page.getByRole('button', { name: 'Help Oric' }).click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await expect(page.locator('.rpg-battle')).toContainText('Awaken');
-    const phase = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().flags.openingRoadV140.phase);
-    expect(phase).toBe('combat');
   });
 
   test('new opening uses existing save key and production script order', async () => {

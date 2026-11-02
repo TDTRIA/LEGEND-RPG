@@ -34,21 +34,32 @@
       const campMarkup = camps.length
         ? camps.slice(-2).reverse().map(entry => '<li><strong>' + esc(entry.place || 'Waystation') + ' · ' + (entry.kind === 'rest' ? 'Rested' : entry.kind === 'craft' ? 'Road poultice crafted' : 'Kept watch') + '</strong><span>' + esc(entry.note || 'A choice made at the waystation.') + '</span></li>').join('')
         : '<li><strong>No camp report</strong><span>You did not rest, craft, or keep watch on this trip.</span></li>';
+      const currentLevel = Math.max(1, Number(player.level || 1));
+      const currentXp = Math.max(0, Number(player.xp || 0));
+      const nextLevelXp = currentLevel * 100;
+      const currentXpPercent = Math.min(100, Math.round(currentXp / Math.max(1, nextLevelXp) * 100));
       const expeditionSummary = details?.type === 'expedition'
         ? '<section class="v152-expedition-summary" aria-label="Expedition results">' +
-            '<div class="v152-expedition-summary-head"><span>OUTING DEBRIEF</span><strong>' + (details.complete ? 'A route secured' : 'A report from the road') + '</strong><p>' +
-              (details.complete ? 'You completed the full route and made it back with your findings.' : 'You returned early, but the miles and evidence still count.') +
-            '</p></div>' +
+            '<div class="v152-expedition-banner">' +
+              '<img src="assets/locations/roads/location_old_road_main_v1.jpg" alt="" aria-hidden="true">' +
+              '<div class="v152-expedition-banner-copy"><span>FIELD DEBRIEF · TRIP ' + trip + '</span>' +
+                '<h2>' + (details.complete ? 'The road has been crossed' : 'A narrow escape') + '</h2>' +
+                '<p>' + (details.complete ? 'The last marker is behind you. Your route, discoveries, and hard-won spoils are ready to be recorded.' : 'You made the call to turn back. What you carried out still matters; the road remains ahead.') + '</p>' +
+              '</div>' +
+            '</div>' +
             '<div class="v152-expedition-metrics">' +
               '<div><span>JOURNEY</span><strong>' + Number(details.stagesCompleted || 0) + ' / 5</strong><small>Stages reached</small></div>' +
               '<div><span>ROUTE</span><strong>' + esc(details.routeName || 'Unrecorded') + '</strong><small>Path traveled</small></div>' +
-              '<div><span>GOLD</span><strong>+' + Number(details.rewardGold || 0) + 'g</strong><small>Settlement reward</small></div>' +
-              '<div><span>EXPERIENCE</span><strong>+' + Number(details.xpGained || 0) + '</strong><small>XP earned</small></div>' +
               '<div><span>DISCOVERIES</span><strong>' + Number(details.discoveriesThisTrip || 0) + '</strong><small>' + Number(details.campsThisTrip || 0) + ' camp reports</small></div>' +
             '</div>' +
-            ((Number(details.roadTokens || 0) > 0 || Number(details.levelsGained || 0) > 0 || Number(details.pressureBefore || 0) !== Number(details.pressureAfter || 0))
+            '<div class="v152-expedition-reward-line" aria-label="Rewards recovered">' +
+              '<div class="v152-expedition-reward-tile"><span aria-hidden="true">◈</span><div><small>SETTLEMENT COIN</small><strong>+' + Number(details.rewardGold || 0) + 'g</strong><em>Payment for the field report</em></div></div>' +
+              '<div class="v152-expedition-reward-tile"><span aria-hidden="true">✧</span><div><small>EXPERIENCE</small><strong>+' + Number(details.xpGained || 0) + ' XP</strong><em>' + (Number(details.levelsGained || 0) > 0 ? 'A new level has been reached' : 'Progress carried forward') + '</em></div></div>' +
+              '<div class="v152-expedition-reward-tile ' + (Number(details.roadTokens || 0) > 0 ? 'is-rare' : 'is-unfound') + '"><span aria-hidden="true">✦</span><div><small>RARE ROUTE PROOF</small><strong>' + (Number(details.roadTokens || 0) > 0 ? '+' + Number(details.roadTokens) + ' Road Token' + (Number(details.roadTokens) === 1 ? '' : 's') : 'No token recovered') + '</strong><em>' + (Number(details.roadTokens || 0) > 0 ? 'A rare find added to your pack' : 'Not every completed route yields one') + '</em></div></div>' +
+            '</div>' +
+            '<div class="v152-expedition-xp"><div><span>LEVEL ' + currentLevel + ' EXPERIENCE</span><strong>' + currentXp + ' / ' + nextLevelXp + ' XP</strong></div><div class="v152-expedition-xp-track"><i style="width:' + currentXpPercent + '%"></i></div></div>' +
+            ((Number(details.levelsGained || 0) > 0 || Number(details.pressureBefore || 0) !== Number(details.pressureAfter || 0))
               ? '<div class="v152-expedition-growth">' +
-                  (Number(details.roadTokens || 0) > 0 ? '<span>✦ &nbsp;+' + Number(details.roadTokens) + ' Road Token' + (Number(details.roadTokens) === 1 ? '' : 's') + ' added to your pack.</span>' : '') +
                   (Number(details.levelsGained || 0) > 0 ? '<span>✧ &nbsp;Level ' + Number(details.levelBefore || 1) + ' → ' + Number(details.levelAfter || 1) + '. Your attribute choices are ready.</span>' : '') +
                   (Number(details.pressureBefore || 0) !== Number(details.pressureAfter || 0) ? '<span>◌ &nbsp;Road Pressure: ' + Number(details.pressureBefore || 0) + ' → ' + Number(details.pressureAfter || 0) + '.</span>' : '') +
                 '</div>'

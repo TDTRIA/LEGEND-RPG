@@ -123,6 +123,8 @@ function combatAction(enemy,action){
  if(enemy.openingEncounterV140&&action!=='skill')return combat(enemy,'???: “Awaken.” Use ACT to answer the voice.');
  if(action==='skill'&&Number(enemy.skillCooldown||0)>0)return combat(enemy,'Your class technique is recovering. Choose another command; this does not consume your turn.');
  const guarding=action==='guard';
+ const guardedHeavy=guarding&&enemy.intent==='heavy';
+ const staggeredOpening=enemy.staggered===true;
  playBattleFx(action==='guard'?'guard':action==='item'||action==='poultice'?'heal':action==='skill'?'magic':action==='heavy'?'heavy':'swing');
  let note='';
  if(action==='item'){
@@ -155,6 +157,7 @@ function combatAction(enemy,action){
    if(action==='skill'&&w.perk==='battleRhythm'){damage+=5;note+='Your Bronze Sword carries the technique through. ';}
    if(action==='attack'&&w.perk==='heavyPunish'&&enemy.intent==='heavy'){damage+=7;note+='Your Iron Sword punishes the wind-up. ';}
    if((action==='attack'||action==='heavy')&&w.perk==='keenEdge'&&Math.random()<.2){damage=Math.round(damage*1.5);note+='Keen Edge critical! ';}
+   if(staggeredOpening){const staggerBonus=Math.max(2,Math.ceil(damage*.25));damage+=staggerBonus;note+='You exploit the stagger for '+staggerBonus+' bonus damage. ';}
    enemy.hp-=damage;
    note+=(action==='heavy'?'Your Heavy Strike lands for ':action==='skill'?'Your '+classTechnique(pl).name+' lands for ':'Your strike lands for ')+damage+' damage.';
    if(damage>=Math.max(1,Number(enemy.maxHp||1)*.28))note+=' The impact staggers your foe.';
@@ -170,6 +173,8 @@ function combatAction(enemy,action){
  const reduction=enemy.intent==='guardbreak'?Math.floor(armorValue*.4)+(guarding?5:0):armorValue+(guarding?(enemy.intent==='heavy'?8:5):0);
  const incoming=Math.max(0,raw-reduction);pl.hp=Math.max(0,Number(pl.hp||1)-incoming);
  if(enemy.snared){note+=' The trap weakens the counterattack.';enemy.snared=false;}
+ enemy.staggered=guardedHeavy;
+ if(guardedHeavy)note+='You catch the heavy wind-up cleanly; the foe is staggered and open to a stronger follow-up.';
  enemy.turn=Number(enemy.turn||0)+1;enemy.intent=enemyIntent(enemy);
  if(action!=='skill')enemy.skillCooldown=Math.max(0,Number(enemy.skillCooldown||0)-1);
  note+=(guarding?' Your guard turns the blow aside.':' '+enemy.name+' hits you for '+incoming+' damage.')+(action==='heavy'?' Your heavy swing leaves you exposed.':'');
@@ -199,13 +204,14 @@ function win(enemy){
   const amount=Array.isArray(bonusDrop.amount)?rand(Number(bonusDrop.amount[0]||1),Number(bonusDrop.amount[1]||bonusDrop.amount[0]||1)):Math.max(1,Number(bonusDrop.amount||1));
   drops.push({item:bonusDrop.item,count:amount});
  }
- drops.forEach(drop=>inv(pl,drop.item,drop.count));
+  if(drops.some(drop=>drop.item==='bellFragment'))s.routeBellFragmentFoundV300=true;
+drops.forEach(drop=>inv(pl,drop.item,drop.count));
  if(Array.isArray(enemy.goldDrop)&&enemy.goldDrop.length>=2){
   pl.gold=Number(pl.gold||0)+Math.max(0,rand(Number(enemy.goldDrop[0]||0),Number(enemy.goldDrop[1]||0)));
  }
  const xpBase=Number(enemy.xp==null?25:enemy.xp);
- const stageBonus=Math.min(20,Number(s.stage||0)*4);
- const tierBonus=enemy.pressureTier==='severe'?12:enemy.pressureTier==='high'?6:0;
+ const stageBonus=Math.min(10,Number(s.stage||0)*2);
+ const tierBonus=enemy.pressureTier==='severe'?8:enemy.pressureTier==='high'?4:0;
  const progress=context.awardProgress?.(pl,xpBase+stageBonus+tierBonus);
  const earnedItems=drops.map(drop=>itemName(drop.item)+(drop.count>1?' ×'+drop.count:''));
  const rewardLabel=earnedItems.join(' · ');

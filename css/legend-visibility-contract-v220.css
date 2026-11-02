@@ -1,4 +1,4 @@
-/* LEGEND v0.27.5 — final scene-visibility contract, loaded after every earlier visual layer. */
+/* LEGEND v0.27.9 — final scene-visibility contract, loaded after every earlier visual layer. */
 body.legend-world-shell-active::before{filter:saturate(.94) contrast(1.03) brightness(1.04)!important}
 body.legend-world-shell-active::after{background:radial-gradient(ellipse at 50% 42%,transparent 34%,rgba(0,0,0,.07) 78%,rgba(0,0,0,.16) 100%),linear-gradient(180deg,rgba(0,0,0,.025),transparent 24%,transparent 77%,rgba(0,0,0,.10))!important;box-shadow:inset 0 0 72px 6px rgba(0,0,0,.08)!important}
 #root{background:transparent!important}
@@ -761,7 +761,7 @@ body.legend-world-shell-active #legend-world-shell-modal-root .lws-modal-content
   min-height:146px !important;
   padding:10px !important;
   text-align:left !important;
-  background:linear-gradient(145deg,rgba(12,19,13,.94),rgba(5,9,6,.97)) !important;
+  background:linear-gradient(145deg,rgba(12,19,13,.74),rgba(5,9,6,.66)) !important;
 }
 #root .ash099-screen .ash099-npc-grid .ash099-npc-card > img {
   grid-column:1 !important;
@@ -812,7 +812,7 @@ body.legend-world-shell-active #legend-world-shell-modal-root .lws-modal-content
   }
 }
 
-/* Keep road text readable without dimming the scenic expedition canvas itself. */
+/* Translucent road surfaces keep the scene readable as a place, not a black page. Text remains high-contrast. */
 body.legend-world-shell-active #root .exp100-head,
 body.legend-world-shell-active #root .exp100-panel:not(.rpg-battle),
 body.legend-world-shell-active #root .exp100-area,
@@ -825,19 +825,19 @@ body.legend-world-shell-active #root .exp100-dock-action,
 body.legend-world-shell-active #root .exp100-discovery-beat,
 body.legend-world-shell-active #root .exp150-world-page .exp100-camp,
 body.legend-world-shell-active #root .exp150-world-page .exp150-aside-card {
-  background:linear-gradient(145deg,rgba(8,14,9,.94),rgba(3,7,4,.90)) !important;
+  background:linear-gradient(145deg,rgba(8,14,9,.74),rgba(3,7,4,.66)) !important;
   color:#eee8d8 !important;
   border-color:rgba(215,184,106,.24) !important;
   box-shadow:0 8px 22px rgba(0,0,0,.22),inset 0 1px rgba(255,246,211,.025) !important;
 }
 body.legend-world-shell-active #root .exp150-world-page .exp100-choice,
 body.legend-world-shell-active #root .exp150-world-page .exp150-action {
-  background:linear-gradient(135deg,rgba(12,19,13,.96),rgba(4,8,5,.94)) !important;
+  background:linear-gradient(135deg,rgba(12,19,13,.82),rgba(4,8,5,.74)) !important;
   color:#f2eddf !important;
   border-color:rgba(215,184,106,.26) !important;
 }
 body.legend-world-shell-active #root .exp150-world-page .exp100-poi {
-  background:linear-gradient(135deg,rgba(24,30,20,.96),rgba(6,11,7,.94)) !important;
+  background:linear-gradient(135deg,rgba(24,30,20,.82),rgba(6,11,7,.74)) !important;
 }
 body.legend-world-shell-active #root .exp150-world-page .exp100-panel h2,
 body.legend-world-shell-active #root .exp150-world-page .exp100-panel h3,
@@ -855,46 +855,45 @@ body.legend-world-shell-active #root .exp150-world-page .exp150-action small {
   color:#cad4c7 !important;
 }
 
-/* Combat retains a visible battlefield, but text cards use a stable dark backing.
-   A pale dialogue surface paired with pale text was the worst contrast offender. */
+/* Combat controls and dialogue retain a dark readable backing without hiding the battlefield. */
 body.legend-world-shell-active #root .rpg-battle {
-  background:linear-gradient(180deg,rgba(8,13,9,.94),rgba(3,7,4,.92)) !important;
+  background:linear-gradient(180deg,rgba(8,13,9,.72),rgba(3,7,4,.64)) !important;
   border-color:rgba(215,184,106,.34) !important;
   box-shadow:0 14px 38px rgba(0,0,0,.20),inset 0 1px rgba(238,220,171,.04) !important;
 }
 body.legend-world-shell-active #root .rpg-combat-status {
-  background:linear-gradient(110deg,rgba(10,17,11,.92),rgba(4,8,5,.90)) !important;
+  background:linear-gradient(110deg,rgba(10,17,11,.80),rgba(4,8,5,.72)) !important;
 }
 body.legend-world-shell-active #root .rpg-foe-nameplate {
-  background:rgba(3,8,5,.90) !important;
+  background:rgba(3,8,5,.76) !important;
   backdrop-filter:blur(2px) !important;
   box-shadow:0 6px 18px rgba(0,0,0,.25) !important;
 }
 body.legend-world-shell-active #root .rpg-battle-log {
-  background:linear-gradient(90deg,rgba(8,14,9,.92),rgba(3,7,4,.88)) !important;
+  background:linear-gradient(90deg,rgba(8,14,9,.78),rgba(3,7,4,.68)) !important;
   color:#e8e4d7 !important;
 }
 body.legend-world-shell-active #root .rpg-command {
-  background:linear-gradient(115deg,rgba(12,20,13,.96),rgba(4,8,5,.92)) !important;
+  background:linear-gradient(115deg,rgba(12,20,13,.82),rgba(4,8,5,.74)) !important;
   color:#f1ecdf !important;
   border-color:rgba(215,184,106,.32) !important;
 }
 body.legend-world-shell-active #root .rpg-command-fight {
-  background:linear-gradient(110deg,rgba(34,24,16,.96),rgba(10,12,8,.94)) !important;
+  background:linear-gradient(110deg,rgba(34,24,16,.82),rgba(10,12,8,.74)) !important;
 }
 body.legend-world-shell-active #root .rpg-utility-command {
-  background:rgba(7,13,9,.94) !important;
+  background:rgba(7,13,9,.78) !important;
   color:#ede7d8 !important;
 }
 body.legend-world-shell-active #root .rpg-enemy-tell {
-  background:linear-gradient(100deg,rgba(25,18,13,.92),rgba(5,9,6,.90)) !important;
+  background:linear-gradient(100deg,rgba(25,18,13,.80),rgba(5,9,6,.72)) !important;
   color:#f0e7d4 !important;
 }
 body.legend-world-shell-active #root .rpg-turn-heading {
-  background:linear-gradient(95deg,rgba(9,15,10,.94),rgba(4,8,5,.92)) !important;
+  background:linear-gradient(95deg,rgba(9,15,10,.78),rgba(4,8,5,.68)) !important;
 }
 body.legend-world-shell-active #root .rpg-battle .rpg-dialogue {
-  background:linear-gradient(105deg,rgba(15,23,16,.97),rgba(5,10,6,.95)) !important;
+  background:linear-gradient(105deg,rgba(15,23,16,.84),rgba(5,10,6,.78)) !important;
   color:#ece5d5 !important;
   border:1px solid rgba(215,184,106,.28) !important;
   box-shadow:0 8px 24px rgba(0,0,0,.22) !important;
@@ -907,9 +906,9 @@ body.legend-world-shell-active #root .rpg-battle .rpg-dialogue-kicker {
 }
 
 
-/* Active-shell NPC cards also need to outrank the original body/root-scoped fill. */
+/* Town NPC cards remain legible while allowing their scene to show through. */
 body.legend-world-shell-active #root .ash099-screen .ash099-npc-grid .ash099-npc-card {
-  background:linear-gradient(145deg,rgba(12,19,13,.94),rgba(5,9,6,.97)) !important;
+  background:linear-gradient(145deg,rgba(12,19,13,.74),rgba(5,9,6,.66)) !important;
 }
 
 
@@ -942,4 +941,238 @@ body.legend-world-shell-active #root .ash099-screen .ash099-head:has(> img[src*=
     height:122px !important;
     max-width:88px !important;
   }
+}
+
+
+/* v0.27.9 — final cascade guard for visible scenes and readable combat controls.
+   Older shell rollout selectors used .94–.97 fills that hid the world art. */
+body.legend-world-shell-active #root .exp100-head,
+body.legend-world-shell-active #root .exp100-panel:not(.rpg-battle),
+body.legend-world-shell-active #root .exp100-area,
+body.legend-world-shell-active #root .exp100-poi,
+body.legend-world-shell-active #root .exp100-result,
+body.legend-world-shell-active #root .exp100-stats > div,
+body.legend-world-shell-active #root .exp100-choice,
+body.legend-world-shell-active #root .exp100-btn,
+body.legend-world-shell-active #root .exp100-dock-action,
+body.legend-world-shell-active #root .exp100-discovery-beat,
+body.legend-world-shell-active #root .exp150-world-page .exp100-camp,
+body.legend-world-shell-active #root .exp150-world-page .exp150-aside-card {
+  background:linear-gradient(145deg,rgba(8,14,9,.72),rgba(3,7,4,.68)) !important;
+  color:#eee8d8 !important;
+  border-color:rgba(215,184,106,.26) !important;
+}
+body.legend-world-shell-active #root .exp150-world-page .exp100-choice,
+body.legend-world-shell-active #root .exp150-world-page .exp150-action {
+  background:linear-gradient(135deg,rgba(12,19,13,.80),rgba(4,8,5,.76)) !important;
+  color:#f2eddf !important;
+  border-color:rgba(215,184,106,.30) !important;
+}
+body.legend-world-shell-active #root .exp150-world-page .exp100-poi {
+  background:linear-gradient(135deg,rgba(24,30,20,.78),rgba(6,11,7,.72)) !important;
+}
+body.legend-world-shell-active #root .rpg-battle {
+  background:linear-gradient(180deg,rgba(8,13,9,.70),rgba(3,7,4,.68)) !important;
+}
+body.legend-world-shell-active #root .rpg-combat-status {
+  background:linear-gradient(110deg,rgba(10,17,11,.72),rgba(4,8,5,.68)) !important;
+}
+body.legend-world-shell-active #root .rpg-foe-nameplate {
+  background:rgba(3,8,5,.74) !important;
+  backdrop-filter:blur(2px) !important;
+}
+body.legend-world-shell-active #root .rpg-battle-log {
+  background:linear-gradient(90deg,rgba(8,14,9,.72),rgba(3,7,4,.68)) !important;
+  color:#e8e4d7 !important;
+}
+body.legend-world-shell-active #root .rpg-command {
+  background:linear-gradient(115deg,rgba(12,20,13,.80),rgba(4,8,5,.76)) !important;
+  color:#f1ecdf !important;
+  border-color:rgba(215,184,106,.34) !important;
+}
+body.legend-world-shell-active #root .rpg-command-fight {
+  background:linear-gradient(110deg,rgba(34,24,16,.80),rgba(10,12,8,.76)) !important;
+}
+body.legend-world-shell-active #root .rpg-utility-command {
+  background:rgba(7,13,9,.78) !important;
+  color:#ede7d8 !important;
+}
+body.legend-world-shell-active #root .rpg-enemy-tell {
+  background:linear-gradient(100deg,rgba(25,18,13,.78),rgba(5,9,6,.74)) !important;
+  color:#f0e7d4 !important;
+}
+body.legend-world-shell-active #root .rpg-turn-heading {
+  background:linear-gradient(95deg,rgba(9,15,10,.76),rgba(4,8,5,.72)) !important;
+}
+body.legend-world-shell-active #root .rpg-battle .rpg-dialogue {
+  background:linear-gradient(105deg,rgba(15,23,16,.82),rgba(5,10,6,.78)) !important;
+  color:#ece5d5 !important;
+  border:1px solid rgba(215,184,106,.32) !important;
+  box-shadow:0 8px 24px rgba(0,0,0,.22) !important;
+}
+body.legend-world-shell-active #root .rpg-battle .rpg-dialogue p { color:#f0eadf !important; }
+body.legend-world-shell-active #root .rpg-battle .rpg-dialogue-kicker { color:#e3c67b !important; }
+
+
+/* v0.29.2 — sharpen the persistent town navigation icons as well as destination tiles. */
+body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon,
+body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon.ash099-asset-icon {
+  display:grid !important;
+  place-items:center !important;
+  flex:0 0 25px !important;
+  width:25px !important;
+  height:25px !important;
+  min-width:25px !important;
+  min-height:25px !important;
+  max-width:25px !important;
+  max-height:25px !important;
+  padding:0 !important;
+  margin:0 auto 2px !important;
+  overflow:hidden !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon img {
+  display:block !important;
+  width:100% !important;
+  height:100% !important;
+  max-width:100% !important;
+  max-height:100% !important;
+  padding:1px !important;
+  box-sizing:border-box !important;
+  object-fit:contain !important;
+  object-position:center !important;
+  image-rendering:auto !important;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.42)) !important;
+}
+body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon svg {
+  width:23px !important;
+  height:23px !important;
+}
+@media(max-width:520px){
+  body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon,
+  body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon.ash099-asset-icon {
+    flex-basis:23px !important;
+    width:23px !important;
+    height:23px !important;
+    min-width:23px !important;
+    min-height:23px !important;
+    max-width:23px !important;
+    max-height:23px !important;
+  }
+  body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon svg {
+    width:21px !important;
+    height:21px !important;
+  }
+}
+
+
+/* Final cascade: retain full-size town destination art after the older shell rules. */
+#root .ash100-town .ash100-destination{
+  grid-template-columns:56px minmax(0,1fr)!important;
+  gap:5px 12px!important;
+}
+#root .ash100-town .ash100-destination-icon{
+  display:grid!important;place-items:center!important;
+  width:54px!important;height:54px!important;min-width:54px!important;min-height:54px!important;
+  max-width:54px!important;max-height:54px!important;
+  overflow:hidden!important;
+}
+#root .ash100-town .ash100-destination-icon .ash099-icon.ash099-asset-icon{
+  width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;
+}
+#root .ash100-town .ash100-destination-icon .ash099-icon.ash099-asset-icon img{
+  width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;
+  object-fit:contain!important;padding:3px!important;
+}
+@media(max-width:520px){
+  #root .ash100-town .ash100-destination{grid-template-columns:52px minmax(0,1fr)!important}
+  #root .ash100-town .ash100-destination-icon{width:50px!important;height:50px!important;min-width:50px!important;min-height:50px!important;max-width:50px!important;max-height:50px!important}
+}
+
+
+/* v0.30.0 — expedition returns read like a field ledger, with the road still visible. */
+#root .v152-expedition-summary {
+  overflow: hidden;
+  border: 1px solid rgba(213,184,112,.38) !important;
+  background: linear-gradient(145deg,rgba(15,24,17,.72),rgba(4,9,6,.62)) !important;
+  box-shadow: 0 18px 48px rgba(0,0,0,.25),inset 0 0 0 2px rgba(0,0,0,.16) !important;
+}
+#root .v152-expedition-banner {
+  position: relative;
+  display: flex;
+  min-height: 176px;
+  align-items: flex-end;
+  overflow: hidden;
+  isolation: isolate;
+  border-bottom: 1px solid rgba(218,190,120,.30);
+}
+#root .v152-expedition-banner > img {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 54%;
+  filter: saturate(.92) contrast(1.04) brightness(1.06);
+}
+#root .v152-expedition-banner::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  background: linear-gradient(90deg,rgba(5,10,7,.74),rgba(5,10,7,.25) 72%,rgba(5,10,7,.18)),
+    linear-gradient(0deg,rgba(5,9,6,.68),transparent 76%);
+}
+#root .v152-expedition-banner-copy { max-width: 760px; padding: 20px clamp(16px,3vw,30px); }
+#root .v152-expedition-banner-copy > span,
+#root .v152-expedition-reward-tile small,
+#root .v152-expedition-xp span {
+  color: #d9bf7d;
+  font: 800 .58rem/1.4 system-ui,sans-serif;
+  letter-spacing: .18em;
+}
+#root .v152-expedition-banner-copy h2 {
+  margin: 6px 0;
+  color: #fff0d0;
+  font: 500 clamp(1.7rem,3vw,2.6rem)/1.05 Georgia,"Times New Roman",serif;
+  text-shadow: 0 3px 18px rgba(0,0,0,.65);
+}
+#root .v152-expedition-banner-copy p { max-width: 650px; margin: 0; color: #e7e5d8; line-height: 1.5; }
+#root .v152-expedition-metrics { background: rgba(6,12,8,.34) !important; }
+#root .v152-expedition-reward-line {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 9px;
+  padding: 12px;
+}
+#root .v152-expedition-reward-tile {
+  display: flex;
+  min-width: 0;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid rgba(210,190,143,.22);
+  background: linear-gradient(145deg,rgba(31,39,29,.68),rgba(7,12,8,.52));
+}
+#root .v152-expedition-reward-tile > span { color: #dfc17b; font-size: 1.45rem; }
+#root .v152-expedition-reward-tile strong { display: block; margin: 3px 0; color: #f4ead4; font: 600 1.05rem/1.2 Georgia,"Times New Roman",serif; overflow-wrap: anywhere; }
+#root .v152-expedition-reward-tile em { display: block; color: #bfc7b5; font-size: .69rem; font-style: normal; line-height: 1.35; }
+#root .v152-expedition-reward-tile.is-rare { border-color: rgba(221,188,108,.55); background: linear-gradient(145deg,rgba(75,60,29,.56),rgba(14,18,10,.64)); }
+#root .v152-expedition-reward-tile.is-unfound { opacity: .78; }
+#root .v152-expedition-xp { margin: 0 12px 12px; padding: 11px 13px; border: 1px solid rgba(211,189,133,.18); background: rgba(4,9,6,.46); }
+#root .v152-expedition-xp > div:first-child { display: flex; justify-content: space-between; gap: 12px; }
+#root .v152-expedition-xp strong { color: #f1e7d2; font-size: .8rem; font-variant-numeric: tabular-nums; }
+#root .v152-expedition-xp-track { height: 6px; margin-top: 8px; overflow: hidden; background: rgba(0,0,0,.38); }
+#root .v152-expedition-xp-track i { display: block; height: 100%; background: linear-gradient(90deg,#7b8d5e,#d7bd78); box-shadow: 0 0 12px rgba(210,185,113,.28); }
+.v152-levelup-overlay .v152-growth-backdrop {
+  background: linear-gradient(180deg,rgba(4,8,5,.38),rgba(4,8,5,.58)),
+    url("../assets/locations/roads/location_old_road_main_v1.jpg") center 52%/cover no-repeat !important;
+}
+@media(max-width:620px) {
+  #root .v152-expedition-reward-line { grid-template-columns: 1fr; }
+  #root .v152-expedition-banner { min-height: 154px; }
 }

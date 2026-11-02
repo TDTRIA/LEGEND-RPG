@@ -1,4 +1,14 @@
 const { test, expect } = require('@playwright/test');
+
+function cssBackgroundAlphas(value) {
+  return Array.from(String(value || '').matchAll(/rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/g), match => Number(match[1]));
+}
+
+function expectBackgroundAlphaAtMost(value, maximum) {
+  const alphas = cssBackgroundAlphas(value);
+  expect(alphas.length, 'expected an rgba background layer in: ' + value).toBeGreaterThan(0);
+  expect(Math.max(...alphas)).toBeLessThanOrEqual(maximum);
+}
 const fs = require('fs');
 const path = require('path');
 const dataSource = fs.readFileSync(path.join(__dirname, '../js/data.js'), 'utf8');
@@ -39,8 +49,27 @@ async function openTitle(page) {
 
 async function startFreshCharacter(page, name = 'QATraveler', options = {}) {
   await openTitle(page);
+  if (options.previousRoadExperience) {
+    await page.evaluate(() => {
+      window.LegendStorage.savePlayer({
+        version: window.LEGEND_DATA.VERSION,
+        username: 'PreviousRoadVeteran',
+        town: 'Ashmere',
+        currentRegion: 'Ashmere',
+        level: 4,
+        hp: 80,
+        maxHp: 80,
+        gold: 40,
+        inventory: {},
+        stats: { roadVictories: 2, oldRoadClears: 1 },
+        flags: { firstRoadReturnSeen: true, introV094Complete: true }
+      });
+    });
+  }
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="unspoken"]').click();
@@ -71,6 +100,23 @@ async function startFreshCharacter(page, name = 'QATraveler', options = {}) {
   await expect(page.locator('.ash100-town')).toBeVisible();
 }
 
+
+async function clearRoadBattle(page) {
+  const battle=page.locator('.rpg-battle');
+  if (await battle.count()) {
+    await page.evaluate(() => {
+      const player=window.LegendRuntimeV120.loadPlayer();
+      player.attributesV152=player.attributesV152||{};
+      player.attributesV152.might=250;
+      player.maxHp=Math.max(999,Number(player.maxHp||0));
+      player.hp=player.maxHp;
+      window.LegendRuntimeV120.savePlayer(player);
+    });
+    if (await battle.count()) await page.locator('#strike').click();
+    if (await page.locator('.v152-combat-results').count()) await page.locator('#v152CombatContinue').click();
+  }
+  await expect(battle).toHaveCount(0);
+}
 
 async function enterOldRoadFromDeparture(page) {
   await page.getByRole('button', { name: /The Old Road/i }).click();
@@ -375,7 +421,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(await page.evaluate(() => typeof window.LegendAshmereViewV099?.create)).toBe('function');
     await expect(page.locator('.ash100-town')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Ashmere', exact: true })).toBeVisible();
-    await expect(page.locator('.ash100-destination')).toHaveCount(7);
+    await expect(page.locator('.ash100-destination')).toHaveCount(8);
     await expect(page.getByRole('heading', { name: 'Your Camp', exact: true })).toHaveCount(0);
     await expect(page.getByRole('navigation', { name: 'Ashmere terminal navigation' })).toBeVisible();
   });
@@ -418,9 +464,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     const innIcon = page.locator('#rest .ash099-asset-icon img');
     const roadIcon = page.locator('#camp .ash099-asset-icon img');
     const journalIcon = page.locator('#rumor .ash099-asset-icon img');
-    await expect(innIcon).toHaveAttribute('src', /legend-icon-inn\.webp/);
-    await expect(roadIcon).toHaveAttribute('src', /legend-icon-milestone\.webp/);
-    await expect(journalIcon).toHaveAttribute('src', /legend-icon-journal\.webp/);
+    await expect(innIcon).toHaveAttribute('src', /service-inn\.webp/);
+    await expect(roadIcon).toHaveAttribute('src', /service-milestone\.webp/);
+    await expect(journalIcon).toHaveAttribute('src', /service-journal\.webp/);
     await expect.poll(async () => page.locator('.ash099-asset-icon img').evaluateAll(imgs =>
       imgs.length === 3 && imgs.every(img => img.complete && img.naturalWidth > 0)
     )).toBe(true);
@@ -835,7 +881,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('blank traveler name shows inline validation without leaving creation', async ({ page }) => {
     await openTitle(page);
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
     await page.locator('#v094Next').click();
     await expect(page.locator('#v094NameError')).toHaveText('Please enter a traveler name.');
     await expect(page.getByRole('heading', { name: 'What name shall you carry?' })).toBeVisible();
@@ -962,8 +1010,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(portraitLayout.height).toBeLessThanOrEqual(140);
     expect(portraitLayout.objectFit).toBe('cover');
     expect(portraitLayout.objectPosition).toContain('18%');
-    expect(portraitLayout.cardBackground).toContain('0.94');
-    expect(portraitLayout.cardBackground).toContain('0.97');
+    expectBackgroundAlphaAtMost(portraitLayout.cardBackground, 0.80);
     await page.locator('[data-ash-view="oric"]').click();
     await expect(page.getByRole('heading', { name: 'Captain Oric' })).toBeVisible();
     const oricDialoguePortrait = page.locator('.ash099-head img');
@@ -1002,7 +1049,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('character creation choices are clearly selected and progress is explained', async ({ page }) => {
     await openTitle(page);
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
     await page.locator('#v094Name').fill('ChoiceQA');
     await page.locator('#v094Next').click();
     await expect(page.locator('.v094-stepper')).toContainText('STEP 2 OF 7');
@@ -1106,7 +1155,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
     await page.getByRole('button', { name: /Side Stories & Contracts/i }).click();
-    await expect(page.locator('.ash099-contract-card')).toHaveCount(4);
+    await expect(page.locator('.ash099-contract-card')).toHaveCount(5);
     await page.locator('[data-contract-accept="watchlightSurvey"]').click();
     await expect(page.locator('[data-contract-turnin="watchlightSurvey"]')).toHaveCount(0);
     await expect(page.locator('.ash099-contract-card').filter({ has: page.getByRole('heading', { name: 'The Watchlight Survey' }) })).toContainText(/In progress · 0 \/ 1/);
@@ -1331,7 +1380,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('#routeReeds')).toBeVisible();
     await expect(page.locator('#routeRidge')).toContainText(/Safer/i);
     await expect(page.locator('#routeReeds')).toContainText(/Riskier/i);
-    await page.locator('#routeReeds').click();
+    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('routeReeds')?.click(); Math.random = random; });
     await expect(page.locator('.exp100-route-choice')).toHaveCount(0);
     await expect(page.locator('.exp100-poi-done')).toContainText('Reed Cut');
     await expect(page.locator('.exp100-head')).toContainText(/\+1 Bell Fragment/i);
@@ -1398,6 +1447,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
         seen: pl.flags.firstRoadReturnSeen,
         route: pl.flags.firstRoadReturnRoute,
         discovery: pl.flags.firstRoadReturnDiscovery,
+        fragmentFound: pl.flags.firstRoadReturnBellFragmentFound,
         objective: pl.questLog.find(item => item.startsWith('The Bell That Rang Once:'))
       };
     });
@@ -1495,7 +1545,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'StoryReedQA');
     await page.evaluate(() => window.LegendAshmereV099.route('routes'));
     await enterOldRoadFromDeparture(page);
-    await page.locator('#routeReeds').click();
+    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('routeReeds')?.click(); Math.random = random; });
     await page.evaluate(() => {
       const rt = window.LegendRuntimeV120;
       const pl = rt.loadPlayer();
@@ -1506,7 +1556,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
       window.LegendRoadControllerV100.renderExpedition();
     });
-    await page.locator('#finish').click();
+    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
     await expect(page.locator('.exp100-outcome')).toContainText(/tracks beneath the blue light/i);
     await page.locator('#outcomeReturn').click();
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
@@ -1521,6 +1571,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
     expect(result.route).toBe('reeds');
     expect(result.discovery).toBe('marsh-watcher-tracks');
+    expect(result.fragmentFound).toBe(true);
     expect(result.objective).toMatch(/Blackroot Bend/i);
   });
 
@@ -1850,6 +1901,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('.exp100-hotspot-find').click();
     await page.locator('#poiInspect').click();
     await page.locator('#push').click();
+    await clearRoadBattle(page);
     await expect(page.locator('.exp100-head')).toContainText(/wet reeds cling to your boots/i);
     await expect(page.locator('.exp100-head')).toContainText(/something followed you out/i);
   });
@@ -1857,9 +1909,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Ashmere hub destinations use the dedicated local service icon artwork', async ({ page }) => {
     await startFreshCharacter(page, 'IconArtQA');
     const destinationIcons = page.locator('.ash100-destinations .ash100-destination-icon');
-    await expect(destinationIcons).toHaveCount(7);
+    await expect(destinationIcons).toHaveCount(8);
     const iconImages = page.locator('.ash100-destinations .ash100-destination-icon .ash099-asset-icon img');
-    await expect(iconImages).toHaveCount(7);
+    await expect(iconImages).toHaveCount(8);
     const iconSources = await iconImages.evaluateAll(nodes => nodes.map(node => node.getAttribute('src') || ''));
     expect(iconSources.every(src => src.startsWith('assets/generated/') && /\.(?:webp|png)(?:\?.*)?$/i.test(src))).toBe(true);
     await expect(page.locator('.ash100-destinations .ash100-destination-icon .ash099-icon svg')).toHaveCount(0);
@@ -1878,7 +1930,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('traveler creation shapes a soul with an unnamed presence and raster LEGEND wordmark', async ({ page }) => {
     await openTitle(page);
     await page.locator('#newPrimary').click();
-    await page.getByRole('button', { name: /Skip the annals/i }).click();
+    await page.getByRole('button', { name: /^Continue$/ }).click();
+    await page.getByRole('button', { name: /^Continue$/ }).click();
+    await page.getByRole('button', { name: /Shape the traveler/i }).click();
     await expect(page.locator('.v140-creation')).toBeVisible();
     await expect(page.locator('.v140-creation-brand .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
     await expect(page.locator('.v140-creation-brand img')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
@@ -1918,21 +1972,28 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.getByRole('group', { name: 'Your answer to Captain Oric' })).toBeVisible();
     await expect(page.locator('.ash100-town')).toHaveCount(0);
     await page.locator('[data-oric-response="honest"]').click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await expect(page.locator('.rpg-battle')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Help Oric' }).click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await expect(page.locator('.rpg-battle')).toContainText('Blackroot Wolf');
     await expect(page.locator('#skill')).toContainText('Awaken');
     await expect(page.locator('#strike')).toBeDisabled();
     await page.locator('#skill').click();
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
+    await expect(page.locator('#openingRoadSkip')).toHaveCount(0);
   });
 
-  test('the opening can be skipped to Ashmere after the required ACT awakening', async ({ page }) => {
-    await startFreshCharacter(page, 'SkipOpeningQA', { stopAtIntro: true });
+  test('only a traveler with a prior road victory is offered the Ashmere shortcut', async ({ page }) => {
+    await startFreshCharacter(page, 'SkipOpeningQA', { stopAtIntro: true, previousRoadExperience: true });
     await page.locator('[data-oric-response="peaceful"]').click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await page.getByRole('button', { name: 'Help Oric' }).click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await page.locator('#skill').click();
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
-    await page.getByRole('button', { name: 'Go straight to Ashmere' }).click();
+    await expect(page.getByRole('button', { name: 'Return to Ashmere (experienced player)' })).toBeVisible();
+    await page.getByRole('button', { name: 'Return to Ashmere (experienced player)' }).click();
     await expect(page.locator('.ash100-town')).toBeVisible();
   });
 
@@ -1991,7 +2052,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       };
     });
 
-    await page.locator('#finish').click();
+    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
     await expect(page.locator('#outcomeReturn')).toBeVisible();
     await expect(page.locator('.exp100-outcome')).toContainText('Expedition Secured');
     await expect(page.locator('.exp100-outcome')).toContainText(/Road Token/i);
@@ -2018,8 +2079,8 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
 
     expect(before.xp).toBe(80);
-    expect(after.gold).toBe(before.gold + 140);
-    expect(after.xp).toBe(45);
+    expect(after.gold).toBe(before.gold + 80);
+    expect(after.xp).toBe(13);
     expect(after.level).toBe(2);
     expect(after.hp).toBe(before.hp + 8);
     expect(after.maxHp).toBe(before.maxHp + 8);

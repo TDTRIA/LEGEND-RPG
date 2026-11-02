@@ -117,6 +117,22 @@
       showCreationError('Traveler records are unavailable. Refresh before beginning your journey.');
       return;
     }
+    // A veteran shortcut is earned only when the previous saved traveler
+    // demonstrably reached the road loop. A first-time player always gets Oric's
+    // guided expedition, even if they have opened the title screen before.
+    const previousPlayer = S().loadPlayer?.();
+    const previousStats = previousPlayer?.stats || {};
+    const previousFlags = previousPlayer?.flags || {};
+    const previousRoad = previousFlags.roadExpeditionV100 || {};
+    const previousOpening = previousFlags.openingRoadV140 || {};
+    const roadExperienced = !!previousPlayer && (
+      Number(previousStats.roadVictories || 0) > 0 ||
+      Number(previousStats.oldRoadClears || 0) > 0 ||
+      Number(previousRoad.trips || 0) > 0 ||
+      previousFlags.firstRoadReturnSeen === true ||
+      previousOpening.completed === true ||
+      previousOpening.awakened === true
+    );
     const pl=recordBuilder.create({
       data:D(),
       name:state.name,
@@ -132,6 +148,8 @@
       showCreationError('Your traveler details are incomplete. Go back and review each choice before continuing.');
       return;
     }
+    pl.flags = pl.flags || {};
+    if (roadExperienced) pl.flags.veteranRoadSkipUnlocked = true;
     S().savePlayer?.(pl);
     if (typeof window.LegendRoadOpeningV140?.start === 'function') return window.LegendRoadOpeningV140.start(pl);
     renderIntro(pl);

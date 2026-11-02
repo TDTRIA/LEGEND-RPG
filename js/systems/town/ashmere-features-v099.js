@@ -114,6 +114,7 @@
           gold,
           itemName,
           awardProgress,
+          openContracts: renderSideContracts,
           jobCatalog: window.LegendAshmereJobCatalogV099
         });
       }

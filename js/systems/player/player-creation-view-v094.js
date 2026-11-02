@@ -102,7 +102,7 @@
         const artRows = Math.max(1, Number(item.artRows || 5));
         const atlasArt = atlas
           ? '<span class="v094-choice-art" aria-hidden="true"><img ' + (artCell
-            ? 'src="' + escapeHtml(atlas) + '" style="width:' + (artColumns * 100) + '%;height:' + (artRows * 100) + '%;left:-' + (Number(artCell[0]) * 100) + '%;top:-' + (Number(artCell[1]) * 100) + '%"'
+            ? 'src="' + escapeHtml(atlas) + '" style="--v094-atlas-width:' + (artColumns * 100) + '%;--v094-atlas-height:' + (artRows * 100) + '%;left:-' + (Number(artCell[0]) * 100) + '%;top:-' + (Number(artCell[1]) * 100) + '%"'
             : 'class="v094-choice-art-image" src="' + escapeHtml(atlas) + '"') + ' alt="" aria-hidden="true" loading="lazy" decoding="async"></span>'
           : '';
         return '<button class="v094-choice' + (active ? ' is-selected' : '') + ((classPortrait || atlasArt) ? ' v094-choice-has-art' : '') +

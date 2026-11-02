@@ -36,9 +36,9 @@
     };
 function render(pl, enemy, note = '', w, a, technique) {
  if (!pl) return;
- const intentText=enemy.snared?'Snared · its next blow is weakened':enemy.intent==='heavy'?'Heavy wind-up · GUARD or disrupt it':enemy.intent==='guardbreak'?'Guard-break · strike first or use ACT':'Quick strike · GUARD softens the hit';
- const foeIntentClass=enemy.snared?'snared':enemy.intent==='heavy'?'heavy':enemy.intent==='guardbreak'?'guardbreak':'attack';
- const foeIntentLabel=foeIntentClass==='heavy'?'HEAVY WIND-UP':foeIntentClass==='guardbreak'?'GUARD BREAK':foeIntentClass==='snared'?'SNARED':'OPPONENT';
+ const intentText=enemy.staggered?'Staggered · its guard is open. Strike now for bonus damage.':enemy.snared?'Snared · its next blow is weakened':enemy.intent==='heavy'?'Heavy wind-up · GUARD or disrupt it':enemy.intent==='guardbreak'?'Guard-break · strike first or use ACT':'Quick strike · GUARD softens the hit';
+ const foeIntentClass=enemy.staggered?'staggered':enemy.snared?'snared':enemy.intent==='heavy'?'heavy':enemy.intent==='guardbreak'?'guardbreak':'attack';
+ const foeIntentLabel=foeIntentClass==='staggered'?'STAGGERED':foeIntentClass==='heavy'?'HEAVY WIND-UP':foeIntentClass==='guardbreak'?'GUARD BREAK':foeIntentClass==='snared'?'SNARED':'OPPONENT';
  const stableEnemies=A().enemies||{},legacyArt=A().byName?.(enemy.name)||'',enemyName=String(enemy.name||'').toLowerCase();
  const location=String(encounterLocation(pl,enemy)||'').toLowerCase();
  const arenaKey=enemy.greyfenMarshV160||location.includes('greyfen')?'greyfen':enemy.dungeonV100||location.includes('cellar')?'cellar':'road';

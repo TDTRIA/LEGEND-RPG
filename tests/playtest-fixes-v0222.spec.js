@@ -17,7 +17,9 @@ async function openTitle(page) {
 async function createTraveler(page, { name = 'PlaytestQA', gender = 'man', className = 'Adventurer' } = {}) {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
   await page.locator('[data-gender="' + gender + '"]').click();
@@ -52,7 +54,9 @@ async function toAshmere(page) {
 test('the name error clears as soon as the player types, and Enter submits', async ({ page }) => {
   await openTitle(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Next').click();
   await expect(page.locator('#v094NameError')).toHaveText('Please enter a traveler name.');
   await page.locator('#v094Name').pressSequentially('Skully');
@@ -66,6 +70,8 @@ test('the traveler portrait follows the chosen form, not the class art', async (
   // Adventurer class art is a woman; a traveler who chose "Man" must not see it.
   await createTraveler(page, { gender: 'man', className: 'Adventurer' });
   await page.locator('[data-oric-response="defiant"]').click();
+  await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+  await page.getByRole('button', { name: 'Help Oric' }).click();
   const portrait = page.locator('.rpg-hero-portrait img');
   await expect(portrait).toHaveAttribute('src', /class-warrior\.webp/);
 
@@ -80,7 +86,7 @@ test('the traveler portrait follows the chosen form, not the class art', async (
   });
   expect(forms.woman).toMatch(/class-adventurer\.webp/);
   expect(forms.nonbinary).toMatch(/class-mage\.webp/);
-  expect(forms.unspoken).toMatch(/legend-icon-traveler\.webp/);
+  expect(forms.unspoken).toMatch(/class-warrior\.webp/);
   expect(forms.legacy).toMatch(/class-ranger\.webp/);
 });
 
@@ -91,12 +97,20 @@ test('Town Square portraits do not cover the NPC names', async ({ page }) => {
   await page.locator('.ash099-btn, button').filter({ hasText: /^Town Square/ }).first().click();
   const card = page.locator('.ash099-npc-card[data-ash-view="mara"]');
   await expect(card).toBeVisible();
-  const overlap = await card.evaluate(el => {
+  const geometry = await card.evaluate(el => {
     const img = el.querySelector('img').getBoundingClientRect();
     const name = el.querySelector('strong').getBoundingClientRect();
-    return img.bottom - name.top;
+    const horizontalOverlap = Math.min(img.right, name.right) - Math.max(img.left, name.left);
+    const verticalOverlap = Math.min(img.bottom, name.bottom) - Math.max(img.top, name.top);
+    return {
+      intersects: horizontalOverlap > 0 && verticalOverlap > 0,
+      horizontalGap: name.left - img.right
+    };
   });
-  expect(overlap).toBeLessThanOrEqual(0);
+  // The portrait and name are deliberately placed in separate grid columns.
+  // Compare both axes; a vertical-only delta is not evidence of overlap.
+  expect(geometry.intersects).toBe(false);
+  expect(geometry.horizontalGap).toBeGreaterThanOrEqual(0);
 });
 
 test('a rest is limited to once per stop, is recorded, and the trip summary shows the final state', async ({ page }) => {

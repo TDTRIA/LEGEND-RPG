@@ -119,7 +119,8 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.player.hp).toBe(40);
     expect(result.events.saves).toBe(1);
     await expect(page.locator('.rpg-dialogue')).toContainText('guard turns the blow aside');
-    await expect(page.locator('.rpg-enemy-tell')).toContainText('Quick strike');
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-staggered/);
+    await expect(page.locator('.rpg-enemy-tell')).toContainText('Staggered');
   });
 
   test('Raider behavior opens with a guard-break feint, then a quick strike and heavy wind-up', async ({ page }) => {
@@ -158,8 +159,11 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     await expect(page.locator('.exp100-intent')).toContainText(/Heavy wind-up/i);
 
     await page.locator('#guard').click();
-    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-guardbreak/);
-    await expect(page.locator('.exp100-intent')).toContainText(/Guard-break/i);
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-staggered/);
+    await expect(page.locator('.exp100-intent')).toContainText(/Staggered/i);
+    await page.locator('#strike').click();
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-attack/);
+    await expect(page.locator('.exp100-intent')).toContainText(/Quick strike/i);
   });
 
   test('victory grants the configured drop and XP, updates counters, and advances the stage', async ({ page }) => {
@@ -176,12 +180,12 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.player.stats.roadVictories).toBe(1);
     expect(result.state.stage).toBe(2);
     expect(result.state.pressure).toBe(22);
-    expect(result.events.progress).toEqual([29]);
+    expect(result.events.progress).toEqual([27]);
     expect(result.events.inventory).toEqual([{ item: 'fur', count: 1 }]);
     expect(result.events.music).toContain('stop');
     expect(result.events.fx).toContain('victory');
     expect(result.events.results).toEqual([{
-      result: 'victory', enemy: 'Road Goblin', rewardName: 'fur', xpGained: 29, routeStage: 2
+      result: 'victory', enemy: 'Road Goblin', rewardName: 'fur', xpGained: 27, routeStage: 2
     }]);
     await expect(page.locator('.v152-combat-results')).toBeVisible();
     await expect(page.locator('.v152-combat-results')).toContainText('Victory');
@@ -228,10 +232,31 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(result.player.inventory.clothScrap).toBe(1);
     expect(result.player.inventory.roadToken).toBe(1);
     expect(result.player.gold).toBe(4);
-    expect(result.events.progress).toEqual([38]);
+    expect(result.events.progress).toEqual([36]);
     await expect(page.locator('.v152-combat-results')).toContainText('clothScrap');
     await expect(page.locator('.v152-combat-results')).toContainText('roadToken');
-    expect(result.events.results[0]).toMatchObject({ result: 'victory', rewardName: 'clothScrap · roadToken', xpGained: 38 });
+    expect(result.events.results[0]).toMatchObject({ result: 'victory', rewardName: 'clothScrap · roadToken', xpGained: 36 });
+  });
+
+  test('a Lantern Wisp fragment drop is recorded for the expedition return report', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 100, maxHp: 100, gold: 0 },
+      state: { stage: 1, pressure: 30 },
+      enemy: {
+        name: 'Lantern Wisp', behavior: 'flicker', hp: 1, maxHp: 1,
+        reward: 'wispAsh', xp: 22,
+        bonusDrop: { item: 'bellFragment', chance: 100, amount: [1, 1] },
+      },
+    });
+    await page.locator('#strike').click();
+    const result = await page.evaluate(() => window.__combatContract);
+    expect(result.player.inventory.wispAsh).toBe(1);
+    expect(result.player.inventory.bellFragment).toBe(1);
+    expect(result.state.routeBellFragmentFoundV300).toBe(true);
+    expect(result.events.inventory).toEqual([
+      { item: 'wispAsh', count: 1 },
+      { item: 'bellFragment', count: 1 },
+    ]);
   });
 
   test('high-tier armor reduces damage without preserving the old overpowered defense scale', async ({ page }) => {
@@ -282,6 +307,27 @@ test.describe('LegendRoadCombatV100 compatibility contract', () => {
     expect(staging.sceneTint).toContain('0.22');
     expect(staging.dialogue).toContain('linear-gradient');
     expect(staging.enemyPlate).not.toBe('auto');
+  });
+
+  test('a clean guard against a heavy wind-up creates a one-hit stagger opening', async ({ page }) => {
+    await startCombat(page, {
+      player: { hp: 40, maxHp: 100 },
+      enemy: { hp: 99, maxHp: 99, intent: 'heavy', damage: [3, 7] },
+    });
+
+    await page.locator('#guard').click();
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-staggered/);
+    await expect(page.locator('.rpg-foe-nameplate')).toContainText('STAGGERED');
+    await expect(page.locator('.exp100-intent')).toContainText(/strike now for bonus damage/i);
+    const afterGuard = await page.evaluate(() => window.__combatContract);
+    expect(afterGuard.player.hp).toBe(40);
+
+    await page.locator('#strike').click();
+    await expect(page.locator('.rpg-dialogue')).toContainText(/exploit the stagger for 2 bonus damage/i);
+    await expect(page.locator('.rpg-dialogue')).toContainText(/strike lands for 4 damage/i);
+    await expect(page.locator('.rpg-foe-nameplate')).not.toHaveClass(/rpg-foe-intent-staggered/);
+    const afterFollowUp = await page.evaluate(() => window.__combatContract);
+    expect(afterFollowUp.player.hp).toBe(39);
   });
 
 });

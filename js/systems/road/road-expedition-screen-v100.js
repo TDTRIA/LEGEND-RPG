@@ -138,6 +138,64 @@
     const copy=id==='windbreak'?'A shallow lee offers a place to observe the tracks and visible traffic below.':'A partly submerged cart holds a possible scrap of salvage and worn cargo marks.';
     return '<section class="exp160-optional-detour" aria-label="Optional road detour"><span class="exp150-kicker">OFF THE MARKED ROUTE</span><h3>'+title+' <small>OPTIONAL</small></h3><p>'+copy+' Visiting is never required to complete the expedition.</p><button type="button" class="exp100-choice" id="exp160VisitOptional" data-node="'+id+'"><strong>Visit '+title+'</strong><span>Make a short detour, then return to the route or continue to camp.</span><em>Optional · costs and rewards are shown at the location</em></button></section>';
   }
+  function blackrootSurveyMarkup(pl,s,stage){
+    if(stage!==3||s.activeSideTripV160)return '';
+    const contract=pl.flags?.sideContracts?.blackrootTrailSurvey;
+    if(!contract||contract.complete)return '';
+    const report=pl.flags?.roadContractsV290?.blackrootTrailSurvey;
+    if(report?.choice){
+      return '<section class="exp160-field-contract is-recorded" aria-label="Blackroot field contract"><span class="exp150-kicker">FIELD POSTING · REPORT RECORDED</span><h2>A Trail Worth Keeping</h2><p>Your field notes are saved. The tracks are recorded as evidence, not assigned to a person without proof.</p><div class="exp160-field-report-note">'+esc(report.note||'The Blackroot Bend track survey is complete.')+'</div><small>Return to Ashmere and report the findings to Old Brenn.</small></section>';
+    }
+    return '<section class="exp160-field-contract" aria-label="Blackroot field contract"><span class="exp150-kicker">WORK BOARD POSTING · OLD BRENN</span><h2>A Trail Worth Keeping</h2><p>Brenn needs a measured account of the prints crossing Blackroot Bend. The ground can show depth, stride and direction; it cannot identify the traveler by itself. How will you handle the survey?</p><div class="exp160-field-contract-actions"><button type="button" class="exp100-choice" data-blackroot-survey="measure"><strong>Measure before disturbing the ground</strong><span>Record depth, stride and direction from the undisturbed prints. Keep the evidence precise.</span><em>Cost: 1 hour · No supplies · Safest record</em></button><button type="button" class="exp100-choice" data-blackroot-survey="follow"><strong>Follow the prints beneath the roots</strong><span>Trace where the tracks disappear at the flooded stone. The detour may reveal a useful herb, but it could draw attention.</span><em>Cost: 1 hour + 8 Road Pressure · Gain 1 Road Herb</em></button></div></section>';
+  }
+  function completeBlackrootSurvey(choice){
+    const pl=p();if(!pl)return;
+    const s=ensure(pl),contract=pl.flags?.sideContracts?.blackrootTrailSurvey;
+    if(Number(s.stage)!==3||s.activeSideTripV160||!contract||contract.complete)return renderExpedition('Brenn’s field posting is not available at this stretch of road.');
+    pl.flags=pl.flags||{};
+    pl.flags.roadContractsV290=pl.flags.roadContractsV290||{};
+    if(pl.flags.roadContractsV290.blackrootTrailSurvey?.choice)return renderExpedition('You have already recorded this Blackroot survey. Return to Brenn with the saved report.');
+    if(!['measure','follow'].includes(choice))return renderExpedition('That field approach is not available.');
+    advanceOptionalTime(pl,s,1);
+    let note='';
+    if(choice==='measure'){
+      note='At Blackroot Bend, you measured the shallow impression and long stride before touching the mud. The prints pass the broken seal in two uneven lines. Their direction is clear; their maker is not.';
+    }else{
+      s.pressure=clamp(Number(s.pressure||0)+8,0,100);
+      inv(pl,'roadHerb',1);
+      note='You follow the prints beneath the roots until the trail disappears where water crosses the old stone. A Road Herb grows in the silt beside the last clear impression. The trail gives no name.';
+    }
+    pl.flags.roadContractsV290.blackrootTrailSurvey={
+      choice,
+      note,
+      day:Number(pl.day||1),
+      trip:Number(s.trips||0),
+      stage:3
+    };
+    contract.fieldChoice=choice;
+    pl.stats=pl.stats||{};
+    pl.stats.blackrootTrackSurveys=Number(pl.stats.blackrootTrackSurveys||0)+1;
+    const journal=journalFor(pl),trip=Number(s.trips||0);
+    if(!journal.discoveries.some(item=>item.key==='blackroot-track-survey'&&Number(item.trip||0)===trip)){
+      journal.discoveries.push({
+        key:'blackroot-track-survey',
+        name:'Blackroot Track Survey',
+        kind:'Field Contract',
+        place:'Blackroot Bend',
+        note,
+        route:s.routeChoice||'unrecorded',
+        day:Number(pl.day||1),
+        trip
+      });
+    }
+    if(!journal.visitedPlaces.includes('Blackroot Bend'))journal.visitedPlaces.push('Blackroot Bend');
+    s.discoveredNodeIdsV160=s.discoveredNodeIdsV160||[];
+    if(!s.discoveredNodeIdsV160.includes('blackroot-bend'))s.discoveredNodeIdsV160.push('blackroot-bend');
+    save(pl);
+    return renderExpedition(choice==='measure'
+      ?'You finish the measurements before disturbing the ground. One hour passes; the report is saved in your field journal.'
+      :'You follow the prints beneath the roots. The detour costs an hour and raises Road Pressure by 8, but you recover one Road Herb. The report is saved.');
+  }
   function wireOptionalSiteActions(pl,s,node){
     const completed=(s.completedInteractionIdsV160||[]).includes(node.id);
     if(completed)return;
@@ -283,6 +341,10 @@
     const travelGate=window.LegendRoadOpeningV140?.travelGate?.(pl,s,stage)||{allowed:true};
     const travelLocked=travelGate.allowed===false;
     const openingLesson=pl.flags?.openingRoadV140?.phase==='road'&&!pl.flags.openingRoadV140.completed;
+    const veteranCanAbandon=pl.flags?.openingRoadV140?.veteranSkipUnlocked===true;
+    const earlyReturnMarkup=(!openingLesson||veteranCanAbandon)
+      ? '<button class="exp150-abandon" id="town" data-legend-scene-transition="Leaving the expedition" type="button">Leave the expedition and return to Ashmere</button>'
+      : '<p class="exp150-abandon-hint">Captain Oric is guiding your first outing. Complete the field lesson and return with him at Greyfen Approach.</p>';
     const discoveryFound=Object.values(s.poiUsed||{}).some(Boolean);
     const searchLocked=openingLesson&&stage===0&&(!s.routeChoice||!discoveryFound);
     const journal=journalFor(pl),discoveryCount=journal.discoveries.length;
@@ -304,9 +366,9 @@
       trackerMarkup(pl,s,stage)+
       '<div class="exp150-main-grid"><section class="exp150-scene-column">'+
       (guide?'<div class="exp150-guide">'+guide+'</div>':'')+
-      '<div class="exp150-interactions">'+(sideNode?optionalSiteMarkup(pl,s,sideNode):roadDiscovery.routeChoicePanel(s,stage)+roadDiscovery.pointOfInterestPanel(pl,s,stage)+roadDiscovery.movedCairnDecisionPanel(pl,s,stage)+optionalDetourCard(pl,s,stage))+'</div>'+
+      '<div class="exp150-interactions">'+(sideNode?optionalSiteMarkup(pl,s,sideNode):roadDiscovery.routeChoicePanel(s,stage)+roadDiscovery.pointOfInterestPanel(pl,s,stage)+roadDiscovery.movedCairnDecisionPanel(pl,s,stage)+optionalDetourCard(pl,s,stage)+blackrootSurveyMarkup(pl,s,stage))+'</div>'+
       (atCamp?campActions(pl,s,area):'')+
-      '<section class="exp150-action-dock"><div class="exp150-section-heading"><div><span class="exp150-kicker">YOUR NEXT MOVE</span><h2>How will you proceed?</h2></div><span class="exp150-current-mark">STOP '+(stage+1)+' / 6</span></div><div class="exp150-action-list">'+choices+'</div><button class="exp150-abandon" id="town" data-legend-scene-transition="Leaving the expedition" type="button">Leave the expedition and return to Ashmere</button></section></section>'+
+      '<section class="exp150-action-dock"><div class="exp150-section-heading"><div><span class="exp150-kicker">YOUR NEXT MOVE</span><h2>How will you proceed?</h2></div><span class="exp150-current-mark">STOP '+(stage+1)+' / 6</span></div><div class="exp150-action-list">'+choices+'</div>'+earlyReturnMarkup+'</section></section>'+
       '<aside class="exp150-journey-aside"><section class="exp150-aside-card exp150-next-stop"><span class="exp150-kicker">AHEAD ON THE ROAD</span><h2>'+(stage>=5?'Ashmere':esc(nextArea.name))+'</h2><p>'+(stage>=5?'The trip is complete. Your finds can be secured in town.':'The route can change what you find, how much pressure builds, and what follows you.')+'</p>'+(stage===0?'<div class="exp150-route-reminder"><span>THE FIRST FORK</span><strong>'+(s.routeChoice?(s.routeChoice==='ridge'?'High Ridge chosen':'Reed Cut chosen'):'High Ridge · Reed Cut')+'</strong><small>'+(s.routeChoice?'Your route choice is recorded for this journey.':'Compare a safer ridge path with a riskier trail through the reeds.')+'</small></div>':'')+'</section>'+
       '<section class="exp150-aside-card exp150-pressure-card"><div class="exp150-aside-title"><span class="exp150-kicker">ROAD PRESSURE</span><span>'+Number(s.pressure||0)+'%</span></div><div class="exp150-pressure-track"><i style="width:'+clamp(s.pressure,0,100)+'%"></i></div><p>'+esc(pressureNote)+'</p></section>'+
       '<section class="exp150-aside-card exp150-supplies-card"><span class="exp150-kicker">FIELD SUPPLIES</span><div class="exp150-supply-row"><span>Rations</span><strong>'+Number(pl.inventory?.food||0)+'</strong></div><div class="exp150-supply-row"><span>Camp Supplies</span><strong>'+Number(pl.inventory?.camp||0)+'</strong></div><div class="exp150-supply-row"><span>Road Herbs</span><strong>'+Number(pl.inventory?.roadHerb||0)+'</strong></div><div class="exp150-supply-row"><span>Healing Potions</span><strong>'+Number(pl.inventory?.potion||0)+'</strong></div><p>Resting and crafting use the supplies you carry. Check the waystation when you find one.</p></section>'+
@@ -317,6 +379,7 @@
     document.getElementById('poiLeave')?.addEventListener('click',()=>{const player=p();if(!player)return;const state=ensure(player);state.discoveryOpen=false;state.discoveryStage=null;roadDiscovery.hide();save(player);document.querySelector('.exp150-interactions .exp100-discovery-beat')?.remove();});
     document.getElementById('poiInspect')?.addEventListener('click',roadDiscovery.inspectPointOfInterest);
     document.getElementById('exp160VisitOptional')?.addEventListener('click',button=>beginOptionalSite(button.currentTarget.dataset.node));
+    document.querySelectorAll('[data-blackroot-survey]').forEach(button=>button.addEventListener('click',()=>completeBlackrootSurvey(button.dataset.blackrootSurvey)));
     document.getElementById('exp160ReturnToRoute')?.addEventListener('click',leaveOptionalSite);
     document.getElementById('exp160ContinueToCamp')?.addEventListener('click',()=>resolveChoice('push'));
     if(sideNode)wireOptionalSiteActions(pl,s,sideNode);
@@ -331,7 +394,7 @@
     document.getElementById('exp150OpenJournal')?.addEventListener('click',()=>openPanel('journal'));
     document.getElementById('exp150OpenJournalAside')?.addEventListener('click',()=>openPanel('journal'));
 
-    document.getElementById('town').onclick=()=>{const player=p();if(player?.flags?.openingRoadV140?.phase==='road'&&!player.flags.openingRoadV140.completed)window.LegendRoadOpeningV140?.complete?.(player,'abandoned');ret();};
+    document.getElementById('town')?.addEventListener('click',()=>{const player=p();if(player?.flags?.openingRoadV140?.phase==='road'&&!player.flags.openingRoadV140.completed)window.LegendRoadOpeningV140?.complete?.(player,'abandoned');ret();});
     document.getElementById('campRest')?.addEventListener('click',()=>{
       const player=p();if(!player)return;const state=ensure(player);
       // One rest per stop: resting used to be repeatable, so a traveler at full

@@ -30,21 +30,31 @@
 .opening-road-v140-primary{color:#261c08;border-color:#e8c878;background:linear-gradient(180deg,#f6d995,#c99a42)}
 .opening-road-v140-primary:hover,.opening-road-v140-secondary:hover{filter:brightness(1.1)}
 .opening-road-v140-choice:focus-visible,.opening-road-v140-primary:focus-visible,.opening-road-v140-secondary:focus-visible{outline:2px solid #ffe7a6;outline-offset:3px}
-.opening-road-v140-guide{display:flex;align-items:flex-start;gap:12px;margin:12px 0;padding:14px 16px;border:1px solid rgba(229,190,110,.46);border-radius:3px;background:linear-gradient(100deg,rgba(54,43,23,.82),rgba(8,15,10,.94));box-shadow:inset 0 0 20px rgba(225,188,109,.04)}
-.opening-road-v140-guide-mark{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border:1px solid rgba(229,190,110,.44);color:#f0d18b}
-.opening-road-v140-guide>div:last-child{min-width:0}
+.opening-road-v140-guide{display:grid;grid-template-columns:54px minmax(0,1fr);align-items:start;gap:12px;margin:12px 0;padding:14px 16px;border:1px solid rgba(229,190,110,.46);border-radius:3px;background:linear-gradient(100deg,rgba(54,43,23,.82),rgba(8,15,10,.94));box-shadow:inset 0 0 20px rgba(225,188,109,.04)}
+.opening-road-v140-guide-portrait{display:block;width:54px;height:66px;object-fit:cover;object-position:center 20%;border:1px solid rgba(229,190,110,.52);box-shadow:0 5px 14px rgba(0,0,0,.32)}
+.opening-road-v140-guide-copy{min-width:0}
 .opening-road-v140-guide span{font-size:.57rem;letter-spacing:.14em}
 .opening-road-v140-guide strong{display:block;margin-top:4px;color:#f3e5c2;font-family:Georgia,serif;font-size:1.13rem}
 .opening-road-v140-guide p{margin:5px 0 0;color:#ccd6ca;font-size:.86rem;line-height:1.5}
+.opening-road-v140-guide blockquote{margin:8px 0 0;padding:6px 10px;border-left:2px solid rgba(229,190,110,.54);color:#e7d5a8;background:rgba(2,7,4,.22);font:italic .86rem/1.45 Georgia,serif}
 .exp100 .opening-road-v140-guide{margin:12px 0}
 .exp100 .opening-road-v140-guide p{color:#ccd6ca}
 #push:disabled{opacity:.5;cursor:not-allowed;filter:saturate(.5)}
 #push:disabled:hover{transform:none;border-color:rgba(150,205,160,.2)}
 @media(min-width:760px){.opening-road-v140-choices{grid-template-columns:repeat(3,minmax(0,1fr))}.opening-road-v140-choice{min-height:118px}.opening-road-v140-choice strong{line-height:1.35}}
-@media(max-width:560px){.opening-road-v140{padding:10px;place-items:start center}.opening-road-v140-card{margin:8px auto;padding:22px 16px}.opening-road-v140-card h1{font-size:clamp(2.1rem,12vw,3.1rem)}.opening-road-v140-actions{display:grid}.opening-road-v140-primary,.opening-road-v140-secondary{width:100%}.opening-road-v140-guide{padding:12px;gap:9px}.opening-road-v140-guide-mark{flex-basis:29px;width:29px;height:29px}}
+@media(max-width:560px){.opening-road-v140{padding:10px;place-items:start center}.opening-road-v140-card{margin:8px auto;padding:22px 16px}.opening-road-v140-card h1{font-size:clamp(2.1rem,12vw,3.1rem)}.opening-road-v140-actions{display:grid}.opening-road-v140-primary,.opening-road-v140-secondary{width:100%}.opening-road-v140-guide{grid-template-columns:43px minmax(0,1fr);padding:11px;gap:9px}.opening-road-v140-guide-portrait{width:43px;height:56px}.opening-road-v140-guide strong{font-size:1rem}.opening-road-v140-guide p,.opening-road-v140-guide blockquote{font-size:.78rem}}
 @media(prefers-reduced-motion:reduce){.opening-road-v140-choice,.opening-road-v140-primary,.opening-road-v140-secondary{transition:none!important;transform:none!important}}
 /* Make the one required opening command unmistakable without animating under reduced motion. */
 .rpg-opening-awakening #skill{border-color:#e8c878!important;background:linear-gradient(180deg,#604b25,#1c2118)!important;box-shadow:0 0 0 1px rgba(232,200,120,.44),0 0 28px rgba(232,200,120,.24),inset 0 0 18px rgba(232,200,120,.10)!important;animation:legend-awakening-command-v140 1.6s ease-in-out infinite alternate}
 .rpg-opening-awakening #skill .rpg-command-label small{color:#f3d990!important;font-weight:900;letter-spacing:.08em}
 @keyframes legend-awakening-command-v140{from{transform:translateY(0);filter:brightness(1)}to{transform:translateY(-2px);filter:brightness(1.14)}}
 @media(prefers-reduced-motion:reduce){.rpg-opening-awakening #skill{animation:none!important;transform:none!important}}
+
+
+/* The Oric ambush is a story beat before it becomes a combat interface. */
+.opening-road-v140-ambush-card{max-width:760px}
+.opening-road-v140-ambush-beat{color:#d7ddcf;line-height:1.65}
+.opening-road-v140-awaken-line{border-left-color:rgba(144,167,205,.74);background:linear-gradient(90deg,rgba(43,57,79,.34),rgba(5,9,7,.3))}
+.opening-road-v140-awaken-line strong{color:#b9c9e6}
+.opening-road-v140-awaken-line p{font:italic 1.35rem/1.35 Georgia,serif;color:#f3e4bd}
+@media(max-width:560px){.opening-road-v140-ambush-card{padding:20px 15px}.opening-road-v140-ambush-beat{font-size:.92rem}}
