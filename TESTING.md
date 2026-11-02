@@ -85,7 +85,7 @@ Latest production main is `d098e57bd01f99d60ad9d1512a09e941916f147c` (app versio
 
 - [Main Playwright workflow 40937100701](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40937100701): **207 passed, 3 failed, 1 skipped**. The JavaScript syntax check passed. The live Pages smoke step was skipped because the Playwright job failed.
 - [Pages deployment workflow 40937098658](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/40937098658): completed successfully for the same main commit.
-- The three Playwright failures are: (1) an Ashmere shell assertion that expects `background:none` but receives the intended low-opacity gradient; (2) a real 138px NPC portrait/name overlap in `tests/playtest-fixes-v0222.spec.js`; and (3) a brittle Old Road alpha string check that expects `0.90` while Chromium serializes it as `0.9`.
+- The three Playwright failures are: (1) an Ashmere shell assertion that expects `background:none` but receives the intended low-opacity gradient; (2) a portrait geometry false positive: `tests/playtest-fixes-v0222.spec.js` measured vertical overlap while the image and name occupied separate grid columns; and (3) a brittle Old Road alpha string check that expects `0.90` while Chromium serializes it as `0.9`.
 - The latest run is not a clean regression pass and does not include a live deployed smoke pass. Use [GitHub Actions](https://github.com/TDTRIA/LEGEND-RPG/actions) for newer evidence before release claims.
 
 The current visual follow-up is tracked in [issue #76](https://github.com/TDTRIA/LEGEND-RPG/issues/76). Keep the scenery visible behind translucent large panels while retaining readable text and distinct controls. Record manual desktop/mobile screenshot review only after it is actually performed.
