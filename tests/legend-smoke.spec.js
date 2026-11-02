@@ -1380,7 +1380,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('#routeReeds')).toBeVisible();
     await expect(page.locator('#routeRidge')).toContainText(/Safer/i);
     await expect(page.locator('#routeReeds')).toContainText(/Riskier/i);
-    await page.locator('#routeReeds').click();
+    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('routeReeds')?.click(); Math.random = random; });
     await expect(page.locator('.exp100-route-choice')).toHaveCount(0);
     await expect(page.locator('.exp100-poi-done')).toContainText('Reed Cut');
     await expect(page.locator('.exp100-head')).toContainText(/\+1 Bell Fragment/i);
