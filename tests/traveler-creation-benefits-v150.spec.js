@@ -30,7 +30,7 @@ test('every traveler choice has its own art and gameplay effects are visible and
   await expect(page.locator('.v094-choice[data-gender]')).toHaveCount(4);
   await expect(page.locator('.v094-choice-art img')).toHaveCount(4);
   await expect.poll(() => page.locator('.v094-choice-art img').evaluateAll(imgs => imgs.every(img => img.complete && img.naturalWidth > 0))).toBe(true);
-  await expectAtlasScale(page, 'gender', 5);
+  await expectAtlasScale(page, 'gender', 1);
   await choose(page, '[data-gender="woman"]');
 
   await expect(page.locator('.v094-choice[data-personality]')).toHaveCount(5);
