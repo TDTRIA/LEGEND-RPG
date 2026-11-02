@@ -70,7 +70,9 @@ async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) 
     });
   }
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
-  await page.getByRole('button', { name: /Skip the annals/i }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
