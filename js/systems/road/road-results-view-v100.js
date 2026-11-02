@@ -34,6 +34,16 @@
       const campMarkup = camps.length
         ? camps.slice(-2).reverse().map(entry => '<li><strong>' + esc(entry.place || 'Waystation') + ' · ' + (entry.kind === 'rest' ? 'Rested' : entry.kind === 'craft' ? 'Road poultice crafted' : 'Kept watch') + '</strong><span>' + esc(entry.note || 'A choice made at the waystation.') + '</span></li>').join('')
         : '<li><strong>No camp report</strong><span>You did not rest, craft, or keep watch on this trip.</span></li>';
+      const expeditionLoot = details?.type === 'expedition'
+        ? '<div class="v152-expedition-loot" aria-label="Expedition spoils">' +
+            '<div class="v152-expedition-loot-item"><span class="v152-expedition-loot-glyph">◈</span><div><small>FIELD PAY</small><strong>+' + Number(details.rewardGold || 0) + ' gold</strong></div></div>' +
+            '<div class="v152-expedition-loot-item"><span class="v152-expedition-loot-glyph">✧</span><div><small>EXPERIENCE</small><strong>+' + Number(details.xpGained || 0) + ' XP</strong></div></div>' +
+            '<div class="v152-expedition-loot-item ' + (Number(details.roadTokens || 0) > 0 ? 'is-found' : 'is-scarce') + '">' +
+              '<span class="v152-expedition-loot-glyph">' + (Number(details.roadTokens || 0) > 0 ? '◆' : '◇') + '</span>' +
+              '<div><small>RARE ROAD PROOF</small><strong>' + (Number(details.roadTokens || 0) > 0 ? '+1 Road Token' : 'No token recovered') + '</strong><em>' +
+                (Number(details.roadTokens || 0) > 0 ? 'A stamped token, earned.' : 'The road yielded no stamped token this time.') + '</em></div></div>' +
+          '</div>'
+        : '';
       const expeditionSummary = details?.type === 'expedition'
         ? '<section class="v152-expedition-summary" aria-label="Expedition results">' +
             '<div class="v152-expedition-summary-head"><span>OUTING DEBRIEF</span><strong>' + (details.complete ? 'A route secured' : 'A report from the road') + '</strong><p>' +
@@ -59,7 +69,7 @@
         '<div class="exp150-return-report-route"><small>ROUTE TAKEN</small><strong>' + esc(routeName) + '</strong><p>' + esc(routeNote?.note || (routeName === 'High Ridge' ? 'Firm ground led above the flooded lowland.' : routeName === 'Reed Cut' ? 'The low path brought you through waterlogged ground.' : 'The road report does not contain a chosen route.')) + '</p></div>' +
         '<div class="exp150-return-report-columns"><section><h3>Evidence brought back <b>' + discoveries.length + '</b></h3><ul>' + discoveryMarkup + '</ul></section><section><h3>Camp reports <b>' + camps.length + '</b></h3><ul>' + campMarkup + '</ul></section></div>' +
         '<div class="exp150-return-report-foot"><span>' + Number((journal.visitedPlaces || []).length) + ' places known to your map</span><span>' + discoveries.length + (discoveries.length === 1 ? ' discovery' : ' discoveries') + ' this trip</span></div></section>';
-      shell(header(player, state, kicker || 'EXPEDITION COMPLETE', title, text) + expeditionSummary + report +
+      shell(header(player, state, kicker || 'EXPEDITION COMPLETE', title, text) + expeditionSummary + expeditionLoot + report +
         '<section class="exp100-explore-dock exp100-outcome"><div class="exp100-route"><span>THE ROAD REMEMBERS</span><strong>' +
         esc(title) + '</strong><small>' + esc(text) +
         '</small></div><div class="exp100-dock-actions"><button class="exp100-dock-action primary" id="outcomeReturn" data-legend-scene-transition="Reporting back to Ashmere"><strong>Return to Ashmere</strong><span>Leave the road and return to town.</span></button>' + maraAction + '</div></section>');
