@@ -14,6 +14,7 @@
       ashmereMain: 'assets/generated/locations/ashmere-town.webp',
       greyfenMain: 'assets/generated/locations/greyfen-town.webp',
       oldRoad: 'assets/generated/locations/old-road-south-fork.webp',
+      oldRoadMain: 'assets/locations/roads/location_old_road_main_v1.jpg',
       roadCamp: 'assets/generated/locations/roadside-camp.webp',
       highRidge: 'assets/generated/locations/high-ridge.webp',
       reedCut: 'assets/generated/locations/reed-cut.webp',
