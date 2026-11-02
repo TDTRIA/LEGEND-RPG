@@ -75,7 +75,7 @@
       journal.routes.push({trip:Number(s.trips||0),place:'South Fork',title:routeTitle,note:routeNote,day:Number(pl.day||1)});
      }
      if(route==='ridge'){s.pressure=clamp(s.pressure-8,0,100);save(pl);return renderExpedition('You choose the High Ridge. The ground firms beneath your boots, and the road feels a little less watchful. Road Pressure falls by 8.');}
-     const foundFragment=Math.random()<.35;if(foundFragment)inv(pl,'bellFragment',1);s.pressure=clamp(s.pressure+10,0,100);save(pl);return renderExpedition('You slip into the Reed Cut and follow the blue light into the reeds. Something stirs deeper in the water. '+(foundFragment?'A Bell Fragment comes free from the mud. +1 Bell Fragment.':'The mud holds no fragment this time.')+' Road Pressure rises by 10.');
+     const foundFragment=Math.random()<.35;s.routeBellFragmentFoundV300=foundFragment;if(foundFragment)inv(pl,'bellFragment',1);s.pressure=clamp(s.pressure+10,0,100);save(pl);return renderExpedition('You slip into the Reed Cut and follow the blue light into the reeds. Something stirs deeper in the water. '+(foundFragment?'A Bell Fragment comes free from the mud. +1 Bell Fragment.':'The mud holds no fragment this time.')+' Road Pressure rises by 10.');
     }
 
     return Object.freeze({ chooseMovedCairnDecision, chooseRoadRoute });
