@@ -1091,3 +1091,16 @@ body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon sv
   #root .ash100-town .ash100-destination{grid-template-columns:52px minmax(0,1fr)!important}
   #root .ash100-town .ash100-destination-icon{width:50px!important;height:50px!important;min-width:50px!important;min-height:50px!important;max-width:50px!important;max-height:50px!important}
 }
+
+
+/* Final level-up cascade: keep the scene art visible behind a solid, readable
+   milestone frame instead of washing the growth cards into a transparent shell. */
+.v152-levelup-overlay .v152-levelup-panel{
+  border-radius:3px!important;
+  border:1px solid rgba(220,188,112,.72)!important;
+  background:linear-gradient(145deg,rgba(19,26,19,.96),rgba(4,9,6,.98) 74%)!important;
+  box-shadow:0 30px 110px #000d,inset 0 0 0 4px rgba(210,179,106,.055),inset 0 1px #fff2!important;
+}
+.v152-levelup-overlay .v152-growth-backdrop{overflow:hidden!important;background:#060a07!important}
+.v152-levelup-overlay .v152-growth-backdrop img{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;opacity:.42!important;filter:saturate(.62) sepia(.15) contrast(1.06)!important}
+.v152-levelup-overlay .v152-growth-backdrop span{position:absolute!important;inset:0!important;background:linear-gradient(180deg,rgba(5,9,6,.58),rgba(4,8,5,.88)),radial-gradient(ellipse at 50% 18%,rgba(205,168,85,.2),transparent 63%)!important}
