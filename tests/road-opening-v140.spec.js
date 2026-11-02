@@ -101,6 +101,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await openTitle(page);
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
     await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Skip the annals/i })).toHaveCount(0);
     await expect(page.locator('.opening-lore-v220')).toContainText('human kingdoms and monster nations');
     await page.getByRole('button', { name: /^Continue$/ }).click();
     await expect(page.getByRole('heading', { name: 'The Pact Beneath the Stone' })).toBeVisible();
