@@ -341,6 +341,10 @@
     const travelGate=window.LegendRoadOpeningV140?.travelGate?.(pl,s,stage)||{allowed:true};
     const travelLocked=travelGate.allowed===false;
     const openingLesson=pl.flags?.openingRoadV140?.phase==='road'&&!pl.flags.openingRoadV140.completed;
+    const veteranCanAbandon=pl.flags?.openingRoadV140?.veteranSkipUnlocked===true;
+    const earlyReturnMarkup=(!openingLesson||veteranCanAbandon)
+      ? '<button class="exp150-abandon" id="town" data-legend-scene-transition="Leaving the expedition" type="button">Leave the expedition and return to Ashmere</button>'
+      : '<p class="exp150-abandon-hint">Captain Oric is guiding your first outing. Complete the field lesson and return with him at Greyfen Approach.</p>';
     const discoveryFound=Object.values(s.poiUsed||{}).some(Boolean);
     const searchLocked=openingLesson&&stage===0&&(!s.routeChoice||!discoveryFound);
     const journal=journalFor(pl),discoveryCount=journal.discoveries.length;
@@ -364,7 +368,7 @@
       (guide?'<div class="exp150-guide">'+guide+'</div>':'')+
       '<div class="exp150-interactions">'+(sideNode?optionalSiteMarkup(pl,s,sideNode):roadDiscovery.routeChoicePanel(s,stage)+roadDiscovery.pointOfInterestPanel(pl,s,stage)+roadDiscovery.movedCairnDecisionPanel(pl,s,stage)+optionalDetourCard(pl,s,stage)+blackrootSurveyMarkup(pl,s,stage))+'</div>'+
       (atCamp?campActions(pl,s,area):'')+
-      '<section class="exp150-action-dock"><div class="exp150-section-heading"><div><span class="exp150-kicker">YOUR NEXT MOVE</span><h2>How will you proceed?</h2></div><span class="exp150-current-mark">STOP '+(stage+1)+' / 6</span></div><div class="exp150-action-list">'+choices+'</div><button class="exp150-abandon" id="town" data-legend-scene-transition="Leaving the expedition" type="button">Leave the expedition and return to Ashmere</button></section></section>'+
+      '<section class="exp150-action-dock"><div class="exp150-section-heading"><div><span class="exp150-kicker">YOUR NEXT MOVE</span><h2>How will you proceed?</h2></div><span class="exp150-current-mark">STOP '+(stage+1)+' / 6</span></div><div class="exp150-action-list">'+choices+'</div>'+earlyReturnMarkup+'</section></section>'+
       '<aside class="exp150-journey-aside"><section class="exp150-aside-card exp150-next-stop"><span class="exp150-kicker">AHEAD ON THE ROAD</span><h2>'+(stage>=5?'Ashmere':esc(nextArea.name))+'</h2><p>'+(stage>=5?'The trip is complete. Your finds can be secured in town.':'The route can change what you find, how much pressure builds, and what follows you.')+'</p>'+(stage===0?'<div class="exp150-route-reminder"><span>THE FIRST FORK</span><strong>'+(s.routeChoice?(s.routeChoice==='ridge'?'High Ridge chosen':'Reed Cut chosen'):'High Ridge · Reed Cut')+'</strong><small>'+(s.routeChoice?'Your route choice is recorded for this journey.':'Compare a safer ridge path with a riskier trail through the reeds.')+'</small></div>':'')+'</section>'+
       '<section class="exp150-aside-card exp150-pressure-card"><div class="exp150-aside-title"><span class="exp150-kicker">ROAD PRESSURE</span><span>'+Number(s.pressure||0)+'%</span></div><div class="exp150-pressure-track"><i style="width:'+clamp(s.pressure,0,100)+'%"></i></div><p>'+esc(pressureNote)+'</p></section>'+
       '<section class="exp150-aside-card exp150-supplies-card"><span class="exp150-kicker">FIELD SUPPLIES</span><div class="exp150-supply-row"><span>Rations</span><strong>'+Number(pl.inventory?.food||0)+'</strong></div><div class="exp150-supply-row"><span>Camp Supplies</span><strong>'+Number(pl.inventory?.camp||0)+'</strong></div><div class="exp150-supply-row"><span>Road Herbs</span><strong>'+Number(pl.inventory?.roadHerb||0)+'</strong></div><div class="exp150-supply-row"><span>Healing Potions</span><strong>'+Number(pl.inventory?.potion||0)+'</strong></div><p>Resting and crafting use the supplies you carry. Check the waystation when you find one.</p></section>'+
