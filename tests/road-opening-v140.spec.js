@@ -195,6 +195,8 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(page.locator('.opening-road-v140-guide')).toContainText('The road forks');
     await expect(page.locator('.opening-road-v140-guide-portrait')).toHaveAttribute('src', /captain-oric\.webp/);
     await expect(page.locator('.opening-road-v140-guide-portrait')).toBeVisible();
+    await expect(page.locator('#town')).toHaveCount(0);
+    await expect(page.locator('.exp150-abandon-hint')).toContainText('Oric is guiding your first outing');
     await expect(page.locator('#routeRidge')).toBeVisible();
     await expect(page.locator('#search')).toBeDisabled();
     await expect(page.locator('#push')).toBeDisabled();
@@ -283,6 +285,20 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     const flags = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().flags);
     expect(flags.openingRoadV140.phase).toBe('skipped');
     expect(flags.openingRoadV140.veteranSkipUnlocked).toBe(true);
+  });
+
+  test('a road-experienced traveler may leave the first expedition early', async ({ page }) => {
+    await createTravelerToLantern(page, 'VeteranRoadExitQA', { previousRoadExperience: true });
+    await page.locator('[data-oric-response="honest"]').click();
+    await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await page.getByRole('button', { name: 'Help Oric' }).click();
+    await page.locator('#skill').click();
+    await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
+    await page.getByRole('button', { name: 'Follow Oric onto the Old Road' }).click();
+    await expect(page.locator('.exp100-wrap')).toBeVisible();
+    await expect(page.locator('#town')).toBeVisible();
+    await page.locator('#town').click();
+    await expect(page.locator('.ash100-town')).toBeVisible();
   });
 
   test('an unfinished lantern conversation resumes safely after reload', async ({ page }) => {
