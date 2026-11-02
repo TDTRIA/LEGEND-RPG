@@ -1,4 +1,16 @@
-## Unreleased — Playtest bug fixes (from a full live playthrough of v0.22.1)
+## v0.30.0 — Old Road balance, mandatory annals, and Greyfen field slice
+
+- Make all three opening annals mandatory before traveler creation; remove the skip control and update the first-session Playwright flows.
+- Keep the five-stage expedition and five-token Greyfen unlock, but change the completed-trip Road Token to a 65% roll. Early returns receive no completion token; rare Bandit/Road Cache drops remain.
+- Rebalance baseline expedition settlement to 80g and 33 XP for a five-stage trip at 20 Road Pressure. Reduce early-road enemy XP/coin and combat stage/tier XP bonuses so levels and gear require more journeys.
+- Make Bell Fragments uncommon: 35% on the Reed Cut, 25% on recurring clue interactions, and 15% from a Lantern Wisp. Persist whether a fragment was actually recovered so the first-return report and Mara/Brenn dialogue do not invent evidence.
+- Retain the encounter cadence that guarantees a road clash after two travel stretches, even when careful travel keeps Road Pressure low; pressure escalation still makes later threats more severe.
+- Replace the plain expedition debrief with an illustrated field ledger showing route, discoveries, coin, XP, rare-token outcome, and level progress. Give the existing attribute-allocation level-up overlay an Old Road scene backdrop.
+- Add Greyfen's **Patch the Ferry Nets** Work Board contract with reward/region-gate/reload coverage.
+- Add the optional **Silted Storehouse** Marsh Path stop with a disclosed one-hour/+6 Pressure cost, one Dry Peat Brick, persistent journal/map state, a return to Mossbarrow Shelter, and a regression proving the Waterline Gauge remains reachable.
+- Preserve the existing save key and traveler record format; no save migration, combat framework replacement, or engine rewrite.
+
+## Historical pending notes — superseded by v0.30.0
 
 - The traveler's portrait now follows the form chosen at creation (the same image shown on that choice card) in combat, the Traveler record, and the Forge. Previously it always used the class art, so a "Man" Adventurer was shown as a woman. Saves without a form fall back to class art.
 - The Town Square NPC cards no longer let the 186px portraits spill over Mara, Brenn, and Oric's names.
