@@ -1555,7 +1555,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
       window.LegendRoadControllerV100.renderExpedition();
     });
-    await page.locator('#finish').click();
+    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
     await expect(page.locator('.exp100-outcome')).toContainText(/tracks beneath the blue light/i);
     await page.locator('#outcomeReturn').click();
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
