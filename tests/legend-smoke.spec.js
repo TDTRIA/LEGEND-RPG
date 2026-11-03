@@ -2627,8 +2627,13 @@ test('traveler creation draws choice cards and dialogue in Phaser while preservi
   expect(nameStep.nextBackground).toBe('rgba(0, 0, 0, 0)');
   expect(nameStep.nextLabel).toMatch(/Choose Identity/i);
 
-  // The live name field remains a real editable input; only its surrounding UI is Phaser artwork.
+  // The live name field remains a real editable input and validation remains readable.
+  await page.locator('#v094Next').click();
+  await expect(page.locator('#v094NameError')).toBeVisible();
+  const validationColor = await page.locator('#v094NameError').evaluate(node => getComputedStyle(node).color);
+  expect(validationColor).not.toBe('rgba(0, 0, 0, 0)');
   await page.locator('#v094Name').fill('NativePhaserQA');
+  await expect(page.locator('#v094NameError')).toBeHidden();
   await page.locator('#v094Next').click();
   await expect(page.locator('[data-gender="woman"]')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCreationUiStep)).toBe(2);
