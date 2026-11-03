@@ -140,6 +140,13 @@
     serviceMarketIcon: 'assets/generated/ui/icons/service-market.webp',
     serviceForgeIcon: 'assets/generated/ui/icons/service-blacksmith.webp',
     serviceRoadIcon: 'assets/generated/ui/icons/service-map.webp',
+    menuCompass: 'assets/generated/ui/icons/legend-icon-compass.webp',
+    menuTraveler: 'assets/generated/ui/icons/legend-icon-traveler.webp',
+    menuInn: 'assets/generated/ui/icons/legend-icon-inn.webp',
+    menuJournal: 'assets/generated/ui/icons/legend-icon-journal.webp',
+    menuSettings: 'assets/generated/ui/icons/legend-icon-settings.webp',
+    menuRoad: 'assets/generated/ui/icons/legend-icon-road.webp',
+    menuMilestone: 'assets/generated/ui/icons/legend-icon-milestone.webp',
     oric: 'assets/generated/npcs/captain-oric.webp',
     wolf: 'assets/generated/enemies/blackroot-wolf.webp',
     goblin: 'assets/generated/enemies/road-goblin.webp',
@@ -249,6 +256,8 @@
     if (surface !== currentSurface) {
       currentSurface = surface;
       realmScene?.setSurface?.(surface);
+    } else {
+      realmScene?.syncNativeTitleUi?.(surface);
     }
   }
 
@@ -444,11 +453,16 @@
       this.serviceDressing = [];
       this.serviceDressingTweenTargets = [];
       this.serviceDressingKey = '';
+      this.nativeTitleUiActive = false;
+      this.nativeTitleUiObjects = [];
+      this.nativeTitleUiControls = [];
+      this.nativeTitleUiSignature = '';
+      this.nativeTitleUiLayoutEvent = null;
     }
 
     preload() {
       Object.keys(ASSETS).forEach(key => {
-        if (['title','ashmere','road','blackroot','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive','serviceInnIcon','serviceMarketIcon','serviceForgeIcon','serviceRoadIcon'].includes(key)) {
+        if (['title','ashmere','road','blackroot','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive','serviceInnIcon','serviceMarketIcon','serviceForgeIcon','serviceRoadIcon','menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].includes(key)) {
           this.load.image(key, ASSETS[key]);
         }
       });
@@ -457,7 +471,11 @@
     create() {
       this.cameras.main.setBackgroundColor('#090e0d');
       this.motionReduced = reducedMotion();
-      this.scale.on('resize', () => this.layoutBackground());
+      this.scale.on('resize', () => {
+        this.layoutBackground();
+        this.layoutAshmereLandmarks();
+        this.syncNativeTitleUi(this.surface);
+      });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
       });
@@ -487,6 +505,19 @@
           landmarkIconsLoaded: this.ashmereLandmarks.every(item => this.textures.exists(item.iconKey)),
           serviceDressingCount: this.serviceDressing.filter(item => item.object?.active).length,
           serviceDressingKey: this.serviceDressingKey,
+          nativeTitleUi: this.nativeTitleUiActive,
+          nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
+          nativeTitleUiControlCount: this.nativeTitleUiControls.length,
+          nativeTitleUiControlIds: this.nativeTitleUiControls.map(item => item.id),
+          nativeTitleUiSceneSize: this.dimensions(),
+          nativeTitleUiControlBounds: this.nativeTitleUiControls.map(item => ({
+            id: item.id,
+            x: item.x,
+            y: item.y,
+            width: item.width,
+            height: item.height,
+            focused: Boolean(item.focusFrame?.visible)
+          })),
           rendererType: this.sys.game.renderer?.type ?? null
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
@@ -700,10 +731,14 @@
 
     setSurface(surface) {
       const next = String(surface || 'title');
-      if (next === this.surface) return;
+      if (next === this.surface) {
+        this.syncNativeTitleUi(next);
+        return;
+      }
       const previous = this.surface;
       this.surface = next;
       this.syncAshmereLandmarks();
+      this.syncNativeTitleUi(next);
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -738,6 +773,206 @@
 
     dimensions() {
       return { width: this.scale.width || 1600, height: this.scale.height || 900 };
+    }
+
+    clearNativeTitleUi(removeClass = true) {
+      this.nativeTitleUiLayoutEvent?.remove?.(false);
+      this.nativeTitleUiLayoutEvent = null;
+      this.nativeTitleUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeTitleUiObjects = [];
+      this.nativeTitleUiControls = [];
+      this.nativeTitleUiSignature = '';
+      this.nativeTitleUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-title-ui-active');
+    }
+
+    setNativeTitleControlFocus(id, active) {
+      const control = this.nativeTitleUiControls.find(item => item.id === id);
+      if (!control?.container?.active) return;
+      control.focusFrame?.setVisible?.(Boolean(active));
+      const targetX = control.x + (active && !reducedMotion() ? 2 : 0);
+      if (reducedMotion()) {
+        control.container.x = targetX;
+      } else {
+        this.tweens.add({
+          targets: control.container,
+          x: targetX,
+          duration: 120,
+          ease: 'Sine.easeOut',
+          overwrite: true
+        });
+      }
+    }
+
+    syncNativeTitleUi(surface = this.surface) {
+      const hero = root()?.querySelector('.title-v136-rpg .v120-title-hero');
+      if (String(surface || '') !== 'title' || !hero) {
+        if (this.nativeTitleUiActive || document.body?.classList.contains('legend-phaser-title-ui-active')) {
+          this.clearNativeTitleUi();
+        }
+        return;
+      }
+
+      const animations = typeof hero.getAnimations === 'function'
+        ? hero.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' || animation.playState === 'pending')
+        : [];
+      if (animations.length) {
+        // Measure the final painted bounds, not the intermediate CSS entrance pose.
+        this.nativeTitleUiLayoutEvent?.remove?.(false);
+        this.nativeTitleUiLayoutEvent = this.time.delayedCall(820, () => {
+          this.nativeTitleUiLayoutEvent = null;
+          this.syncNativeTitleUi(surface);
+        });
+        return;
+      }
+      this.nativeTitleUiLayoutEvent?.remove?.(false);
+      this.nativeTitleUiLayoutEvent = null;
+
+      const buttons = Array.from(hero.querySelectorAll('.v136-menu-btn'));
+      const panelRect = hero.getBoundingClientRect();
+      if (!panelRect.width || !panelRect.height || !buttons.length) {
+        this.clearNativeTitleUi();
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const sceneRect = rect => ({
+        x: rect.left * sx,
+        y: rect.top * sy,
+        width: rect.width * sx,
+        height: rect.height * sy
+      });
+      const signature = JSON.stringify([
+        Math.round(panelRect.left), Math.round(panelRect.top), Math.round(panelRect.width), Math.round(panelRect.height),
+        ...buttons.map(button => {
+          const rect = button.getBoundingClientRect();
+          return [button.id, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
+            button.querySelector('.v136-menu-copy strong')?.textContent?.trim() || '',
+            button.querySelector('.v136-menu-copy small')?.textContent?.trim() || ''];
+        })
+      ]);
+      if (this.nativeTitleUiActive && signature === this.nativeTitleUiSignature) return;
+
+      this.clearNativeTitleUi(false);
+      this.nativeTitleUiActive = true;
+      this.nativeTitleUiSignature = signature;
+      document.body?.classList.add('legend-phaser-title-ui-active');
+
+      const panel = sceneRect(panelRect);
+      const frame = this.add.graphics().setDepth(12);
+      frame.fillStyle(0x020604, 0.48);
+      frame.fillRect(panel.x - 7 * sx, panel.y + 8 * sy, panel.width + 14 * sx, panel.height + 8 * sy);
+      frame.fillStyle(0x08110b, 0.90);
+      frame.fillRect(panel.x, panel.y, panel.width, panel.height);
+      frame.lineStyle(1.2, 0xd5b775, 0.78);
+      frame.strokeRect(panel.x + 0.5, panel.y + 0.5, panel.width - 1, panel.height - 1);
+      frame.lineStyle(1, 0x9c895d, 0.34);
+      frame.strokeRect(panel.x + 8 * sx, panel.y + 8 * sy, panel.width - 16 * sx, panel.height - 16 * sy);
+      frame.fillStyle(0xe0bd75, 0.66);
+      frame.fillRect(panel.x + 1 * sx, panel.y + 18 * sy, 2 * sx, Math.max(12, panel.height - 36 * sy));
+      frame.fillStyle(0xe8cf9a, 0.78);
+      frame.fillRect(panel.x + 15 * sx, panel.y + 12 * sy, Math.min(42 * sx, panel.width * 0.15), Math.max(1, sy));
+      this.nativeTitleUiObjects.push(frame);
+
+      const iconTextures = {
+        continue: 'menuCompass',
+        newPrimary: 'menuTraveler',
+        new: 'menuInn',
+        account: 'menuJournal',
+        settings: 'menuSettings',
+        dispatches: 'menuRoad',
+        credits: 'menuMilestone'
+      };
+      buttons.forEach(button => {
+        const rect = sceneRect(button.getBoundingClientRect());
+        const primary = button.classList.contains('v136-menu-primary');
+        const main = button.querySelector('.v136-menu-copy strong')?.textContent?.trim() || button.textContent.trim();
+        const detail = button.querySelector('.v136-menu-copy small')?.textContent?.trim() || '';
+        button.setAttribute('aria-label', [main, detail].filter(Boolean).join('. '));
+        const mainCss = window.getComputedStyle(button.querySelector('.v136-menu-copy strong') || button);
+        const detailCss = window.getComputedStyle(button.querySelector('.v136-menu-copy small') || button);
+        const mainSize = Math.max(10, Math.round((parseFloat(mainCss.fontSize) || 13) * sy));
+        const detailSize = Math.max(9, Math.round((parseFloat(detailCss.fontSize) || 10) * sy));
+        const group = this.add.container(rect.x, rect.y).setDepth(13);
+        const art = this.add.graphics();
+        const idleFill = primary ? 0x57421f : 0x101a12;
+        const idleLine = primary ? 0xe8c47a : 0x9e895d;
+        art.fillStyle(idleFill, primary ? 0.96 : 0.92);
+        art.fillRect(0, 0, rect.width, rect.height);
+        art.lineStyle(primary ? 1.35 : 1, idleLine, primary ? 0.82 : 0.54);
+        art.strokeRect(0.5, 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        art.fillStyle(primary ? 0xf0ca76 : 0xc6a766, primary ? 0.96 : 0.72);
+        art.fillRect(0, 0, primary ? 3 * sx : 2 * sx, rect.height);
+        const iconX = 10 * sx;
+        const iconY = Math.max(4 * sy, (rect.height - 25 * sy) / 2);
+        art.fillStyle(primary ? 0x211a0e : 0x050a07, 0.56);
+        art.fillRect(iconX, iconY, 25 * sx, Math.min(25 * sy, rect.height - 8 * sy));
+        art.lineStyle(1, primary ? 0xf0d28f : 0xc5a96c, 0.55);
+        art.strokeRect(iconX + 0.5, iconY + 0.5, 24 * sx, Math.min(24 * sy, rect.height - 9 * sy));
+
+        const iconKey = iconTextures[button.id] || 'menuMilestone';
+        const icon = this.textures.exists(iconKey)
+          ? this.add.image(iconX + 12.5 * sx, rect.height / 2, iconKey)
+            .setDisplaySize(23 * sx, 23 * sy)
+            .setAlpha(0.98)
+          : this.add.text(iconX + 12.5 * sx, rect.height / 2, '✦', {
+            fontFamily: 'Georgia, serif',
+            fontSize: (Math.max(12, Math.round(15 * sy))) + 'px',
+            color: primary ? '#ffe5a2' : '#e4cb91'
+          }).setOrigin(0.5);
+        const labelX = 48 * sx;
+        const titleY = rect.height * (detail ? 0.39 : 0.5);
+        const title = this.add.text(labelX, titleY, main, {
+          fontFamily: 'Georgia, Times New Roman, serif',
+          fontSize: `${mainSize}px`,
+          fontStyle: 'bold',
+          color: primary ? '#fff0c5' : '#f0ead9',
+          letterSpacing: 0.15 * sx
+        }).setOrigin(0, 0.5);
+        const subtitle = this.add.text(labelX, rect.height * 0.72, detail, {
+          fontFamily: 'Arial, sans-serif',
+          fontSize: `${detailSize}px`,
+          color: primary ? '#ead9ac' : '#c6d0c5'
+        }).setOrigin(0, 0.5);
+        const arrow = this.add.text(rect.width - 17 * sx, rect.height / 2, '›', {
+          fontFamily: 'Georgia, serif',
+          fontSize: `${Math.max(20, Math.round(23 * sy))}px`,
+          color: primary ? '#ffe5a2' : '#d6bd7d'
+        }).setOrigin(0.5);
+        const focusFrame = this.add.graphics();
+        focusFrame.lineStyle(2, 0xffe7a6, 0.96);
+        focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
+        focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
+        group.add([art, icon, title, subtitle, arrow, focusFrame]);
+        group.setSize(rect.width, rect.height);
+        this.nativeTitleUiObjects.push(group);
+        const control = {
+          id: button.id,
+          label: main,
+          x: rect.x,
+          y: rect.y,
+          width: rect.width,
+          height: rect.height,
+          container: group,
+          focusFrame,
+          button
+        };
+        this.nativeTitleUiControls.push(control);
+
+        if (!button.__legendNativeTitleUiBound) {
+          button.__legendNativeTitleUiBound = true;
+          button.addEventListener('pointerenter', () => this.setNativeTitleControlFocus(button.id, true));
+          button.addEventListener('pointerleave', () => this.setNativeTitleControlFocus(button.id, document.activeElement === button));
+          button.addEventListener('focus', () => this.setNativeTitleControlFocus(button.id, true));
+          button.addEventListener('blur', () => this.setNativeTitleControlFocus(button.id, button.matches(':hover')));
+        }
+      });
     }
 
     ashmerelandmarkSpecs() {

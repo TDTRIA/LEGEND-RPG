@@ -1,7 +1,7 @@
 # Production architecture audit
 Updated: 2026-11-03
 
-This is a working map of the production browser game. It is not a map of `prototypes/reboot/`. The production runtime is now hybrid: Phaser 4.1 renders the persistent world layer, while classic browser scripts and shared `window` namespaces still own most interface and gameplay behavior. Script order and global names remain runtime contracts.
+This is a working map of the production browser game. It is not a map of `prototypes/reboot/`. The production runtime is migrating incrementally to Phaser 4.1: the persistent world and Ashmere landmarks are native scene objects, and the title menu's panel/button artwork is the first migrated UI surface. Other screens still use classic browser views and controllers; script order and global names remain runtime contracts.
 
 ## Entry point and module model
 
@@ -14,9 +14,9 @@ The active production entry point loads Phaser 4.1 and the world renderer, follo
 - `js/screens/title-screen-view-v120.js` owns the main title menu markup and established CSS/accessibility hooks.
 - `js/screens/title-extras-v120.js` owns the optional gate transition and accessible credits dialog; `LegendTitleScreenV120` keeps wrapper methods for both screens.
 - `js/screens/title-screen-v120.js` owns title state preparation, transition feedback, optional gate screen and credits; navigation actions are injected.
-- `js/systems/title-audio-v120.js` owns title ambience, menu hover/focus cues, confirmation sounds, and first-interaction audio unlock. Its current paths still use the legacy title ambience and UI clips pending the audio integration work.
+- `js/systems/title-audio-v120.js` is the title-audio compatibility façade; `js/systems/road/road-audio-v100.js` owns the shared production score, world ambience, UI cues, and event effects.
 - `js/game.js` is the thin bootstrap/navigation adapter for continue, new traveler, account, settings, and title-screen callbacks. It publishes `window.LegendGameBootstrap`.
-- `js/engine/phaser-world-v1.js` is the active production Phaser world layer. It manages the persistent background scene, environment changes, atmosphere, transitions, and interactive Ashmere landmarks; it does not yet replace the DOM gameplay screens or the existing save/gameplay systems.
+- `js/engine/phaser-world-v1.js` is the active production Phaser presentation engine. `RealmScene` owns the persistent environments, atmosphere, transitions, interactive Ashmere landmarks, service dressing, and native title-menu panel/button artwork. The title's semantic HTML buttons remain transparent focusable hit targets with explicit accessible names and continue to invoke `LegendTitleScreenV120` callbacks. Remaining traveler creation, dialogue, HUD/contextual shell, expedition and combat views are still being migrated one surface at a time; gameplay rules and persistence remain with their current modules.
 - `js/screens/settings-screen-v090.js` owns settings presentation and its control binding. Persistence remains in `js/storage.js`.
 - Feature systems use classic browser scripts and shared `window` namespaces; injection objects provide the dependencies between extracted screens.
 - `docs/ADDING_FEATURES.md` maps common feature types to their data, rules, views, and facade wiring points so new gameplay stays inside the existing module boundaries.
