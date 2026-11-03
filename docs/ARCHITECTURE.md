@@ -81,7 +81,7 @@ The active production entry point loads Phaser 4.1 and the world renderer, follo
 | `js/systems/road/road-expedition-screen-v100.js` | 60 lines | Expedition stage panel assembly and camp/road control event binding | Own screen composition; inject domain decisions and state changes from actions/discovery/results modules |
 | `js/systems/road/road-combat-view-v100.js` | 81 lines | Battle layout, player/enemy status panels, command buttons, and combat UI event binding | Own battle presentation and forward commands to injected handlers; do not mutate combat state in the view |
 | `js/systems/road/road-combat-v100.js` | 162 lines | Enemy intent, class techniques, damage/turn rules, item use, retreat/defeat, and victory rewards | Own combat behavior and progression effects; delegate battle markup and button binding to the combat view |
-| `js/systems/road/road-audio-v100.js` | 55 | Road sound preference, UI tones, battle sound effects, and battle music lifecycle | Single road-audio API for the v100 expedition and combat modules; owns `legend-road-sound` preference |
+| `js/systems/road/road-audio-v100.js` | 55 | Road sound preference, UI tones, battle effects, and legacy battle-music lifecycle | Keep `legend-road-sound` as the preference owner; replace legacy track references with the reviewed audio pack and main-theme service only after playback and regression checks pass |
 
 ## Road-controller overlap audit
 
