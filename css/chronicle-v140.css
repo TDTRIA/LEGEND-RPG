@@ -1327,3 +1327,6 @@ body.chronicle-article .shell{
   .realm-hub-button,.realm-hub-feature:before,.realm-hub-card,.realm-hub-card-link b{transition:none!important}
   .realm-hub-feature:hover:before,.realm-hub-card:hover,.realm-hub-button:hover{transform:none}
 }
+
+.realm-hub-page .chronicle-nav-links .chronicle-hub-link{color:#e7c982;border-bottom:1px solid rgba(231,201,130,.48)}
+.realm-hub-page .chronicle-nav-links .chronicle-hub-link:hover{color:#fff0c6}
