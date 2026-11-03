@@ -92,6 +92,17 @@ Ashmere is the first town surface with native Phaser scene interactables:
 - Landmark objects are created only on the Ashmere hub, repositioned for viewport changes, and destroyed when leaving for a service or a different region. Reduced Motion disables their idle glow animations.
 - No new economy, quest, progression, dialogue, inventory or persistence logic is introduced in Phaser.
 
+## Native Phaser title controls — 2026-11-03
+
+The production title menu now uses `RealmScene` for its panel and button artwork rather than painting separate floating HTML cards over the world:
+
+- Phaser draws the menu panel frame, button backgrounds, icon marks, accessible labels, subtitles, arrows and focus frames in the same scene as the title artwork.
+- The existing HTML buttons remain in their original layout as transparent, focusable hit targets. Phaser reads their responsive bounds and labels; their existing `LegendTitleScreenV120` callbacks still perform Begin/Continue, Profile, Settings, News and Credits.
+- The scene remeasures after the title entrance animation and on viewport resize. Reduced-motion styling does not require a separate UI path.
+- This is a presentation migration, not a second router: traveler creation, progression, combat, rewards, services, accounts and persistence continue to belong to their production modules. The production save key and player schema are unchanged.
+
+**Next surface order:** traveler creation and story dialogue; the persistent HUD and contextual journal/map/action shell; expedition interactions and results; then combat presentation and command controls. Each surface must retain its existing accessible input bridge and pass the same production journey/save regression tests before the next is moved.
+
 ## Native Phaser service interiors — 2026-11-03
 
 The Ashmere service backdrops now receive scene-native set dressing while their existing accessible service consoles remain interactive HTML:
