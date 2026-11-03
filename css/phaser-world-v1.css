@@ -31,6 +31,10 @@ body.legend-phaser-world-active #legend-world-shell-modal-root {
 
 /* Phaser now supplies the environment plate. Keep the existing authored
    gradients, borders, menus and story panels as the readable interface layer. */
+body.legend-phaser-world-active #root .v120-title,
+body.legend-phaser-world-active #root .title-v136-rpg {
+  background: transparent !important;
+}
 body.legend-phaser-world-active #root .v120-title-backdrop {
   opacity: 0 !important;
   visibility: hidden !important;
