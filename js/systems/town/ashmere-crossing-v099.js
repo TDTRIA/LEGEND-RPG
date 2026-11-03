@@ -13,6 +13,13 @@
     const screen = context.screen;
     const locationInterior = context.locationInterior;
     const renderAshmere = context.renderTown;
+    const crossingRumor = "A rumor among Greyfen’s landing workers says the reed-bed cut was marked as a route only after the floodwater rose. The speaker had no record, and no one named who approved it.";
+    function preserveCrossingRumor(player) {
+      player.memories = Array.isArray(player.memories) ? player.memories : [];
+      if (player.memories.includes(crossingRumor)) return false;
+      player.memories.push(crossingRumor);
+      return true;
+    }
 
 function renderDryCrossing(){
     const pl=p(); if(!pl)return;
@@ -20,8 +27,11 @@ function renderDryCrossing(){
     const completed=Boolean(pl.flags?.greyfenDryCrossingComplete);
     const description="The Landing Warden needs a route marker that washed loose from the raised path. The marker will help travelers avoid a newly opened sink in the marsh.";
     if(completed){
+      // Existing saves that completed this contract before the rumor was added
+      // receive the same single saved field-memory when they revisit the report.
+      if (preserveCrossingRumor(pl)) save(pl);
       return screen(head('Greyfen Contract','A Dry Crossing','The marker has been recovered and entered in the Boundary Archive.',locationInterior('archive'),'route'),
-        '<div class="ash099-lines"><p>The recovered marker now points travelers toward the raised causeway. The bellkeeper has copied its position into the lowland ledger.</p><p><strong>Contract complete.</strong> This one-time contract cannot be claimed again.</p></div>');
+        '<div class="ash099-lines"><p>The recovered marker now points travelers toward the raised causeway. The bellkeeper has copied its position into the lowland ledger.</p><p><strong>Rumor recorded:</strong> '+esc(crossingRumor)+'</p><p><strong>Contract complete.</strong> This one-time contract cannot be claimed again.</p></div>');
     }
     screen(head('Greyfen Contract','A Dry Crossing',description,locationInterior('archive'),'route'),
       '<div class="ash099-lines"><p>Choose a route before leaving the landing. Both options are explained up front; a failed reed-bed attempt can be retried, but the marsh will take a toll.</p></div>'+
@@ -60,6 +70,10 @@ function renderDryCrossing(){
         pl.memories=pl.memories||[]; pl.memories.push('The reed bed turned you back from Greyfen’s washed route marker; you lost 5 HP.');
       }
     }else return renderDryCrossing();
+    if (pl.flags.greyfenDryCrossingComplete) {
+      preserveCrossingRumor(pl);
+      detail += ' ' + crossingRumor;
+    }
     save(pl);
     screen(head('Contract Result',heading,'Your choice has been recorded.',locationInterior('archive'),'route'),
       '<div class="ash099-lines"><p>'+esc(detail)+'</p><p>'+esc(pl.flags.greyfenDryCrossingComplete?'The marker’s location is now recorded in the Boundary Archive.':'The contract remains open until the marker is recovered.')+'</p></div>');
