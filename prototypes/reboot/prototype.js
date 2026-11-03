@@ -80,33 +80,33 @@
   window.__legendRebootSaveKey = SAVE_KEY;
 
   const ASSETS = {
-    title: '../../assets/generated/title/title-ashmere-road.webp',
-    ashmere: '../../assets/generated/locations/ashmere-town.webp',
-    road: '../../assets/generated/locations/old-road-south-fork.webp',
-    ridge: '../../assets/generated/locations/high-ridge.webp',
-    reeds: '../../assets/generated/locations/reed-cut.webp',
-    camp: '../../assets/generated/locations/roadside-camp.webp',
-    greyfen: '../../assets/generated/locations/greyfen-town.webp',
-    marsh: '../../assets/generated/locations/greyfen-marsh-walkway.webp',
-    inn: '../../assets/generated/locations/ashmere-inn.webp',
-    market: '../../assets/generated/locations/ashmere-market.webp',
-    forge: '../../assets/generated/locations/ashmere-forge.webp',
-    archive: '../../assets/generated/locations/ashmere-archive.webp',
-    greyfenInn: '../../assets/generated/locations/greyfen-inn.webp',
-    greyfenMarket: '../../assets/generated/locations/greyfen-market.webp',
-    greyfenForge: '../../assets/generated/locations/greyfen-forge.webp',
-    greyfenArchive: '../../assets/generated/locations/greyfen-archive.webp',
-    oric: '../../assets/generated/npcs/captain-oric.webp',
-    wolf: '../../assets/generated/enemies/blackroot-wolf.webp',
-    goblin: '../../assets/generated/enemies/road-goblin.webp',
-    wisp: '../../assets/generated/enemies/lantern-wisp.webp',
-    sentinel: '../../assets/generated/enemies/mirebound-sentinel.webp',
-    warrior: '../../assets/generated/classes/class-warrior.webp',
-    adventurer: '../../assets/generated/classes/class-adventurer.webp',
-    ranger: '../../assets/generated/classes/class-ranger.webp',
-    mage: '../../assets/generated/classes/class-mage.webp',
-    thief: '../../assets/generated/classes/class-thief.webp',
-    skiller: '../../assets/generated/classes/class-skiller.webp'
+    title: 'assets/generated/title/title-ashmere-road.webp',
+    ashmere: 'assets/generated/locations/ashmere-town.webp',
+    road: 'assets/generated/locations/old-road-south-fork.webp',
+    ridge: 'assets/generated/locations/high-ridge.webp',
+    reeds: 'assets/generated/locations/reed-cut.webp',
+    camp: 'assets/generated/locations/roadside-camp.webp',
+    greyfen: 'assets/generated/locations/greyfen-town.webp',
+    marsh: 'assets/generated/locations/greyfen-marsh-walkway.webp',
+    inn: 'assets/generated/locations/ashmere-inn.webp',
+    market: 'assets/generated/locations/ashmere-market.webp',
+    forge: 'assets/generated/locations/ashmere-forge.webp',
+    archive: 'assets/generated/locations/ashmere-archive.webp',
+    greyfenInn: 'assets/generated/locations/greyfen-inn.webp',
+    greyfenMarket: 'assets/generated/locations/greyfen-market.webp',
+    greyfenForge: 'assets/generated/locations/greyfen-forge.webp',
+    greyfenArchive: 'assets/generated/locations/greyfen-archive.webp',
+    oric: 'assets/generated/npcs/captain-oric.webp',
+    wolf: 'assets/generated/enemies/blackroot-wolf.webp',
+    goblin: 'assets/generated/enemies/road-goblin.webp',
+    wisp: 'assets/generated/enemies/lantern-wisp.webp',
+    sentinel: 'assets/generated/enemies/mirebound-sentinel.webp',
+    warrior: 'assets/generated/classes/class-warrior.webp',
+    adventurer: 'assets/generated/classes/class-adventurer.webp',
+    ranger: 'assets/generated/classes/class-ranger.webp',
+    mage: 'assets/generated/classes/class-mage.webp',
+    thief: 'assets/generated/classes/class-thief.webp',
+    skiller: 'assets/generated/classes/class-skiller.webp'
   };
 
   function toast(message) {
@@ -258,7 +258,7 @@
   function startAmbient() {
     if (!soundEnabled || ambientAudio) return;
     try {
-      ambientAudio = new Audio('../../assets/audio/title/ashmere_ambience_loop.wav');
+      ambientAudio = new Audio('assets/audio/title/ashmere_ambience_loop.wav');
       ambientAudio.loop = true;
       ambientAudio.volume = 0.16;
       ambientAudio.play().catch(() => {});
