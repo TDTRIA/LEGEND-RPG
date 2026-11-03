@@ -2089,8 +2089,8 @@
       const style = window.getComputedStyle(node);
       if (style.display === 'none' || (style.visibility === 'hidden' && node?.dataset?.legendPhaserNativeImage !== 'true') || Number(style.opacity) < 0.02) return null;
       if (node.closest('[hidden]')) return null;
-      const ariaHidden = node.closest('[aria-hidden="true"]');
-      if (ariaHidden && !node.matches('img,.runway-icon') && !node.closest('.runway-icon')) return null;
+      // aria-hidden removes content from the accessibility tree; it does not
+      // mean the decorative image/backdrop is invisible to the player.
       const viewport = { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight };
       let clip = { ...viewport };
       let ancestor = node.parentElement;
@@ -2281,8 +2281,9 @@
           if (iconClass) iconNodes.push({ node, rect, name: iconClass.slice('runway-icon-'.length) });
         }
 
-        if (node.matches('button,a[href],[role="button"]')) controls.push({ node, rect });
-        if (node.getAttribute('aria-hidden') === 'true' || node.closest('[aria-hidden="true"]')) return;
+        const hiddenFromAccessibility = node.getAttribute('aria-hidden') === 'true' || Boolean(node.closest('[aria-hidden="true"]'));
+        if (!hiddenFromAccessibility && node.matches('button,a[href],[role="button"]')) controls.push({ node, rect });
+        if (hiddenFromAccessibility) return;
         const textTags = 'h1,h2,h3,h4,p,small,strong,em,span,label,li,dt,dd,button,a,div';
         if (!node.matches(textTags)) return;
         let directText = Array.from(node.childNodes || [])
