@@ -19,7 +19,7 @@ The story and the systems should reinforce that loop. Town is a place the player
 
 - **Production main:** v0.30.4. The road-first opening, mandatory annals, Oric/Wolf tutorial, five-stage Old Road, Ashmere services, progression, and early Greyfen activities are part of the browser build.
 - **Phaser migration:** approved by the owner and in progress. Phaser 4.1 is loaded in index.html; js/engine/phaser-world-v1.js supplies the persistent environment renderer, atmosphere, transitions, and Ashmere landmarks. Most UI and gameplay systems have not yet been rewritten into Phaser.
-- **Audio:** 48 original generated assets (13 ambience loops and 35 one-shot effects) are staged in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98), not shipped. Replacing the recurring main gameplay theme is the priority; its new score/render/integration still require verification.
+- **Audio:** 48 original generated ambience/effect assets and the rendered roughly 10½-minute main-theme loop are staged in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98), not shipped. In-game listening, mix and loop-seam checks, and production integration remain.
 - **Region status:** Ashmere and the Old Road form the main playable foundation. Greyfen is an active partial region; Ironpass is future content. The first three towns are still a release target.
 - **Active sequence:** review/integrate audio; migrate one real playable surface into Phaser with parity tests; complete Greyfen; continue long-run balance and human playtesting.
 
