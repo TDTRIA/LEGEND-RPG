@@ -478,14 +478,14 @@
         letterSpacing: 7,
         color: '#d9c38e'
       }).setOrigin(0.5).setDepth(40).setAlpha(0);
-      const systemLabel = this.add.text(cx, cy + Math.min(size.height * 0.205, 176), 'INITIALIZING WORLD ENGINE', {
+      const systemLabel = this.add.text(cx, cy + Math.min(size.height * 0.205, 176), 'A BELL RINGS WHERE NO TOWER STANDS', {
         fontFamily: 'Arial, sans-serif',
         fontSize: '10px',
         fontStyle: 'bold',
         letterSpacing: 2.6,
         color: '#e8d39d'
       }).setOrigin(0.5).setDepth(40).setAlpha(0);
-      const systemDetail = this.add.text(cx, cy + Math.min(size.height * 0.237, 205), 'BUILDING THE SCENE GRAPH  ·  RESTORING THE REALM', {
+      const systemDetail = this.add.text(cx, cy + Math.min(size.height * 0.237, 205), 'THE ROAD REMEMBERS  ·  THE REALM IS WAKING', {
         fontFamily: 'Arial, sans-serif',
         fontSize: '9px',
         letterSpacing: 1.5,
@@ -501,16 +501,16 @@
       this.bootObjects.push(barTrack, barFill);
 
       const statusRows = [
-        'INITIALIZING WORLD ENGINE',
-        'LINKING TOWNS  ·  ROADS  ·  ENCOUNTERS',
-        'WAKING THE REALM',
-        'WORLD ENGINE ONLINE'
+        'A BELL RINGS WHERE NO TOWER STANDS',
+        'ASHMERE  ·  THE OLD ROAD  ·  GREYFEN',
+        'THE SEAL STIRS BENEATH THE STONE',
+        'THE REALM AWAKENS'
       ];
       const details = [
-        'BUILDING THE SCENE GRAPH  ·  RESTORING THE REALM',
-        'BINDING THE CURRENT GAMEPLAY SYSTEMS',
-        'LIGHTING THE WORLD  ·  OPENING THE PATHS',
-        'THE WORLD IS READY FOR YOUR ARRIVAL'
+        'THE ROAD REMEMBERS  ·  THE REALM IS WAKING',
+        'LANTERNS BURN AGAINST THE LONG NIGHT',
+        'SOMETHING MOVES BEYOND THE VEIL',
+        'YOUR JOURNEY IS ABOUT TO BEGIN'
       ];
       const moteCount = reduced ? 6 : 30;
       for (let i = 0; i < moteCount; i++) {
