@@ -7,6 +7,16 @@ async function openPrototype(page, viewport = { width: 1440, height: 900 }) {
   await page.evaluate(() => localStorage.removeItem('legend-reboot-prototype-save-v1'));
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__legendRebootReady === true, null, { timeout: 15000 });
+  // Disable decorative motion only in the automated browser fixture so click
+  // stability is not coupled to cinematic transitions or Phaser camera pulses.
+  await page.addStyleTag({ content: `
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+  ` });
+  await page.waitForFunction(() => Boolean(window.LegendWorldShellV170));
 }
 
 test.describe('LEGEND Phaser reboot prototype', () => {
@@ -16,12 +26,33 @@ test.describe('LEGEND Phaser reboot prototype', () => {
 
     await openPrototype(page);
     await expect(page).toHaveTitle(/LEGEND: The Awakening — Phaser Reboot/);
-    await expect(page.locator('#title-panel')).toBeVisible();
-    await expect(page.locator('#title-heading')).toHaveText('LEGEND');
-    await expect(page.locator('.subtitle')).toHaveText('The Awakening');
-    await expect(page.locator('#beginButton')).toBeVisible();
+    await expect(page.locator('.v120-title')).toBeVisible();
+    await expect(page.locator('.v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
+    await expect(page.locator('.v151-realm-dispatch')).toContainText('Greyfen');
+    await expect(page.locator('#newPrimary')).toBeVisible();
+    await expect(page.locator('#dispatches')).toBeVisible();
+    await expect(page.locator('#settings')).toBeVisible();
+    await expect(page.locator('#account')).toHaveCount(0);
     await expect(page.locator('#game-container canvas')).toHaveCount(1);
     await expect.poll(async () => page.locator('#game-container canvas').evaluate(canvas => canvas.width)).toBeGreaterThan(0);
+
+    await page.locator('#dispatches').click();
+    await expect(page.locator('.dispatches-v140')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'News & Roadmap' })).toBeVisible();
+    await page.locator('#dispatchesBack').click();
+    await expect(page.locator('.v120-title')).toBeVisible();
+
+    await page.locator('#settings').click();
+    await expect(page.locator('.settings09x')).toBeVisible();
+    await expect(page.locator('[data-setting]')).toHaveCount(6);
+    await page.locator('#saveSettings').click();
+    await page.locator('#backTitle').click();
+    await expect(page.locator('.v120-title')).toBeVisible();
+
+    await page.locator('#credits').click();
+    await expect(page.locator('.legend-credits-overlay')).toBeVisible();
+    await page.locator('[data-credits-close]').click();
+    await expect(page.locator('.v120-title')).toBeVisible();
 
     expect(pageErrors).toEqual([]);
   });
@@ -31,7 +62,7 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     page.on('pageerror', error => pageErrors.push(error.message));
 
     await openPrototype(page);
-    await page.locator('#beginButton').click();
+    await page.locator('#newPrimary').click();
 
     await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
     await expect(page.getByRole('button', { name: /Skip the annals/i })).toHaveCount(0);
@@ -108,11 +139,12 @@ test.describe('LEGEND Phaser reboot prototype', () => {
       regions: typeof window.LegendRegionsV100?.render === 'function',
       greyfen: typeof window.LegendGreyfenMarshV160?.start === 'function',
       bellCellar: typeof window.LegendBellVaultV100?.create === 'function',
-      storehouse: typeof window.LegendGreyfenStorehouseV170?.create === 'function'
+      storehouse: typeof window.LegendGreyfenStorehouseV170?.create === 'function',
+      worldShell: typeof window.LegendWorldShellV170?.refresh === 'function'
     }));
     expect(services).toEqual({
       town: true, road: true, combat: true, opening: true,
-      regions: true, greyfen: true, bellCellar: true, storehouse: true
+      regions: true, greyfen: true, bellCellar: true, storehouse: true, worldShell: true
     });
 
     const town = await page.evaluate(() => {
@@ -143,6 +175,7 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     expect(town.menuViews).toContain('quests');
     expect(town.menuViews).toContain('regions');
     await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeVisible();
     expect(pageErrors).toEqual([]);
   });
 
@@ -157,6 +190,6 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     expect(dimensions.document).toBeLessThanOrEqual(dimensions.viewport);
     expect(dimensions.body).toBeLessThanOrEqual(dimensions.viewport);
     expect(dimensions.canvas).toBeGreaterThan(0);
-    await expect(page.locator('#beginButton')).toBeVisible();
+    await expect(page.locator('#newPrimary')).toBeVisible();
   });
 });
