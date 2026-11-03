@@ -178,3 +178,20 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
     transform: none !important;
   }
 }
+
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice-art,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-gender-emblem,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-class-art {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v140-presence-haze,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v140-presence-ring,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v140-presence-frame::before {
+  visibility: hidden !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
