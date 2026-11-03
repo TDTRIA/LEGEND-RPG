@@ -464,6 +464,7 @@
       this.nativeAnnalsUiSignature = '';
       this.nativeAnnalsUiLayoutEvent = null;
       this.nativeAnnalsUiScrollTarget = null;
+      this.nativeAnnalsUiButtonFocus = null;
     }
 
     preload() {
@@ -529,6 +530,7 @@
           nativeAnnalsUiObjectCount: this.nativeAnnalsUiObjects.filter(item => item?.active).length,
           nativeAnnalsUiStep: Number(root()?.querySelector('.opening-lore-v220')?.dataset.loreStep ?? -1),
           nativeAnnalsUiScrollTargetBound: Boolean(this.nativeAnnalsUiScrollTarget),
+          nativeAnnalsUiButtonFocused: Boolean(this.nativeAnnalsUiButtonFocus?.visible),
           rendererType: this.sys.game.renderer?.type ?? null
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
@@ -1003,6 +1005,7 @@
       this.nativeAnnalsUiObjects = [];
       this.nativeAnnalsUiSignature = '';
       this.nativeAnnalsUiActive = false;
+      this.nativeAnnalsUiButtonFocus = null;
       if (removeClass) document.body?.classList.remove('legend-phaser-annals-ui-active');
     }
 
