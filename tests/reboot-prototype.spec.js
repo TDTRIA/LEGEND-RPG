@@ -32,6 +32,7 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     await expect(page.locator('#newPrimary')).toBeVisible();
     await expect(page.locator('#dispatches')).toBeVisible();
     await expect(page.locator('#settings')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => typeof window.LegendTitleAudioV120?.startAmbience)).toBe('function');
     await expect(page.locator('#account')).toHaveCount(0);
     await expect(page.locator('#game-container canvas')).toHaveCount(1);
     await expect.poll(async () => page.locator('#game-container canvas').evaluate(canvas => canvas.width)).toBeGreaterThan(0);
