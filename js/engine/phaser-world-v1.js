@@ -2182,15 +2182,17 @@
       document.addEventListener('scroll', this.nativeGameplayUiScrollHandler, true);
       this.nativeGameplayUiObserver = new MutationObserver(mutations => {
         const relevant = mutations.some(mutation => {
-          const target = mutation.target;
-          // Our temporary body-class reveal/reapply must not recursively schedule
-          // another render. Other shell/body mutations still trigger refreshes.
-          if (target === document.body && mutation.type === 'attributes' && mutation.attributeName === 'class') return false;
-          return !target?.dataset?.legendPhaserNativePaint &&
-            !target?.dataset?.legendPhaserNativeText &&
-            !target?.dataset?.legendPhaserNativeControl &&
-            !target?.dataset?.legendPhaserNativeImage &&
-            !target?.dataset?.legendPhaserOriginalStyle;
+          // Ignore only our own add/remove of the paint-mode body class. A real
+          // drawer/body class change or an update inside an already-tagged card
+          // must still refresh the Phaser copy.
+          if (mutation.target === document.body && mutation.type === 'attributes' &&
+              mutation.attributeName === 'class' && mutation.oldValue !== null) {
+            const before = new Set(String(mutation.oldValue || '').split(/\\s+/).filter(Boolean));
+            const after = new Set(Array.from(document.body.classList));
+            const changed = new Set([...before, ...after].filter(token => before.has(token) !== after.has(token)));
+            if (changed.size === 1 && changed.has('legend-phaser-gameplay-ui-active')) return false;
+          }
+          return !(mutation.type === 'attributes' && String(mutation.attributeName || '').startsWith('data-legend-phaser-native-'));
         });
         if (!relevant) return;
         this.nativeGameplayUiLayoutEvent?.remove?.(false);
@@ -2204,7 +2206,8 @@
         subtree: true,
         characterData: true,
         attributes: true,
-        attributeFilter: ['class','hidden','disabled','inert','aria-hidden','aria-label','aria-expanded','aria-pressed','aria-selected']
+        attributeOldValue: true,
+        attributeFilter: ['class','style','hidden','disabled','inert','aria-hidden','aria-label','aria-expanded','aria-pressed','aria-selected']
       }));
     }
 
