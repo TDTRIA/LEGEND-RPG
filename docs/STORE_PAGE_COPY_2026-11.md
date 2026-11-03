@@ -10,7 +10,7 @@ Use this as the source text when updating the Game Jolt and itch.io project page
 
 **Development status:** In active development.
 
-**Current public build:** v0.30.4
+**Current public build:** v0.30.5
 
 **Primary format:** HTML5 browser game. Desktop-first presentation with responsive mobile compatibility.
 
@@ -41,7 +41,7 @@ Every expedition leaves a record. Discoveries and camp reports are saved to your
 - Five-stage Old Road expeditions with High Ridge and Reed Cut routes, named locations, discoveries, camps, map and field journal.
 - Road Pressure, travel time, enemy intent, recurring encounters, and a retreat/return choice.
 - XP, level-ups, saved attribute allocation, equipment, inventory, and expedition result reports.
-- Early Greyfen content including local work, Marsh Path activity, and an optional salvage detour.
+- Early Greyfen content including A Dry Crossing, a saved post-flood route rumor after successful marker recovery, local work, Marsh Path activity, and an optional salvage detour.
 
 ### A dangerous road, not an automatic reward loop
 
