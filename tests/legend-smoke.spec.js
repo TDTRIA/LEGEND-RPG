@@ -2001,21 +2001,74 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.v140-creation')).not.toContainText(/Captain Oric|the Veil/i);
   });
 
-  test('Oric finds the traveler beneath the dead lantern and the voice teaches ACT', async ({ page }) => {
+  test('Oric finds the traveler beneath the dead lantern and the voice teaches ACT inside Phaser', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await startFreshCharacter(page, 'OricOpeningQA', { stopAtIntro: true });
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
     await expect(page.getByRole('group', { name: 'Your answer to Captain Oric' })).toBeVisible();
     await expect(page.locator('.ash100-town')).toHaveCount(0);
-    await page.locator('[data-oric-response="honest"]').click();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeOpeningUi)).toBe(true);
+
+    const oricScene = await page.evaluate(() => {
+      const card = document.querySelector('.opening-road-v140-card');
+      const heading = document.querySelector('#openingRoadTitle');
+      const choice = document.querySelector('[data-oric-response="honest"]');
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      return {
+        active: document.body.classList.contains('legend-phaser-opening-ui-active'),
+        surface: snapshot.surface,
+        objects: snapshot.nativeOpeningUiObjectCount,
+        cardBackground: card ? getComputedStyle(card).backgroundColor : '',
+        headingColor: heading ? getComputedStyle(heading).color : '',
+        choiceBackground: choice ? getComputedStyle(choice).backgroundImage : '',
+        choiceLabel: choice?.getAttribute('aria-label') || '',
+        control: snapshot.nativeOpeningUiControlBounds.find(item => item.id === 'oric-honest'),
+        scene: snapshot.nativeOpeningUiSceneSize
+      };
+    });
+    expect(oricScene.active).toBe(true);
+    expect(oricScene.surface).toBe('awakening');
+    expect(oricScene.objects).toBeGreaterThan(12);
+    expect(oricScene.cardBackground).toBe('rgba(0, 0, 0, 0)');
+    expect(oricScene.headingColor).toBe('rgba(0, 0, 0, 0)');
+    expect(oricScene.choiceLabel).toMatch(/I remember a bell/i);
+    expect(oricScene.control).toBeTruthy();
+
+    const firstChoice = page.locator('[data-oric-response="honest"]');
+    await firstChoice.focus();
+    await expect.poll(() => page.evaluate(() =>
+      Boolean(window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUiControlBounds?.find(item => item.id === 'oric-honest')?.focused)
+    )).toBe(true);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.evaluate(() => {
+      const rect = document.querySelector('[data-oric-response="honest"]')?.getBoundingClientRect();
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const native = snapshot?.nativeOpeningUiControlBounds?.find(item => item.id === 'oric-honest');
+      const scene = snapshot?.nativeOpeningUiSceneSize;
+      if (!rect || !native || !scene) return false;
+      return Math.max(
+        Math.abs(native.x - rect.left * scene.width / window.innerWidth),
+        Math.abs(native.y - rect.top * scene.height / window.innerHeight),
+        Math.abs(native.width - rect.width * scene.width / window.innerWidth),
+        Math.abs(native.height - rect.height * scene.height / window.innerHeight)
+      ) < 2;
+    })).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+
+    await firstChoice.click();
     await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(true);
     await expect(page.locator('.rpg-battle')).toHaveCount(0);
     await page.getByRole('button', { name: 'Help Oric' }).click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(false);
     await expect(page.locator('.rpg-battle')).toContainText('Blackroot Wolf');
     await expect(page.locator('#skill')).toContainText('Awaken');
     await expect(page.locator('#strike')).toBeDisabled();
     await page.locator('#skill').click();
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(true);
     await expect(page.locator('#openingRoadSkip')).toHaveCount(0);
   });
 
