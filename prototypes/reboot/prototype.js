@@ -20,7 +20,6 @@
   let ambientAudio = null;
   let observer = null;
   let modalObserver = null;
-  let observedModalRoot = null;
   let currentSurface = '';
   let skipAwakeningRequested = false;
   const settingsStorage = window.LegendSettingsStorageV120?.create();
@@ -197,16 +196,16 @@
   }
 
   function observeModalRoot() {
-    const modal = byId('legend-world-shell-modal-root');
-    if (!modal || modal === observedModalRoot || !window.MutationObserver) return;
-    if (modalObserver) modalObserver.disconnect();
-    observedModalRoot = modal;
+    if (modalObserver || !window.MutationObserver || !document.body) return;
+    // The persistent shell modal lives beside #root, not inside it. Watch the
+    // body for its arrival and hidden-state changes so Phaser can transition
+    // between in-world screens and shell overlays as one presentation engine.
     modalObserver = new MutationObserver(() => inferSurface());
-    modalObserver.observe(modal, {
+    modalObserver.observe(document.body, {
       childList: true,
       subtree: true,
       attributes: true,
-      attributeFilter: ['hidden', 'class']
+      attributeFilter: ['hidden']
     });
   }
 
