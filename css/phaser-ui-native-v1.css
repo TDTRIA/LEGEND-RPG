@@ -228,3 +228,16 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-stepper-track i {
   background: transparent !important;
 }
+
+/* Validation stays in the document so assistive technology and players can
+   read it immediately; it is not hidden behind the native Phaser text layer. */
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation #v094NameError,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation #v094ChoiceError {
+  display: block;
+  color: #ffd0c8 !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,.92) !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation #v094ChoiceError[hidden],
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation #v094NameError:empty {
+  display: none !important;
+}
