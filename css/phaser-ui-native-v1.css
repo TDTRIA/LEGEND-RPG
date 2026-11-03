@@ -1,0 +1,52 @@
+/* Native Phaser presentation for the title menu.
+   The semantic HTML controls remain in place as transparent, accessible hit targets.
+   If Phaser fails to load, this class is never applied and the classic title remains visible. */
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-title-hero {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-title-hero::before {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+  transform: none !important;
+  outline: none !important;
+  transition: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn > * {
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn:hover,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn:active,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn:focus-visible {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn:focus-visible {
+  outline: 2px solid transparent !important;
+  outline-offset: 3px !important;
+}
+/* Phaser supplies the visible focus frame; the DOM keeps focus and activation semantics. */
+@media (prefers-reduced-motion: reduce) {
+  body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn {
+    transition: none !important;
+  }
+}
