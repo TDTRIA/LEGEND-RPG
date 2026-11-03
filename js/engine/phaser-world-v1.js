@@ -258,6 +258,7 @@
       realmScene?.setSurface?.(surface);
     } else {
       realmScene?.syncNativeTitleUi?.(surface);
+      realmScene?.syncNativeAnnalsUi?.(surface);
     }
   }
 
@@ -458,6 +459,11 @@
       this.nativeTitleUiControls = [];
       this.nativeTitleUiSignature = '';
       this.nativeTitleUiLayoutEvent = null;
+      this.nativeAnnalsUiActive = false;
+      this.nativeAnnalsUiObjects = [];
+      this.nativeAnnalsUiSignature = '';
+      this.nativeAnnalsUiLayoutEvent = null;
+      this.nativeAnnalsUiScrollTarget = null;
     }
 
     preload() {
@@ -475,6 +481,7 @@
         this.layoutBackground();
         this.layoutAshmereLandmarks();
         this.syncNativeTitleUi(this.surface);
+        this.syncNativeAnnalsUi(this.surface);
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -518,6 +525,10 @@
             height: item.height,
             focused: Boolean(item.focusFrame?.visible)
           })),
+          nativeAnnalsUi: this.nativeAnnalsUiActive,
+          nativeAnnalsUiObjectCount: this.nativeAnnalsUiObjects.filter(item => item?.active).length,
+          nativeAnnalsUiStep: Number(root()?.querySelector('.opening-lore-v220')?.dataset.loreStep ?? -1),
+          nativeAnnalsUiScrollTargetBound: Boolean(this.nativeAnnalsUiScrollTarget),
           rendererType: this.sys.game.renderer?.type ?? null
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
@@ -733,12 +744,14 @@
       const next = String(surface || 'title');
       if (next === this.surface) {
         this.syncNativeTitleUi(next);
+        this.syncNativeAnnalsUi(next);
         return;
       }
       const previous = this.surface;
       this.surface = next;
       this.syncAshmereLandmarks();
       this.syncNativeTitleUi(next);
+      this.syncNativeAnnalsUi(next);
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -973,6 +986,226 @@
           button.addEventListener('blur', () => this.setNativeTitleControlFocus(button.id, button.matches(':hover')));
         }
       });
+    }
+
+    clearNativeAnnalsUi(removeClass = true) {
+      this.nativeAnnalsUiLayoutEvent?.remove?.(false);
+      this.nativeAnnalsUiLayoutEvent = null;
+      if (this.nativeAnnalsUiScrollTarget) {
+        this.nativeAnnalsUiScrollTarget.removeEventListener('scroll', this.nativeAnnalsUiScrollTarget.__legendAnnalsScrollHandler);
+        this.nativeAnnalsUiScrollTarget = null;
+      }
+      this.nativeAnnalsUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeAnnalsUiObjects = [];
+      this.nativeAnnalsUiSignature = '';
+      this.nativeAnnalsUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-annals-ui-active');
+    }
+
+    syncNativeAnnalsUi(surface = this.surface) {
+      const screen = root()?.querySelector('.opening-lore-v220');
+      if (String(surface || '') !== 'annals' || !screen) {
+        if (this.nativeAnnalsUiActive || document.body?.classList.contains('legend-phaser-annals-ui-active')) {
+          this.clearNativeAnnalsUi();
+        }
+        return;
+      }
+
+      const animations = typeof screen.getAnimations === 'function'
+        ? screen.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' || animation.playState === 'pending')
+        : [];
+      if (animations.length) {
+        this.nativeAnnalsUiLayoutEvent?.remove?.(false);
+        this.nativeAnnalsUiLayoutEvent = this.time.delayedCall(680, () => {
+          this.nativeAnnalsUiLayoutEvent = null;
+          this.syncNativeAnnalsUi(surface);
+        });
+        return;
+      }
+      this.nativeAnnalsUiLayoutEvent?.remove?.(false);
+      this.nativeAnnalsUiLayoutEvent = null;
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        const rect = node?.getBoundingClientRect();
+        if (!rect || !rect.width || !rect.height) return null;
+        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+      };
+      const top = screen.querySelector('.opening-lore-v220-top');
+      const content = screen.querySelector('.opening-lore-v220-content');
+      const side = screen.querySelector('.opening-lore-v220-side');
+      const copy = screen.querySelector('.opening-lore-v220-copy');
+      const footer = screen.querySelector('.opening-lore-v220-footer');
+      const brand = screen.querySelector('.opening-lore-v220-brand');
+      const edition = screen.querySelector('.opening-lore-v220-edition');
+      const numeral = side?.querySelector('span');
+      const sideRule = side?.querySelector('i');
+      const sideStep = side?.querySelector('small');
+      const kicker = copy?.querySelector('.opening-lore-v220-kicker');
+      const heading = copy?.querySelector('h1');
+      const paragraphs = Array.from(copy?.querySelectorAll('p') || []);
+      const quote = copy?.querySelector('blockquote');
+      const progress = footer?.querySelector('.opening-lore-v220-progress');
+      const progressFill = progress?.querySelector('i');
+      const button = footer?.querySelector('.opening-lore-v220-continue');
+      const nodes = [top, content, side, brand, edition, numeral, sideRule, sideStep, kicker, heading, ...paragraphs, quote, footer, progress, progressFill, button];
+      const rects = nodes.map(node => readRect(node));
+      const signature = JSON.stringify([
+        Number(screen.dataset.loreStep || 0), Math.round(window.innerWidth), Math.round(window.innerHeight),
+        ...rects.map(rect => rect && [Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)]),
+        heading?.textContent || '', paragraphs.map(node => node.textContent), quote?.textContent || '',
+        button?.textContent || ''
+      ]);
+      if (this.nativeAnnalsUiActive && signature === this.nativeAnnalsUiSignature) return;
+
+      // Each lore page is rebuilt by the existing prologue controller. Phaser
+      // mirrors the resulting text and controls; the controller remains in charge
+      // of chapter order and the hand-off into traveler creation.
+      this.clearNativeAnnalsUi(false);
+      this.nativeAnnalsUiActive = true;
+      this.nativeAnnalsUiSignature = signature;
+      document.body?.classList.add('legend-phaser-annals-ui-active');
+
+      if (!this.nativeAnnalsUiScrollTarget) {
+        this.nativeAnnalsUiScrollTarget = screen;
+        const handler = () => {
+          this.nativeAnnalsUiLayoutEvent?.remove?.(false);
+          this.nativeAnnalsUiLayoutEvent = this.time.delayedCall(48, () => {
+            this.nativeAnnalsUiLayoutEvent = null;
+            this.syncNativeAnnalsUi(surface);
+          });
+        };
+        screen.__legendAnnalsScrollHandler = handler;
+        screen.addEventListener('scroll', handler, { passive: true });
+      }
+
+      const addObject = object => {
+        if (!object) return object;
+        object.setDepth?.(12);
+        this.nativeAnnalsUiObjects.push(object);
+        return object;
+      };
+      const styleOf = node => window.getComputedStyle(node);
+      const makeText = (node, rect, overrides = {}) => {
+        if (!node || !rect) return null;
+        const style = styleOf(node);
+        const text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
+        if (!text) return null;
+        const fontSize = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
+        const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.4;
+        const config = {
+          fontFamily: style.fontFamily || 'Georgia, Times New Roman, serif',
+          fontSize: fontSize + 'px',
+          fontStyle: style.fontWeight === 'bold' || Number(style.fontWeight) >= 650 ? 'bold' : (style.fontStyle || 'normal'),
+          color: overrides.color || style.color || '#f0e8d4',
+          lineSpacing: Math.max(0, (lineHeight - (parseFloat(style.fontSize) || 14)) * sy),
+          letterSpacing: Math.max(0, parseFloat(style.letterSpacing) || 0) * sx,
+          wordWrap: { width: Math.max(36, rect.width), useAdvancedWrap: true },
+          padding: { left: 1, right: 2, top: 1, bottom: 2 },
+          align: style.textAlign || 'left'
+        };
+        return addObject(this.add.text(rect.x, rect.y, text, config).setOrigin(0, 0));
+      };
+
+      const screenRect = readRect(screen);
+      const contentRect = readRect(content);
+      const topRect = readRect(top);
+      const footerRect = readRect(footer);
+      const copyRect = readRect(copy);
+      const sideRect = readRect(side);
+
+      const scrim = this.add.graphics();
+      if (screenRect) {
+        scrim.fillStyle(0x020704, 0.24);
+        scrim.fillRect(screenRect.x, screenRect.y, screenRect.width, screenRect.height);
+      }
+      if (copyRect) {
+        scrim.fillStyle(0x050a06, 0.23);
+        scrim.fillRoundedRect?.(copyRect.x - 18 * sx, copyRect.y - 14 * sy, copyRect.width + 36 * sx, copyRect.height + 28 * sy, 4 * sx);
+      }
+      addObject(scrim);
+
+      const rules = this.add.graphics();
+      if (topRect) {
+        rules.lineStyle(1, 0xddc07c, 0.48);
+        rules.lineBetween(topRect.x, topRect.y + topRect.height, topRect.x + topRect.width, topRect.y + topRect.height);
+      }
+      if (footerRect) {
+        rules.lineStyle(1, 0xddc07c, 0.44);
+        rules.lineBetween(footerRect.x, footerRect.y, footerRect.x + footerRect.width, footerRect.y);
+      }
+      if (sideRect && readRect(sideRule)) {
+        const line = readRect(sideRule);
+        rules.lineStyle(1.2, 0xd6ba72, 0.82);
+        rules.lineBetween(line.x + line.width / 2, line.y, line.x + line.width / 2, line.y + line.height);
+      }
+      if (contentRect) {
+        rules.fillStyle(0xd6ba72, 0.08);
+        rules.fillRect(contentRect.x, contentRect.y, Math.max(1, 1.2 * sx), contentRect.height);
+      }
+      addObject(rules);
+
+      makeText(brand, readRect(brand), { color: '#f0e5c5' });
+      makeText(edition, readRect(edition), { color: '#d8dccb' });
+      makeText(numeral, readRect(numeral), { color: '#d2b876' });
+      makeText(sideStep, readRect(sideStep), { color: '#d1d5c3' });
+      makeText(kicker, readRect(kicker), { color: '#e0c780' });
+      makeText(heading, readRect(heading), { color: '#fff0cf' });
+      paragraphs.forEach(node => makeText(node, readRect(node), { color: '#f0f0e5' }));
+      makeText(quote, readRect(quote), { color: '#ffe6b2' });
+
+      if (progress) {
+        const track = readRect(progress);
+        const fill = readRect(progressFill);
+        if (track && fill) {
+          const progressGraphics = this.add.graphics();
+          progressGraphics.fillStyle(0x7c6b47, 0.42);
+          progressGraphics.fillRect(track.x, track.y, track.width, Math.max(2, track.height));
+          progressGraphics.fillStyle(0xe7c982, 0.96);
+          progressGraphics.fillRect(track.x, track.y, Math.max(0, fill.width), Math.max(2, track.height));
+          addObject(progressGraphics);
+        }
+      }
+
+      if (button) {
+        const rect = readRect(button);
+        if (rect) {
+          button.setAttribute('aria-label', button.textContent.replace(/→/g, '').trim());
+          const buttonGraphics = this.add.graphics();
+          buttonGraphics.fillStyle(0x57421f, 0.98);
+          buttonGraphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          buttonGraphics.lineStyle(1.35, 0xe8c47a, 0.9);
+          buttonGraphics.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.width - 1, rect.height - 1);
+          buttonGraphics.fillStyle(0xf0ca76, 0.96);
+          buttonGraphics.fillRect(rect.x, rect.y, 3 * sx, rect.height);
+          addObject(buttonGraphics);
+          const labelRect = readRect(button);
+          makeText(button, labelRect, { color: '#fff0c5' });
+          if (!button.__legendNativeAnnalsBound) {
+            button.__legendNativeAnnalsBound = true;
+            button.addEventListener('focus', () => this.setNativeAnnalsButtonFocus(true));
+            button.addEventListener('blur', () => this.setNativeAnnalsButtonFocus(false));
+            button.addEventListener('pointerenter', () => this.setNativeAnnalsButtonFocus(true));
+            button.addEventListener('pointerleave', () => this.setNativeAnnalsButtonFocus(document.activeElement === button));
+          }
+          const focus = this.add.graphics();
+          focus.lineStyle(2, 0xffe7a6, 0.98);
+          focus.strokeRect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
+          focus.setVisible(button === document.activeElement || button.matches(':hover'));
+          addObject(focus);
+          this.nativeAnnalsUiButtonFocus = focus;
+        }
+      }
+    }
+
+    setNativeAnnalsButtonFocus(active) {
+      this.nativeAnnalsUiButtonFocus?.setVisible?.(Boolean(active));
     }
 
     ashmerelandmarkSpecs() {
