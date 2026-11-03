@@ -59,6 +59,15 @@ The title's Profile control is intentionally hidden in the prototype because it 
 
 The prototype stylesheet list is synchronized with the current production `index.html` visual stack, excluding the account-only styles. This includes the latest title renewal, dispatch, accessibility, world-shell, scene-visibility and v0.30.4 gender-art styles.
 
+## Phaser engine transition and persistent world presentation — 2026-11-03
+
+The prototype now introduces Phaser as a persistent presentation engine rather than only a background canvas:
+
+- First visit per tab session opens with a native Phaser scene sequence: a sealed world image, animated runic portal, camera/scene assembly, renderer/system-link messaging, and an expanding realm reveal before the production title is shown.
+- The startup reveal is skip-accessible, responds to browser and in-game Reduced Motion, and runs on the actual Phaser scene rather than a simulated HTML loading card.
+- The same RealmScene persists below the real production gameplay surfaces and the world shell. Root-screen classification drives a consistent Phaser transition accent for title, news, settings, annals, traveler creation, Oric's awakening, combat, expeditions, results, town services, field sites, dungeons and modal states.
+- The engine transition does not change gameplay ownership: production HTML screens, controllers, save adapters, combat calculations, quest state and reward settlement remain the source of truth.
+
 ## Phaser presentation polish — 2026-11-03
 
 The world layer uses the following scene-only effects; production gameplay modules and save data remain untouched:
