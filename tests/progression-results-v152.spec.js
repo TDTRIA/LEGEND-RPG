@@ -45,6 +45,25 @@ test.describe('LEGEND level-up and road results v0.23.0', () => {
 
     await expect(page.getByRole('dialog', { name: 'Level 2' })).toBeVisible();
     await expect(page.locator('#v152-growth-total')).toHaveText('2');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUiSurface)).toBe('modal');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUi)).toBe(true);
+    const nativeGrowth = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const panel = document.querySelector('.v152-levelup-panel');
+      const confirm = document.querySelector('#v152-growth-confirm');
+      return {
+        objects: snapshot.nativeGameplayUiObjectCount,
+        text: snapshot.nativeGameplayUiTextCount,
+        confirm: snapshot.nativeGameplayUiControlBounds.some(item => item.id === 'v152-growth-confirm'),
+        panelBackground: panel ? getComputedStyle(panel).backgroundImage : '',
+        bodyClass: document.body.classList.contains('legend-phaser-gameplay-ui-active')
+      };
+    });
+    expect(nativeGrowth.objects).toBeGreaterThan(10);
+    expect(nativeGrowth.text).toBeGreaterThan(10);
+    expect(nativeGrowth.confirm).toBe(true);
+    expect(nativeGrowth.panelBackground).toBe('none');
+    expect(nativeGrowth.bodyClass).toBe(true);
     await expect(page.locator('#v152-growth-confirm')).toBeDisabled();
 
     await page.locator('[data-attr-add="might"]').click();
@@ -54,6 +73,7 @@ test.describe('LEGEND level-up and road results v0.23.0', () => {
     await page.locator('#v152-growth-confirm').click();
 
     await expect(page.locator('#legendLevelUpOverlay')).toHaveCount(0);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUi)).toBe(false);
     const persisted = await page.evaluate(() => {
       const saved = window.LegendRuntimeV120.loadPlayer();
       const player = window.__growthQAPlayer;

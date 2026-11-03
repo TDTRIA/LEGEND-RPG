@@ -295,3 +295,63 @@ body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-r
     transform: none !important;
   }
 }
+
+
+/* The persistent HUD, drawers, town/service panels, expedition cards, battle
+   commands and shell modals are painted in the shared Phaser RealmScene.
+   The semantic DOM remains the focusable/accessibility/input layer. */
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active [data-legend-phaser-native-paint="true"] {
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active [data-legend-phaser-native-paint="true"]::before,
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active [data-legend-phaser-native-paint="true"]::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active [data-legend-phaser-native-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active [data-legend-phaser-native-image="true"] {
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active [data-legend-phaser-native-control="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+  outline-color: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active [data-legend-phaser-native-control="true"]:focus-visible {
+  outline: 2px solid transparent !important;
+  outline-offset: 3px !important;
+}
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active #legend-world-shell-root {
+  background: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active #legend-world-shell-root::before,
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active #legend-world-shell-root::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active #legend-world-shell-modal-root {
+  color: transparent !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active #legend-world-shell-modal-root .lws-modal {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active #legend-world-shell-modal-root .lws-modal::before {
+  content: none !important;
+  display: none !important;
+}

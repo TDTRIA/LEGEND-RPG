@@ -235,8 +235,13 @@
     const host = root();
     if (!host) return;
     const modal = byId('legend-world-shell-modal-root');
+    const growthOverlay = byId('legendLevelUpOverlay');
+    const growthOverlayVisible = Boolean(growthOverlay && !growthOverlay.hidden &&
+      window.getComputedStyle(growthOverlay).display !== 'none' &&
+      window.getComputedStyle(growthOverlay).visibility !== 'hidden');
     let surface = 'title';
     if (modal && !modal.hidden) surface = 'modal';
+    else if (growthOverlayVisible) surface = 'modal';
     else if (host.querySelector('.dispatches-v140')) surface = 'dispatches';
     else if (host.querySelector('.settings09x')) surface = 'settings';
     else if (host.querySelector('.legend-credits-overlay')) surface = 'credits';
@@ -261,6 +266,7 @@
       realmScene?.syncNativeAnnalsUi?.(surface);
       realmScene?.syncNativeCreationUi?.(surface);
       realmScene?.syncNativeOpeningUi?.(surface);
+      realmScene?.syncNativeGameplayUi?.(surface);
     }
   }
 
@@ -289,6 +295,7 @@
       if (!affectsWorldSurface) {
         realmScene?.syncNativeCreationUi?.(currentSurface);
         realmScene?.syncNativeOpeningUi?.(currentSurface);
+        realmScene?.syncNativeGameplayUi?.(currentSurface);
         return;
       }
       inferEnvironment();
@@ -485,6 +492,17 @@
       this.nativeOpeningUiSignature = '';
       this.nativeOpeningUiLayoutEvent = null;
       this.nativeOpeningUiScrollTarget = null;
+      this.nativeGameplayUiActive = false;
+      this.nativeGameplayUiObjects = [];
+      this.nativeGameplayUiTextures = [];
+      this.nativeGameplayUiTaggedNodes = [];
+      this.nativeGameplayUiControls = [];
+      this.nativeGameplayUiSignature = '';
+      this.nativeGameplayUiObserver = null;
+      this.nativeGameplayUiObserverRoot = null;
+      this.nativeGameplayUiLayoutEvent = null;
+      this.nativeGameplayUiTextureCounter = 0;
+      this.nativeGameplayUiScrollHandler = null;
     }
 
     preload() {
@@ -505,6 +523,7 @@
         this.syncNativeAnnalsUi(this.surface);
         this.syncNativeCreationUi(this.surface);
         this.syncNativeOpeningUi(this.surface);
+        this.syncNativeGameplayUi(this.surface);
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -566,6 +585,16 @@
           nativeOpeningUiControlBounds: this.nativeOpeningUiControls.map(item => ({ id: item.id, label: item.label, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible) })),
           nativeOpeningUiSceneSize: this.dimensions(),
           nativeOpeningUiScrollTargetBound: Boolean(this.nativeOpeningUiScrollTarget),
+          nativeGameplayUi: this.nativeGameplayUiActive,
+          nativeGameplayUiSurface: this.surface,
+          nativeGameplayUiObjectCount: this.nativeGameplayUiObjects.filter(item => item?.active).length,
+          nativeGameplayUiPaintedCount: this.nativeGameplayUiTaggedNodes.filter(node => node?.dataset?.legendPhaserNativePaint === 'true').length,
+          nativeGameplayUiTextCount: this.nativeGameplayUiTaggedNodes.filter(node => node?.dataset?.legendPhaserNativeText === 'true').length,
+          nativeGameplayUiImageCount: this.nativeGameplayUiTaggedNodes.filter(node => node?.dataset?.legendPhaserNativeImage === 'true').length,
+          nativeGameplayUiControlBounds: this.nativeGameplayUiControls.map(item => ({ id: item.id, label: item.label, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible), selected: Boolean(item.selected) })),
+          nativeGameplayUiSceneSize: this.dimensions(),
+          nativeGameplayUiObserverBound: Boolean(this.nativeGameplayUiObserverRoot),
+          nativeGameplayUiProgressionOverlay: Boolean(document.getElementById('legendLevelUpOverlay')),
           nativeAnnalsUiSceneSize: this.dimensions(),
           nativeAnnalsUiButtonBounds: (() => {
             const button = root()?.querySelector('.opening-lore-v220-continue');
@@ -798,6 +827,7 @@
         this.syncNativeAnnalsUi(next);
         this.syncNativeCreationUi(next);
         this.syncNativeOpeningUi(next);
+        this.syncNativeGameplayUi(next);
         return;
       }
       const previous = this.surface;
@@ -807,6 +837,7 @@
       this.syncNativeAnnalsUi(next);
       this.syncNativeCreationUi(next);
       this.syncNativeOpeningUi(next);
+      this.syncNativeGameplayUi(next);
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -1965,6 +1996,443 @@
           button.addEventListener('pointerleave', () => this.setNativeOpeningControlFocus(id, document.activeElement === button));
         }
       });
+    }
+
+    clearNativeGameplayUi(removeClass = true) {
+      this.nativeGameplayUiLayoutEvent?.remove?.(false);
+      this.nativeGameplayUiLayoutEvent = null;
+      if (this.nativeGameplayUiScrollHandler) {
+        document.removeEventListener('scroll', this.nativeGameplayUiScrollHandler, true);
+        this.nativeGameplayUiScrollHandler = null;
+      }
+      this.nativeGameplayUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserNativePaint;
+        delete node.dataset.legendPhaserNativeText;
+        delete node.dataset.legendPhaserNativeControl;
+        delete node.dataset.legendPhaserNativeImage;
+      });
+      this.nativeGameplayUiTaggedNodes = [];
+      if (this.nativeGameplayUiObserver) this.nativeGameplayUiObserver.disconnect();
+      this.nativeGameplayUiObserver = null;
+      this.nativeGameplayUiObserverRoot = null;
+      this.nativeGameplayUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeGameplayUiObjects = [];
+      this.nativeGameplayUiControls = [];
+      this.nativeGameplayUiSignature = '';
+      this.nativeGameplayUiTextures.forEach(key => {
+        try { this.textures.remove(key); } catch (error) { console.warn('[LEGEND Phaser] Could not release gameplay UI texture.', error); }
+      });
+      this.nativeGameplayUiTextures = [];
+      this.nativeGameplayUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-gameplay-ui-active');
+    }
+
+    nativeGameplayUiStyle(node) {
+      const properties = [
+        'backgroundColor','backgroundImage','borderTopColor','borderRightColor','borderBottomColor','borderLeftColor',
+        'borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','borderTopLeftRadius','opacity',
+        'color','fontSize','lineHeight','fontFamily','fontWeight','fontStyle','letterSpacing','textAlign','textTransform','objectFit'
+      ];
+      const computed = window.getComputedStyle(node);
+      const original = {};
+      properties.forEach(property => { original[property] = computed[property]; });
+      try { node.dataset.legendPhaserOriginalStyle = JSON.stringify(original); } catch (error) { /* detached node */ }
+      return original;
+    }
+
+    nativeGameplayUiColor(value, fallback = 0x0a100b) {
+      const source = String(value || '');
+      const directStops = Array.from(source.matchAll(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/ig));
+      const hexes = Array.from(source.matchAll(/#([\da-f]{3}|[\da-f]{6})\b/ig));
+      const direct = directStops.find(match => match[4] === undefined || Number(match[4]) > 0) || directStops[0];
+      if (direct) {
+        return {
+          color: (Math.round(Number(direct[1])) << 16) | (Math.round(Number(direct[2])) << 8) | Math.round(Number(direct[3])),
+          alpha: direct[4] === undefined ? 1 : Math.max(0, Math.min(1, Number(direct[4])))
+        };
+      }
+      if (hexes.length) {
+        let digits = hexes[0][1];
+        if (digits.length === 3) digits = digits.split('').map(char => char + char).join('');
+        return { color: parseInt(digits, 16), alpha: 1 };
+      }
+      // CSS gradients are common throughout the existing shell. Phaser cannot
+      // reuse CSS paint directly, so sample their first authored color stop.
+      if (/gradient\(/i.test(source)) {
+        const stops = Array.from(source.matchAll(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/ig));
+        if (stops.length) {
+          const stop = stops[0];
+          return {
+            color: (Math.round(Number(stop[1])) << 16) | (Math.round(Number(stop[2])) << 8) | Math.round(Number(stop[3])),
+            alpha: stop[4] === undefined ? 1 : Math.max(0, Math.min(1, Number(stop[4])))
+          };
+        }
+        const gradientHex = source.match(/#([\da-f]{3}|[\da-f]{6})\b/i);
+        if (gradientHex) {
+          let digits = gradientHex[1];
+          if (digits.length === 3) digits = digits.split('').map(char => char + char).join('');
+          return { color: parseInt(digits, 16), alpha: 1 };
+        }
+      }
+      return { color: fallback, alpha: 0 };
+    }
+
+    nativeGameplayUiVisibleRect(node) {
+      if (!node?.getBoundingClientRect) return null;
+      const rect = node.getBoundingClientRect();
+      if (!rect.width || !rect.height) return null;
+      const style = window.getComputedStyle(node);
+      if (style.display === 'none' || (style.visibility === 'hidden' && node?.dataset?.legendPhaserNativeImage !== 'true') || Number(style.opacity) < 0.02) return null;
+      if (node.closest('[hidden]')) return null;
+      // aria-hidden removes content from the accessibility tree; it does not
+      // mean the decorative image/backdrop is invisible to the player.
+      const viewport = { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight };
+      let clip = { ...viewport };
+      let ancestor = node.parentElement;
+      while (ancestor && ancestor !== document.body) {
+        const ancestorStyle = window.getComputedStyle(ancestor);
+        const clipsX = !['visible','unset'].includes(ancestorStyle.overflowX);
+        const clipsY = !['visible','unset'].includes(ancestorStyle.overflowY);
+        if (clipsX || clipsY) {
+          const box = ancestor.getBoundingClientRect();
+          if (clipsX) {
+            clip.left = Math.max(clip.left, box.left);
+            clip.right = Math.min(clip.right, box.right);
+          }
+          if (clipsY) {
+            clip.top = Math.max(clip.top, box.top);
+            clip.bottom = Math.min(clip.bottom, box.bottom);
+          }
+        }
+        ancestor = ancestor.parentElement;
+      }
+      const left = Math.max(rect.left, clip.left);
+      const top = Math.max(rect.top, clip.top);
+      const right = Math.min(rect.right, clip.right);
+      const bottom = Math.min(rect.bottom, clip.bottom);
+      // Ignore partially clipped elements instead of drawing text or hit frames
+      // outside their actual scroll viewport.
+      if (right - left < rect.width - 1 || bottom - top < rect.height - 1) return null;
+      if (right <= 0 || bottom <= 0 || left >= window.innerWidth || top >= window.innerHeight) return null;
+      return rect;
+    }
+
+    createNativeGameplayImageTexture(img) {
+      if (!img || !img.complete || !img.naturalWidth || !img.naturalHeight) return '';
+      const rect = this.nativeGameplayUiVisibleRect(img);
+      if (!rect) return '';
+      const ratio = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(rect.width * ratio));
+      canvas.height = Math.max(1, Math.round(rect.height * ratio));
+      const context = canvas.getContext('2d');
+      if (!context) return '';
+      const fit = window.getComputedStyle(img).objectFit;
+      context.save();
+      context.beginPath();
+      context.rect(0, 0, canvas.width, canvas.height);
+      context.clip();
+      if (fit === 'cover') {
+        const sourceWidth = img.naturalWidth;
+        const sourceHeight = img.naturalHeight;
+        const destinationRatio = rect.width / rect.height;
+        const sourceRatio = sourceWidth / sourceHeight;
+        let sx = 0, sy = 0, sw = sourceWidth, sh = sourceHeight;
+        if (sourceRatio > destinationRatio) {
+          sw = sourceHeight * destinationRatio;
+          sx = (sourceWidth - sw) / 2;
+        } else {
+          sh = sourceWidth / destinationRatio;
+          sy = (sourceHeight - sh) / 2;
+        }
+        context.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+      } else {
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+      }
+      context.restore();
+      const key = 'nativeGameplayImage' + (++this.nativeGameplayUiTextureCounter);
+      try {
+        this.textures.addCanvas(key, canvas);
+        this.nativeGameplayUiTextures.push(key);
+        return key;
+      } catch (error) {
+        console.warn('[LEGEND Phaser] Gameplay artwork could not be mirrored.', error);
+        return '';
+      }
+    }
+
+    observeNativeGameplayUi(shell, rootNode, modalRoot, progressionRoot) {
+      const targets = [document.body, shell, rootNode, modalRoot, progressionRoot].filter(Boolean);
+      const signature = targets.map(node => node === document.body ? 'body' : node.id || node.tagName).join('|');
+      if (this.nativeGameplayUiObserver && this.nativeGameplayUiObserverRoot === signature) return;
+      this.nativeGameplayUiObserver?.disconnect?.();
+      this.nativeGameplayUiObserverRoot = signature;
+      this.nativeGameplayUiScrollHandler = () => {
+        this.nativeGameplayUiLayoutEvent?.remove?.(false);
+        this.nativeGameplayUiLayoutEvent = this.time.delayedCall(45, () => {
+          this.nativeGameplayUiLayoutEvent = null;
+          this.syncNativeGameplayUi(this.surface);
+        });
+      };
+      document.addEventListener('scroll', this.nativeGameplayUiScrollHandler, true);
+      this.nativeGameplayUiObserver = new MutationObserver(mutations => {
+        const relevant = mutations.some(mutation => {
+          // Ignore only our own add/remove of the paint-mode body class. A real
+          // drawer/body class change or an update inside an already-tagged card
+          // must still refresh the Phaser copy.
+          if (mutation.target === document.body && mutation.type === 'attributes' &&
+              mutation.attributeName === 'class' && mutation.oldValue !== null) {
+            const before = new Set(String(mutation.oldValue || '').split(/\\s+/).filter(Boolean));
+            const after = new Set(Array.from(document.body.classList));
+            const changed = new Set([...before, ...after].filter(token => before.has(token) !== after.has(token)));
+            if (changed.size === 1 && changed.has('legend-phaser-gameplay-ui-active')) return false;
+          }
+          return !(mutation.type === 'attributes' && String(mutation.attributeName || '').startsWith('data-legend-phaser-native-'));
+        });
+        if (!relevant) return;
+        this.nativeGameplayUiLayoutEvent?.remove?.(false);
+        this.nativeGameplayUiLayoutEvent = this.time.delayedCall(48, () => {
+          this.nativeGameplayUiLayoutEvent = null;
+          this.syncNativeGameplayUi(this.surface);
+        });
+      });
+      targets.forEach(node => this.nativeGameplayUiObserver.observe(node, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeOldValue: true,
+        attributeFilter: ['class','style','hidden','disabled','inert','aria-hidden','aria-label','aria-expanded','aria-pressed','aria-selected']
+      }));
+    }
+
+    syncNativeGameplayUi(surface = this.surface) {
+      const host = root();
+      const shell = document.getElementById('legend-world-shell-root');
+      // Temporarily reveal the semantic layer while measuring its original
+      // computed styles; otherwise our own transparent-paint CSS would be
+      // sampled on every state refresh.
+      document.body?.classList.remove('legend-phaser-gameplay-ui-active');
+      const gameplaySurfaces = new Set([
+        'town','town-service','expedition','expedition-results','combat','combat-results',
+        'dungeon','field-site','settings','dispatches','credits','modal'
+      ]);
+      const modalRoot = document.getElementById('legend-world-shell-modal-root');
+      const modalVisible = Boolean(surface === 'modal' && modalRoot && !modalRoot.hidden);
+      const progressionRoot = document.getElementById('legendLevelUpOverlay');
+      const progressionVisible = Boolean(progressionRoot && !progressionRoot.hidden &&
+        window.getComputedStyle(progressionRoot).display !== 'none' &&
+        window.getComputedStyle(progressionRoot).visibility !== 'hidden');
+      const dedicated = host?.querySelector('.v120-title,.title-v100,.title-v136-rpg,.opening-lore-v220,.v140-creation,.opening-road-v140');
+      const shellVisible = Boolean(shell && !shell.hidden && gameplaySurfaces.has(String(surface || '')));
+      const rootVisible = Boolean(host && gameplaySurfaces.has(String(surface || '')) && !dedicated);
+      if (!shellVisible && !rootVisible && !modalVisible && !progressionVisible) {
+        if (this.nativeGameplayUiActive || document.body?.classList.contains('legend-phaser-gameplay-ui-active')) {
+          this.clearNativeGameplayUi();
+        }
+        return;
+      }
+
+      const roots = [];
+      if (rootVisible) roots.push(host);
+      if (shellVisible) roots.push(shell);
+      if (modalVisible) roots.push(modalRoot);
+      if (progressionVisible) roots.push(progressionRoot);
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const rectFor = node => {
+        const rect = this.nativeGameplayUiVisibleRect(node);
+        if (!rect) return null;
+        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+      };
+      const allNodes = roots.flatMap(node => [node, ...Array.from(node.querySelectorAll('*'))]);
+      const backgroundNodes = [];
+      const textNodes = [];
+      const images = [];
+      const controls = [];
+      const iconNodes = [];
+      const candidates = allNodes.filter(node => node && node.nodeType === 1);
+      candidates.forEach(node => {
+        if (node.matches('input,textarea,select,option,script,style,template')) return;
+        const rect = rectFor(node);
+        if (!rect) return;
+        const style = this.nativeGameplayUiStyle(node);
+        const bgImage = style.backgroundImage || 'none';
+        const bgColor = style.backgroundColor || 'rgba(0,0,0,0)';
+        let bgSample = this.nativeGameplayUiColor(bgImage !== 'none' ? bgImage : bgColor);
+        if (bgSample.alpha <= 0.04 && bgImage !== 'none') bgSample = this.nativeGameplayUiColor(bgColor);
+        const borderWidth = Math.max(
+          parseFloat(style.borderTopWidth) || 0,
+          parseFloat(style.borderRightWidth) || 0,
+          parseFloat(style.borderBottomWidth) || 0,
+          parseFloat(style.borderLeftWidth) || 0
+        );
+        const borderSample = this.nativeGameplayUiColor(style.borderTopColor || style.borderColor, 0xd0b477);
+        if (rect.width > 3 && rect.height > 3 && (bgSample.alpha > 0.04 || borderWidth > 0)) {
+          backgroundNodes.push({ node, rect, bgSample, bgAlpha: bgSample.alpha * Math.max(0, Math.min(1, Number(style.opacity) || 0)), borderSample, borderWidth, style, depth: (() => { let depth = 0; let parent = node.parentElement; while (parent && parent !== document.body) { depth += 1; parent = parent.parentElement; } return depth; })() });
+        }
+        if (node.tagName === 'IMG' && node.complete && node.naturalWidth > 0) {
+          images.push({ node, rect });
+        } else if (node.matches('.runway-icon')) {
+          const iconClass = Array.from(node.classList).find(name => name.startsWith('runway-icon-'));
+          if (iconClass) iconNodes.push({ node, rect, name: iconClass.slice('runway-icon-'.length) });
+        }
+
+        const hiddenFromAccessibility = node.getAttribute('aria-hidden') === 'true' || Boolean(node.closest('[aria-hidden="true"]'));
+        if (!hiddenFromAccessibility && node.matches('button,a[href],[role="button"]')) controls.push({ node, rect });
+        if (hiddenFromAccessibility) return;
+        const textTags = 'h1,h2,h3,h4,p,small,strong,em,span,label,li,dt,dd,button,a,div';
+        if (!node.matches(textTags)) return;
+        let directText = Array.from(node.childNodes || [])
+          .filter(child => child.nodeType === 3)
+          .map(child => child.textContent || '')
+          .join(' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+        if (!directText && node.childElementCount === 0) directText = String(node.textContent || '').replace(/\s+/g, ' ').trim();
+        if (!directText && node.childElementCount === 0 && node.matches('button,a[href],[role="button"]')) {
+          directText = String(node.getAttribute('aria-label') || node.textContent || '').replace(/\s+/g, ' ').trim();
+        }
+        if (directText) textNodes.push({ node, rect, text: directText, style });
+      });
+
+      const signature = JSON.stringify([
+        surface, Math.round(window.innerWidth), Math.round(window.innerHeight),
+        ...backgroundNodes.map(item => [item.node.id,item.node.className,Math.round(item.rect.x),Math.round(item.rect.y),Math.round(item.rect.width),Math.round(item.rect.height),item.node.getAttribute('aria-pressed') || '',item.node.getAttribute('aria-selected') || '']),
+        ...textNodes.map(item => [item.node.tagName,item.text,Math.round(item.rect.x),Math.round(item.rect.y),Math.round(item.rect.width),Math.round(item.rect.height)]),
+        ...images.map(item => [item.node.currentSrc || item.node.src,Math.round(item.rect.x),Math.round(item.rect.y),Math.round(item.rect.width),Math.round(item.rect.height)]),
+        ...controls.map(item => [item.node.id,item.node.className,item.node.getAttribute('aria-label') || item.node.textContent?.trim() || '',item.node.disabled,item.node.getAttribute('aria-pressed') || '']),
+        ...roots.map(node => [node.scrollTop,node.dataset?.context || '',node.dataset?.region || ''])
+      ]);
+      if (this.nativeGameplayUiActive && signature === this.nativeGameplayUiSignature) {
+        this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null, modalVisible ? modalRoot : null, progressionVisible ? progressionRoot : null);
+        document.body?.classList.add('legend-phaser-gameplay-ui-active');
+        return;
+      }
+
+      this.clearNativeGameplayUi(false);
+      this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null, modalVisible ? modalRoot : null, progressionVisible ? progressionRoot : null);
+      this.nativeGameplayUiActive = true;
+      this.nativeGameplayUiSignature = signature;
+      document.body?.classList.add('legend-phaser-gameplay-ui-active');
+
+      const tag = (node, property) => {
+        const key = property === 'paint' ? 'legendPhaserNativePaint'
+          : property === 'text' ? 'legendPhaserNativeText'
+          : property === 'control' ? 'legendPhaserNativeControl'
+          : 'legendPhaserNativeImage';
+        node.dataset[key] = 'true';
+        if (!this.nativeGameplayUiTaggedNodes.includes(node)) this.nativeGameplayUiTaggedNodes.push(node);
+      };
+      const graphics = this.add.graphics().setDepth(20);
+      backgroundNodes.sort((a,b) => a.depth - b.depth).forEach(item => {
+        const { rect, bgSample, bgAlpha, borderSample, borderWidth, style, node } = item;
+        const radius = Math.max(0, Math.min(16, parseFloat(style.borderTopLeftRadius) || 0)) * Math.min(sx,sy);
+        if (bgAlpha > 0.04) {
+          graphics.fillStyle(bgSample.color, bgAlpha);
+          if (typeof graphics.fillRoundedRect === 'function' && radius > 1) graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, radius);
+          else graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+        }
+        if (borderWidth > 0 && borderSample.alpha > 0.04) {
+          graphics.lineStyle(Math.max(1, borderWidth * Math.min(sx,sy)), borderSample.color, borderSample.alpha);
+          if (typeof graphics.strokeRoundedRect === 'function' && radius > 1) graphics.strokeRoundedRect(rect.x + .5, rect.y + .5, rect.width - 1, rect.height - 1, radius);
+          else graphics.strokeRect(rect.x + .5, rect.y + .5, Math.max(1,rect.width-1), Math.max(1,rect.height-1));
+        }
+        tag(node, 'paint');
+      });
+      this.nativeGameplayUiObjects.push(graphics);
+
+      images.forEach(item => {
+        const { node, rect } = item;
+        const key = this.createNativeGameplayImageTexture(node);
+        if (!key || !this.textures.exists(key)) return;
+        const img = this.add.image(rect.x + rect.width/2, rect.y + rect.height/2, key)
+          .setDisplaySize(rect.width, rect.height)
+          .setDepth(24);
+        this.nativeGameplayUiObjects.push(img);
+        tag(node, 'image');
+      });
+
+      const iconTextures = {
+        compass: 'menuCompass', journal: 'menuJournal', traveler: 'menuTraveler',
+        inn: 'menuInn', market: 'serviceMarketIcon', forge: 'serviceForgeIcon',
+        road: 'menuRoad', settings: 'menuSettings', milestone: 'menuMilestone'
+      };
+      iconNodes.forEach(item => {
+        const key = iconTextures[item.name];
+        if (!key || !this.textures.exists(key)) return;
+        const img = this.add.image(item.rect.x + item.rect.width/2, item.rect.y + item.rect.height/2, key)
+          .setDisplaySize(item.rect.width, item.rect.height)
+          .setDepth(26)
+          .setAlpha(.98);
+        this.nativeGameplayUiObjects.push(img);
+        tag(item.node,'image');
+      });
+
+      textNodes.forEach(item => {
+        // Styles were captured before the native class hides the DOM paint.
+        const fontPx = Math.max(8, (parseFloat(item.style.fontSize) || 12) * sy);
+        const linePx = parseFloat(item.style.lineHeight) || (parseFloat(item.style.fontSize) || 12) * 1.4;
+        let value = item.text;
+        if (item.style.textTransform === 'uppercase') value = value.toLocaleUpperCase();
+        else if (item.style.textTransform === 'lowercase') value = value.toLocaleLowerCase();
+        const text = this.add.text(item.rect.x, item.rect.y, value, {
+          fontFamily: item.style.fontFamily || 'Arial, sans-serif',
+          fontSize: fontPx + 'px',
+          fontStyle: Number(item.style.fontWeight) >= 650 || item.style.fontWeight === 'bold' ? 'bold' : (item.style.fontStyle || 'normal'),
+          color: item.style.color || '#e9e3d2',
+          lineSpacing: Math.max(0, (linePx - (parseFloat(item.style.fontSize) || 12)) * sy),
+          letterSpacing: Number.isFinite(parseFloat(item.style.letterSpacing)) ? Math.max(0, parseFloat(item.style.letterSpacing) * sx) : 0,
+          wordWrap: { width: Math.max(20, item.rect.width), useAdvancedWrap: true },
+          align: item.style.textAlign || 'left',
+          padding: { left: 1, right: 2, top: 1, bottom: 2 }
+        }).setOrigin(0,0).setDepth(30);
+        this.nativeGameplayUiObjects.push(text);
+        tag(item.node,'text');
+      });
+
+      controls.forEach((item,index) => {
+        const node = item.node;
+        const id = node.id || node.getAttribute('data-world-action') || node.getAttribute('data-world-route') || node.getAttribute('data-world-place') || 'gameplay-control-' + index;
+        const label = String(node.getAttribute('aria-label') || node.textContent?.replace(/\s+/g,' ').trim() || id);
+        if (!node.hasAttribute('aria-label')) node.setAttribute('aria-label',label);
+        const rect = item.rect;
+        const focusFrame = this.add.graphics();
+        focusFrame.lineStyle(2, node.disabled ? 0x9a8f72 : 0xffe6a0, .98);
+        focusFrame.strokeRect(rect.x + 1,rect.y + 1,Math.max(1,rect.width-2),Math.max(1,rect.height-2));
+        focusFrame.setVisible(node === document.activeElement || node.matches(':hover'));
+        focusFrame.setDepth(40);
+        this.nativeGameplayUiObjects.push(focusFrame);
+        const control = { id, label, x:rect.x, y:rect.y, width:rect.width, height:rect.height, focusFrame, node, selected:node.getAttribute('aria-pressed') === 'true' };
+        this.nativeGameplayUiControls.push(control);
+        tag(node,'control');
+        if (!node.__legendNativeGameplayBound) {
+          node.__legendNativeGameplayBound = true;
+          const updateFocus = active => {
+            const live = this.nativeGameplayUiControls.find(entry => entry.node === node);
+            live?.focusFrame?.setVisible?.(Boolean(active));
+          };
+          node.addEventListener('focus', () => updateFocus(true));
+          node.addEventListener('blur', () => updateFocus(node.matches(':hover')));
+          node.addEventListener('pointerenter', () => updateFocus(true));
+          node.addEventListener('pointerleave', () => updateFocus(node === document.activeElement));
+        }
+      });
+      images.forEach(item => { item.node.loading = 'eager'; });
+      roots.forEach(node => node.querySelectorAll('img').forEach(img => {
+        if (img.__legendNativeGameplayLoadBound || (img.complete && img.naturalWidth > 0)) return;
+        img.__legendNativeGameplayLoadBound = true;
+        img.loading = 'eager';
+        const retry = () => this.syncNativeGameplayUi(this.surface);
+        img.addEventListener('load', retry, { once: true });
+        img.addEventListener('error', retry, { once: true });
+      }));
     }
 
     ashmerelandmarkSpecs() {

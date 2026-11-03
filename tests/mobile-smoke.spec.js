@@ -264,6 +264,22 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await tap(page,page.locator('#routeRidge'));
     await tap(page,page.locator('#push'));
     await expect(page.locator('.exp100-combat')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUiSurface)).toBe('combat');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUi)).toBe(true);
+    const battlePaint = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const strike = document.querySelector('#strike');
+      return {
+        objects: snapshot.nativeGameplayUiObjectCount,
+        text: snapshot.nativeGameplayUiTextCount,
+        strikeControl: snapshot.nativeGameplayUiControlBounds.some(item => item.id === 'strike'),
+        strikeBackground: strike ? getComputedStyle(strike).backgroundImage : ''
+      };
+    });
+    expect(battlePaint.objects).toBeGreaterThan(10);
+    expect(battlePaint.text).toBeGreaterThan(5);
+    expect(battlePaint.strikeControl).toBe(true);
+    expect(battlePaint.strikeBackground).toBe('none');
     await expect(page.locator('.rpg-command-grid .rpg-command')).toHaveCount(4);
     await expect(page.locator('#strike')).toContainText('FIGHT');
     await expect(page.locator('#skill')).toContainText('ACT');
