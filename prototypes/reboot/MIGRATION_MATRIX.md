@@ -67,7 +67,8 @@ The world layer uses the following scene-only effects; production gameplay modul
 - Responsive background framing with overscan, subtle pointer parallax and a slow camera-breathing effect to add depth to the existing location art.
 - Crossfaded environment changes with a restrained camera settle rather than a hard black fade.
 - Distinct hit, heavy strike, guard, magic, swing and victory feedback using Phaser camera shake/flash, expanding rings, slash shapes and short-lived motes.
-- Reduced-motion support suppresses ambient motion, parallax, camera shake and screen flashes.
+- Both the in-game Reduced Motion setting and the browser/OS preference suppress ambient motion, parallax, camera shake and screen flashes; scene changes stop the previous ambience tweens before replacing them.
+- Portrait layouts use a smaller image overscan so the existing location art is not cropped more than necessary.
 
 The atmospheric layer is decorative only: it does not affect collision, combat calculations, turn order, rewards, quests, expeditions, or persistence.
 
