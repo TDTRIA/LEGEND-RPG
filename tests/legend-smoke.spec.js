@@ -2612,7 +2612,8 @@ test('traveler creation draws choice cards and dialogue in Phaser while preservi
       inputBackground: input ? getComputedStyle(input).backgroundColor : '',
       inputColor: input ? getComputedStyle(input).color : '',
       nextBackground: next ? getComputedStyle(next).backgroundColor : '',
-      nextLabel: next?.getAttribute('aria-label') || ''
+      nextLabel: next?.getAttribute('aria-label') || '',
+      sceneNextLabel: snapshot.nativeCreationUiControlBounds.find(item => item.id === 'v094Next')?.label || ''
     };
   });
   expect(nameStep.active).toBe(true);
@@ -2626,6 +2627,7 @@ test('traveler creation draws choice cards and dialogue in Phaser while preservi
   expect(nameStep.inputColor).not.toBe('rgba(0, 0, 0, 0)');
   expect(nameStep.nextBackground).toBe('rgba(0, 0, 0, 0)');
   expect(nameStep.nextLabel).toMatch(/Choose Identity/i);
+  expect(nameStep.sceneNextLabel).toMatch(/Choose Identity/i);
 
   // The live name field remains a real editable input and validation remains readable.
   await page.locator('#v094Next').click();
