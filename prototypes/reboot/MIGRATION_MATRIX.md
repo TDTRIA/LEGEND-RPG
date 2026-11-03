@@ -1,12 +1,12 @@
-# LEGEND: The Awakening — Phaser Reboot Migration Inventory
+# LEGEND: The Awakening — Phaser Production Migration Inventory
 
-Updated for the reboot/current-game-migration branch. The original browser game on main remains the source of truth.
+The root GitHub Pages game is now the official Phaser-powered production entry point. The optional `/prototypes/reboot/` route is a preview/test bench only; both paths load the same engine source at `js/engine/phaser-world-v1.js`.
 
 ## Porting strategy
 
-The Phaser prototype is a separate presentation/runtime shell over the current game's versioned JavaScript systems. It loads the original content catalogs, creation controller, opening sequence, town controller, road expedition controller, combat engine, progression, reward settlement, regional travel, and dungeon/region modules. Its LegendStorage and LegendRuntimeV120 adapters use only legend-reboot-prototype-save-v1 in browser local storage.
+Phaser is the persistent production world renderer and presentation engine. It runs below the existing accessible screen controls and uses the same production content catalogs, creation controller, opening sequence, town controller, road expedition controller, combat engine, progression, reward settlement, regional travel, and dungeon/region modules. The production root delegates all traveler reads and writes to the pre-existing `LegendStorage` / `LegendRuntimeV120` services, including the production save key and account/cloud stack. Only the preview path installs the isolated `legend-reboot-prototype-save-v1` adapter.
 
-This is intentionally not a production-save migration. No production save key, Supabase client, sign-in flow, account slot, or cloud account is read or written. Existing HTML-based production screens are retained as accessible overlays on top of Phaser's canvas while Phaser handles the world layer, transitions, atmosphere, and camera feedback.
+This promotion is not a save migration: the production key and stored player schema are preserved in place. The HTML screens remain accessible interaction overlays while Phaser owns the persistent environment layer, camera, atmosphere, transitions and action feedback. The next conversion work can move specific screen visuals and interactions into native Phaser scene objects without creating another engine or gameplay/save implementation.
 
 ## Current-game content and systems mapped into the prototype
 
