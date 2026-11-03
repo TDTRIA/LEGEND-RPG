@@ -139,6 +139,20 @@ The Old Road prologue, Oric's first exchange, response choice, ambush beat and a
 
 **Next surfaces:** the persistent HUD and contextual world shell (journal, map, action rail and town navigation), followed by town-service consoles, expedition scenes/results, and combat presentation.
 
+## Shared native Phaser gameplay surfaces — 2026-11-03
+
+The persistent `RealmScene` now has a common renderer for the remaining production gameplay surfaces:
+
+- It mirrors visible panel surfaces, borders, text, local raster imagery, generated runway icon textures, and focus frames from the active production screen into Phaser.
+- The targets include the world-shell HUD and drawers, Ashmere/Greyfen services, Old Road/expedition screens and reports, combat, Bell Cellar, and shell overlays/modals.
+- The original DOM controls remain the accessible and functional input bridge. Existing `LegendWorldShellV170`, service, expedition, combat and dungeon controllers remain the only owners of real actions and game state.
+- Real input/select/textarea fields are intentionally left interactive in the document; their field styling is preserved while their surrounding interface is painted natively.
+- The renderer follows dynamic DOM state, responsive viewport changes, scroll containers and shell drawer changes; it clears its Phaser objects and temporary textures when leaving gameplay surfaces.
+
+This common pass is a migration foundation, not proof that every screen is complete. Each surface still needs a production journey regression covering its buttons, inputs, scene transition, desktop/mobile layout and accessible names before the migration is considered finished.
+
+**Remaining polish order after the shared painter:** validate and refine every town/service, Old Road/camp/results, combat/level-up and Bell Cellar/Greyfen screen individually; then handle the specific camp text and results-label issues found in external playtesting. Gameplay-depth changes remain deliberately deferred until the Phaser pass is stable.
+
 ## Native Phaser service interiors — 2026-11-03
 
 The Ashmere service backdrops now receive scene-native set dressing while their existing accessible service consoles remain interactive HTML:
