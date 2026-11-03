@@ -598,15 +598,17 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.getByRole('heading', { name: 'The marker is safe' })).toBeVisible();
     const after=await page.evaluate(() => {
       const pl=window.LegendRuntimeV120.loadPlayer();
-      return {gold:Number(pl.gold||0),herbs:Number(pl.inventory.roadHerb||0),complete:Boolean(pl.flags.greyfenDryCrossingComplete)};
+      return {gold:Number(pl.gold||0),herbs:Number(pl.inventory.roadHerb||0),complete:Boolean(pl.flags.greyfenDryCrossingComplete),memories:pl.memories||[]};
     });
     expect(after.gold).toBe(before.gold+35);
     expect(after.herbs).toBe(before.herbs+1);
     expect(after.complete).toBe(true);
+    expect(after.memories).toContain("A rumor among Greyfen’s landing workers says the reed-bed cut was marked as a route only after the floodwater rose. The speaker had no record, and no one named who approved it.");
     await page.locator('#ashBack').click();
     await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
     await expect(page.locator('[data-crossing-choice]')).toHaveCount(0);
     await expect(page.locator('.ash099-screen')).toContainText('cannot be claimed again');
+    await expect(page.locator('.ash099-screen')).toContainText(/reed-bed cut was marked as a route only after the floodwater rose/i);
   });
 
   test('Dry Crossing risky route penalizes a miss and allows a rewarded retry', async ({ page }) => {
@@ -644,6 +646,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
         herbs: Number(pl.inventory.roadHerb || 0),
         attempts: Number(pl.flags.greyfenCrossingAttempts || 0),
         complete: Boolean(pl.flags.greyfenDryCrossingComplete),
+        rumorRecorded: (pl.memories || []).includes("A rumor among Greyfen’s landing workers says the reed-bed cut was marked as a route only after the floodwater rose. The speaker had no record, and no one named who approved it."),
         memories: pl.memories || []
       };
     });
@@ -652,6 +655,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(miss.herbs).toBe(before.herbs);
     expect(miss.attempts).toBe(1);
     expect(miss.complete).toBe(false);
+    expect(miss.rumorRecorded).toBe(false);
     expect(miss.memories.some(memory => /reed bed turned you back from Greyfen/i.test(memory))).toBe(true);
     await expect(page.locator('.ash099-screen')).toContainText('You may try again');
 
@@ -669,6 +673,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
         herbs: Number(pl.inventory.roadHerb || 0),
         attempts: Number(pl.flags.greyfenCrossingAttempts || 0),
         complete: Boolean(pl.flags.greyfenDryCrossingComplete),
+        rumorRecorded: (pl.memories || []).includes("A rumor among Greyfen’s landing workers says the reed-bed cut was marked as a route only after the floodwater rose. The speaker had no record, and no one named who approved it."),
         memories: pl.memories || []
       };
     });
@@ -677,7 +682,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(success.herbs).toBe(before.herbs + 2);
     expect(success.attempts).toBe(2);
     expect(success.complete).toBe(true);
+    expect(success.rumorRecorded).toBe(true);
     expect(success.memories.some(memory => /recovered Greyfen.*through the reed bed/i.test(memory))).toBe(true);
+    await expect(page.locator('.ash099-screen')).toContainText(/reed-bed cut was marked as a route only after the floodwater rose/i);
   });
 
   test('Continue Journey returns to the saved playable region', async ({ page }) => {
