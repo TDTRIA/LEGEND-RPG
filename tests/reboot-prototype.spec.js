@@ -78,7 +78,7 @@ test.describe('LEGEND Phaser reboot prototype', () => {
 
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible({ timeout: 8000 });
     await page.locator('#openingRoadContinue').click();
-    await expect(page.locator('.exp100-world-page')).toBeVisible();
+    await expect(page.locator('.exp150-world-page')).toBeVisible();
     await expect(page.locator('#routeRidge')).toBeVisible();
     await expect(page.locator('#routeReeds')).toBeVisible();
 
