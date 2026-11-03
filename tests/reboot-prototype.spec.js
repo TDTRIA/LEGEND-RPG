@@ -60,6 +60,8 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     const state = await page.evaluate(() => window.__legendRebootBridge.snapshot());
     expect(state.engineAwakened).toBe(true);
     expect(state.environment).toBe('title');
+    await expect(page.locator('body')).not.toContainText('INITIALIZING WORLD ENGINE');
+    await expect(page.locator('body')).not.toContainText('BUILDING THE SCENE GRAPH');
     await expect(page.locator('#engine-skip')).toBeHidden();
   });
 
@@ -72,6 +74,12 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     await expect(page.locator('.v120-title')).toBeVisible();
     await expect(page.locator('.v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
     await expect(page.locator('.v151-realm-dispatch')).toContainText('Greyfen');
+    await expect(page.locator('.site-top')).toHaveCount(0);
+    await expect(page.locator('.prototype-note')).toHaveCount(0);
+    await expect(page.locator('.v140-realm-overview-head')).not.toContainText('BUILD');
+    await expect(page.locator('.v151-realm-dispatch-head')).toContainText('FIELD NOTES');
+    await expect(page.locator('.v120-title-footer')).toContainText('ASHMERE · THE OLD ROAD · GREYFEN');
+    await expect(page.locator('.v120-title-footer')).not.toContainText('v0.30.');
     await expect(page.locator('#newPrimary')).toBeVisible();
     await expect(page.locator('#dispatches')).toBeVisible();
     await expect(page.locator('#settings')).toBeVisible();
