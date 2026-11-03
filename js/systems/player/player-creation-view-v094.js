@@ -20,7 +20,9 @@
     const visual = isArrival
       ? '<div class="v140-guide-portrait-frame"><img class="v140-guide-portrait" src="' + escapeHtml(portrait) + '" alt="Captain Oric, Ashmere watch captain" decoding="async"><span>ASHMERE WATCH</span></div>'
       : '<div class="v140-guide-portrait-frame v140-presence-frame" aria-hidden="true"><div class="v140-presence-haze"></div><div class="v140-presence-ring"></div><img class="v140-presence-mark" src="' + escapeHtml(presenceMark) + '" alt="" decoding="async"><span class="v140-presence-glyph">???</span><small class="v140-presence-caption">MEMORY · SHAPE · SELF</small></div>';
-    root.innerHTML = '<main class="v094-beginning v140-creation v140-' + mode + '" data-creation-step="' + step + '">' +
+    const previousBackground = root.querySelector('.v094-beginning-bg');
+    const template = document.createElement('template');
+    template.innerHTML = '<main class="v094-beginning v140-creation v140-' + mode + '" data-creation-step="' + step + '">' +
       '<div class="v094-beginning-bg" aria-hidden="true"></div>' +
       '<header class="v140-creation-brand"><span class="v150-logo-lockup" role="img" aria-label="LEGEND: The Awakening"><img src="' + escapeHtml(logo) + '" alt="" aria-hidden="true" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="v150-wordmark-fallback" hidden><strong>LEGEND</strong><em>THE AWAKENING</em></span></span>' +
       '<span>' + (isArrival ? 'THE GATE IS OPEN' : 'BETWEEN MEMORY AND WAKING') + '</span></header>' +
@@ -35,6 +37,10 @@
         '</aside>' +
         '<div class="v094-beginning-shell">' + markup + '</div>' +
       '</div></main>';
+    const nextMain = template.content.firstElementChild;
+    const nextBackground = nextMain?.querySelector('.v094-beginning-bg');
+    if (previousBackground && nextBackground) nextBackground.replaceWith(previousBackground);
+    if (nextMain) root.replaceChildren(nextMain);
     root.querySelectorAll('.v140-creation img').forEach(img => {
       img.addEventListener('error', () => {
         const art = img.closest('.v094-choice-art');
@@ -127,15 +133,20 @@
     classPortraits, nextLabel, progress, scene, onSelect, onBack, onNext
   }) {
     const baseGuide = ({ gender: 'Something is taking shape where the dark was. Is it the form you remember, or the form you choose now?', personality: 'A feeling can survive the memory that made it. Which one still calls to you?', origin: 'A place takes shape, but its edges are blurred. Was it home, refuge, or only a story you needed?', class: 'Your hands remember before your mind does. Steel, bow, spell, or guile. What movement finds you first?', keepsake: 'One thing remained when the rest fell quiet. Did you carry it—or did it carry you?' })[key] || scene;
+    const guideForSelection = item => {
+      if (!item) return baseGuide;
+      const label = String(item.label || item.id || '');
+      return ({
+        gender: 'The silhouette steadies around ' + label + '. It feels familiar, but no face comes with the memory.',
+        personality: 'The feeling returns before its cause: ' + label + '. Something in you recognizes it.',
+        origin: label + ' comes into focus, though its edges will not hold still. You can keep the memory without understanding it.',
+        class: 'Your hands answer with ' + label.toLowerCase() + ' before your mind can explain why.',
+        keepsake: 'The ' + label + ' settles into your palm like something you once promised to keep. The memory stays incomplete.'
+      })[key] || baseGuide;
+    };
     const selectedItem = items.find(item => String(item.id) === String(selected));
     const selectedLabel = String(selectedItem?.label || selectedItem?.id || selected || '');
-    const echoGuide = selectedItem ? ({
-      gender: 'The silhouette steadies around ' + selectedLabel + '. It feels familiar, but no face comes with the memory.',
-      personality: 'The feeling returns before its cause: ' + selectedLabel + '. Something in you recognizes it.',
-      origin: selectedLabel + ' comes into focus, though its edges will not hold still. You can keep the memory without understanding it.',
-      class: 'Your hands answer with ' + selectedLabel.toLowerCase() + ' before your mind can explain why.',
-      keepsake: 'The ' + selectedLabel + ' settles into your palm like something you once promised to keep. The memory stays incomplete.'
-    })[key] || baseGuide : baseGuide;
+    const echoGuide = guideForSelection(selectedItem);
     const fragmentLabel = selectedItem ? 'MEMORY ECHO · ' + selectedLabel.toUpperCase() : 'FRAGMENT · MEMORY';
     const fragmentText = selectedItem?.text || scene;
     mount(root,
@@ -146,12 +157,38 @@
       '<p id="v094ChoiceError" role="alert" class="v094-choice-error" hidden>Please choose an option to continue.</p>' +
       actionButtons({ back: true, next: true, label: nextLabel }) + '</section>', { step, guideText: echoGuide, mode: 'creation' });
 
+    let currentSelection = selected;
     root?.querySelectorAll('[data-' + key + ']').forEach(button => {
-      button.addEventListener('click', () => onSelect?.(button.dataset[key]));
+      button.addEventListener('click', () => {
+        const value = button.dataset[key];
+        const item = items.find(candidate => String(candidate.id) === String(value));
+        currentSelection = value;
+        onSelect?.(value);
+
+        // A choice is a change of memory, not a screen transition. Update the
+        // card states and dialogue in place so the world backdrop and Phaser
+        // scene never have to remount while the player explores options.
+        root.querySelectorAll('[data-' + key + ']').forEach(option => {
+          const active = option === button;
+          option.classList.toggle('is-selected', active);
+          option.setAttribute('aria-pressed', String(active));
+          const prompt = option.querySelector('.v094-choice-prompt');
+          if (prompt) prompt.textContent = active ? 'Selected · change any time' : 'Tap to choose';
+        });
+
+        const note = root.querySelector('.v094-scene-note');
+        const noteLabel = note?.querySelector('span');
+        const noteText = note?.querySelector('p');
+        if (note) note.classList.toggle('is-remembered', Boolean(item));
+        if (noteLabel) noteLabel.textContent = item ? 'MEMORY ECHO · ' + String(item.label || item.id).toUpperCase() : 'FRAGMENT · MEMORY';
+        if (noteText) noteText.textContent = item?.text || scene || '';
+        const guide = root.querySelector('.v140-dialogue-box > p');
+        if (guide) guide.textContent = guideForSelection(item);
+      });
     });
     root?.querySelector('#v094Back')?.addEventListener('click', () => onBack?.());
     root?.querySelector('#v094Next')?.addEventListener('click', () => {
-      if (!selected) {
+      if (!currentSelection) {
         const error = root.querySelector('#v094ChoiceError');
         if (error) {
           error.hidden = false;
