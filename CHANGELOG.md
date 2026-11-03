@@ -1,3 +1,10 @@
+## v0.30.4 — Runway traveler identity portraits
+
+- Replace the temporary identity glyphs with four separate local Runway WebP portraits for Woman, Man, Nonbinary, and Keep It Unspoken.
+- Give every portrait the same shared in-world medallion frame and retain accessible choice labels.
+- Add browser checks for all four local image sources and successful 512×512 image loads.
+- Preserve identity/pronoun-only behavior, the existing traveler record, and save compatibility.
+
 ## v0.30.3 — Traveler identity emblems and release information catch-up
 
 - Replace the generic repeated traveler-creation art with four distinct, accessible identity emblems for Woman, Man, Nonbinary, and Keep It Unspoken. Identity selection remains cosmetic and pronoun-related; it does not change stats or save structure.

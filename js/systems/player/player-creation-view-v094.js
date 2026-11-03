@@ -105,8 +105,12 @@
             ? 'src="' + escapeHtml(atlas) + '" style="--v094-atlas-width:' + (artColumns * 100) + '%;--v094-atlas-height:' + (artRows * 100) + '%;left:-' + (Number(artCell[0]) * 100) + '%;top:-' + (Number(artCell[1]) * 100) + '%"'
             : 'class="v094-choice-art-image" src="' + escapeHtml(atlas) + '"') + ' alt="" aria-hidden="true" loading="lazy" decoding="async"></span>'
           : '';
-        const identityArt = key === 'gender' && item.identityGlyph
-          ? '<span class="v094-gender-emblem v094-gender-emblem-' + escapeHtml(item.id) + '" aria-hidden="true"><span>' + escapeHtml(item.identityGlyph) + '</span></span>'
+        const identityArt = key === 'gender' && (item.identityImage || item.identityGlyph)
+          ? '<span class="v094-gender-emblem v094-gender-emblem-' + escapeHtml(item.id) + '" aria-hidden="true">' +
+            (item.identityImage
+              ? '<img src="' + escapeHtml(item.identityImage) + '" alt="" loading="lazy" decoding="async">'
+              : '<span>' + escapeHtml(item.identityGlyph) + '</span>') +
+            '</span>'
           : '';
         return '<button class="v094-choice' + (active ? ' is-selected' : '') + ((classPortrait || atlasArt || identityArt) ? ' v094-choice-has-art' : '') +
           '" data-' + key + '="' + escapeHtml(item.id) + '" aria-pressed="' + active + '">' +

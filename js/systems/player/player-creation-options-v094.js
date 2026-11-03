@@ -4,10 +4,10 @@
  */
 (() => {
   const genderOptions = Object.freeze([
-    Object.freeze({ id:'woman', label:'Woman', pronouns:'she/her', text:'The face that feels like yours returns through the mist.', glyph:'♀', effect:'Identity and pronouns only; no combat penalty or bonus.' }),
-    Object.freeze({ id:'man', label:'Man', pronouns:'he/him', text:'A familiar silhouette settles into focus beneath a road-worn cloak.', glyph:'♂', effect:'Identity and pronouns only; no combat penalty or bonus.' }),
-    Object.freeze({ id:'nonbinary', label:'Nonbinary', pronouns:'they/them', text:'Your shape returns on your own terms, beyond the labels others expect.', glyph:'⚧', effect:'Identity and pronouns only; no combat penalty or bonus.' }),
-    Object.freeze({ id:'unspoken', label:'Keep It Unspoken', pronouns:'they/them', text:'A face stays veiled. The world may learn your name before anything else.', glyph:'◌', effect:'Keep your identity private; no combat penalty or bonus.' })
+    Object.freeze({ id:'woman', label:'Woman', pronouns:'she/her', text:'The face that feels like yours returns through the mist.', glyph:'♀', artSource:'assets/generated/ui/icons/traveler-gender-woman.webp', effect:'Identity and pronouns only; no combat penalty or bonus.' }),
+    Object.freeze({ id:'man', label:'Man', pronouns:'he/him', text:'A familiar silhouette settles into focus beneath a road-worn cloak.', glyph:'♂', artSource:'assets/generated/ui/icons/traveler-gender-man.webp', effect:'Identity and pronouns only; no combat penalty or bonus.' }),
+    Object.freeze({ id:'nonbinary', label:'Nonbinary', pronouns:'they/them', text:'Your shape returns on your own terms, beyond the labels others expect.', glyph:'⚧', artSource:'assets/generated/ui/icons/traveler-gender-nonbinary.webp', effect:'Identity and pronouns only; no combat penalty or bonus.' }),
+    Object.freeze({ id:'unspoken', label:'Keep It Unspoken', pronouns:'they/them', text:'A face stays veiled. The world may learn your name before anything else.', glyph:'◌', artSource:'assets/generated/ui/icons/traveler-gender-unspoken.webp', effect:'Keep your identity private; no combat penalty or bonus.' })
   ]);
 
   const personalityOptions = Object.freeze([

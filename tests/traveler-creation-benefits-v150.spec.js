@@ -29,12 +29,15 @@ test('every traveler choice has its own art and gameplay effects are visible and
   await page.locator('#v094Next').click();
 
   await expect(page.locator('.v094-choice[data-gender]')).toHaveCount(4);
-  await expect(page.locator('.v094-gender-emblem')).toHaveCount(4);
+  await expect(page.locator('.v094-gender-emblem img')).toHaveCount(4);
   await expect(page.locator('.v094-choice[data-gender] .v094-choice-art')).toHaveCount(0);
-  await expect(page.locator('[data-gender="woman"] .v094-gender-emblem')).toHaveText('♀');
-  await expect(page.locator('[data-gender="man"] .v094-gender-emblem')).toHaveText('♂');
-  await expect(page.locator('[data-gender="nonbinary"] .v094-gender-emblem')).toHaveText('⚧');
-  await expect(page.locator('[data-gender="unspoken"] .v094-gender-emblem')).toHaveText('◌');
+  await expect(page.locator('[data-gender="woman"] .v094-gender-emblem img')).toHaveAttribute('src', /traveler-gender-woman\.webp/);
+  await expect(page.locator('[data-gender="man"] .v094-gender-emblem img')).toHaveAttribute('src', /traveler-gender-man\.webp/);
+  await expect(page.locator('[data-gender="nonbinary"] .v094-gender-emblem img')).toHaveAttribute('src', /traveler-gender-nonbinary\.webp/);
+  await expect(page.locator('[data-gender="unspoken"] .v094-gender-emblem img')).toHaveAttribute('src', /traveler-gender-unspoken\.webp/);
+  await expect.poll(() => page.locator('.v094-gender-emblem img').evaluateAll(images =>
+    images.every(image => image.complete && image.naturalWidth === 512 && image.naturalHeight === 512)
+  )).toBe(true);
   await choose(page, '[data-gender="woman"]');
 
   await expect(page.locator('.v094-choice[data-personality]')).toHaveCount(5);
