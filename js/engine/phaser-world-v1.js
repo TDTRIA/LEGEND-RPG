@@ -126,6 +126,7 @@
     market: 'assets/generated/locations/ashmere-market.webp',
     forge: 'assets/generated/locations/ashmere-forge.webp',
     archive: 'assets/generated/locations/ashmere-archive.webp',
+    cellar: 'assets/generated/locations/bell-cellar-undercroft.webp',
     greyfenInn: 'assets/generated/locations/greyfen-inn.webp',
     greyfenMarket: 'assets/generated/locations/greyfen-market.webp',
     greyfenForge: 'assets/generated/locations/greyfen-forge.webp',
@@ -167,7 +168,10 @@
     if (host.querySelector('.opening-road-v140')) environment = 'road';
     else if (host.querySelector('.opening-lore-v220')) environment = 'title';
     else if (host.querySelector('.v140-creation')) environment = 'title';
-    else if (host.querySelector('.rpg-battle')) environment = 'road';
+    else if (host.querySelector('.rpg-battle')) {
+      const arena = host.querySelector('.rpg-battlefield')?.dataset.arena || 'road';
+      environment = arena === 'greyfen' ? 'marsh' : arena === 'cellar' ? 'cellar' : 'road';
+    }
     else if (host.querySelector('.gss170-page')) environment = 'marsh';
     else if (host.querySelector('.gfm160-page')) environment = 'marsh';
     else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'archive';
@@ -408,7 +412,7 @@
 
     preload() {
       Object.keys(ASSETS).forEach(key => {
-        if (['title','ashmere','road','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive'].includes(key)) {
+        if (['title','ashmere','road','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive'].includes(key)) {
           this.load.image(key, ASSETS[key]);
         }
       });
@@ -737,7 +741,7 @@
       const isBog = key === 'marsh' || key === 'reeds' || key.includes('greyfen');
       const isWet = key === 'marsh' || key === 'reeds';
       const isFire = key === 'camp' || key.includes('forge');
-      const isArcane = key.includes('archive');
+      const isArcane = key.includes('archive') || key === 'cellar';
       const palette = isBog
         ? { haze: 0x8eaaa0, mote: 0xc6e8d0, glow: 0xa8e4cb, rain: 0x9bc9ce }
         : isFire
