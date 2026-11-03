@@ -1198,3 +1198,52 @@ body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon sv
     height: 34px;
   }
 }
+
+/* v0.30.5 — the Phaser town shell owns the hub controls now.
+   Keep the original Ashmere buttons in the DOM as route targets for the
+   production controller, but do not paint a second copy underneath the shell. */
+body.legend-world-shell-active #root .ash100-town > .ash099-topnav,
+body.legend-world-shell-active #root .ash100-town > .ash100-route-dock,
+body.legend-world-shell-active #root .ash100-town > .ash100-status,
+body.legend-world-shell-active #root .ash100-town > .ash100-destination-section {
+  display: none !important;
+}
+
+/* Local control surfaces remain solid and readable over live Phaser scenery.
+   These opaque panels do not darken the actual town or road artwork. */
+body.legend-world-shell-active #legend-world-shell-root .lws-panel {
+  background: linear-gradient(150deg, rgba(19, 29, 20, .97), rgba(6, 11, 7, .96) 72%) !important;
+  border-color: rgba(225, 194, 112, .32) !important;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, .38), inset 0 0 0 1px rgba(231, 201, 130, .07) !important;
+  backdrop-filter: blur(9px) saturate(1.08) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-place-option {
+  background: linear-gradient(120deg, rgba(30, 42, 29, .98), rgba(7, 13, 8, .97)) !important;
+  border-color: rgba(211, 189, 129, .26) !important;
+  backdrop-filter: blur(8px) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-place-option.is-selected {
+  background: linear-gradient(120deg, rgba(70, 57, 30, .98), rgba(15, 22, 14, .98)) !important;
+  border-color: rgba(230, 195, 110, .82) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-selected-place,
+body.legend-world-shell-active #legend-world-shell-root .lws-poi-hint,
+body.legend-world-shell-active #legend-world-shell-root .lws-poi-scene-note {
+  background: linear-gradient(145deg, rgba(35, 43, 29, .97), rgba(7, 13, 8, .96)) !important;
+  border-color: rgba(215, 184, 106, .34) !important;
+  box-shadow: inset 0 1px rgba(255, 246, 211, .05), 0 7px 20px rgba(0, 0, 0, .24) !important;
+  backdrop-filter: blur(8px) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-panel .lws-btn:not(.primary) {
+  background: linear-gradient(110deg, rgba(31, 43, 31, .97), rgba(7, 13, 8, .96)) !important;
+  border-color: rgba(211, 189, 129, .24) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-bottom-bar {
+  background: linear-gradient(180deg, rgba(17, 27, 18, .96), rgba(5, 10, 6, .95)) !important;
+  border-color: rgba(231, 201, 130, .30) !important;
+  backdrop-filter: blur(8px) !important;
+}
+body.legend-world-shell-active #legend-world-shell-root .lws-hud {
+  background: linear-gradient(180deg, rgba(13, 22, 14, .95), rgba(5, 10, 6, .93)) !important;
+  backdrop-filter: blur(8px) !important;
+}
