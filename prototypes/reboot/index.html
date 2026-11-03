@@ -117,10 +117,16 @@
       .title-block .menu-row { display: grid; grid-template-columns: 1fr; width: min(300px, 100%); }
       .disclaimer { left: 12px; right: 12px; text-align: left; bottom: 28px; }
       .prototype-note { font-size: 8px; }
-      #root { padding-bottom: 22px; }
     }
     @media (prefers-reduced-motion: reduce) {
       .mode.active, .primary, .secondary { animation: none !important; transition: none !important; }
+    }
+    /* The old outer preview bars are gone; let the responsive world shell use the full viewport. */
+    @media (max-width: 1199px) {
+      body.legend-world-shell-active #root {
+        margin: 0 !important;
+        min-height: 100vh !important;
+      }
     }
   </style>
   <script>
