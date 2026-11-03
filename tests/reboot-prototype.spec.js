@@ -255,6 +255,12 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surface)).toBe('modal');
     await page.locator('#legend-world-shell-modal-root [data-shell-modal-close]').click();
     await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surface)).toBe('town');
+    await page.setViewportSize({ width: 390, height: 844 });
+    const shellBounds = await page.locator('#root').evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    });
+    expect(shellBounds).toEqual({ x: 0, y: 0, width: 390, height: 844 });
     expect(pageErrors).toEqual([]);
   });
 
