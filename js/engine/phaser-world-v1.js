@@ -1338,7 +1338,7 @@
     }
 
     syncNativeCreationUi(surface = this.surface) {
-      const screen = root()?.querySelector('.v140-creation');
+      const screen = root()?.querySelector('.v140-creation:not(.v140-arrival)');
       if (String(surface || '') !== 'creation' || !screen) {
         if (this.nativeCreationUiActive || document.body?.classList.contains('legend-phaser-creation-ui-active')) {
           this.clearNativeCreationUi();
