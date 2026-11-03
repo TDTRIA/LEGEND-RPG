@@ -144,6 +144,32 @@ async function allocatePendingGrowth(page) {
   await expect(overlay).toHaveCount(0);
 }
 
+async function ensureShellActionsOpen(page) {
+  const isMobile = await page.evaluate(() => matchMedia('(max-width: 1199px)').matches);
+  if (!isMobile) return;
+  const isOpen = await page.evaluate(() => document.body.classList.contains('legend-shell-right-open'));
+  if (!isOpen) await page.locator('#legend-world-shell-root [data-world-action="toggle-right"]').click();
+  await expect(page.locator('#legend-world-shell-root #lws-panel-right')).toBeVisible();
+}
+
+async function visitTownRoute(page, view) {
+  await ensureShellActionsOpen(page);
+  const landmarkForView = { inn: 'inn', trader: 'market', smith: 'forge', road: 'road' };
+  const landmark = landmarkForView[view];
+  if (landmark) {
+    const option = page.locator('#legend-world-shell-root [data-world-place="' + landmark + '"]');
+    if (await option.count()) {
+      await expect(option).toBeVisible();
+      await option.click();
+      await page.locator('#legend-world-shell-root [data-world-action="visit-selected-place"]').click();
+      return;
+    }
+  }
+  const route = page.locator('#legend-world-shell-root [data-world-route="' + view + '"]');
+  await expect(route).toBeVisible();
+  await route.click();
+}
+
 test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('News & Roadmap opens from the title and returns without changing the save', async ({ page }) => {
     await openTitle(page);
@@ -424,9 +450,34 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(await page.evaluate(() => typeof window.LegendAshmereViewV099?.create)).toBe('function');
     await expect(page.locator('.ash100-town')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Ashmere', exact: true })).toBeVisible();
-    await expect(page.locator('.ash100-destination')).toHaveCount(8);
+    await expect(page.locator('.ash100-destination')).toHaveCount(8); // Hidden legacy route targets remain available to the real town controller.
     await expect(page.getByRole('heading', { name: 'Your Camp', exact: true })).toHaveCount(0);
-    await expect(page.getByRole('navigation', { name: 'Ashmere terminal navigation' })).toBeVisible();
+    const hubLayers = await page.evaluate(() => {
+      const selectors = ['.ash099-topnav', '.ash100-route-dock', '.ash100-status', '.ash100-destination-section'];
+      const root = document.querySelector('.ash100-town');
+      const styles = Object.fromEntries(selectors.map(selector => {
+        const node = root?.querySelector(selector);
+        return [selector, node ? getComputedStyle(node).display : 'missing'];
+      }));
+      const shell = document.querySelector('#legend-world-shell-root');
+      const panel = shell?.querySelector('#lws-panel-right');
+      const place = shell?.querySelector('.lws-place-option');
+      return {
+        styles,
+        shellVisible: Boolean(shell && !shell.hidden),
+        panelDisplay: panel ? getComputedStyle(panel).display : 'missing',
+        panelBackground: panel ? getComputedStyle(panel).backgroundImage : '',
+        placeBackground: place ? getComputedStyle(place).backgroundImage : '',
+        placeCount: shell?.querySelectorAll('[data-world-place]').length || 0
+      };
+    });
+    expect(Object.values(hubLayers.styles)).toEqual(['none', 'none', 'none', 'none']);
+    expect(hubLayers.shellVisible).toBe(true);
+    expect(hubLayers.panelDisplay).toBe('flex');
+    expect(hubLayers.placeCount).toBe(4);
+    expect(Math.min(...cssBackgroundAlphas(hubLayers.panelBackground))).toBeGreaterThanOrEqual(0.93);
+    expect(Math.min(...cssBackgroundAlphas(hubLayers.placeBackground))).toBeGreaterThanOrEqual(0.93);
+    await expect(page.locator('#legend-world-shell-root [data-world-place="market"]')).toBeVisible();
   });
 
   test('new generated RPG art is registered and exists as stable local files', async ({ page }) => {
@@ -462,7 +513,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Inn services enforce rest and supply costs, including insufficient-gold cases', async ({ page }) => {
     await startFreshCharacter(page, 'InnServicesQA');
-    await page.locator('.ash100-destination[data-ash-view="inn"]').click();
+    await visitTownRoute(page, 'inn');
 
     const innIcon = page.locator('#rest .ash099-asset-icon img');
     const roadIcon = page.locator('#camp .ash099-asset-icon img');
@@ -593,7 +644,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       window.LegendAshmereV099.renderAshmere();
       return {gold:Number(pl.gold||0),herbs:Number(pl.inventory.roadHerb||0)};
     });
-    await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
+    await visitTownRoute(page, 'crossing');
     await expect(page.locator('.ash099-screen h1').filter({ hasText: 'A Dry Crossing' })).toBeVisible();
     await expect(page.locator('[data-crossing-choice="posts"]')).toContainText('35g and 1 Road Herb');
     await expect(page.locator('[data-crossing-choice="reeds"]')).toContainText('65% chance');
@@ -607,7 +658,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(after.herbs).toBe(before.herbs+1);
     expect(after.complete).toBe(true);
     await page.locator('#ashBack').click();
-    await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
+    await visitTownRoute(page, 'crossing');
     await expect(page.locator('[data-crossing-choice]')).toHaveCount(0);
     await expect(page.locator('.ash099-screen')).toContainText('cannot be claimed again');
   });
@@ -633,7 +684,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       };
     });
 
-    await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
+    await visitTownRoute(page, 'crossing');
     await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'A Dry Crossing' })).toBeVisible();
     await page.evaluate(() => { Math.random = () => 0.9; });
     await page.locator('[data-crossing-choice="reeds"]').click();
@@ -659,7 +710,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.ash099-screen')).toContainText('You may try again');
 
     await page.locator('#ashBack').click();
-    await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
+    await visitTownRoute(page, 'crossing');
     await page.evaluate(() => { Math.random = () => 0.1; });
     await page.locator('[data-crossing-choice="reeds"]').click();
     await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'The shortcut pays off' })).toBeVisible();
@@ -831,7 +882,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
       window.LegendAshmereV099.renderAshmere();
     });
-    await page.locator('.ash100-destination[data-ash-view="work"]').click();
+    await visitTownRoute(page, 'work');
     await expect(page.locator('#ashBack')).toHaveText('Back to Greyfen');
     await expect(page.locator('[data-job-open="peat"]')).toContainText('Dry Peat Bricks');
     await expect(page.locator('[data-job-open="salvage"]')).toContainText('Sort a Salvage Basket');
@@ -855,7 +906,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       window.LegendAshmereV099.renderAshmere();
     });
     await expect(page.locator('.ash100-town-greyfen .ash100-hero img')).toHaveAttribute('src', /greyfen-town\.webp/);
-    await page.locator('.ash100-destination[data-ash-view="people"]').click();
+    await visitTownRoute(page, 'people');
     await expect(page.locator('.ash099-head')).toContainText(/People of Greyfen/i);
     await expect(page.locator('.ash099-npc-grid')).toContainText(/Boundary Archivist/i);
     await page.locator('.ash099-npc-card[data-ash-view="mara"]').click();
@@ -875,10 +926,10 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
       window.LegendAshmereV099.renderAshmere();
     });
-    await page.getByRole('navigation', { name: 'Greyfen town navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await expect(page.locator('.ash099-head')).toContainText(/Lowland Crossings/i);
     await expect(page.locator('[data-ash-view="road"]')).toHaveCount(0);
-    await expect(page.locator('[data-ash-view="regions"]')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root [data-world-route="regions"]')).toBeVisible();
   });
 
   test('blank traveler name shows inline validation without leaving creation', async ({ page }) => {
@@ -897,12 +948,12 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'AshmereQA');
     await expect(page.locator('.ash100-town')).toContainText('Ashmere');
     await expect(page.locator('.ash100-town')).toContainText('AshmereQA');
-    await expect(page.getByRole('navigation', { name: 'Ashmere terminal navigation' })).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root #lws-panel-right')).toBeVisible();
   });
 
   test('Routes opens route board instead of starting an expedition', async ({ page }) => {
     await startFreshCharacter(page, 'RoutesQA');
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await expect(page.locator('#root').getByRole('heading', { name: 'Routes & Expeditions', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: /The Old Road/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /Road Network/i })).toBeVisible();
@@ -911,7 +962,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Road Network opens regional map and stays on map', async ({ page }) => {
     await startFreshCharacter(page, 'MapQA');
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await page.locator('#root').getByRole('button', { name: /Road Network/i }).click();
     await expect(page.locator('#root').getByRole('heading', { name: 'Roads & Regions', exact: true })).toBeVisible();
     await expect(page.getByText('Greyfen', { exact: true })).toBeVisible();
@@ -973,7 +1024,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Profile opens account screen without falling back to town', async ({ page }) => {
     await startFreshCharacter(page, 'ProfileQA');
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Profile/i }).click();
+    await visitTownRoute(page, 'profile');
     await expect(page.getByText(/LEGEND ACCOUNT/i)).toBeVisible();
     await expect(page.getByText(/ASHMERE ACCOUNT/i)).toBeVisible();
     await expect(page.locator('.ash100-town')).toHaveCount(0);
@@ -991,7 +1042,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   test('Ashmere Town Square keeps direct conversations with local NPCs accessible', async ({ page }) => {
     await startFreshCharacter(page, 'PeopleQA');
     await expect(page.locator('.ash100-destinations')).toContainText('Town Square');
-    await page.locator('.ash100-destinations .ash100-destination[data-ash-view="people"]').click();
+    await visitTownRoute(page, 'people');
     await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'People of Ashmere' })).toBeVisible();
     const oricCard = page.locator('.ash099-npc-card[data-ash-view="oric"] img');
     await expect(oricCard).toBeVisible();
@@ -1037,7 +1088,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       pl.xp = 95;
       rt.savePlayer(pl);
     });
-    await page.locator('.ash100-destinations').getByRole('button', { name: /Work Board/i }).click();
+    await visitTownRoute(page, 'work');
     await expect(page.locator('#root').getByRole('heading', { name: 'Work Board', exact: true })).toBeVisible();
     await page.locator('[data-job-open="wood"]').click();
     await page.locator('#jobStrike').click();
@@ -1089,7 +1140,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       road.enemies = road.enemies.filter(enemy => enemy.id === 'goblin');
       rt.savePlayer(pl);
     });
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await enterOldRoadFromDeparture(page);
     await expect(page.locator('.exp100-head')).toBeVisible();
     await page.locator('#push').click();
@@ -1114,7 +1165,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Work Board offers multiple task types instead of one timing minigame', async ({ page }) => {
     await startFreshCharacter(page, 'VariedJobsQA');
-    await page.locator('.ash100-destinations').getByRole('button', { name: /Work Board/i }).click();
+    await visitTownRoute(page, 'work');
     await expect(page.locator('[data-job-open="wood"]')).toContainText(/Timing challenge/i);
     await expect(page.locator('[data-job-open="gate"]')).toContainText(/Read the signal/i);
     await expect(page.locator('[data-job-open="records"]')).toContainText(/Solve the clue/i);
@@ -1128,7 +1179,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Work Board memory sequence can be studied and repeated', async ({ page }) => {
     await startFreshCharacter(page, 'SequenceQA');
-    await page.locator('.ash100-destinations').getByRole('button', { name: /Work Board/i }).click();
+    await visitTownRoute(page, 'work');
     await page.locator('[data-job-open="crates"]').click();
     await expect(page.locator('.ash099-job-mode-sequence')).toBeVisible();
     await page.locator('#jobStartSequence').click();
@@ -1156,7 +1207,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       };
     });
 
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await page.getByRole('button', { name: /Side Stories & Contracts/i }).click();
     await expect(page.locator('.ash099-contract-card')).toHaveCount(5);
     await page.locator('[data-contract-accept="watchlightSurvey"]').click();
@@ -1171,7 +1222,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
     });
     await page.locator('#ashBack').click();
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await page.getByRole('button', { name: /Side Stories & Contracts/i }).click();
     await expect(page.locator('[data-contract-turnin="watchlightSurvey"]')).toBeVisible();
     await page.locator('[data-contract-turnin="watchlightSurvey"]').click();
@@ -1199,7 +1250,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
     // Reopening the journal must not expose a second turn-in action or pay again.
     await page.locator('#ashBack').click();
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await page.getByRole('button', { name: /Side Stories & Contracts/i }).click();
     await expect(page.locator('[data-contract-turnin="watchlightSurvey"]')).toHaveCount(0);
     const reopened = await page.evaluate(() => {
@@ -1365,7 +1416,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Forge shows material-specific sword illustrations and tactical passive descriptions', async ({ page }) => {
     await startFreshCharacter(page, 'WeaponTraitsQA');
-    await page.locator('.ash100-destinations').getByRole('button', { name: /Forge & Workshop/i }).click();
+    await visitTownRoute(page, 'smith');
     await expect(page.locator('[data-gear="woodenSword"] .ash099-weapon-art-woodenSword')).toBeVisible();
     await expect(page.locator('[data-gear="stoneSword"]')).toContainText(/Heavy Strike deals 25% more damage/i);
     await expect(page.locator('[data-gear="steelSword"]')).toContainText(/20% critical chance/i);
@@ -1374,7 +1425,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Old Road fork offers a persistent risk-reward route choice', async ({ page }) => {
     await startFreshCharacter(page, 'ForkQA');
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await enterOldRoadFromDeparture(page);
     const expeditionHeading = page.locator('.exp100-scene-live + .exp100-head');
     await expect(expeditionHeading).toBeVisible();
@@ -1400,7 +1451,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('High Ridge keeps the next stretch calmer than the Reed Cut', async ({ page }) => {
     await startFreshCharacter(page, 'RidgeQA');
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await enterOldRoadFromDeparture(page);
     await page.locator('#routeRidge').click();
     await expect(page.locator('.exp100-head')).toContainText(/Road Pressure falls by 8/i);
@@ -1885,7 +1936,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('road discovery stays hidden until the player notices it', async ({ page }) => {
     await startFreshCharacter(page, 'DiscoveryQA');
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await enterOldRoadFromDeparture(page);
     await expect(page.locator('#poiInspect')).toHaveCount(0);
     await expect(page.locator('.exp100-hotspot-find')).toContainText('Look closer');
@@ -1898,7 +1949,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('route choice changes the later waystation scene text', async ({ page }) => {
     await startFreshCharacter(page, 'RouteEchoQA');
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await enterOldRoadFromDeparture(page);
     await page.locator('#routeReeds').click();
     await page.locator('#push').click();
@@ -1927,8 +1978,16 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       return { within: b.width <= a.width + 1 && b.height <= a.height + 1, iconWidth: a.width, imageWidth: b.width };
     }));
     expect(iconBounds.every(item => item.within)).toBe(true);
-    const navImmediatelyAfterHero = await page.locator('.ash100-hero').evaluate(hero => hero.nextElementSibling?.classList.contains('ash099-topnav'));
-    expect(navImmediatelyAfterHero).toBe(true);
+    const hubControlVisibility = await page.evaluate(() => ({
+      legacyNav: getComputedStyle(document.querySelector('.ash099-topnav')).display,
+      legacyDestinations: getComputedStyle(document.querySelector('.ash100-destination-section')).display,
+      shellLandmarks: document.querySelectorAll('#legend-world-shell-root [data-world-place]').length,
+      shellPanelVisible: getComputedStyle(document.querySelector('#legend-world-shell-root #lws-panel-right')).display !== 'none'
+    }));
+    expect(hubControlVisibility.legacyNav).toBe('none');
+    expect(hubControlVisibility.legacyDestinations).toBe('none');
+    expect(hubControlVisibility.shellLandmarks).toBe(4);
+    expect(hubControlVisibility.shellPanelVisible).toBe(true);
   });
 
   test('traveler creation shapes a soul with an unnamed presence and raster LEGEND wordmark', async ({ page }) => {
@@ -2003,7 +2062,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Trading Post uses Buy and Sell tabs with illustrated goods', async ({ page }) => {
     await startFreshCharacter(page, 'MarketUXQA');
-    await page.locator('[data-ash-view="trader"]').click();
+    await visitTownRoute(page, 'trader');
     await expect(page.locator('.ash099-market-console')).toBeVisible();
     await expect(page.locator('.ash099-market-item').first()).toBeVisible();
     await expect(page.locator('.ash099-market-item img').first()).toBeVisible();
@@ -2016,7 +2075,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Workshop exposes the crafting bench directly from the Forge', async ({ page }) => {
     await startFreshCharacter(page, 'CraftingEntryQA');
-    await page.locator('[data-ash-view="smith"]').click();
+    await visitTownRoute(page, 'smith');
     await expect(page.locator('.ash099-forge-tabs [data-forge-tab="craft"]')).toBeVisible();
     await page.locator('.ash099-forge-tabs [data-forge-tab="craft"]').click();
     await expect(page.getByRole('heading', { name: 'Crafting Bench' })).toBeVisible();
@@ -2113,7 +2172,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Blacksmith puts the equipped kit first and separates weapons from armor', async ({ page }) => {
     await startFreshCharacter(page, 'ForgeUXQA');
-    await page.locator('[data-ash-view="smith"]').click();
+    await visitTownRoute(page, 'smith');
     await expect(page.locator('.ash099-forge-loadout')).toBeVisible();
     await expect(page.locator('.ash099-forge-traveler')).toBeVisible();
     await expect(page.locator('.ash099-forge-grid')).toContainText(/Wooden Sword|Stone Sword/i);
@@ -2124,7 +2183,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Traveler profile shows the class portrait, loadout, and pack instead of raw stats tiles', async ({ page }) => {
     await startFreshCharacter(page, 'TravelerUXQA');
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: 'Traveler' }).click();
+    await visitTownRoute(page, 'sheet');
     await expect(page.locator('.ash099-traveler-profile')).toBeVisible();
     await expect(page.locator('.ash099-traveler-profile-portrait')).toBeVisible();
     await expect(page.locator('.ash099-profile-equipment-grid')).toBeVisible();
@@ -2137,16 +2196,19 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'MobileQA');
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2);
     expect(overflow).toBe(false);
-    const navOrder = await page.evaluate(() => {
-      const nav = document.querySelector('.ash099-topnav');
-      const destinations = document.querySelector('.ash100-destinations');
-      return !!nav && !!destinations && !!(nav.compareDocumentPosition(destinations) & Node.DOCUMENT_POSITION_FOLLOWING);
-    });
-    expect(navOrder).toBe(true);
-    const routes = page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i });
+    const hubVisibility = await page.evaluate(() => ({
+      legacyNav: getComputedStyle(document.querySelector('.ash099-topnav')).display,
+      legacyRoutes: getComputedStyle(document.querySelector('.ash100-destination-section')).display
+    }));
+    expect(hubVisibility.legacyNav).toBe('none');
+    expect(hubVisibility.legacyRoutes).toBe('none');
+    await ensureShellActionsOpen(page);
+    const routes = page.locator('#legend-world-shell-root [data-world-route="routes"]');
     const box = await routes.boundingBox();
     expect(box).not.toBeNull();
     expect(box.height).toBeGreaterThanOrEqual(40);
+    await routes.click();
+    await expect(page.locator('.ash099-screen')).toContainText(/Routes|Region/i);
   });
 
   test('cinematic title layer and road transition controller load', async ({ page }) => {
@@ -2300,17 +2362,16 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
   expect(landmarks.pointLightCount).toBeGreaterThanOrEqual(0);
   expect(landmarks.pointLightCount).toBeLessThanOrEqual(4);
   expect(landmarks.productionStorage).toBe(true);
+  const hiddenRouteTargets = await page.locator('.ash100-destination[data-ash-view]').count();
+  expect(hiddenRouteTargets).toBeGreaterThanOrEqual(4);
+  await expect(page.locator('.ash100-destination-section')).toBeHidden();
 
   // A map-space pointer-up hits the Phaser landmark's screen-space bounds.
   // The engine selects the matching production POI; the existing shell action
   // then enters the real market controller and its real buy/sell state.
   const market = landmarks.landmarks.find(item => item.id === 'market');
   expect(market).toBeTruthy();
-  await page.evaluate(({ x, y }) => {
-    document.dispatchEvent(new PointerEvent('pointerup', {
-      bubbles: true, cancelable: true, button: 0, clientX: x, clientY: y
-    }));
-  }, { x: market.clientX, y: market.clientY });
+  await page.mouse.click(market.clientX, market.clientY);
 
   await expect(page.locator('#legend-world-shell-root .lws-selected-place h3')).toHaveText('Market');
   await expect(page.locator('#legend-world-shell-root [data-world-action="visit-selected-place"]')).toBeEnabled();
@@ -2332,7 +2393,7 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
 
   // Forge and Inn interiors are classified by the explicit town-service key,
   // not brittle visible-text matching, and get their own native Phaser dressing.
-  await page.locator('.ash100-destination[data-ash-view="smith"]').click();
+  await visitTownRoute(page, 'smith');
   await expect(page.locator('.ash099-forge-console')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('forge');
   const forgeScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
@@ -2342,7 +2403,7 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
   await page.locator('#ashBack').click();
   await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.serviceDressingCount)).toBe(0);
-  await page.locator('.ash100-destination[data-ash-view="inn"]').click();
+  await visitTownRoute(page, 'inn');
   await expect(page.locator('.ash099-service-dashboard')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('inn');
   const innScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
