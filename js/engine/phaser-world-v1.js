@@ -419,6 +419,8 @@
       this.bootCompleteCallback = null;
       this.surface = '';
       this.surfaceTransitionCount = 0;
+      this.ashmereLandmarks = [];
+      this.hoveredAshmereLandmark = '';
     }
 
     preload() {
@@ -448,7 +450,9 @@
           parallaxEnabled: !reducedMotion(),
           engineAwakened: this.engineAwakened,
           surface: this.surface,
-          surfaceTransitionCount: this.surfaceTransitionCount
+          surfaceTransitionCount: this.surfaceTransitionCount,
+          ashmerelandmarks: this.ashmereLandmarks.map(item => ({ id: item.id, x: item.x, y: item.y })),
+          hoveredAshmereLandmark: this.hoveredAshmereLandmark
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
         flash: (color, duration) => {
@@ -664,6 +668,7 @@
       if (next === this.surface) return;
       const previous = this.surface;
       this.surface = next;
+      this.syncAshmereLandmarks();
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -698,6 +703,178 @@
 
     dimensions() {
       return { width: this.scale.width || 1600, height: this.scale.height || 900 };
+    }
+
+    ashmerelandmarkSpecs() {
+      const mobile = this.dimensions().width < 700;
+      return [
+        { id: 'inn', view: 'inn', label: 'THE INN', glyph: '⌂', x: mobile ? 0.15 : 0.25, y: mobile ? 0.48 : 0.43 },
+        { id: 'market', view: 'trader', label: 'MARKET', glyph: '◇', x: mobile ? 0.38 : 0.42, y: mobile ? 0.43 : 0.38 },
+        { id: 'forge', view: 'smith', label: 'FORGE', glyph: '⚒', x: mobile ? 0.62 : 0.58, y: mobile ? 0.43 : 0.38 },
+        { id: 'road', view: 'road', label: 'OLD ROAD', glyph: '➜', x: mobile ? 0.85 : 0.75, y: mobile ? 0.48 : 0.43 }
+      ];
+    }
+
+    syncAshmereLandmarks() {
+      const active = this.environment === 'ashmere' &&
+        this.surface === 'town' &&
+        Boolean(root()?.querySelector('.ash100-town-ashmere'));
+      if (!active) {
+        this.clearAshmereLandmarks();
+        return;
+      }
+      if (!this.ashmereLandmarks.length) this.createAshmereLandmarks();
+      this.layoutAshmereLandmarks();
+    }
+
+    createAshmereLandmarks() {
+      this.clearAshmereLandmarks();
+      const reduced = reducedMotion();
+      this.ashmerelandmarkSpecs().forEach(spec => {
+        const halo = this.add.circle(0, -24, 27, 0xd7b66e, 0.075);
+        const shadow = this.add.ellipse(0, 15, 29, 8, 0x020604, 0.52);
+        const beacon = this.add.rectangle(0, -9, 1.5, 24, 0xe1c47e, 0.35);
+        const ring = this.add.circle(0, -25, 14, 0x07100b, 0.82);
+        ring.setStrokeStyle(1.4, 0xe5c77f, 0.84);
+        const core = this.add.circle(0, -25, 4, 0xf2d899, 0.96);
+        const glyph = this.add.text(0, -25, spec.glyph, {
+          fontFamily: 'Georgia, Times New Roman, serif',
+          fontSize: '15px',
+          color: '#fff2ce',
+          stroke: '#172016',
+          strokeThickness: 2
+        }).setOrigin(0.5);
+        const plate = this.add.rectangle(0, 15, 92, 25, 0x050a07, 0.82);
+        plate.setStrokeStyle(1, 0xc6a760, 0.74);
+        const label = this.add.text(0, 10, spec.label, {
+          fontFamily: 'Arial, sans-serif',
+          fontSize: '9px',
+          fontStyle: 'bold',
+          letterSpacing: 1.1,
+          color: '#f2e5c6'
+        }).setOrigin(0.5);
+        const action = this.add.text(0, 20, 'INSPECT', {
+          fontFamily: 'Arial, sans-serif',
+          fontSize: '6px',
+          letterSpacing: 1.2,
+          color: '#cdb77f'
+        }).setOrigin(0.5);
+        const container = this.add.container(0, 0, [halo, shadow, beacon, ring, core, glyph, plate, label, action]);
+        container.setDepth(10);
+        container.setSize(112, 84);
+        container.setInteractive(
+          new Phaser.Geom.Rectangle(-56, -39, 112, 84),
+          Phaser.Geom.Rectangle.Contains
+        );
+        container.on('pointerover', () => this.setHoveredAshmereLandmark(spec.id));
+        container.on('pointerout', () => this.setHoveredAshmereLandmark(''));
+        container.on('pointerup', () => this.selectAshmereLandmark(spec.id));
+        if (!reduced) {
+          this.tweens.add({
+            targets: halo,
+            alpha: 0.14,
+            scale: 1.35,
+            duration: Phaser.Math.Between(1700, 2300),
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
+          this.tweens.add({
+            targets: ring,
+            scale: 1.12,
+            duration: 2100,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+            delay: Phaser.Math.Between(0, 500)
+          });
+        }
+        this.ashmereLandmarks.push({
+          id: spec.id,
+          view: spec.view,
+          x: 0,
+          y: 0,
+          xRatio: spec.x,
+          yRatio: spec.y,
+          container,
+          halo,
+          ring,
+          label,
+          action,
+          baseScale: 1,
+          hitWidth: 58,
+          hitHeight: 44
+        });
+      });
+    }
+
+    clearAshmereLandmarks() {
+      this.ashmereLandmarks.forEach(item => {
+        [item.container, item.halo, item.ring].forEach(object => {
+          if (object) this.tweens.killTweensOf(object);
+        });
+        if (item.container?.active) item.container.destroy(true);
+      });
+      this.ashmereLandmarks = [];
+      this.hoveredAshmereLandmark = '';
+    }
+
+    layoutAshmereLandmarks() {
+      if (!this.ashmereLandmarks.length) return;
+      const size = this.dimensions();
+      const narrow = size.width < 700;
+      const scale = narrow ? 0.84 : size.width < 1100 ? 0.92 : 1;
+      this.ashmereLandmarks.forEach(item => {
+        item.x = size.width * item.xRatio;
+        item.y = size.height * item.yRatio;
+        item.baseScale = scale;
+        item.container.setPosition(item.x, item.y);
+        item.container.setScale(scale * (this.hoveredAshmereLandmark === item.id ? 1.10 : 1));
+        item.hitWidth = 58 * scale;
+        item.hitHeight = 44 * scale;
+      });
+    }
+
+    setHoveredAshmereLandmark(id) {
+      const next = this.ashmereLandmarks.some(item => item.id === id) ? id : '';
+      if (next === this.hoveredAshmereLandmark) return;
+      this.hoveredAshmereLandmark = next;
+      this.ashmereLandmarks.forEach(item => {
+        const hovered = item.id === next;
+        item.container.setScale(item.baseScale * (hovered ? 1.10 : 1));
+        item.ring.setStrokeStyle(hovered ? 2 : 1.4, hovered ? 0xffe6a1 : 0xe5c77f, hovered ? 1 : 0.84);
+        item.label.setColor(hovered ? '#fff4d5' : '#f2e5c6');
+        item.action.setText(hovered ? 'OPEN DETAILS' : 'INSPECT');
+      });
+    }
+
+    handleAshmerePointer(clientX, clientY, activate = false) {
+      if (this.environment !== 'ashmere' || this.surface !== 'town' || !this.ashmereLandmarks.length) return false;
+      const size = this.dimensions();
+      const screenWidth = Math.max(1, window.innerWidth || size.width);
+      const screenHeight = Math.max(1, window.innerHeight || size.height);
+      const x = Number(clientX) / screenWidth * size.width;
+      const y = Number(clientY) / screenHeight * size.height;
+      const hit = this.ashmereLandmarks.find(item =>
+        Math.abs(x - item.x) <= item.hitWidth &&
+        Math.abs(y - item.y) <= item.hitHeight + 14
+      );
+      this.setHoveredAshmereLandmark(hit?.id || '');
+      return activate && hit ? this.selectAshmereLandmark(hit.id) : Boolean(hit);
+    }
+
+    selectAshmereLandmark(id) {
+      if (this.environment !== 'ashmere' || this.surface !== 'town') return false;
+      const landmark = this.ashmereLandmarks.find(item => item.id === String(id || ''));
+      if (!landmark || !root()?.querySelector('.ash100-town-ashmere')) return false;
+      const panels = window.LegendWorldShellPanelsV170;
+      if (typeof panels?.selectAshmerePoi !== 'function' || !panels.selectAshmerePoi(landmark.id)) return false;
+      this.setHoveredAshmereLandmark(landmark.id);
+      window.LegendWorldShellV170?.refresh?.();
+      window.dispatchEvent(new CustomEvent('legend:ashmere-landmark-selected', {
+        detail: { id: landmark.id, view: landmark.view }
+      }));
+      return true;
     }
 
     setLookTarget(clientX, clientY) {
@@ -980,6 +1157,7 @@
 
       this.createAtmosphere(key);
       this.layoutBackground();
+      this.syncAshmereLandmarks();
       if (!immediate && !reducedMotion()) {
         const camera = this.cameras.main;
         camera.setZoom(1.018);
@@ -1022,6 +1200,7 @@
           object.setPosition(size.width * object._legendU, size.height * object._legendV);
         }
       });
+      this.layoutAshmereLandmarks();
     }
 
     pulse(kind) {
@@ -1248,6 +1427,21 @@
         : 'hit';
       window.__legendRebootBridge.pulse(kind);
     });
+    const isInteractiveWorldControl = event => {
+      const target = event.target?.nodeType === 1 ? event.target : event.target?.parentElement;
+      return Boolean(target?.closest?.(
+        'button, a, input, textarea, select, [role="button"], [data-world-action], ' +
+        '[data-world-place], [data-ash-view], .lws-panel, .lws-hud, .lws-bottom-bar, ' +
+        '#legend-world-shell-modal-root'
+      ));
+    };
+    document.addEventListener('pointermove', event => {
+      if (!isInteractiveWorldControl(event)) realmScene?.handleAshmerePointer?.(event.clientX, event.clientY, false);
+    }, { passive: true });
+    document.addEventListener('pointerup', event => {
+      if (event.button !== 0 || isInteractiveWorldControl(event)) return;
+      realmScene?.handleAshmerePointer?.(event.clientX, event.clientY, true);
+    }, true);
     root()?.addEventListener('pointermove', event => {
       window.__legendRebootBridge?.lookAt?.(event.clientX, event.clientY);
     }, { passive: true });
@@ -1267,6 +1461,7 @@
     pulse: kind => realmScene?.pulse?.(kind),
     setSurface: surface => realmScene?.setSurface?.(surface),
     refresh: () => inferEnvironment(),
+    selectAshmereLandmark: id => realmScene?.selectAshmereLandmark?.(id) || false,
     get saveKey() { return SAVE_KEY; }
   });
 
