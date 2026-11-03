@@ -13,7 +13,11 @@
     ? 'legend-phaser-engine-awakened-v1'
     : 'legend-phaser-production-engine-awakened-v1';
   if (!IS_PROTOTYPE) {
+    // The Phaser canvas is a fixed, non-interactive world layer behind the HTML
+    // game controls. The production CSS intentionally scopes that contract to
+    // BODY, while the intro visibility gate is scoped to HTML.
     document.documentElement.classList.add('legend-phaser-world-active', 'engine-intro-active');
+    document.body?.classList.add('legend-phaser-world-active');
   }
   const root = () => document.getElementById('root');
   const byId = id => document.getElementById(id);
