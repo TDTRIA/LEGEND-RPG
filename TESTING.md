@@ -83,9 +83,9 @@ npm run test:e2e:report
 
 Production main is **v0.30.4**. The current published build contains the Runway traveler identity portraits, mandatory opening annals, road-first Oric/Wolf tutorial, balanced Old Road rewards, illustrated expedition report, and partial Greyfen content.
 
-The latest audio work is staged separately in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98):
-- The import workflow completed successfully and the branch contains 13 ambience loops and 35 one-shot audio effects.
-- The original main-theme source now renders successfully to a roughly 10½-minute MP3 loop, staged in PR #98. In-game listening, balance, loop-seam, sound-toggle, and scene-transition verification are still required before merge/shipping.
+The generated soundtrack and world-audio integration are staged together in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98):
+- The branch contains 13 location ambience loops, 35 generated one-shot effects, and the original main-theme MP3. The production controller keeps one theme loop and one location loop, honors `legend-road-sound`, and changes ambience with Phaser environment/surface transitions.
+- The original main-theme source renders to a roughly 10½-minute MP3 loop. Playwright covers asset selection, duplicate-loop prevention, volume levels, and the sound-toggle contract; final listening for balance, loop seam, and long-session fatigue remains required.
 - The PR Playwright run is still pending at this checkpoint. Do not mark the branch green until the final-head workflow completes; do not treat its status as a verification of the live main branch.
 
 The active production engine is hybrid: Phaser 4.1 renders the persistent world layer, while the existing browser modules still own most UI, dialogue, account, combat, expedition, and save behavior. Phaser migration itself must be verified surface by surface; no save migration is part of it.

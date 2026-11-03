@@ -164,6 +164,7 @@
 
   function setEnvironment(name, immediate = false) {
     const environment = String(name || 'title');
+    window.LegendRoadAudioV100?.setEnvironment?.(environment);
     if (environment === currentEnvironment) return;
     currentEnvironment = environment;
     if (realmScene && realmScene.setEnvironment) realmScene.setEnvironment(environment, immediate);
@@ -225,7 +226,7 @@
 
   function inferSurface() {
     const host = root();
-    if (!host || !realmScene?.setSurface) return;
+    if (!host) return;
     const modal = byId('legend-world-shell-modal-root');
     let surface = 'title';
     if (modal && !modal.hidden) surface = 'modal';
@@ -244,9 +245,10 @@
     else if (host.querySelector('.ash100-town')) surface = 'town';
     else if (host.querySelector('.ash099, .reg100')) surface = 'town-service';
     else if (host.querySelector('.v120-title')) surface = 'title';
+    window.LegendRoadAudioV100?.setSurface?.(surface);
     if (surface !== currentSurface) {
       currentSurface = surface;
-      realmScene.setSurface(surface);
+      realmScene?.setSurface?.(surface);
     }
   }
 
