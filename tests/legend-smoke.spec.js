@@ -2299,7 +2299,7 @@ test('the production root plays its Phaser awakening and exposes the skip contro
 
   await expect(page.locator('#engine-skip')).toBeVisible({ timeout: 10000 });
   await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('engine-intro-active'))).toBe(true);
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true, { timeout: 15000 });
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready), { timeout: 15000 }).toBe(true);
   await expect(page.locator('.v120-title')).toBeVisible();
   const boot = await page.evaluate(() => ({
     marker: sessionStorage.getItem('legend-phaser-production-engine-awakened-v1'),
