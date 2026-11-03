@@ -19,6 +19,9 @@
   let soundEnabled = true;
   let ambientAudio = null;
   let observer = null;
+  let modalObserver = null;
+  let currentSurface = '';
+  let skipAwakeningRequested = false;
   const settingsStorage = window.LegendSettingsStorageV120?.create();
 
   function safeRead() {
@@ -162,15 +165,61 @@
       else if (text.includes('inn')) environment = environment === 'Greyfen' ? 'greyfenInn' : 'inn';
     }
     setEnvironment(environment);
+    inferSurface();
+  }
+
+  function inferSurface() {
+    const host = root();
+    if (!host || !realmScene?.setSurface) return;
+    const modal = byId('legend-world-shell-modal-root');
+    let surface = 'title';
+    if (modal && !modal.hidden) surface = 'modal';
+    else if (host.querySelector('.dispatches-v140')) surface = 'dispatches';
+    else if (host.querySelector('.settings09x')) surface = 'settings';
+    else if (host.querySelector('.legend-credits-overlay')) surface = 'credits';
+    else if (host.querySelector('.opening-lore-v220')) surface = 'annals';
+    else if (host.querySelector('.v140-creation, .v094-creation, [data-character-creation]')) surface = 'creation';
+    else if (host.querySelector('.opening-road-v140')) surface = 'awakening';
+    else if (host.querySelector('.rpg-battle')) surface = 'combat';
+    else if (host.querySelector('.v152-combat-results')) surface = 'combat-results';
+    else if (host.querySelector('.exp150-return-report, .exp100-outcome')) surface = 'expedition-results';
+    else if (host.querySelector('.exp150-world-page, .exp100-scene')) surface = 'expedition';
+    else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) surface = 'dungeon';
+    else if (host.querySelector('.gss170-page, .gfm160-page')) surface = 'field-site';
+    else if (host.querySelector('.ash100-town')) surface = 'town';
+    else if (host.querySelector('.ash099, .reg100')) surface = 'town-service';
+    else if (host.querySelector('.v120-title')) surface = 'title';
+    if (surface !== currentSurface) {
+      currentSurface = surface;
+      realmScene.setSurface(surface);
+    }
+  }
+
+  function observeModalRoot() {
+    if (modalObserver || !window.MutationObserver || !document.body) return;
+    // The persistent shell modal lives beside #root, not inside it. Watch the
+    // body for its arrival and hidden-state changes so Phaser can transition
+    // between in-world screens and shell overlays as one presentation engine.
+    modalObserver = new MutationObserver(() => inferSurface());
+    modalObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['hidden']
+    });
   }
 
   function observeRoot() {
     if (observer) observer.disconnect();
     const host = root();
     if (!host || !window.MutationObserver) return;
-    observer = new MutationObserver(() => inferEnvironment());
+    observer = new MutationObserver(() => {
+      inferEnvironment();
+      observeModalRoot();
+    });
     observer.observe(host, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
     inferEnvironment();
+    observeModalRoot();
   }
 
   function showDispatches() {
@@ -321,6 +370,13 @@
       this.lookTarget = { x: 0, y: 0 };
       this.lookCurrent = { x: 0, y: 0 };
       this.motionReduced = false;
+      this.engineAwakened = false;
+      this.awakeningActive = false;
+      this.bootObjects = [];
+      this.bootEvents = [];
+      this.bootCompleteCallback = null;
+      this.surface = '';
+      this.surfaceTransitionCount = 0;
     }
 
     preload() {
@@ -340,21 +396,261 @@
       });
       realmScene = this;
       window.__legendRebootBridge = {
-        version: 'phaser-atmosphere-v2',
+        version: 'phaser-engine-v1',
         setEnvironment: (name, immediate) => this.setEnvironment(name, immediate),
         pulse: kind => this.pulse(kind),
         lookAt: (x, y) => this.setLookTarget(x, y),
         snapshot: () => ({
           environment: this.environment,
           atmosphereCount: this.ambienceObjects.filter(item => item && item.active).length,
-          parallaxEnabled: !reducedMotion()
+          parallaxEnabled: !reducedMotion(),
+          engineAwakened: this.engineAwakened,
+          surface: this.surface,
+          surfaceTransitionCount: this.surfaceTransitionCount
         }),
+        finishAwakening: () => this.finishEngineAwakening(true),
         flash: (color, duration) => {
           if (reducedMotion()) return;
           this.cameras.main.flash(duration || 240, color?.r || 188, color?.g || 155, color?.b || 92);
         }
       };
       this.setEnvironment('title', true);
+    }
+
+    runEngineAwakening(onComplete) {
+      if (this.awakeningActive || this.engineAwakened) {
+        onComplete?.();
+        return;
+      }
+      this.awakeningActive = true;
+      this.bootCompleteCallback = onComplete;
+      const size = this.dimensions();
+      const cx = size.width / 2;
+      const cy = size.height / 2;
+      const reduced = reducedMotion();
+      const veil = this.add.rectangle(cx, cy, size.width, size.height, 0x020503, 0.97).setDepth(30);
+      this.bootObjects.push(veil);
+
+      // Phaser-native seal: the real world image is held behind the scene while
+      // the renderer, camera and world presentation layers come online.
+      const portal = this.add.container(cx, cy).setDepth(34);
+      this.bootObjects.push(portal);
+      const baseSize = Math.min(size.width, size.height);
+      const outer = this.add.circle(0, 0, baseSize * 0.205, 0x000000, 0);
+      outer.setStrokeStyle(2, 0xcba85f, 0.62);
+      const middle = this.add.circle(0, 0, baseSize * 0.17, 0x000000, 0);
+      middle.setStrokeStyle(1, 0xe9d49c, 0.52);
+      const inner = this.add.circle(0, 0, baseSize * 0.115, 0x000000, 0);
+      inner.setStrokeStyle(1, 0x8fa88b, 0.58);
+      const diamondA = this.add.rectangle(0, 0, baseSize * 0.29, baseSize * 0.29, 0x000000, 0);
+      diamondA.setStrokeStyle(1, 0xcba85f, 0.3);
+      diamondA.setRotation(Math.PI / 4);
+      const diamondB = this.add.rectangle(0, 0, baseSize * 0.235, baseSize * 0.235, 0x000000, 0);
+      diamondB.setStrokeStyle(1, 0x8fa88b, 0.22);
+      diamondB.setRotation(-Math.PI / 4);
+      const glyphs = [];
+      const glyphSet = ['✦', 'ᚨ', '✧', 'ᛟ', '✦', 'ᚱ', '✧', 'ᛞ'];
+      const radius = baseSize * 0.205;
+      glyphSet.forEach((glyph, index) => {
+        const angle = Math.PI * 2 * index / glyphSet.length;
+        const mark = this.add.text(Math.cos(angle) * radius, Math.sin(angle) * radius, glyph, {
+          fontFamily: 'Georgia, serif',
+          fontSize: Math.max(14, Math.round(baseSize * 0.027)) + 'px',
+          color: '#e9d49c'
+        }).setOrigin(0.5);
+        glyphs.push(mark);
+      });
+      portal.add([outer, middle, inner, diamondA, diamondB, ...glyphs]);
+      portal.setScale(0.52);
+      portal.setAlpha(0.08);
+
+      const heading = this.add.text(cx, cy - Math.min(size.height * 0.105, 94), 'LEGEND', {
+        fontFamily: 'Georgia, Times New Roman, serif',
+        fontSize: Math.round(Math.min(size.width * 0.079, size.height * 0.13, 104)) + 'px',
+        fontStyle: 'bold',
+        letterSpacing: 9,
+        color: '#f0e4c5',
+        shadow: { offsetX: 0, offsetY: 4, color: '#000000', blur: 22, fill: true }
+      }).setOrigin(0.5).setDepth(40).setAlpha(0).setScale(0.84);
+      const subheading = this.add.text(cx, cy - 5, 'THE AWAKENING', {
+        fontFamily: 'Georgia, Times New Roman, serif',
+        fontSize: Math.max(13, Math.round(Math.min(size.width * 0.022, 23))) + 'px',
+        letterSpacing: 7,
+        color: '#d9c38e'
+      }).setOrigin(0.5).setDepth(40).setAlpha(0);
+      const systemLabel = this.add.text(cx, cy + Math.min(size.height * 0.205, 176), 'INITIALIZING WORLD ENGINE', {
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '10px',
+        fontStyle: 'bold',
+        letterSpacing: 2.6,
+        color: '#e8d39d'
+      }).setOrigin(0.5).setDepth(40).setAlpha(0);
+      const systemDetail = this.add.text(cx, cy + Math.min(size.height * 0.237, 205), 'BUILDING THE SCENE GRAPH  ·  RESTORING THE REALM', {
+        fontFamily: 'Arial, sans-serif',
+        fontSize: '9px',
+        letterSpacing: 1.5,
+        color: '#aab7a3'
+      }).setOrigin(0.5).setDepth(40).setAlpha(0);
+      this.bootObjects.push(heading, subheading, systemLabel, systemDetail);
+
+      const barWidth = Math.min(size.width * 0.35, 380);
+      const barY = cy + Math.min(size.height * 0.285, 248);
+      const barTrack = this.add.rectangle(cx, barY, barWidth, 3, 0x71836c, 0.28).setDepth(40).setAlpha(0);
+      const barFill = this.add.rectangle(cx - barWidth / 2, barY, barWidth, 3, 0xe2c47e, 0.92)
+        .setOrigin(0, 0.5).setScale(0.015, 1).setDepth(41).setAlpha(0);
+      this.bootObjects.push(barTrack, barFill);
+
+      const statusRows = [
+        'INITIALIZING WORLD ENGINE',
+        'LINKING TOWNS  ·  ROADS  ·  ENCOUNTERS',
+        'WAKING THE REALM',
+        'WORLD ENGINE ONLINE'
+      ];
+      const details = [
+        'BUILDING THE SCENE GRAPH  ·  RESTORING THE REALM',
+        'BINDING THE CURRENT GAMEPLAY SYSTEMS',
+        'LIGHTING THE WORLD  ·  OPENING THE PATHS',
+        'THE WORLD IS READY FOR YOUR ARRIVAL'
+      ];
+      const moteCount = reduced ? 6 : 30;
+      for (let i = 0; i < moteCount; i++) {
+        const angle = Math.PI * 2 * i / moteCount;
+        const distance = baseSize * Phaser.Math.FloatBetween(0.23, 0.34);
+        const mote = this.add.circle(
+          cx + Math.cos(angle) * distance,
+          cy + Math.sin(angle) * distance,
+          Phaser.Math.FloatBetween(1.2, 3.1),
+          i % 3 === 0 ? 0xf1d89b : 0xa7b997,
+          Phaser.Math.FloatBetween(0.25, 0.75)
+        ).setDepth(36);
+        this.bootObjects.push(mote);
+        if (!reduced) {
+          this.tweens.add({
+            targets: mote,
+            x: cx + Math.cos(angle + 0.55) * (distance * 0.68),
+            y: cy + Math.sin(angle + 0.55) * (distance * 0.68),
+            alpha: 0.08,
+            scale: 0.25,
+            duration: Phaser.Math.Between(1250, 2200),
+            repeat: -1,
+            yoyo: true,
+            ease: 'Sine.easeInOut',
+            delay: i * 18
+          });
+        }
+      }
+
+      const duration = reduced ? 450 : 4700;
+      this.cameras.main.setZoom(reduced ? 1 : 1.12);
+      if (!reduced) {
+        this.tweens.add({ targets: this.cameras.main, zoom: 1, duration: 4200, ease: 'Cubic.easeOut' });
+        this.tweens.add({ targets: portal, alpha: 0.92, scale: 1, angle: 360, duration: 4300, ease: 'Cubic.easeOut' });
+        this.tweens.add({ targets: veil, alpha: 0.43, duration: 4100, ease: 'Sine.easeInOut' });
+        this.tweens.add({ targets: heading, alpha: 1, scale: 1, duration: 1050, delay: 620, ease: 'Back.easeOut' });
+        this.tweens.add({ targets: subheading, alpha: 0.95, duration: 850, delay: 1120, ease: 'Sine.easeOut' });
+        this.tweens.add({ targets: [systemLabel, systemDetail, barTrack, barFill], alpha: 1, duration: 620, delay: 1800 });
+        this.tweens.add({ targets: barFill, scaleX: 1, duration: 2600, delay: 1900, ease: 'Cubic.easeInOut' });
+      } else {
+        portal.setAlpha(1);
+        heading.setAlpha(1).setScale(1);
+        subheading.setAlpha(1);
+        systemLabel.setAlpha(1);
+        systemDetail.setAlpha(1);
+        barTrack.setAlpha(1);
+        barFill.setAlpha(1).setScale(1, 1);
+        veil.setAlpha(0.12);
+      }
+
+      [0, 1, 2].forEach(index => {
+        const event = this.time.delayedCall(reduced ? 90 * (index + 1) : 1180 * (index + 1), () => {
+          if (this.awakeningActive) {
+            systemLabel.setText(statusRows[index + 1]);
+            systemDetail.setText(details[index + 1]);
+          }
+        });
+        this.bootEvents.push(event);
+      });
+      this.bootEvents.push(this.time.delayedCall(duration, () => this.finishEngineAwakening(false)));
+      const skip = byId('engine-skip');
+      if (skip) skip.hidden = false;
+      this.input.keyboard?.once('keydown', () => this.finishEngineAwakening(true));
+      if (skipAwakeningRequested) {
+        skipAwakeningRequested = false;
+        this.finishEngineAwakening(true);
+      }
+    }
+
+    finishEngineAwakening(skipped = false) {
+      if (!this.awakeningActive) return;
+      this.awakeningActive = false;
+      this.bootEvents.forEach(event => event?.remove?.(false));
+      this.bootEvents = [];
+      this.bootObjects.forEach(object => {
+        if (object?.active) this.tweens.killTweensOf(object);
+      });
+      const objects = this.bootObjects.filter(object => object?.active);
+      this.bootObjects = [];
+      this.engineAwakened = true;
+      this.cameras.main.setZoom(1);
+      const finish = () => {
+        objects.forEach(object => object?.active && object.destroy());
+        this.cameras.main.flash(reducedMotion() ? 0 : skipped ? 100 : 220, 202, 178, 116, true);
+        const callback = this.bootCompleteCallback;
+        this.bootCompleteCallback = null;
+        callback?.();
+      };
+      if (reducedMotion() || skipped) {
+        objects.forEach(object => object?.active && object.destroy());
+        finish();
+        return;
+      }
+      this.tweens.add({
+        targets: objects,
+        alpha: 0,
+        scale: 1.12,
+        duration: 620,
+        ease: 'Sine.easeInOut',
+        onComplete: finish
+      });
+      const veil = objects[0];
+      if (veil?.active) this.tweens.add({ targets: veil, alpha: 0, duration: 660, ease: 'Sine.easeInOut' });
+    }
+
+    setSurface(surface) {
+      const next = String(surface || 'title');
+      if (next === this.surface) return;
+      const previous = this.surface;
+      this.surface = next;
+      if (!previous || !this.engineAwakened || this.awakeningActive) return;
+      this.playSurfaceTransition(next);
+    }
+
+    playSurfaceTransition(surface) {
+      if (reducedMotion()) return;
+      const size = this.dimensions();
+      const colors = {
+        title: 0xd8bb7b, dispatches: 0xd8bb7b, settings: 0x91a6c0, credits: 0xd8bb7b,
+        annals: 0xc9ad72, creation: 0x9caacb, awakening: 0xb5c99e,
+        combat: 0xd4aa79, 'combat-results': 0xe3c37d, expedition: 0xa6b99a,
+        'expedition-results': 0xe3c37d, town: 0xd8bb7b, 'town-service': 0xd8bb7b,
+        dungeon: 0xa4b4c7, 'field-site': 0x9ac8b2, modal: 0xe3c37d
+      };
+      const color = colors[surface] || 0xd8bb7b;
+      const upper = this.add.rectangle(-size.width * 0.3, size.height * 0.16, size.width * 0.32, 2, color, 0.62).setDepth(8);
+      const lower = this.add.rectangle(size.width * 1.3, size.height * 0.84, size.width * 0.32, 2, color, 0.52).setDepth(8);
+      this.surfaceTransitionCount += 1;
+      this.tweens.add({
+        targets: upper, x: size.width * 0.5, alpha: 0, scaleX: 2.3, duration: 620,
+        ease: 'Cubic.easeOut', onComplete: () => upper.destroy()
+      });
+      this.tweens.add({
+        targets: lower, x: size.width * 0.5, alpha: 0, scaleX: 2.3, duration: 720, delay: 70,
+        ease: 'Cubic.easeOut', onComplete: () => lower.destroy()
+      });
+      const camera = this.cameras.main;
+      this.tweens.killTweensOf(camera);
+      camera.setZoom(1.012);
+      this.tweens.add({ targets: camera, zoom: 1, duration: 520, ease: 'Sine.easeOut' });
     }
 
     dimensions() {
@@ -798,8 +1094,20 @@
   }
 
   function startPhaser() {
-    if (!window.Phaser || game) return;
-    game = new Phaser.Game({
+    if (game) return;
+    if (!window.Phaser) {
+      console.warn('Phaser could not be loaded; opening the production HTML interface without the engine canvas.');
+      try { window.sessionStorage.removeItem(ENGINE_SESSION_KEY); } catch (_) {}
+      document.documentElement.classList.remove('engine-intro-active');
+      byId('engine-skip') && (byId('engine-skip').hidden = true);
+      showTitle();
+      observeRoot();
+      window.__legendRebootReady = true;
+      toast('The Phaser world renderer did not load. The game interface is still available; refresh to retry.');
+      return;
+    }
+    try {
+      game = new Phaser.Game({
       type: Phaser.AUTO,
       parent: 'game-container',
       backgroundColor: '#090e0d',
@@ -815,17 +1123,52 @@
       scene: [RealmScene],
       input: { keyboard: true, mouse: true, touch: true },
       audio: { noAudio: false }
-    });
-    game.events.once('ready', () => {
-      window.__legendRebootReady = true;
-      realmScene = game.scene.getScene('RealmScene');
-      realmScene?.setEnvironment('title', true);
+      });
+    } catch (error) {
+      console.error('Phaser could not start.', error);
+      document.documentElement.classList.remove('engine-intro-active');
+      byId('engine-skip') && (byId('engine-skip').hidden = true);
       showTitle();
       observeRoot();
+      window.__legendRebootReady = true;
+      toast('The Phaser renderer could not start. The game interface is still available.');
+      return;
+    }
+    let needsAwakening = true;
+    try {
+      needsAwakening = !window.sessionStorage.getItem(ENGINE_SESSION_KEY);
+      if (needsAwakening) window.sessionStorage.setItem(ENGINE_SESSION_KEY, 'pending');
+    } catch (_) {
+      needsAwakening = true;
+    }
+    if (!needsAwakening) document.documentElement.classList.remove('engine-intro-active');
+
+    game.events.once('ready', () => {
+      realmScene = game.scene.getScene('RealmScene');
+      realmScene?.setEnvironment('title', true);
+      const finishStartup = () => {
+        try { window.sessionStorage.setItem(ENGINE_SESSION_KEY, 'ready'); } catch (_) {}
+        if (realmScene) realmScene.engineAwakened = true;
+        document.documentElement.classList.remove('engine-intro-active');
+        const skip = byId('engine-skip');
+        if (skip) skip.hidden = true;
+        showTitle();
+        observeRoot();
+        window.__legendRebootReady = true;
+      };
+      if (needsAwakening && realmScene?.runEngineAwakening) {
+        realmScene.runEngineAwakening(finishStartup);
+      } else {
+        finishStartup();
+      }
     });
   }
 
   function bindHostActions() {
+    byId('engine-skip')?.addEventListener('click', () => {
+      if (realmScene?.awakeningActive) realmScene.finishEngineAwakening(true);
+      else if (!realmScene?.engineAwakened) skipAwakeningRequested = true;
+    });
     byId('soundToggle')?.addEventListener('click', () => setSound(!soundEnabled));
     root()?.addEventListener('click', event => {
       const button = event.target.closest('#strike, #heavy, #guard, #skill, #item, #poultice, #flee');
@@ -848,6 +1191,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    settingsStorage?.applySettings?.(settingsStorage.loadSettings());
     bindHostActions();
     startPhaser();
   }, { once: true });
