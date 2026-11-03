@@ -2269,6 +2269,46 @@ test('the production Phaser world follows all six Old Road scene stages and the 
 });
 
 
+test('Ashmere uses native Phaser landmarks that route into the real town services', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await startFreshCharacter(page, 'PhaserAshmereQA');
+  await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.surface)).toBe('town');
+
+  const landmarks = await page.evaluate(() => {
+    const snapshot = window.LegendPhaserWorldV1?.snapshot?.();
+    return {
+      environment: snapshot?.environment,
+      surface: snapshot?.surface,
+      landmarks: snapshot?.ashmereLandmarks || [],
+      productionStorage: typeof window.LegendStorage?.loadPlayer === 'function' &&
+        typeof window.LegendStorage?.savePlayer === 'function'
+    };
+  });
+  expect(landmarks.environment).toBe('ashmere');
+  expect(landmarks.surface).toBe('town');
+  expect(landmarks.landmarks.map(item => item.id)).toEqual(['inn', 'market', 'forge', 'road']);
+  expect(landmarks.productionStorage).toBe(true);
+
+  // A map-space pointer-up hits the Phaser landmark's screen-space bounds.
+  // The engine selects the matching production POI; the existing shell action
+  // then enters the real market controller and its real buy/sell state.
+  const market = landmarks.landmarks.find(item => item.id === 'market');
+  expect(market).toBeTruthy();
+  await page.evaluate(({ x, y }) => {
+    document.dispatchEvent(new PointerEvent('pointerup', {
+      bubbles: true, cancelable: true, button: 0, clientX: x, clientY: y
+    }));
+  }, { x: market.x, y: market.y });
+
+  await expect(page.locator('#legend-world-shell-root .lws-selected-place h3')).toHaveText('Market');
+  await expect(page.locator('#legend-world-shell-root [data-world-action="visit-selected-place"]')).toBeEnabled();
+  await page.locator('#legend-world-shell-root [data-world-action="visit-selected-place"]').click();
+  await expect(page.locator('.ash099-market-console')).toBeVisible();
+  await expect(page.locator('[data-market-tab="buy"]')).toHaveAttribute('aria-selected', 'true');
+});
+
 test('the production root falls back to its original artwork when the Phaser CDN is unavailable', async ({ page }) => {
   await page.route('https://cdn.jsdelivr.net/npm/phaser@4.1.0/dist/phaser.min.js', route => route.abort());
   await openTitle(page);
