@@ -44,10 +44,11 @@
         <div class="status-card">
           <span class="status-tag">Live on GitHub Pages</span>
           <h3>LEGEND: The Awakening · v0.30.4</h3>
-          <p>The current build contains the mandatory three-part opening annals, the dead-lantern road opening, Captain Oric and the Blackroot Wolf tutorial, traveler creation with meaningful starting choices, turn-based road encounters, and the five-stage Old Road expedition.</p>
+          <p>The v0.30.4 build contains the mandatory three-part opening annals, dead-lantern road opening, Captain Oric and the Blackroot Wolf tutorial, meaningful traveler choices, turn-based road encounters, and the five-stage Old Road expedition. Phaser 4.1 is now active in production for the persistent world scene, environment atmosphere, transitions, and Ashmere landmarks; most gameplay screens and systems still use the existing browser modules while migration continues.</p>
           <p>The road tracks route choices, discoveries, camp reports, time, and Road Pressure. Two travel stretches bring an encounter even on a careful route. Completed five-stage trips have a 65% Road Token roll; early returns do not receive the completion token. The illustrated return ledger shows gold, XP, rare-token outcome, and the field report.</p>
           <div class="actions">
             <a class="btn primary" href="index.html">Play LEGEND</a>
+            <a class="btn" href="posts/014-the-sound-of-the-realm.html">Latest: Audio & Engine Work</a>
             <a class="btn" href="posts/013-from-road-rework-to-rpg.html">Read the Development Catch-Up</a>
             <a class="btn" href="docs/STORE_PAGE_COPY_2026-11.md">Store Page Copy</a>
           </div>
@@ -65,6 +66,11 @@
         </ul>
       </section>
       <section class="card">
+        <h2>Audio & Engine Status</h2>
+        <p>A 48-asset original audio collection has been generated for Ashmere, the Old Road, High Ridge, Reed Cut, Greyfen, Bell Cellar, menus, combat, rewards, creatures, and town interactions. The assets are staged in <a class="archive-link" href="https://github.com/TDTRIA/LEGEND-RPG/pull/98">audio review PR #98</a>; they are not in the live build yet. The replacement recurring main theme is being composed and rendered separately. The old music remains in production until the replacement passes integration and playback checks.</p>
+        <p class="muted">The Phaser migration is approved and underway, but it is not yet a complete rewrite: the world renderer is active while most existing UI and gameplay systems remain in place.</p>
+      </section>
+      <section class="card">
         <h2>Project Status</h2>
         <div class="update-grid">
           <div class="update-card"><strong>Ashmere & the Old Road</strong><p class="muted">The opening-to-first-expedition loop is in the production build. More balance and real-player feedback are still needed.</p></div>
@@ -75,7 +81,7 @@
       </section>
       <section class="card">
         <h2>What Comes Next</h2>
-        <p>Current work is focused on cleaning up the first-session experience, validating the live build, improving results and progression presentation, and finishing the next coherent pieces of Greyfen without rushing an unfinished region into the game.</p>
+        <p>The next priorities are replacing and integrating the recurring game theme, reviewing the new location and gameplay sounds, moving real gameplay surfaces into Phaser one at a time, and completing Greyfen as a coherent town-and-expedition loop. Balance, accessibility, and desktop/mobile regression checks remain release requirements.</p>
         <p class="muted">Follow the <a class="archive-link" href="blog.html">development chronicle</a> for the recent catch-up and the <a class="archive-link" href="docs/ROADMAP.md">roadmap</a> for active release gates.</p>
       </section>
     </main>
