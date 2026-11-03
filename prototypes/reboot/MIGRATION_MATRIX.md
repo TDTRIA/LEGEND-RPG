@@ -41,3 +41,26 @@ This is intentionally not a production-save migration. No production save key, S
 ## Carry-over rule
 
 When a source system is implemented in the original game, this prototype should call the existing module or use its authored data. It should not create a second reward table, combat formula, quest truth, save schema, or contradictory dialogue. When the original game does not implement a region or feature, the prototype should say so rather than inventing it.
+
+
+## Parity update — current production main (v0.30.4)
+
+The prototype now also reuses the current production title and persistent world-shell presentation rather than the earlier simplified title/menu wrapper.
+
+| Area | Current production module reused | Prototype boundary |
+|---|---|---|
+| Title menu and realm overview | `LegendTitleScreenV120`, `LegendTitleScreenViewV120`, current title CSS and local Runway art | Current build version, traveler summary, Ashmere/Old Road/Bell Cellar destination art and the live realm-dispatch panel |
+| News and roadmap | `LegendTitleDispatchesV140` and its production stylesheet | The same shipped-update notes and forward roadmap shown by main |
+| Credits | `LegendTitleExtrasV120` | Current credits dialog; no account or network behavior |
+| Accessibility settings | `LegendSettingsScreenV090`, `LegendSettingsStorageV120` | Current large text, bold text, high contrast, reduced motion, spacious layout and readable font controls |
+| Persistent in-world shell | `LegendWorldShellPanelsV170`, `LegendWorldShellModalsV170`, `LegendWorldShellV170` | Current HUD, contextual journal/map/actions, mobile side panels, inventory/settings/combat modal and navigation delegates over production gameplay screens |
+
+The title's Profile control is intentionally hidden in the prototype because it would invoke account/profile flows that are not part of this isolated local-save build. The original Supabase/account scripts, production `storage.js`, production runtime, and production boot-sequence are still deliberately not loaded: those modules bind to the production save key or account services. The prototype's adapter exposes the current settings interface while keeping traveler writes on `legend-reboot-prototype-save-v1`.
+
+The prototype stylesheet list is synchronized with the current production `index.html` visual stack, excluding the account-only styles. This includes the latest title renewal, dispatch, accessibility, world-shell, scene-visibility and v0.30.4 gender-art styles.
+
+## Verification notes
+
+- The Phaser scene's custom glow collection is named independently from Phaser's built-in `lights` scene plugin.
+- Playwright disables decorative CSS motion only in its test context so the Oric ACT click is tested as an interaction, not as an animation-stability race.
+- The full suite should be read as two layers: existing production regression tests and reboot-specific title/annals/creation/opening/town/mobile checks. A pre-existing Reed Cut smoke-test failure was observed on main before these reboot changes; it is tracked separately and is not counted as a reboot pass.
