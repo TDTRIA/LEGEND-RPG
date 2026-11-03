@@ -497,6 +497,7 @@
       this.nativeGameplayUiObserverRoot = null;
       this.nativeGameplayUiLayoutEvent = null;
       this.nativeGameplayUiTextureCounter = 0;
+      this.nativeGameplayUiScrollHandler = null;
     }
 
     preload() {
@@ -1994,6 +1995,10 @@
     clearNativeGameplayUi(removeClass = true) {
       this.nativeGameplayUiLayoutEvent?.remove?.(false);
       this.nativeGameplayUiLayoutEvent = null;
+      if (this.nativeGameplayUiScrollHandler) {
+        document.removeEventListener('scroll', this.nativeGameplayUiScrollHandler, true);
+        this.nativeGameplayUiScrollHandler = null;
+      }
       this.nativeGameplayUiTaggedNodes.forEach(node => {
         if (!node?.dataset) return;
         delete node.dataset.legendPhaserNativePaint;
@@ -2127,6 +2132,14 @@
       if (this.nativeGameplayUiObserver && this.nativeGameplayUiObserverRoot === signature) return;
       this.nativeGameplayUiObserver?.disconnect?.();
       this.nativeGameplayUiObserverRoot = signature;
+      this.nativeGameplayUiScrollHandler = () => {
+        this.nativeGameplayUiLayoutEvent?.remove?.(false);
+        this.nativeGameplayUiLayoutEvent = this.time.delayedCall(45, () => {
+          this.nativeGameplayUiLayoutEvent = null;
+          this.syncNativeGameplayUi(this.surface);
+        });
+      };
+      document.addEventListener('scroll', this.nativeGameplayUiScrollHandler, true);
       this.nativeGameplayUiObserver = new MutationObserver(mutations => {
         const relevant = mutations.some(mutation => {
           const target = mutation.target;
@@ -2171,8 +2184,6 @@
       const roots = [];
       if (rootVisible) roots.push(host);
       if (shellVisible) roots.push(shell);
-      this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null);
-
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -2238,9 +2249,13 @@
         ...controls.map(item => [item.node.id,item.node.className,item.node.getAttribute('aria-label') || item.node.textContent?.trim() || '',item.node.disabled,item.node.getAttribute('aria-pressed') || '']),
         ...roots.map(node => [node.scrollTop,node.dataset?.context || '',node.dataset?.region || ''])
       ]);
-      if (this.nativeGameplayUiActive && signature === this.nativeGameplayUiSignature) return;
+      if (this.nativeGameplayUiActive && signature === this.nativeGameplayUiSignature) {
+        this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null);
+        return;
+      }
 
       this.clearNativeGameplayUi(false);
+      this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null);
       this.nativeGameplayUiActive = true;
       this.nativeGameplayUiSignature = signature;
       document.body?.classList.add('legend-phaser-gameplay-ui-active');
@@ -2336,13 +2351,25 @@
         tag(node,'control');
         if (!node.__legendNativeGameplayBound) {
           node.__legendNativeGameplayBound = true;
-          node.addEventListener('focus', () => focusFrame.setVisible(true));
-          node.addEventListener('blur', () => focusFrame.setVisible(node.matches(':hover')));
-          node.addEventListener('pointerenter', () => focusFrame.setVisible(true));
-          node.addEventListener('pointerleave', () => focusFrame.setVisible(node === document.activeElement));
+          const updateFocus = active => {
+            const live = this.nativeGameplayUiControls.find(entry => entry.node === node);
+            live?.focusFrame?.setVisible?.(Boolean(active));
+          };
+          node.addEventListener('focus', () => updateFocus(true));
+          node.addEventListener('blur', () => updateFocus(node.matches(':hover')));
+          node.addEventListener('pointerenter', () => updateFocus(true));
+          node.addEventListener('pointerleave', () => updateFocus(node === document.activeElement));
         }
       });
       images.forEach(item => { item.node.loading = 'eager'; });
+      roots.forEach(node => node.querySelectorAll('img').forEach(img => {
+        if (img.__legendNativeGameplayLoadBound || (img.complete && img.naturalWidth > 0)) return;
+        img.__legendNativeGameplayLoadBound = true;
+        img.loading = 'eager';
+        const retry = () => this.syncNativeGameplayUi(this.surface);
+        img.addEventListener('load', retry, { once: true });
+        img.addEventListener('error', retry, { once: true });
+      }));
     }
 
     ashmerelandmarkSpecs() {
