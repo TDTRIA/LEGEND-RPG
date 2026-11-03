@@ -2215,3 +2215,52 @@ test('production root launches the canonical Phaser world without replacing prod
   expect(runtime.previewSaveKey).toBeNull();
   expect(runtime.previewSave).toBeNull();
 });
+
+
+test('the production Phaser world follows all six Old Road scene stages and the Bell Cellar arena', async ({ page }) => {
+  await openTitle(page);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
+
+  const environments = await page.evaluate(() => {
+    const root = document.getElementById('root');
+    const originalLoadPlayer = window.LegendStorage.loadPlayer;
+    root.innerHTML = '<div class="exp100-scene"></div>';
+    const readStage = (stage, routeChoice = 'ridge', sideTrip = null) => {
+      window.LegendStorage.loadPlayer = () => ({
+        flags: { roadExpeditionV100: { stage, routeChoice, activeSideTripV160: sideTrip } },
+        currentRegion: 'Ashmere'
+      });
+      window.LegendPhaserWorldV1.refresh();
+      return window.LegendPhaserWorldV1.snapshot().environment;
+    };
+    const result = {
+      southFork: readStage(0),
+      highRidge: readStage(1, 'ridge'),
+      reedCut: readStage(1, 'reeds'),
+      roadsideCamp: readStage(2),
+      blackrootBend: readStage(3),
+      reedwatchShelter: readStage(4),
+      greyfenBoundary: readStage(5),
+      windbreak: readStage(1, 'reeds', 'windbreak'),
+      sunkenCart: readStage(1, 'ridge', 'sunken-cart')
+    };
+    root.innerHTML = '<div class="rpg-battle"><div class="rpg-battlefield" data-arena="cellar"></div></div>';
+    window.LegendPhaserWorldV1.refresh();
+    result.bellCellar = window.LegendPhaserWorldV1.snapshot().environment;
+    window.LegendStorage.loadPlayer = originalLoadPlayer;
+    return result;
+  });
+
+  expect(environments).toEqual({
+    southFork: 'road',
+    highRidge: 'ridge',
+    reedCut: 'reeds',
+    roadsideCamp: 'camp',
+    blackrootBend: 'blackroot',
+    reedwatchShelter: 'marsh',
+    greyfenBoundary: 'greyfen',
+    windbreak: 'ridge',
+    sunkenCart: 'reeds',
+    bellCellar: 'cellar'
+  });
+});
