@@ -80,13 +80,27 @@ async function tap(page, locator) {
   await page.touchscreen.tap(target.x, target.y);
 }
 
+async function ensureTownPanelOpen(page, side = 'right') {
+  const isOpen = await page.evaluate(sideName => document.body.classList.contains('legend-shell-' + sideName + '-open'), side);
+  if (!isOpen) await tap(page, page.locator('#legend-world-shell-root [data-world-action="toggle-' + side + '"]'));
+  await expect(page.locator('#legend-world-shell-root #lws-panel-' + side)).toBeVisible();
+}
+
 async function ensureTownActionsOpen(page) {
-  const isOpen = await page.evaluate(() => document.body.classList.contains('legend-shell-right-open'));
-  if (!isOpen) await tap(page, page.locator('#legend-world-shell-root [data-world-action="toggle-right"]'));
-  await expect(page.locator('#legend-world-shell-root #lws-panel-right')).toBeVisible();
+  return ensureTownPanelOpen(page, 'right');
 }
 
 async function visitTownRoute(page, view) {
+  if (view === 'routes') {
+    await tap(page, page.locator('#legend-world-shell-root .lws-bottom-bar [data-world-action="map"]'));
+    return;
+  }
+  if (view === 'profile' || view === 'sheet') {
+    await ensureTownPanelOpen(page, 'left');
+    const action = view === 'profile' ? 'account-profile' : 'traveler-sheet';
+    await tap(page, page.locator('#legend-world-shell-root [data-world-action="' + action + '"]'));
+    return;
+  }
   await ensureTownActionsOpen(page);
   const landmarkForView = { inn: 'inn', trader: 'market', smith: 'forge', road: 'road' };
   const landmark = landmarkForView[view];
