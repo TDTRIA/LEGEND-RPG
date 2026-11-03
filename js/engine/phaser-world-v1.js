@@ -2026,6 +2026,27 @@
       if (removeClass) document.body?.classList.remove('legend-phaser-gameplay-ui-active');
     }
 
+    nativeGameplayUiStyle(node) {
+      const properties = [
+        'backgroundColor','backgroundImage','borderTopColor','borderRightColor','borderBottomColor','borderLeftColor',
+        'borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','borderTopLeftRadius','opacity',
+        'color','fontSize','lineHeight','fontFamily','fontWeight','fontStyle','letterSpacing','textAlign','textTransform','objectFit'
+      ];
+      let original = null;
+      try {
+        if (node?.dataset?.legendPhaserOriginalStyle) original = JSON.parse(node.dataset.legendPhaserOriginalStyle);
+      } catch (error) {
+        original = null;
+      }
+      if (!original) {
+        const computed = window.getComputedStyle(node);
+        original = {};
+        properties.forEach(property => { original[property] = computed[property]; });
+        try { node.dataset.legendPhaserOriginalStyle = JSON.stringify(original); } catch (error) { /* detached node */ }
+      }
+      return original;
+    }
+
     nativeGameplayUiColor(value, fallback = 0x0a100b) {
       const source = String(value || '');
       const rgba = source.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/i);
@@ -2049,7 +2070,7 @@
       const rect = node.getBoundingClientRect();
       if (!rect.width || !rect.height) return null;
       const style = window.getComputedStyle(node);
-      if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) < 0.02) return null;
+      if (style.display === 'none' || (style.visibility === 'hidden' && node?.dataset?.legendPhaserNativeImage !== 'true') || Number(style.opacity) < 0.02) return null;
       if (node.closest('[hidden]') || node.closest('[aria-hidden="true"]')) return null;
       const viewport = { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight };
       let clip = { ...viewport };
@@ -2203,7 +2224,7 @@
         if (node.matches('input,textarea,select,option,script,style,template')) return;
         const rect = rectFor(node);
         if (!rect) return;
-        const style = window.getComputedStyle(node);
+        const style = this.nativeGameplayUiStyle(node);
         const bgImage = style.backgroundImage || 'none';
         const bgColor = style.backgroundColor || 'rgba(0,0,0,0)';
         const bgSample = this.nativeGameplayUiColor(bgImage !== 'none' ? bgImage : bgColor);
@@ -2314,6 +2335,8 @@
       });
 
       textNodes.forEach(item => {
+        const textStyle = this.nativeGameplayUiStyle(item.node);
+        item.style = textStyle;
         const fontPx = Math.max(8, (parseFloat(item.style.fontSize) || 12) * sy);
         const linePx = parseFloat(item.style.lineHeight) || (parseFloat(item.style.fontSize) || 12) * 1.4;
         let value = item.text;
