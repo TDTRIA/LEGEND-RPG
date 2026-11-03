@@ -241,3 +241,57 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation #v094NameError:empty {
   display: none !important;
 }
+
+
+/* Oric's prologue, response, ambush and aftermath now use native scene panels.
+   The original semantic content and button targets remain available to assistive
+   technology and continue to invoke the existing production tutorial controller. */
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 {
+  color: transparent !important;
+  background: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-card,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-prologue-card,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-scene-note,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 blockquote,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-choice,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-primary,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-secondary {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-card::before {
+  display: none !important;
+  content: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 h1,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 h2,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 p,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 strong,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 span,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 blockquote {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-choice,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-primary,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-secondary {
+  color: transparent !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-choice > *,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-primary > *,
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-secondary > * {
+  visibility: hidden !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-choice,
+  body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-primary,
+  body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-secondary {
+    transition: none !important;
+    transform: none !important;
+  }
+}
