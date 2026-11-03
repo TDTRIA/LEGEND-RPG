@@ -968,6 +968,26 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.ash099-market-console')).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeGameplayUiSurface)).toBe('town-service');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeGameplayUi)).toBe(true);
+
+    // The separate shell modal root must also be part of the same Phaser scene.
+    await page.locator('.lws-bottom-bar [data-world-action="inventory"]').click();
+    const inventoryDialog = page.getByRole('dialog', { name: 'Inventory' });
+    await expect(inventoryDialog).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeGameplayUiSurface)).toBe('modal');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeGameplayUi)).toBe(true);
+    const modalPaint = await page.evaluate(() => ({
+      active: document.body.classList.contains('legend-phaser-gameplay-ui-active'),
+      panelBackground: getComputedStyle(document.querySelector('#legend-world-shell-modal-root .lws-modal')).backgroundImage,
+      painted: window.LegendPhaserWorldV1.snapshot()?.nativeGameplayUiPaintedCount,
+      text: window.LegendPhaserWorldV1.snapshot()?.nativeGameplayUiTextCount
+    }));
+    expect(modalPaint.active).toBe(true);
+    expect(modalPaint.panelBackground).toBe('none');
+    expect(modalPaint.painted).toBeGreaterThan(0);
+    expect(modalPaint.text).toBeGreaterThan(0);
+    await page.locator('#legend-world-shell-modal-root [data-shell-modal-close]').click();
+    await expect(inventoryDialog).toBeHidden();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeGameplayUiSurface)).toBe('town-service');
   });
 
   test('Routes opens route board instead of starting an expedition', async ({ page }) => {
