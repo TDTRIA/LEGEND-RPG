@@ -2032,35 +2032,45 @@
         'borderTopWidth','borderRightWidth','borderBottomWidth','borderLeftWidth','borderTopLeftRadius','opacity',
         'color','fontSize','lineHeight','fontFamily','fontWeight','fontStyle','letterSpacing','textAlign','textTransform','objectFit'
       ];
-      let original = null;
-      try {
-        if (node?.dataset?.legendPhaserOriginalStyle) original = JSON.parse(node.dataset.legendPhaserOriginalStyle);
-      } catch (error) {
-        original = null;
-      }
-      if (!original) {
-        const computed = window.getComputedStyle(node);
-        original = {};
-        properties.forEach(property => { original[property] = computed[property]; });
-        try { node.dataset.legendPhaserOriginalStyle = JSON.stringify(original); } catch (error) { /* detached node */ }
-      }
+      const computed = window.getComputedStyle(node);
+      const original = {};
+      properties.forEach(property => { original[property] = computed[property]; });
+      try { node.dataset.legendPhaserOriginalStyle = JSON.stringify(original); } catch (error) { /* detached node */ }
       return original;
     }
 
     nativeGameplayUiColor(value, fallback = 0x0a100b) {
       const source = String(value || '');
-      const rgba = source.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/i);
-      if (rgba) {
+      const direct = source.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/i);
+      const hexes = Array.from(source.matchAll(/#([\da-f]{3}|[\da-f]{6})\b/ig));
+      if (direct) {
         return {
-          color: (Math.round(Number(rgba[1])) << 16) | (Math.round(Number(rgba[2])) << 8) | Math.round(Number(rgba[3])),
-          alpha: rgba[4] === undefined ? 1 : Math.max(0, Math.min(1, Number(rgba[4])))
+          color: (Math.round(Number(direct[1])) << 16) | (Math.round(Number(direct[2])) << 8) | Math.round(Number(direct[3])),
+          alpha: direct[4] === undefined ? 1 : Math.max(0, Math.min(1, Number(direct[4])))
         };
       }
-      const hex = source.match(/#([\da-f]{3}|[\da-f]{6})\b/i);
-      if (hex) {
-        let digits = hex[1];
+      if (hexes.length) {
+        let digits = hexes[0][1];
         if (digits.length === 3) digits = digits.split('').map(char => char + char).join('');
         return { color: parseInt(digits, 16), alpha: 1 };
+      }
+      // CSS gradients are common throughout the existing shell. Phaser cannot
+      // reuse CSS paint directly, so sample their first authored color stop.
+      if (/gradient\(/i.test(source)) {
+        const stops = Array.from(source.matchAll(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/ig));
+        if (stops.length) {
+          const stop = stops[0];
+          return {
+            color: (Math.round(Number(stop[1])) << 16) | (Math.round(Number(stop[2])) << 8) | Math.round(Number(stop[3])),
+            alpha: stop[4] === undefined ? 1 : Math.max(0, Math.min(1, Number(stop[4])))
+          };
+        }
+        const gradientHex = source.match(/#([\da-f]{3}|[\da-f]{6})\b/i);
+        if (gradientHex) {
+          let digits = gradientHex[1];
+          if (digits.length === 3) digits = digits.split('').map(char => char + char).join('');
+          return { color: parseInt(digits, 16), alpha: 1 };
+        }
       }
       return { color: fallback, alpha: 0 };
     }
@@ -2147,8 +2157,8 @@
       }
     }
 
-    observeNativeGameplayUi(shell, rootNode) {
-      const targets = [document.body, shell, rootNode].filter(Boolean);
+    observeNativeGameplayUi(shell, rootNode, modalRoot) {
+      const targets = [document.body, shell, rootNode, modalRoot].filter(Boolean);
       const signature = targets.map(node => node === document.body ? 'body' : node.id || node.tagName).join('|');
       if (this.nativeGameplayUiObserver && this.nativeGameplayUiObserverRoot === signature) return;
       this.nativeGameplayUiObserver?.disconnect?.();
@@ -2164,10 +2174,14 @@
       this.nativeGameplayUiObserver = new MutationObserver(mutations => {
         const relevant = mutations.some(mutation => {
           const target = mutation.target;
+          // Our temporary body-class reveal/reapply must not recursively schedule
+          // another render. Other shell/body mutations still trigger refreshes.
+          if (target === document.body && mutation.type === 'attributes' && mutation.attributeName === 'class') return false;
           return !target?.dataset?.legendPhaserNativePaint &&
             !target?.dataset?.legendPhaserNativeText &&
             !target?.dataset?.legendPhaserNativeControl &&
-            !target?.dataset?.legendPhaserNativeImage;
+            !target?.dataset?.legendPhaserNativeImage &&
+            !target?.dataset?.legendPhaserOriginalStyle;
         });
         if (!relevant) return;
         this.nativeGameplayUiLayoutEvent?.remove?.(false);
@@ -2188,14 +2202,20 @@
     syncNativeGameplayUi(surface = this.surface) {
       const host = root();
       const shell = document.getElementById('legend-world-shell-root');
+      // Temporarily reveal the semantic layer while measuring its original
+      // computed styles; otherwise our own transparent-paint CSS would be
+      // sampled on every state refresh.
+      document.body?.classList.remove('legend-phaser-gameplay-ui-active');
       const gameplaySurfaces = new Set([
         'town','town-service','expedition','expedition-results','combat','combat-results',
         'dungeon','field-site','settings','dispatches','credits','modal'
       ]);
+      const modalRoot = document.getElementById('legend-world-shell-modal-root');
+      const modalVisible = Boolean(surface === 'modal' && modalRoot && !modalRoot.hidden);
       const dedicated = host?.querySelector('.v120-title,.title-v100,.title-v136-rpg,.opening-lore-v220,.v140-creation,.opening-road-v140');
       const shellVisible = Boolean(shell && !shell.hidden && gameplaySurfaces.has(String(surface || '')));
       const rootVisible = Boolean(host && gameplaySurfaces.has(String(surface || '')) && !dedicated);
-      if (!shellVisible && !rootVisible) {
+      if (!shellVisible && !rootVisible && !modalVisible) {
         if (this.nativeGameplayUiActive || document.body?.classList.contains('legend-phaser-gameplay-ui-active')) {
           this.clearNativeGameplayUi();
         }
@@ -2205,6 +2225,7 @@
       const roots = [];
       if (rootVisible) roots.push(host);
       if (shellVisible) roots.push(shell);
+      if (modalVisible) roots.push(modalRoot);
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -2271,12 +2292,13 @@
         ...roots.map(node => [node.scrollTop,node.dataset?.context || '',node.dataset?.region || ''])
       ]);
       if (this.nativeGameplayUiActive && signature === this.nativeGameplayUiSignature) {
-        this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null);
+        this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null, modalVisible ? modalRoot : null);
+        document.body?.classList.add('legend-phaser-gameplay-ui-active');
         return;
       }
 
       this.clearNativeGameplayUi(false);
-      this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null);
+      this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null, modalVisible ? modalRoot : null);
       this.nativeGameplayUiActive = true;
       this.nativeGameplayUiSignature = signature;
       document.body?.classList.add('legend-phaser-gameplay-ui-active');
