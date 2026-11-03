@@ -259,6 +259,7 @@
     } else {
       realmScene?.syncNativeTitleUi?.(surface);
       realmScene?.syncNativeAnnalsUi?.(surface);
+      realmScene?.syncNativeCreationUi?.(surface);
     }
   }
 
@@ -284,7 +285,10 @@
       const affectsWorldSurface = mutations.some(mutation => !(
         mutation.type === 'attributes' && mutation.target.closest?.('.v094-choice-grid')
       ));
-      if (!affectsWorldSurface) return;
+      if (!affectsWorldSurface) {
+        realmScene?.syncNativeCreationUi?.(currentSurface);
+        return;
+      }
       inferEnvironment();
       observeModalRoot();
     });
@@ -465,6 +469,14 @@
       this.nativeAnnalsUiLayoutEvent = null;
       this.nativeAnnalsUiScrollTarget = null;
       this.nativeAnnalsUiButtonFocus = null;
+      this.nativeCreationUiActive = false;
+      this.nativeCreationUiObjects = [];
+      this.nativeCreationUiTextures = [];
+      this.nativeCreationUiControls = [];
+      this.nativeCreationUiSignature = '';
+      this.nativeCreationUiLayoutEvent = null;
+      this.nativeCreationUiScrollTarget = null;
+      this.nativeCreationUiTextureCounter = 0;
     }
 
     preload() {
@@ -483,6 +495,7 @@
         this.layoutAshmereLandmarks();
         this.syncNativeTitleUi(this.surface);
         this.syncNativeAnnalsUi(this.surface);
+        this.syncNativeCreationUi(this.surface);
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -531,6 +544,14 @@
           nativeAnnalsUiStep: Number(root()?.querySelector('.opening-lore-v220')?.dataset.loreStep ?? -1),
           nativeAnnalsUiScrollTargetBound: Boolean(this.nativeAnnalsUiScrollTarget),
           nativeAnnalsUiButtonFocused: Boolean(this.nativeAnnalsUiButtonFocus?.visible),
+          nativeCreationUi: this.nativeCreationUiActive,
+          nativeCreationUiStep: Number(root()?.querySelector('.v140-creation')?.dataset.creationStep ?? -1),
+          nativeCreationUiObjectCount: this.nativeCreationUiObjects.filter(item => item?.active).length,
+          nativeCreationUiChoiceIds: this.nativeCreationUiControls.filter(item => item.kind === 'choice').map(item => item.id),
+          nativeCreationUiControlBounds: this.nativeCreationUiControls.map(item => ({ id: item.id, label: item.label, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible), selected: Boolean(item.selected) })),
+          nativeCreationUiTextureCount: this.nativeCreationUiTextures.length,
+          nativeCreationUiSceneSize: this.dimensions(),
+          nativeCreationUiScrollTargetBound: Boolean(this.nativeCreationUiScrollTarget),
           nativeAnnalsUiSceneSize: this.dimensions(),
           nativeAnnalsUiButtonBounds: (() => {
             const button = root()?.querySelector('.opening-lore-v220-continue');
@@ -761,6 +782,7 @@
       if (next === this.surface) {
         this.syncNativeTitleUi(next);
         this.syncNativeAnnalsUi(next);
+        this.syncNativeCreationUi(next);
         return;
       }
       const previous = this.surface;
@@ -768,6 +790,7 @@
       this.syncAshmereLandmarks();
       this.syncNativeTitleUi(next);
       this.syncNativeAnnalsUi(next);
+      this.syncNativeCreationUi(next);
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -1226,6 +1249,488 @@
 
     setNativeAnnalsButtonFocus(active) {
       this.nativeAnnalsUiButtonFocus?.setVisible?.(Boolean(active));
+    }
+
+    clearNativeCreationUi(removeClass = true) {
+      this.nativeCreationUiLayoutEvent?.remove?.(false);
+      this.nativeCreationUiLayoutEvent = null;
+      if (this.nativeCreationUiScrollTarget) {
+        this.nativeCreationUiScrollTarget.removeEventListener('scroll', this.nativeCreationUiScrollTarget.__legendCreationScrollHandler);
+        this.nativeCreationUiScrollTarget = null;
+      }
+      this.nativeCreationUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeCreationUiObjects = [];
+      this.nativeCreationUiControls = [];
+      this.nativeCreationUiSignature = '';
+      this.nativeCreationUiActive = false;
+      this.nativeCreationUiTextures.forEach(key => {
+        try { this.textures.remove(key); } catch (error) { console.warn('[LEGEND Phaser] Could not release creation art texture.', error); }
+      });
+      this.nativeCreationUiTextures = [];
+      if (removeClass) document.body?.classList.remove('legend-phaser-creation-ui-active');
+    }
+
+    createNativeCreationArtTexture(img, wrapper) {
+      if (!img || !wrapper || !img.complete || !img.naturalWidth || !img.naturalHeight) return '';
+      const imageRect = img.getBoundingClientRect();
+      const wrapperRect = wrapper.getBoundingClientRect();
+      if (!wrapperRect.width || !wrapperRect.height || !imageRect.width || !imageRect.height) return '';
+      const pixelRatio = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(wrapperRect.width * pixelRatio));
+      canvas.height = Math.max(1, Math.round(wrapperRect.height * pixelRatio));
+      const context = canvas.getContext('2d');
+      if (!context) return '';
+      context.save();
+      context.beginPath();
+      context.rect(0, 0, canvas.width, canvas.height);
+      context.clip();
+      const imageStyle = window.getComputedStyle(img);
+      const fit = imageStyle.objectFit;
+      context.filter = imageStyle.filter && imageStyle.filter !== 'none' ? imageStyle.filter : 'none';
+      if (wrapper === img && fit === 'cover') {
+        const sourceWidth = img.naturalWidth;
+        const sourceHeight = img.naturalHeight;
+        const destinationRatio = wrapperRect.width / wrapperRect.height;
+        const sourceRatio = sourceWidth / sourceHeight;
+        const position = String(imageStyle.objectPosition || '50% 50%').split(/\s+/);
+        const positionX = Math.max(0, Math.min(1, parseFloat(position[0]) / 100 || 0.5));
+        const positionY = Math.max(0, Math.min(1, parseFloat(position[1] || position[0]) / 100 || 0.5));
+        let sx = 0, sy = 0, sw = sourceWidth, sh = sourceHeight;
+        if (sourceRatio > destinationRatio) {
+          sw = sourceHeight * destinationRatio;
+          sx = (sourceWidth - sw) * positionX;
+        } else {
+          sh = sourceWidth / destinationRatio;
+          sy = (sourceHeight - sh) * positionY;
+        }
+        context.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+      } else {
+        const dx = (imageRect.left - wrapperRect.left) * pixelRatio;
+        const dy = (imageRect.top - wrapperRect.top) * pixelRatio;
+        context.drawImage(img, dx, dy, imageRect.width * pixelRatio, imageRect.height * pixelRatio);
+      }
+      context.restore();
+      const key = 'nativeCreationArt' + (++this.nativeCreationUiTextureCounter);
+      try {
+        this.textures.addCanvas(key, canvas);
+        this.nativeCreationUiTextures.push(key);
+        return key;
+      } catch (error) {
+        console.warn('[LEGEND Phaser] Creation artwork could not be mirrored into the scene.', error);
+        return '';
+      }
+    }
+
+    setNativeCreationControlFocus(id, active) {
+      const control = this.nativeCreationUiControls.find(item => item.id === id);
+      if (!control?.focusFrame?.active) return;
+      control.focusFrame.setVisible(Boolean(active));
+      if (control.container?.active) {
+        const offset = active && !reducedMotion() ? 1.5 : 0;
+        if (reducedMotion()) control.container.x = control.x + offset;
+        else this.tweens.add({
+          targets: control.container,
+          x: control.x + offset,
+          duration: 110,
+          ease: 'Sine.easeOut',
+          overwrite: true
+        });
+      }
+    }
+
+    syncNativeCreationUi(surface = this.surface) {
+      const screen = root()?.querySelector('.v140-creation:not(.v140-arrival)');
+      if (String(surface || '') !== 'creation' || !screen) {
+        if (this.nativeCreationUiActive || document.body?.classList.contains('legend-phaser-creation-ui-active')) {
+          this.clearNativeCreationUi();
+        }
+        return;
+      }
+
+      const animations = typeof screen.getAnimations === 'function'
+        ? screen.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' || animation.playState === 'pending')
+        : [];
+      if (animations.length) {
+        this.nativeCreationUiLayoutEvent?.remove?.(false);
+        this.nativeCreationUiLayoutEvent = this.time.delayedCall(720, () => {
+          this.nativeCreationUiLayoutEvent = null;
+          this.syncNativeCreationUi(surface);
+        });
+        return;
+      }
+      this.nativeCreationUiLayoutEvent?.remove?.(false);
+      this.nativeCreationUiLayoutEvent = null;
+
+      const screenImages = Array.from(screen.querySelectorAll('img')).filter(img =>
+        !img.closest('[hidden]') && img.getBoundingClientRect().width > 0
+      );
+      screenImages.forEach(img => {
+        img.loading = 'eager';
+        if (!img.complete) {
+          if (!img.__legendCreationLoadBound) {
+            img.__legendCreationLoadBound = true;
+            img.addEventListener('load', () => this.syncNativeCreationUi(surface), { once: true });
+            img.addEventListener('error', () => this.syncNativeCreationUi(surface), { once: true });
+          }
+        }
+      });
+      const pendingImages = screenImages.some(img => !img.complete);
+      if (pendingImages) {
+        this.nativeCreationUiLayoutEvent?.remove?.(false);
+        this.nativeCreationUiLayoutEvent = this.time.delayedCall(240, () => {
+          this.nativeCreationUiLayoutEvent = null;
+          this.syncNativeCreationUi(surface);
+        });
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        const rect = node?.getBoundingClientRect();
+        if (!rect || !rect.width || !rect.height) return null;
+        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+      };
+      const choices = Array.from(screen.querySelectorAll('.v094-choice'));
+      const controls = Array.from(screen.querySelectorAll('.v094-actions button'));
+      const textNodes = Array.from(screen.querySelectorAll('h1,h2,h3,p,small,strong,em,label,span'))
+        .filter(node => !node.matches('#v094NameError,#v094ChoiceError') && !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
+      const panels = Array.from(screen.querySelectorAll(
+        '.v094-beginning-card,.v140-guide-portrait-frame,.v140-dialogue-box,.v094-stepper,.v094-scene-note,.v094-choice,.v094-summary > div,.v094-confirm-benefit,.v094-field,.v094-actions button'
+      ));
+      const imageSpecs = screenImages.map((img, index) => {
+        let wrapper = img;
+        if (img.closest('.v094-choice-art')) wrapper = img.closest('.v094-choice-art');
+        else if (img.closest('.v094-gender-emblem')) wrapper = img.closest('.v094-gender-emblem');
+        const rect = readRect(wrapper);
+        return { img, wrapper, rect, index };
+      }).filter(item => item.rect);
+      const signature = JSON.stringify([
+        screen.dataset.creationStep || '',
+        screen.classList.contains('v140-arrival'),
+        Math.round(window.innerWidth), Math.round(window.innerHeight),
+        screen.scrollTop,
+        ...panels.map(node => {
+          const rect = node.getBoundingClientRect();
+          return [node.className, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
+            node.classList.contains('is-selected'), node.getAttribute('aria-pressed') || ''];
+        }),
+        ...textNodes.map(node => [node.tagName, node.textContent?.replace(/\s+/g, ' ').trim() || '', Math.round(node.getBoundingClientRect().left), Math.round(node.getBoundingClientRect().top)]),
+        ...imageSpecs.map(item => [item.img.currentSrc || item.img.src, Math.round(item.rect.x), Math.round(item.rect.y), Math.round(item.rect.width), Math.round(item.rect.height)]),
+        screen.querySelector('#v094Name')?.value || ''
+      ]);
+      if (this.nativeCreationUiActive && signature === this.nativeCreationUiSignature) return;
+
+      const colorNodes = Array.from(screen.querySelectorAll('h1,h2,h3,p,small,strong,em,label,span'));
+      colorNodes.forEach(node => {
+        if (!node.dataset.legendNativeCreationColor) {
+          node.dataset.legendNativeCreationColor = window.getComputedStyle(node).color || '#eee7d6';
+        }
+      });
+
+      this.clearNativeCreationUi(false);
+      this.nativeCreationUiActive = true;
+      this.nativeCreationUiSignature = signature;
+      document.body?.classList.add('legend-phaser-creation-ui-active');
+
+      if (!this.nativeCreationUiScrollTarget) {
+        this.nativeCreationUiScrollTarget = screen;
+        const handler = () => {
+          this.nativeCreationUiLayoutEvent?.remove?.(false);
+          this.nativeCreationUiLayoutEvent = this.time.delayedCall(48, () => {
+            this.nativeCreationUiLayoutEvent = null;
+            this.syncNativeCreationUi(surface);
+          });
+        };
+        screen.__legendCreationScrollHandler = handler;
+        screen.addEventListener('scroll', handler, { passive: true });
+      }
+
+      const addObject = (object, depth = 13) => {
+        if (!object) return object;
+        object.setDepth?.(depth);
+        this.nativeCreationUiObjects.push(object);
+        return object;
+      };
+      const rectFor = node => readRect(node);
+      const drawPanel = (node, options = {}) => {
+        const rect = rectFor(node);
+        if (!rect) return null;
+        const graphics = this.add.graphics();
+        graphics.fillStyle(options.fill ?? 0x0a100b, options.alpha ?? 0.94);
+        graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+        graphics.lineStyle(options.lineWidth ?? 1, options.stroke ?? 0xd1b575, options.strokeAlpha ?? 0.58);
+        graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        if (options.inset !== false && rect.width > 16 && rect.height > 16) {
+          graphics.lineStyle(1, 0xc2a96f, 0.15);
+          graphics.strokeRect(rect.x + 6 * sx, rect.y + 6 * sy, rect.width - 12 * sx, rect.height - 12 * sy);
+        }
+        return addObject(graphics, 12);
+      };
+      const imageKeys = [];
+      imageSpecs.forEach(item => {
+        const key = this.createNativeCreationArtTexture(item.img, item.wrapper);
+        if (key) imageKeys[item.index] = key;
+      });
+      imageSpecs.forEach(item => {
+        const key = imageKeys[item.index];
+        if (!key || !this.textures.exists(key)) return;
+        const rect = item.rect;
+        const opacity = Number.parseFloat(window.getComputedStyle(item.img).opacity);
+        const image = this.add.image(rect.x + rect.width / 2, rect.y + rect.height / 2, key)
+          .setDisplaySize(rect.width, rect.height)
+          .setAlpha(Number.isFinite(opacity) ? Math.max(0, Math.min(1, opacity)) : 1);
+        addObject(image, 13);
+      });
+      imageSpecs.forEach(item => {
+        const rect = item.rect;
+        const frame = this.add.graphics();
+        if (item.wrapper.classList.contains('v094-gender-emblem')) {
+          const radius = Math.min(rect.width, rect.height) * 0.47;
+          frame.fillStyle(0x18251b, 0.96);
+          frame.fillCircle(rect.x + rect.width / 2, rect.y + rect.height / 2, radius);
+          frame.lineStyle(1.4, 0xe0c17d, 0.92);
+          frame.strokeCircle(rect.x + rect.width / 2, rect.y + rect.height / 2, radius);
+          frame.lineStyle(1, 0xead49d, 0.28);
+          frame.strokeCircle(rect.x + rect.width / 2, rect.y + rect.height / 2, radius * 0.84);
+        } else if (item.wrapper.classList.contains('v094-choice-art')) {
+          frame.fillStyle(0x090f0b, 0.94);
+          frame.fillRect(rect.x, rect.y, rect.width, rect.height);
+          frame.lineStyle(1, 0xc9aa69, 0.58);
+          frame.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.width - 1, rect.height - 1);
+        } else if (item.img.classList.contains('v094-class-art')) {
+          frame.fillStyle(0x080f0b, 0.92);
+          frame.fillRect(rect.x, rect.y, rect.width, rect.height);
+          frame.lineStyle(1, 0xc9aa69, 0.52);
+          frame.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.width - 1, rect.height - 1);
+        } else {
+          return;
+        }
+        addObject(frame, 12.5);
+      });
+      const presenceFrame = screen.querySelector('.v140-presence-frame');
+      const presenceRect = rectFor(presenceFrame);
+      if (presenceRect) {
+        const glow = this.add.graphics();
+        const cx = presenceRect.x + presenceRect.width / 2;
+        const cy = presenceRect.y + presenceRect.height * 0.43;
+        glow.fillStyle(0x7474a2, 0.12);
+        glow.fillEllipse(cx, cy, presenceRect.width * 0.7, presenceRect.height * 0.58);
+        glow.lineStyle(1.2, 0xc5bfe8, 0.34);
+        glow.strokeEllipse(cx, cy, presenceRect.width * 0.46, presenceRect.width * 0.46);
+        glow.lineStyle(1, 0x92a5c5, 0.22);
+        glow.strokeEllipse(cx, cy, presenceRect.width * 0.58, presenceRect.width * 0.58);
+        addObject(glow, 13);
+        if (!reducedMotion()) {
+          this.tweens.add({
+            targets: glow,
+            alpha: 0.74,
+            duration: 2600,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
+        }
+      }
+
+      const brandHeader = screen.querySelector('.v140-creation-brand');
+      const brandHeaderRect = rectFor(brandHeader);
+      const brandLabel = brandHeader?.querySelector(':scope > span:last-child');
+      const brandLabelRect = rectFor(brandLabel);
+      if (brandHeaderRect || brandLabelRect) {
+        const brandRules = this.add.graphics();
+        if (brandHeaderRect) {
+          brandRules.lineStyle(1, 0xd3b56c, 0.42);
+          brandRules.lineBetween(
+            brandHeaderRect.x,
+            brandHeaderRect.y + brandHeaderRect.height,
+            brandHeaderRect.x + brandHeaderRect.width,
+            brandHeaderRect.y + brandHeaderRect.height
+          );
+        }
+        if (brandLabelRect) {
+          brandRules.lineStyle(1, 0xd3b56c, 0.44);
+          brandRules.lineBetween(
+            brandLabelRect.x + 0.5 * sx,
+            brandLabelRect.y + 4 * sy,
+            brandLabelRect.x + 0.5 * sx,
+            brandLabelRect.y + brandLabelRect.height - 4 * sy
+          );
+        }
+        addObject(brandRules, 12);
+      }
+
+      panels.forEach(node => {
+        if (node.matches('.v094-choice')) {
+          const selected = node.classList.contains('is-selected') || node.getAttribute('aria-pressed') === 'true';
+          drawPanel(node, {
+            fill: selected ? 0x1b3f2a : 0x0a130d,
+            alpha: selected ? 0.95 : 0.91,
+            stroke: selected ? 0x80c88e : 0xc4a867,
+            strokeAlpha: selected ? 0.98 : 0.42,
+            lineWidth: selected ? 1.8 : 1,
+            inset: false
+          });
+        } else if (node.matches('.v094-actions button')) {
+          const primary = node.classList.contains('primary');
+          drawPanel(node, {
+            fill: primary ? 0x604923 : 0x111b13,
+            alpha: 0.98,
+            stroke: primary ? 0xe8c77e : 0xa89262,
+            strokeAlpha: primary ? 0.92 : 0.55,
+            lineWidth: primary ? 1.4 : 1,
+            inset: false
+          });
+        } else if (node.matches('.v094-beginning-card')) {
+          drawPanel(node, { fill: 0x101810, alpha: 0.97, stroke: 0xc6a96a, strokeAlpha: 0.82, lineWidth: 1.4 });
+        } else if (node.matches('.v140-guide-portrait-frame.v140-presence-frame')) {
+          drawPanel(node, { fill: 0x10111f, alpha: 0.99, stroke: 0xa9a1d0, strokeAlpha: 0.82 });
+        } else if (node.matches('.v140-guide-portrait-frame')) {
+          drawPanel(node, { fill: 0x101810, alpha: 0.99, stroke: 0xd7b66e, strokeAlpha: 0.9 });
+        } else if (node.matches('.v140-dialogue-box')) {
+          const mystery = screen.classList.contains('v140-creation');
+          drawPanel(node, { fill: mystery ? 0x11121f : 0x101810, alpha: 0.98, stroke: mystery ? 0x9e98c6 : 0xd7b66e, strokeAlpha: 0.8 });
+        } else if (node.matches('.v094-summary > div,.v094-confirm-benefit')) {
+          drawPanel(node, { fill: 0x0d160f, alpha: 0.92, stroke: 0x8e9f7b, strokeAlpha: 0.44, inset: false });
+        } else if (node.matches('.v094-field')) {
+          drawPanel(node, { fill: 0x0a120d, alpha: 0.72, stroke: 0xd1b575, strokeAlpha: 0.4, inset: false });
+        } else if (node.matches('.v094-stepper')) {
+          drawPanel(node, { fill: 0x0a120d, alpha: 0.64, stroke: 0xd1b575, strokeAlpha: 0.36, inset: false });
+        } else if (node.matches('.v094-scene-note')) {
+          drawPanel(node, { fill: 0x282319, alpha: 0.58, stroke: 0xd6b875, strokeAlpha: 0.64, inset: false });
+        }
+      });
+
+      const styleOf = node => window.getComputedStyle(node);
+      const makeText = (node, overrides = {}) => {
+        if (!node) return null;
+        const rect = rectFor(node);
+        if (!rect) return null;
+        let text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
+        if (styleOf(node).textTransform === 'uppercase') text = text.toLocaleUpperCase();
+        else if (styleOf(node).textTransform === 'lowercase') text = text.toLocaleLowerCase();
+        if (!text) return null;
+        const style = styleOf(node);
+        const originalColor = node.dataset.legendNativeCreationColor || style.color || '#eee7d6';
+        const fontPx = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
+        const linePx = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.42;
+        const wrap = Math.max(32, rect.width);
+        const textObject = this.add.text(rect.x, rect.y, text, {
+          fontFamily: style.fontFamily || 'Georgia, Times New Roman, serif',
+          fontSize: fontPx + 'px',
+          fontStyle: Number(style.fontWeight) >= 650 || style.fontWeight === 'bold'
+            ? 'bold'
+            : (style.fontStyle || 'normal'),
+          color: overrides.color || originalColor,
+          lineSpacing: Math.max(0, (linePx - (parseFloat(style.fontSize) || 14)) * sy),
+          letterSpacing: Number.isFinite(parseFloat(style.letterSpacing))
+            ? Math.max(0, parseFloat(style.letterSpacing) * sx)
+            : 0,
+          wordWrap: { width: wrap, useAdvancedWrap: true },
+          padding: { left: 1, right: 2, top: 1, bottom: 2 },
+          align: style.textAlign || 'left'
+        }).setOrigin(0, 0);
+        return addObject(textObject, 14);
+      };
+      textNodes.forEach(node => {
+        let color = null;
+        if (node.matches('.v094-kicker,.v094-stepper-top strong,.v094-choice strong,.v094-summary strong,.v094-confirm-benefit strong,.v140-dialogue-speaker strong')) color = '#e6c77e';
+        else if (node.matches('.v140-dialogue-box p,.v094-scene-note p,.v094-beginning-card > p')) color = '#e0e4d8';
+        else if (node.matches('.v094-choice-prompt,.v094-stepper-top span,.v094-field label,.v094-confirm-benefit span,.v094-summary span,.v140-dialogue-speaker span,.v140-dialogue-box small')) color = '#b4c0af';
+        else if (node.matches('h1,h2,h3')) color = '#f0e5c8';
+        makeText(node, { color });
+      });
+
+      const stepper = screen.querySelector('.v094-stepper');
+      const progressTrack = stepper?.querySelector('.v094-stepper-track');
+      const progressFill = progressTrack?.querySelector('i');
+      if (progressTrack) {
+        const track = rectFor(progressTrack);
+        const fill = rectFor(progressFill);
+        if (track) {
+          const graphics = this.add.graphics();
+          graphics.fillStyle(0x233126, 0.95);
+          graphics.fillRect(track.x, track.y, track.width, Math.max(3, track.height));
+          if (fill) {
+            graphics.fillStyle(0x88ae81, 0.98);
+            graphics.fillRect(track.x, track.y, Math.max(0, fill.width), Math.max(3, track.height));
+          }
+          addObject(graphics, 13);
+        }
+      }
+
+      const mainButtons = [...choices, ...controls];
+      mainButtons.forEach((button, index) => {
+        const choice = button.classList.contains('v094-choice');
+        const key = choice ? Object.keys(button.dataset).find(name => ['gender','personality','origin','class','keepsake'].includes(name)) : '';
+        const value = key ? button.dataset[key] : '';
+        const id = choice ? 'choice-' + key + '-' + value : (button.id || 'creation-action-' + index);
+        const labelText = [
+          ...Array.from(button.querySelectorAll('strong,span,em,small')).map(node => node.textContent?.trim() || '')
+        ].filter(Boolean).join('. ') || button.textContent?.trim() || id;
+        button.setAttribute('aria-label', labelText);
+        const rect = rectFor(button);
+        if (!rect) return;
+        const container = this.add.container(rect.x, rect.y).setDepth(15);
+        const focusFrame = this.add.graphics();
+        focusFrame.lineStyle(2, choice ? 0xb5d99a : 0xffe7a6, 0.98);
+        focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
+        focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
+        const objects = [focusFrame];
+        if (!choice) {
+          const actionStyle = window.getComputedStyle(button);
+          const actionText = button.textContent?.replace(/\s+/g, ' ').trim() || id;
+          const primaryAction = button.classList.contains('primary');
+          const actionLabel = this.add.text(rect.width / 2, rect.height / 2, actionText, {
+            fontFamily: actionStyle.fontFamily || 'Arial, sans-serif',
+            fontSize: Math.max(10, (parseFloat(actionStyle.fontSize) || 13) * sy) + 'px',
+            fontStyle: 'bold',
+            color: primaryAction ? '#241803' : '#e9e2cf',
+            letterSpacing: 0.25 * sx,
+            align: 'center',
+            wordWrap: { width: Math.max(40, rect.width - 24 * sx), useAdvancedWrap: true }
+          }).setOrigin(0.5);
+          objects.push(actionLabel);
+        }
+        if (choice && (button.classList.contains('is-selected') || button.getAttribute('aria-pressed') === 'true')) {
+          const tick = this.add.text(rect.width - 18 * sx, 15 * sy, '✓', {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: Math.max(13, Math.round(15 * sy)) + 'px',
+            fontStyle: 'bold',
+            color: '#baffcd'
+          }).setOrigin(0.5);
+          objects.push(tick);
+        }
+        container.add(objects);
+        addObject(container, 15);
+        const control = {
+          id,
+          label: labelText,
+          kind: choice ? 'choice' : 'action',
+          x: rect.x,
+          y: rect.y,
+          width: rect.width,
+          height: rect.height,
+          container,
+          focusFrame,
+          selected: choice && (button.classList.contains('is-selected') || button.getAttribute('aria-pressed') === 'true'),
+          button
+        };
+        this.nativeCreationUiControls.push(control);
+        if (!button.__legendNativeCreationBound) {
+          button.__legendNativeCreationBound = true;
+          button.addEventListener('focus', () => this.setNativeCreationControlFocus(id, true));
+          button.addEventListener('blur', () => this.setNativeCreationControlFocus(id, button.matches(':hover')));
+          button.addEventListener('pointerenter', () => this.setNativeCreationControlFocus(id, true));
+          button.addEventListener('pointerleave', () => this.setNativeCreationControlFocus(id, document.activeElement === button));
+        }
+      });
     }
 
     ashmerelandmarkSpecs() {
