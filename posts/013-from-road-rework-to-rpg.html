@@ -1,9 +1,25 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Devlog 013 — From Road Rework to RPG Loop</title><link rel="stylesheet" href="../css/legend-site-v090.css?v=0.30.3-devlog">
-  <style>body{padding:24px}.shell{width:min(920px,100%);margin:auto}.card{margin-top:14px}.kicker{color:#d7b86a;letter-spacing:.14em;text-transform:uppercase;font-size:.78rem}h1{font-size:clamp(2rem,7vw,4.2rem)}h2{color:#d7b86a}p,li{line-height:1.7}.actions{display:flex;flex-wrap:wrap;gap:10px}.btn{display:inline-flex;padding:12px 15px;border:1px solid rgba(215,184,106,.3);border-radius:10px;color:inherit;text-decoration:none;background:#111912}.note{padding:14px;border:1px solid rgba(215,184,106,.25);border-radius:12px;background:rgba(11,18,12,.5);color:#d8dfd1}</style></head>
-<body><div class="shell">
+  <style>body{padding:24px}.shell{width:min(920px,100%);margin:auto}.card{margin-top:14px}.kicker{color:#d7b86a;letter-spacing:.14em;text-transform:uppercase;font-size:.78rem}h1{font-size:clamp(2rem,7vw,4.2rem)}h2{color:#d7b86a}p,li{line-height:1.7}.actions{display:flex;flex-wrap:wrap;gap:10px}.btn{display:inline-flex;padding:12px 15px;border:1px solid rgba(215,184,106,.3);border-radius:10px;color:inherit;text-decoration:none;background:#111912}.note{padding:14px;border:1px solid rgba(215,184,106,.25);border-radius:12px;background:rgba(11,18,12,.5);color:#d8dfd1}</style>  <link rel="stylesheet" href="../css/chronicle-v140.css?v=20261103-chronicle-v140">
+</head>
+<body class="chronicle-page chronicle-article">
+  <nav class="chronicle-nav" aria-label="Chronicle navigation">
+    <div class="chronicle-nav-inner">
+      <a class="chronicle-brand" href="../index.html" aria-label="LEGEND: The Awakening — return to the game">
+        <img src="../assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening" decoding="async">
+        <span class="chronicle-brand-copy"><strong>Field Records</strong><span>Development Chronicle</span></span>
+      </a>
+      <div class="chronicle-nav-links">
+        <a href="../index.html" class="chronicle-play">Enter the World</a>
+        <a href="../blog.html" aria-current="page">All Entries</a>
+        <a href="../updates.html">Dispatch</a>
+        <a href="../guide.html">Field Guide</a>
+      </div>
+    </div>
+  </nav>
+<div class="shell">
 <article class="panel card"><p class="kicker">Devlog 013 · Release Catch-Up · November 2, 2026</p><h1>From Road Rework to a Living RPG Loop</h1>
-<p>The last public devlog described the early Ashmere and Old Road rework. Since then, the project has changed substantially. This entry is a catch-up on the work that now defines the production build, <strong>LEGEND: The Awakening v0.30.3</strong>.</p>
+<p>The last public devlog described the early Ashmere and Old Road rework. Since then, the project has changed substantially. This entry is a catch-up on the work that now defines the production build, <strong>LEGEND: The Awakening v0.30.4</strong>.</p>
 <div class="actions"><a class="btn" href="../index.html">Play LEGEND</a><a class="btn" href="../updates.html">Development Dispatch</a><a class="btn" href="../CHANGELOG.md">Detailed Changelog</a></div></article>
 <section class="panel card"><h2>1. The first session became a story</h2>
 <p>The old title and menu work grew into a clearer fantasy-RPG entry point. The new-player route now includes three mandatory annals, an unnamed voice shown as ???, a memory-led traveler creator, and the dead-lantern opening on the Old Road. Captain Oric and the Blackroot Wolf encounter teach the production combat flow rather than a separate tutorial mock-up.</p></section>
@@ -18,5 +34,5 @@
 <p>Greyfen now has some local quests, resource and equipment progression, marsh routes, the Ferry Nets contract, and an optional Silted Storehouse detour. It is still incomplete: its full service loop and story resolution need work, and Ironpass is future content. The project is deliberately not calling the first three towns finished while those gates remain open.</p></section>
 <section class="panel card"><h2>Where the project stands</h2>
 <p>The live browser game is desktop-first with mobile compatibility and is actively in development. The current priority is to keep the first journey coherent, correct the public-facing information, validate the live production build, and complete each region as a playable loop before opening the next one.</p>
-<p class="note">All recent work has stayed within the existing classic-JavaScript game. The production save key and current player record are preserved; a new engine or save migration is not part of this update.</p></section>
+<p class="note">The production Phaser world renderer is now active, and the approved migration is underway one playable surface at a time. The existing save key and player record remain the source of truth.</p></section>
 </div></body></html>
