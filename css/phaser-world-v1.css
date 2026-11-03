@@ -99,3 +99,101 @@ body.legend-phaser-world-active #toast { z-index: 100003; }
   body.legend-phaser-world-active #root .v120-title-backdrop,
   body.legend-phaser-world-active #root .v094-beginning-bg { transition: none !important; }
 }
+
+
+/* Production scene parity: remove duplicate environment paintings and let the
+   persistent Phaser scene remain the single world backdrop behind HTML controls. */
+body.legend-phaser-world-active.legend-world-shell-active::before {
+  background-image: none !important;
+  filter: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+body.legend-phaser-world-active.legend-world-shell-active::after {
+  background: radial-gradient(ellipse at 50% 48%, transparent 48%, rgba(0,0,0,.10) 100%) !important;
+  box-shadow: none !important;
+}
+
+body.legend-phaser-world-active #root .opening-road-v140 {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .opening-road-v140-bg {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+}
+body.legend-phaser-world-active #root .opening-lore-v220 {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .opening-lore-v220-backdrop {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+}
+
+body.legend-phaser-world-active #root .exp100 {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .exp100-scene-live {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .exp100-scene-live > img {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+}
+body.legend-phaser-world-active #root .exp100-scene-live .exp100-scene-shade {
+  background: linear-gradient(180deg, rgba(6,13,10,.015), rgba(6,13,10,.075) 52%, rgba(4,7,5,.22) 100%) !important;
+}
+
+body.legend-phaser-world-active #root .ash100-town {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .ash100-hero {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .ash100-hero > img {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+body.legend-phaser-world-active #root .gfm160-scene,
+body.legend-phaser-world-active #root .gss170-scene {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .gfm160-scene-art,
+body.legend-phaser-world-active #root .gfm160-results-art img,
+body.legend-phaser-world-active #root .gss170-scene-art {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active #root .gfm160-scene-shade,
+body.legend-phaser-world-active #root .gfm160-results-art > div,
+body.legend-phaser-world-active #root .gss170-scene-shade {
+  background: linear-gradient(90deg, rgba(7,19,18,.18), rgba(7,19,18,.04) 54%, rgba(7,19,18,.10)), linear-gradient(0deg, rgba(6,17,16,.20), transparent 66%) !important;
+}
+body.legend-phaser-world-active #root .gss170-page,
+body.legend-phaser-world-active #root .gfm160-page {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .bell-vault-v100 {
+  background: linear-gradient(145deg, rgba(23,33,24,.48), rgba(6,11,7,.42)) !important;
+  backdrop-filter: blur(2px);
+}
+body.legend-phaser-world-active #root .bell-vault-room-card,
+body.legend-phaser-world-active #root .bell-vault-keeper-card {
+  background: linear-gradient(145deg, rgba(13,21,14,.70), rgba(5,10,6,.64)) !important;
+}
+
+/* The world canvas remains visible when screen-local images are hidden. */
+body.legend-phaser-world-active #root .opening-road-v140-shade {
+  background: linear-gradient(90deg, rgba(2,6,4,.14), rgba(2,6,4,.035) 49%, rgba(2,6,4,.12)), linear-gradient(180deg, rgba(2,4,3,.015), rgba(2,5,4,.20)) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.legend-phaser-world-active #root .opening-road-v140-bg,
+  body.legend-phaser-world-active #root .opening-lore-v220-backdrop,
+  body.legend-phaser-world-active #root .exp100-scene-live > img {
+    animation: none !important;
+    transition: none !important;
+  }
+}
