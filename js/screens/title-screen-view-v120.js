@@ -54,7 +54,7 @@
           </section>
         </main>
         <aside class="v140-realm-overview v151-realm-art" aria-label="Realm overview">
-          <div class="v140-realm-overview-head"><span>BEYOND THE LANTERN LINE</span><small>BUILD <b>${esc(buildVersion)}</b></small></div>
+          <div class="v140-realm-overview-head"><span>BEYOND THE LANTERN LINE</span></div>
           <section class="v151-realm-feature">
             <img src="assets/generated/locations/ashmere-town.webp" alt="Lantern-lit streets of Ashmere" loading="eager" decoding="async">
             <div class="v151-realm-feature-shade"></div>
@@ -71,14 +71,14 @@
             </article>
           </div>
           <section class="v151-realm-dispatch" aria-label="Latest update and upcoming features">
-            <div class="v151-realm-dispatch-head"><span>REALM DISPATCH</span><small>LATEST UPDATE · ${esc(buildVersion)}</small></div>
+            <div class="v151-realm-dispatch-head"><span>REALM DISPATCH</span><small>FIELD NOTES</small></div>
             <div class="v151-realm-dispatch-latest"><span>NOW LIVE</span><h3>Greyfen’s frontier is taking shape</h3><p>The lowland road now has its own crossing story, field work, salvage, crafting, a deeper storehouse, and regional equipment.</p></div>
             <div class="v151-realm-dispatch-next"><span>WHAT'S COMING NEXT</span><strong>A road that answers back</strong><p>More reliable combat encounters, distinct enemies, richer discoveries, and town services that feel like places in the same world.</p></div>
             <a href="updates.html" target="_blank" rel="noopener">Read the latest field notes ↗</a>
           </section>
           <div class="v140-realm-player-state"><span>YOUR JOURNEY</span><strong>${player ? 'Day ' + day + ' · ' + tokens + (Number(tokens) === 1 ? ' Road Token' : ' Road Tokens') : 'A new journey awaits'}</strong><small>${player ? esc(name) + ' · ' + esc(cls) : 'Shape a traveler and enter the realm.'}</small></div>
         </aside>
-        <footer class="portal100-footer portal-footer v120-title-footer"><span>LEGEND: THE AWAKENING</span><span>${esc(buildVersion)} · ASHMERE · OLD ROAD · GREYFEN</span></footer>
+        <footer class="portal100-footer portal-footer v120-title-footer"><span>LEGEND: THE AWAKENING</span><span>ASHMERE · THE OLD ROAD · GREYFEN</span></footer>
       </div>`;
     return true;
   }

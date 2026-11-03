@@ -107,6 +107,7 @@
     .toast { position: fixed; z-index: 1400; left: 50%; bottom: 30px; transform: translate(-50%, 16px); max-width: min(680px, calc(100% - 28px)); padding: 12px 17px; border: 1px solid rgba(219,185,121,.4); background: rgba(8,12,11,.96); color: #f0ead8; font: 12px/1.5 system-ui, sans-serif; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
     .prototype-fallback { position: absolute; inset: auto 12px 35px; color: #c7c3b7; text-align: center; font: 10px system-ui, sans-serif; }
+    .v120-title .v140-realm-overview-head small { display: none !important; }
     @media (max-width: 640px) {
       .site-top { height: 55px; padding: 10px 12px; }
       .brand { font-size: 9px; letter-spacing: .13em; }
@@ -177,21 +178,11 @@
           <p class="subtitle">The Awakening</p>
           <p class="tagline">The roads remember. The realm is waking.</p>
           <div class="menu-row"><button class="primary" id="beginButton" type="button">Begin Your Journey</button></div>
-          <p class="title-note">A standalone Phaser prototype using the current game’s authored content and systems.</p>
         </div>
-        <span class="disclaimer">Prototype save is separate from the production game.</span>
       </section>
     </div>
   </div>
   <button id="engine-skip" type="button" aria-label="Skip the Phaser engine awakening">Skip intro</button>
-  <header class="site-top">
-    <div class="brand">LEGEND <small>THE AWAKENING · PHASER WORLD ENGINE</small></div>
-    <div class="top-actions">
-      <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true">Sound On</button>
-      <a class="quiet-link" href="./" rel="noopener">Open Current Game</a>
-    </div>
-  </header>
-  <div class="prototype-note">PHASER WORLD ENGINE · LIVE WORLD PRESENTATION · ISOLATED PROTOTYPE SAVE</div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/phaser@4.1.0/dist/phaser.min.js"></script>
