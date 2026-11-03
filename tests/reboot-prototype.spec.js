@@ -222,6 +222,11 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     expect(town.menuViews).toContain('regions');
     await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
     await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+    await page.locator('#legend-world-shell-root [data-world-action="inventory"]').click();
+    await expect(page.locator('#legend-world-shell-modal-root')).toBeVisible();
+    await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surface)).toBe('modal');
+    await page.locator('#legend-world-shell-modal-root [data-shell-modal-close]').click();
+    await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surface)).toBe('town');
     expect(pageErrors).toEqual([]);
   });
 
