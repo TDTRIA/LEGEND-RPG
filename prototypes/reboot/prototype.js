@@ -1148,6 +1148,7 @@
       realmScene?.setEnvironment('title', true);
       const finishStartup = () => {
         try { window.sessionStorage.setItem(ENGINE_SESSION_KEY, 'ready'); } catch (_) {}
+        if (realmScene) realmScene.engineAwakened = true;
         document.documentElement.classList.remove('engine-intro-active');
         const skip = byId('engine-skip');
         if (skip) skip.hidden = true;
