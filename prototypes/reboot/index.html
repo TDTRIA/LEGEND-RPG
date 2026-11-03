@@ -3,28 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <base href="../../">
   <meta name="theme-color" content="#090d0c">
   <meta name="description" content="An isolated Phaser reboot prototype using the current LEGEND: The Awakening game content and gameplay systems.">
   <title>LEGEND: The Awakening — Phaser Reboot</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="stylesheet" href="../../css/style.css">
-  <link rel="stylesheet" href="../../css/game-ui-v090.css">
-  <link rel="stylesheet" href="../../css/beginning-v094.css">
-  <link rel="stylesheet" href="../../css/road-combat-v093.css">
-  <link rel="stylesheet" href="../../css/ashmere-v099.css">
-  <link rel="stylesheet" href="../../css/ashmere-town-terminal-v09x.css">
-  <link rel="stylesheet" href="../../css/road-expedition-v100.css">
-  <link rel="stylesheet" href="../../css/ashmere-town-v100.css">
-  <link rel="stylesheet" href="../../css/ashmere-workshops-v100.css">
-  <link rel="stylesheet" href="../../css/region-travel-v100.css">
-  <link rel="stylesheet" href="../../css/opening-road-v140.css">
-  <link rel="stylesheet" href="../../css/bell-vault-v100.css">
-  <link rel="stylesheet" href="../../css/progression-results-v152.css">
-  <link rel="stylesheet" href="../../css/greyfen-marsh-v160.css">
-  <link rel="stylesheet" href="../../css/greyfen-storehouse-v170.css">
-  <link rel="stylesheet" href="../../css/legend-ui-system-v160.css">
-  <link rel="stylesheet" href="../../css/legend-world-shell-v170.css">
-  <link rel="stylesheet" href="../../css/opening-lore-v220.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/game-ui-v090.css">
+  <link rel="stylesheet" href="css/beginning-v094.css">
+  <link rel="stylesheet" href="css/road-combat-v093.css">
+  <link rel="stylesheet" href="css/ashmere-v099.css">
+  <link rel="stylesheet" href="css/ashmere-town-terminal-v09x.css">
+  <link rel="stylesheet" href="css/road-expedition-v100.css">
+  <link rel="stylesheet" href="css/ashmere-town-v100.css">
+  <link rel="stylesheet" href="css/ashmere-workshops-v100.css">
+  <link rel="stylesheet" href="css/region-travel-v100.css">
+  <link rel="stylesheet" href="css/opening-road-v140.css">
+  <link rel="stylesheet" href="css/bell-vault-v100.css">
+  <link rel="stylesheet" href="css/progression-results-v152.css">
+  <link rel="stylesheet" href="css/greyfen-marsh-v160.css">
+  <link rel="stylesheet" href="css/greyfen-storehouse-v170.css">
+  <link rel="stylesheet" href="css/legend-ui-system-v160.css">
+  <link rel="stylesheet" href="css/legend-world-shell-v170.css">
+  <link rel="stylesheet" href="css/opening-lore-v220.css">
   <style>
     :root { color-scheme: dark; --ink: #f0ead8; --muted: #bec1b4; --gold: #dbb979; --deep: #080d0c; --line: rgba(226,205,158,.28); }
     * { box-sizing: border-box; }
@@ -142,78 +143,78 @@
     <div class="brand">LEGEND <small>THE AWAKENING · PHASER REBOOT</small></div>
     <div class="top-actions">
       <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="true">Sound On</button>
-      <a class="quiet-link" href="../../" rel="noopener">Open Current Game</a>
+      <a class="quiet-link" href="./" rel="noopener">Open Current Game</a>
     </div>
   </header>
   <div class="prototype-note">Isolated prototype save · no production save or cloud account is accessed · desktop and mobile layouts supported</div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/phaser@4.1.0/dist/phaser.min.js"></script>
-  <script defer src="../../js/data.js"></script>
-  <script defer src="../../js/core/html-utils-v120.js"></script>
-  <script defer src="../../js/storage/player-normalizer-v120.js"></script>
-  <script defer src="../../js/systems/assets-v090.js"></script>
-  <script defer src="../../js/systems/progression-v100.js"></script>
-  <script defer src="../../js/systems/player/progression-level-up-v152.js"></script>
-  <script defer src="../../js/systems/quest-log-v120.js"></script>
-  <script defer src="../../js/content/roads/old-road-v100.js"></script>
-  <script defer src="../../js/content/roads/greyfen-marsh-v160.js"></script>
-  <script defer src="../../js/systems/player/player-record-v094.js"></script>
-  <script defer src="../../js/systems/player/player-creation-options-v094.js"></script>
-  <script defer src="../../js/systems/player/player-creation-steps-v094.js"></script>
-  <script defer src="../../js/systems/player/player-creation-view-v094.js"></script>
-  <script defer src="../../js/systems/beginning-v094.js"></script>
-  <script defer src="../../js/systems/region-view-v100.js"></script>
-  <script defer src="../../js/systems/region-service-v100.js"></script>
-  <script defer src="../../js/systems/region-controller-v100.js"></script>
-  <script defer src="../../js/systems/town/ashmere-records-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-job-catalog-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-workboard-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-market-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-crafting-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-forge-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-commerce-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-inn-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-npc-catalog-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-greyfen-evidence-story-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-first-road-return-dialogue-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-npc-story-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-npc-dialogue-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-people-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-crossing-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-contracts-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-assets-v099.js"></script>
-  <script defer src="../../js/systems/dungeons/greyfen-storehouse-v170.js"></script>
-  <script defer src="../../js/systems/town/ashmere-features-v099.js"></script>
-  <script defer src="../../js/systems/dungeons/bell-vault-v100.js"></script>
-  <script defer src="../../js/systems/town/ashmere-view-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-guidance-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-destination-catalog-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-hub-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-routes-v099.js"></script>
-  <script defer src="../../js/systems/town/ashmere-navigation-v099.js"></script>
-  <script defer src="../../js/systems/ashmere-controller-v099.js"></script>
-  <script defer src="../../js/systems/road/road-audio-v100.js"></script>
-  <script defer src="../../js/systems/road/road-combat-view-v100.js"></script>
-  <script defer src="../../js/systems/road/road-combat-v100.js"></script>
-  <script defer src="../../js/systems/road/road-combat-results-view-v152.js"></script>
-  <script defer src="../../js/systems/road/road-state-v100.js"></script>
-  <script defer src="../../js/systems/quests/bell-road-evidence-v120.js"></script>
-  <script defer src="../../js/content/roads/road-poi-catalog-v100.js"></script>
-  <script defer src="../../js/systems/road/road-discovery-view-v100.js"></script>
-  <script defer src="../../js/systems/road/road-decisions-v100.js"></script>
-  <script defer src="../../js/systems/road/road-poi-outcomes-v100.js"></script>
-  <script defer src="../../js/systems/road/road-discovery-v100.js"></script>
-  <script defer src="../../js/systems/road/road-view-v100.js"></script>
-  <script defer src="../../js/systems/road/road-actions-v100.js"></script>
-  <script defer src="../../js/systems/road/road-results-view-v100.js"></script>
-  <script defer src="../../js/systems/road/road-results-v100.js"></script>
-  <script defer src="../../js/systems/road/road-expedition-screen-v100.js"></script>
-  <script defer src="../../js/systems/road-controller-v100.js"></script>
-  <script defer src="../../js/systems/road-opening-v140.js"></script>
-  <script defer src="../../js/systems/opening-prologue-v220.js"></script>
-  <script defer src="../../js/systems/scene-transitions-v120.js"></script>
-  <script defer src="../../js/systems/road/greyfen-marsh-expedition-v160.js"></script>
-  <script defer src="./prototype.js"></script>
+  <script defer src="js/data.js"></script>
+  <script defer src="js/core/html-utils-v120.js"></script>
+  <script defer src="js/storage/player-normalizer-v120.js"></script>
+  <script defer src="js/systems/assets-v090.js"></script>
+  <script defer src="js/systems/progression-v100.js"></script>
+  <script defer src="js/systems/player/progression-level-up-v152.js"></script>
+  <script defer src="js/systems/quest-log-v120.js"></script>
+  <script defer src="js/content/roads/old-road-v100.js"></script>
+  <script defer src="js/content/roads/greyfen-marsh-v160.js"></script>
+  <script defer src="js/systems/player/player-record-v094.js"></script>
+  <script defer src="js/systems/player/player-creation-options-v094.js"></script>
+  <script defer src="js/systems/player/player-creation-steps-v094.js"></script>
+  <script defer src="js/systems/player/player-creation-view-v094.js"></script>
+  <script defer src="js/systems/beginning-v094.js"></script>
+  <script defer src="js/systems/region-view-v100.js"></script>
+  <script defer src="js/systems/region-service-v100.js"></script>
+  <script defer src="js/systems/region-controller-v100.js"></script>
+  <script defer src="js/systems/town/ashmere-records-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-job-catalog-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-workboard-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-market-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-crafting-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-forge-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-commerce-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-inn-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-npc-catalog-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-greyfen-evidence-story-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-first-road-return-dialogue-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-npc-story-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-npc-dialogue-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-people-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-crossing-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-contracts-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-assets-v099.js"></script>
+  <script defer src="js/systems/dungeons/greyfen-storehouse-v170.js"></script>
+  <script defer src="js/systems/town/ashmere-features-v099.js"></script>
+  <script defer src="js/systems/dungeons/bell-vault-v100.js"></script>
+  <script defer src="js/systems/town/ashmere-view-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-guidance-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-destination-catalog-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-hub-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-routes-v099.js"></script>
+  <script defer src="js/systems/town/ashmere-navigation-v099.js"></script>
+  <script defer src="js/systems/ashmere-controller-v099.js"></script>
+  <script defer src="js/systems/road/road-audio-v100.js"></script>
+  <script defer src="js/systems/road/road-combat-view-v100.js"></script>
+  <script defer src="js/systems/road/road-combat-v100.js"></script>
+  <script defer src="js/systems/road/road-combat-results-view-v152.js"></script>
+  <script defer src="js/systems/road/road-state-v100.js"></script>
+  <script defer src="js/systems/quests/bell-road-evidence-v120.js"></script>
+  <script defer src="js/content/roads/road-poi-catalog-v100.js"></script>
+  <script defer src="js/systems/road/road-discovery-view-v100.js"></script>
+  <script defer src="js/systems/road/road-decisions-v100.js"></script>
+  <script defer src="js/systems/road/road-poi-outcomes-v100.js"></script>
+  <script defer src="js/systems/road/road-discovery-v100.js"></script>
+  <script defer src="js/systems/road/road-view-v100.js"></script>
+  <script defer src="js/systems/road/road-actions-v100.js"></script>
+  <script defer src="js/systems/road/road-results-view-v100.js"></script>
+  <script defer src="js/systems/road/road-results-v100.js"></script>
+  <script defer src="js/systems/road/road-expedition-screen-v100.js"></script>
+  <script defer src="js/systems/road-controller-v100.js"></script>
+  <script defer src="js/systems/road-opening-v140.js"></script>
+  <script defer src="js/systems/opening-prologue-v220.js"></script>
+  <script defer src="js/systems/scene-transitions-v120.js"></script>
+  <script defer src="js/systems/road/greyfen-marsh-expedition-v160.js"></script>
+  <script defer src="prototypes/reboot/prototype.js"></script>
 </body>
 </html>
