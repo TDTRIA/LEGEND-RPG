@@ -7,7 +7,7 @@ All notable changes to the current project are recorded here. Historical entries
 ## 2026-11-03 — Audio library, production migration, and repository catch-up (in progress; not a game version bump)
 
 - Generate a 48-asset original audio collection: 13 location/prologue ambience loops and 35 gameplay effects for UI, story, combat, creatures, rewards, travel, town services, and Bell Cellar. Stage the files for review in PR #98; they are not in the live build yet.
-- Begin replacing the recurring gameplay theme. The original score is being prepared for a verified rendered MP3 and production integration; do not mark the old game theme as replaced until the new music is playing in the live game and audio transitions pass checks.
+- Render the original main-theme score as a roughly 10½-minute looping MP3 and stage it in PR #98. It is not integrated into the live game yet; verify audible quality, balance, repeat seam, and transitions before treating the old theme as replaced.
 - Record the owner-approved Phaser production migration (2026-11-03). Phaser 4.1 is active as the persistent world-rendering layer; the rest of the gameplay migration remains incremental and in progress.
 - Refresh the public development chronicle, dispatch, player guide, Save Vault labeling, lightweight QA runner, README, roadmap, architecture notes, and active AI handoff to match production v0.30.4.
 - Archive the superseded AI handoff snapshot without deleting its historical build and PR notes.
