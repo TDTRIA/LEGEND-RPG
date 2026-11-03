@@ -80,6 +80,27 @@ async function tap(page, locator) {
   await page.touchscreen.tap(target.x, target.y);
 }
 
+async function ensureTownActionsOpen(page) {
+  const isOpen = await page.evaluate(() => document.body.classList.contains('legend-shell-right-open'));
+  if (!isOpen) await tap(page, page.locator('#legend-world-shell-root [data-world-action="toggle-right"]'));
+  await expect(page.locator('#legend-world-shell-root #lws-panel-right')).toBeVisible();
+}
+
+async function visitTownRoute(page, view) {
+  await ensureTownActionsOpen(page);
+  const landmarkForView = { inn: 'inn', trader: 'market', smith: 'forge', road: 'road' };
+  const landmark = landmarkForView[view];
+  if (landmark) {
+    const option = page.locator('#legend-world-shell-root [data-world-place="' + landmark + '"]');
+    if (await option.count()) {
+      await tap(page, option);
+      await tap(page, page.locator('#legend-world-shell-root [data-world-action="visit-selected-place"]'));
+      return;
+    }
+  }
+  await tap(page, page.locator('#legend-world-shell-root [data-world-route="' + view + '"]'));
+}
+
 async function startFreshCharacter(page, name) {
   await openTitle(page);
   await tap(page, page.getByRole('button', { name: /Begin Your Journey/i }));
@@ -175,7 +196,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
   test('Work Board signal job accepts taps and fits the viewport', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await startFreshCharacter(page, 'MobileWorkQA');
-    await tap(page, page.locator('.ash100-destinations').getByRole('button', { name: /Work Board/i }));
+    await visitTownRoute(page, 'work');
     await expect(page.locator('[data-job-open="wood"]')).toContainText(/Timing challenge/i);
     await expect(page.locator('[data-job-open="gate"]')).toContainText(/Read the signal/i);
     await expect(page.locator('[data-job-open="crates"]')).toContainText(/Memory sequence/i);
@@ -189,7 +210,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
   test('Old Road route and discovery respond to touch input', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await startFreshCharacter(page, 'MobileRoadQA');
-    await tap(page, page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }));
+    await visitTownRoute(page, 'routes');
     await enterOldRoadFromDeparture(page);
     await expect(page.locator('#routeRidge')).toBeVisible();
     await tap(page, page.locator('#routeRidge'));
@@ -212,7 +233,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
       pl.flags.roadExpeditionV100 = { ...(pl.flags.roadExpeditionV100 || {}), stage: 0, pressure: 70, trips: 0, events: 0, finds: 0, battles: 0 };
       rt.savePlayer(pl);
     });
-    await tap(page, page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }));
+    await visitTownRoute(page, 'routes');
     await enterOldRoadFromDeparture(page);
     await tap(page, page.locator('#routeRidge'));
     await tap(page, page.locator('#push'));
@@ -304,7 +325,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await expect(page.locator('.ash100-town-greyfen')).toBeVisible();
     await expectNoHorizontalOverflow(page);
 
-    await tap(page, page.locator('[data-ash-view="marsh"]').first());
+    await visitTownRoute(page, 'marsh');
     await expect(page.getByRole('main', { name: 'Greyfen Marsh Path expedition' })).toBeVisible();
     await expectNoHorizontalOverflow(page);
 
