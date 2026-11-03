@@ -92,6 +92,17 @@ Ashmere is the first town surface with native Phaser scene interactables:
 - Landmark objects are created only on the Ashmere hub, repositioned for viewport changes, and destroyed when leaving for a service or a different region. Reduced Motion disables their idle glow animations.
 - No new economy, quest, progression, dialogue, inventory or persistence logic is introduced in Phaser.
 
+## Native Phaser service interiors — 2026-11-03
+
+The Ashmere service backdrops now receive scene-native set dressing while their existing accessible service consoles remain interactive HTML:
+
+- The Inn adds suspended lanterns, animated flame cores and a subtle hearth glow.
+- The Market adds low-opacity canopy cloth, pennants and a warm hanging lantern.
+- The Blacksmith adds a contained forge glow, anvil silhouette and rising sparks.
+- The Archive adds paired rune accents; the same service mapping resolves the Greyfen Inn, Market, Forge and Archive variants.
+- The Phaser environment is selected from the town view's explicit `data-ash-service` key (`inn`, `trader`, `smith`, `craft`, `archive`) instead of depending primarily on visible text matching.
+- Scene objects use normalized viewport anchors, respect Reduced Motion, and have their tweens and objects cleared when the player changes environment. Service actions, item prices, equipment, crafting and save state remain in their current production controllers.
+
 ## Verification notes
 
 - The Phaser scene's custom glow collection is named independently from Phaser's built-in `lights` scene plugin.
