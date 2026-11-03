@@ -1289,19 +1289,24 @@
       context.beginPath();
       context.rect(0, 0, canvas.width, canvas.height);
       context.clip();
-      const fit = window.getComputedStyle(img).objectFit;
+      const imageStyle = window.getComputedStyle(img);
+      const fit = imageStyle.objectFit;
+      context.filter = imageStyle.filter && imageStyle.filter !== 'none' ? imageStyle.filter : 'none';
       if (wrapper === img && fit === 'cover') {
         const sourceWidth = img.naturalWidth;
         const sourceHeight = img.naturalHeight;
         const destinationRatio = wrapperRect.width / wrapperRect.height;
         const sourceRatio = sourceWidth / sourceHeight;
+        const position = String(imageStyle.objectPosition || '50% 50%').split(/\\s+/);
+        const positionX = Math.max(0, Math.min(1, parseFloat(position[0]) / 100 || 0.5));
+        const positionY = Math.max(0, Math.min(1, parseFloat(position[1] || position[0]) / 100 || 0.5));
         let sx = 0, sy = 0, sw = sourceWidth, sh = sourceHeight;
         if (sourceRatio > destinationRatio) {
           sw = sourceHeight * destinationRatio;
-          sx = (sourceWidth - sw) / 2;
+          sx = (sourceWidth - sw) * positionX;
         } else {
           sh = sourceWidth / destinationRatio;
-          sy = (sourceHeight - sh) / 2;
+          sy = (sourceHeight - sh) * positionY;
         }
         context.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
       } else {
@@ -1477,11 +1482,62 @@
         const key = imageKeys[item.index];
         if (!key || !this.textures.exists(key)) return;
         const rect = item.rect;
+        const opacity = Number.parseFloat(window.getComputedStyle(item.img).opacity);
         const image = this.add.image(rect.x + rect.width / 2, rect.y + rect.height / 2, key)
           .setDisplaySize(rect.width, rect.height)
-          .setAlpha(1);
+          .setAlpha(Number.isFinite(opacity) ? Math.max(0, Math.min(1, opacity)) : 1);
         addObject(image, 13);
       });
+      imageSpecs.forEach(item => {
+        const rect = item.rect;
+        const frame = this.add.graphics();
+        if (item.wrapper.classList.contains('v094-gender-emblem')) {
+          const radius = Math.min(rect.width, rect.height) * 0.47;
+          frame.fillStyle(0x18251b, 0.96);
+          frame.fillCircle(rect.x + rect.width / 2, rect.y + rect.height / 2, radius);
+          frame.lineStyle(1.4, 0xe0c17d, 0.92);
+          frame.strokeCircle(rect.x + rect.width / 2, rect.y + rect.height / 2, radius);
+          frame.lineStyle(1, 0xead49d, 0.28);
+          frame.strokeCircle(rect.x + rect.width / 2, rect.y + rect.height / 2, radius * 0.84);
+        } else if (item.wrapper.classList.contains('v094-choice-art')) {
+          frame.fillStyle(0x090f0b, 0.94);
+          frame.fillRect(rect.x, rect.y, rect.width, rect.height);
+          frame.lineStyle(1, 0xc9aa69, 0.58);
+          frame.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.width - 1, rect.height - 1);
+        } else if (item.img.classList.contains('v094-class-art')) {
+          frame.fillStyle(0x080f0b, 0.92);
+          frame.fillRect(rect.x, rect.y, rect.width, rect.height);
+          frame.lineStyle(1, 0xc9aa69, 0.52);
+          frame.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.width - 1, rect.height - 1);
+        } else {
+          return;
+        }
+        addObject(frame, 12.5);
+      });
+      const presenceFrame = screen.querySelector('.v140-presence-frame');
+      const presenceRect = rectFor(presenceFrame);
+      if (presenceRect) {
+        const glow = this.add.graphics();
+        const cx = presenceRect.x + presenceRect.width / 2;
+        const cy = presenceRect.y + presenceRect.height * 0.43;
+        glow.fillStyle(0x7474a2, 0.12);
+        glow.fillEllipse(cx, cy, presenceRect.width * 0.7, presenceRect.height * 0.58);
+        glow.lineStyle(1.2, 0xc5bfe8, 0.34);
+        glow.strokeEllipse(cx, cy, presenceRect.width * 0.46, presenceRect.width * 0.46);
+        glow.lineStyle(1, 0x92a5c5, 0.22);
+        glow.strokeEllipse(cx, cy, presenceRect.width * 0.58, presenceRect.width * 0.58);
+        addObject(glow, 13);
+        if (!reducedMotion()) {
+          this.tweens.add({
+            targets: glow,
+            alpha: 0.74,
+            duration: 2600,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
+        }
+      }
 
       panels.forEach(node => {
         if (node.matches('.v094-choice')) {
@@ -1506,10 +1562,13 @@
           });
         } else if (node.matches('.v094-beginning-card')) {
           drawPanel(node, { fill: 0x101810, alpha: 0.97, stroke: 0xc6a96a, strokeAlpha: 0.82, lineWidth: 1.4 });
+        } else if (node.matches('.v140-guide-portrait-frame.v140-presence-frame')) {
+          drawPanel(node, { fill: 0x10111f, alpha: 0.99, stroke: 0xa9a1d0, strokeAlpha: 0.82 });
         } else if (node.matches('.v140-guide-portrait-frame')) {
           drawPanel(node, { fill: 0x101810, alpha: 0.99, stroke: 0xd7b66e, strokeAlpha: 0.9 });
         } else if (node.matches('.v140-dialogue-box')) {
-          drawPanel(node, { fill: 0x101810, alpha: 0.98, stroke: 0xd7b66e, strokeAlpha: 0.8 });
+          const mystery = screen.classList.contains('v140-creation');
+          drawPanel(node, { fill: mystery ? 0x11121f : 0x101810, alpha: 0.98, stroke: mystery ? 0x9e98c6 : 0xd7b66e, strokeAlpha: 0.8 });
         } else if (node.matches('.v094-summary > div,.v094-confirm-benefit')) {
           drawPanel(node, { fill: 0x0d160f, alpha: 0.92, stroke: 0x8e9f7b, strokeAlpha: 0.44, inset: false });
         } else if (node.matches('.v094-field')) {
