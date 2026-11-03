@@ -2510,6 +2510,55 @@ test('native Phaser title menu replaces the floating HTML button paint and keeps
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
 });
 
+test('opening annals are painted by Phaser while the existing chapter controls remain accessible', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openTitle(page);
+  await page.locator('#newPrimary').click();
+  await expect(page.locator('.opening-lore-v220')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeAnnalsUi)).toBe(true);
+
+  const firstChapter = await page.evaluate(() => {
+    const screen = document.querySelector('.opening-lore-v220');
+    const button = screen?.querySelector('#openingLoreContinue');
+    const heading = screen?.querySelector('#openingLoreTitle');
+    const snapshot = window.LegendPhaserWorldV1.snapshot();
+    return {
+      active: document.body.classList.contains('legend-phaser-annals-ui-active'),
+      surface: snapshot.surface,
+      step: snapshot.nativeAnnalsUiStep,
+      objects: snapshot.nativeAnnalsUiObjectCount,
+      buttonLabel: button?.getAttribute('aria-label'),
+      buttonBackground: button ? getComputedStyle(button).backgroundColor : '',
+      buttonBorder: button ? getComputedStyle(button).borderTopColor : '',
+      headingColor: heading ? getComputedStyle(heading).color : '',
+      scrollBridge: snapshot.nativeAnnalsUiScrollTargetBound
+    };
+  });
+  expect(firstChapter.active).toBe(true);
+  expect(firstChapter.surface).toBe('annals');
+  expect(firstChapter.step).toBe(0);
+  expect(firstChapter.objects).toBeGreaterThanOrEqual(10);
+  expect(firstChapter.buttonLabel).toMatch(/^Continue/);
+  expect(firstChapter.buttonBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(firstChapter.headingColor).toBe('rgba(0, 0, 0, 0)');
+  expect(firstChapter.scrollBridge).toBe(true);
+
+  // Chapter order and the real hand-off remain owned by the original annals controller.
+  await page.locator('#openingLoreContinue').click();
+  await expect(page.getByRole('heading', { name: 'The Pact Beneath the Stone' })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiStep)).toBe(1);
+  await page.locator('#openingLoreContinue').focus();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiButtonFocused)).toBe(true);
+
+  await page.locator('#openingLoreContinue').click();
+  await expect(page.getByRole('heading', { name: 'The Kindness That Failed' })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiStep)).toBe(2);
+  await expect(page.locator('#openingLoreContinue')).toContainText('Shape the traveler');
+  await page.locator('#openingLoreContinue').click();
+  await expect(page.locator('.v140-creation')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUi)).toBe(false);
+});
+
 test('the production root plays its Phaser awakening and exposes the skip control on first visit', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
