@@ -1108,7 +1108,7 @@
           fontStyle: style.fontWeight === 'bold' || Number(style.fontWeight) >= 650 ? 'bold' : (style.fontStyle || 'normal'),
           color: overrides.color || style.color || '#f0e8d4',
           lineSpacing: Math.max(0, (lineHeight - (parseFloat(style.fontSize) || 14)) * sy),
-          letterSpacing: Math.max(0, parseFloat(style.letterSpacing) || 0) * sx,
+          letterSpacing: Number.isFinite(parseFloat(style.letterSpacing)) ? Math.max(0, parseFloat(style.letterSpacing) * sx) : 0,
           wordWrap: { width: Math.max(36, rect.width), useAdvancedWrap: true },
           padding: { left: 1, right: 2, top: 1, bottom: 2 },
           align: style.textAlign || 'left'
