@@ -52,7 +52,7 @@
       selected:state[stateKey],
       classPortraits:window.LegendAssetsV090?.classes||{},
       nextLabel,progress,scene,
-      onSelect:value=>{state[stateKey]=value;rerender();},
+      onSelect:value=>{state[stateKey]=value;},
       onBack:back,
       onNext:next
     });
