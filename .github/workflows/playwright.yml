@@ -39,7 +39,14 @@ jobs:
         run: npm install
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox webkit
+        run: |
+          if [ "${{ inputs.full_browser_matrix }}" = "true" ]; then
+            npx playwright install --with-deps chromium firefox webkit
+          else
+            # The default project set uses Chromium plus WebKit touch coverage.
+            # Firefox is installed only for the explicitly requested full matrix.
+            npx playwright install --with-deps chromium webkit
+          fi
 
       - name: Check critical JavaScript syntax
         run: |
