@@ -53,6 +53,8 @@
   <link rel="stylesheet" href="css/opening-lore-v220.css?v=0.30.0-mandatory-annals">
   <link rel="stylesheet" href="css/title-screen-renewal-v220.css?v=0.29.1-realm-dispatch">
   <link rel="stylesheet" href="css/legend-visibility-contract-v220.css?v=0.30.3-release-visibility">
+  <link rel="stylesheet" href="css/phaser-world-v1.css?v=20261103-production-root-1">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 </head>
 <body>
   <div id="legend-boot-screen" class="legend-boot-screen" role="status" aria-label="Loading LEGEND: The Awakening">
@@ -140,7 +142,11 @@
       paintProgress(4, 'Listening for the first bell', 'Gathering signs of a waking realm');
     })();
   </script>
+  <div id="game-container" aria-label="LEGEND world rendered by Phaser" aria-hidden="true"></div>
   <div id="root"></div>
+  <button id="engine-skip" type="button" aria-label="Skip the world awakening">Skip intro</button>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script defer src="https://cdn.jsdelivr.net/npm/phaser@4.1.0/dist/phaser.min.js"></script>
   <script defer src="js/data.js?v=0.30.3-release"></script>
   <script defer src="js/core/html-utils-v120.js?v=0.20.36-shared-html-utils-1"></script>
   <script defer src="js/storage/settings-storage-v120.js?v=0.20.36-settings-storage-1"></script>
@@ -229,5 +235,6 @@
   <script defer src="js/ui/panels-v170.js?v=0.27.0-world-shell-language-1"></script>
   <script defer src="js/ui/modals-v170.js?v=0.27.0-world-shell-language-1"></script>
   <script defer src="js/ui/world-shell-v170.js?v=0.27.0-world-shell-language-1"></script>
+  <script defer src="js/engine/phaser-world-v1.js?v=20261103-production-root-1"></script>
 </body>
 </html>
