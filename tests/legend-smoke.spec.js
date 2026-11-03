@@ -611,6 +611,43 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.ash099-screen')).toContainText(/reed-bed cut was marked as a route only after the floodwater rose/i);
   });
 
+  test('a previously completed Dry Crossing backfills its rumor once and preserves it after reload', async ({ page }) => {
+    await startFreshCharacter(page, 'DryCrossingLegacyQA');
+    await page.evaluate(() => {
+      const rt = window.LegendRuntimeV120;
+      const pl = rt.loadPlayer();
+      pl.currentRegion = 'Greyfen';
+      pl.discoveredRegions = ['Ashmere', 'Greyfen'];
+      pl.inventory = pl.inventory || {};
+      pl.inventory.roadToken = 5;
+      pl.flags = pl.flags || {};
+      pl.flags.greyfenDryCrossingComplete = true;
+      const rumor = "A rumor among Greyfen’s landing workers says the reed-bed cut was marked as a route only after the floodwater rose. The speaker had no record, and no one named who approved it.";
+      pl.memories = (Array.isArray(pl.memories) ? pl.memories : []).filter(memory => memory !== rumor);
+      rt.savePlayer(pl);
+      window.LegendAshmereV099.renderAshmere();
+    });
+
+    await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
+    await expect(page.locator('.ash099-screen')).toContainText(/reed-bed cut was marked as a route only after the floodwater rose/i);
+    const firstVisit = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      const rumor = "A rumor among Greyfen’s landing workers says the reed-bed cut was marked as a route only after the floodwater rose. The speaker had no record, and no one named who approved it.";
+      return { complete: Boolean(pl.flags.greyfenDryCrossingComplete), count: (pl.memories || []).filter(memory => memory === rumor).length };
+    });
+    expect(firstVisit).toEqual({ complete: true, count: 1 });
+
+    await page.reload();
+    await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 30000 });
+    await expect.poll(() => page.evaluate(() => typeof window.LegendRuntimeV120?.loadPlayer === 'function')).toBe(true);
+    const afterReload = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      const rumor = "A rumor among Greyfen’s landing workers says the reed-bed cut was marked as a route only after the floodwater rose. The speaker had no record, and no one named who approved it.";
+      return (pl.memories || []).filter(memory => memory === rumor).length;
+    });
+    expect(afterReload).toBe(1);
+  });
+
   test('Dry Crossing risky route penalizes a miss and allows a rewarded retry', async ({ page }) => {
     await startFreshCharacter(page, 'RiskyCrossingQA');
     const before = await page.evaluate(() => {
