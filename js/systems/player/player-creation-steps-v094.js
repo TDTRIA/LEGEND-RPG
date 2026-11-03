@@ -24,6 +24,7 @@
         artSource: '',
         artCell: null,
         identityGlyph: option.glyph,
+        identityImage: option.artSource || '',
         effect: option.effect || 'Identity only; your form never weakens your character.'
       }))
     }),

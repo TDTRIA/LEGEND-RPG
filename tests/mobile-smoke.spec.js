@@ -33,14 +33,14 @@ async function tap(page, locator) {
   await expect(locator).toBeVisible();
   await expect(locator).toBeEnabled();
 
-  // A scene transition intentionally covers controls while destination assets
-  // settle. Wait for the curtain to clear before checking the physical touch hit
-  // target, just as a player would wait for the scene to finish arriving.
+  // A scene transition blocks controls while destination assets settle. The curtain's
+  // revealing fade is intentionally pointer-transparent, so wait for its actual
+  // blocking state to clear; the hit-test below verifies the tap target itself.
   const curtain = page.locator('#legend-scene-curtain');
   if (await curtain.count()) {
     await expect.poll(() => curtain.evaluate(el =>
-      !el.classList.contains('is-covering') && !el.classList.contains('is-revealing')
-    ), { timeout: 15000 }).toBe(true);
+      !el.classList.contains('is-covering') && getComputedStyle(el).pointerEvents === 'none'
+    ), { timeout: 10000 }).toBe(true);
   }
 
   // Mobile WebKit's mouse-click stability check can hang on visible controls,

@@ -273,8 +273,9 @@
 }
 
 
-/* v0.30.3 — gender choices use distinct semantic emblems, never the generic traveler icon. */
-.v094-choice-scene .v094-gender-emblem{display:grid;place-items:center;flex:0 0 58px;width:58px;height:58px;margin:0 0 12px;border:1px solid rgba(215,188,116,.62);border-radius:50%;background:radial-gradient(circle at 38% 28%,rgba(194,165,101,.24),rgba(13,22,16,.92) 72%);color:#f1dca6;box-shadow:inset 0 0 0 3px rgba(8,13,9,.52),0 5px 18px rgba(0,0,0,.28);font-family:"Segoe UI Symbol","Noto Sans Symbols 2",Georgia,serif;font-size:2rem;line-height:1;text-align:center}
-.v094-choice-scene .v094-gender-emblem>span{display:block;margin:0;padding:0;color:inherit;line-height:1}
-.v094-choice-scene .v094-choice[data-gender="unspoken"] .v094-gender-emblem{border-style:dashed;color:#c5cbbb}
-@media(max-width:560px){.v094-choice-scene .v094-gender-emblem{width:50px;height:50px;flex-basis:50px;font-size:1.8rem;margin-bottom:10px}}
+/* v0.30.4 — individual Runway portrait assets with one shared in-world medallion frame. */
+.v094-choice-scene .v094-gender-emblem{display:grid;place-items:center;flex:0 0 68px;width:68px;height:68px;padding:3px;margin:0 0 12px;border:1px solid rgba(222,190,123,.88);border-radius:50%;overflow:hidden;background:linear-gradient(145deg,#9b7745 0%,#26392d 48%,#5b452d 100%);box-shadow:inset 0 0 0 2px rgba(9,15,11,.72),0 5px 18px rgba(0,0,0,.34)}
+.v094-choice-scene .v094-gender-emblem>img{display:block;width:100%;height:100%;max-width:none;object-fit:cover;border-radius:50%;filter:drop-shadow(0 2px 4px rgba(0,0,0,.32))}
+.v094-choice-scene .v094-gender-emblem>span{display:grid;place-items:center;width:100%;height:100%;color:#f1dca6;font:700 2rem/1 Georgia,serif}
+.v094-choice-scene .v094-choice[data-gender="unspoken"] .v094-gender-emblem{border-color:rgba(165,184,159,.82)}
+@media(max-width:560px){.v094-choice-scene .v094-gender-emblem{width:60px;height:60px;flex-basis:60px;margin-bottom:10px}}
