@@ -946,7 +946,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
     await expect(page.locator('#root').getByRole('heading', { name: 'Routes & Expeditions', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: /The Old Road/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /Road Network/i })).toBeVisible();
+    await expect(page.locator('#root button.ash099-card[data-ash-view="regions"]')).toBeVisible();
     await expect(page.locator('.ash100-town')).toHaveCount(0);
   });
 
