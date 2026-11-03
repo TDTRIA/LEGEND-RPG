@@ -48,21 +48,23 @@ Migration guardrails:
 
 Relevant files: `index.html`, `js/engine/phaser-world-v1.js`, `js/game.js`, `js/systems/`, `js/ui/`, `docs/ARCHITECTURE.md`, and `docs/SAVE_DATA_CONTRACT.md`.
 
-## Audio identity — active priority
+## Audio identity — integrated, final listening pending
 
-The owner has explicitly said the recurring gameplay theme must be replaced; the current theme is not acceptable.
+The replacement gameplay theme and generated sound library have been merged into production main.
 
-- The current legacy title/audio and road-audio modules still reference the old ambience and old-road battle loop. Do not claim those references have been replaced until the production integrations land.
-- A new collection of **48 original generated assets** has been staged in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98): 13 thirty-second location/prologue ambience loops and 35 effects for UI, story, combat, creatures, rewards, travel, town services, and Bell Cellar.
-- PR #98 is an audio integration candidate, not yet a shipped production feature. Review the asset import, theme render, file paths, audio levels, loop seams, and test coverage before merge.
-- The original MIDI score has now rendered successfully to a roughly 10½-minute loop in PR #98. The MP3 is staged, but it has not yet been checked in actual gameplay or integrated into production. Verify audible quality, mix, loop seam, sound-toggle behavior, and scene/battle transitions before replacing the live music. Do not claim the live theme has changed until those checks pass.
-- The intended soundtrack identity is dark medieval fantasy with a memorable recurring LEGEND motif, expressive cello/strings, restrained horns, folk instrumentation, and bronze-bell accents. Keep it playable for long sessions; avoid generic mobile-game cues, constant trailer percussion, and overbearing brass.
+- [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98) merged as `807696aa177c9a45bd1b5f62a8bdea466e082551`; GitHub Pages deployment [#41718562597](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41718562597) succeeded for that commit.
+- The repository now contains the 48-asset generated pack (13 location/prologue ambience loops and 35 one-shot effects) plus the separately rendered original main-theme MP3, a roughly 10½-minute loop.
+- `LegendRoadAudioV100` is the production world-audio director. It keeps one persistent main-theme loop and one environment/surface-specific ambience loop, routes generated UI and battle effects, and preserves the existing `legend-road-sound` preference as the single mute switch.
+- `LegendTitleAudioV120` delegates title playback and menu cues to the director. The production Phaser engine now forwards environment and screen-surface transitions to it. Combat reuses the same score rather than starting a competing battle loop.
+- The generated audio paths for additional story, creature, reward, travel, town, and dungeon effects are available through the director for incremental event-by-event wiring. Do not claim that every one-shot is already triggered by every corresponding gameplay event.
+- The main theme and ambience are integrated in the deployed build, but a human listening pass for actual browser playback, levels, repeat seam, and long-session fatigue has not yet been completed. Do not claim the soundtrack has passed subjective audio QA.
+- The intended identity remains dark medieval fantasy with a recognizable LEGEND motif, expressive cello/strings, restrained horns, folk instrumentation, and bronze-bell accents. Keep it playable for long sessions; avoid generic mobile-game cues, constant trailer percussion, and overbearing brass.
 
-The existing sound preference `legend-road-sound` must continue to control game audio. Keep music, ambience, and SFX volume/lifecycle separate so scene changes do not create duplicate loops.
+The existing `legend-road-sound` preference must continue to control game audio. Keep music, ambience, and SFX volume/lifecycle separate so scene changes do not create duplicate loops.
 
 ## Current priorities
 
-1. **Replace the recurring gameplay theme and integrate the new audio pack.** Review PR #98 and make sure the old main/battle tracks are no longer used where the new soundtrack takes over.
+1. **Finish audio QA and remaining event hooks.** Listen to the deployed theme and ambience in the real browser build, verify levels and loop seams, then wire the remaining generated world/town/reward effects to their successful gameplay actions.
 2. **Continue the approved Phaser production migration.** Move an actual playable surface, not just its backdrop, and preserve save/gameplay parity.
 3. **Finish Greyfen as a coherent region.** Complete its town services, local economy, story resolution, expeditions, rewards, and return loop before calling it done.
 4. **Keep the first-session and Old Road loop challenging and readable.** Continue long-run reward/economy tuning and real-player feedback without making the road safe or progression effortless.

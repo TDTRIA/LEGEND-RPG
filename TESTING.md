@@ -95,16 +95,20 @@ npm run test:e2e:report
 
 ## Current validation checkpoint (2026-11-03)
 
-Production main is **v0.30.4**. The current published build contains the Runway traveler identity portraits, mandatory opening annals, road-first Oric/Wolf tutorial, balanced Old Road rewards, illustrated expedition report, and partial Greyfen content.
+Production main is **v0.30.4**. The road-first opening, mandatory annals, Oric/Wolf tutorial, five-stage Old Road, Ashmere services, progression, and early Greyfen activities remain the production content baseline.
 
-The generated soundtrack and world-audio integration are staged together in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98):
-- The branch contains 13 location ambience loops, 35 generated one-shot effects, and the original main-theme MP3. The production controller keeps one theme loop and one location loop, honors `legend-road-sound`, and changes ambience with Phaser environment/surface transitions.
-- The original main-theme source renders to a roughly 10½-minute MP3 loop. Playwright covers asset selection, duplicate-loop prevention, volume levels, and the sound-toggle contract; final listening for balance, loop seam, and long-session fatigue remains required.
-- The PR Playwright run is still pending at this checkpoint. Do not mark the branch green until the final-head workflow completes; do not treat its status as a verification of the live main branch.
+The generated soundtrack and Phaser shell changes are merged into main:
+- [PR #98 — generated soundtrack/audio integration](https://github.com/TDTRIA/LEGEND-RPG/pull/98) merged as `807696aa177c9a45bd1b5f62a8bdea466e082551`. The 48-asset pack (13 ambience loops and 35 one-shot effects) plus the separately rendered roughly 10½-minute main-theme MP3 are included in production. The controller keeps one theme loop and one location ambience loop, follows Phaser environment/surface transitions, preserves `legend-road-sound`, and routes generated title/menu and battle effects.
+- [PR #99 — Phaser shell drawer fix and browser coverage](https://github.com/TDTRIA/LEGEND-RPG/pull/99) is merged. Open mobile/tablet drawers now use opaque reading surfaces without removing desktop transparency; regression coverage exercises Ashmere touch navigation and service routes.
+- [GitHub Pages deployment #41718562597](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41718562597) succeeded for the merged main commit above.
+- The merged-main Playwright workflow [#41718563547](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41718563547) is running. Do not treat it as green until GitHub reports completion.
+- Earlier PR-head Playwright runs #41717026033 (audio) and #41716283770 (Phaser) remain separate historical runs; their eventual conclusions do not replace verification of the merged main commit.
 
-The active production engine is hybrid: Phaser 4.1 renders the persistent world layer, while the existing browser modules still own most UI, dialogue, account, combat, expedition, and save behavior. Phaser migration itself must be verified surface by surface; no save migration is part of it.
+The active production engine is still hybrid: Phaser 4.1 renders the persistent world layer, atmosphere, transitions, audio environment/surface cues, and Ashmere landmarks, while existing browser modules own most UI, dialogue, account, combat rules, expedition logic, and persistence. The full production UI migration is not complete; continue surface by surface without a parallel save system or changes to gameplay source-of-truth logic.
 
-Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) for the live status rather than reusing historical run counts or treating a queued/running job as passed. GitHub Pages deployment and the deployed smoke test must succeed after merge before claiming a release is live.
+The main theme is integrated but has not yet received a human listening pass for real-browser playback, levels, repeat seam, and long-session fatigue. Additional generated world/town/reward effects are available through the audio director and should be wired to their individual successful gameplay actions incrementally.
+
+Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) for current status rather than reusing historical run counts or treating a queued/running job as passed. Check the final main Playwright run after any further code change.
 
 ## Remaining high-value test gaps
 

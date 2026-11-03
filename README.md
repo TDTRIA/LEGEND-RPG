@@ -26,9 +26,11 @@ The game is currently hybrid: most menus, dialogue, account/settings, combat rul
 
 ## Audio transition
 
-A new **48-asset original audio collection** has been generated: 13 thirty-second location/prologue ambience loops and 35 one-shot effects for UI, story, battle, creatures, rewards, footsteps, town interactions, and Bell Cellar. These assets are staged for review in [audio PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98); they are **not in the live build yet**.
+The generated soundtrack is now integrated in production main and deployed. The game includes the 48-asset original library (13 location/prologue ambience loops and 35 one-shot effects) plus the separately rendered roughly 10½-minute LEGEND main-theme MP3. The integration is merged in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98); the merge commit's [GitHub Pages deployment succeeded](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41718562597).
 
-Replacing the recurring gameplay theme is a priority. A replacement main-theme MP3 has now been rendered as a roughly 10½-minute loop and is staged in PR #98 with the effects collection. It still needs in-game listening, mix/loop verification, and integration. The live game continues using its older music setup until the replacement actually lands.
+The production `LegendRoadAudioV100` director keeps one recurring theme and one location ambience loop, follows the Phaser environment/surface transitions, and preserves `legend-road-sound` as the existing sound preference. Generated title/menu cues and turn-based battle effects now use the new files. The additional world, creature, travel, town, reward, and dungeon effects are mapped in the director for ongoing event-specific wiring.
+
+The replacement theme is integrated, but final human listening is still required for audible playback, mix balance, repeat seam, and long-session fatigue. The production Phaser migration also remains incremental: Phaser owns the persistent world presentation, while most gameplay screens and rules remain in their existing modules until each native Phaser surface has parity.
 
 ## Current priorities
 

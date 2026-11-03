@@ -18,10 +18,10 @@ The story and the systems should reinforce that loop. Town is a place the player
 ## Current implementation checkpoint — 2026-11-03
 
 - **Production main:** v0.30.4. The road-first opening, mandatory annals, Oric/Wolf tutorial, five-stage Old Road, Ashmere services, progression, and early Greyfen activities are part of the browser build.
-- **Phaser migration:** approved by the owner and in progress. Phaser 4.1 is loaded in index.html; js/engine/phaser-world-v1.js supplies the persistent environment renderer, atmosphere, transitions, and Ashmere landmarks. Most UI and gameplay systems have not yet been rewritten into Phaser.
-- **Audio:** 48 original generated ambience/effect assets and the rendered roughly 10½-minute main-theme loop are staged in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98), not shipped. In-game listening, mix and loop-seam checks, and production integration remain.
+- **Phaser migration:** approved by the owner and in progress. Phaser 4.1 supplies the persistent environment renderer, atmosphere, transitions, and Ashmere landmarks. PR #99 also fixes the open mobile/tablet shell drawer overlap and adds touch/desktop route coverage. Most UI and gameplay systems have not yet been rewritten into native Phaser surfaces.
+- **Audio:** the 48-asset generated ambience/effect library and separate roughly 10½-minute main-theme MP3 are merged into main and deployed through [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98). The shared director supplies the persistent score, environment ambience, menu cues, and combat effects. Human listening for mix/loop quality and further event-specific world/town/reward SFX wiring remain.
 - **Region status:** Ashmere and the Old Road form the main playable foundation. Greyfen is an active partial region; Ironpass is future content. The first three towns are still a release target.
-- **Active sequence:** review/integrate audio; migrate one real playable surface into Phaser with parity tests; complete Greyfen; continue long-run balance and human playtesting.
+- **Active sequence:** complete in-browser audio listening and remaining one-shot event wiring; migrate the real HUD/contextual shell from DOM presentation into Phaser with accessibility and parity tests; complete Greyfen; continue long-run balance and human playtesting.
 
 
 ## The player experience we are aiming for
