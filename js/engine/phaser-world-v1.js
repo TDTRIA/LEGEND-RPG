@@ -187,8 +187,8 @@
         : stage === 3 ? 'blackroot'
         : stage === 4 ? 'marsh'
         : stage >= 5 ? 'greyfen'
-        : state.routeChoice === 'ridge' && stage <= 1 ? 'ridge'
-        : state.routeChoice === 'reeds' && stage <= 1 ? 'reeds'
+        : state.routeChoice === 'ridge' && stage === 1 ? 'ridge'
+        : state.routeChoice === 'reeds' && stage === 1 ? 'reeds'
         : 'road';
     } else if (host.querySelector('.ash099, .reg100')) {
       environment = String(player?.currentRegion || 'Ashmere') === 'Greyfen' ? 'greyfen' : 'ashmere';
