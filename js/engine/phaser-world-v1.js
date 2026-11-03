@@ -199,12 +199,25 @@
         : state.routeChoice === 'reeds' && stage === 1 ? 'reeds'
         : 'road';
     } else if (host.querySelector('.ash099, .reg100')) {
-      environment = String(player?.currentRegion || 'Ashmere') === 'Greyfen' ? 'greyfen' : 'ashmere';
-      const text = (host.textContent || '').toLowerCase();
-      if (text.includes('workbench') || text.includes('crafting bench')) environment = environment === 'Greyfen' ? 'greyfenForge' : 'forge';
-      else if (text.includes('trading post') || text.includes('market')) environment = environment === 'Greyfen' ? 'greyfenMarket' : 'market';
-      else if (text.includes('archive')) environment = environment === 'Greyfen' ? 'greyfenArchive' : 'archive';
-      else if (text.includes('inn')) environment = environment === 'Greyfen' ? 'greyfenInn' : 'inn';
+      const greyfen = String(player?.currentRegion || 'Ashmere') === 'Greyfen';
+      environment = greyfen ? 'greyfen' : 'ashmere';
+      const service = String(host.querySelector('.ash099-head')?.dataset.ashService || '').toLowerCase();
+      const serviceEnvironment = {
+        inn: greyfen ? 'greyfenInn' : 'inn',
+        trader: greyfen ? 'greyfenMarket' : 'market',
+        smith: greyfen ? 'greyfenForge' : 'forge',
+        craft: greyfen ? 'greyfenForge' : 'forge',
+        archive: greyfen ? 'greyfenArchive' : 'archive'
+      };
+      if (serviceEnvironment[service]) {
+        environment = serviceEnvironment[service];
+      } else {
+        const text = (host.textContent || '').toLowerCase();
+        if (text.includes('workbench') || text.includes('crafting bench')) environment = greyfen ? 'greyfenForge' : 'forge';
+        else if (text.includes('trading post') || text.includes('market')) environment = greyfen ? 'greyfenMarket' : 'market';
+        else if (text.includes('archive')) environment = greyfen ? 'greyfenArchive' : 'archive';
+        else if (text.includes('inn')) environment = greyfen ? 'greyfenInn' : 'inn';
+      }
     }
     setEnvironment(environment);
     inferSurface();
@@ -426,6 +439,9 @@
       this.ashmereLandmarks = [];
       this.ashmerePointLights = [];
       this.hoveredAshmereLandmark = '';
+      this.serviceDressing = [];
+      this.serviceDressingTweenTargets = [];
+      this.serviceDressingKey = '';
     }
 
     preload() {
@@ -467,6 +483,8 @@
           hoveredAshmereLandmark: this.hoveredAshmereLandmark,
           pointLightCount: this.ashmerePointLights.filter(item => item.light?.active).length,
           landmarkIconsLoaded: this.ashmereLandmarks.every(item => this.textures.exists(item.iconKey)),
+          serviceDressingCount: this.serviceDressing.filter(item => item.object?.active).length,
+          serviceDressingKey: this.serviceDressingKey,
           rendererType: this.sys.game.renderer?.type ?? null
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
@@ -978,7 +996,7 @@
       const key = String(environment || 'title').toLowerCase();
       const isBog = key === 'marsh' || key === 'reeds' || key.includes('greyfen');
       const isWet = key === 'marsh' || key === 'reeds';
-      const isFire = key === 'camp' || key.includes('forge');
+      const isFire = key === 'camp' || key.includes('forge') || key.includes('inn');
       const isArcane = key.includes('archive') || key === 'cellar';
       const palette = isBog
         ? { haze: 0x8eaaa0, mote: 0xc6e8d0, glow: 0xa8e4cb, rain: 0x9bc9ce }
@@ -1157,6 +1175,7 @@
           rune.setStrokeStyle(1, 0xc5dcfa, 0.16);
           this.addAtmosphereObject(rune, u, v, 4);
           if (animate) {
+            this.trackServiceDressingTweenTarget(rune);
             this.tweens.add({
               targets: rune,
               scale: 1.65,
@@ -1170,6 +1189,198 @@
           }
         }
       }
+    }
+
+    addServiceDressingObject(object, u, v, depth = 5) {
+      object.setDepth(depth);
+      object._legendU = u;
+      object._legendV = v;
+      this.serviceDressing.push({ object, u, v });
+      return object;
+    }
+
+    trackServiceDressingTweenTarget(object) {
+      if (object && !this.serviceDressingTweenTargets.includes(object)) this.serviceDressingTweenTargets.push(object);
+      return object;
+    }
+
+    clearServiceDressing() {
+      this.serviceDressingTweenTargets.forEach(object => this.tweens.killTweensOf(object));
+      this.serviceDressingTweenTargets = [];
+      this.serviceDressing.forEach(({ object }) => {
+        if (!object) return;
+        this.tweens.killTweensOf(object);
+        if (object.active) object.destroy(true);
+      });
+      this.serviceDressing = [];
+      this.serviceDressingKey = '';
+    }
+
+    layoutServiceDressing() {
+      if (!this.serviceDressing.length) return;
+      const size = this.dimensions();
+      this.serviceDressing.forEach(({ object, u, v }) => {
+        if (object?.active) object.setPosition(size.width * u, size.height * v);
+      });
+    }
+
+    addServiceLantern(u, v, color) {
+      const glow = this.add.ellipse(0, 3, 76, 106, color, 0.075);
+      const chain = this.add.rectangle(0, -33, 1.5, 39, 0x40372a, 0.56);
+      const cap = this.add.rectangle(0, -14, 19, 5, 0x6d5635, 0.92);
+      const glass = this.add.rectangle(0, 1, 14, 22, 0x101a13, 0.92);
+      glass.setStrokeStyle(1, 0xd4b46d, 0.76);
+      const flame = this.add.ellipse(0, 1, 5, 11, color, 0.82);
+      const lantern = this.add.container(0, 0, [glow, chain, cap, glass, flame]);
+      this.addServiceDressingObject(lantern, u, v, 5);
+      if (!reducedMotion()) {
+        this.trackServiceDressingTweenTarget(glow);
+        this.trackServiceDressingTweenTarget(flame);
+        this.tweens.add({
+          targets: glow,
+          alpha: 0.13,
+          scale: 1.18,
+          duration: Phaser.Math.Between(1800, 2500),
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut'
+        });
+        this.tweens.add({
+          targets: flame,
+          scaleY: 1.28,
+          alpha: 0.52,
+          duration: Phaser.Math.Between(520, 840),
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut'
+        });
+      }
+      return lantern;
+    }
+
+    createServiceDressing(environment) {
+      this.clearServiceDressing();
+      const key = String(environment || '').toLowerCase();
+      const greyfen = key.includes('greyfen');
+      const isInn = key === 'inn' || key === 'greyfeninn';
+      const isMarket = key === 'market' || key === 'greyfenmarket';
+      const isForge = key === 'forge' || key === 'greyfenforge';
+      const isArchive = key === 'archive' || key === 'greyfenarchive';
+      if (!isInn && !isMarket && !isForge && !isArchive) return;
+      this.serviceDressingKey = key;
+      const warm = greyfen ? 0x9fc8ae : 0xe7b86d;
+      const ember = greyfen ? 0x6ca897 : 0xe8793d;
+      const animate = !reducedMotion();
+      const size = this.dimensions();
+
+      if (isInn) {
+        // Two suspended lanterns give the painted inn interior a nearer foreground plane.
+        this.addServiceLantern(0.17, 0.18, warm);
+        this.addServiceLantern(0.83, 0.20, warm);
+        const hearthGlow = this.add.ellipse(0, 0, size.width * 0.15, size.height * 0.085, ember, 0.055);
+        this.addServiceDressingObject(hearthGlow, 0.78, 0.78, 1);
+        if (animate) {
+          this.trackServiceDressingTweenTarget(hearthGlow);
+          this.tweens.add({
+            targets: hearthGlow,
+            alpha: 0.105,
+            scale: 1.14,
+            duration: 2300,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
+        }
+      }
+
+      if (isMarket) {
+        // Low-opacity cloth pennants frame the market stall without obscuring its art.
+        const cloth = greyfen ? [0x456c63, 0x9a7950, 0x526d72] : [0x71503b, 0x8a7140, 0x3f664c];
+        [0.29, 0.5, 0.71].forEach((u, i) => {
+          const canopy = this.add.rectangle(0, 0, size.width * 0.12, 19, cloth[i], 0.28);
+          canopy.setStrokeStyle(1, 0xc3a76b, 0.22);
+          this.addServiceDressingObject(canopy, u, 0.14, 4);
+          const tail = this.add.triangle(0, 0, -size.width * 0.035, -1, size.width * 0.035, -1, 0, 21, cloth[i], 0.23);
+          this.addServiceDressingObject(tail, u, 0.157, 4);
+        });
+        this.addServiceLantern(0.5, 0.22, warm);
+      }
+
+      if (isForge) {
+        // A contained forge mouth and anvil silhouette add a readable warm focal point.
+        const forgeHalo = this.add.ellipse(0, 0, size.width * 0.16, size.height * 0.105, ember, 0.075);
+        const forgeMouth = this.add.ellipse(0, 0, size.width * 0.065, size.height * 0.046, 0x8f3f24, 0.18);
+        const forgeCore = this.add.ellipse(0, 0, size.width * 0.027, size.height * 0.026, 0xffc36d, 0.3);
+        const forge = this.add.container(0, 0, [forgeHalo, forgeMouth, forgeCore]);
+        this.addServiceDressingObject(forge, 0.79, 0.72, 3);
+        const anvil = this.add.container(0, 0, [
+          this.add.rectangle(0, 0, 78, 10, 0x172019, 0.54),
+          this.add.rectangle(0, 8, 34, 10, 0x172019, 0.56),
+          this.add.rectangle(0, 16, 58, 5, 0x172019, 0.46)
+        ]);
+        this.addServiceDressingObject(anvil, 0.78, 0.82, 4);
+        if (animate) {
+          this.trackServiceDressingTweenTarget(forgeHalo);
+          this.trackServiceDressingTweenTarget(forgeCore);
+          this.tweens.add({
+            targets: forgeHalo,
+            alpha: 0.15,
+            scale: 1.19,
+            duration: 1900,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
+          this.tweens.add({
+            targets: forgeCore,
+            alpha: 0.72,
+            scale: 1.24,
+            duration: 460,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
+        }
+        for (let i = 0; i < 7; i++) {
+          const u = 0.70 + Phaser.Math.FloatBetween(0, 0.17);
+          const v = 0.54 + Phaser.Math.FloatBetween(0, 0.19);
+          const spark = this.add.circle(0, 0, Phaser.Math.FloatBetween(1.3, 2.5), 0xffd18c, Phaser.Math.FloatBetween(0.35, 0.7));
+          this.addServiceDressingObject(spark, u, v, 6);
+          if (animate) {
+            this.tweens.add({
+              targets: spark,
+              y: spark.y - Phaser.Math.Between(22, 72),
+              alpha: 0.04,
+              scale: 0.28,
+              duration: Phaser.Math.Between(900, 1900),
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeOut',
+              delay: Phaser.Math.Between(0, 1400)
+            });
+          }
+        }
+      }
+
+      if (isArchive) {
+        [0.18, 0.82].forEach((u, i) => {
+          const rune = this.add.circle(0, 0, 24 + i * 7, 0x9fbdd0, 0);
+          rune.setStrokeStyle(1.2, 0xc7dced, 0.18);
+          this.addServiceDressingObject(rune, u, 0.30 + i * 0.08, 4);
+          if (animate) {
+            this.tweens.add({
+              targets: rune,
+              scale: 1.42,
+              alpha: 0.26,
+              duration: 4200 + i * 600,
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut'
+            });
+          }
+        });
+      }
+      this.layoutServiceDressing();
     }
 
     setEnvironment(name, immediate = false) {
@@ -1206,6 +1417,7 @@
       }
 
       this.createAtmosphere(key);
+      this.createServiceDressing(key);
       this.layoutBackground();
       this.syncAshmereLandmarks();
       if (!immediate && !reducedMotion()) {
@@ -1251,6 +1463,8 @@
         }
       });
       this.layoutAshmereLandmarks();
+      this.layoutServiceDressing();
+      this.layoutServiceDressing();
     }
 
     pulse(kind) {
