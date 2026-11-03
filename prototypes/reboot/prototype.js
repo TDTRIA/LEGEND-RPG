@@ -134,12 +134,12 @@
     else if (host.querySelector('.opening-lore-v220')) environment = 'title';
     else if (host.querySelector('.v140-creation')) environment = 'title';
     else if (host.querySelector('.rpg-battle')) environment = 'road';
-    else if (host.querySelector('.gfm160')) environment = 'marsh';
-    else if (host.querySelector('.gss170')) environment = 'marsh';
-    else if (host.querySelector('.bell-vault')) environment = 'archive';
+    else if (host.querySelector('.gss170-page')) environment = 'marsh';
+    else if (host.querySelector('.gfm160-page')) environment = 'marsh';
+    else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'archive';
     else if (host.querySelector('.ash100-town-greyfen')) environment = 'greyfen';
     else if (host.querySelector('.ash100-town-ashmere')) environment = 'ashmere';
-    else if (host.querySelector('.exp100-world-page')) {
+    else if (host.querySelector('.exp100-scene')) {
       const state = player?.flags?.roadExpeditionV100 || {};
       environment = Number(state.stage || 0) === 2 ? 'camp'
         : state.routeChoice === 'ridge' && Number(state.stage || 0) <= 1 ? 'ridge'
