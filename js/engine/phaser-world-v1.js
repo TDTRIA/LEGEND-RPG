@@ -501,6 +501,15 @@
           nativeTitleUi: this.nativeTitleUiActive,
           nativeTitleUiControlCount: this.nativeTitleUiControls.length,
           nativeTitleUiControlIds: this.nativeTitleUiControls.map(item => item.id),
+          nativeTitleUiSceneSize: this.dimensions(),
+          nativeTitleUiControlBounds: this.nativeTitleUiControls.map(item => ({
+            id: item.id,
+            x: item.x,
+            y: item.y,
+            width: item.width,
+            height: item.height,
+            focused: Boolean(item.focusFrame?.visible)
+          })),
           rendererType: this.sys.game.renderer?.type ?? null
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
