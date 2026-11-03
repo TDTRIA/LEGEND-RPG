@@ -19,6 +19,8 @@
   let soundEnabled = true;
   let ambientAudio = null;
   let observer = null;
+  let modalObserver = null;
+  let observedModalRoot = null;
   let currentSurface = '';
   let skipAwakeningRequested = false;
   const settingsStorage = window.LegendSettingsStorageV120?.create();
@@ -194,13 +196,31 @@
     }
   }
 
+  function observeModalRoot() {
+    const modal = byId('legend-world-shell-modal-root');
+    if (!modal || modal === observedModalRoot || !window.MutationObserver) return;
+    if (modalObserver) modalObserver.disconnect();
+    observedModalRoot = modal;
+    modalObserver = new MutationObserver(() => inferSurface());
+    modalObserver.observe(modal, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['hidden', 'class']
+    });
+  }
+
   function observeRoot() {
     if (observer) observer.disconnect();
     const host = root();
     if (!host || !window.MutationObserver) return;
-    observer = new MutationObserver(() => inferEnvironment());
+    observer = new MutationObserver(() => {
+      inferEnvironment();
+      observeModalRoot();
+    });
     observer.observe(host, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
     inferEnvironment();
+    observeModalRoot();
   }
 
   function showDispatches() {
@@ -1078,6 +1098,7 @@
     if (game) return;
     if (!window.Phaser) {
       console.warn('Phaser could not be loaded; opening the production HTML interface without the engine canvas.');
+      try { window.sessionStorage.removeItem(ENGINE_SESSION_KEY); } catch (_) {}
       document.documentElement.classList.remove('engine-intro-active');
       byId('engine-skip') && (byId('engine-skip').hidden = true);
       showTitle();
