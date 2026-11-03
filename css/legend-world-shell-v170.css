@@ -605,3 +605,28 @@ body.a11y-reduced-motion #legend-world-shell-modal-root *::after {
 #legend-world-shell-modal-root .lws-empty-state {
   line-height: 1.6;
 }
+
+/* Realm Hub route in the title-screen dispatch panel. */
+.v151-realm-dispatch a.realm-hub-title-link{
+  display:inline-flex!important;
+  align-items:center;
+  gap:8px;
+  min-height:32px;
+  margin:7px 6px 0 0;
+  padding:7px 10px;
+  border:1px solid rgba(191,160,100,.42);
+  border-left:2px solid #bfa064;
+  border-radius:2px;
+  background:linear-gradient(180deg,rgba(31,40,29,.94),rgba(8,13,9,.94));
+  color:#e7c982!important;
+  font-size:.66rem;
+  font-weight:850;
+  letter-spacing:.07em;
+  text-decoration:none!important;
+  text-transform:uppercase;
+}
+.v151-realm-dispatch a.realm-hub-title-link:hover{
+  border-color:#e7c982;
+  background:linear-gradient(180deg,#293327,#141c14);
+  color:#fff0c6!important;
+}
