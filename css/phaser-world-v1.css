@@ -232,3 +232,26 @@ body.legend-phaser-world-active #root .ash100-hero:after {
   transition: opacity .2s, transform .2s;
 }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+
+/* Mobile drawers overlap the legacy hub; give the open drawer an opaque
+   reading surface there while retaining the glass treatment on wide screens. */
+@media (max-width: 1199px) {
+  body.legend-world-shell-active.legend-shell-left-open #legend-world-shell-root .lws-panel-left,
+  body.legend-world-shell-active.legend-shell-right-open #legend-world-shell-root .lws-panel-right {
+    background: linear-gradient(150deg, rgba(18,27,19,.965), rgba(9,15,10,.95) 70%) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 16px 38px rgba(0,0,0,.40), inset 0 1px rgba(241,229,195,.045) !important;
+  }
+  body.legend-world-shell-active.legend-shell-left-open #legend-world-shell-root .lws-panel-left .lws-place-option,
+  body.legend-world-shell-active.legend-shell-left-open #legend-world-shell-root .lws-panel-left .lws-selected-place,
+  body.legend-world-shell-active.legend-shell-left-open #legend-world-shell-root .lws-panel-left .lws-poi-hint,
+  body.legend-world-shell-active.legend-shell-left-open #legend-world-shell-root .lws-panel-left .lws-poi-scene-note,
+  body.legend-world-shell-active.legend-shell-right-open #legend-world-shell-root .lws-panel-right .lws-place-option,
+  body.legend-world-shell-active.legend-shell-right-open #legend-world-shell-root .lws-panel-right .lws-selected-place,
+  body.legend-world-shell-active.legend-shell-right-open #legend-world-shell-root .lws-panel-right .lws-poi-hint,
+  body.legend-world-shell-active.legend-shell-right-open #legend-world-shell-root .lws-panel-right .lws-poi-scene-note {
+    background: linear-gradient(145deg, rgba(29,40,28,.985), rgba(13,20,14,.975)) !important;
+    backdrop-filter: none !important;
+  }
+}

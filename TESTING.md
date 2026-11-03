@@ -53,6 +53,20 @@ npm run test:e2e
 
 ---
 
+## Test the isolated Phaser reboot preview
+
+The production suite covers the production Phaser renderer, Ashmere landmarks, town-service handoffs, Old Road scene mapping, and the non-Phaser fallback. The isolated `/prototypes/reboot/` preview runs separately so preview-only failures cannot obscure production-game results.
+
+Run the preview checks separately when working on the prototype:
+
+```bash
+npm run test:e2e:phaser-preview
+```
+
+This uses Desktop Chrome against the separate prototype entry point. It does not replace the production regression suite.
+
+---
+
 ## Run tests with the browser visible
 
 ```bash

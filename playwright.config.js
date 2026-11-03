@@ -15,6 +15,9 @@ if (!fullBrowserMatrix) {
 
 module.exports = defineConfig({
   testDir: './tests',
+  // The isolated reboot preview is tested through its own config; production CI
+  // must exercise the real game entry point and its production Phaser bridge.
+  testIgnore: ['**/reboot-prototype.spec.js'],
   timeout: 30_000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
