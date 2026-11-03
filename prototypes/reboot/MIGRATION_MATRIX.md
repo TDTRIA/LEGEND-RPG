@@ -144,7 +144,7 @@ The Old Road prologue, Oric's first exchange, response choice, ambush beat and a
 The persistent `RealmScene` now has a common renderer for the remaining production gameplay surfaces:
 
 - It mirrors visible panel surfaces, borders, text, local raster imagery, generated runway icon textures, and focus frames from the active production screen into Phaser.
-- The targets include the world-shell HUD and drawers, Ashmere/Greyfen services, Old Road/expedition screens and reports, combat, Bell Cellar, and shell overlays/modals.
+- The targets include the world-shell HUD and drawers, Ashmere/Greyfen services, Old Road/expedition screens and reports, combat, Bell Cellar, shell overlays/modals, and the separately body-mounted level-up allocation overlay.
 - The original DOM controls remain the accessible and functional input bridge. Existing `LegendWorldShellV170`, service, expedition, combat and dungeon controllers remain the only owners of real actions and game state.
 - Real input/select/textarea fields are intentionally left interactive in the document; their field styling is preserved while their surrounding interface is painted natively.
 - The renderer follows dynamic DOM state, responsive viewport changes, scroll containers and shell drawer changes; it clears its Phaser objects and temporary textures when leaving gameplay surfaces.
