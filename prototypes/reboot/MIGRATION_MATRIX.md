@@ -127,6 +127,18 @@ The soul-shaping creation screens are being presented in the persistent Phaser s
 
 **Next surface order:** Oric's arrival dialogue and response controls; then the persistent HUD/contextual journal/map/action shell; expedition interactions/results; and combat presentation/command controls. Each remains a separate production-parity slice.
 
+## Native Phaser Oric opening scenes — 2026-11-03
+
+The Old Road prologue, Oric's first exchange, response choice, ambush beat and aftermath now use the persistent `RealmScene` for their visible panels and text:
+
+- Phaser draws the story cards, chapter labels, headings, narration, scene-note panels, quotations, response cards and primary/secondary action buttons.
+- The background continues to come from the shared road environment, so the story UI and road artwork occupy one scene.
+- Existing buttons remain semantic, labelled hit targets; `LegendRoadOpeningV140` still owns response memory, phase transitions, tutorial encounter start and the return-to-road hand-off.
+- Layout is measured after entrance motion and on scroll/resize; focus treatment follows keyboard and pointer focus.
+- When the real battle interface takes over, the opening UI objects are cleared; the post-fight Oric scene restores them. Combat rules and tutorial progression remain unchanged.
+
+**Next surfaces:** the persistent HUD and contextual world shell (journal, map, action rail and town navigation), followed by town-service consoles, expedition scenes/results, and combat presentation.
+
 ## Native Phaser service interiors — 2026-11-03
 
 The Ashmere service backdrops now receive scene-native set dressing while their existing accessible service consoles remain interactive HTML:

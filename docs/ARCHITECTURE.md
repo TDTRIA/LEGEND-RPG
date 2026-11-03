@@ -1,7 +1,7 @@
 # Production architecture audit
 Updated: 2026-11-03
 
-This is a working map of the production browser game. It is not a map of `prototypes/reboot/`. The production runtime is migrating incrementally to Phaser 4.1: the persistent world and Ashmere landmarks are native scene objects, and the title, opening-annals, and traveler-creation presentation are now being moved into the same scene. Other screens still use classic browser views and controllers; script order and global names remain runtime contracts.
+This is a working map of the production browser game. It is not a map of `prototypes/reboot/`. The production runtime is migrating incrementally to Phaser 4.1: the persistent world and Ashmere landmarks are native scene objects, and the title, opening-annals, traveler-creation, and Oric opening-road story presentation are now rendered in the same scene. Other screens still use classic browser views and controllers; script order and global names remain runtime contracts.
 
 ## Entry point and module model
 
@@ -16,7 +16,7 @@ The active production entry point loads Phaser 4.1 and the world renderer, follo
 - `js/screens/title-screen-v120.js` owns title state preparation, transition feedback, optional gate screen and credits; navigation actions are injected.
 - `js/systems/title-audio-v120.js` is the title-audio compatibility façade; `js/systems/road/road-audio-v100.js` owns the shared production score, world ambience, UI cues, and event effects.
 - `js/game.js` is the thin bootstrap/navigation adapter for continue, new traveler, account, settings, and title-screen callbacks. It publishes `window.LegendGameBootstrap`.
-- `js/engine/phaser-world-v1.js` is the active production Phaser presentation engine. `RealmScene` owns the persistent environments, atmosphere, transitions, interactive Ashmere landmarks, service dressing, native title-menu artwork, native opening-annals layout, and the in-progress native traveler-creation layout. The title, annals, and traveler creation keep semantic HTML as accessible hit targets/content; the real name input and navigation/selection callbacks stay with their existing controllers. Oric's arrival dialogue, HUD/contextual shell, expedition and combat views remain on the migration list; gameplay rules and persistence remain with their current modules.
+- `js/engine/phaser-world-v1.js` is the active production Phaser presentation engine. `RealmScene` owns the persistent environments, atmosphere, transitions, interactive Ashmere landmarks, service dressing, and native title, annals, traveler-creation and Oric opening-road UI artwork. These screens retain semantic HTML as transparent accessible hit targets/content; real text inputs and navigation/selection/tutorial callbacks remain with their existing controllers. The persistent HUD/contextual shell, town-service consoles, expedition and combat views remain on the migration list; gameplay rules and persistence remain with their current modules.
 - `js/screens/settings-screen-v090.js` owns settings presentation and its control binding. Persistence remains in `js/storage.js`.
 - Feature systems use classic browser scripts and shared `window` namespaces; injection objects provide the dependencies between extracted screens.
 - `docs/ADDING_FEATURES.md` maps common feature types to their data, rules, views, and facade wiring points so new gameplay stays inside the existing module boundaries.
