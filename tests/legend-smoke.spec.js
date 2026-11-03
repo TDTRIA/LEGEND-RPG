@@ -27,6 +27,9 @@ async function openTitle(page) {
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
+    // Keep the regular gameplay smoke suite focused on screen behavior. The
+    // first-visit production awakening is covered by its own dedicated test.
+    sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready');
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
@@ -2282,4 +2285,29 @@ test('the production root falls back to its original artwork when the Phaser CDN
   expect(fallback.phaserWorldClass).toBe(false);
   expect(fallback.backdropVisibility).toBe('visible');
   expect(fallback.titleVisible).toBe(true);
+});
+
+
+test('the production root plays its Phaser awakening and exposes the skip control on first visit', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+
+  await expect(page.locator('#engine-skip')).toBeVisible({ timeout: 10000 });
+  await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('engine-intro-active'))).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true, { timeout: 15000 });
+  await expect(page.locator('.v120-title')).toBeVisible();
+  const boot = await page.evaluate(() => ({
+    marker: sessionStorage.getItem('legend-phaser-production-engine-awakened-v1'),
+    environment: window.LegendPhaserWorldV1.snapshot()?.environment,
+    active: document.documentElement.classList.contains('engine-intro-active')
+  }));
+  expect(boot.marker).toBe('ready');
+  expect(boot.environment).toBe('title');
+  expect(boot.active).toBe(false);
+  await expect(page.locator('#engine-skip')).toBeHidden();
 });
