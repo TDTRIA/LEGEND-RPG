@@ -1,7 +1,7 @@
 # LEGEND — Game Reboot & Playable Foundation Plan
 
-**Status:** Proposed reboot plan; production engine migration not yet approved or applied  
-**Current source build:** v0.20.36, browser-based, desktop-first with mobile compatibility. The production title presents **LEGEND: The Awakening**. Main workflow [#1498](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/39258094517) passed on 2026-10-19, including the separate live GitHub Pages smoke test. This document remains a proposal for future gameplay systems and a controlled engine experiment; it does not approve a production migration.  
+**Status:** Design proposal; production Phaser migration approved by the owner on 2026-11-03 and partially applied  
+**Current source build:** v0.30.4, browser-based, desktop-first with mobile compatibility. The production title is **LEGEND: The Awakening**. Phaser 4.1 is loaded in production through `index.html`, and `js/engine/phaser-world-v1.js` renders the persistent world layer. Most gameplay screens and domain systems still use the existing browser modules. This document remains a design reference for broader gameplay systems; implementation must now follow the owner-approved incremental production Phaser migration and current [roadmap](ROADMAP.md).  
 **Purpose:** Replace incremental screen polishing with a coherent design for a dark-fantasy RPG that has animated exploration, magic, trainable skills, active turn-based combat, a cinematic opening, and room to grow across a shared world.
 
 **Related documents:** [Fantasy RPG Direction: Monster Wars & the Awakening](LEGEND_FANTASY_RPG_DIRECTION.md), [World & Story Bible](LEGEND_WORLD_BIBLE.md), [Mystery & Story Arc Blueprint](LEGEND_MYSTERY_AND_STORY_ARC.md), [First-Session Story Spine](ASHMERE_STORY_SPINE.md), [Series & Title Reframe](LEGEND_SERIES_CONTINUITY_REFRAME.md), [Character Compendium](LEGEND_CHARACTER_COMPENDIUM.md), [Culture & History Atlas](LEGEND_CULTURE_AND_HISTORY_ATLAS.md), [Roadmap](ROADMAP.md), [Art Direction](ART-DIRECTION.md).
@@ -10,7 +10,7 @@
 
 ## Current product identity — 2026-10-16
 
-The current title is **LEGEND: The Awakening**; “The Unquiet Road” is a retired working subtitle. The production title should look and behave like a classic fantasy RPG menu. The Phaser prototype remains a separate experiment and must not replace the live game or touch production saves until a deliberate playable-slice decision is made.
+The current title is **LEGEND: The Awakening**; “The Unquiet Road” is a retired working subtitle. The production title should look and behave like a classic fantasy RPG menu. The isolated reboot prototype remains separate, but production migration to Phaser has now been approved. The live game uses a hybrid runtime while the owner-approved migration proceeds. Preserve production saves and move gameplay surfaces one at a time with parity tests.
 
 ## 1. The honest diagnosis
 
@@ -36,7 +36,7 @@ Do not choose an engine because it sounds more like a “real game engine.” Ch
 
 ### Non-negotiable migration rule
 
-Build a separate playable proof of concept before replacing production code. Keep the existing browser build available while the experiment is evaluated. Do not add Phaser as a dependency to the production runtime or change save behavior until the proof passes the acceptance criteria in Section 13.
+Build a separate playable proof of concept before replacing production code. Keep the existing browser build available while the experiment is evaluated. Phaser 4.1 is now a production dependency. Treat the Section 13 proof-of-concept criteria as historical evaluation guidance; the current migration acceptance criteria are defined by the updated product roadmap and active handoff. Do not change save behavior as part of engine migration.
 
 ## 3. The experience we are actually building
 
