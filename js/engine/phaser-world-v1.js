@@ -136,6 +136,10 @@
     greyfenMarket: 'assets/generated/locations/greyfen-market.webp',
     greyfenForge: 'assets/generated/locations/greyfen-forge.webp',
     greyfenArchive: 'assets/generated/locations/greyfen-archive.webp',
+    serviceInnIcon: 'assets/generated/ui/icons/service-inn.webp',
+    serviceMarketIcon: 'assets/generated/ui/icons/service-market.webp',
+    serviceForgeIcon: 'assets/generated/ui/icons/service-blacksmith.webp',
+    serviceRoadIcon: 'assets/generated/ui/icons/service-map.webp',
     oric: 'assets/generated/npcs/captain-oric.webp',
     wolf: 'assets/generated/enemies/blackroot-wolf.webp',
     goblin: 'assets/generated/enemies/road-goblin.webp',
@@ -420,12 +424,13 @@
       this.surface = '';
       this.surfaceTransitionCount = 0;
       this.ashmereLandmarks = [];
+      this.ashmerePointLights = [];
       this.hoveredAshmereLandmark = '';
     }
 
     preload() {
       Object.keys(ASSETS).forEach(key => {
-        if (['title','ashmere','road','blackroot','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive'].includes(key)) {
+        if (['title','ashmere','road','blackroot','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive','serviceInnIcon','serviceMarketIcon','serviceForgeIcon','serviceRoadIcon'].includes(key)) {
           this.load.image(key, ASSETS[key]);
         }
       });
@@ -453,12 +458,15 @@
           surfaceTransitionCount: this.surfaceTransitionCount,
           ashmereLandmarks: this.ashmereLandmarks.map(item => ({
             id: item.id,
+            iconKey: item.iconKey,
             x: item.x,
             y: item.y,
             clientX: item.x / Math.max(1, this.dimensions().width) * Math.max(1, window.innerWidth),
             clientY: item.y / Math.max(1, this.dimensions().height) * Math.max(1, window.innerHeight)
           })),
-          hoveredAshmereLandmark: this.hoveredAshmereLandmark
+          hoveredAshmereLandmark: this.hoveredAshmereLandmark,
+          pointLightCount: this.ashmerePointLights.filter(item => item.light?.active).length,
+          rendererType: this.sys.game.renderer?.type ?? null
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
         flash: (color, duration) => {
@@ -714,10 +722,10 @@
     ashmerelandmarkSpecs() {
       const mobile = this.dimensions().width < 700;
       return [
-        { id: 'inn', view: 'inn', label: 'THE INN', glyph: '⌂', x: mobile ? 0.15 : 0.25, y: mobile ? 0.48 : 0.43 },
-        { id: 'market', view: 'trader', label: 'MARKET', glyph: '◇', x: mobile ? 0.38 : 0.42, y: mobile ? 0.43 : 0.38 },
-        { id: 'forge', view: 'smith', label: 'FORGE', glyph: '⚒', x: mobile ? 0.62 : 0.58, y: mobile ? 0.43 : 0.38 },
-        { id: 'road', view: 'road', label: 'OLD ROAD', glyph: '➜', x: mobile ? 0.85 : 0.75, y: mobile ? 0.48 : 0.43 }
+        { id: 'inn', view: 'inn', label: 'THE INN', icon: 'serviceInnIcon', x: mobile ? 0.15 : 0.25, y: mobile ? 0.48 : 0.43 },
+        { id: 'market', view: 'trader', label: 'MARKET', icon: 'serviceMarketIcon', x: mobile ? 0.38 : 0.42, y: mobile ? 0.43 : 0.38 },
+        { id: 'forge', view: 'smith', label: 'FORGE', icon: 'serviceForgeIcon', x: mobile ? 0.62 : 0.58, y: mobile ? 0.43 : 0.38 },
+        { id: 'road', view: 'road', label: 'OLD ROAD', icon: 'serviceRoadIcon', x: mobile ? 0.85 : 0.75, y: mobile ? 0.48 : 0.43 }
       ];
     }
 
@@ -743,13 +751,9 @@
         const ring = this.add.circle(0, -25, 14, 0x07100b, 0.82);
         ring.setStrokeStyle(1.4, 0xe5c77f, 0.84);
         const core = this.add.circle(0, -25, 4, 0xf2d899, 0.96);
-        const glyph = this.add.text(0, -25, spec.glyph, {
-          fontFamily: 'Georgia, Times New Roman, serif',
-          fontSize: '15px',
-          color: '#fff2ce',
-          stroke: '#172016',
-          strokeThickness: 2
-        }).setOrigin(0.5);
+        const icon = this.add.image(0, -25, spec.icon)
+          .setDisplaySize(22, 22)
+          .setAlpha(0.98);
         const plate = this.add.rectangle(0, 15, 92, 25, 0x050a07, 0.82);
         plate.setStrokeStyle(1, 0xc6a760, 0.74);
         const label = this.add.text(0, 10, spec.label, {
@@ -765,8 +769,35 @@
           letterSpacing: 1.2,
           color: '#cdb77f'
         }).setOrigin(0.5);
-        const container = this.add.container(0, 0, [halo, shadow, beacon, ring, core, glyph, plate, label, action]);
+        const container = this.add.container(0, 0, [halo, shadow, beacon, ring, core, icon, plate, label, action]);
         container.setDepth(10);
+
+        // Phaser 4 PointLights add a real WebGL light pool without enabling the
+        // scene's full normal-map Light2D pipeline. The existing halo remains
+        // the Canvas fallback, so AUTO renderer selection stays safe.
+        let pointLight = null;
+        const rendererType = this.sys.game.renderer?.type;
+        if (rendererType === Phaser.WEBGL && typeof this.lights?.addPointLight === 'function') {
+          try {
+            pointLight = this.lights.addPointLight(0, 0, 0xe8bd70, 112, 0.11, 0.1);
+            pointLight.setDepth(8);
+            this.ashmerePointLights.push({ id: spec.id, light: pointLight });
+            if (!reduced) {
+              this.tweens.add({
+                targets: pointLight,
+                intensity: 0.145,
+                duration: Phaser.Math.Between(1850, 2450),
+                yoyo: true,
+                repeat: -1,
+                ease: 'Sine.easeInOut'
+              });
+            }
+          } catch (error) {
+            pointLight?.destroy?.();
+            pointLight = null;
+            console.warn('[LEGEND Phaser] PointLight unavailable; using the scene glow fallback.', error);
+          }
+        }
         container.setSize(112, 84);
         container.setInteractive(
           new Phaser.Geom.Rectangle(-56, -39, 112, 84),
@@ -807,6 +838,8 @@
           ring,
           label,
           action,
+          iconKey: spec.icon,
+          pointLight,
           baseScale: 1,
           hitWidth: 58,
           hitHeight: 44
@@ -822,6 +855,12 @@
         if (item.container?.active) item.container.destroy(true);
       });
       this.ashmereLandmarks = [];
+      this.ashmerePointLights.forEach(({ light }) => {
+        if (!light) return;
+        this.tweens.killTweensOf(light);
+        light.destroy();
+      });
+      this.ashmerePointLights = [];
       this.hoveredAshmereLandmark = '';
     }
 
@@ -836,6 +875,10 @@
         item.baseScale = scale;
         item.container.setPosition(item.x, item.y);
         item.container.setScale(scale * (this.hoveredAshmereLandmark === item.id ? 1.10 : 1));
+        if (item.pointLight?.active) {
+          item.pointLight.setPosition(item.x, item.y - 24);
+          item.pointLight.radius = 112 * scale;
+        }
         item.hitWidth = 58 * scale;
         item.hitHeight = 44 * scale;
       });
