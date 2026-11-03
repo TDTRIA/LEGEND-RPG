@@ -256,12 +256,14 @@
   }
 
   function startAmbient() {
-    if (!soundEnabled || ambientAudio) return;
+    if (!soundEnabled) return;
     try {
-      ambientAudio = new Audio('assets/audio/title/ashmere_ambience_loop.wav');
-      ambientAudio.loop = true;
-      ambientAudio.volume = 0.16;
-      ambientAudio.play().catch(() => {});
+      if (!ambientAudio) {
+        ambientAudio = new Audio('assets/audio/title/ashmere_ambience_loop.wav');
+        ambientAudio.loop = true;
+        ambientAudio.volume = 0.16;
+      }
+      if (ambientAudio.paused) ambientAudio.play().catch(() => {});
     } catch (error) {
       ambientAudio = null;
     }
