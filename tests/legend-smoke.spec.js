@@ -2461,8 +2461,17 @@ test('native Phaser title menu replaces the floating HTML button paint and keeps
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.evaluate(() => {
     const rect = document.querySelector('#newPrimary')?.getBoundingClientRect();
-    const ids = window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUiControlIds || [];
-    return Boolean(rect && ids.includes('newPrimary') && rect.left >= 0 && rect.right <= window.innerWidth);
+    const snapshot = window.LegendPhaserWorldV1?.snapshot?.();
+    const native = snapshot?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary');
+    const scene = snapshot?.nativeTitleUiSceneSize;
+    if (!rect || !native || !scene || rect.left < 0 || rect.right > window.innerWidth) return false;
+    const deltas = [
+      Math.abs(native.x - rect.left * scene.width / window.innerWidth),
+      Math.abs(native.y - rect.top * scene.height / window.innerHeight),
+      Math.abs(native.width - rect.width * scene.width / window.innerWidth),
+      Math.abs(native.height - rect.height * scene.height / window.innerHeight)
+    ];
+    return deltas.every(delta => delta < 2);
   })).toBe(true);
   const mobile = await page.evaluate(() => {
     const rect = document.querySelector('#newPrimary')?.getBoundingClientRect();
