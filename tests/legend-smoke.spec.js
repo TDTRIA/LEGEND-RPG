@@ -2318,11 +2318,32 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
   await expect(page.locator('.ash099-market-console')).toBeVisible();
   await expect(page.locator('[data-market-tab="buy"]')).toHaveAttribute('aria-selected', 'true');
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('market');
-  expect(await page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.ashmereLandmarks)).toHaveLength(0);
+  const marketScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
+  expect(marketScene.ashmereLandmarks).toHaveLength(0);
+  expect(marketScene.serviceDressingKey).toBe('market');
+  expect(marketScene.serviceDressingCount).toBeGreaterThanOrEqual(4);
 
   await page.locator('#ashBack').click();
   await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.ashmereLandmarks?.length)).toBe(4);
+
+  // Forge and Inn interiors are classified by the explicit town-service key,
+  // not brittle visible-text matching, and get their own native Phaser dressing.
+  await page.locator('.ash100-destination[data-ash-view="smith"]').click();
+  await expect(page.locator('.ash099-forge-console')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('forge');
+  const forgeScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
+  expect(forgeScene.serviceDressingKey).toBe('forge');
+  expect(forgeScene.serviceDressingCount).toBeGreaterThanOrEqual(8);
+
+  await page.locator('#ashBack').click();
+  await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
+  await page.locator('.ash100-destination[data-ash-view="inn"]').click();
+  await expect(page.locator('.ash099-service-dashboard')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('inn');
+  const innScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
+  expect(innScene.serviceDressingKey).toBe('inn');
+  expect(innScene.serviceDressingCount).toBeGreaterThanOrEqual(3);
 });
 
 test('the production root falls back to its original artwork when the Phaser CDN is unavailable', async ({ page }) => {
