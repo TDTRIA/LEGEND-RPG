@@ -24,7 +24,6 @@ jobs:
           set -euo pipefail
           curl --fail --location --silent --show-error "$RUNWAY_ATLAS_URL" --output /tmp/identity-atlas.png
           file /tmp/identity-atlas.png
-          identify /tmp/identity-atlas.png
 
       - name: Crop four square identity emblems for review
         run: |
