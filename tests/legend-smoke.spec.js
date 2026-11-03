@@ -2419,6 +2419,17 @@ test('native Phaser title menu replaces the floating HTML button paint and keeps
     return {
       active: document.body.classList.contains('legend-phaser-title-ui-active'),
       snapshot: window.LegendPhaserWorldV1.snapshot(),
+      nativeAlignment: (() => {
+        const snapshot = window.LegendPhaserWorldV1.snapshot();
+        const native = snapshot?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary');
+        const scene = snapshot?.nativeTitleUiSceneSize;
+        return rect && native && scene ? {
+          x: Math.abs(native.x - rect.left * scene.width / window.innerWidth),
+          y: Math.abs(native.y - rect.top * scene.height / window.innerHeight),
+          width: Math.abs(native.width - rect.width * scene.width / window.innerWidth),
+          height: Math.abs(native.height - rect.height * scene.height / window.innerHeight)
+        } : null;
+      })(),
       heroBackground: heroStyle?.backgroundColor,
       heroShadow: heroStyle?.boxShadow,
       buttonBackground: style?.backgroundColor,
@@ -2433,6 +2444,8 @@ test('native Phaser title menu replaces the floating HTML button paint and keeps
   expect(desktop.snapshot.nativeTitleUi).toBe(true);
   expect(desktop.snapshot.nativeTitleUiControlIds).toContain('newPrimary');
   expect(desktop.snapshot.nativeTitleUiControlCount).toBeGreaterThanOrEqual(5);
+  expect(desktop.nativeAlignment).not.toBeNull();
+  Object.values(desktop.nativeAlignment).forEach(delta => expect(delta).toBeLessThan(2));
   expect(desktop.heroBackground).toBe('rgba(0, 0, 0, 0)');
   expect(desktop.heroShadow).toBe('none');
   expect(desktop.buttonBackground).toBe('rgba(0, 0, 0, 0)');
@@ -2450,25 +2463,38 @@ test('native Phaser title menu replaces the floating HTML button paint and keeps
     const ids = window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUiControlIds || [];
     return Boolean(rect && ids.includes('newPrimary') && rect.left >= 0 && rect.right <= window.innerWidth);
   })).toBe(true);
-  const mobile = await page.evaluate(() => ({
-    overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-    active: document.body.classList.contains('legend-phaser-title-ui-active'),
-    native: window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi,
-    button: (() => {
-      const rect = document.querySelector('#newPrimary')?.getBoundingClientRect();
-      return rect ? { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom } : null;
-    })()
-  }));
+  const mobile = await page.evaluate(() => {
+    const rect = document.querySelector('#newPrimary')?.getBoundingClientRect();
+    const snapshot = window.LegendPhaserWorldV1.snapshot();
+    const native = snapshot?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary');
+    const scene = snapshot?.nativeTitleUiSceneSize;
+    return {
+      overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+      active: document.body.classList.contains('legend-phaser-title-ui-active'),
+      native: snapshot?.nativeTitleUi,
+      button: rect ? { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom } : null,
+      alignment: rect && native && scene ? {
+        x: Math.abs(native.x - rect.left * scene.width / window.innerWidth),
+        y: Math.abs(native.y - rect.top * scene.height / window.innerHeight),
+        width: Math.abs(native.width - rect.width * scene.width / window.innerWidth),
+        height: Math.abs(native.height - rect.height * scene.height / window.innerHeight)
+      } : null
+    };
+  });
   expect(mobile.overflow).toBe(false);
   expect(mobile.active).toBe(true);
   expect(mobile.native).toBe(true);
   expect(mobile.button.left).toBeGreaterThanOrEqual(0);
   expect(mobile.button.right).toBeLessThanOrEqual(390);
+  expect(mobile.alignment).not.toBeNull();
+  Object.values(mobile.alignment).forEach(delta => expect(delta).toBeLessThan(2));
 
   // The semantic button remains in the accessibility tree and activates the
   // existing title controller rather than introducing a Phaser-only router.
   const menuButton = page.getByRole('button', { name: /Begin Your Journey/i });
   await expect(menuButton).toBeVisible();
+  await menuButton.focus();
+  await expect.poll(() => page.evaluate(() => Boolean(window.LegendPhaserWorldV1.snapshot()?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary')?.focused))).toBe(true);
   await menuButton.click();
   await expect(page.locator('.opening-lore-v220')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
