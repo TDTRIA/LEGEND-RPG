@@ -1,0 +1,362 @@
+{
+  "generated_at": "2026-11-03",
+  "project": "LEGEND: The Awakening",
+  "provider": "Mirelo",
+  "credits_spent": 4920,
+  "credits_remaining": 18,
+  "total_assets": 48,
+  "ambience_loops": 13,
+  "sound_effects": 35,
+  "format": "MP3 192 kbps mono",
+  "files": [
+    {
+      "name": "title_ashmere_loop",
+      "path": "assets/audio/ambience/title-ashmere.mp3",
+      "url": "https://mirelo.ai/dl/qx75ecdcm7trwpsxrnq93kjcgd8hhhyj/0?k=GOpEshoaPt-bJfvQ",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "opening_annals_loop",
+      "path": "assets/audio/ambience/opening-annals.mp3",
+      "url": "https://mirelo.ai/dl/qx7ccv1gtx34kv46gj54yj70cx8hh76b/0?k=3nXqgJgHoTon_vo0",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "traveler_memory_loop",
+      "path": "assets/audio/ambience/traveler-memory.mp3",
+      "url": "https://mirelo.ai/dl/qx71tbs13c7sb993bahjzhmv398hg4ek/0?k=wHCj9vNUSU-qiW3s",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "ashmere_town_loop",
+      "path": "assets/audio/ambience/ashmere-town.mp3",
+      "url": "https://mirelo.ai/dl/qx784rqszdtwaat2ph4jvbfbxd8hh8qz/0?k=fcV8UiJyCVLIg3-m",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "ashmere_inn_loop",
+      "path": "assets/audio/ambience/ashmere-inn.mp3",
+      "url": "https://mirelo.ai/dl/qx7c2jy7eq805v9ts2pqc9ssk18hh6qe/0?k=Yp3JBwDfkoiIkEeQ",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "ashmere_forge_loop",
+      "path": "assets/audio/ambience/ashmere-forge.mp3",
+      "url": "https://mirelo.ai/dl/qx7adyshq3dep4banacef2m6s98hggsg/0?k=9vSGowGpo3mJIf5M",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "old_road_forest_loop",
+      "path": "assets/audio/ambience/old-road-forest.mp3",
+      "url": "https://mirelo.ai/dl/qx739jhcztt9beg6nxeb3c1mxh8hgcsh/0?k=Copt-gTzGq76JS7_",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "high_ridge_loop",
+      "path": "assets/audio/ambience/high-ridge.mp3",
+      "url": "https://mirelo.ai/dl/qx76rdcr4fa22g10xkpvnvp1qh8hg9ar/0?k=7PMa4EV4EuAKcKuJ",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "reed_cut_loop",
+      "path": "assets/audio/ambience/reed-cut.mp3",
+      "url": "https://mirelo.ai/dl/qx78cpwqg2zv3ws5ggmq8w8hjn8hgbjp/0?k=WW4GJVAJYf_rOE1X",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "roadside_camp_loop",
+      "path": "assets/audio/ambience/roadside-camp.mp3",
+      "url": "https://mirelo.ai/dl/qx7aweb0m0fht7w2epcsn8f0vx8hgggx/0?k=maB-rJv--Vi0ot6B",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "greyfen_marsh_loop",
+      "path": "assets/audio/ambience/greyfen-marsh.mp3",
+      "url": "https://mirelo.ai/dl/qx7dykcp9nra464fzbqpscy06s8hgf0n/0?k=Mj0HlTikq2Hn_nR9",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "greyfen_docks_loop",
+      "path": "assets/audio/ambience/greyfen-docks.mp3",
+      "url": "https://mirelo.ai/dl/qx73sdse248ct8ean35yh5pgex8hha7k/0?k=VxWaiygLdS7WXzbY",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "bell_cellar_loop",
+      "path": "assets/audio/ambience/bell-cellar.mp3",
+      "url": "https://mirelo.ai/dl/qx72es6zwk1nm2bwb73qwahftx8hgd30/0?k=mGpezGBO2KKBSt0T",
+      "kind": "ambience",
+      "duration_seconds": 30,
+      "loop": true
+    },
+    {
+      "name": "title_bell_toll",
+      "path": "assets/audio/story/ancient-bell-toll.mp3",
+      "url": "https://mirelo.ai/dl/qx7dcd1fanv896dhe7bza4c30h8hg7d0/0?k=_neLBHYrKWopz-30",
+      "kind": "sfx",
+      "duration_seconds": 6
+    },
+    {
+      "name": "veil_awakening_pulse",
+      "path": "assets/audio/story/veil-awakening-pulse.mp3",
+      "url": "https://mirelo.ai/dl/qx78a22z5r32e1dzny9xpf8wys8hhvd6/0?k=dsJvyhpww6GJioaJ",
+      "kind": "sfx",
+      "duration_seconds": 4
+    },
+    {
+      "name": "ui_hover_soft",
+      "path": "assets/audio/ui/menu-hover.mp3",
+      "url": "https://mirelo.ai/dl/qx78vthsp4mvs79c12cc8ykg5d8hhzj8/0?k=DBcdC9dhRZy67qCh",
+      "kind": "sfx",
+      "duration_seconds": 1
+    },
+    {
+      "name": "ui_confirm_gate",
+      "path": "assets/audio/ui/menu-confirm.mp3",
+      "url": "https://mirelo.ai/dl/qx796729eb1w1evvhpp5vxpnrh8hhfnf/0?k=DeOaeHWL3MoJ2EUA",
+      "kind": "sfx",
+      "duration_seconds": 1
+    },
+    {
+      "name": "ui_back_dismiss",
+      "path": "assets/audio/ui/menu-back.mp3",
+      "url": "https://mirelo.ai/dl/qx7e26r8raw1kk3fy1fzfe1bgd8hhx47/0?k=S_-f_w3LkVWERLzS",
+      "kind": "sfx",
+      "duration_seconds": 1
+    },
+    {
+      "name": "battle_sword_swing",
+      "path": "assets/audio/battle/sword-swing.mp3",
+      "url": "https://mirelo.ai/dl/qx72weyn7jzg89vxqbna3kt8bx8hg4nc/0?k=id6eTj7zY0KrHadm",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "battle_sword_hit",
+      "path": "assets/audio/battle/sword-hit.mp3",
+      "url": "https://mirelo.ai/dl/qx76c8q0r5ckpk0breha1kpv418hgp79/0?k=t2ttCbiybIsGvLFd",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "battle_heavy_impact",
+      "path": "assets/audio/battle/heavy-impact.mp3",
+      "url": "https://mirelo.ai/dl/qx76byvckya14q0q4akj83870d8hhzjj/0?k=D7RRIMvdGS-O6RlL",
+      "kind": "sfx",
+      "duration_seconds": 3
+    },
+    {
+      "name": "battle_shield_block",
+      "path": "assets/audio/battle/shield-block.mp3",
+      "url": "https://mirelo.ai/dl/qx76e1917zd80p1bfkjjtd99g98hh391/0?k=mBLi4_sLDWTPCLQ_",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "battle_parry_clang",
+      "path": "assets/audio/battle/parry-clang.mp3",
+      "url": "https://mirelo.ai/dl/qx76rjb4vqa6xan662et7ng6cs8hhc27/0?k=S0teHV0x5StPHsmr",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "battle_spell_cast",
+      "path": "assets/audio/battle/spell-cast.mp3",
+      "url": "https://mirelo.ai/dl/qx7c6kft7429nth2d2jhdk7kt18hg59x/0?k=IBXNiUpcrCVH4jVD",
+      "kind": "sfx",
+      "duration_seconds": 3
+    },
+    {
+      "name": "battle_healing_spell",
+      "path": "assets/audio/battle/healing-spell.mp3",
+      "url": "https://mirelo.ai/dl/qx73hfwkz8wd24qzbznfzk8sah8hh5p2/0?k=ljkyZzJUbPsgDtV6",
+      "kind": "sfx",
+      "duration_seconds": 3
+    },
+    {
+      "name": "enemy_hurt_fall",
+      "path": "assets/audio/battle/enemy-hurt-fall.mp3",
+      "url": "https://mirelo.ai/dl/qx77356cvzcz0n2fyfdkhxz3zx8hgwas/0?k=pASctb70hd7BFv6N",
+      "kind": "sfx",
+      "duration_seconds": 4
+    },
+    {
+      "name": "blackroot_wolf_growl",
+      "path": "assets/audio/creatures/blackroot-wolf-growl.mp3",
+      "url": "https://mirelo.ai/dl/qx7e4z5eyv16rffpfeptvan7j58hh462/0?k=tdxUrBtBOhImqXjP",
+      "kind": "sfx",
+      "duration_seconds": 4
+    },
+    {
+      "name": "road_goblin_snarl",
+      "path": "assets/audio/creatures/road-goblin-snarl.mp3",
+      "url": "https://mirelo.ai/dl/job/119111c3392e37e49cdb3c8fd4109cd0/0?k=UAmHz_58IIzqyt_N",
+      "kind": "sfx",
+      "duration_seconds": 3
+    },
+    {
+      "name": "lantern_wisp_chime",
+      "path": "assets/audio/creatures/lantern-wisp-chime.mp3",
+      "url": "https://mirelo.ai/dl/qx78sgymbs8hgtpf7j12vwjhds8hgdf4/0?k=VVmnj52TxMEESvu7",
+      "kind": "sfx",
+      "duration_seconds": 4
+    },
+    {
+      "name": "loot_pickup_coins",
+      "path": "assets/audio/rewards/loot-pickup-coins.mp3",
+      "url": "https://mirelo.ai/dl/qx793q8g2e51rq09tb0vee61b58hhbgd/0?k=B382FXjcXwg7HFFN",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "bell_fragment_discovery",
+      "path": "assets/audio/rewards/bell-fragment-discovery.mp3",
+      "url": "https://mirelo.ai/dl/qx7d1w0e84zccssdejada642jd8hg9tz/0?k=bgsakiJo1ZbfNZp5",
+      "kind": "sfx",
+      "duration_seconds": 3
+    },
+    {
+      "name": "level_up_fanfare",
+      "path": "assets/audio/rewards/level-up.mp3",
+      "url": "https://mirelo.ai/dl/qx76evsx9qesekx1nxkhh5hav98hg0gv/0?k=eZHNQQpdXWS3Ng84",
+      "kind": "sfx",
+      "duration_seconds": 5
+    },
+    {
+      "name": "quest_complete_stamp",
+      "path": "assets/audio/rewards/quest-complete.mp3",
+      "url": "https://mirelo.ai/dl/job/44c366a66c0c196f4a4fd5a8ead1ecaf/0?k=aZ_BLivu_plnqlrM",
+      "kind": "sfx",
+      "duration_seconds": 3
+    },
+    {
+      "name": "workboard_paper_stamp",
+      "path": "assets/audio/town/workboard-stamp.mp3",
+      "url": "https://mirelo.ai/dl/qx79cnn5xhkgndybdz6pnq1fyd8hh2nx/0?k=pl6PNKr9YPD2OQ_G",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "market_coin_trade",
+      "path": "assets/audio/town/market-coin-trade.mp3",
+      "url": "https://mirelo.ai/dl/qx70kern5f6582p0enq9cs59mh8hh3hj/0?k=eKl8ws3MbTYZ4SJg",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "footsteps_packed_dirt",
+      "path": "assets/audio/world/footsteps-packed-dirt.mp3",
+      "url": "https://mirelo.ai/dl/qx729k3p495we0ge50sjy432qn8hhp99/0?k=QHIpRfOLYGw68STf",
+      "kind": "sfx",
+      "duration_seconds": 4
+    },
+    {
+      "name": "footsteps_old_gravel",
+      "path": "assets/audio/world/footsteps-old-gravel.mp3",
+      "url": "https://mirelo.ai/dl/qx72f0ngeg9gtr5h28t84bw7218hg0mk/0?k=3KqpxRAF3OMcB3Qy",
+      "kind": "sfx",
+      "duration_seconds": 4
+    },
+    {
+      "name": "footsteps_marsh_mud",
+      "path": "assets/audio/world/footsteps-marsh-mud.mp3",
+      "url": "https://mirelo.ai/dl/qx7b7eh3yppmhpc6yvgw85grw18hhy08/0?k=ulUVqUWL5chhDKML",
+      "kind": "sfx",
+      "duration_seconds": 4
+    },
+    {
+      "name": "door_wooden_creak",
+      "path": "assets/audio/town/wooden-door-creak.mp3",
+      "url": "https://mirelo.ai/dl/qx77qngs98tgya04fjh83hz2w18hhgq4/0?k=2c4b0gusTpWyYsRj",
+      "kind": "sfx",
+      "duration_seconds": 3
+    },
+    {
+      "name": "forge_hammer_quench",
+      "path": "assets/audio/town/forge-hammer-quench.mp3",
+      "url": "https://mirelo.ai/dl/qx70v6g1sx3cern8g9ymqsyzxx8hg0tq/0?k=IpPGN5M8Ox5FZtR1",
+      "kind": "sfx",
+      "duration_seconds": 3
+    },
+    {
+      "name": "armor_equip_leather_steel",
+      "path": "assets/audio/ui/armor-equip.mp3",
+      "url": "https://mirelo.ai/dl/qx7at5afa9xdb8a5sdv6s748e18hgkr9/0?k=nv7lUjbArz5gBodt",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "map_parchment_unfold",
+      "path": "assets/audio/ui/map-unfold.mp3",
+      "url": "https://mirelo.ai/dl/qx73fncf55bw9r74m80wywmr098hh5zx/0?k=wO_SYF5NuCnyDpG1",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "bell_cellar_door_grind",
+      "path": "assets/audio/dungeon/cellar-door-grind.mp3",
+      "url": "https://mirelo.ai/dl/job/e875c442f466365d1068005359f7bde8/0?k=S9jNjcq4Nzyh2ByE",
+      "kind": "sfx",
+      "duration_seconds": 4
+    },
+    {
+      "name": "bell_cellar_ancient_strike",
+      "path": "assets/audio/dungeon/ancient-bell-strike.mp3",
+      "url": "https://mirelo.ai/dl/qx77ncz5cpqghztpaymqx7xtm18hgw6g/0?k=wNY6SHCTPFPcwEP5",
+      "kind": "sfx",
+      "duration_seconds": 4
+    },
+    {
+      "name": "greyfen_water_splash",
+      "path": "assets/audio/world/greyfen-water-splash.mp3",
+      "url": "https://mirelo.ai/dl/qx7fvg69rggze19gkj51gdzwwh8hgrj8/0?k=6Qo3L3XqAWRSqyjl",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "monster_roar_blackroot",
+      "path": "assets/audio/creatures/monster-roar.mp3",
+      "url": "https://mirelo.ai/dl/qx70dv7a1qn9rajw9bfcgrtnb58hgv7b/0?k=jvQyRVoz3_b3AfBW",
+      "kind": "sfx",
+      "duration_seconds": 4
+    },
+    {
+      "name": "enemy_stagger_fall",
+      "path": "assets/audio/battle/enemy-stagger.mp3",
+      "url": "https://mirelo.ai/dl/qx7fcsehem6wmg0bmf7mcnqqqh8hhyjg/0?k=5ehYlXtWGZpG9tnX",
+      "kind": "sfx",
+      "duration_seconds": 2
+    },
+    {
+      "name": "old_road_gate_unlock",
+      "path": "assets/audio/world/old-road-gate-unlock.mp3",
+      "url": "https://mirelo.ai/dl/job/f6eacc65ae7b3fb4b8f81e72cc09de8f/0?k=HxY8Zus_GVTFhgMJ",
+      "kind": "sfx",
+      "duration_seconds": 2
+    }
+  ]
+}

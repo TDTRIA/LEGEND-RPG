@@ -22,13 +22,16 @@ test.describe('LegendRoadAudioV100 compatibility contract', () => {
     });
   });
 
-  test('keeps battle effect paths, volumes, and music reuse behavior', async ({ page }) => {
+  test('uses the generated LEGEND theme, scene ambience, and effects without duplicate loops', async ({ page }) => {
     const result = await page.evaluate(() => {
+      const audio = window.LegendRoadAudioV100;
+      audio.stopWorldAudio();
       const played = [];
       window.Audio = function (src) {
         this.src = src;
         this.volume = 1;
         this.loop = false;
+        this.preload = '';
         this.paused = true;
         this.currentTime = 0;
         this.play = () => {
@@ -39,22 +42,37 @@ test.describe('LegendRoadAudioV100 compatibility contract', () => {
         this.pause = () => { this.paused = true; };
       };
       localStorage.setItem('legend-road-sound', 'on');
-      const audio = window.LegendRoadAudioV100;
+      audio.setEnvironment('title');
+      audio.setSurface('title');
+      audio.startWorldAudio();
+      audio.startWorldAudio();
+      audio.startBattleMusic();
+      audio.setEnvironment('forge');
+      audio.setSurface('town-service');
       audio.playBattleFx('victory');
       audio.playBattleFx('unknown-effect');
-      audio.startBattleMusic();
-      audio.startBattleMusic();
+      audio.playUi('hover');
       audio.stopBattleMusic();
-      audio.startBattleMusic();
-      audio.stopBattleMusic();
-      return played;
+      return { played, snapshot: audio.snapshot() };
     });
 
-    expect(result).toEqual([
-      { src: 'assets/audio/battle/battle_victory.wav', volume: 0.3, loop: false },
-      { src: 'assets/audio/battle/battle_swing.wav', volume: 0.2, loop: false },
-      { src: 'assets/audio/battle/old-road-battle_loop.wav', volume: 0.17, loop: true },
-      { src: 'assets/audio/battle/old-road-battle_loop.wav', volume: 0.17, loop: true }
+    expect(result.played).toEqual([
+      { src: 'assets/audio/music/legend-main-theme.mp3', volume: 0.17, loop: true },
+      { src: 'assets/audio/ambience/title-ashmere.mp3', volume: 0.105, loop: true },
+      { src: 'assets/audio/ambience/ashmere-forge.mp3', volume: 0.105, loop: true },
+      { src: 'assets/audio/rewards/quest-complete.mp3', volume: 0.28, loop: false },
+      { src: 'assets/audio/battle/sword-swing.mp3', volume: 0.22, loop: false },
+      { src: 'assets/audio/ui/menu-hover.mp3', volume: 0.14, loop: false }
     ]);
+    expect(result.snapshot).toMatchObject({
+      enabled: true,
+      unlocked: true,
+      environment: 'forge',
+      surface: 'town-service',
+      musicPath: 'assets/audio/music/legend-main-theme.mp3',
+      ambiencePath: 'assets/audio/ambience/ashmere-forge.mp3',
+      musicPlaying: true,
+      ambiencePlaying: true
+    });
   });
 });
