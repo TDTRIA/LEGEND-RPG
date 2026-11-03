@@ -2326,6 +2326,9 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
   await page.locator('#ashBack').click();
   await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.ashmereLandmarks?.length)).toBe(4);
+  const townAfterMarket = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
+  expect(townAfterMarket.serviceDressingCount).toBe(0);
+  expect(townAfterMarket.serviceDressingKey).toBe('');
 
   // Forge and Inn interiors are classified by the explicit town-service key,
   // not brittle visible-text matching, and get their own native Phaser dressing.
@@ -2338,6 +2341,7 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
 
   await page.locator('#ashBack').click();
   await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.serviceDressingCount)).toBe(0);
   await page.locator('.ash100-destination[data-ash-view="inn"]').click();
   await expect(page.locator('.ash099-service-dashboard')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('inn');
