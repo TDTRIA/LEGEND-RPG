@@ -2041,8 +2041,9 @@
 
     nativeGameplayUiColor(value, fallback = 0x0a100b) {
       const source = String(value || '');
-      const direct = source.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/i);
+      const directStops = Array.from(source.matchAll(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*([\d.]+))?\s*\)/ig));
       const hexes = Array.from(source.matchAll(/#([\da-f]{3}|[\da-f]{6})\b/ig));
+      const direct = directStops.find(match => match[4] === undefined || Number(match[4]) > 0) || directStops[0];
       if (direct) {
         return {
           color: (Math.round(Number(direct[1])) << 16) | (Math.round(Number(direct[2])) << 8) | Math.round(Number(direct[3])),
@@ -2081,7 +2082,9 @@
       if (!rect.width || !rect.height) return null;
       const style = window.getComputedStyle(node);
       if (style.display === 'none' || (style.visibility === 'hidden' && node?.dataset?.legendPhaserNativeImage !== 'true') || Number(style.opacity) < 0.02) return null;
-      if (node.closest('[hidden]') || node.closest('[aria-hidden="true"]')) return null;
+      if (node.closest('[hidden]')) return null;
+      const ariaHidden = node.closest('[aria-hidden="true"]');
+      if (ariaHidden && !node.matches('img,.runway-icon') && !node.closest('.runway-icon')) return null;
       const viewport = { left: 0, top: 0, right: window.innerWidth, bottom: window.innerHeight };
       let clip = { ...viewport };
       let ancestor = node.parentElement;
@@ -2195,7 +2198,7 @@
         subtree: true,
         characterData: true,
         attributes: true,
-        attributeFilter: ['class','hidden','disabled','aria-expanded','aria-pressed','aria-selected']
+        attributeFilter: ['class','hidden','disabled','inert','aria-hidden','aria-label','aria-expanded','aria-pressed','aria-selected']
       }));
     }
 
@@ -2248,7 +2251,8 @@
         const style = this.nativeGameplayUiStyle(node);
         const bgImage = style.backgroundImage || 'none';
         const bgColor = style.backgroundColor || 'rgba(0,0,0,0)';
-        const bgSample = this.nativeGameplayUiColor(bgImage !== 'none' ? bgImage : bgColor);
+        let bgSample = this.nativeGameplayUiColor(bgImage !== 'none' ? bgImage : bgColor);
+        if (bgSample.alpha <= 0.04 && bgImage !== 'none') bgSample = this.nativeGameplayUiColor(bgColor);
         const borderWidth = Math.max(
           parseFloat(style.borderTopWidth) || 0,
           parseFloat(style.borderRightWidth) || 0,
