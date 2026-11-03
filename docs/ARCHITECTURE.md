@@ -1,21 +1,22 @@
 # Production architecture audit
-Updated: 2026-10-19
+Updated: 2026-11-03
 
-This is a working map of the production browser game. It is not a map of `prototypes/reboot/`. The code uses classic browser scripts and shared `window` namespaces, so script order and global names must be treated as runtime contracts.
+This is a working map of the production browser game. It is not a map of `prototypes/reboot/`. The production runtime is now hybrid: Phaser 4.1 renders the persistent world layer, while classic browser scripts and shared `window` namespaces still own most interface and gameplay behavior. Script order and global names remain runtime contracts.
 
 ## Entry point and module model
 
-The active code uses versioned classic scripts loaded in order by `index.html`; preserve script ordering and public globals while extracting responsibilities. CI derives its production syntax-check set from local script tags in `index.html` and automatically checks Playwright `*.spec.js` files under `tests/`.
+The active production entry point loads Phaser 4.1 and the world renderer, followed by versioned classic scripts in explicit order. Preserve script ordering and public globals while migrating real gameplay surfaces into Phaser. CI derives its production syntax-check set from local script tags in `index.html` and automatically checks Playwright `*.spec.js` files under `tests/`.
 
-- `index.html` loads the production scripts directly, in an explicit order. There is no bundler or native ES-module graph.
+- `index.html` loads Phaser 4.1, `js/engine/phaser-world-v1.js`, and the production classic scripts directly, in explicit order. There is no bundler or native ES-module graph.
 - `js/data.js` defines `window.LEGEND_DATA`: version, active save key, legacy keys, class/origin/keepsake data, item names/prices, and region definitions.
 - `js/storage.js` publishes `window.LegendStorage` and owns player save/load/delete, while preserving the stable `baseSkills()` and `normalize()` facade methods. The field defaults and normalizing rules live in `js/storage/player-normalizer-v120.js`; device-local settings persistence lives in `js/storage/settings-storage-v120.js`.
 - `js/core/html-utils-v120.js` publishes `LegendHtmlV120.escapeHtml()` as the shared implementation for escaping text inserted into HTML. It is not an arbitrary-HTML sanitizer and does not validate URLs.
 - `js/screens/title-screen-view-v120.js` owns the main title menu markup and established CSS/accessibility hooks.
 - `js/screens/title-extras-v120.js` owns the optional gate transition and accessible credits dialog; `LegendTitleScreenV120` keeps wrapper methods for both screens.
 - `js/screens/title-screen-v120.js` owns title state preparation, transition feedback, optional gate screen and credits; navigation actions are injected.
-- `js/systems/title-audio-v120.js` owns title ambience, menu hover/focus cues, confirmation sounds, and first-interaction audio unlock.
+- `js/systems/title-audio-v120.js` owns title ambience, menu hover/focus cues, confirmation sounds, and first-interaction audio unlock. Its current paths still use the legacy title ambience and UI clips pending the audio integration work.
 - `js/game.js` is the thin bootstrap/navigation adapter for continue, new traveler, account, settings, and title-screen callbacks. It publishes `window.LegendGameBootstrap`.
+- `js/engine/phaser-world-v1.js` is the active production Phaser world layer. It manages the persistent background scene, environment changes, atmosphere, transitions, and interactive Ashmere landmarks; it does not yet replace the DOM gameplay screens or the existing save/gameplay systems.
 - `js/screens/settings-screen-v090.js` owns settings presentation and its control binding. Persistence remains in `js/storage.js`.
 - Feature systems use classic browser scripts and shared `window` namespaces; injection objects provide the dependencies between extracted screens.
 - `docs/ADDING_FEATURES.md` maps common feature types to their data, rules, views, and facade wiring points so new gameplay stays inside the existing module boundaries.
