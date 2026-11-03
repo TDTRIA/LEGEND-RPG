@@ -1658,7 +1658,7 @@
         const objects = [focusFrame];
         if (!choice) {
           const actionStyle = window.getComputedStyle(button);
-          const actionText = button.textContent?.replace(/\\s+/g, ' ').trim() || id;
+          const actionText = button.textContent?.replace(/\s+/g, ' ').trim() || id;
           const primaryAction = button.classList.contains('primary');
           const actionLabel = this.add.text(rect.width / 2, rect.height / 2, actionText, {
             fontFamily: actionStyle.fontFamily || 'Arial, sans-serif',
