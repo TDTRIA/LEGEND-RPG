@@ -154,9 +154,21 @@ test.describe('LEGEND Phaser reboot prototype', () => {
 
     await page.locator('#v094Name').fill('PhaserRoadQA');
     await page.locator('#v094Next').click();
+    await page.evaluate(() => {
+      window.__legendCreationBackdrop = document.querySelector('.v094-beginning-bg');
+      window.__legendCreationSurfaceTransitions = window.__legendRebootBridge.snapshot().surfaceTransitionCount;
+    });
     await page.locator('[data-gender="unspoken"]').click();
+    await expect(page.locator('[data-gender="unspoken"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.v140-dialogue-box > p')).toContainText('silhouette steadies around');
+    expect(await page.evaluate(() => document.querySelector('.v094-beginning-bg') === window.__legendCreationBackdrop)).toBe(true);
+    expect(await page.evaluate(() => window.__legendRebootBridge.snapshot().surfaceTransitionCount)).toBe(await page.evaluate(() => window.__legendCreationSurfaceTransitions));
     await page.locator('#v094Next').click();
+    expect(await page.evaluate(() => document.querySelector('.v094-beginning-bg') === window.__legendCreationBackdrop)).toBe(true);
     await page.locator('[data-personality="kind"]').click();
+    await expect(page.locator('[data-personality="kind"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('.v140-dialogue-box > p')).toContainText('The feeling returns before its cause');
+    expect(await page.evaluate(() => document.querySelector('.v094-beginning-bg') === window.__legendCreationBackdrop)).toBe(true);
     await page.locator('#v094Next').click();
     await page.locator('[data-origin]').first().click();
     await page.locator('#v094Next').click();
