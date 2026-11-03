@@ -2301,6 +2301,37 @@ test('the production root plays its Phaser awakening and exposes the skip contro
   await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('engine-intro-active'))).toBe(true);
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready), { timeout: 15000 }).toBe(true);
   await expect(page.locator('.v120-title')).toBeVisible();
+  const menuButton = page.getByRole('button', { name: /Begin Your Journey/i });
+  await expect(menuButton).toBeVisible();
+  const layerState = await page.evaluate(() => {
+    const container = document.getElementById('game-container');
+    const root = document.getElementById('root');
+    const button = root?.querySelector('#newPrimary');
+    const buttonRect = button?.getBoundingClientRect();
+    return {
+      htmlWorldClass: document.documentElement.classList.contains('legend-phaser-world-active'),
+      bodyWorldClass: document.body.classList.contains('legend-phaser-world-active'),
+      canvasLayerPosition: container ? getComputedStyle(container).position : '',
+      canvasLayerPointerEvents: container ? getComputedStyle(container).pointerEvents : '',
+      rootPosition: root ? getComputedStyle(root).position : '',
+      rootZIndex: root ? Number(getComputedStyle(root).zIndex) : 0,
+      buttonInViewport: Boolean(buttonRect && buttonRect.top >= 0 && buttonRect.bottom <= window.innerHeight),
+      buttonPresent: Boolean(button)
+    };
+  });
+  expect(layerState.htmlWorldClass).toBe(true);
+  expect(layerState.bodyWorldClass).toBe(true);
+  expect(layerState.canvasLayerPosition).toBe('fixed');
+  expect(layerState.canvasLayerPointerEvents).toBe('none');
+  expect(layerState.rootPosition).toBe('relative');
+  expect(layerState.rootZIndex).toBeGreaterThan(0);
+  expect(layerState.buttonInViewport).toBe(true);
+  expect(layerState.buttonPresent).toBe(true);
+  // A real click verifies that the menu is above the Phaser canvas, not merely
+  // present in the DOM while the canvas occupies the visible page.
+  await menuButton.click();
+  await expect(page.locator('.opening-lore-v220')).toBeVisible();
+
   const boot = await page.evaluate(() => ({
     marker: sessionStorage.getItem('legend-phaser-production-engine-awakened-v1'),
     environment: window.LegendPhaserWorldV1.snapshot()?.environment,
