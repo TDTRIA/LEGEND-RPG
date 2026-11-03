@@ -918,3 +918,82 @@ body.chronicle-article .shell{
   .chronicle-article .signup-form{grid-template-columns:1fr}
   .chronicle-article button{width:100%}
 }
+
+
+/* Bring legacy post tiles and step cards onto the same iron/brass materials. */
+.chronicle-article .step,
+.chronicle-article .tile,
+.chronicle-article .feature-card,
+.chronicle-article .feature-grid>div,
+.chronicle-article .roadmap-item,
+.chronicle-article .manual,
+.chronicle-article .entry{
+  border:1px solid rgba(191,160,100,.22)!important;
+  border-radius:2px!important;
+  background:linear-gradient(180deg,rgba(24,32,23,.88),rgba(8,13,9,.93))!important;
+  color:#efe7d4!important;
+  box-shadow:inset 0 0 22px rgba(231,201,130,.018);
+}
+.chronicle-article .step-number{
+  width:30px;height:30px;
+  border:1px solid rgba(231,201,130,.6);
+  border-radius:2px;
+  background:linear-gradient(180deg,#f2d99f,#b78a46);
+  color:#1a1409;
+}
+.chronicle-article .tag{
+  border:1px solid rgba(191,160,100,.38);
+  border-radius:2px;
+  background:rgba(191,160,100,.07);
+  color:#e7c982!important;
+}
+.chronicle-article .feature-grid,
+.chronicle-article .grid{
+  align-items:stretch;
+}
+.chronicle-article a:not(.btn):not(.chronicle-action):not(.chronicle-text-link){
+  color:#e7c982;
+}
+.chronicle-article a:not(.btn):not(.chronicle-action):not(.chronicle-text-link):hover{
+  color:#fff0c6;
+}
+.chronicle-article .small,
+.chronicle-article .muted{color:#b0b8a8!important}
+
+/* QA runner keeps its iframe and test actions, but receives the same site frame. */
+.chronicle-article .runner-shell{
+  width:min(1360px,calc(100% - 40px));
+  margin:0 auto;
+  padding:24px 0 48px;
+  display:grid;
+  grid-template-columns:minmax(330px,390px) minmax(0,1fr);
+  gap:16px;
+  align-items:start;
+}
+.chronicle-article .runner-shell>.panel{
+  border:1px solid rgba(191,160,100,.29);
+  border-radius:2px;
+  background:linear-gradient(180deg,rgba(17,24,18,.97),rgba(7,11,8,.98));
+  box-shadow:0 18px 44px rgba(0,0,0,.34);
+  padding:22px;
+}
+.chronicle-article .runner-shell .frame-wrap{height:calc(100vh - 120px);min-height:560px}
+.chronicle-article .runner-shell iframe{
+  border:1px solid rgba(191,160,100,.32);
+  border-radius:2px;
+  background:#030604;
+  box-shadow:0 24px 58px rgba(0,0,0,.42);
+}
+.chronicle-article .runner-shell button{width:100%;margin:5px 0}
+.chronicle-article .runner-shell .status{display:grid;gap:8px;margin-top:12px;max-height:42vh;overflow:auto}
+.chronicle-article .runner-shell .entry.pass{border-left:3px solid #829b74}
+.chronicle-article .runner-shell .entry.fail{border-left:3px solid #b96f5f}
+.chronicle-article .runner-shell .entry.info{border-left:3px solid #bfa064}
+@media(max-width:980px){
+  .chronicle-article .runner-shell{grid-template-columns:1fr}
+  .chronicle-article .runner-shell .frame-wrap{height:70vh;min-height:440px}
+}
+@media(max-width:640px){
+  .chronicle-article .runner-shell{width:calc(100% - 24px);padding:15px 0 34px}
+  .chronicle-article .runner-shell>.panel{padding:16px}
+}
