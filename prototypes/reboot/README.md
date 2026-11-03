@@ -6,7 +6,7 @@ Live preview after GitHub Pages deployment: https://tdtria.github.io/LEGEND-RPG/
 
 ## What this build is
 
-The Phaser canvas provides the world presentation layer behind the game's accessible HTML interfaces. The current pass adds location-aware atmosphere (drifting haze, dust, marsh rain/fireflies, forge embers and archive rune glows), subtle pointer-driven depth/parallax, overscanned camera breathing, crossfaded location changes, and distinct combat impact feedback using Phaser tweens, shapes and camera effects. Both the in-game Reduced Motion setting and the browser/OS preference suppress parallax, ambient animation, flashes and shakes.
+Phaser is now the persistent world presentation engine behind every production gameplay screen and the in-world shell. A Phaser-native first-visit engine awakening builds a runic seal over the realm, brings up the camera and scene graph, binds the existing towns, roads and encounter systems, then reveals the production title screen. The splash is skippable, honors Reduced Motion, and plays once per tab session. After startup, the same Phaser scene remains alive underneath the HTML gameplay surfaces: transitions respond to title, annals, traveler creation, Oric's awakening, combat, expeditions, town services, dungeons, results and shell modals. Location-aware atmosphere and combat impact feedback continue throughout play. Both the in-game Reduced Motion setting and the browser/OS preference suppress parallax, ambient animation, flashes and shakes.
 
 The current production modules are loaded directly for:
 - Mandatory annals and the existing anonymous-presence traveler creator.
