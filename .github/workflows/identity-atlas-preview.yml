@@ -8,7 +8,7 @@ on:
       - .github/workflows/identity-atlas-preview.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   preview:
@@ -32,36 +32,63 @@ jobs:
           curl --fail --location --silent --show-error "$UNSPOKEN_URL" --output /tmp/identity-source/unspoken.png
           file /tmp/identity-source/*.png
 
-      - name: Prepare consistent preview sizes
+      - name: Crop and normalize final local game emblems
         run: |
           python -m pip install --quiet Pillow
           python - <<'PY'
           from pathlib import Path
-          from PIL import Image
+          from PIL import Image, ImageDraw
           import json
 
           source = Path('/tmp/identity-source')
           output = Path('/tmp/identity-preview')
           output.mkdir(parents=True, exist_ok=True)
+          # Normalized crops reproduce the manually inspected face/bust crop.
+          boxes = {
+              'woman': (0.3046875, 0.23046875, 0.6953125, 0.62109375),
+              'man': (0.3046875, 0.21875, 0.6953125, 0.609375),
+              'nonbinary': (0.3046875, 0.25, 0.6953125, 0.640625),
+              'unspoken': (0.3046875, 0.265625, 0.6953125, 0.65625),
+          }
           names = ['woman', 'man', 'nonbinary', 'unspoken']
+          assets = Path('assets/generated/ui/icons')
+          assets.mkdir(parents=True, exist_ok=True)
           tile_size = 512
           gutter = 28
-          canvas = Image.new('RGBA', (tile_size * 2 + gutter * 3, tile_size * 2 + gutter * 3), (14, 19, 16, 255))
+          contact = Image.new('RGBA', (tile_size * 2 + gutter * 3, tile_size * 2 + gutter * 3), (8, 11, 9, 255))
           for i, name in enumerate(names):
-              img = Image.open(source / f'{name}.png').convert('RGBA')
-              if img.width != img.height:
-                  side = min(img.width, img.height)
-                  left = (img.width - side) // 2
-                  top = (img.height - side) // 2
-                  img = img.crop((left, top, left + side, top + side))
-              img = img.resize((tile_size, tile_size), Image.Resampling.LANCZOS)
-              img.save(output / f'{name}.webp', 'WEBP', quality=94, method=6)
-              x = gutter + (i % 2) * (tile_size + gutter)
-              y = gutter + (i // 2) * (tile_size + gutter)
-              canvas.alpha_composite(img, (x, y))
-          canvas.save(output / 'contact-sheet.png')
-          print(json.dumps({'emblems': names, 'tile': tile_size, 'contact': canvas.size}))
+              image = Image.open(source / f'{name}.png').convert('RGB')
+              width, height = image.size
+              x1, y1, x2, y2 = boxes[name]
+              box = (round(width*x1), round(height*y1), round(width*x2), round(height*y2))
+              crop = image.crop(box).resize((tile_size, tile_size), Image.Resampling.LANCZOS).convert('RGBA')
+              mask = Image.new('L', (tile_size, tile_size), 0)
+              ImageDraw.Draw(mask).ellipse((2, 2, tile_size-2, tile_size-2), fill=255)
+              crop.putalpha(mask)
+              crop.save(output / f'{name}.webp', 'WEBP', quality=94, method=6)
+              crop.save(assets / f'traveler-gender-{name}.webp', 'WEBP', quality=94, method=6)
+
+              # A contact sheet with the common in-game medallion edge for review.
+              framed = Image.new('RGBA', (tile_size+32, tile_size+32), (10, 14, 11, 255))
+              draw = ImageDraw.Draw(framed)
+              draw.ellipse((2, 2, tile_size+30, tile_size+30), fill=(111, 82, 45, 255), outline=(207, 175, 111, 255), width=5)
+              draw.ellipse((10, 10, tile_size+22, tile_size+22), fill=(23, 38, 29, 255), outline=(62, 83, 61, 255), width=6)
+              framed.alpha_composite(crop.resize((tile_size+2, tile_size+2), Image.Resampling.LANCZOS), (15, 15))
+              x = 16 + (i % 2) * (tile_size + 60)
+              y = 16 + (i // 2) * (tile_size + 60)
+              contact.alpha_composite(framed, (x, y))
+          contact.convert('RGB').save(output / 'contact-sheet.jpg', quality=92)
+          print(json.dumps({'assets': [f'traveler-gender-{n}.webp' for n in names], 'crop': 'circular 512x512 WEBP'}))
           PY
+
+      - name: Commit verified local identity assets to preview branch
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/generated/ui/icons/traveler-gender-*.webp
+          git commit -m "Add reviewed traveler identity emblem assets"
+          git push origin HEAD:asset-preview-runway-identity
 
       - name: Upload identity artwork preview
         uses: actions/upload-artifact@v4
