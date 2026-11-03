@@ -36,16 +36,6 @@
     return 'The road turns';
   }
 
-  function waitForSceneAssets() {
-    const images = Array.from(document.getElementById('root')?.querySelectorAll('img') || []).filter(img => !img.complete);
-    const paint = new Promise(resolve => window.requestAnimationFrame(() => window.requestAnimationFrame(resolve)));
-    const assets = Promise.all(images.map(img => new Promise(resolve => {
-      img.addEventListener('load', resolve, { once: true });
-      img.addEventListener('error', resolve, { once: true });
-    })));
-    const safety = new Promise(resolve => window.setTimeout(resolve, 1600));
-    return Promise.race([Promise.all([assets, paint]), safety]);
-  }
 
   function transitionTo(label, action) {
     if (typeof action !== 'function') return;
@@ -72,22 +62,21 @@
       // Always uncover the game, even when a screen handler throws.
     }
 
-    void (async () => {
-      await waitForSceneAssets();
-      const minimumCoverMs = Math.max(0, 1450 - (Date.now() - startedAt));
+    // Keep the cover bounded by a fixed clock rather than waiting on every scene
+    // image. Mobile Safari can leave an image-load promise unresolved even after
+    // the destination DOM is ready; that must never strand the player under an
+    // opaque curtain or keep the global transition lock enabled.
+    const minimumCoverMs = Math.max(0, 1280 - (Date.now() - startedAt));
+    window.setTimeout(() => {
+      curtain.classList.remove('is-covering');
+      curtain.classList.add('is-revealing');
+      curtain.style.pointerEvents = 'none';
       window.setTimeout(() => {
-        curtain.classList.remove('is-covering');
-        curtain.classList.add('is-revealing');
-        // The scene is now rendered behind a transparent fade. Never let the
-        // visual curtain keep intercepting real touch input during or after it.
+        curtain.classList.remove('is-revealing');
         curtain.style.pointerEvents = 'none';
-        window.setTimeout(() => {
-          curtain.classList.remove('is-revealing');
-          curtain.style.pointerEvents = 'none';
-          busy = false;
-        }, 580);
-      }, minimumCoverMs);
-    })();
+        busy = false;
+      }, 480);
+    }, minimumCoverMs);
   }
 
   document.addEventListener('click', event => {
