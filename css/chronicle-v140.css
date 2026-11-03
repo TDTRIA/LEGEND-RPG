@@ -678,14 +678,14 @@ body.chronicle-article .shell{
 }
 .chronicle-article li::marker{color:var(--chron-brass)}
 .chronicle-article .actions,
-.chronicle-article nav{
+.chronicle-article nav:not(.chronicle-nav){
   display:flex;
   flex-wrap:wrap;
   gap:9px;
   margin-top:18px;
 }
 .chronicle-article .actions a,
-.chronicle-article nav a,
+.chronicle-article nav:not(.chronicle-nav) a,
 .chronicle-article .btn,
 .chronicle-article a.btn{
   display:inline-flex;
@@ -800,9 +800,9 @@ body.chronicle-article .shell{
   .chronicle-article .shell>header:first-child,
   .chronicle-article .shell>.panel.card:first-child{padding:24px 20px!important}
   .chronicle-article .actions,
-  .chronicle-article nav{display:grid;grid-template-columns:1fr}
+  .chronicle-article nav:not(.chronicle-nav){display:grid;grid-template-columns:1fr}
   .chronicle-article .actions a,
-  .chronicle-article nav a{width:100%}
+  .chronicle-article nav:not(.chronicle-nav) a{width:100%}
 }
 @media(prefers-reduced-motion:reduce){
   .chronicle-nav-links a,
