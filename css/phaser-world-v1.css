@@ -1,0 +1,234 @@
+/* LEGEND production Phaser world layer — static-host safe, no server dependency. */
+body.legend-phaser-world-active {
+  position: relative;
+  min-height: 100vh;
+  background: #080d0c !important;
+}
+body.legend-phaser-world-active #game-container {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  background: #090e0d;
+}
+body.legend-phaser-world-active #game-container canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+body.legend-phaser-world-active #root {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+body.legend-phaser-world-active #legend-world-shell-root,
+body.legend-phaser-world-active #legend-world-shell-modal-root {
+  z-index: 800;
+}
+
+/* Phaser now supplies the environment plate. Keep the existing authored
+   gradients, borders, menus and story panels as the readable interface layer. */
+body.legend-phaser-world-active #root .v120-title,
+body.legend-phaser-world-active #root .title-v136-rpg {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .v120-title-backdrop {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active #root .v094-beginning {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .v094-beginning-bg {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active #root .rpg-battlefield {
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: inset 0 0 0 1px rgba(220,195,131,.10) !important;
+}
+body.legend-phaser-world-active #root .rpg-battlefield::before,
+body.legend-phaser-world-active #root .rpg-battlefield::after {
+  background: transparent !important;
+  opacity: 0 !important;
+}
+
+html.engine-intro-active #root {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+html.engine-intro-active #legend-boot-screen {
+  display: none !important;
+}
+#engine-skip {
+  display: none;
+  position: fixed;
+  z-index: 100002;
+  left: 50%;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  min-height: 40px;
+  padding: 10px 19px;
+  border: 1px solid rgba(224,198,132,.5);
+  border-radius: 2px;
+  background: rgba(4,8,6,.78);
+  color: #f0dfb8;
+  font: 800 10px/1.2 system-ui, sans-serif;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+html.engine-intro-active #engine-skip { display: block; }
+#engine-skip:hover,
+#engine-skip:focus-visible {
+  border-color: #f0d69b;
+  background: rgba(28,34,25,.94);
+  color: #fff2d3;
+  outline: 2px solid rgba(240,214,155,.52);
+  outline-offset: 3px;
+}
+body.legend-phaser-world-active #toast { z-index: 100003; }
+@media (prefers-reduced-motion: reduce) {
+  #engine-skip { transition: none !important; }
+  body.legend-phaser-world-active #root .v120-title-backdrop,
+  body.legend-phaser-world-active #root .v094-beginning-bg { transition: none !important; }
+}
+
+
+/* Production scene parity: remove duplicate environment paintings and let the
+   persistent Phaser scene remain the single world backdrop behind HTML controls. */
+body.legend-phaser-world-active.legend-world-shell-active::before {
+  background-image: none !important;
+  filter: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+body.legend-phaser-world-active.legend-world-shell-active::after {
+  background: radial-gradient(ellipse at 50% 48%, transparent 48%, rgba(0,0,0,.10) 100%) !important;
+  box-shadow: none !important;
+}
+
+body.legend-phaser-world-active #root .opening-road-v140 {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .opening-road-v140-bg {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+}
+body.legend-phaser-world-active #root .opening-lore-v220 {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .opening-lore-v220-backdrop {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+}
+
+body.legend-phaser-world-active #root .exp100 {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .exp100-scene-live {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .exp100-scene-live > img {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  animation: none !important;
+}
+body.legend-phaser-world-active #root .exp100-scene-live .exp100-scene-shade {
+  background: linear-gradient(180deg, rgba(6,13,10,.015), rgba(6,13,10,.075) 52%, rgba(4,7,5,.22) 100%) !important;
+}
+
+body.legend-phaser-world-active #root .ash100-town {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .ash100-hero {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .ash100-hero > img {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+body.legend-phaser-world-active #root .gfm160-scene,
+body.legend-phaser-world-active #root .gss170-scene {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .gfm160-scene-art,
+body.legend-phaser-world-active #root .gfm160-results-art img,
+body.legend-phaser-world-active #root .gss170-scene-art {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active #root .gfm160-scene-shade,
+body.legend-phaser-world-active #root .gfm160-results-art > div,
+body.legend-phaser-world-active #root .gss170-scene-shade {
+  background: linear-gradient(90deg, rgba(7,19,18,.18), rgba(7,19,18,.04) 54%, rgba(7,19,18,.10)), linear-gradient(0deg, rgba(6,17,16,.20), transparent 66%) !important;
+}
+body.legend-phaser-world-active #root .gss170-page,
+body.legend-phaser-world-active #root .gfm160-page {
+  background: transparent !important;
+}
+body.legend-phaser-world-active #root .bell-vault-v100 {
+  background: linear-gradient(145deg, rgba(23,33,24,.48), rgba(6,11,7,.42)) !important;
+  backdrop-filter: blur(2px);
+}
+body.legend-phaser-world-active #root .bell-vault-room-card,
+body.legend-phaser-world-active #root .bell-vault-keeper-card {
+  background: linear-gradient(145deg, rgba(13,21,14,.70), rgba(5,10,6,.64)) !important;
+}
+
+/* The world canvas remains visible when screen-local images are hidden. */
+body.legend-phaser-world-active #root .opening-road-v140-shade {
+  background: linear-gradient(90deg, rgba(2,6,4,.14), rgba(2,6,4,.035) 49%, rgba(2,6,4,.12)), linear-gradient(180deg, rgba(2,4,3,.015), rgba(2,5,4,.20)) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.legend-phaser-world-active #root .opening-road-v140-bg,
+  body.legend-phaser-world-active #root .opening-lore-v220-backdrop,
+  body.legend-phaser-world-active #root .exp100-scene-live > img {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+@media (max-width: 1199px) {
+  body.legend-phaser-world-active.legend-world-shell-active #root {
+    margin: 0 !important;
+    min-height: 100vh !important;
+    width: auto !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}
+
+
+body.legend-phaser-world-active #root .ash100-hero:after {
+  background: linear-gradient(90deg, rgba(3,7,5,.42) 0%, rgba(3,7,5,.12) 58%, transparent 100%), linear-gradient(0deg, rgba(3,7,5,.24), transparent 62%) !important;
+}
+
+
+#toast {
+  position: fixed;
+  z-index: 100003;
+  left: 50%;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  transform: translate(-50%, 14px);
+  max-width: min(680px, calc(100% - 28px));
+  padding: 12px 17px;
+  border: 1px solid rgba(219,185,121,.42);
+  background: rgba(8,12,11,.96);
+  color: #f0ead8;
+  font: 12px/1.5 system-ui, sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }

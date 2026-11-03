@@ -1,11 +1,20 @@
-/* LEGEND Reboot — Phaser presentation + production gameplay adapter.
- * The prototype has its own local save key. All gameplay catalogs, rules, controllers,
- * town services, quests, dungeons and Greyfen systems are loaded from the current game.
+/* LEGEND — canonical persistent Phaser world engine.
+ * Shared by the production GitHub Pages game and the reboot preview. Production mode
+ * delegates all traveler persistence to the existing LegendStorage/account stack.
  */
 (() => {
   'use strict';
 
-  const SAVE_KEY = 'legend-reboot-prototype-save-v1';
+  const IS_PROTOTYPE = /\/prototypes\/reboot(?:\/|$)/.test(window.location.pathname);
+  const SAVE_KEY = IS_PROTOTYPE
+    ? 'legend-reboot-prototype-save-v1'
+    : String(window.LEGEND_DATA?.SAVE_KEY || 'legend-roads-of-ashmere-v09');
+  const ENGINE_SESSION_KEY = IS_PROTOTYPE
+    ? 'legend-phaser-engine-awakened-v1'
+    : 'legend-phaser-production-engine-awakened-v1';
+  if (!IS_PROTOTYPE) {
+    document.documentElement.classList.add('legend-phaser-world-active', 'engine-intro-active');
+  }
   const root = () => document.getElementById('root');
   const byId = id => document.getElementById(id);
   const reducedMotion = () => Boolean(
@@ -15,6 +24,7 @@
   let activePlayer = null;
   let game = null;
   let realmScene = null;
+  let engineReady = false;
   let currentEnvironment = '';
   let soundEnabled = true;
   let ambientAudio = null;
@@ -47,6 +57,7 @@
   }
 
   function loadPlayer() {
+    if (!IS_PROTOTYPE) return window.LegendStorage?.loadPlayer?.() || null;
     if (activePlayer) return activePlayer;
     activePlayer = normalize(safeRead());
     return activePlayer;
@@ -54,6 +65,10 @@
 
   function savePlayer(player) {
     if (!player) return null;
+    if (!IS_PROTOTYPE) {
+      window.LegendStorage?.savePlayer?.(player);
+      return window.LegendStorage?.loadPlayer?.() || player;
+    }
     activePlayer = normalize(player);
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify(activePlayer));
@@ -65,35 +80,44 @@
   }
 
   function clearPlayer() {
+    // The production engine must never clear a player's real save through a
+    // preview/new-traveler helper. Production deletion stays with the game UI.
+    if (!IS_PROTOTYPE) return false;
     activePlayer = null;
     try { localStorage.removeItem(SAVE_KEY); } catch (error) { console.warn(error); }
+    return true;
   }
 
-  // The production creation, town and road controllers expect these stable facades.
-  // They are intentionally backed by the prototype's separate save key.
-  window.LegendStorage = {
-    loadPlayer,
-    savePlayer,
-    normalize,
-    baseSkills: () => normalizer()?.baseSkills?.() || {},
-    loadSettings: () => settingsStorage?.loadSettings?.() || {},
-    saveSettings: settings => settingsStorage?.saveSettings?.(settings) || false,
-    applySettings: settings => settingsStorage?.applySettings?.(settings),
-    deleteSaves: clearPlayer
-  };
-  window.LegendRuntimeV120 = {
-    loadPlayer,
-    savePlayer,
-    returnToAshmere: () => window.LegendAshmereV099?.renderAshmere?.(),
-    baseSkills: () => normalizer()?.baseSkills?.() || {},
-    normalize
-  };
-  window.__legendRebootSaveKey = SAVE_KEY;
+  // Only the isolated preview installs its adapter. Production retains the real
+  // LegendStorage and LegendRuntimeV120, including local/cloud account behavior.
+  if (IS_PROTOTYPE) {
+    window.LegendStorage = {
+      loadPlayer,
+      savePlayer,
+      normalize,
+      baseSkills: () => normalizer()?.baseSkills?.() || {},
+      loadSettings: () => settingsStorage?.loadSettings?.() || {},
+      saveSettings: settings => settingsStorage?.saveSettings?.(settings) || false,
+      applySettings: settings => settingsStorage?.applySettings?.(settings),
+      deleteSaves: clearPlayer
+    };
+    window.LegendRuntimeV120 = {
+      loadPlayer,
+      savePlayer,
+      returnToAshmere: () => window.LegendAshmereV099?.renderAshmere?.(),
+      baseSkills: () => normalizer()?.baseSkills?.() || {},
+      normalize
+    };
+    window.__legendRebootSaveKey = SAVE_KEY;
+  } else {
+    window.__legendPhaserProductionSaveKey = SAVE_KEY;
+  }
 
   const ASSETS = {
     title: 'assets/generated/title/title-ashmere-road.webp',
     ashmere: 'assets/generated/locations/ashmere-town.webp',
     road: 'assets/generated/locations/old-road-south-fork.webp',
+    blackroot: 'assets/locations/roads/location_old_road_main_v1.jpg',
     ridge: 'assets/generated/locations/high-ridge.webp',
     reeds: 'assets/generated/locations/reed-cut.webp',
     camp: 'assets/generated/locations/roadside-camp.webp',
@@ -103,6 +127,7 @@
     market: 'assets/generated/locations/ashmere-market.webp',
     forge: 'assets/generated/locations/ashmere-forge.webp',
     archive: 'assets/generated/locations/ashmere-archive.webp',
+    cellar: 'assets/generated/locations/bell-cellar-undercroft.webp',
     greyfenInn: 'assets/generated/locations/greyfen-inn.webp',
     greyfenMarket: 'assets/generated/locations/greyfen-market.webp',
     greyfenForge: 'assets/generated/locations/greyfen-forge.webp',
@@ -144,17 +169,26 @@
     if (host.querySelector('.opening-road-v140')) environment = 'road';
     else if (host.querySelector('.opening-lore-v220')) environment = 'title';
     else if (host.querySelector('.v140-creation')) environment = 'title';
-    else if (host.querySelector('.rpg-battle')) environment = 'road';
+    else if (host.querySelector('.rpg-battle')) {
+      const arena = host.querySelector('.rpg-battlefield')?.dataset.arena || 'road';
+      environment = arena === 'greyfen' ? 'marsh' : arena === 'cellar' ? 'cellar' : 'road';
+    }
     else if (host.querySelector('.gss170-page')) environment = 'marsh';
     else if (host.querySelector('.gfm160-page')) environment = 'marsh';
-    else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'archive';
+    else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'cellar';
     else if (host.querySelector('.ash100-town-greyfen')) environment = 'greyfen';
     else if (host.querySelector('.ash100-town-ashmere')) environment = 'ashmere';
     else if (host.querySelector('.exp100-scene')) {
       const state = player?.flags?.roadExpeditionV100 || {};
-      environment = Number(state.stage || 0) === 2 ? 'camp'
-        : state.routeChoice === 'ridge' && Number(state.stage || 0) <= 1 ? 'ridge'
-        : state.routeChoice === 'reeds' && Number(state.stage || 0) <= 1 ? 'reeds'
+      const stage = Number(state.stage || 0);
+      environment = state.activeSideTripV160 === 'windbreak' ? 'ridge'
+        : state.activeSideTripV160 === 'sunken-cart' ? 'reeds'
+        : stage === 2 ? 'camp'
+        : stage === 3 ? 'blackroot'
+        : stage === 4 ? 'marsh'
+        : stage >= 5 ? 'greyfen'
+        : state.routeChoice === 'ridge' && stage === 1 ? 'ridge'
+        : state.routeChoice === 'reeds' && stage === 1 ? 'reeds'
         : 'road';
     } else if (host.querySelector('.ash099, .reg100')) {
       environment = String(player?.currentRegion || 'Ashmere') === 'Greyfen' ? 'greyfen' : 'ashmere';
@@ -385,7 +419,7 @@
 
     preload() {
       Object.keys(ASSETS).forEach(key => {
-        if (['title','ashmere','road','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive'].includes(key)) {
+        if (['title','ashmere','road','blackroot','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive'].includes(key)) {
           this.load.image(key, ASSETS[key]);
         }
       });
@@ -419,6 +453,7 @@
         }
       };
       this.setEnvironment('title', true);
+      currentEnvironment = 'title';
     }
 
     runEngineAwakening(onComplete) {
@@ -713,7 +748,7 @@
       const isBog = key === 'marsh' || key === 'reeds' || key.includes('greyfen');
       const isWet = key === 'marsh' || key === 'reeds';
       const isFire = key === 'camp' || key.includes('forge');
-      const isArcane = key.includes('archive');
+      const isArcane = key.includes('archive') || key === 'cellar';
       const palette = isBog
         ? { haze: 0x8eaaa0, mote: 0xc6e8d0, glow: 0xa8e4cb, rain: 0x9bc9ce }
         : isFire
@@ -1100,14 +1135,21 @@
   function startPhaser() {
     if (game) return;
     if (!window.Phaser) {
-      console.warn('Phaser could not be loaded; opening the production HTML interface without the engine canvas.');
+      console.warn('Phaser could not be loaded; keeping the available HTML game interface active.');
       try { window.sessionStorage.removeItem(ENGINE_SESSION_KEY); } catch (_) {}
       document.documentElement.classList.remove('engine-intro-active');
+      if (!IS_PROTOTYPE) document.body.classList.remove('legend-phaser-world-active');
       byId('engine-skip') && (byId('engine-skip').hidden = true);
-      showTitle();
+      if (IS_PROTOTYPE) showTitle();
       observeRoot();
-      window.__legendRebootReady = true;
-      toast('The Phaser world renderer did not load. The game interface is still available; refresh to retry.');
+      if (IS_PROTOTYPE) window.__legendRebootReady = true;
+      else {
+        const bootScreen = byId('legend-boot-screen');
+        if (bootScreen) bootScreen.hidden = true;
+        document.body.classList.remove('legend-booting');
+        window.__legendPhaserWorldReady = false;
+      }
+      toast('The world renderer could not load. The game remains available; refresh to retry the scene.');
       return;
     }
     try {
@@ -1131,11 +1173,18 @@
     } catch (error) {
       console.error('Phaser could not start.', error);
       document.documentElement.classList.remove('engine-intro-active');
+      if (!IS_PROTOTYPE) document.body.classList.remove('legend-phaser-world-active');
       byId('engine-skip') && (byId('engine-skip').hidden = true);
-      showTitle();
+      if (IS_PROTOTYPE) showTitle();
       observeRoot();
-      window.__legendRebootReady = true;
-      toast('The Phaser renderer could not start. The game interface is still available.');
+      if (IS_PROTOTYPE) window.__legendRebootReady = true;
+      else {
+        const bootScreen = byId('legend-boot-screen');
+        if (bootScreen) bootScreen.hidden = true;
+        document.body.classList.remove('legend-booting');
+        window.__legendPhaserWorldReady = false;
+      }
+      toast('The world renderer could not start. The game interface remains available.');
       return;
     }
     let needsAwakening = true;
@@ -1156,9 +1205,19 @@
         document.documentElement.classList.remove('engine-intro-active');
         const skip = byId('engine-skip');
         if (skip) skip.hidden = true;
-        showTitle();
-        observeRoot();
-        window.__legendRebootReady = true;
+        engineReady = true;
+        if (IS_PROTOTYPE) {
+          showTitle();
+          observeRoot();
+          window.__legendRebootReady = true;
+        } else {
+          const bootScreen = byId('legend-boot-screen');
+          if (bootScreen) bootScreen.hidden = true;
+          document.body.classList.remove('legend-booting');
+          observeRoot();
+          window.__legendPhaserWorldReady = true;
+          window.dispatchEvent(new CustomEvent('legend:phaser-world-ready'));
+        }
       };
       if (needsAwakening && realmScene?.runEngineAwakening) {
         realmScene.runEngineAwakening(finishStartup);
@@ -1193,6 +1252,19 @@
     }, { passive: true });
     window.addEventListener('resize', inferEnvironment, { passive: true });
   }
+
+  window.LegendPhaserWorldV1 = Object.freeze({
+    version: 'phaser-world-v1',
+    mode: IS_PROTOTYPE ? 'preview' : 'production',
+    get ready() { return engineReady; },
+    get engine() { return game; },
+    snapshot: () => realmScene ? window.__legendRebootBridge?.snapshot?.() || null : null,
+    setEnvironment: (name, immediate = false) => setEnvironment(name, immediate),
+    pulse: kind => realmScene?.pulse?.(kind),
+    setSurface: surface => realmScene?.setSurface?.(surface),
+    refresh: () => inferEnvironment(),
+    get saveKey() { return SAVE_KEY; }
+  });
 
   document.addEventListener('DOMContentLoaded', () => {
     settingsStorage?.applySettings?.(settingsStorage.loadSettings());

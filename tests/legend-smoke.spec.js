@@ -27,6 +27,9 @@ async function openTitle(page) {
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
+    // Keep the regular gameplay smoke suite focused on screen behavior. The
+    // first-visit production awakening is covered by its own dedicated test.
+    sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready');
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
@@ -2183,4 +2186,128 @@ test('Credits dialog opens accessibly and closes with Escape', async ({ page }) 
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Credits' })).toBeFocused();
+});
+
+
+test('production root launches the canonical Phaser world without replacing production persistence', async ({ page }) => {
+  await openTitle(page);
+  await expect(page.locator('#game-container canvas')).toHaveCount(1);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.environment)).toBe('title');
+
+  const runtime = await page.evaluate(() => ({
+    mode: window.LegendPhaserWorldV1?.mode,
+    engineVersion: window.LegendPhaserWorldV1?.version,
+    engineSaveKey: window.LegendPhaserWorldV1?.saveKey,
+    declaredSaveKey: window.LEGEND_DATA?.SAVE_KEY,
+    productionAdapter: typeof window.LegendStorage?.loadPlayer === 'function' &&
+      typeof window.LegendStorage?.savePlayer === 'function',
+    productionRuntime: typeof window.LegendRuntimeV120?.loadPlayer === 'function',
+    accountModule: Boolean(window.LegendAccountV09x),
+    gameBootstrap: typeof window.LegendGameBootstrap?.continueGame === 'function',
+    previewSaveKey: window.__legendRebootSaveKey || null,
+    previewSave: localStorage.getItem('legend-reboot-prototype-save-v1')
+  }));
+  expect(runtime.mode).toBe('production');
+  expect(runtime.engineVersion).toBe('phaser-world-v1');
+  expect(runtime.engineSaveKey).toBe(runtime.declaredSaveKey);
+  expect(runtime.productionAdapter).toBe(true);
+  expect(runtime.productionRuntime).toBe(true);
+  expect(runtime.accountModule).toBe(true);
+  expect(runtime.gameBootstrap).toBe(true);
+  expect(runtime.previewSaveKey).toBeNull();
+  expect(runtime.previewSave).toBeNull();
+});
+
+
+test('the production Phaser world follows all six Old Road scene stages and the Bell Cellar arena', async ({ page }) => {
+  await openTitle(page);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
+
+  const environments = await page.evaluate(() => {
+    const root = document.getElementById('root');
+    const originalLoadPlayer = window.LegendStorage.loadPlayer;
+    root.innerHTML = '<div class="exp100-scene"></div>';
+    const readStage = (stage, routeChoice = 'ridge', sideTrip = null) => {
+      window.LegendStorage.loadPlayer = () => ({
+        flags: { roadExpeditionV100: { stage, routeChoice, activeSideTripV160: sideTrip } },
+        currentRegion: 'Ashmere'
+      });
+      window.LegendPhaserWorldV1.refresh();
+      return window.LegendPhaserWorldV1.snapshot().environment;
+    };
+    const result = {
+      southFork: readStage(0),
+      highRidge: readStage(1, 'ridge'),
+      reedCut: readStage(1, 'reeds'),
+      roadsideCamp: readStage(2),
+      blackrootBend: readStage(3),
+      reedwatchShelter: readStage(4),
+      greyfenBoundary: readStage(5),
+      windbreak: readStage(1, 'reeds', 'windbreak'),
+      sunkenCart: readStage(1, 'ridge', 'sunken-cart')
+    };
+    root.innerHTML = '<div class="rpg-battle"><div class="rpg-battlefield" data-arena="cellar"></div></div>';
+    window.LegendPhaserWorldV1.refresh();
+    result.bellCellar = window.LegendPhaserWorldV1.snapshot().environment;
+    window.LegendStorage.loadPlayer = originalLoadPlayer;
+    return result;
+  });
+
+  expect(environments).toEqual({
+    southFork: 'road',
+    highRidge: 'ridge',
+    reedCut: 'reeds',
+    roadsideCamp: 'camp',
+    blackrootBend: 'blackroot',
+    reedwatchShelter: 'marsh',
+    greyfenBoundary: 'greyfen',
+    windbreak: 'ridge',
+    sunkenCart: 'reeds',
+    bellCellar: 'cellar'
+  });
+});
+
+
+test('the production root falls back to its original artwork when the Phaser CDN is unavailable', async ({ page }) => {
+  await page.route('https://cdn.jsdelivr.net/npm/phaser@4.1.0/dist/phaser.min.js', route => route.abort());
+  await openTitle(page);
+  await expect(page.locator('.v120-title-backdrop')).toBeVisible();
+  const fallback = await page.evaluate(() => ({
+    engineMode: window.LegendPhaserWorldV1?.mode,
+    engineReady: window.LegendPhaserWorldV1?.ready,
+    phaserWorldClass: document.body.classList.contains('legend-phaser-world-active'),
+    backdropVisibility: getComputedStyle(document.querySelector('.v120-title-backdrop')).visibility,
+    titleVisible: Boolean(document.querySelector('.v120-title'))
+  }));
+  expect(fallback.engineMode).toBe('production');
+  expect(fallback.engineReady).toBe(false);
+  expect(fallback.phaserWorldClass).toBe(false);
+  expect(fallback.backdropVisibility).toBe('visible');
+  expect(fallback.titleVisible).toBe(true);
+});
+
+
+test('the production root plays its Phaser awakening and exposes the skip control on first visit', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+
+  await expect(page.locator('#engine-skip')).toBeVisible({ timeout: 10000 });
+  await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('engine-intro-active'))).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready), { timeout: 15000 }).toBe(true);
+  await expect(page.locator('.v120-title')).toBeVisible();
+  const boot = await page.evaluate(() => ({
+    marker: sessionStorage.getItem('legend-phaser-production-engine-awakened-v1'),
+    environment: window.LegendPhaserWorldV1.snapshot()?.environment,
+    active: document.documentElement.classList.contains('engine-intro-active')
+  }));
+  expect(boot.marker).toBe('ready');
+  expect(boot.environment).toBe('title');
+  expect(boot.active).toBe(false);
+  await expect(page.locator('#engine-skip')).toBeHidden();
 });
