@@ -1975,33 +1975,48 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.exp100-head')).toContainText(/something followed you out/i);
   });
 
-  test('Ashmere hub destinations use the dedicated local service icon artwork', async ({ page }) => {
+  test('Ashmere hub uses the shell raster icons instead of duplicate legacy buttons', async ({ page }) => {
     await startFreshCharacter(page, 'IconArtQA');
-    const destinationIcons = page.locator('.ash100-destinations .ash100-destination-icon');
-    await expect(destinationIcons).toHaveCount(8);
-    const iconImages = page.locator('.ash100-destinations .ash100-destination-icon .ash099-asset-icon img');
-    await expect(iconImages).toHaveCount(8);
-    const iconSources = await iconImages.evaluateAll(nodes => nodes.map(node => node.getAttribute('src') || ''));
-    expect(iconSources.every(src => src.startsWith('assets/generated/') && /\.(?:webp|png)(?:\?.*)?$/i.test(src))).toBe(true);
-    await expect(page.locator('.ash100-destinations .ash100-destination-icon .ash099-icon svg')).toHaveCount(0);
-    await expect(page.locator('.ash100-destinations .ash100-destination-icon .ash099-region-shop-icon img')).toHaveCount(0);
-    const iconBounds = await iconImages.evaluateAll(nodes => nodes.map(img => {
-      const icon = img.closest('.ash100-destination-icon');
-      const a = icon.getBoundingClientRect();
-      const b = img.getBoundingClientRect();
-      return { within: b.width <= a.width + 1 && b.height <= a.height + 1, iconWidth: a.width, imageWidth: b.width };
-    }));
-    expect(iconBounds.every(item => item.within)).toBe(true);
-    const hubControlVisibility = await page.evaluate(() => ({
-      legacyNav: getComputedStyle(document.querySelector('.ash099-topnav')).display,
-      legacyDestinations: getComputedStyle(document.querySelector('.ash100-destination-section')).display,
-      shellLandmarks: document.querySelectorAll('#legend-world-shell-root [data-world-place]').length,
-      shellPanelVisible: getComputedStyle(document.querySelector('#legend-world-shell-root #lws-panel-right')).display !== 'none'
-    }));
-    expect(hubControlVisibility.legacyNav).toBe('none');
-    expect(hubControlVisibility.legacyDestinations).toBe('none');
+    await expect(page.locator('.ash100-destination')).toHaveCount(8); // Retained only as production route targets.
+    await expect(page.locator('.ash100-destination-section')).toBeHidden();
+
+    const shellIcons = page.locator('#legend-world-shell-root .lws-place-option-icon');
+    await expect(shellIcons).toHaveCount(4);
+    const iconDetails = await shellIcons.evaluateAll(nodes => nodes.map(node => ({
+      classes: node.className,
+      background: getComputedStyle(node).backgroundImage,
+      bounds: (() => {
+        const rect = node.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+      })()
+    })));
+    expect(iconDetails.map(icon => icon.classes)).toEqual([
+      expect.stringContaining('runway-icon-inn'),
+      expect.stringContaining('runway-icon-market'),
+      expect.stringContaining('runway-icon-forge'),
+      expect.stringContaining('runway-icon-road')
+    ]);
+    expect(iconDetails.every(icon => icon.background.includes('url('))).toBe(true);
+    expect(iconDetails.every(icon => icon.bounds.width >= 26 && icon.bounds.height >= 26)).toBe(true);
+    await expect(page.locator('#legend-world-shell-root .lws-place-option-icon svg')).toHaveCount(0);
+
+    const hubControlVisibility = await page.evaluate(() => {
+      const selectors = ['.ash099-topnav', '.ash100-route-dock', '.ash100-status', '.ash100-destination-section'];
+      return {
+        hiddenLegacyControls: selectors.every(selector => getComputedStyle(document.querySelector(selector)).display === 'none'),
+        shellLandmarks: document.querySelectorAll('#legend-world-shell-root [data-world-place]').length,
+        rightPanel: getComputedStyle(document.querySelector('#legend-world-shell-root #lws-panel-right')).display,
+        leftPanel: getComputedStyle(document.querySelector('#legend-world-shell-root #lws-panel-left')).display,
+        accountProfileControl: Boolean(document.querySelector('#legend-world-shell-root [data-world-action="account-profile"]')),
+        travelerSheetControl: Boolean(document.querySelector('#legend-world-shell-root [data-world-action="traveler-sheet"]'))
+      };
+    });
+    expect(hubControlVisibility.hiddenLegacyControls).toBe(true);
     expect(hubControlVisibility.shellLandmarks).toBe(4);
-    expect(hubControlVisibility.shellPanelVisible).toBe(true);
+    expect(hubControlVisibility.rightPanel).toBe('flex');
+    expect(hubControlVisibility.leftPanel).toBe('flex');
+    expect(hubControlVisibility.accountProfileControl).toBe(true);
+    expect(hubControlVisibility.travelerSheetControl).toBe(true);
   });
 
   test('traveler creation shapes a soul with an unnamed presence and raster LEGEND wordmark', async ({ page }) => {
