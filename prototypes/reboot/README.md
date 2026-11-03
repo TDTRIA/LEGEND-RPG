@@ -16,13 +16,14 @@ The current production modules are loaded directly for:
 - Ashmere's town hub, NPC dialogue, inn, market, forge, crafting, jobs, daily board, journal, traveler sheet and contracts.
 - Region unlock/travel, Greyfen Marsh Path, the optional Silted Storehouse and Ashmere's Bell Cellar.
 
-The detailed feature-by-feature inventory and known exclusions are in [MIGRATION_MATRIX.md](./MIGRATION_MATRIX.md).
+The production title menu, realm overview/news dispatch, News & Roadmap page, Credits, accessibility settings, and persistent in-world shell now also come directly from the current game. The detailed feature-by-feature inventory and boundaries are in [MIGRATION_MATRIX.md](./MIGRATION_MATRIX.md).
 
 ## Save and integration boundary
 
 - The prototype writes only the browser-local key legend-reboot-prototype-save-v1.
 - It does not read or write the production legend-roads-of-ashmere-v09 save key.
-- It does not connect to Supabase, cloud saves, production account slots or sign-in.
+- It does not connect to Supabase, cloud saves, production account slots, profile management or sign-in.
+- The Profile menu entry is hidden; current local accessibility settings and the other production title surfaces remain available.
 - It uses current local production artwork and the existing game modules; no story, enemy, item, reward or region content is fabricated to fill gaps.
 
 ## Controls and layout
