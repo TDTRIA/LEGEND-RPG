@@ -41,6 +41,12 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     expect(titleAtmosphere.environment).toBe('title');
     expect(titleAtmosphere.atmosphereCount).toBeGreaterThanOrEqual(30);
 
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.evaluate(() => document.body.classList.add('a11y-reduced-motion'));
+    await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().parallaxEnabled)).toBe(false);
+    await page.evaluate(() => document.body.classList.remove('a11y-reduced-motion'));
+    await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().parallaxEnabled)).toBe(true);
+
     await page.evaluate(() => window.__legendRebootBridge.setEnvironment('marsh', true));
     const marshAtmosphere = await page.evaluate(() => window.__legendRebootBridge.snapshot());
     expect(marshAtmosphere.environment).toBe('marsh');
