@@ -85,7 +85,8 @@ The atmospheric layer is decorative only: it does not affect collision, combat c
 
 Ashmere is the first town surface with native Phaser scene interactables:
 
-- The RealmScene builds four responsive Phaser landmark containers (Inn, Market, Forge, Old Road Gate) with animated glow, beacon, ring, label and hover feedback.
+- The RealmScene builds four responsive Phaser landmark containers (Inn, Market, Forge, Old Road Gate) with committed raster service icons, animated beacon/ring/label and hover feedback.
+- On WebGL renderers, native Phaser PointLight game objects add small, pulsing local light pools at the service markers. On Canvas renderers, the existing Phaser halo graphics remain as the visual fallback; the game continues using Phaser.AUTO and does not force WebGL.
 - Screen-space pointer hit testing makes the landmarks usable without putting a full-screen canvas above the HTML controls. Clicks over buttons, form fields, panels and shell controls are ignored by the scene bridge.
 - Selecting a landmark delegates to the existing `LegendWorldShellPanelsV170.selectAshmerePoi` state and refreshes the existing contextual panel. The user's existing `Enter` action continues through `LegendAshmereV099` and its production route/controller.
 - Landmark objects are created only on the Ashmere hub, repositioned for viewport changes, and destroyed when leaving for a service or a different region. Reduced Motion disables their idle glow animations.
