@@ -206,3 +206,14 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
   transition: none !important;
   filter: none !important;
 }
+
+/* Validation is intentionally left as accessible live DOM feedback while
+   the rest of the creation copy is painted in Phaser. */
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation #v094NameError,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation #v094ChoiceError {
+  color: #ffd0c8 !important;
+  text-shadow: 0 1px 5px rgba(0,0,0,.8) !important;
+  background: rgba(69,22,19,.44) !important;
+  border-left: 2px solid rgba(235,125,108,.74) !important;
+  padding: 7px 10px !important;
+}
