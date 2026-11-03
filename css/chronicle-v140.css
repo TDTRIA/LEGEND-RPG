@@ -997,3 +997,333 @@ body.chronicle-article .shell{
   .chronicle-article .runner-shell{width:calc(100% - 24px);padding:15px 0 34px}
   .chronicle-article .runner-shell>.panel{padding:16px}
 }
+
+
+/* Central Realm Hub — a single index for every public LEGEND destination. */
+.realm-hub-shell{
+  width:min(1240px,calc(100% - 48px));
+  margin:30px auto 0;
+  padding-bottom:42px;
+}
+.realm-hub-hero{
+  min-height:490px;
+  position:relative;
+  isolation:isolate;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 255px;
+  align-items:end;
+  gap:26px;
+  overflow:hidden;
+  padding:clamp(26px,5vw,62px);
+  border:1px solid rgba(191,160,100,.38);
+  background:#080d09;
+  box-shadow:0 28px 70px rgba(0,0,0,.42);
+}
+.realm-hub-hero-art,.realm-hub-hero-shade{
+  position:absolute;
+  z-index:-2;
+  inset:0;
+  width:100%;
+  height:100%;
+}
+.realm-hub-hero-art{object-fit:cover;object-position:center 55%;opacity:.76}
+.realm-hub-hero-shade{
+  z-index:-1;
+  background:
+    linear-gradient(90deg,rgba(4,8,5,.94) 0%,rgba(4,8,5,.80) 44%,rgba(4,8,5,.22) 100%),
+    linear-gradient(0deg,rgba(4,8,5,.92) 0%,transparent 74%),
+    radial-gradient(ellipse at 22% 35%,rgba(8,12,8,.14),transparent 55%);
+}
+.realm-hub-hero-copy{max-width:720px;align-self:end}
+.realm-hub-kicker,.realm-hub-eyebrow,.realm-hub-card-index{
+  color:#e7c982;
+  text-transform:uppercase;
+  letter-spacing:.2em;
+  font-size:.68rem;
+  font-weight:850;
+}
+.realm-hub-kicker{margin:0 0 18px}
+.realm-hub-hero h1{
+  margin:0;
+  color:#f1e8d4;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(3.3rem,8.2vw,7.2rem);
+  letter-spacing:-.045em;
+  line-height:.88;
+  text-shadow:0 8px 28px rgba(0,0,0,.7);
+}
+.realm-hub-hero h1 em{color:#e7c982;font-weight:500}
+.realm-hub-lede{
+  max-width:62ch;
+  margin:24px 0 0;
+  color:#e0ddcf;
+  font-size:1.04rem;
+  line-height:1.75;
+  text-shadow:0 2px 12px rgba(0,0,0,.8);
+}
+.realm-hub-actions,.realm-hub-community-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:24px;
+}
+.realm-hub-button{
+  display:inline-flex;
+  min-height:48px;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  padding:12px 17px;
+  border:1px solid rgba(231,201,130,.48);
+  border-radius:2px;
+  background:linear-gradient(180deg,rgba(34,43,31,.96),rgba(8,13,9,.96));
+  color:#f0e7d5!important;
+  font-size:.77rem;
+  font-weight:850;
+  letter-spacing:.07em;
+  text-decoration:none!important;
+  text-transform:uppercase;
+  transition:transform .16s ease,border-color .16s ease,background .16s ease;
+}
+.realm-hub-button:hover{transform:translateY(-2px);border-color:#f0d89d;background:linear-gradient(180deg,#394532,#121a12)}
+.realm-hub-button.primary{
+  color:#1c160b!important;
+  border-color:#eddaab;
+  background:linear-gradient(180deg,#f0dca6,#b68b4e);
+  box-shadow:0 8px 26px rgba(0,0,0,.32);
+}
+.realm-hub-button.primary:hover{background:linear-gradient(180deg,#ffe9b4,#c59a59)}
+.realm-hub-status{
+  align-self:end;
+  padding:17px;
+  border:1px solid rgba(231,201,130,.38);
+  background:linear-gradient(180deg,rgba(7,12,8,.88),rgba(5,9,6,.96));
+  box-shadow:0 16px 36px rgba(0,0,0,.4);
+}
+.realm-hub-status-label,.realm-hub-status-state{display:block}
+.realm-hub-status-label{
+  color:#b0b8a8;
+  font-size:.64rem;
+  font-weight:800;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.realm-hub-status>strong{
+  display:block;
+  margin:7px 0 10px;
+  color:#f1dfad;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:2.45rem;
+  line-height:1;
+}
+.realm-hub-status-state{
+  color:#c3d0b4;
+  font-size:.68rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.realm-hub-status-state i{
+  display:inline-block;
+  width:7px;height:7px;
+  margin:0 7px 1px 0;
+  border-radius:50%;
+  background:#91a77c;
+  box-shadow:0 0 10px rgba(145,167,124,.75);
+}
+.realm-hub-status p{margin:12px 0 0;color:#b0b8a8;font-size:.79rem;line-height:1.6}
+.realm-hub-section{margin-top:52px}
+.realm-hub-section-head{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:24px;
+  margin:0 0 18px;
+  padding-bottom:14px;
+  border-bottom:1px solid rgba(191,160,100,.22);
+}
+.realm-hub-section-head h2,.realm-hub-community h2{
+  margin:5px 0 0;
+  color:#efe7d4;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(1.65rem,3.5vw,2.45rem);
+  font-weight:600;
+  line-height:1.1;
+}
+.realm-hub-section-head>p{
+  max-width:46ch;
+  margin:0;
+  color:#b0b8a8;
+  font-size:.86rem;
+  line-height:1.6;
+  text-align:right;
+}
+.realm-hub-eyebrow{margin:0}
+.realm-hub-feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.realm-hub-feature{
+  min-height:280px;
+  position:relative;
+  isolation:isolate;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:flex-end;
+  overflow:hidden;
+  padding:25px;
+  border:1px solid rgba(191,160,100,.31);
+  background:linear-gradient(145deg,#263024,#0a100b);
+  color:#efe7d4!important;
+  text-decoration:none!important;
+}
+.realm-hub-feature:before{
+  content:"";
+  position:absolute;
+  z-index:-2;
+  inset:0;
+  opacity:.44;
+  background-size:cover;
+  background-position:center;
+  transition:transform .35s ease,opacity .35s ease;
+}
+.realm-hub-play-card:before{background-image:url("../assets/generated/locations/old-road-south-fork.webp")}
+.realm-hub-guide-card:before{background-image:url("../assets/generated/locations/ashmere-town.webp")}
+.realm-hub-feature:after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  inset:0;
+  background:linear-gradient(0deg,rgba(4,8,5,.98),rgba(4,8,5,.58) 60%,rgba(4,8,5,.12));
+}
+.realm-hub-feature:hover:before{transform:scale(1.045);opacity:.59}
+.realm-hub-feature-title{
+  display:block;
+  margin-top:22px;
+  color:#f3ead8;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:clamp(1.7rem,3.5vw,2.6rem);
+  line-height:1.05;
+}
+.realm-hub-feature-copy{max-width:52ch;margin-top:10px;color:#c3c7b9;font-size:.88rem;line-height:1.65}
+.realm-hub-card-link{
+  display:inline-flex;
+  align-items:center;
+  gap:11px;
+  margin-top:20px;
+  color:#e7c982;
+  font-size:.69rem;
+  font-weight:900;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.realm-hub-card-link b{font-size:1rem;transition:transform .15s ease}
+.realm-hub-feature:hover .realm-hub-card-link b,.realm-hub-card:hover .realm-hub-card-link b{transform:translate(2px,-2px)}
+.realm-hub-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.realm-hub-card{
+  min-height:205px;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  padding:20px;
+  border:1px solid rgba(191,160,100,.23);
+  background:linear-gradient(180deg,rgba(26,34,24,.91),rgba(7,12,8,.96));
+  color:#efe7d4!important;
+  text-decoration:none!important;
+  box-shadow:inset 0 0 26px rgba(231,201,130,.018);
+  transition:transform .16s ease,border-color .16s ease,background .16s ease;
+}
+.realm-hub-card:hover{transform:translateY(-2px);border-color:rgba(231,201,130,.64);background:linear-gradient(180deg,rgba(37,47,33,.96),rgba(8,14,9,.98))}
+.realm-hub-card-index{font-size:.61rem;letter-spacing:.16em}
+.realm-hub-card-title{
+  margin-top:18px;
+  color:#f1e8d6;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:1.43rem;
+  line-height:1.1;
+}
+.realm-hub-card-copy{margin-top:9px;color:#b7c0b0;font-size:.8rem;line-height:1.65}
+.realm-hub-card .realm-hub-card-link{margin-top:auto;padding-top:19px}
+.realm-hub-card-image{isolation:isolate;overflow:hidden}
+.realm-hub-card-image:before{
+  content:"";
+  position:absolute;z-index:-2;inset:0;
+  background:url("../assets/generated/locations/greyfen-marsh-walkway.webp") center/cover;
+  opacity:.19;
+}
+.realm-hub-card-image:after{
+  content:"";
+  position:absolute;z-index:-1;inset:0;
+  background:linear-gradient(90deg,rgba(7,12,8,.96),rgba(7,12,8,.77));
+}
+.realm-hub-inline-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
+  margin-top:17px;
+  padding-top:14px;
+  border-top:1px solid rgba(191,160,100,.17);
+}
+.realm-hub-inline-links a{
+  color:#e7c982!important;
+  font-size:.76rem;
+  font-weight:800;
+  text-decoration:none;
+}
+.realm-hub-inline-links a:hover{color:#fff0c6!important}
+.realm-hub-community{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:24px;
+  margin-top:52px;
+  padding:clamp(22px,4vw,38px);
+  border:1px solid rgba(191,160,100,.36);
+  background:linear-gradient(110deg,rgba(29,38,27,.98),rgba(7,12,8,.98));
+}
+.realm-hub-community h2{max-width:20ch}
+.realm-hub-community p:not(.realm-hub-eyebrow){max-width:62ch;margin:12px 0 0;color:#bac2b3;font-size:.86rem;line-height:1.7}
+.realm-hub-community-actions{justify-content:flex-end;margin:0;max-width:390px}
+.realm-hub-community-actions .realm-hub-button{min-height:42px;padding:10px 12px;font-size:.65rem}
+.realm-hub-footer{
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px 20px;
+  margin-top:28px;
+  padding:16px 0;
+  border-top:1px solid rgba(191,160,100,.2);
+  color:#969f90;
+  font-size:.7rem;
+}
+.realm-hub-footer a{color:#e7c982!important;text-decoration:none}
+.realm-hub-footer a:hover{color:#fff0c6!important}
+@media(max-width:900px){
+  .realm-hub-hero{grid-template-columns:1fr;min-height:620px}
+  .realm-hub-status{width:min(320px,100%)}
+  .realm-hub-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .realm-hub-community{grid-template-columns:1fr}
+  .realm-hub-community-actions{justify-content:flex-start;max-width:none}
+}
+@media(max-width:640px){
+  .realm-hub-shell{width:calc(100% - 24px);margin-top:14px}
+  .realm-hub-hero{min-height:620px;padding:22px 18px;gap:20px}
+  .realm-hub-hero-art{object-position:58% center}
+  .realm-hub-hero-shade{background:linear-gradient(90deg,rgba(4,8,5,.91),rgba(4,8,5,.47)),linear-gradient(0deg,rgba(4,8,5,.96),transparent 82%)}
+  .realm-hub-hero h1{font-size:clamp(3rem,15vw,5rem)}
+  .realm-hub-lede{font-size:.93rem}
+  .realm-hub-actions{display:grid;grid-template-columns:1fr}
+  .realm-hub-button{width:100%}
+  .realm-hub-section{margin-top:38px}
+  .realm-hub-section-head{display:block}
+  .realm-hub-section-head>p{margin-top:10px;text-align:left}
+  .realm-hub-feature-grid,.realm-hub-card-grid{grid-template-columns:1fr}
+  .realm-hub-feature{min-height:245px;padding:20px}
+  .realm-hub-card{min-height:180px}
+  .realm-hub-community{margin-top:38px;padding:22px 18px}
+  .realm-hub-community-actions{display:grid;grid-template-columns:1fr}
+  .realm-hub-footer{display:grid;text-align:center}
+}
+@media(prefers-reduced-motion:reduce){
+  .realm-hub-button,.realm-hub-feature:before,.realm-hub-card,.realm-hub-card-link b{transition:none!important}
+  .realm-hub-feature:hover:before,.realm-hub-card:hover,.realm-hub-button:hover{transform:none}
+}
