@@ -451,7 +451,7 @@
           engineAwakened: this.engineAwakened,
           surface: this.surface,
           surfaceTransitionCount: this.surfaceTransitionCount,
-          ashmerelandmarks: this.ashmereLandmarks.map(item => ({ id: item.id, x: item.x, y: item.y })),
+          ashmereLandmarks: this.ashmereLandmarks.map(item => ({ id: item.id, x: item.x, y: item.y })),
           hoveredAshmereLandmark: this.hoveredAshmereLandmark
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
