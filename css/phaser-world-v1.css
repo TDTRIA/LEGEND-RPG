@@ -197,3 +197,14 @@ body.legend-phaser-world-active #root .opening-road-v140-shade {
     transition: none !important;
   }
 }
+
+
+@media (max-width: 1199px) {
+  body.legend-phaser-world-active.legend-world-shell-active #root {
+    margin: 0 !important;
+    min-height: 100vh !important;
+    width: auto !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+}
