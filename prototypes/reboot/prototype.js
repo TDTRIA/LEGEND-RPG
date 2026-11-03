@@ -16,6 +16,7 @@
   let soundEnabled = true;
   let ambientAudio = null;
   let observer = null;
+  const settingsStorage = window.LegendSettingsStorageV120?.create();
 
   function safeRead() {
     try {
@@ -68,7 +69,11 @@
     loadPlayer,
     savePlayer,
     normalize,
-    baseSkills: () => normalizer()?.baseSkills?.() || {}
+    baseSkills: () => normalizer()?.baseSkills?.() || {},
+    loadSettings: () => settingsStorage?.loadSettings?.() || {},
+    saveSettings: settings => settingsStorage?.saveSettings?.(settings) || false,
+    applySettings: settings => settingsStorage?.applySettings?.(settings),
+    deleteSaves: clearPlayer
   };
   window.LegendRuntimeV120 = {
     loadPlayer,
@@ -165,28 +170,61 @@
     inferEnvironment();
   }
 
+  function showDispatches() {
+    const host = root();
+    const rendered = window.LegendTitleDispatchesV140?.render?.({
+      root: host,
+      buildVersion: String(window.LEGEND_DATA?.VERSION || 'v0.30.4'),
+      onBack: showTitle
+    });
+    if (!rendered) {
+      toast('The development dispatch is not available in this build.');
+      return showTitle();
+    }
+    setEnvironment('title');
+    observeRoot();
+  }
+
+  function showSettings() {
+    const host = root();
+    const rendered = window.LegendSettingsScreenV090?.render?.({
+      root: host,
+      loadSettings: () => settingsStorage?.loadSettings?.() || {},
+      saveSettings: settings => settingsStorage?.saveSettings?.(settings),
+      buildVersion: () => String(window.LEGEND_DATA?.VERSION || 'v0.30.4'),
+      loadPlayer,
+      onBackTitle: showTitle,
+      onBackGame: continueJourney
+    });
+    if (!rendered) {
+      toast('Settings are not available in this build.');
+      return showTitle();
+    }
+    setEnvironment('title');
+    observeRoot();
+  }
+
   function showTitle() {
-    const player = loadPlayer();
-    const hasSave = Boolean(player);
-    const escapedName = hasSave ? String(player.username || 'Traveler').replace(/[&<>"']/g, '') : '';
-    root().innerHTML =
-      '<section class="mode active" id="title-panel" aria-labelledby="title-heading">' +
-        '<div class="title-block">' +
-          '<div class="eyebrow">A dark-fantasy role-playing adventure</div>' +
-          '<h1 id="title-heading">LEGEND</h1>' +
-          '<p class="subtitle">The Awakening</p>' +
-          '<p class="tagline">The roads remember. The realm is waking.</p>' +
-          (hasSave ? '<p class="save-summary">Continue as <strong>' + escapedName + '</strong> · Level ' + Number(player.level || 1) + ' · ' + String(player.currentRegion || 'Ashmere') + '</p>' : '') +
-          '<div class="menu-row">' +
-            (hasSave ? '<button class="primary" id="continueButton" type="button">Continue Journey</button>' : '') +
-            '<button class="primary" id="beginButton" type="button">' + (hasSave ? 'Begin a New Journey' : 'Begin Your Journey') + '</button>' +
-          '</div>' +
-          '<p class="title-note">A standalone Phaser prototype using the current game’s authored content and systems.</p>' +
-        '</div>' +
-        '<span class="disclaimer">Prototype save is separate from the production game.</span>' +
-      '</section>';
-    if (hasSave) byId('continueButton')?.addEventListener('click', continueJourney);
-    byId('beginButton')?.addEventListener('click', beginJourney);
+    const host = root();
+    const title = window.LegendTitleScreenV120;
+    if (!host || typeof title?.render !== 'function') {
+      if (host) host.innerHTML = '<section class="mode active" role="alert"><h1>Title screen unavailable</h1><p>The production title modules did not load. Refresh before continuing.</p></section>';
+      return;
+    }
+    title.render({
+      root: host,
+      loadPlayer,
+      buildVersion: () => String(window.LEGEND_DATA?.VERSION || 'v0.30.4'),
+      applySettings: settings => settingsStorage?.applySettings?.(settings),
+      onContinue: continueJourney,
+      onNewTraveler: beginJourney,
+      onAccount: () => toast('Traveler accounts and cloud profiles are not enabled in the isolated prototype.'),
+      onSettings: showSettings,
+      onCredits: () => title.openCredits?.(),
+      onDispatches: showDispatches
+    });
+    // Cloud identity and remote traveler slots remain outside this isolated save boundary.
+    host.querySelector('#account')?.remove();
     setEnvironment('title');
     observeRoot();
   }
@@ -274,7 +312,7 @@
       super({ key: 'RealmScene' });
       this.background = null;
       this.mist = [];
-      this.lights = [];
+      this.glowSources = [];
       this.environment = '';
     }
 
@@ -332,7 +370,7 @@
         const y = size.height * (0.72 + (i % 2) * 0.05);
         const light = this.add.circle(x, y, Phaser.Math.Between(4, 8), 0xe3b969, 0.11);
         light.setDepth(2);
-        this.lights.push(light);
+        this.glowSources.push(light);
         this.tweens.add({
           targets: light,
           alpha: 0.025,
