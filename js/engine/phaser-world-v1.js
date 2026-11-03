@@ -1138,6 +1138,7 @@
       console.warn('Phaser could not be loaded; keeping the available HTML game interface active.');
       try { window.sessionStorage.removeItem(ENGINE_SESSION_KEY); } catch (_) {}
       document.documentElement.classList.remove('engine-intro-active');
+      if (!IS_PROTOTYPE) document.body.classList.remove('legend-phaser-world-active');
       byId('engine-skip') && (byId('engine-skip').hidden = true);
       if (IS_PROTOTYPE) showTitle();
       observeRoot();
@@ -1172,6 +1173,7 @@
     } catch (error) {
       console.error('Phaser could not start.', error);
       document.documentElement.classList.remove('engine-intro-active');
+      if (!IS_PROTOTYPE) document.body.classList.remove('legend-phaser-world-active');
       byId('engine-skip') && (byId('engine-skip').hidden = true);
       if (IS_PROTOTYPE) showTitle();
       observeRoot();
