@@ -1260,6 +1260,7 @@
     setEnvironment: (name, immediate = false) => setEnvironment(name, immediate),
     pulse: kind => realmScene?.pulse?.(kind),
     setSurface: surface => realmScene?.setSurface?.(surface),
+    refresh: () => inferEnvironment(),
     get saveKey() { return SAVE_KEY; }
   });
 
