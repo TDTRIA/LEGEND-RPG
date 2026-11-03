@@ -31,13 +31,19 @@ async function openTitle(page) {
 async function capture(page, filename) {
   await page.evaluate(async () => {
     if (document.fonts?.ready) await document.fonts.ready;
-    const images = Array.from(document.images);
-    await Promise.all(images.map(image => image.complete ? Promise.resolve() :
-      new Promise(resolve => {
-        image.addEventListener('load', resolve, { once: true });
-        image.addEventListener('error', resolve, { once: true });
-      })
-    ));
+    const images = Array.from(document.images).filter(image => {
+      const rect = image.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && rect.bottom >= 0 && rect.top <= window.innerHeight;
+    });
+    await Promise.race([
+      Promise.all(images.map(image => image.complete ? Promise.resolve() :
+        new Promise(resolve => {
+          image.addEventListener('load', resolve, { once: true });
+          image.addEventListener('error', resolve, { once: true });
+        })
+      )),
+      new Promise(resolve => setTimeout(resolve, 5000))
+    ]);
   });
   await page.waitForTimeout(500);
   await page.mouse.move(1588, 12);
