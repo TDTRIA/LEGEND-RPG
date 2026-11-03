@@ -36,17 +36,6 @@
     return 'The road turns';
   }
 
-  function waitForSceneAssets() {
-    const images = Array.from(document.getElementById('root')?.querySelectorAll('img') || []).filter(img => !img.complete);
-    const paint = new Promise(resolve => window.requestAnimationFrame(() => window.requestAnimationFrame(resolve)));
-    const assets = Promise.all(images.map(img => new Promise(resolve => {
-      img.addEventListener('load', resolve, { once: true });
-      img.addEventListener('error', resolve, { once: true });
-    })));
-    const safety = new Promise(resolve => window.setTimeout(resolve, 1600));
-    return Promise.race([Promise.all([assets, paint]), safety]);
-  }
-
   function transitionTo(label, action) {
     if (typeof action !== 'function') return;
     if (busy || reduced()) return action();
@@ -55,6 +44,8 @@
     const curtain = overlay();
     const location = curtain.querySelector('.legend-transition-location');
     if (location) location.textContent = String(label || 'The road turns').toUpperCase();
+    // Explicit hit testing avoids stale Mobile Safari pointer state during CSS transitions.
+    curtain.style.pointerEvents = 'auto';
     curtain.classList.remove('is-revealing');
     curtain.classList.add('is-covering');
 
@@ -69,19 +60,19 @@
       // Always uncover the game, even when a screen handler throws.
     }
 
-    void (async () => {
-      await waitForSceneAssets();
-      const minimumCoverMs = Math.max(0, 1450 - (Date.now() - startedAt));
+    // Keep the reveal bounded. A scene image that never fires load/error must
+    // not strand a mobile player beneath the curtain or leave navigation locked.
+    const minimumCoverMs = Math.max(0, 1280 - (Date.now() - startedAt));
+    window.setTimeout(() => {
+      curtain.classList.remove('is-covering');
+      curtain.classList.add('is-revealing');
+      curtain.style.pointerEvents = 'none';
       window.setTimeout(() => {
-        curtain.classList.remove('is-covering');
-        curtain.classList.add('is-revealing');
-        window.setTimeout(() => {
-          curtain.classList.remove('is-revealing');
-          busy = false;
-        }, 580);
-      }, minimumCoverMs);
-    })();
-  }
+        curtain.classList.remove('is-revealing');
+        curtain.style.pointerEvents = 'none';
+        busy = false;
+      }, 480);
+    }, minimumCoverMs);  }
 
   document.addEventListener('click', event => {
     if (window.__legendSceneTransitionBypass || busy || event.defaultPrevented) return;

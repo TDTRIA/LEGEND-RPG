@@ -243,25 +243,43 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('Road combat controls render and accept a touch action', async ({ page }) => {
+  test('Road combat controls and Healing Potion accept mobile touch input', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await startFreshCharacter(page, 'MobileCombatQA');
     await page.evaluate(() => {
-      const rt = window.LegendRuntimeV120;
-      const pl = rt.loadPlayer();
-      pl.flags = pl.flags || {};
-      pl.flags.roadExpeditionV100 = { ...(pl.flags.roadExpeditionV100 || {}), stage: 0, pressure: 70, trips: 0, events: 0, finds: 0, battles: 0 };
+      const rt=window.LegendRuntimeV120;
+      const pl=rt.loadPlayer();
+      pl.hp=40;
+      pl.maxHp=100;
+      pl.inventory=pl.inventory||{};
+      pl.inventory.potion=1;
+      pl.flags=pl.flags||{};
+      pl.flags.roadExpeditionV100={...(pl.flags.roadExpeditionV100||{}),stage:0,pressure:70,trips:0,events:0,finds:0,battles:0};
+      const road=window.LegendRoadsV100.oldRoad;
+      road.enemies=road.enemies.filter(enemy=>enemy.id==='goblin').map(enemy=>({...enemy,damage:[3,3]}));
       rt.savePlayer(pl);
     });
-    await tap(page, page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }));
+    await tap(page,page.getByRole('navigation',{name:'Ashmere terminal navigation'}).getByRole('button',{name:/Routes/i}));
     await enterOldRoadFromDeparture(page);
-    await tap(page, page.locator('#routeRidge'));
-    await tap(page, page.locator('#push'));
+    await tap(page,page.locator('#routeRidge'));
+    await tap(page,page.locator('#push'));
     await expect(page.locator('.exp100-combat')).toBeVisible();
     await expect(page.locator('.rpg-command-grid .rpg-command')).toHaveCount(4);
     await expect(page.locator('#strike')).toContainText('FIGHT');
     await expect(page.locator('#skill')).toContainText('ACT');
-    await tap(page, page.locator('#guard'));
+    await expect(page.locator('#item')).toBeEnabled();
+    await tap(page,page.locator('#item'));
+    await expect(page.locator('.rpg-dialogue')).toContainText(/drink a Healing Potion and recover 30 HP/i);
+    await expect(page.locator('.rpg-dialogue')).toContainText(/hits you for \d+ damage/i);
+    const afterPotion=await page.evaluate(()=>{
+      const pl=window.LegendRuntimeV120.loadPlayer();
+      return {hp:pl.hp,potion:pl.inventory.potion};
+    });
+    expect(afterPotion.potion).toBe(0);
+    expect(afterPotion.hp).toBeGreaterThan(40);
+    expect(afterPotion.hp).toBeLessThan(70);
+    await tap(page,page.locator('#guard'));
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-heavy/);
     await expect(page.locator('.exp100-combat')).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
