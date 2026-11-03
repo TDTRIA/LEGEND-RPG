@@ -1,4 +1,5 @@
-const { defineConfig, devices } = require('@playwright/test');
+const { defineConfig } = require('@playwright/test');
+const path = require('node:path');
 
 module.exports = defineConfig({
   testDir: __dirname,
@@ -14,6 +15,7 @@ module.exports = defineConfig({
     video: 'off'
   },
   webServer: {
+    cwd: path.resolve(__dirname, '..'),
     command: 'npx http-server . -p 4173 -c-1',
     url: 'http://127.0.0.1:4173',
     reuseExistingServer: !process.env.CI,
