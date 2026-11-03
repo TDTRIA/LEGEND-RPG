@@ -1,3 +1,9 @@
+## v0.30.5 — A Dry Crossing leaves a rumor
+
+- On either successful route, A Dry Crossing records a small Greyfen landing rumor that the reed-bed cut was marked as a route only after the floodwater rose.
+- The rumor is stored once in the traveler's existing memories and shown on the contract result and completed-contract review; it explicitly does not name who authorized the change.
+- Failed reed-bed attempts do not record the rumor. Route odds, health toll, gold/herb rewards, one-time completion flag, and save structure remain unchanged.
+
 ## v0.30.4 — Runway traveler identity portraits
 
 - Replace the temporary identity glyphs with four separate local Runway WebP portraits for Woman, Man, Nonbinary, and Keep It Unspoken.
