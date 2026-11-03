@@ -140,6 +140,13 @@
     serviceMarketIcon: 'assets/generated/ui/icons/service-market.webp',
     serviceForgeIcon: 'assets/generated/ui/icons/service-blacksmith.webp',
     serviceRoadIcon: 'assets/generated/ui/icons/service-map.webp',
+    menuCompass: 'assets/generated/ui/icons/legend-icon-compass.webp',
+    menuTraveler: 'assets/generated/ui/icons/legend-icon-traveler.webp',
+    menuInn: 'assets/generated/ui/icons/legend-icon-inn.webp',
+    menuJournal: 'assets/generated/ui/icons/legend-icon-journal.webp',
+    menuSettings: 'assets/generated/ui/icons/legend-icon-settings.webp',
+    menuRoad: 'assets/generated/ui/icons/legend-icon-road.webp',
+    menuMilestone: 'assets/generated/ui/icons/legend-icon-milestone.webp',
     oric: 'assets/generated/npcs/captain-oric.webp',
     wolf: 'assets/generated/enemies/blackroot-wolf.webp',
     goblin: 'assets/generated/enemies/road-goblin.webp',
@@ -455,7 +462,7 @@
 
     preload() {
       Object.keys(ASSETS).forEach(key => {
-        if (['title','ashmere','road','blackroot','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive','serviceInnIcon','serviceMarketIcon','serviceForgeIcon','serviceRoadIcon'].includes(key)) {
+        if (['title','ashmere','road','blackroot','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive','serviceInnIcon','serviceMarketIcon','serviceForgeIcon','serviceRoadIcon','menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].includes(key)) {
           this.load.image(key, ASSETS[key]);
         }
       });
@@ -872,9 +879,14 @@
       frame.fillRect(panel.x + 15 * sx, panel.y + 12 * sy, Math.min(42 * sx, panel.width * 0.15), Math.max(1, sy));
       this.nativeTitleUiObjects.push(frame);
 
-      const iconGlyphs = {
-        continue: '↗', newPrimary: '✦', new: '✧', account: '◇',
-        settings: '⚙', dispatches: '⌖', credits: '✧'
+      const iconTextures = {
+        continue: 'menuCompass',
+        newPrimary: 'menuTraveler',
+        new: 'menuInn',
+        account: 'menuJournal',
+        settings: 'menuSettings',
+        dispatches: 'menuRoad',
+        credits: 'menuMilestone'
       };
       buttons.forEach(button => {
         const rect = sceneRect(button.getBoundingClientRect());
@@ -903,11 +915,16 @@
         art.lineStyle(1, primary ? 0xf0d28f : 0xc5a96c, 0.55);
         art.strokeRect(iconX + 0.5, iconY + 0.5, 24 * sx, Math.min(24 * sy, rect.height - 9 * sy));
 
-        const glyph = this.add.text(iconX + 12.5 * sx, rect.height / 2, iconGlyphs[button.id] || '✦', {
-          fontFamily: 'Georgia, serif',
-          fontSize: `${Math.max(12, Math.round(15 * sy))}px`,
-          color: primary ? '#ffe5a2' : '#e4cb91'
-        }).setOrigin(0.5);
+        const iconKey = iconTextures[button.id] || 'menuMilestone';
+        const icon = this.textures.exists(iconKey)
+          ? this.add.image(iconX + 12.5 * sx, rect.height / 2, iconKey)
+            .setDisplaySize(23 * sx, 23 * sy)
+            .setAlpha(0.98)
+          : this.add.text(iconX + 12.5 * sx, rect.height / 2, '✦', {
+            fontFamily: 'Georgia, serif',
+            fontSize: (Math.max(12, Math.round(15 * sy))) + 'px',
+            color: primary ? '#ffe5a2' : '#e4cb91'
+          }).setOrigin(0.5);
         const labelX = 48 * sx;
         const titleY = rect.height * (detail ? 0.39 : 0.5);
         const title = this.add.text(labelX, titleY, main, {
@@ -931,7 +948,7 @@
         focusFrame.lineStyle(2, 0xffe7a6, 0.96);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
-        group.add([art, glyph, title, subtitle, arrow, focusFrame]);
+        group.add([art, icon, title, subtitle, arrow, focusFrame]);
         group.setSize(rect.width, rect.height);
         this.nativeTitleUiObjects.push(group);
         const control = {
