@@ -117,6 +117,7 @@
     title: 'assets/generated/title/title-ashmere-road.webp',
     ashmere: 'assets/generated/locations/ashmere-town.webp',
     road: 'assets/generated/locations/old-road-south-fork.webp',
+    blackroot: 'assets/locations/roads/location_old_road_main_v1.jpg',
     ridge: 'assets/generated/locations/high-ridge.webp',
     reeds: 'assets/generated/locations/reed-cut.webp',
     camp: 'assets/generated/locations/roadside-camp.webp',
@@ -174,14 +175,20 @@
     }
     else if (host.querySelector('.gss170-page')) environment = 'marsh';
     else if (host.querySelector('.gfm160-page')) environment = 'marsh';
-    else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'archive';
+    else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'cellar';
     else if (host.querySelector('.ash100-town-greyfen')) environment = 'greyfen';
     else if (host.querySelector('.ash100-town-ashmere')) environment = 'ashmere';
     else if (host.querySelector('.exp100-scene')) {
       const state = player?.flags?.roadExpeditionV100 || {};
-      environment = Number(state.stage || 0) === 2 ? 'camp'
-        : state.routeChoice === 'ridge' && Number(state.stage || 0) <= 1 ? 'ridge'
-        : state.routeChoice === 'reeds' && Number(state.stage || 0) <= 1 ? 'reeds'
+      const stage = Number(state.stage || 0);
+      environment = state.activeSideTripV160 === 'windbreak' ? 'ridge'
+        : state.activeSideTripV160 === 'sunken-cart' ? 'reeds'
+        : stage === 2 ? 'camp'
+        : stage === 3 ? 'blackroot'
+        : stage === 4 ? 'marsh'
+        : stage >= 5 ? 'greyfen'
+        : state.routeChoice === 'ridge' && stage <= 1 ? 'ridge'
+        : state.routeChoice === 'reeds' && stage <= 1 ? 'reeds'
         : 'road';
     } else if (host.querySelector('.ash099, .reg100')) {
       environment = String(player?.currentRegion || 'Ashmere') === 'Greyfen' ? 'greyfen' : 'ashmere';
@@ -412,7 +419,7 @@
 
     preload() {
       Object.keys(ASSETS).forEach(key => {
-        if (['title','ashmere','road','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive'].includes(key)) {
+        if (['title','ashmere','road','blackroot','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive'].includes(key)) {
           this.load.image(key, ASSETS[key]);
         }
       });
@@ -1136,6 +1143,8 @@
       observeRoot();
       if (IS_PROTOTYPE) window.__legendRebootReady = true;
       else {
+        const bootScreen = byId('legend-boot-screen');
+        if (bootScreen) bootScreen.hidden = true;
         document.body.classList.remove('legend-booting');
         window.__legendPhaserWorldReady = false;
       }
@@ -1168,6 +1177,8 @@
       observeRoot();
       if (IS_PROTOTYPE) window.__legendRebootReady = true;
       else {
+        const bootScreen = byId('legend-boot-screen');
+        if (bootScreen) bootScreen.hidden = true;
         document.body.classList.remove('legend-booting');
         window.__legendPhaserWorldReady = false;
       }
