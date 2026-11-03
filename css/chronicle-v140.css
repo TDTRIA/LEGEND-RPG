@@ -705,7 +705,7 @@ body.chronicle-article .shell{
   transition:border-color .16s ease,transform .16s ease,background .16s ease;
 }
 .chronicle-article .actions a:hover,
-.chronicle-article nav a:hover,
+.chronicle-article nav:not(.chronicle-nav) a:hover,
 .chronicle-article .btn:hover{
   transform:translateY(-1px);
   border-color:var(--chron-amber)!important;
