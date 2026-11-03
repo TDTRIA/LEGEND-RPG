@@ -20,6 +20,15 @@ async function openPrototype(page, viewport = { width: 1440, height: 900 }) {
 }
 
 test.describe('LEGEND Phaser reboot prototype', () => {
+  test('keeps the production interface usable if the Phaser CDN is unavailable', async ({ page }) => {
+    await page.route('https://cdn.jsdelivr.net/npm/phaser@4.1.0/dist/phaser.min.js', route => route.abort());
+    await page.goto('/prototypes/reboot/', { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => window.__legendRebootReady === true, null, { timeout: 15000 });
+    await expect(page.locator('.v120-title')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.classList.contains('engine-intro-active'))).toBe(false);
+    await expect(page.locator('#engine-skip')).toBeHidden();
+  });
+
   test('plays the Phaser-native engine awakening and supports an accessible skip', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto('/prototypes/reboot/', { waitUntil: 'domcontentloaded' });
