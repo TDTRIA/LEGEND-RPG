@@ -213,3 +213,22 @@ body.legend-phaser-world-active #root .opening-road-v140-shade {
 body.legend-phaser-world-active #root .ash100-hero:after {
   background: linear-gradient(90deg, rgba(3,7,5,.42) 0%, rgba(3,7,5,.12) 58%, transparent 100%), linear-gradient(0deg, rgba(3,7,5,.24), transparent 62%) !important;
 }
+
+
+#toast {
+  position: fixed;
+  z-index: 100003;
+  left: 50%;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  transform: translate(-50%, 14px);
+  max-width: min(680px, calc(100% - 28px));
+  padding: 12px 17px;
+  border: 1px solid rgba(219,185,121,.42);
+  background: rgba(8,12,11,.96);
+  color: #f0ead8;
+  font: 12px/1.5 system-ui, sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s, transform .2s;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
