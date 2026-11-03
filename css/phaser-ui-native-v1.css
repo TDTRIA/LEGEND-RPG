@@ -351,3 +351,7 @@ body.legend-phaser-world-active.legend-phaser-gameplay-ui-active #legend-world-s
   background: transparent !important;
   box-shadow: none !important;
 }
+body.legend-phaser-world-active.legend-phaser-gameplay-ui-active #legend-world-shell-modal-root .lws-modal::before {
+  content: none !important;
+  display: none !important;
+}
