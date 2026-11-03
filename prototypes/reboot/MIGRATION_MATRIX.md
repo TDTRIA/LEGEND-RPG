@@ -20,7 +20,7 @@ This promotion is not a save migration: the production key and stored player sch
 | Old Road route and exploration | LegendRoadsV100.oldRoad, LegendRoadStateV100, LegendRoadActionsV100, LegendRoadDecisionsV100, LegendRoadPoiCatalogV100, LegendRoadPoiOutcomesV100, LegendRoadDiscoveryV100, LegendRoadExpeditionScreenV100 | Current South Fork, High Ridge/Reed Cut, point-of-interest/evidence outcomes, searches, travel, road pressure, forced encounters, camps, field journal/map, and return |
 | Enemy variety and combat rules | LegendRoadsV100.oldRoad.enemies, LegendRoadCombatV100, LegendRoadCombatViewV100 | Original enemies, intent patterns, FIGHT/ACT/ITEM/GUARD/Heavy Strike/retreat, damage, armor, status, drops, and enemy turns |
 | Progression and expedition results | LegendProgressionV100, LegendLevelUpV152, LegendRoadResultsV100, LegendRoadResultsViewV100, combat-results view | Current XP thresholds, level growth/stat points, gold/XP/rare Road Token settlement, saved route report, victory/defeat/return |
-| Ashmere hub and services | LegendAshmereV099, LegendAshmereHubV099, LegendAshmereFeaturesV099, destination/navigation/view/asset modules | Current town and service screens, people, inn, trading post, forge, crafting, work board, journal, traveler sheet, routes, and contracts |
+| Ashmere hub and services | LegendAshmereV099, LegendAshmereHubV099, LegendAshmereFeaturesV099, destination/navigation/view/asset modules; canonical Phaser RealmScene | Native Phaser scene landmarks for Inn, Market, Forge and Old Road Gate select the matching existing town POI; the current production service controllers still own entry, dialogue, purchases, crafting, jobs, quests and saves |
 | Town characters and story callbacks | LegendAshmereNpcCatalogV099, NPC dialogue/story modules, evidence and first-return dialogue modules | Mara Vell, Old Brenn, Captain Oric, Sella and the current dialog/evidence branches |
 | Daily and local work | LegendAshmereContractsV099, LegendAshmereWorkV099, job catalog and destination catalog | Current Daily Field Board / contracts and the existing timed, sequence, clue and worksite activities |
 | Regional network | LegendRegionsV100, LegendRegionServiceV100, LEGEND_DATA.regions | Token-gated Greyfen unlock, travel costs and region requirements |
@@ -80,6 +80,16 @@ The world layer uses the following scene-only effects; production gameplay modul
 - Portrait layouts use a smaller image overscan so the existing location art is not cropped more than necessary.
 
 The atmospheric layer is decorative only: it does not affect collision, combat calculations, turn order, rewards, quests, expeditions, or persistence.
+
+## Native Phaser scene interaction slice — 2026-11-03
+
+Ashmere is the first town surface with native Phaser scene interactables:
+
+- The RealmScene builds four responsive Phaser landmark containers (Inn, Market, Forge, Old Road Gate) with animated glow, beacon, ring, label and hover feedback.
+- Screen-space pointer hit testing makes the landmarks usable without putting a full-screen canvas above the HTML controls. Clicks over buttons, form fields, panels and shell controls are ignored by the scene bridge.
+- Selecting a landmark delegates to the existing `LegendWorldShellPanelsV170.selectAshmerePoi` state and refreshes the existing contextual panel. The user's existing `Enter` action continues through `LegendAshmereV099` and its production route/controller.
+- Landmark objects are created only on the Ashmere hub, repositioned for viewport changes, and destroyed when leaving for a service or a different region. Reduced Motion disables their idle glow animations.
+- No new economy, quest, progression, dialogue, inventory or persistence logic is introduced in Phaser.
 
 ## Verification notes
 
