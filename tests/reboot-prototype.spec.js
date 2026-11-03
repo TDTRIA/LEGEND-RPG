@@ -36,6 +36,16 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     await expect(page.locator('#account')).toHaveCount(0);
     await expect(page.locator('#game-container canvas')).toHaveCount(1);
     await expect.poll(async () => page.locator('#game-container canvas').evaluate(canvas => canvas.width)).toBeGreaterThan(0);
+    expect(await page.evaluate(() => window.__legendRebootBridge?.version)).toBe('phaser-atmosphere-v2');
+    const titleAtmosphere = await page.evaluate(() => window.__legendRebootBridge?.snapshot?.());
+    expect(titleAtmosphere.environment).toBe('title');
+    expect(titleAtmosphere.atmosphereCount).toBeGreaterThanOrEqual(30);
+
+    await page.evaluate(() => window.__legendRebootBridge.setEnvironment('marsh', true));
+    const marshAtmosphere = await page.evaluate(() => window.__legendRebootBridge.snapshot());
+    expect(marshAtmosphere.environment).toBe('marsh');
+    expect(marshAtmosphere.atmosphereCount).toBeGreaterThan(titleAtmosphere.atmosphereCount);
+    await page.evaluate(() => window.__legendRebootBridge.setEnvironment('title', true));
 
     await page.locator('#dispatches').click();
     await expect(page.locator('.dispatches-v140')).toBeVisible();

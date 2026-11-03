@@ -59,6 +59,18 @@ The title's Profile control is intentionally hidden in the prototype because it 
 
 The prototype stylesheet list is synchronized with the current production `index.html` visual stack, excluding the account-only styles. This includes the latest title renewal, dispatch, accessibility, world-shell, scene-visibility and v0.30.4 gender-art styles.
 
+## Phaser presentation polish — 2026-11-03
+
+The world layer uses the following scene-only effects; production gameplay modules and save data remain untouched:
+
+- Environment-aware ambience: low-opacity drifting haze, motes and light pools, plus marsh rain/fireflies, forge/camp embers, and archive rune glows.
+- Responsive background framing with overscan, subtle pointer parallax and a slow camera-breathing effect to add depth to the existing location art.
+- Crossfaded environment changes with a restrained camera settle rather than a hard black fade.
+- Distinct hit, heavy strike, guard, magic, swing and victory feedback using Phaser camera shake/flash, expanding rings, slash shapes and short-lived motes.
+- Reduced-motion support suppresses ambient motion, parallax, camera shake and screen flashes.
+
+The atmospheric layer is decorative only: it does not affect collision, combat calculations, turn order, rewards, quests, expeditions, or persistence.
+
 ## Verification notes
 
 - The Phaser scene's custom glow collection is named independently from Phaser's built-in `lights` scene plugin.
