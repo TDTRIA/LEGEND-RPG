@@ -1,6 +1,13 @@
 /* Native Phaser presentation for the title menu.
    The semantic HTML controls remain in place as transparent, accessible hit targets.
    If Phaser fails to load, this class is never applied and the classic title remains visible. */
+/* The old left-side web overlay was designed around an opaque HTML card.
+   Phaser now draws that card itself, so soften the scrim to keep the world art alive. */
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg::after {
+  background:
+    linear-gradient(180deg, rgba(1,4,3,.20), transparent 23%, transparent 70%, rgba(1,4,3,.30)),
+    radial-gradient(ellipse at 67% 44%, rgba(231,185,99,.08), transparent 36%) !important;
+}
 body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-title-hero {
   border-color: transparent !important;
   background: transparent !important;
