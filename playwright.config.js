@@ -15,6 +15,10 @@ if (!fullBrowserMatrix) {
 
 module.exports = defineConfig({
   testDir: './tests',
+  // The Phaser reboot test is for an isolated, non-production prototype. Keep
+  // production CI focused on the playable classic-JS game until that experiment
+  // is explicitly approved for a separate test workflow.
+  testIgnore: ['**/reboot-prototype.spec.js'],
   timeout: 30_000,
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
