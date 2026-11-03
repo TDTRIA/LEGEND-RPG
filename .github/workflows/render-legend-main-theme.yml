@@ -1,0 +1,105 @@
+name: Render LEGEND main theme
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'audio/source/legend-main-theme.mid.gz.b64'
+
+permissions:
+  contents: write
+
+jobs:
+  render-main-theme:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'audio/legend-world-audio-pass'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the authorized audio branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Install renderer and encoding tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fluidsynth ffmpeg curl
+
+      - name: Render the original LEGEND main theme
+        run: |
+          set -euo pipefail
+          mkdir -p assets/audio/music /tmp/legend-theme
+          curl -fL --retry 3 --retry-delay 2 \
+            https://ftp.osuosl.org/pub/musescore/soundfont/MuseScore_General/MuseScore_General.sf3 \
+            -o /tmp/legend-theme/MuseScore_General.sf3
+          test "$(stat -c%s /tmp/legend-theme/MuseScore_General.sf3)" -gt 30000000
+          base64 --decode audio/source/legend-main-theme.mid.gz.b64 | gzip -dc > /tmp/legend-theme/main.mid
+          fluidsynth -ni -F /tmp/legend-theme/main.wav -r 44100 -g 0.72 \
+            /tmp/legend-theme/MuseScore_General.sf3 /tmp/legend-theme/main.mid
+          ffmpeg -y -v error -i /tmp/legend-theme/main.wav \
+            -ac 2 -ar 44100 -c:a pcm_s16le /tmp/legend-theme/main-16.wav
+          python3 - <<'PY'
+          import array
+          import math
+          import wave
+
+          source = "/tmp/legend-theme/main-16.wav"
+          target = "/tmp/legend-theme/main-loop.wav"
+          with wave.open(source, "rb") as wav:
+              params = wav.getparams()
+              if params.sampwidth != 2 or params.nchannels not in (1, 2):
+                  raise SystemExit(f"Unexpected renderer WAV format: {params}")
+              frames = wav.getnframes()
+              rate = wav.getframerate()
+              channels = params.nchannels
+              raw = wav.readframes(frames)
+
+          samples = array.array("h")
+          samples.frombytes(raw)
+          fade_frames = min(rate * 4, frames // 10)
+          if fade_frames < rate:
+              raise SystemExit("Rendered theme is too short for a safe loop crossfade")
+
+          body = samples[fade_frames * channels:(frames - fade_frames) * channels]
+          cross = array.array("h")
+          tail_start = frames - fade_frames
+          for frame in range(fade_frames):
+              t = frame / max(1, fade_frames - 1)
+              tail_gain = math.cos(t * math.pi / 2)
+              head_gain = math.sin(t * math.pi / 2)
+              for channel in range(channels):
+                  tail = samples[(tail_start + frame) * channels + channel]
+                  head = samples[frame * channels + channel]
+                  mixed = round(tail * tail_gain + head * head_gain)
+                  cross.append(max(-32768, min(32767, mixed)))
+
+          loop = array.array("h")
+          loop.extend(body)
+          loop.extend(cross)
+          with wave.open(target, "wb") as wav:
+              wav.setparams(params._replace(nframes=len(loop) // channels))
+              wav.writeframes(loop.tobytes())
+          print(f"Prepared seamless {len(loop) / channels / rate:.1f}s loop")
+          PY
+          ffmpeg -y -v error -i /tmp/legend-theme/main-loop.wav \
+            -af loudnorm=I=-18:TP=-1.2:LRA=9 \
+            -c:a libmp3lame -b:a 256k -ar 44100 -ac 2 \
+            assets/audio/music/legend-main-theme.mp3
+          test "$(stat -c%s assets/audio/music/legend-main-theme.mp3)" -gt 1000000
+
+      - name: Commit the rendered main theme to the PR branch
+        env:
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/audio/music/legend-main-theme.mp3
+          if git diff --cached --quiet; then
+            echo "No main theme asset changed."
+            exit 0
+          fi
+          git commit -m "Render original LEGEND main gameplay theme"
+          git push origin "HEAD:refs/heads/$HEAD_BRANCH"
