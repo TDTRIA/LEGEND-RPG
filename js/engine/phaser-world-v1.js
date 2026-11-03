@@ -1297,7 +1297,7 @@
         const sourceHeight = img.naturalHeight;
         const destinationRatio = wrapperRect.width / wrapperRect.height;
         const sourceRatio = sourceWidth / sourceHeight;
-        const position = String(imageStyle.objectPosition || '50% 50%').split(/\\s+/);
+        const position = String(imageStyle.objectPosition || '50% 50%').split(/\s+/);
         const positionX = Math.max(0, Math.min(1, parseFloat(position[0]) / 100 || 0.5));
         const positionY = Math.max(0, Math.min(1, parseFloat(position[1] || position[0]) / 100 || 0.5));
         let sx = 0, sy = 0, sw = sourceWidth, sh = sourceHeight;
@@ -1421,7 +1421,7 @@
           return [node.className, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
             node.classList.contains('is-selected'), node.getAttribute('aria-pressed') || ''];
         }),
-        ...textNodes.map(node => [node.tagName, node.textContent?.replace(/\\s+/g, ' ').trim() || '', Math.round(node.getBoundingClientRect().left), Math.round(node.getBoundingClientRect().top)]),
+        ...textNodes.map(node => [node.tagName, node.textContent?.replace(/\s+/g, ' ').trim() || '', Math.round(node.getBoundingClientRect().left), Math.round(node.getBoundingClientRect().top)]),
         ...imageSpecs.map(item => [item.img.currentSrc || item.img.src, Math.round(item.rect.x), Math.round(item.rect.y), Math.round(item.rect.width), Math.round(item.rect.height)]),
         screen.querySelector('#v094Name')?.value || ''
       ]);
@@ -1612,7 +1612,7 @@
         if (!node) return null;
         const rect = rectFor(node);
         if (!rect) return null;
-        let text = node.textContent?.replace(/\\s+/g, ' ').trim() || '';
+        let text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
         if (styleOf(node).textTransform === 'uppercase') text = text.toLocaleUpperCase();
         else if (styleOf(node).textTransform === 'lowercase') text = text.toLocaleLowerCase();
         if (!text) return null;
