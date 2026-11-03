@@ -1167,7 +1167,7 @@
   function bindHostActions() {
     byId('engine-skip')?.addEventListener('click', () => {
       if (realmScene?.awakeningActive) realmScene.finishEngineAwakening(true);
-      else skipAwakeningRequested = true;
+      else if (!realmScene?.engineAwakened) skipAwakeningRequested = true;
     });
     byId('soundToggle')?.addEventListener('click', () => setSound(!soundEnabled));
     root()?.addEventListener('click', event => {
