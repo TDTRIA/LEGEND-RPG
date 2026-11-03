@@ -555,7 +555,10 @@
       const skip = byId('engine-skip');
       if (skip) skip.hidden = false;
       this.input.keyboard?.once('keydown', () => this.finishEngineAwakening(true));
-      if (skipAwakeningRequested) this.finishEngineAwakening(true);
+      if (skipAwakeningRequested) {
+        skipAwakeningRequested = false;
+        this.finishEngineAwakening(true);
+      }
     }
 
     finishEngineAwakening(skipped = false) {
@@ -1072,8 +1075,19 @@
   }
 
   function startPhaser() {
-    if (!window.Phaser || game) return;
-    game = new Phaser.Game({
+    if (game) return;
+    if (!window.Phaser) {
+      console.warn('Phaser could not be loaded; opening the production HTML interface without the engine canvas.');
+      document.documentElement.classList.remove('engine-intro-active');
+      byId('engine-skip') && (byId('engine-skip').hidden = true);
+      showTitle();
+      observeRoot();
+      window.__legendRebootReady = true;
+      toast('The Phaser world renderer did not load. The game interface is still available; refresh to retry.');
+      return;
+    }
+    try {
+      game = new Phaser.Game({
       type: Phaser.AUTO,
       parent: 'game-container',
       backgroundColor: '#090e0d',
@@ -1089,7 +1103,17 @@
       scene: [RealmScene],
       input: { keyboard: true, mouse: true, touch: true },
       audio: { noAudio: false }
-    });
+      });
+    } catch (error) {
+      console.error('Phaser could not start.', error);
+      document.documentElement.classList.remove('engine-intro-active');
+      byId('engine-skip') && (byId('engine-skip').hidden = true);
+      showTitle();
+      observeRoot();
+      window.__legendRebootReady = true;
+      toast('The Phaser renderer could not start. The game interface is still available.');
+      return;
+    }
     let needsAwakening = true;
     try {
       needsAwakening = !window.sessionStorage.getItem(ENGINE_SESSION_KEY);
@@ -1146,6 +1170,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    settingsStorage?.applySettings?.(settingsStorage.loadSettings());
     bindHostActions();
     startPhaser();
   }, { once: true });
