@@ -85,7 +85,7 @@ Production main is **v0.30.4**. The current published build contains the Runway 
 
 The latest audio work is staged separately in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98):
 - The import workflow completed successfully and the branch contains 13 ambience loops and 35 one-shot audio effects.
-- The original main-theme source was corrected after the first render attempt failed on malformed encoded input. The replacement MP3 must still be confirmed and the new sound must be integrated before this audio work is considered shipped.
+- The original main-theme source now renders successfully to a roughly 10½-minute MP3 loop, staged in PR #98. In-game listening, balance, loop-seam, sound-toggle, and scene-transition verification are still required before merge/shipping.
 - The PR Playwright run is still pending at this checkpoint. Do not mark the branch green until the final-head workflow completes; do not treat its status as a verification of the live main branch.
 
 The active production engine is hybrid: Phaser 4.1 renders the persistent world layer, while the existing browser modules still own most UI, dialogue, account, combat, expedition, and save behavior. Phaser migration itself must be verified surface by surface; no save migration is part of it.
