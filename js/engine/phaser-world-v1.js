@@ -450,6 +450,7 @@
       this.nativeTitleUiObjects = [];
       this.nativeTitleUiControls = [];
       this.nativeTitleUiSignature = '';
+      this.nativeTitleUiLayoutEvent = null;
     }
 
     preload() {
@@ -758,6 +759,8 @@
     }
 
     clearNativeTitleUi(removeClass = true) {
+      this.nativeTitleUiLayoutEvent?.remove?.(false);
+      this.nativeTitleUiLayoutEvent = null;
       this.nativeTitleUiObjects.forEach(object => {
         if (!object?.active) return;
         this.tweens.killTweensOf(object);
@@ -796,6 +799,21 @@
         }
         return;
       }
+
+      const animations = typeof hero.getAnimations === 'function'
+        ? hero.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' || animation.playState === 'pending')
+        : [];
+      if (animations.length) {
+        // Measure the final painted bounds, not the intermediate CSS entrance pose.
+        this.nativeTitleUiLayoutEvent?.remove?.(false);
+        this.nativeTitleUiLayoutEvent = this.time.delayedCall(820, () => {
+          this.nativeTitleUiLayoutEvent = null;
+          this.syncNativeTitleUi(surface);
+        });
+        return;
+      }
+      this.nativeTitleUiLayoutEvent?.remove?.(false);
+      this.nativeTitleUiLayoutEvent = null;
 
       const buttons = Array.from(hero.querySelectorAll('.v136-menu-btn'));
       const panelRect = hero.getBoundingClientRect();
