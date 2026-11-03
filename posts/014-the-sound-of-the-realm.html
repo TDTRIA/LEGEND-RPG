@@ -37,7 +37,7 @@
       <a class="btn" href="../index.html">Play the current build</a>
       <a class="btn" href="../blog.html">Development Chronicle</a>
       <a class="btn" href="../docs/ROADMAP.md">Current roadmap</a>
-      <a class="btn" href="https://github.com/TDTRIA/LEGEND-RPG/pull/98">Audio asset review · PR #98</a>
+      <a class="btn" href="https://github.com/TDTRIA/LEGEND-RPG/commit/807696aa177c9a45bd1b5f62a8bdea466e082551">Integrated audio · production commit</a>
     </div>
   </article>
 
@@ -52,14 +52,14 @@
       <li><strong>Bell Cellar:</strong> a damp subterranean ambience with a distant bronze resonance.</li>
     </ul>
     <p>The one-shot effects cover sword swings and impacts, blocking and parrying, spellcasting and healing, creature calls, loot and Bell Fragment discoveries, level-ups, quest completion, footsteps across different ground, doors, the forge, maps, markets, and other town interactions.</p>
-    <p class="note"><span class="status">Staged for review</span> These 48 files are in the audio work branch and review PR, not yet in the live production game. They still need integration, balance checks, loop-seam checks, and browser testing before release.</p>
+    <p class="note"><span class="status">Integrated and deployed</span> The 48-asset collection is merged into production main and included in the successful GitHub Pages deployment. It provides the current location ambience and generated gameplay sound library; the remaining pass is subjective listening, mix/loop verification, and wiring the remaining one-shot cues to their corresponding game events.</p>
   </section>
 
   <section class="panel card">
-    <h2>The main theme is the priority</h2>
+    <h2>The new main theme now runs through the realm</h2>
     <p>The soundtrack should have a musical identity, not just a background drone. The direction is a memorable recurring motif carried by expressive cello and strings, restrained horns, subtle medieval folk instrumentation, and occasional bronze-bell accents. It should feel adventurous and weathered, melancholic without becoming hopeless, and comfortable to hear during a long session.</p>
-    <p>The original instrumental score has now been rendered as a roughly 10½-minute loop and staged in PR #98. It is not in the live game yet: its in-game sound, mix, repeat seam, and scene transitions still need to be listened to and verified before integration is considered complete. The current gameplay theme will not be considered replaced until the new music is actually playing in the game and the transitions between exploration and combat are tested.</p>
-    <p class="note"><span class="status">In progress</span> The current live build still uses the older music setup. The replacement theme is not being advertised as shipped.</p>
+    <p>The original instrumental score has been rendered as a roughly 10½-minute loop and is now integrated in the production game. A shared audio director keeps the main theme continuous across exploration, battle, and results while changing the underlying ambience as the player moves between the title, Ashmere, the Old Road, Greyfen, and the Bell Cellar. It also retains the existing sound toggle and prevents competing music loops from stacking.</p>
+    <p class="note"><span class="status">Integrated · listening QA pending</span> The deployed build now uses the replacement theme and location ambience. The remaining verification is a real-browser listening pass for audible playback, relative levels, the loop seam, and long-session comfort; the automated browser suite is still running.</p>
   </section>
 
   <section class="panel card">
@@ -71,8 +71,8 @@
   <section class="panel card">
     <h2>What happens next</h2>
     <ol>
-      <li>Review the new location ambience and gameplay effects, then integrate them through the existing sound preference and audio services.</li>
-      <li>Finish and verify the replacement main theme, then create a related battle arrangement so the music feels like one soundtrack.</li>
+      <li>Listen to the deployed theme and location ambience in the browser, confirm levels and loop seam, and connect the remaining generated effects to their matching successful game actions.</li>
+      <li>Keep the main theme continuous through combat and results; assess whether a separate related battle arrangement is actually needed after listening in the game.</li>
       <li>Move real gameplay surfaces into Phaser while keeping save data, quests, progression, combat balance, and accessibility intact.</li>
       <li>Continue completing Greyfen's town services, local economy, story, expeditions, and return loop. It remains an active partial region, not a finished town.</li>
     </ol>
