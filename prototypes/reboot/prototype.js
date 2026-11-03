@@ -213,7 +213,11 @@
     if (observer) observer.disconnect();
     const host = root();
     if (!host || !window.MutationObserver) return;
-    observer = new MutationObserver(() => {
+    observer = new MutationObserver(mutations => {
+      const affectsWorldSurface = mutations.some(mutation => !(
+        mutation.type === 'attributes' && mutation.target.closest?.('.v094-choice-grid')
+      ));
+      if (!affectsWorldSurface) return;
       inferEnvironment();
       observeModalRoot();
     });
