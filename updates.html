@@ -8,8 +8,26 @@
     :root{--bg:#060807;--bg-soft:#0d1813;--panel:rgba(10,18,15,.94);--panel-2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border-soft:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369}
     *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--bg-soft),var(--bg));padding:24px}.shell{width:min(1040px,100%);margin:0 auto}header,.card{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px rgba(0,0,0,.42);border-radius:18px;padding:clamp(20px,4vw,38px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0;color:var(--accent);font-size:clamp(2.2rem,8vw,5.4rem);letter-spacing:.08em;line-height:.94;text-shadow:0 0 22px rgba(125,255,173,.24)}h2{margin:0 0 12px;color:var(--accent);font-size:1.5rem}h3{margin:0 0 8px;color:var(--gold);font-size:1.12rem}p{color:var(--text);line-height:1.65;margin:0 0 12px}.muted{color:var(--muted)}nav,.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.signup-box,.status-card,.update-card{border:1px solid var(--border-soft);background:var(--panel-2);border-radius:16px;padding:18px;margin-top:14px}.update-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.update-card strong{color:var(--gold);display:block;margin-bottom:6px}.signup-form{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px;margin-top:18px}.signup-form input{min-height:46px;border:1px solid rgba(132,255,178,.28);border-radius:12px;background:rgba(0,0,0,.42);color:var(--text);padding:0 14px;font:inherit;outline:none}.signup-form button{border:1px solid rgba(255,211,105,.46);border-radius:12px;background:linear-gradient(180deg,#ffe29a,#d69f32);color:#241803;font-weight:900;min-height:46px;padding:0 16px;cursor:pointer}.archive-link{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,211,105,.35)}.feature-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;padding:0;list-style:none}.feature-list li{border:1px solid var(--border-soft);background:var(--panel-2);border-radius:12px;padding:12px 14px;line-height:1.5}.status-tag{display:inline-block;border:1px solid rgba(255,211,105,.35);border-radius:999px;padding:4px 9px;color:#ffe6a0;font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;font-weight:800;margin-bottom:8px}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:820px){.update-grid{grid-template-columns:1fr}}@media(max-width:720px){body{padding:12px}nav,.actions{flex-direction:column}.btn{width:100%}.signup-form{grid-template-columns:1fr}.signup-form button{width:100%}}
   </style>
+  <link rel="stylesheet" href="css/chronicle-v140.css?v=20261103-chronicle-v140">
 </head>
-<body>
+<body class="chronicle-page chronicle-article">
+  <nav class="chronicle-nav" aria-label="Site navigation">
+    <div class="chronicle-nav-inner">
+      <a class="chronicle-brand" href="index.html" aria-label="LEGEND: The Awakening — return to the game">
+        <img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening" decoding="async">
+        <span class="chronicle-brand-copy"><strong>Realm Records</strong><span>LEGEND: The Awakening</span></span>
+      </a>
+      <div class="chronicle-nav-links">
+        <a href="index.html" class="chronicle-play">Enter the World</a>
+        <a href="blog.html">Chronicle</a>
+        <a href="updates.html">Dispatch</a>
+        <a href="guide.html">Field Guide</a>
+        <a href="save.html">Save Vault</a>
+        <a href="feedback.html">Feedback</a>
+      </div>
+    </div>
+  </nav>
+
   <div class="shell">
     <header>
       <p class="kicker">LEGEND Development Dispatch · v0.30.4</p>
