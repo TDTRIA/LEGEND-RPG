@@ -55,6 +55,7 @@
   function renderPrologue(player) {
     const state = openingState(player);
     if (!state) return;
+    window.LegendRoadAudioV100?.playWorldFx?.('bell');
     ROOT().innerHTML =
       "<main class='opening-road-v140 opening-road-v140-prologue' aria-labelledby='openingPrologueTitle'>" +
         "<img class='opening-road-v140-bg' src='assets/locations/roads/location_old_road_main_v1.jpg' alt='' aria-hidden='true' onerror='this.style.display=\"none\"'>" +
@@ -112,6 +113,7 @@
   function renderAmbush(player) {
     const state = openingState(player);
     if (!state) return;
+    window.LegendRoadAudioV100?.playWorldFx?.('wolf');
     state.phase = 'ambush';
     const line = responses[state.response] || responses.honest;
     ROOT().innerHTML =

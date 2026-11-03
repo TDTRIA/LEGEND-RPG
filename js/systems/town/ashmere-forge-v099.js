@@ -9,6 +9,8 @@
     const save = player => context.savePlayer(player);
     const A = () => context.getAssets?.() || {};
     const D = () => context.getData?.() || {};
+    const playWorldFx = kind => window.LegendRoadAudioV100?.playWorldFx?.(kind);
+    const playUi = kind => window.LegendRoadAudioV100?.playUi?.(kind);
     const {
       itemIcon, itemName, gold, locationInterior, head, screen, esc, icon,
       canAfford, owned, note, canCraft, needsMarkup, armorArt, weaponName, armorName, regionShopArt
@@ -96,13 +98,13 @@ function buyGear(id,kind){
     if(level<required&&!Number(ownedMap[id]||0))return note('You need level '+required+' to use '+item.name+'.');
     if(Number(ownedMap[id]||0)>0){
       if(kind==='weapon')pl.weapon=id;else pl.armor=id;
-      save(pl);renderSmith(kind);note('Equipped '+item.name+'.');
+      save(pl);playUi('equip');renderSmith(kind);note('Equipped '+item.name+'.');
       return;
     }
     if(Number(pl.gold||0)<Number(item.cost||0))return note('Not enough gold.');
     pl.gold-=Number(item.cost||0);ownedMap[id]=1;
     if(kind==='weapon')pl.weapon=id;else pl.armor=id;
-    save(pl);renderSmith(kind);note('Purchased and equipped '+item.name+'.');
+    save(pl);playWorldFx('forge');renderSmith(kind);note('Purchased and equipped '+item.name+'.');
   }
 
     return renderSmith(argument);

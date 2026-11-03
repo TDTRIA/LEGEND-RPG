@@ -83,6 +83,7 @@
       '</section>';
 
     document.body.appendChild(overlay);
+    window.LegendRoadAudioV100?.playWorldFx?.('levelUp');
 
     const allocatedCount = () => Object.values(allocations).reduce((sum, value) => sum + value, 0);
     function refresh() {

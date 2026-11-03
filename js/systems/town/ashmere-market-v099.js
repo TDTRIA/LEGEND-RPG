@@ -9,6 +9,7 @@
     const save = player => context.savePlayer(player);
     const A = () => context.getAssets?.() || {};
     const D = () => context.getData?.() || {};
+    const playWorldFx = kind => window.LegendRoadAudioV100?.playWorldFx?.(kind);
     const salePrice = (player, baseValue) => Math.max(0, Math.round(Number(baseValue || 0) * (1 + Math.max(0, Number(D().keepsakes?.[player?.keepsake]?.sellBonus || 0)))));
     const {
       itemIcon, itemName, gold, locationInterior, head, screen, esc, icon,
@@ -41,9 +42,9 @@ function renderTrader(tab='buy'){
     const sellAll=document.getElementById('sellAllLoot');
     if(sellAll)sellAll.onclick=()=>sellAllLoot(sellables);
   }
-  function buyItem(k,cost){const pl=p();if(Number(pl.gold||0)<cost)return note('Not enough gold.');pl.gold-=cost;pl.inventory[k]=Number(pl.inventory[k]||0)+1;save(pl);renderTrader('buy');}
-  function sellItem(k,value){const pl=p();if(owned(pl,k)<=0)return note('Nothing to sell.');pl.inventory[k]-=1;pl.gold=Number(pl.gold||0)+value;save(pl);renderTrader('sell');}
-  function sellAllLoot(sellables){const pl=p();let total=0;sellables.forEach(([k,v])=>{const qty=owned(pl,k);if(qty>0){total+=qty*salePrice(pl,v);pl.inventory[k]=0;}});if(total<=0)return note('No sellable road loot.');pl.gold=Number(pl.gold||0)+total;save(pl);renderTrader('sell');}
+  function buyItem(k,cost){const pl=p();if(Number(pl.gold||0)<cost)return note('Not enough gold.');pl.gold-=cost;pl.inventory[k]=Number(pl.inventory[k]||0)+1;save(pl);playWorldFx('trade');renderTrader('buy');}
+  function sellItem(k,value){const pl=p();if(owned(pl,k)<=0)return note('Nothing to sell.');pl.inventory[k]-=1;pl.gold=Number(pl.gold||0)+value;save(pl);playWorldFx('trade');renderTrader('sell');}
+  function sellAllLoot(sellables){const pl=p();let total=0;sellables.forEach(([k,v])=>{const qty=owned(pl,k);if(qty>0){total+=qty*salePrice(pl,v);pl.inventory[k]=0;}});if(total<=0)return note('No sellable road loot.');pl.gold=Number(pl.gold||0)+total;save(pl);playWorldFx('trade');renderTrader('sell');}
 
     return renderTrader(argument);
   }

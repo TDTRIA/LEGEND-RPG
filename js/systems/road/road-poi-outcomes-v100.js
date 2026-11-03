@@ -41,8 +41,8 @@
      if(s.poiUsed[point.key])return renderExpedition('You have already investigated this spot on the current expedition.');
      s.poiUsed[point.key]=true;s.discoveryOpen=false;s.discoveryStage=null;if (typeof clearVisibleDiscovery === 'function') clearVisibleDiscovery();
      const {foundGreyfenFieldNote,foundGreyfenWeeklyReturn}=bellRoadEvidence.recordPointEvidence(pl,point);
-     let note='',reward='';
-     if(stage===0){pl.gold=Number(pl.gold||0)+5;s.pressure=clamp(s.pressure-4,0,100);note='You follow the drier tracks and find a small coin purse caught beneath the marker. +5 gold; Road Pressure falls by 4.';}
+     let note='',reward='',fragmentFound=false,coinFound=false;
+     if(stage===0){pl.gold=Number(pl.gold||0)+5;s.pressure=clamp(s.pressure-4,0,100);coinFound=true;note='You follow the drier tracks and find a small coin purse caught beneath the marker. +5 gold; Road Pressure falls by 4.';}
      else if(stage===1&&s.routeChoice==='ridge'){
       inv(pl,'roadHerb',1);s.pressure=clamp(s.pressure-3,0,100);
       const cairnOutcome=pl.flags?.highRidgeCairnOutcome||pl.flags?.sideContracts?.movedCairn?.decision;
@@ -55,14 +55,14 @@
          :'You collect the herbs tucked behind the Ridgeway Cairn and follow its dry trail marks. +1 Road Herb; Road Pressure falls by 3.';
      }
      else if(stage===1&&s.routeChoice==='reeds'){inv(pl,'roadHerb',1);s.pressure=clamp(s.pressure+4,0,100);note='You recover the torn herb pouch, but the tracks circle closer as you leave. +1 Road Herb; Road Pressure rises by 4.';}
-     else if(stage===1){const foundFragment=Math.random()<.25;if(foundFragment){inv(pl,'bellFragment',1);s.routeBellFragmentFoundV300=true;}s.pressure=clamp(s.pressure+2,0,100);note=foundFragment?'The blue glow fades, leaving a Bell Fragment in your palm. The ditch feels less quiet now. +1 Bell Fragment.':'The blue glow fades before you can catch it. The ditch feels less quiet, but no fragment remains.';}
+     else if(stage===1){const foundFragment=Math.random()<.25;if(foundFragment){inv(pl,'bellFragment',1);s.routeBellFragmentFoundV300=true;fragmentFound=true;}s.pressure=clamp(s.pressure+2,0,100);note=foundFragment?'The blue glow fades, leaving a Bell Fragment in your palm. The ditch feels less quiet now. +1 Bell Fragment.':'The blue glow fades before you can catch it. The ditch feels less quiet, but no fragment remains.';}
      else if(stage===2){
       inv(pl,'food',1);inv(pl,'roadHerb',1);
       note=foundGreyfenWeeklyReturn
        ?'The oilskin return is damp but legible: the lower crossing was closed pending inspection, then changed to open in darker ink without initials. You wrap it separately for Brenn. +1 Ration, +1 Road Herb.'
        :'You recover a sealed ration and a usable Road Herb from the cold ashes. +1 Ration, +1 Road Herb.';
      }
-     else if(stage===3){s.pressure=clamp(s.pressure-8,0,100);const foundFragment=Math.random()<.25;if(foundFragment){inv(pl,'bellFragment',1);s.routeBellFragmentFoundV300=true;note='The seal’s pattern matches an old Ashmere mark. A sliver breaks free from the stone. +1 Bell Fragment; Road Pressure falls by 8.';}else{note='The seal’s pattern matches an old Ashmere mark, but the stone holds fast. You learn a safer way around the roots; Road Pressure falls by 8.';}}
+     else if(stage===3){s.pressure=clamp(s.pressure-8,0,100);const foundFragment=Math.random()<.25;if(foundFragment){inv(pl,'bellFragment',1);s.routeBellFragmentFoundV300=true;fragmentFound=true;note='The seal’s pattern matches an old Ashmere mark. A sliver breaks free from the stone. +1 Bell Fragment; Road Pressure falls by 8.';}else{note='The seal’s pattern matches an old Ashmere mark, but the stone holds fast. You learn a safer way around the roots; Road Pressure falls by 8.';}}
      else if(stage===4){
       inv(pl,'clothScrap',1);inv(pl,'roadHerb',1);
       note=foundGreyfenFieldNote
@@ -70,10 +70,10 @@
        :'The locker gives way. Inside are clean cloth strips and a bundle of preserved herbs. +1 Cloth Scrap, +1 Road Herb.';
      }
      else if(stage===5&&point.key==='greyfen-marker'&&pl.flags?.greyfenBoundaryCompared){
-      pl.gold=Number(pl.gold||0)+10;s.pressure=clamp(s.pressure-5,0,100);pl.flags=pl.flags||{};pl.flags.greyfenRouteRecorded=true;
+      pl.gold=Number(pl.gold||0)+10;s.pressure=clamp(s.pressure-5,0,100);coinFound=true;pl.flags=pl.flags||{};pl.flags.greyfenRouteRecorded=true;
       note='The Greyfen boundary mark matches the older bell-mark at Blackroot, but a newer cut turns toward the reed bed. The stone shows that someone altered the marker; it does not say who. +10 gold; Road Pressure falls by 5.';
      }
-     else {pl.gold=Number(pl.gold||0)+10;s.pressure=clamp(s.pressure-5,0,100);pl.flags=pl.flags||{};pl.flags.greyfenRouteRecorded=true;note='You copy the scratched route marks into your journal. The safer line is recorded, and you find 10 gold wedged behind the stone.';}
+     else {pl.gold=Number(pl.gold||0)+10;s.pressure=clamp(s.pressure-5,0,100);coinFound=true;pl.flags=pl.flags||{};pl.flags.greyfenRouteRecorded=true;note='You copy the scratched route marks into your journal. The safer line is recorded, and you find 10 gold wedged behind the stone.';}
      pl.flags=pl.flags||{};
      pl.flags.roadFieldJournalV150=pl.flags.roadFieldJournalV150||{visitedPlaces:[],discoveries:[],routes:[]};
      const journal=pl.flags.roadFieldJournalV150;
@@ -85,6 +85,8 @@
       journal.discoveries.push({key:point.key,name:String(point.name||'Road discovery'),kind:String(point.kind||'Discovery'),place:place,note:String(note||point.text||'You investigated a feature of the road.'),stage:stage,route:String(s.routeChoice||''),trip:Number(s.trips||0),day:Number(pl.day||1)});
      }
      pl.stats=pl.stats||{};pl.stats.pointsOfInterest=Number(pl.stats.pointsOfInterest||0)+1;save(pl);
+     if(fragmentFound) window.LegendRoadAudioV100?.playWorldFx?.('fragment');
+     else if(coinFound) window.LegendRoadAudioV100?.playWorldFx?.('coin');
      tone('success');renderExpedition(note);
     }
 

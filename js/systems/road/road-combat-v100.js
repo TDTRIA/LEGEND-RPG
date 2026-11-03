@@ -121,6 +121,7 @@ function toggleBattleSound(){
 function combatAction(enemy,action){
  const pl=p();if(!pl)return;const s=ensure(pl),w=weapon(pl),a=armor(pl);
  if(enemy.openingEncounterV140&&action!=='skill')return combat(enemy,'???: “Awaken.” Use ACT to answer the voice.');
+ if(enemy.openingEncounterV140&&action==='skill')window.LegendRoadAudioV100?.playWorldFx?.('awakening');
  if(action==='skill'&&Number(enemy.skillCooldown||0)>0)return combat(enemy,'Your class technique is recovering. Choose another command; this does not consume your turn.');
  const guarding=action==='guard';
  const guardedHeavy=guarding&&enemy.intent==='heavy';

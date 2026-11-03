@@ -64,6 +64,8 @@ function finish(){
  const endedState={...s};
  s.stage=0;s.pressure=pressureAfter;
  save(pl);
+ window.LegendRoadAudioV100?.playWorldFx?.('coin');
+ if(Number(progress?.levels||0)>0) window.LegendRoadAudioV100?.playWorldFx?.('levelUp');
  const details={type:'expedition',complete,stagesCompleted:stageCount,rewardGold:reward,roadTokens:tokenEarned,
   xpGained:Number(progress?.gained||0),levelsGained:Number(progress?.levels||0),levelBefore,levelAfter:Math.max(1,Number(pl.level||1)),
   routeName,discoveriesThisTrip,campsThisTrip,pressureBefore,pressureAfter,trip};

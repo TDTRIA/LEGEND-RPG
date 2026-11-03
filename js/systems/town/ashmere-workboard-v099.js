@@ -9,6 +9,7 @@
     const p = () => context.getPlayer();
     const save = player => context.savePlayer(player);
     const { screen, head, locationInterior, esc, gold, itemName, jobCatalog, openContracts } = context;
+    const playWorldFx = kind => window.LegendRoadAudioV100?.playWorldFx?.(kind);
   function jobsForCurrentRegion(){
     return jobCatalog?.forRegion?.(p()?.currentRegion) || {};
   }
@@ -95,6 +96,7 @@
       if(Math.random()<bonusChance){player.inventory[j.item]=Number(player.inventory[j.item]||0)+Number(j.amount||1);bonus=' Bonus gained: '+Number(j.amount||1)+' '+itemName(j.item)+'.';}
       if(grade==='Miss'&&Number(player.hp||0)>1){player.hp=Math.max(1,Number(player.hp||0)-1);bonus+=' You lose 1 HP from the rough work.';}
       save(player);
+      playWorldFx('workboard');
       const xpNote=progress?' XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'.':'';
       if(result){result.style.display='block';result.textContent=grade+'! '+(feedback?feedback+' ':'')+'Earned '+pay+'g.'+bonus+' Local standing increased.'+xpNote;}
       if(strike){strike.disabled=true;strike.textContent='Job Complete';}
