@@ -100,7 +100,15 @@ The presence speaking during traveler creation is **the Veil at the author/story
 
 The mandatory opening annals should cover **the old war and the seal only**. The Last Mercy, the wound in the Veil and echoes are **not** told in the opening; the player learns of them through Mara's Chronicle quest and the legend's leaves, scattered across the first two regions. The annals still end by handing into traveler creation.
 
-- **Not yet implemented.** The shipped opening (`js/systems/opening-prologue-v220.js`, v0.30.1) still carries "III · The Last Mercy." Changing it is a code change with test updates (the "3 / 3" counter, the Continue/"Shape the traveler" button flow and any text assertions). The replacement for the third screen is the owner's call; assistants may draft options.
+- **Not yet implemented.** The shipped opening (`js/systems/opening-prologue-v220.js`, v0.30.1) still carries "III · The Last Mercy." Changing it is a code change with test updates (two tests assert the Last Mercy screen: `tests/road-opening-v140.spec.js` and `tests/reboot-prototype.spec.js`). The screen count stays at three.
+- **Approved replacement for screen III (owner-approved 2026-11-03).** Use this text exactly; do not rewrite it. Keep the existing closing quote.
+  - Chapter label: `III · THE PEACE KEPT`
+  - Title: `The Peace, Written Down`
+  - Paragraph 1: "The kingdoms did not trust the silence. They set wardens over the passage-stones and ordered the deep ground left alone. Chroniclers wrote the year down as the end of the monster war, and the writing was neat, and it became the version everyone told."
+  - Paragraph 2: "Generations passed. Roads were cut across the old war-ground, and towns grew where armies had camped. The wardens’ stones were kept, and the law against digging became a custom, then an inconvenience. Few remembered why it had been made. Fewer asked."
+  - Quote (unchanged from the shipped screen): "Before the road, before the waking, there is a question no chronicle can answer for you: what will you choose to carry?"
+  - The replacement must not contain the words Last Mercy, Veil, echo, wound, healer or Saint.
+  - Leaf I of the legend (the peace was believed, the kings' seals beside the peoples' marks) is a later find; do not pre-empt its wording in the annals.
 - Do not reintroduce a "Skip the annals" button; all annals stay mandatory (v0.30.1).
 - The annals text is the human account of the war and the seal. It must not contradict L7's truth in a way the later game cannot correct.
 - This does not approve revealing L4. The annals must not mention the traveler's nature.
