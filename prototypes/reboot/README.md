@@ -6,7 +6,7 @@ Live preview after GitHub Pages deployment: https://tdtria.github.io/LEGEND-RPG/
 
 ## What this build is
 
-The Phaser canvas provides the world presentation layer behind the game's accessible HTML interfaces. The current pass adds location-aware atmosphere (drifting haze, dust, marsh rain/fireflies, forge embers and archive rune glows), subtle pointer-driven depth/parallax, overscanned camera breathing, crossfaded location changes, and distinct combat impact feedback using Phaser tweens, shapes and camera effects. Reduced-motion preferences suppress parallax, ambient animation, flashes and shakes.
+The Phaser canvas provides the world presentation layer behind the game's accessible HTML interfaces. The current pass adds location-aware atmosphere (drifting haze, dust, marsh rain/fireflies, forge embers and archive rune glows), subtle pointer-driven depth/parallax, overscanned camera breathing, crossfaded location changes, and distinct combat impact feedback using Phaser tweens, shapes and camera effects. Both the in-game Reduced Motion setting and the browser/OS preference suppress parallax, ambient animation, flashes and shakes.
 
 The current production modules are loaded directly for:
 - Mandatory annals and the existing anonymous-presence traveler creator.
