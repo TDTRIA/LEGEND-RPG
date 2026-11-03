@@ -75,7 +75,7 @@
             <div class="v151-realm-dispatch-latest"><span>NOW LIVE</span><h3>Greyfen’s frontier is taking shape</h3><p>The lowland road now has its own crossing story, field work, salvage, crafting, a deeper storehouse, and regional equipment.</p></div>
             <div class="v151-realm-dispatch-next"><span>WHAT'S COMING NEXT</span><strong>A road that answers back</strong><p>More reliable combat encounters, distinct enemies, richer discoveries, and town services that feel like places in the same world.</p></div>
             <a href="updates.html" target="_blank" rel="noopener">Read the latest field notes ↗</a>
-            <a href="portal.html" target="_blank" rel="noopener">All project links ↗</a>
+            <a class="realm-hub-title-link" href="portal.html" target="_blank" rel="noopener">All project links ↗</a>
           </section>
           <div class="v140-realm-player-state"><span>YOUR JOURNEY</span><strong>${player ? 'Day ' + day + ' · ' + tokens + (Number(tokens) === 1 ? ' Road Token' : ' Road Tokens') : 'A new journey awaits'}</strong><small>${player ? esc(name) + ' · ' + esc(cls) : 'Shape a traveler and enter the realm.'}</small></div>
         </aside>
