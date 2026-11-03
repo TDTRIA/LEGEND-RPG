@@ -601,15 +601,16 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.getByRole('heading', { name: 'The marker is safe' })).toBeVisible();
     const after=await page.evaluate(() => {
       const pl=window.LegendRuntimeV120.loadPlayer();
-      return {gold:Number(pl.gold||0),herbs:Number(pl.inventory.roadHerb||0),complete:Boolean(pl.flags.greyfenDryCrossingComplete)};
+      return {gold:Number(pl.gold||0),herbs:Number(pl.inventory.roadHerb||0),complete:Boolean(pl.flags.greyfenDryCrossingComplete),memories:pl.memories||[]};
     });
     expect(after.gold).toBe(before.gold+35);
     expect(after.herbs).toBe(before.herbs+1);
     expect(after.complete).toBe(true);
+    expect(after.memories).toContain("A rumor among Greyfen’s landing workers says the reed-bed cut was marked as a route only after the floodwater rose. The speaker had no record, and no one named who approved it.");
     await page.locator('#ashBack').click();
     await page.locator('.ash100-destination[data-ash-view="crossing"]').click();
     await expect(page.locator('[data-crossing-choice]')).toHaveCount(0);
-    await expect(page.locator('.ash099-screen')).toContainText('cannot be claimed again');
+    await expect(page.locator('.ash099-screen')).toContainText(/reed-bed cut was marked as a route only after the floodwater rose/i);
   });
 
   test('Dry Crossing risky route penalizes a miss and allows a rewarded retry', async ({ page }) => {
@@ -647,6 +648,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
         herbs: Number(pl.inventory.roadHerb || 0),
         attempts: Number(pl.flags.greyfenCrossingAttempts || 0),
         complete: Boolean(pl.flags.greyfenDryCrossingComplete),
+        rumorRecorded: (pl.memories || []).includes("A rumor among Greyfen’s landing workers says the reed-bed cut was marked as a route only after the floodwater rose. The speaker had no record, and no one named who approved it."),
         memories: pl.memories || []
       };
     });
@@ -655,6 +657,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(miss.herbs).toBe(before.herbs);
     expect(miss.attempts).toBe(1);
     expect(miss.complete).toBe(false);
+    expect(miss.rumorRecorded).toBe(false);
     expect(miss.memories.some(memory => /reed bed turned you back from Greyfen/i.test(memory))).toBe(true);
     await expect(page.locator('.ash099-screen')).toContainText('You may try again');
 
@@ -680,6 +683,8 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(success.herbs).toBe(before.herbs + 2);
     expect(success.attempts).toBe(2);
     expect(success.complete).toBe(true);
+    expect(success.rumorRecorded).toBe(true);
+    await expect(page.locator('.ash099-screen')).toContainText(/reed-bed cut was marked as a route only after the floodwater rose/i);
     expect(success.memories.some(memory => /recovered Greyfen.*through the reed bed/i.test(memory))).toBe(true);
   });
 
@@ -1077,16 +1082,18 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(pageErrors).toEqual([]);
   });
 
-  test('Ranger expedition encounter presents its distinct class technique', async ({ page }) => {
+  test('Ranger encounter exposes intent and uses a Healing Potion through the live battle UI', async ({ page }) => {
     await startFreshCharacter(page, 'BattleQA');
-    // Prime pressure so the first advance deterministically triggers combat.
     await page.evaluate(() => {
       const rt=window.LegendRuntimeV120, pl=rt.loadPlayer();
       pl.flags=pl.flags||{};
+      pl.hp=40;
+      pl.maxHp=100;
+      pl.inventory=pl.inventory||{};
+      pl.inventory.potion=1;
       pl.flags.roadExpeditionV100={...(pl.flags.roadExpeditionV100||{}),stage:0,pressure:53,trips:0,events:0,finds:0,battles:0};
-      // Pin this browser test to the goblin so its intent pattern is deterministic.
-      const road = window.LegendRoadsV100.oldRoad;
-      road.enemies = road.enemies.filter(enemy => enemy.id === 'goblin');
+      const road=window.LegendRoadsV100.oldRoad;
+      road.enemies=road.enemies.filter(enemy=>enemy.id==='goblin').map(enemy=>({...enemy,damage:[3,3]}));
       rt.savePlayer(pl);
     });
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
@@ -1103,10 +1110,24 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.rpg-command-grid .rpg-command')).toHaveCount(4);
     await expect(page.locator('#strike')).toContainText('FIGHT');
     await expect(page.locator('#skill')).toContainText('ACT');
-    await expect(page.locator('#item')).toContainText('ITEM');
-    await page.locator('#guard').click();
+    await expect(page.locator('#item')).toBeEnabled();
+    const beforePotion=await page.evaluate(()=>{
+      const pl=window.LegendRuntimeV120.loadPlayer();
+      return {hp:pl.hp,potion:pl.inventory.potion};
+    });
+    expect(beforePotion).toEqual({hp:40,potion:1});
+    await page.locator('#item').click();
+    await expect(page.locator('.rpg-dialogue')).toContainText(/drink a Healing Potion and recover 30 HP/i);
+    await expect(page.locator('.rpg-dialogue')).toContainText(/hits you for \d+ damage/i);
+    await expect(page.locator('.rpg-battle-topline strong')).toContainText('TURN 2');
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-attack/);
-    await expect(page.locator('.rpg-foe-nameplate')).toContainText('OPPONENT');
+    const afterPotion=await page.evaluate(()=>{
+      const pl=window.LegendRuntimeV120.loadPlayer();
+      return {hp:pl.hp,potion:pl.inventory.potion};
+    });
+    expect(afterPotion.potion).toBe(0);
+    expect(afterPotion.hp).toBeGreaterThan(40);
+    expect(afterPotion.hp).toBeLessThan(70);
     await page.locator('#guard').click();
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-heavy/);
     await expect(page.locator('.rpg-foe-nameplate')).toContainText('HEAVY WIND-UP');
@@ -1548,7 +1569,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'StoryReedQA');
     await page.evaluate(() => window.LegendAshmereV099.route('routes'));
     await enterOldRoadFromDeparture(page);
-    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('routeReeds')?.click(); Math.random = random; });
+    await page.evaluate(() => { window.__reedRouteRandom = Math.random; Math.random = () => 0.1; });
+    await page.locator('#routeReeds').click();
+    await page.evaluate(() => { Math.random = window.__reedRouteRandom; delete window.__reedRouteRandom; });
     await page.evaluate(() => {
       const rt = window.LegendRuntimeV120;
       const pl = rt.loadPlayer();
@@ -1559,9 +1582,17 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
       window.LegendRoadControllerV100.renderExpedition();
     });
-    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
+    await expect(page.locator('#finish')).toBeVisible();
+    await page.evaluate(() => { window.__reedFinishRandom = Math.random; Math.random = () => 0.1; });
+    await page.locator('#finish').click();
+    await expect(page.locator('.exp100-outcome')).toBeVisible({ timeout: 10000 });
     await expect(page.locator('.exp100-outcome')).toContainText(/tracks beneath the blue light/i);
+    await page.evaluate(() => { Math.random = window.__reedFinishRandom; delete window.__reedFinishRandom; });
     await page.locator('#outcomeReturn').click();
+    await expect(page.locator('.ash100-town')).toBeVisible();
+    await expect.poll(() => page.locator('#legend-scene-curtain').evaluate(el =>
+      !el.classList.contains('is-covering') && getComputedStyle(el).pointerEvents === 'none'
+    )).toBe(true);
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
     await expect(page.locator('.ash099-lines')).toContainText(/Bell Fragment is physical evidence/i);
     const result = await page.evaluate(() => {

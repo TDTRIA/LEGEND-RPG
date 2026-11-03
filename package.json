@@ -1,6 +1,6 @@
 {
   "name": "legend-the-awakening",
-  "version": "0.30.4",
+  "version": "0.30.5",
   "private": true,
   "description": "Production Playwright regression tooling and isolated Phaser preview checks for LEGEND: The Awakening.",
   "scripts": {

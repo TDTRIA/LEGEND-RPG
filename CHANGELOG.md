@@ -4,6 +4,12 @@
 
 All notable changes to the current project are recorded here. Historical entries may retain old names and versions from the build they describe.
 
+## v0.30.5 — Greyfen crossing story and mobile reliability
+
+- Successful **A Dry Crossing** completions preserve a single post-flood landing rumor in traveler memories; failed attempts do not record it, and older completed saves backfill it on the next visit.
+- Scene-transition curtains now use a bounded reveal window and explicitly release touch hit-testing after the cover, so delayed destination images cannot trap mobile input.
+- Production browser coverage now verifies Reed Cut field-report returns and Healing Potion use on desktop and mobile.
+
 ## 2026-11-03 — Audio and Phaser production integration (not a game version bump)
 
 - Merge [PR #99](https://github.com/TDTRIA/LEGEND-RPG/pull/99): make open Ashmere world-shell drawers opaque at mobile/tablet widths, preserve desktop glass panels, refresh the Phaser stylesheet cache key, and add production Playwright coverage for touch navigation through the Ashmere Market, Forge, and Inn.
