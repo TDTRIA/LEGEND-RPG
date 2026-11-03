@@ -2282,6 +2282,9 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
       environment: snapshot?.environment,
       surface: snapshot?.surface,
       landmarks: snapshot?.ashmereLandmarks || [],
+      landmarkIconsLoaded: snapshot?.landmarkIconsLoaded,
+      pointLightCount: snapshot?.pointLightCount ?? 0,
+      rendererType: snapshot?.rendererType ?? null,
       productionStorage: typeof window.LegendStorage?.loadPlayer === 'function' &&
         typeof window.LegendStorage?.savePlayer === 'function'
     };
@@ -2289,6 +2292,13 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
   expect(landmarks.environment).toBe('ashmere');
   expect(landmarks.surface).toBe('town');
   expect(landmarks.landmarks.map(item => item.id)).toEqual(['inn', 'market', 'forge', 'road']);
+  expect(landmarks.landmarks.map(item => item.iconKey)).toEqual([
+    'serviceInnIcon', 'serviceMarketIcon', 'serviceForgeIcon', 'serviceRoadIcon'
+  ]);
+  expect(landmarks.landmarkIconsLoaded).toBe(true);
+  // PointLights are WebGL-only; Canvas uses the retained native halo fallback.
+  expect(landmarks.pointLightCount).toBeGreaterThanOrEqual(0);
+  expect(landmarks.pointLightCount).toBeLessThanOrEqual(4);
   expect(landmarks.productionStorage).toBe(true);
 
   // A map-space pointer-up hits the Phaser landmark's screen-space bounds.
