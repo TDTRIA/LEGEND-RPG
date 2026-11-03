@@ -1,601 +1,528 @@
+/* LEGEND Reboot — Phaser presentation + production gameplay adapter.
+ * The prototype has its own local save key. All gameplay catalogs, rules, controllers,
+ * town services, quests, dungeons and Greyfen systems are loaded from the current game.
+ */
 (() => {
   'use strict';
 
-  const ASSET = '../../assets/';
+  const SAVE_KEY = 'legend-reboot-prototype-save-v1';
+  const root = () => document.getElementById('root');
+  const byId = id => document.getElementById(id);
+  const reducedMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let activePlayer = null;
+  let game = null;
+  let realmScene = null;
+  let currentEnvironment = '';
+  let soundEnabled = true;
+  let ambientAudio = null;
+  let observer = null;
+  const settingsStorage = window.LegendSettingsStorageV120?.create();
+
+  function safeRead() {
+    try {
+      const value = localStorage.getItem(SAVE_KEY);
+      return value ? JSON.parse(value) : null;
+    } catch (error) {
+      console.warn('Prototype save could not be read.', error);
+      return null;
+    }
+  }
+
+  function normalizer() {
+    return window.LegendPlayerNormalizerV120 && window.LegendPlayerNormalizerV120.create({
+      getData: () => window.LEGEND_DATA || {}
+    });
+  }
+
+  function normalize(player) {
+    if (!player) return null;
+    const service = normalizer();
+    return service && service.normalize ? service.normalize(player) : player;
+  }
+
+  function loadPlayer() {
+    if (activePlayer) return activePlayer;
+    activePlayer = normalize(safeRead());
+    return activePlayer;
+  }
+
+  function savePlayer(player) {
+    if (!player) return null;
+    activePlayer = normalize(player);
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(activePlayer));
+    } catch (error) {
+      console.warn('Prototype save could not be written.', error);
+      toast('Browser storage is unavailable. Your current session can continue, but will not persist after closing this tab.');
+    }
+    return activePlayer;
+  }
+
+  function clearPlayer() {
+    activePlayer = null;
+    try { localStorage.removeItem(SAVE_KEY); } catch (error) { console.warn(error); }
+  }
+
+  // The production creation, town and road controllers expect these stable facades.
+  // They are intentionally backed by the prototype's separate save key.
+  window.LegendStorage = {
+    loadPlayer,
+    savePlayer,
+    normalize,
+    baseSkills: () => normalizer()?.baseSkills?.() || {},
+    loadSettings: () => settingsStorage?.loadSettings?.() || {},
+    saveSettings: settings => settingsStorage?.saveSettings?.(settings) || false,
+    applySettings: settings => settingsStorage?.applySettings?.(settings),
+    deleteSaves: clearPlayer
+  };
+  window.LegendRuntimeV120 = {
+    loadPlayer,
+    savePlayer,
+    returnToAshmere: () => window.LegendAshmereV099?.renderAshmere?.(),
+    baseSkills: () => normalizer()?.baseSkills?.() || {},
+    normalize
+  };
+  window.__legendRebootSaveKey = SAVE_KEY;
+
   const ASSETS = {
-    title: ASSET + 'generated/title/title-ashmere-road.webp',
-    ash: ASSET + 'generated/locations/ashmere-town.webp',
-    road: ASSET + 'generated/locations/old-road-south-fork.webp',
-    greyfen: ASSET + 'generated/locations/greyfen-town.webp',
-    storm: ASSET + 'images/backgrounds/eerie_medieval_village_under_stormy_skies.png',
-    ruins: ASSET + 'images/backgrounds/gothic_ruins_beneath_a_stormy_sky.png',
-    library: ASSET + 'images/backgrounds/gothic_library_of_arcane_secrets.png',
-    swamp: ASSET + 'images/backgrounds/goblin_in_a_haunted_swamp_path.png',
-    hero: ASSET + 'generated/classes/class-adventurer.webp',
-    mage: ASSET + 'generated/classes/class-mage.webp',
-    goblin: ASSET + 'generated/enemies/road-goblin.webp',
-    wolf: ASSET + 'generated/enemies/blackroot-wolf.webp',
-    wisp: ASSET + 'generated/enemies/lantern-wisp.webp',
-    ambience: ASSET + 'audio/title/ashmere_ambience_loop.wav',
-    hit: ASSET + 'audio/battle/battle_hit.wav',
-    swing: ASSET + 'audio/battle/battle_swing.wav',
-    magic: ASSET + 'audio/battle/battle_magic.wav',
-    guard: ASSET + 'audio/battle/battle_guard.wav',
-    victory: ASSET + 'audio/battle/battle_victory.wav',
-    confirm: ASSET + 'audio/ui/ui_confirm_gate.wav'
+    title: 'assets/generated/title/title-ashmere-road.webp',
+    ashmere: 'assets/generated/locations/ashmere-town.webp',
+    road: 'assets/generated/locations/old-road-south-fork.webp',
+    ridge: 'assets/generated/locations/high-ridge.webp',
+    reeds: 'assets/generated/locations/reed-cut.webp',
+    camp: 'assets/generated/locations/roadside-camp.webp',
+    greyfen: 'assets/generated/locations/greyfen-town.webp',
+    marsh: 'assets/generated/locations/greyfen-marsh-walkway.webp',
+    inn: 'assets/generated/locations/ashmere-inn.webp',
+    market: 'assets/generated/locations/ashmere-market.webp',
+    forge: 'assets/generated/locations/ashmere-forge.webp',
+    archive: 'assets/generated/locations/ashmere-archive.webp',
+    greyfenInn: 'assets/generated/locations/greyfen-inn.webp',
+    greyfenMarket: 'assets/generated/locations/greyfen-market.webp',
+    greyfenForge: 'assets/generated/locations/greyfen-forge.webp',
+    greyfenArchive: 'assets/generated/locations/greyfen-archive.webp',
+    oric: 'assets/generated/npcs/captain-oric.webp',
+    wolf: 'assets/generated/enemies/blackroot-wolf.webp',
+    goblin: 'assets/generated/enemies/road-goblin.webp',
+    wisp: 'assets/generated/enemies/lantern-wisp.webp',
+    sentinel: 'assets/generated/enemies/mirebound-sentinel.webp',
+    warrior: 'assets/generated/classes/class-warrior.webp',
+    adventurer: 'assets/generated/classes/class-adventurer.webp',
+    ranger: 'assets/generated/classes/class-ranger.webp',
+    mage: 'assets/generated/classes/class-mage.webp',
+    thief: 'assets/generated/classes/class-thief.webp',
+    skiller: 'assets/generated/classes/class-skiller.webp'
   };
-
-  const $ = (selector) => document.querySelector(selector);
-  const $$ = (selector) => Array.from(document.querySelectorAll(selector));
-  const panels = {
-    title: $('#title-panel'),
-    cinematic: $('#cinematic-panel'),
-    combat: $('#combat-panel'),
-    training: $('#training-panel')
-  };
-
-  let scene = null;
-  let currentMode = 'title';
-  let soundEnabled = false;
-  let trainingRank = 0;
-  let chosenRunes = [];
-  const intendedPattern = ['TIDE', 'EMBER', 'ROOT'];
-  let toastHandle = null;
 
   function toast(message) {
-    const element = $('#toast');
-    element.textContent = message;
+    const element = byId('toast');
+    if (!element) return;
+    element.textContent = String(message || '');
     element.classList.add('show');
-    if (toastHandle) window.clearTimeout(toastHandle);
-    toastHandle = window.setTimeout(() => element.classList.remove('show'), 1700);
+    window.clearTimeout(toast.handle);
+    toast.handle = window.setTimeout(() => element.classList.remove('show'), 2800);
   }
 
-  function setMode(mode) {
-    currentMode = mode;
-    Object.entries(panels).forEach(([key, panel]) => {
-      panel.classList.toggle('active', key === mode);
-      panel.setAttribute('aria-hidden', key !== mode ? 'true' : 'false');
+  function setEnvironment(name, immediate = false) {
+    const environment = String(name || 'title');
+    if (environment === currentEnvironment) return;
+    currentEnvironment = environment;
+    if (realmScene && realmScene.setEnvironment) realmScene.setEnvironment(environment, immediate);
+  }
+
+  function inferEnvironment() {
+    const host = root();
+    if (!host) return;
+    const player = loadPlayer();
+    let environment = 'title';
+    if (host.querySelector('.opening-road-v140')) environment = 'road';
+    else if (host.querySelector('.opening-lore-v220')) environment = 'title';
+    else if (host.querySelector('.v140-creation')) environment = 'title';
+    else if (host.querySelector('.rpg-battle')) environment = 'road';
+    else if (host.querySelector('.gss170-page')) environment = 'marsh';
+    else if (host.querySelector('.gfm160-page')) environment = 'marsh';
+    else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'archive';
+    else if (host.querySelector('.ash100-town-greyfen')) environment = 'greyfen';
+    else if (host.querySelector('.ash100-town-ashmere')) environment = 'ashmere';
+    else if (host.querySelector('.exp100-scene')) {
+      const state = player?.flags?.roadExpeditionV100 || {};
+      environment = Number(state.stage || 0) === 2 ? 'camp'
+        : state.routeChoice === 'ridge' && Number(state.stage || 0) <= 1 ? 'ridge'
+        : state.routeChoice === 'reeds' && Number(state.stage || 0) <= 1 ? 'reeds'
+        : 'road';
+    } else if (host.querySelector('.ash099, .reg100')) {
+      environment = String(player?.currentRegion || 'Ashmere') === 'Greyfen' ? 'greyfen' : 'ashmere';
+      const text = (host.textContent || '').toLowerCase();
+      if (text.includes('workbench') || text.includes('crafting bench')) environment = environment === 'Greyfen' ? 'greyfenForge' : 'forge';
+      else if (text.includes('trading post') || text.includes('market')) environment = environment === 'Greyfen' ? 'greyfenMarket' : 'market';
+      else if (text.includes('archive')) environment = environment === 'Greyfen' ? 'greyfenArchive' : 'archive';
+      else if (text.includes('inn')) environment = environment === 'Greyfen' ? 'greyfenInn' : 'inn';
+    }
+    setEnvironment(environment);
+  }
+
+  function observeRoot() {
+    if (observer) observer.disconnect();
+    const host = root();
+    if (!host || !window.MutationObserver) return;
+    observer = new MutationObserver(() => inferEnvironment());
+    observer.observe(host, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    inferEnvironment();
+  }
+
+  function showDispatches() {
+    const host = root();
+    const rendered = window.LegendTitleDispatchesV140?.render?.({
+      root: host,
+      buildVersion: String(window.LEGEND_DATA?.VERSION || 'v0.30.4'),
+      onBack: showTitle
     });
+    if (!rendered) {
+      toast('The development dispatch is not available in this build.');
+      return showTitle();
+    }
+    setEnvironment('title');
+    observeRoot();
   }
 
-  function setBattleLog(title, message) {
-    $('#battleHeading').textContent = title;
-    $('#battleLog').textContent = message;
-  }
-
-  function updateBars() {
-    if (!scene || !scene.battle) return;
-    const b = scene.battle;
-    $('#heroHpText').textContent = Math.max(0, b.hp) + ' / 100';
-    $('#heroMpText').textContent = Math.max(0, b.mp) + ' / 30';
-    $('#heroHpBar').style.width = Math.max(0, b.hp) + '%';
-    $('#heroMpBar').style.width = Math.max(0, b.mp / 30 * 100) + '%';
-    $$('[data-battle]').forEach(button => {
-      button.disabled = b.busy || b.hp <= 0 || b.enemyHp <= 0 ||
-        (button.dataset.battle === 'spell' && b.mp < 10);
+  function showSettings() {
+    const host = root();
+    const rendered = window.LegendSettingsScreenV090?.render?.({
+      root: host,
+      loadSettings: () => settingsStorage?.loadSettings?.() || {},
+      saveSettings: settings => settingsStorage?.saveSettings?.(settings),
+      buildVersion: () => String(window.LEGEND_DATA?.VERSION || 'v0.30.4'),
+      loadPlayer,
+      onBackTitle: showTitle,
+      onBackGame: continueJourney
     });
+    if (!rendered) {
+      toast('Settings are not available in this build.');
+      return showTitle();
+    }
+    setEnvironment('title');
+    observeRoot();
   }
 
-  function showMode(mode) {
-    if (!scene || !scene.ready) {
-      toast('The scene is still loading. Try again in a moment.');
+  function showTitle() {
+    const host = root();
+    const title = window.LegendTitleScreenV120;
+    if (!host || typeof title?.render !== 'function') {
+      if (host) host.innerHTML = '<section class="mode active" role="alert"><h1>Title screen unavailable</h1><p>The production title modules did not load. Refresh before continuing.</p></section>';
       return;
     }
-    scene.stopModeEffects();
-    setMode(mode);
-    if (mode === 'title') {
-      scene.showBackdrop('title');
-      scene.clearBattle();
-      scene.soundscape();
-    } else if (mode === 'combat') {
-      scene.enterCombat();
-    } else if (mode === 'training') {
-      scene.enterTraining();
-    }
+    title.render({
+      root: host,
+      loadPlayer,
+      buildVersion: () => String(window.LEGEND_DATA?.VERSION || 'v0.30.4'),
+      applySettings: settings => settingsStorage?.applySettings?.(settings),
+      onContinue: continueJourney,
+      onNewTraveler: beginJourney,
+      onAccount: () => toast('Traveler accounts and cloud profiles are not enabled in the isolated prototype.'),
+      onSettings: showSettings,
+      onCredits: () => title.openCredits?.(),
+      onDispatches: showDispatches
+    });
+    // Cloud identity and remote traveler slots remain outside this isolated save boundary.
+    host.querySelector('#account')?.remove();
+    setEnvironment('title');
+    observeRoot();
   }
 
-  function endCinematic() {
-    if (!scene) return;
-    scene.stopCinematic();
-    setMode('cinematic');
-    $('#cinematicChapter').textContent = 'Arrival · Ashmere';
-    $('#cinematicLine').textContent = 'Ashmere waits beneath the first grey light. Beyond its lamps, old magic has begun to stir.';
-    $('#skipCinematic').hidden = true;
-    $('#cinematicNext').hidden = false;
-    $('#cinematicNext').textContent = 'Return to the prototype menu';
-    scene.showBackdrop('ash');
-  }
-
-  function startCinematic() {
-    if (!scene || !scene.ready) {
-      toast('The scene is still loading. Try again in a moment.');
-      return;
-    }
-    setMode('cinematic');
-    $('#skipCinematic').hidden = false;
-    $('#cinematicNext').hidden = true;
-    scene.startCinematic();
-  }
-
-  function chooseRune(rune) {
-    if (currentMode !== 'training' || chosenRunes.length >= intendedPattern.length) return;
-    chosenRunes.push(rune);
-    $('#trainingResult').textContent = 'Your pattern: ' + chosenRunes.join(' → ');
-    if (scene) scene.pulseRune(rune);
-  }
-
-  function testRunes() {
-    if (chosenRunes.length !== intendedPattern.length) {
-      $('#trainingResult').textContent = 'The circle is incomplete. Choose three marks first.';
-      return;
-    }
-    const success = chosenRunes.every((rune, i) => rune === intendedPattern[i]);
-    if (success) {
-      trainingRank += 1;
-      $('#trainingRank').textContent = String(trainingRank);
-      $('#trainingResult').textContent = 'The current holds. Rune Craft mastery +1 (prototype only).';
-      if (scene) scene.runeSuccess();
-      toast('Pattern held · Rune Craft +1');
+  function beginJourney() {
+    if (loadPlayer() && !window.confirm('Start a new prototype traveler? This replaces only the separate Phaser prototype save. Your production game and saves are not changed.')) return;
+    clearPlayer();
+    setEnvironment('title');
+    const annals = window.LegendOpeningPrologueV220;
+    if (typeof annals?.start === 'function') {
+      annals.start(() => {
+        setEnvironment('title');
+        window.LegendBeginningV094?.startCreation?.();
+      });
     } else {
-      $('#trainingResult').textContent = 'The pattern breaks apart. No punishment—reset and try again.';
-      if (scene) scene.runeFailure();
+      window.LegendBeginningV094?.startCreation?.();
     }
   }
 
-  window.LegendRebootPrototype = {
-    title: () => showMode('title'),
-    combat: () => showMode('combat'),
-    training: () => showMode('training'),
-    begin: startCinematic
-  };
-
-  $('#beginButton').addEventListener('click', startCinematic);
-  $('#combatButton').addEventListener('click', () => showMode('combat'));
-  $('#runeButton').addEventListener('click', () => showMode('training'));
-  $('#skipCinematic').addEventListener('click', endCinematic);
-  $('#cinematicNext').addEventListener('click', () => showMode('title'));
-  $$('.rune-choice').forEach(button => button.addEventListener('click', () => chooseRune(button.dataset.rune)));
-  $('#testRune').addEventListener('click', testRunes);
-  $('#resetRune').addEventListener('click', () => {
-    chosenRunes = [];
-    $('#trainingResult').textContent = 'Pattern cleared. Study the sequence, then try again.';
-  });
-  $('#soundToggle').addEventListener('click', () => {
-    soundEnabled = !soundEnabled;
-    $('#soundToggle').textContent = soundEnabled ? 'SOUND: ON' : 'SOUND: OFF';
-    $('#soundToggle').setAttribute('aria-pressed', String(soundEnabled));
-    if (scene) scene.setSoundEnabled(soundEnabled);
-  });
-  $$('[data-battle]').forEach(button => button.addEventListener('click', () => {
-    if (scene) scene.takeBattleAction(button.dataset.battle);
-  }));
-
-  window.addEventListener('keydown', event => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      showMode('title');
-      return;
+  function continueJourney() {
+    const player = loadPlayer();
+    if (!player) return showTitle();
+    if (player.flags?.openingRoadV140 && !player.flags.openingRoadV140.completed) {
+      setEnvironment('road');
+      if (window.LegendRoadOpeningV140?.resume?.(player)) return;
     }
-    if (currentMode === 'combat' && ['1', '2', '3', '4'].includes(event.key)) {
-      const action = ({ '1': 'attack', '2': 'guard', '3': 'spell', '4': 'retreat' })[event.key];
-      if (scene) scene.takeBattleAction(action);
+    const road = player.flags?.roadExpeditionV100 || {};
+    if (Number(road.trips || 0) > 0 && (Number(road.stage || 0) > 0 || road.routeChoice)) {
+      setEnvironment('road');
+      return window.LegendRoadControllerV100?.renderHub?.();
     }
-  });
-
-  if (typeof Phaser === 'undefined') {
-    $('#game-container').innerHTML = '<div style="padding:24px;color:#e2d3ae;font:14px system-ui">Phaser did not load. Check the browser connection to the pinned Phaser CDN.</div>';
-    toast('Could not load the game framework.');
-    return;
+    const marsh = player.flags?.greyfenMarshExpeditionV160 || {};
+    if (marsh.active && window.LegendGreyfenMarshV160?.start) {
+      setEnvironment('marsh');
+      return window.LegendGreyfenMarshV160.start();
+    }
+    if (player.flags?.greyfenStorehouseV170?.active) {
+      setEnvironment('marsh');
+      return window.LegendAshmereV099?.route?.('storehouse');
+    }
+    if (player.flags?.bellVaultV100?.active) {
+      setEnvironment('archive');
+      return window.LegendAshmereV099?.route?.('dungeon');
+    }
+    if (player.currentRegion === 'Greyfen') setEnvironment('greyfen');
+    else setEnvironment('ashmere');
+    return window.LegendAshmereV099?.renderAshmere?.();
   }
 
-  class RebootScene extends Phaser.Scene {
+  function setSound(enabled) {
+    soundEnabled = Boolean(enabled);
+    const button = byId('soundToggle');
+    if (button) {
+      button.textContent = soundEnabled ? 'Sound On' : 'Sound Off';
+      button.setAttribute('aria-pressed', String(soundEnabled));
+    }
+    if (!soundEnabled && ambientAudio) {
+      ambientAudio.pause();
+      ambientAudio.currentTime = 0;
+    } else if (soundEnabled && currentEnvironment === 'title') {
+      startAmbient();
+    }
+    const roadAudio = window.LegendRoadAudioV100;
+    if (roadAudio && typeof roadAudio.soundOn === 'function' && roadAudio.soundOn() !== soundEnabled) {
+      roadAudio.toggleSound?.();
+    }
+  }
+
+  function startAmbient() {
+    if (!soundEnabled) return;
+    try {
+      if (!ambientAudio) {
+        ambientAudio = new Audio('assets/audio/title/ashmere_ambience_loop.wav');
+        ambientAudio.loop = true;
+        ambientAudio.volume = 0.16;
+      }
+      if (ambientAudio.paused) ambientAudio.play().catch(() => {});
+    } catch (error) {
+      ambientAudio = null;
+    }
+  }
+
+  class RealmScene extends Phaser.Scene {
     constructor() {
-      super({ key: 'RebootScene' });
-      this.ready = false;
-      this.backdrop = null;
-      this.backdropTween = null;
-      this.modeTweens = [];
-      this.soundNodes = {};
-      this.battle = null;
-      this.heroArt = null;
-      this.enemyArt = null;
-      this.heroOrigin = { x: 390, y: 440 };
-      this.enemyOrigin = { x: 1200, y: 420 };
-      this.runeRings = [];
-      this.trainingGlyphs = [];
-      this.cinematicEvents = [];
-      this.cinematicIndex = 0;
-      this.cinematicRunning = false;
+      super({ key: 'RealmScene' });
+      this.background = null;
+      this.mist = [];
+      this.glowSources = [];
+      this.environment = '';
     }
 
     preload() {
-      Object.entries(ASSETS).forEach(([key, path]) => {
-        const isAudio = ['ambience', 'hit', 'swing', 'magic', 'guard', 'victory', 'confirm'].includes(key);
-        if (isAudio) this.load.audio(key, path);
-        else this.load.image(key, path);
+      Object.keys(ASSETS).forEach(key => {
+        if (['title','ashmere','road','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive'].includes(key)) {
+          this.load.image(key, ASSETS[key]);
+        }
       });
-      this.load.on('loaderror', file => console.warn('[LEGEND prototype] Asset failed to load:', file.key, file.src));
     }
 
     create() {
-      this.ready = true;
-      scene = this;
-      this.showBackdrop('title');
-      this.scale.on('resize', () => this.resizeCurrentScene());
-      this.soundscape();
-      window.__legendRebootReady = true;
-      window.dispatchEvent(new CustomEvent('legend-reboot-prototype-ready'));
+      this.cameras.main.setBackgroundColor('#090e0d');
+      this.createAtmosphere();
+      this.scale.on('resize', () => this.layoutBackground());
+      this.setEnvironment('title', true);
+      this.input.keyboard?.on('keydown', event => {
+        if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
+      });
+      realmScene = this;
+      window.__legendRebootBridge = {
+        setEnvironment: (name, immediate) => this.setEnvironment(name, immediate),
+        pulse: kind => this.pulse(kind),
+        flash: (color, duration) => this.cameras.main.flash(duration || 240, color?.r || 188, color?.g || 155, color?.b || 92)
+      };
     }
 
     dimensions() {
       return { width: this.scale.width || 1600, height: this.scale.height || 900 };
     }
 
-    createCover(key, alpha = 1) {
-      const { width, height } = this.dimensions();
-      const image = this.add.image(width / 2, height / 2, key);
-      const factor = Math.max(width / image.width, height / image.height);
-      image.setScale(factor).setAlpha(alpha);
-      image.setData('coverFactor', factor);
-      return image;
-    }
-
-    showBackdrop(key) {
-      if (!this.textures.exists(key)) return;
-      const prior = this.backdrop;
-      const next = this.createCover(key, prior ? 0 : 1);
-      this.backdrop = next;
-      const { width, height } = this.dimensions();
-      this.backdropTween = this.tweens.add({
-        targets: next,
-        scale: next.getData('coverFactor') * 1.045,
-        x: width / 2 - width * .01,
-        y: height / 2 + height * .006,
-        duration: 14500,
-        ease: 'Sine.easeInOut',
-        yoyo: true,
-        repeat: -1
-      });
-      if (prior) {
-        this.tweens.add({ targets: next, alpha: 1, duration: 680, ease: 'Sine.easeInOut' });
-        this.tweens.add({ targets: prior, alpha: 0, duration: 680, ease: 'Sine.easeInOut', onComplete: () => prior.destroy() });
+    createAtmosphere() {
+      const size = this.dimensions();
+      for (let i = 0; i < 12; i++) {
+        const x = Phaser.Math.Between(0, size.width);
+        const y = Phaser.Math.Between(0, size.height);
+        const radius = Phaser.Math.FloatBetween(1.1, 3.4);
+        const mote = this.add.circle(x, y, radius, 0xd7c79d, Phaser.Math.FloatBetween(0.08, 0.24));
+        mote.setDepth(3);
+        this.mist.push(mote);
+        this.tweens.add({
+          targets: mote,
+          x: x + Phaser.Math.Between(-90, 90),
+          y: y - Phaser.Math.Between(24, 120),
+          alpha: 0.015,
+          duration: Phaser.Math.Between(6000, 13000),
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut',
+          delay: Phaser.Math.Between(0, 2500)
+        });
+      }
+      for (let i = 0; i < 5; i++) {
+        const x = size.width * (0.12 + i * 0.18);
+        const y = size.height * (0.72 + (i % 2) * 0.05);
+        const light = this.add.circle(x, y, Phaser.Math.Between(4, 8), 0xe3b969, 0.11);
+        light.setDepth(2);
+        this.glowSources.push(light);
+        this.tweens.add({
+          targets: light,
+          alpha: 0.025,
+          scale: 1.7,
+          duration: 1900 + i * 330,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut'
+        });
       }
     }
 
-    stopModeEffects() {
-      this.cinematicRunning = false;
-      this.cinematicEvents.forEach(event => event.remove(false));
-      this.cinematicEvents = [];
-      this.modeTweens.forEach(tween => tween.stop());
-      this.modeTweens = [];
-      this.clearBattle();
-      this.runeRings.forEach(ring => ring.destroy());
-      this.runeRings = [];
-      this.trainingGlyphs.forEach(glyph => glyph.destroy());
-      this.trainingGlyphs = [];
-    }
-
-    resizeCurrentScene() {
-      if (this.backdrop && this.backdrop.active) {
-        const { width, height } = this.dimensions();
-        const factor = Math.max(width / this.backdrop.width, height / this.backdrop.height);
-        this.backdrop.setPosition(width / 2, height / 2);
-        this.backdrop.setScale(factor);
-        this.backdrop.setData('coverFactor', factor);
-      }
-      if (currentMode === 'combat') this.placeBattleActors();
-    }
-
-    setSoundEnabled(enabled) {
-      if (!this.cache.audio.exists('ambience')) return;
-      if (enabled) {
-        if (!this.soundNodes.ambience) {
-          this.soundNodes.ambience = this.sound.add('ambience', { loop: true, volume: .22 });
-        }
-        if (!this.soundNodes.ambience.isPlaying) this.soundNodes.ambience.play();
-      } else if (this.soundNodes.ambience) {
-        this.soundNodes.ambience.stop();
-      }
-    }
-
-    soundscape() {
-      this.setSoundEnabled(soundEnabled);
-    }
-
-    sfx(key, volume = .6) {
-      if (!soundEnabled || !this.cache.audio.exists(key)) return;
-      this.sound.play(key, { volume });
-    }
-
-    startCinematic() {
-      this.stopModeEffects();
-      this.cinematicRunning = true;
-      this.cinematicIndex = 0;
-      const beats = [
-        { key: 'storm', chapter: 'Prologue · The Veil Stirs', line: 'In every age, people have begged the world to give back what it takes.' },
-        { key: 'library', chapter: 'The forbidden art', line: 'A healer learned to hold a dying voice—and mistook the echo for a miracle.' },
-        { key: 'ruins', chapter: 'What the dead leave behind', line: 'The ritual did not return the dead. It left the living to answer their footsteps.' },
-        { key: 'swamp', chapter: 'The old places wake', line: 'Now magic stirs in places the old kingdoms buried. Something below is listening.' },
-        { key: 'road', chapter: 'Beyond the last safe mile', line: 'The roads still lead somewhere. Whether it should be reached is another matter.' }
-      ];
-      const playBeat = index => {
-        if (!this.cinematicRunning) return;
-        this.cinematicIndex = index;
-        const beat = beats[index];
-        $('#cinematicChapter').textContent = beat.chapter;
-        $('#cinematicLine').textContent = beat.line;
-        this.showBackdrop(beat.key);
-        if (index === 2) this.cameras.main.shake(260, .0014);
-        if (index < beats.length - 1) {
-          this.cinematicEvents.push(this.time.delayedCall(3700, () => playBeat(index + 1)));
-        } else {
-          this.cinematicEvents.push(this.time.delayedCall(3900, () => endCinematic()));
-        }
-      };
-      playBeat(0);
-    }
-
-    stopCinematic() {
-      this.cinematicRunning = false;
-      this.cinematicEvents.forEach(event => event.remove(false));
-      this.cinematicEvents = [];
-    }
-
-    fitArtwork(image, maxWidth, maxHeight) {
-      const factor = Math.min(maxWidth / image.width, maxHeight / image.height);
-      image.setScale(factor);
-    }
-
-    enterCombat() {
-      this.stopModeEffects();
-      this.battle = { hp: 100, mp: 30, enemyHp: 72, busy: false, guarding: false, finished: false };
-      this.showBackdrop('road');
-      this.placeBattleActors();
-      setBattleLog('A road-goblin blocks the pass', 'It watches your hands. It has not committed to an attack yet.');
-      updateBars();
-    }
-
-    placeBattleActors() {
-      if (currentMode !== 'combat' || !this.battle) return;
-      const { width, height } = this.dimensions();
-      const heroX = width * .28;
-      const enemyX = width * .73;
-      const actorY = height * .52;
-      if (!this.heroArt || !this.heroArt.active) {
-        this.heroArt = this.add.image(heroX, actorY, 'hero');
-      }
-      if (!this.enemyArt || !this.enemyArt.active) {
-        this.enemyArt = this.add.image(enemyX, actorY, 'goblin');
-      }
-      this.heroOrigin = { x: heroX, y: actorY };
-      this.enemyOrigin = { x: enemyX, y: actorY };
-      this.heroArt.setPosition(heroX, actorY);
-      this.enemyArt.setPosition(enemyX, actorY);
-      this.fitArtwork(this.heroArt, width * .25, height * .52);
-      this.fitArtwork(this.enemyArt, width * .22, height * .42);
-      this.heroArt.setAlpha(1).clearTint();
-      this.enemyArt.setAlpha(1).clearTint();
-    }
-
-    clearBattle() {
-      if (this.heroArt && this.heroArt.active) this.heroArt.destroy();
-      if (this.enemyArt && this.enemyArt.active) this.enemyArt.destroy();
-      this.heroArt = null;
-      this.enemyArt = null;
-      this.battle = null;
-    }
-
-    takeBattleAction(action) {
-      const b = this.battle;
-      if (currentMode !== 'combat' || !b || b.busy || b.finished || b.hp <= 0 || b.enemyHp <= 0) return;
-      b.busy = true;
-      updateBars();
-      if (action === 'retreat') {
-        this.sfx('confirm');
-        setBattleLog('You break away', 'A wise retreat is still a decision. The encounter can be approached again.');
-        this.time.delayedCall(850, () => showMode('title'));
+    setEnvironment(name, immediate = false) {
+      const key = ASSETS[name] ? name : 'title';
+      if (key === this.environment && !immediate) return;
+      this.environment = key;
+      const size = this.dimensions();
+      const texture = this.textures.exists(key) ? this.textures.get(key) : null;
+      if (!texture) {
+        if (this.background) this.background.destroy();
+        this.background = this.add.rectangle(size.width / 2, size.height / 2, size.width, size.height, 0x101712);
+        this.background.setDepth(-2);
         return;
       }
-      if (action === 'guard') {
-        b.guarding = true;
-        this.sfx('guard');
-        setBattleLog('You set your stance', 'You read the goblin’s shoulder and prepare to blunt its next strike.');
-        this.tweens.add({ targets: this.heroArt, y: this.heroOrigin.y + 8, duration: 150, yoyo: true, repeat: 1 });
-        this.time.delayedCall(420, () => this.enemyTurn());
-        return;
-      }
-      if (action === 'spell' && b.mp < 10) {
-        b.busy = false;
-        updateBars();
-        setBattleLog('Not enough focus', 'Wait, defend, or use a weapon action while focus recovers.');
-        return;
-      }
-      const isSpell = action === 'spell';
-      const damage = isSpell ? Phaser.Math.Between(23, 31) : Phaser.Math.Between(14, 21);
-      if (isSpell) {
-        b.mp -= 10;
-        this.sfx('magic');
-        this.castEffect();
-        setBattleLog('Ember Bolt', 'The spell strikes hard, but drawing it through the Veil leaves a brief strain.');
-      } else {
-        this.sfx('swing');
-        setBattleLog('A measured strike', 'You step into range instead of trading blows blindly.');
-      }
-      const oldHeroX = this.heroOrigin.x;
-      this.tweens.add({
-        targets: this.heroArt,
-        x: oldHeroX + (isSpell ? 12 : 72),
-        y: this.heroOrigin.y - (isSpell ? 16 : 9),
-        duration: 145,
-        ease: 'Quad.easeOut',
-        onComplete: () => {
-          b.enemyHp = Math.max(0, b.enemyHp - damage);
-          this.hitEnemy(damage);
+      const source = texture.getSourceImage();
+      const scale = Math.max(size.width / Math.max(1, source.width), size.height / Math.max(1, source.height));
+      const next = this.add.image(size.width / 2, size.height / 2, key);
+      next.setScale(scale);
+      next.setDepth(-3);
+      next.setAlpha(immediate || reducedMotion() ? 1 : 0);
+      if (this.background) {
+        const previous = this.background;
+        if (immediate || reducedMotion()) previous.destroy();
+        else {
           this.tweens.add({
-            targets: this.heroArt,
-            x: oldHeroX,
-            y: this.heroOrigin.y,
-            duration: 190,
-            ease: 'Quad.easeInOut'
+            targets: previous,
+            alpha: 0,
+            duration: 520,
+            onComplete: () => previous.destroy()
           });
-          if (b.enemyHp <= 0) {
-            b.busy = false;
-            b.finished = true;
-            this.time.delayedCall(520, () => {
-              this.sfx('victory');
-              setBattleLog('The road falls quiet', 'The goblin retreats into the brush. This is a prototype encounter, not a production reward.');
-              updateBars();
-              toast('Encounter won · combat feedback prototype');
-            });
-            updateBars();
-          } else {
-            updateBars();
-            this.time.delayedCall(300, () => this.enemyTurn());
-          }
         }
+      }
+      this.background = next;
+      if (!immediate && !reducedMotion()) {
+        this.cameras.main.fadeIn(520, 4, 7, 6);
+        this.tweens.add({
+          targets: next,
+          alpha: 1,
+          duration: 680,
+          ease: 'Sine.easeOut'
+        });
+      }
+      this.layoutBackground();
+    }
+
+    layoutBackground() {
+      if (!this.background || !this.background.active || !this.background.texture) return;
+      const size = this.dimensions();
+      const source = this.background.texture.getSourceImage();
+      const scale = Math.max(size.width / Math.max(1, source.width), size.height / Math.max(1, source.height));
+      this.background.setPosition(size.width / 2, size.height / 2);
+      this.background.setScale(scale);
+      this.mist.forEach((mote, index) => {
+        if (mote && mote.active) mote.setPosition((size.width * ((index * 0.137 + 0.11) % 0.9)), size.height * ((index * 0.191 + 0.2) % 0.8));
       });
     }
 
-    hitEnemy(damage) {
-      if (!this.enemyArt || !this.enemyArt.active) return;
-      this.enemyArt.setTint(0xffb4a0);
-      this.sfx('hit');
-      this.cameras.main.shake(110, .003);
-      const x = this.enemyOrigin.x;
-      const y = this.enemyOrigin.y - this.enemyArt.displayHeight * .38;
-      const number = this.add.text(x, y, '-' + damage, {
-        fontFamily: 'system-ui, sans-serif', fontSize: '27px', fontStyle: 'bold',
-        color: '#ffe5ae', stroke: '#16120d', strokeThickness: 5
-      }).setOrigin(.5);
-      this.tweens.add({ targets: number, y: y - 62, alpha: 0, duration: 760, ease: 'Sine.easeOut', onComplete: () => number.destroy() });
-      this.tweens.add({
-        targets: this.enemyArt,
-        x: x + 25,
-        duration: 85,
-        yoyo: true,
-        repeat: 1,
-        onComplete: () => {
-          if (!this.enemyArt || !this.enemyArt.active) return;
-          this.enemyArt.clearTint();
-          this.enemyArt.setPosition(x, this.enemyOrigin.y);
-        }
-      });
-    }
-
-    castEffect() {
-      const { width, height } = this.dimensions();
-      const graphics = this.add.graphics();
-      const sx = this.heroOrigin.x + 35;
-      const ex = this.enemyOrigin.x - 45;
-      const y = this.heroOrigin.y - 25;
-      graphics.lineStyle(7, 0x91c9ff, .85);
-      graphics.beginPath();
-      graphics.moveTo(sx, y);
-      graphics.lineTo(ex, y - 42);
-      graphics.strokePath();
-      graphics.fillStyle(0xc3e6ff, .9);
-      graphics.fillCircle((sx + ex) / 2, y - 22, 11);
-      this.tweens.add({ targets: graphics, alpha: 0, duration: 300, onComplete: () => graphics.destroy() });
-      if (this.enemyArt) {
-        this.enemyArt.setTint(0xa5c6ff);
-        this.time.delayedCall(180, () => this.enemyArt && this.enemyArt.active && this.enemyArt.clearTint());
+    pulse(kind) {
+      const camera = this.cameras.main;
+      if (kind === 'hit') camera.shake(165, 0.003);
+      else if (kind === 'heavy') camera.shake(120, 0.0026);
+      else if (kind === 'guard') camera.flash(120, 88, 132, 164, true);
+      else if (kind === 'magic') {
+        camera.flash(170, 105, 151, 181, true);
+        this.runeBurst(0x9fc8e5);
+      } else if (kind === 'swing') camera.shake(80, 0.0011);
+      else if (kind === 'victory') {
+        camera.flash(330, 197, 162, 91, true);
+        this.runeBurst(0xe2c17d);
       }
     }
 
-    enemyTurn() {
-      const b = this.battle;
-      if (!b || b.finished || b.enemyHp <= 0 || currentMode !== 'combat') return;
-      setBattleLog('The goblin commits to a strike', 'Its shoulders drop. You have a brief moment to understand the attack before it lands.');
-      const startX = this.enemyOrigin.x;
-      this.enemyArt.setTint(0xe8b77f);
-      this.tweens.add({
-        targets: this.enemyArt,
-        x: startX - 60,
-        y: this.enemyOrigin.y + 8,
-        duration: 220,
-        ease: 'Quad.easeIn',
-        onComplete: () => {
-          const rawDamage = Phaser.Math.Between(11, 17);
-          const damage = b.guarding ? Math.ceil(rawDamage * .28) : rawDamage;
-          b.hp = Math.max(0, b.hp - damage);
-          b.guarding = false;
-          this.sfx('hit');
-          this.cameras.main.shake(100, .002);
-          this.heroArt.setTint(0xff9d8b);
-          const y = this.heroOrigin.y - this.heroArt.displayHeight * .4;
-          const number = this.add.text(this.heroOrigin.x, y, '-' + damage, {
-            fontFamily: 'system-ui, sans-serif', fontSize: '25px', fontStyle: 'bold',
-            color: '#ffc0b0', stroke: '#16120d', strokeThickness: 5
-          }).setOrigin(.5);
-          this.tweens.add({ targets: number, y: y - 45, alpha: 0, duration: 650, onComplete: () => number.destroy() });
-          this.tweens.add({
-            targets: this.enemyArt,
-            x: startX, y: this.enemyOrigin.y, duration: 210, ease: 'Sine.easeOut',
-            onComplete: () => this.enemyArt && this.enemyArt.active && this.enemyArt.clearTint()
-          });
-          this.time.delayedCall(150, () => this.heroArt && this.heroArt.active && this.heroArt.clearTint());
-          if (b.hp <= 0) {
-            b.finished = true;
-            b.busy = false;
-            setBattleLog('You fall back', 'Defeat should carry consequences in the real game. This preview resets cleanly when restarted.');
-            updateBars();
-            toast('Defeat preview · no save changed');
-          } else {
-            b.busy = false;
-            setBattleLog('Your turn', 'The goblin is exposed after its lunge. Guard, time a strike, or spend focus on magic.');
-            updateBars();
-          }
-        }
-      });
-    }
-
-    enterTraining() {
-      this.stopModeEffects();
-      this.showBackdrop('library');
-      chosenRunes = [];
-      $('#trainingResult').textContent = 'Choose the marks in the order shown.';
-      const glyphs = this.add.text(this.dimensions().width * .5, this.dimensions().height * .47, '✦  ≈  ◇', {
-        fontFamily: 'Georgia, serif', fontSize: '54px', color: '#e7c887',
-        stroke: '#16100a', strokeThickness: 5
-      }).setOrigin(.5).setAlpha(.68);
-      this.trainingGlyphs.push(glyphs);
-      this.sfx('magic', .35);
-    }
-
-    pulseRune(rune) {
-      const { width, height } = this.dimensions();
-      const tone = ({ EMBER: 0xe8a15a, TIDE: 0x88c4dd, ROOT: 0xa8c28c, GALE: 0xc9c6e9 })[rune] || 0xe7c887;
-      const ring = this.add.circle(width * .5, height * .46, 38, tone, .22).setStrokeStyle(3, tone, .9);
-      ring.setScale(.6).setAlpha(.95);
-      this.runeRings.push(ring);
-      this.tweens.add({ targets: ring, scale: 2.8, alpha: 0, duration: 530, ease: 'Sine.easeOut', onComplete: () => { ring.destroy(); this.runeRings = this.runeRings.filter(x => x !== ring); } });
-    }
-
-    runeSuccess() {
-      this.cameras.main.flash(250, 161, 200, 167, false);
-      this.sfx('magic');
-    }
-
-    runeFailure() {
-      this.cameras.main.shake(170, .001);
+    runeBurst(color) {
+      const size = this.dimensions();
+      const centerX = size.width * 0.5;
+      const centerY = size.height * 0.46;
+      for (let i = 0; i < 7; i++) {
+        const angle = Math.PI * 2 * i / 7;
+        const startX = centerX + Math.cos(angle) * 34;
+        const startY = centerY + Math.sin(angle) * 34;
+        const mote = this.add.circle(startX, startY, 4 + (i % 3), color, 0.88);
+        mote.setDepth(6);
+        this.tweens.add({
+          targets: mote,
+          x: centerX + Math.cos(angle) * Phaser.Math.Between(110, 165),
+          y: centerY + Math.sin(angle) * Phaser.Math.Between(85, 145),
+          alpha: 0,
+          scale: 0.15,
+          duration: reducedMotion() ? 1 : 460,
+          ease: 'Sine.easeOut',
+          onComplete: () => mote.destroy()
+        });
+      }
     }
   }
 
-  const game = new Phaser.Game({
-    type: Phaser.AUTO,
-    parent: 'game-container',
-    backgroundColor: '#090d0c',
-    width: 1600,
-    height: 900,
-    scale: { mode: Phaser.Scale.RESIZE, width: 1600, height: 900 },
-    render: { antialias: true, pixelArt: false, transparent: false },
-    scene: [RebootScene],
-    input: { keyboard: true, mouse: true, touch: true },
-    audio: { noAudio: false }
-  });
+  function startPhaser() {
+    if (!window.Phaser || game) return;
+    game = new Phaser.Game({
+      type: Phaser.AUTO,
+      parent: 'game-container',
+      backgroundColor: '#090e0d',
+      width: 1600,
+      height: 900,
+      scale: {
+        mode: Phaser.Scale.RESIZE,
+        width: 1600,
+        height: 900,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+      },
+      render: { antialias: true, pixelArt: false, transparent: false },
+      scene: [RealmScene],
+      input: { keyboard: true, mouse: true, touch: true },
+      audio: { noAudio: false }
+    });
+    game.events.once('ready', () => {
+      window.__legendRebootReady = true;
+      realmScene = game.scene.getScene('RealmScene');
+      realmScene?.setEnvironment('title', true);
+      showTitle();
+      observeRoot();
+    });
+  }
 
-  game.events.once('ready', () => {
-    if (!scene) scene = game.scene.getScene('RebootScene');
-    updateBars();
-  });
+  function bindHostActions() {
+    byId('soundToggle')?.addEventListener('click', () => setSound(!soundEnabled));
+    root()?.addEventListener('click', event => {
+      const button = event.target.closest('#strike, #heavy, #guard, #skill, #item, #poultice, #flee');
+      if (!button || !window.__legendRebootBridge) return;
+      const kind = button.id === 'strike' ? 'swing'
+        : button.id === 'heavy' ? 'heavy'
+        : button.id === 'guard' ? 'guard'
+        : button.id === 'skill' ? 'magic'
+        : button.id === 'flee' ? 'guard'
+        : 'hit';
+      window.__legendRebootBridge.pulse(kind);
+    });
+    window.addEventListener('resize', inferEnvironment, { passive: true });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    bindHostActions();
+    startPhaser();
+  }, { once: true });
 })();
