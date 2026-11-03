@@ -1,5 +1,7 @@
 # LEGEND: The Awakening — Changelog
 
+- Pin direct Node development dependencies to the current stable Playwright Test and http-server releases instead of floating `latest` tags; a dependency lockfile remains outstanding.
+
 All notable changes to the current project are recorded here. Historical entries may retain old names and versions from the build they describe.
 
 ## 2026-11-03 — Audio library, production migration, and repository catch-up (in progress; not a game version bump)
