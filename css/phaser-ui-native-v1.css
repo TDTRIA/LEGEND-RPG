@@ -97,3 +97,84 @@ body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lo
   outline: 2px solid transparent !important;
   outline-offset: 3px !important;
 }
+
+
+/* Traveler creation is now drawn in RealmScene. The live inputs and semantic
+   buttons stay in the DOM as accessible, focusable hit targets. */
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation {
+  color: transparent !important;
+  background: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-beginning-bg {
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-beginning-card,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v140-guide-portrait-frame,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v140-dialogue-box,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-stepper,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-scene-note,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-summary > div,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-confirm-benefit,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-field,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-actions,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-actions .v094-btn {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-beginning-card::before,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice::after,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-scene-note::before,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v140-guide-portrait-frame::after,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v140-dialogue-box::before {
+  display: none !important;
+  content: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation h1,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation h2,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation h3,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation p,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation small,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation strong,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation em,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation label,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation span {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation img {
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-actions .v094-btn {
+  color: transparent !important;
+  border-color: transparent !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice > *,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-actions .v094-btn > * {
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-field input {
+  color: #eee7d6 !important;
+  background: rgba(4,10,7,.92) !important;
+  border: 1px solid rgba(215,185,111,.52) !important;
+  box-shadow: inset 0 1px 7px rgba(0,0,0,.44) !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-field input::placeholder {
+  color: #91a092 !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-field input:focus-visible {
+  outline: 2px solid #b5d99a !important;
+  outline-offset: 2px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice {
+    transition: none !important;
+    transform: none !important;
+  }
+}
