@@ -112,7 +112,20 @@ The mandatory three-chapter prologue is being presented inside the persistent Ph
 - Resize and scroll changes remeasure the live layout. Focus on the chapter control is reflected in the Phaser frame.
 - No story text, chapter order, save data, character-creation rules or progression behavior is changed.
 
-**Next surface order:** traveler-creation choices and inputs, then Oric's scene dialogue/response controls; after that, the persistent HUD/contextual journal/map/action shell, expedition interactions/results, and combat controls/presentation. Each is a separate production-parity slice.
+**Next surface order:** Oric's scene dialogue/response controls; after that, the persistent HUD/contextual journal/map/action shell, expedition interactions/results, and combat controls/presentation. Traveler-creation visuals are now their own in-progress slice.
+
+## Native Phaser traveler creation — 2026-11-03
+
+The soul-shaping creation screens are being presented in the persistent Phaser scene while the production creation controller remains authoritative:
+
+- Phaser draws the presence/guide frame, dialogue panel, card panels, stepper/progress bar, choice cards, selection checks, review/benefit tiles, and navigation button artwork.
+- Existing local raster art is captured into Phaser textures: the four distinct Woman/Man/Nonbinary/Keep It Unspoken emblems, class portraits, personality/origin/keepsake choice art, the current wordmark and Veil presence mark.
+- The real name input remains a visible editable HTML field. Choice/navigation buttons remain focusable accessible hit targets with explicit names; the existing selection, validation, step order, and callbacks are unchanged.
+- Desktop/mobile resize and scroll remeasure the native scene layout. Focus and selected choice states are reflected in Phaser. Reduced Motion suppresses decorative pulses.
+- The Oric arrival briefing is intentionally not part of this slice; it remains visible through the existing view until its separate dialogue migration.
+- No player attributes, identity rules, starting benefits, class balance, saves, or persistence behavior are changed.
+
+**Next surface order:** Oric's arrival dialogue and response controls; then the persistent HUD/contextual journal/map/action shell; expedition interactions/results; and combat presentation/command controls. Each remains a separate production-parity slice.
 
 ## Native Phaser service interiors — 2026-11-03
 
