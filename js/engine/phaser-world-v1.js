@@ -1112,7 +1112,9 @@
       const makeText = (node, rect, overrides = {}) => {
         if (!node || !rect) return null;
         const style = styleOf(node);
-        const text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
+        let text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
+        if (style.textTransform === 'uppercase') text = text.toLocaleUpperCase();
+        else if (style.textTransform === 'lowercase') text = text.toLocaleLowerCase();
         if (!text) return null;
         const fontSize = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
         const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.4;
