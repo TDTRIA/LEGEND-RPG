@@ -506,6 +506,7 @@
           serviceDressingCount: this.serviceDressing.filter(item => item.object?.active).length,
           serviceDressingKey: this.serviceDressingKey,
           nativeTitleUi: this.nativeTitleUiActive,
+          nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
           nativeTitleUiControlCount: this.nativeTitleUiControls.length,
           nativeTitleUiControlIds: this.nativeTitleUiControls.map(item => item.id),
           nativeTitleUiSceneSize: this.dimensions(),
