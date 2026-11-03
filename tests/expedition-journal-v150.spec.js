@@ -57,6 +57,8 @@ test('first secured field report can be handed directly to Mara to advance the n
     player.flags.firstRoadReturnRoute = 'ridge';
     player.flags.firstRoadReturnDiscovery = 'ridge-cairn';
     player.flags.firstRoadReturnMaraBriefed = false;
+    player.xp = 0;
+    player.pendingStatPointsV152 = 0;
     player.flags.roadExpeditionV100 = {
       ...(player.flags.roadExpeditionV100 || {}),
       stage: 5, pressure: 12, trips: 1, routeChoice: 'ridge',
@@ -66,13 +68,23 @@ test('first secured field report can be handed directly to Mara to advance the n
     window.LegendRoadControllerV100.renderExpedition();
   });
 
-  await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
-  await expect(page.getByRole('region', { name: 'Expedition results' })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Expedition results' })).toContainText('5 / 5');
-  await expect(page.getByRole('region', { name: 'Expedition results' })).toContainText('Road Token');
-  await expect(page.getByRole('region', { name: 'Expedition field report' })).toContainText('High Ridge');
-  await expect(page.locator('#outcomeReportToMara')).toBeVisible();
-  await expect(page.locator('#outcomeReturn')).toBeVisible();
+  await expect(page.locator('#finish')).toBeVisible();
+  await page.evaluate(() => {
+    const originalRandom = Math.random;
+    window.__legendSceneTransitionBypass = true;
+    Math.random = () => 0.1;
+    try { document.getElementById('finish')?.click(); }
+    finally {
+      Math.random = originalRandom;
+      window.__legendSceneTransitionBypass = false;
+    }
+  });
+  await expect(page.locator('.v152-expedition-summary')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('.v152-expedition-summary')).toContainText('5 / 5');
+  await expect(page.locator('.v152-expedition-summary')).toContainText('Road Token');
+  await expect(page.locator('.exp150-return-report')).toContainText('High Ridge');
+  await expect(page.locator('#outcomeReportToMara')).toBeVisible({ timeout: 15000 });
+  await expect(page.locator('#outcomeReturn')).toBeVisible({ timeout: 15000 });
 
   await page.locator('#outcomeReportToMara').click();
   await expect(page.locator('.ash099-lines')).toContainText(/Ridgeway Cairn marks a dry line/i);

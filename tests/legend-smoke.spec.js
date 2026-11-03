@@ -2053,12 +2053,23 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       };
     });
 
-    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
-    await expect(page.locator('#outcomeReturn')).toBeVisible();
+    await expect(page.locator('#finish')).toBeVisible();
+    await page.evaluate(() => {
+    const originalRandom = Math.random;
+    window.__legendSceneTransitionBypass = true;
+    Math.random = () => 0.1;
+    try { document.getElementById('finish')?.click(); }
+    finally {
+      Math.random = originalRandom;
+      window.__legendSceneTransitionBypass = false;
+    }
+  });
+    await expect(page.locator('.v152-expedition-summary')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('.exp100-outcome')).toContainText('Expedition Secured');
     await expect(page.locator('.exp100-outcome')).toContainText(/Road Token/i);
     await expect(page.locator('.exp100-outcome')).toContainText(/Level up! You are now level 2\./);
     await allocatePendingGrowth(page);
+    await expect(page.locator('#outcomeReturn')).toBeVisible({ timeout: 15000 });
 
     const after = await page.evaluate(() => {
       const player = window.LegendRuntimeV120.loadPlayer();

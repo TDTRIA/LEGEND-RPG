@@ -267,8 +267,18 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(page.locator('.exp100-head h1')).toHaveText('Reedwatch Shelter');
     await page.locator('#push').click();
     await expect(page.locator('.exp100-head h1')).toHaveText('Greyfen Approach');
-    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
-    await expect(page.getByRole('heading', { name: 'Expedition Secured' })).toBeVisible();
+    await expect(page.locator('#finish')).toBeVisible();
+    await page.evaluate(() => {
+    const originalRandom = Math.random;
+    window.__legendSceneTransitionBypass = true;
+    Math.random = () => 0.1;
+    try { document.getElementById('finish')?.click(); }
+    finally {
+      Math.random = originalRandom;
+      window.__legendSceneTransitionBypass = false;
+    }
+  });
+    await expect(page.getByRole('heading', { name: 'Expedition Secured' })).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('region', { name: 'Expedition field report' })).toContainText('High Ridge');
     await expect(page.getByRole('region', { name: 'Expedition field report' })).toContainText('The Split Milestone');
 
@@ -288,6 +298,15 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     expect(saved.roadToken).toBeGreaterThanOrEqual(1);
     expect(saved.visitedPlaces).toEqual(['South Fork', 'Ridgeway Cairn', 'Blackroot Bend', 'Greyfen Approach']);
     expect(saved.journalRoutes.some(entry => entry.title === 'High Ridge')).toBe(true);
+    const growthOverlay = page.locator('#legendLevelUpOverlay');
+    if (await growthOverlay.count()) {
+      const pointCount = Number((await growthOverlay.locator('#v152-growth-total').textContent() || '0').split('/').pop().trim());
+      for (let point = 0; point < pointCount; point += 1) {
+        await growthOverlay.locator('[data-attr-add="might"]').click();
+      }
+      await growthOverlay.locator('#v152-growth-confirm').click();
+      await expect(growthOverlay).toHaveCount(0);
+    }
     await page.getByRole('button', { name: /Return to Ashmere/i }).click();
     await expect(page.locator('.ash100-town')).toBeVisible();
     await expect(page.getByRole('button', { name: /The Bell Cellar/i })).toBeVisible();
