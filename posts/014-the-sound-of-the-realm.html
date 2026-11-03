@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Devlog 014 — The Sound of the Realm | LEGEND: The Awakening</title>
+  <link rel="stylesheet" href="../css/legend-site-v090.css?v=0.30.4-devlog">
+  <style>
+    body{padding:24px}.shell{width:min(920px,100%);margin:auto}.card{margin-top:14px}.kicker{color:#d7b86a;letter-spacing:.14em;text-transform:uppercase;font-size:.78rem}h1{font-size:clamp(2rem,7vw,4.2rem)}h2{color:#d7b86a}p,li{line-height:1.7}.actions{display:flex;flex-wrap:wrap;gap:10px}.btn{display:inline-flex;padding:12px 15px;border:1px solid rgba(215,184,106,.3);border-radius:10px;color:inherit;text-decoration:none;background:#111912}.note{padding:14px;border:1px solid rgba(215,184,106,.25);border-radius:12px;background:rgba(11,18,12,.5);color:#d8dfd1}.status{display:inline-block;padding:4px 9px;border:1px solid rgba(215,184,106,.35);border-radius:999px;color:#e8d49b;font-size:.74rem;text-transform:uppercase;letter-spacing:.1em}
+  </style>
+</head>
+<body>
+<div class="shell">
+  <article class="panel card">
+    <p class="kicker">Devlog 014 · Audio Identity & Engine Transition · November 3, 2026</p>
+    <h1>The Sound of the Realm</h1>
+    <p>The next improvement to <strong>LEGEND: The Awakening</strong> is something every player hears. The recurring gameplay music needs a stronger identity. The current theme does not carry the world we are building, and adding more sound effects around it will not solve that.</p>
+    <p>Today’s work is focused on giving LEGEND a consistent sound: music with a recognizable melody, places that sound different from one another, and effects that feel like they belong to the same medieval-fantasy world.</p>
+    <div class="actions">
+      <a class="btn" href="../index.html">Play the current build</a>
+      <a class="btn" href="../blog.html">Development Chronicle</a>
+      <a class="btn" href="../docs/ROADMAP.md">Current roadmap</a>
+      <a class="btn" href="https://github.com/TDTRIA/LEGEND-RPG/pull/98">Audio asset review · PR #98</a>
+    </div>
+  </article>
+
+  <section class="panel card">
+    <h2>A full location sound library</h2>
+    <p>We generated a 48-asset original collection for the game: <strong>13 thirty-second ambience loops and 35 short sound effects.</strong> The ambience is tailored to places already represented in the game rather than using one generic wind loop everywhere.</p>
+    <ul>
+      <li><strong>Ashmere:</strong> the town square, Inn, and Forge.</li>
+      <li><strong>The opening:</strong> the title scene, the three-annal prologue, and the traveler's memory sequence.</li>
+      <li><strong>The Old Road:</strong> Blackroot forest, High Ridge, Reed Cut, and a roadside camp.</li>
+      <li><strong>Greyfen:</strong> the marsh and working docks.</li>
+      <li><strong>Bell Cellar:</strong> a damp subterranean ambience with a distant bronze resonance.</li>
+    </ul>
+    <p>The one-shot effects cover sword swings and impacts, blocking and parrying, spellcasting and healing, creature calls, loot and Bell Fragment discoveries, level-ups, quest completion, footsteps across different ground, doors, the forge, maps, markets, and other town interactions.</p>
+    <p class="note"><span class="status">Staged for review</span> These 48 files are in the audio work branch and review PR, not yet in the live production game. They still need integration, balance checks, loop-seam checks, and browser testing before release.</p>
+  </section>
+
+  <section class="panel card">
+    <h2>The main theme is the priority</h2>
+    <p>The soundtrack should have a musical identity, not just a background drone. The direction is a memorable recurring motif carried by expressive cello and strings, restrained horns, subtle medieval folk instrumentation, and occasional bronze-bell accents. It should feel adventurous and weathered, melancholic without becoming hopeless, and comfortable to hear during a long session.</p>
+    <p>An original instrumental score draft has been composed. Its final rendered game file, loop, mix, and integration still need to be verified. The current gameplay theme will not be considered replaced until the new music is actually playing in the game and the transitions between exploration and combat are tested.</p>
+    <p class="note"><span class="status">In progress</span> The current live build still uses the older music setup. The replacement theme is not being advertised as shipped.</p>
+  </section>
+
+  <section class="panel card">
+    <h2>One world, not a stack of menus</h2>
+    <p>There is also an important engine milestone. Phaser 4.1 is now loaded in the production game and renders the persistent world layer, environment atmosphere, transitions, and Ashmere landmarks. That is the start of the production migration the project is moving toward, not the end of it.</p>
+    <p>Most menus, dialogue, combat rules, expedition logic, account flows, and save handling still use the existing browser modules. Those systems will move into Phaser incrementally, one complete playable surface at a time, with the current game remaining playable and the existing saves and gameplay rules preserved.</p>
+  </section>
+
+  <section class="panel card">
+    <h2>What happens next</h2>
+    <ol>
+      <li>Review the new location ambience and gameplay effects, then integrate them through the existing sound preference and audio services.</li>
+      <li>Finish and verify the replacement main theme, then create a related battle arrangement so the music feels like one soundtrack.</li>
+      <li>Move real gameplay surfaces into Phaser while keeping save data, quests, progression, combat balance, and accessibility intact.</li>
+      <li>Continue completing Greyfen's town services, local economy, story, expeditions, and return loop. It remains an active partial region, not a finished town.</li>
+    </ol>
+    <p>LEGEND is still an in-development browser RPG. This update describes work in progress and does not announce a new game version or a finished 1.0 release.</p>
+  </section>
+</div>
+</body>
+</html>
