@@ -8,7 +8,10 @@
   const SAVE_KEY = 'legend-reboot-prototype-save-v1';
   const root = () => document.getElementById('root');
   const byId = id => document.getElementById(id);
-  const reducedMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const reducedMotion = () => Boolean(
+    (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) ||
+    document.body?.classList.contains('a11y-reduced-motion')
+  );
   let activePlayer = null;
   let game = null;
   let realmScene = null;
@@ -317,6 +320,7 @@
       this.environment = '';
       this.lookTarget = { x: 0, y: 0 };
       this.lookCurrent = { x: 0, y: 0 };
+      this.motionReduced = false;
     }
 
     preload() {
@@ -329,6 +333,7 @@
 
     create() {
       this.cameras.main.setBackgroundColor('#090e0d');
+      this.motionReduced = reducedMotion();
       this.scale.on('resize', () => this.layoutBackground());
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -365,9 +370,14 @@
     }
 
     update(time, delta) {
+      const reduced = reducedMotion();
+      if (reduced !== this.motionReduced) {
+        this.motionReduced = reduced;
+        this.createAtmosphere(this.environment);
+      }
       if (!this.background || !this.background.active) return;
       const size = this.dimensions();
-      const motion = reducedMotion() ? 0 : 1;
+      const motion = reduced ? 0 : 1;
       const follow = 1 - Math.exp(-Math.max(1, delta) / 520);
       this.lookCurrent.x = Phaser.Math.Linear(this.lookCurrent.x, this.lookTarget.x, follow);
       this.lookCurrent.y = Phaser.Math.Linear(this.lookCurrent.y, this.lookTarget.y, follow);
@@ -388,7 +398,10 @@
 
     clearAtmosphere() {
       this.ambienceObjects.forEach(object => {
-        if (object && object.active) object.destroy();
+        if (object && object.active) {
+          this.tweens.killTweensOf(object);
+          object.destroy();
+        }
       });
       this.ambienceObjects = [];
     }
@@ -496,6 +509,49 @@
         }
       }
 
+      if (isBog) {
+        for (let i = 0; i < 8; i++) {
+          const u = Phaser.Math.FloatBetween(0.08, 0.92);
+          const v = Phaser.Math.FloatBetween(0.44, 0.88);
+          const halo = this.add.circle(size.width * u, size.height * v, 9, palette.glow, 0.055);
+          const core = this.add.circle(size.width * u, size.height * v, 2.2, palette.mote, 0.62);
+          this.addAtmosphereObject(halo, u, v, 3);
+          this.addAtmosphereObject(core, u, v, 4);
+          if (animate) {
+            const destinationX = size.width * u + Phaser.Math.Between(-48, 48);
+            const destinationY = size.height * v + Phaser.Math.Between(-34, 34);
+            this.tweens.add({
+              targets: [halo, core],
+              x: destinationX,
+              y: destinationY,
+              duration: Phaser.Math.Between(3600, 6800),
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut',
+              delay: Phaser.Math.Between(0, 2200)
+            });
+            this.tweens.add({
+              targets: halo,
+              alpha: 0.012,
+              scale: 1.75,
+              duration: Phaser.Math.Between(1900, 3300),
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut'
+            });
+            this.tweens.add({
+              targets: core,
+              alpha: 0.18,
+              scale: 0.72,
+              duration: Phaser.Math.Between(1500, 2800),
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut'
+            });
+          }
+        }
+      }
+
       if (isWet) {
         for (let i = 0; i < 17; i++) {
           const u = Phaser.Math.FloatBetween(0.03, 0.97);
@@ -563,7 +619,7 @@
         : this.add.rectangle(size.width / 2, size.height / 2, size.width, size.height, 0x101712);
       this.backgroundIsImage = hasImage;
       this.backgroundBaseScale = hasImage
-        ? Math.max(size.width / source.width, size.height / source.height) * 1.065
+        ? Math.max(size.width / source.width, size.height / source.height) * this.backgroundOverscan(size)
         : 1;
       next.setDepth(-3);
       next.setAlpha(immediate || reducedMotion() ? 1 : 0);
@@ -603,6 +659,11 @@
       }
     }
 
+    backgroundOverscan(size) {
+      const aspect = size.width / Math.max(1, size.height);
+      return aspect < 0.82 ? 1.028 : 1.065;
+    }
+
     layoutBackground() {
       if (!this.background || !this.background.active) return;
       const size = this.dimensions();
@@ -611,7 +672,7 @@
         this.backgroundBaseScale = Math.max(
           size.width / Math.max(1, source.width),
           size.height / Math.max(1, source.height)
-        ) * 1.065;
+        ) * this.backgroundOverscan(size);
         this.background.setScale(this.backgroundBaseScale);
       } else {
         this.background.setSize(size.width, size.height);
