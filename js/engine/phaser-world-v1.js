@@ -1400,7 +1400,7 @@
       const choices = Array.from(screen.querySelectorAll('.v094-choice'));
       const controls = Array.from(screen.querySelectorAll('.v094-actions button'));
       const textNodes = Array.from(screen.querySelectorAll('h1,h2,h3,p,small,strong,em,label,span'))
-        .filter(node => !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
+        .filter(node => !node.matches('#v094NameError,#v094ChoiceError') && !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
       const panels = Array.from(screen.querySelectorAll(
         '.v094-beginning-card,.v140-guide-portrait-frame,.v140-dialogue-box,.v094-stepper,.v094-scene-note,.v094-choice,.v094-summary > div,.v094-confirm-benefit,.v094-field,.v094-actions button'
       ));
@@ -1537,6 +1537,33 @@
             ease: 'Sine.easeInOut'
           });
         }
+      }
+
+      const brandHeader = screen.querySelector('.v140-creation-brand');
+      const brandHeaderRect = rectFor(brandHeader);
+      const brandLabel = brandHeader?.querySelector(':scope > span:last-child');
+      const brandLabelRect = rectFor(brandLabel);
+      if (brandHeaderRect || brandLabelRect) {
+        const brandRules = this.add.graphics();
+        if (brandHeaderRect) {
+          brandRules.lineStyle(1, 0xd3b56c, 0.42);
+          brandRules.lineBetween(
+            brandHeaderRect.x,
+            brandHeaderRect.y + brandHeaderRect.height,
+            brandHeaderRect.x + brandHeaderRect.width,
+            brandHeaderRect.y + brandHeaderRect.height
+          );
+        }
+        if (brandLabelRect) {
+          brandRules.lineStyle(1, 0xd3b56c, 0.44);
+          brandRules.lineBetween(
+            brandLabelRect.x + 0.5 * sx,
+            brandLabelRect.y + 4 * sy,
+            brandLabelRect.x + 0.5 * sx,
+            brandLabelRect.y + brandLabelRect.height - 4 * sy
+          );
+        }
+        addObject(brandRules, 12);
       }
 
       panels.forEach(node => {
