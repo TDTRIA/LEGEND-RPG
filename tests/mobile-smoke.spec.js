@@ -321,6 +321,31 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
 
 
 
+  test('Ashmere Phaser landmarks accept real touch input and enter the production Market', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await startFreshCharacter(page, 'MobilePhaserHubQA');
+    await expectNoHorizontalOverflow(page);
+
+    const market = await page.evaluate(() => {
+      const items = window.LegendPhaserWorldV1?.snapshot?.()?.ashmereLandmarks || [];
+      return items.find(item => item.id === 'market') || null;
+    });
+    expect(market).not.toBeNull();
+    expect(market.clientX).toBeGreaterThan(0);
+    expect(market.clientX).toBeLessThan(390);
+    expect(market.clientY).toBeGreaterThan(70);
+    expect(market.clientY).toBeLessThan(780);
+
+    // Tap the Phaser scene hotspot itself while the large HTML action drawer is closed.
+    await page.touchscreen.tap(market.clientX, market.clientY);
+    await ensureTownActionsOpen(page);
+    await expect(page.locator('#legend-world-shell-root .lws-selected-place h3')).toHaveText('Market');
+    await tap(page, page.locator('#legend-world-shell-root [data-world-action="visit-selected-place"]'));
+    await expect(page.locator('.ash099-market-console')).toBeVisible();
+    await expect(page.locator('[data-market-tab="buy"]')).toHaveAttribute('aria-selected', 'true');
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('Greyfen Marsh Path route choice and field map fit a 390px touch viewport', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await startFreshCharacter(page, 'MobileMarshQA');
