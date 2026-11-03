@@ -470,6 +470,11 @@
         closeShellModal();
         routeTo('sheet');
         break;
+      case 'account-profile':
+        event.preventDefault();
+        closeShellModal();
+        routeTo('profile');
+        break;
       case 'continue-road':
         event.preventDefault();
         if (!clickExisting('#push')) showToast('Continuing is not available at this point in the expedition.');
