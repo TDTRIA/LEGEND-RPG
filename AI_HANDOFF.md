@@ -1,21 +1,30 @@
 # AI Handoff — LEGEND: The Awakening
 
-Last updated: 2026-11-02. GitHub `main` is the source of truth; inspect current source and Actions before changing code.
+Last updated: 2026-11-03. GitHub `main` is the source of truth; inspect current source and Actions before changing code.
 
-## Current production checkpoint — v0.30.3
+## Current production checkpoint — v0.30.4
 
-- **Main release:** v0.30.3. Code/test correction commit [8bde87e](https://github.com/TDTRIA/LEGEND-RPG/commit/8bde87e79b541989b7975b3cbc8b3d0e6fe0e36a); public chronicle, updates page, and store-copy commit [bb77a6e](https://github.com/TDTRIA/LEGEND-RPG/commit/bb77a6ea267952035c15f8cb86a156947ecdfc62).
-- **Open PRs:** none at the latest repository check.
-- **Runtime:** the existing classic-JavaScript browser game. Preserve save key legend-roads-of-ashmere-v09, traveler record structure, current combat system, and current script-loading architecture. No migration or engine reboot is authorized by this release.
-- **Release identity:** js/data.js, js/version-v090.js, package.json, and the HTML document title report v0.30.3. The prior v0.27.0 override is corrected.
-- **Traveler creation:** Woman, Man, Nonbinary, and Keep It Unspoken now have distinct identity emblems; the repeated generic traveler icon has been removed from the gender choice cards. Identity and pronoun selection do not change gameplay attributes.
-- **Progression balance:** five-stage Old Road; five Road Tokens still unlock Greyfen. A completed expedition has a 65% Road Token roll; early returns do not award a completion token. Five-stage baseline reward at Road Pressure 20 is 80g and 33 XP. Reed Cut Bell Fragment chance is 35%, recurring POI clue interaction chance is 25%, Lantern Wisp drop chance is 15%. The road forces an encounter after two travel stretches; higher pressure makes threats stronger.
-- **Opening:** all three annals are mandatory. The unused “Skip the annals” button was removed in v0.30.1; do not reintroduce it. The traveler still shapes a role from memories, the voice remains ???, and Oric and the Blackroot Wolf tutorial continue into the production Old Road loop.
-- **Results/progression UI:** expedition debrief uses an illustrated field ledger and XP bar; the rare Road Token tile uses the generated inventory art, while a missed token is visibly dimmed. Level-up keeps the existing saved attribute-allocation overlay with an Old Road scene backdrop.
-- **Greyfen additions:** Patch the Ferry Nets Work Board contract; optional Silted Storehouse with a disclosed one-hour/+6 Pressure cost and one Dry Peat Brick, saved map/journal state, return to Mossbarrow and a report that does not block the Waterline Gauge. Greyfen remains partial; Ironpass and the complete first-three-town target are not being claimed as finished.
-- **Public pages:** blog.html and updates.html have been refreshed; posts 011–013 provide the catch-up; docs/STORE_PAGE_COPY_2026-11.md has accurate Game Jolt / itch.io copy and a screenshot checklist. External store pages have not been published by this repository update.
-- **Verification:** [Pages deployment #41540782943](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41540782943) succeeded for bb77a6e. [Final-head Playwright run #41540785980](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41540785980) has passed dependency installation and syntax checks and is still running the browser suite; do not claim the full suite passed until it completes.
-- **Next high-value work:** inspect the final-head Playwright results and fix any remaining real defects; complete a human playthrough of the first road and Greyfen; finish Greyfen as a complete region before opening Ironpass. Continue updating external store pages only with features verified in the playable build.
+- **Production main:** v0.30.4 at [`662992a`](https://github.com/TDTRIA/LEGEND-RPG/commit/662992ae430069372424d27568032d35d845fa80). `js/data.js`, `js/version-v090.js`, `package.json`, and the HTML document identify v0.30.4.
+- **Deployment:** [GitHub Pages deployment #41643146692](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41643146692) succeeded for this main commit. The live game is deployed; this does not mean Playwright passed.
+- **Main Playwright:** [run #41643147299](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41643147299) failed. Its failing test is `first Reed Cut return preserves its own clue and directs the player to Mara` at `tests/legend-smoke.spec.js:1544`. The test reached Greyfen Approach (stage 5), but the scripted finish interaction left the expedition screen visible and never rendered `.exp100-outcome`. The report and trace are archived in the `playwright-report` artifact for that run. The return-report and Mara assertions were therefore not reached.
+- **Additional regression run:** [run #41659483982](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41659483982) also failed. Its distinct failures were the Mobile Safari Old Road/tap transition wait, Mobile Safari battle-control touchability, and a strict-mode Road Network locator matching both the Ashmere route card and the world-shell map action. The two mobile failures were retried by CI; do not treat them as a single confirmed gameplay failure.
+- **Active production PR:** [#87 — Greyfen: carry the post-flood route rumor into the story](https://github.com/TDTRIA/LEGEND-RPG/pull/87), head `7d81e8a70626`, based on the v0.30.4 main commit. It contains the Greyfen rumor/migration coverage, explicit pointer-event release during scene reveal, a scoped Road Network selector, and a Reed Cut test that uses Playwright's locator click, asserts the finish control is present, and waits for the outcome before testing the return/report handoff. Its latest run [#41664720311](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41664720311) was still executing at the time of this handoff. Do not call it green or merge until its final-head browser run completes.
+- **Open PR housekeeping:** #87 is the only open PR. The unrelated Phaser migration PR #85 and the standalone Reed Cut test PR #86 are closed. Continue the existing browser game; do not revive the Phaser reboot.
+- **Runtime compatibility:** preserve save key `legend-roads-of-ashmere-v09`, the traveler record shape, current combat/economy/progression systems, and classic-JavaScript script-loading architecture. No broad engine rewrite or save migration is authorized.
+- **Balance and opening guardrails:** the first expedition remains guided and non-skippable; Greyfen still requires its existing access progression. Keep Road Tokens uncommon, Bell Fragments rare, and combat dangerous enough to require reading enemy intent and spending supplies thoughtfully.
+- **Known first-session gaps to verify:** Healing Potion use through the live battle UI; enemy intent/behavior consistency across multiple encounters; the complete first-session desktop loop and mobile critical path. Do a paced, reproducible playthrough and record observed defects rather than speculative polish.
+- **Greyfen:** complete and verify its local service/economy loop, evidence handoffs, save/reload behavior, and desktop/mobile presentation before opening Ironpass. The missing closure order and the Warden's earned player-facing reveal remain unresolved; preserve the canon guardrails below.
+- **Store pages:** the Game Jolt and itch.io copy was refreshed in the repository; external store-page publication remains separate. Use only verified in-game screenshots and accurate build claims.
+
+## Next work order
+
+1. Make the Reed Cut first-return flow pass end to end: chosen route and discovered clue persist, the completed trip renders its field report, return to Ashmere works, and Mara receives the correct fragment-aware account.
+2. Complete a paced first-session playthrough on desktop, then the critical opening/Old Road/combat path on mobile. Test a genuinely injured traveler using Healing Potion and verify enemy responses across more than one encounter.
+3. Finish Greyfen's coherent local loop and acceptance sweep (services, resource sinks, Marsh Path/Storehouse, evidence chain, save/reload, responsive art). Do not open Ironpass until Greyfen is verified.
+
+## Compatibility and story guardrails
+
+Read `docs/CANON.md` before lore changes. The Veil, Last Mercy/Hollow Saint relationship, echo rules, and old monster-war agreement remain canon. Do not reveal the traveler's hidden nature in dialogue or UI until an owner-approved reveal plan exists. Keep the Old Road danger meaningful; a lower-pressure route is not a fight-free promise.
 
 ## Compatibility and story guardrails
 
