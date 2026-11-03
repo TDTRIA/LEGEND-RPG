@@ -2405,6 +2405,75 @@ test('the production root falls back to its original artwork when the Phaser CDN
 });
 
 
+test('native Phaser title menu replaces the floating HTML button paint and keeps accessible controls', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openTitle(page);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
+
+  const desktop = await page.evaluate(() => {
+    const hero = document.querySelector('.title-v136-rpg .v120-title-hero');
+    const button = document.querySelector('#newPrimary');
+    const style = button ? getComputedStyle(button) : null;
+    const heroStyle = hero ? getComputedStyle(hero) : null;
+    const rect = button?.getBoundingClientRect();
+    return {
+      active: document.body.classList.contains('legend-phaser-title-ui-active'),
+      snapshot: window.LegendPhaserWorldV1.snapshot(),
+      heroBackground: heroStyle?.backgroundColor,
+      heroShadow: heroStyle?.boxShadow,
+      buttonBackground: style?.backgroundColor,
+      buttonBorder: style?.borderTopColor,
+      childVisibility: button?.firstElementChild ? getComputedStyle(button.firstElementChild).visibility : '',
+      ariaLabel: button?.getAttribute('aria-label'),
+      buttonBounds: rect ? { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom } : null,
+      canvasCount: document.querySelectorAll('#game-container canvas').length
+    };
+  });
+  expect(desktop.active).toBe(true);
+  expect(desktop.snapshot.nativeTitleUi).toBe(true);
+  expect(desktop.snapshot.nativeTitleUiControlIds).toContain('newPrimary');
+  expect(desktop.snapshot.nativeTitleUiControlCount).toBeGreaterThanOrEqual(5);
+  expect(desktop.heroBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(desktop.heroShadow).toBe('none');
+  expect(desktop.buttonBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(desktop.childVisibility).toBe('hidden');
+  expect(desktop.ariaLabel).toMatch(/Begin Your Journey.*Create your traveler/i);
+  expect(desktop.canvasCount).toBe(1);
+  expect(desktop.buttonBounds.left).toBeGreaterThanOrEqual(0);
+  expect(desktop.buttonBounds.right).toBeLessThanOrEqual(1440);
+
+  // Resize the same live scene: native Phaser hit-target artwork must realign
+  // with the responsive, still-accessible HTML button hit targets.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => page.evaluate(() => {
+    const rect = document.querySelector('#newPrimary')?.getBoundingClientRect();
+    const ids = window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUiControlIds || [];
+    return Boolean(rect && ids.includes('newPrimary') && rect.left >= 0 && rect.right <= window.innerWidth);
+  })).toBe(true);
+  const mobile = await page.evaluate(() => ({
+    overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    active: document.body.classList.contains('legend-phaser-title-ui-active'),
+    native: window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi,
+    button: (() => {
+      const rect = document.querySelector('#newPrimary')?.getBoundingClientRect();
+      return rect ? { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom } : null;
+    })()
+  }));
+  expect(mobile.overflow).toBe(false);
+  expect(mobile.active).toBe(true);
+  expect(mobile.native).toBe(true);
+  expect(mobile.button.left).toBeGreaterThanOrEqual(0);
+  expect(mobile.button.right).toBeLessThanOrEqual(390);
+
+  // The semantic button remains in the accessibility tree and activates the
+  // existing title controller rather than introducing a Phaser-only router.
+  const menuButton = page.getByRole('button', { name: /Begin Your Journey/i });
+  await expect(menuButton).toBeVisible();
+  await menuButton.click();
+  await expect(page.locator('.opening-lore-v220')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
+});
+
 test('the production root plays its Phaser awakening and exposes the skip control on first visit', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
