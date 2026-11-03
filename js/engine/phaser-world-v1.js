@@ -440,6 +440,7 @@
       this.ashmerePointLights = [];
       this.hoveredAshmereLandmark = '';
       this.serviceDressing = [];
+      this.serviceDressingTweenTargets = [];
       this.serviceDressingKey = '';
     }
 
@@ -1174,6 +1175,7 @@
           rune.setStrokeStyle(1, 0xc5dcfa, 0.16);
           this.addAtmosphereObject(rune, u, v, 4);
           if (animate) {
+            this.trackServiceDressingTweenTarget(rune);
             this.tweens.add({
               targets: rune,
               scale: 1.65,
@@ -1197,7 +1199,14 @@
       return object;
     }
 
+    trackServiceDressingTweenTarget(object) {
+      if (object && !this.serviceDressingTweenTargets.includes(object)) this.serviceDressingTweenTargets.push(object);
+      return object;
+    }
+
     clearServiceDressing() {
+      this.serviceDressingTweenTargets.forEach(object => this.tweens.killTweensOf(object));
+      this.serviceDressingTweenTargets = [];
       this.serviceDressing.forEach(({ object }) => {
         if (!object) return;
         this.tweens.killTweensOf(object);
@@ -1225,6 +1234,8 @@
       const lantern = this.add.container(0, 0, [glow, chain, cap, glass, flame]);
       this.addServiceDressingObject(lantern, u, v, 5);
       if (!reducedMotion()) {
+        this.trackServiceDressingTweenTarget(glow);
+        this.trackServiceDressingTweenTarget(flame);
         this.tweens.add({
           targets: glow,
           alpha: 0.13,
@@ -1269,6 +1280,7 @@
         const hearthGlow = this.add.ellipse(0, 0, size.width * 0.15, size.height * 0.085, ember, 0.055);
         this.addServiceDressingObject(hearthGlow, 0.78, 0.78, 1);
         if (animate) {
+          this.trackServiceDressingTweenTarget(hearthGlow);
           this.tweens.add({
             targets: hearthGlow,
             alpha: 0.105,
@@ -1308,6 +1320,8 @@
         ]);
         this.addServiceDressingObject(anvil, 0.78, 0.82, 4);
         if (animate) {
+          this.trackServiceDressingTweenTarget(forgeHalo);
+          this.trackServiceDressingTweenTarget(forgeCore);
           this.tweens.add({
             targets: forgeHalo,
             alpha: 0.15,
