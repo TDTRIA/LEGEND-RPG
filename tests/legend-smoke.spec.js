@@ -2442,6 +2442,7 @@ test('native Phaser title menu replaces the floating HTML button paint and keeps
   });
   expect(desktop.active).toBe(true);
   expect(desktop.snapshot.nativeTitleUi).toBe(true);
+  expect(desktop.snapshot.nativeTitleUiIconsLoaded).toBe(true);
   expect(desktop.snapshot.nativeTitleUiControlIds).toContain('newPrimary');
   expect(desktop.snapshot.nativeTitleUiControlCount).toBeGreaterThanOrEqual(5);
   expect(desktop.nativeAlignment).not.toBeNull();
