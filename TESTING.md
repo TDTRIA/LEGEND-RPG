@@ -79,20 +79,18 @@ npm run test:e2e:report
 
 ---
 
-## Current validation checkpoint (2026-11-02)
+## Current validation checkpoint (2026-11-03)
 
-Production main is **v0.30.3** at [bb77a6e](https://github.com/TDTRIA/LEGEND-RPG/commit/bb77a6ea267952035c15f8cb86a156947ecdfc62). The code/test correction commit is [8bde87e](https://github.com/TDTRIA/LEGEND-RPG/commit/8bde87e79b541989b7975b3cbc8b3d0e6fe0e36a); the public-site and store-copy refresh is [bb77a6e](https://github.com/TDTRIA/LEGEND-RPG/commit/bb77a6ea267952035c15f8cb86a156947ecdfc62).
+Production main is **v0.30.4**. The current published build contains the Runway traveler identity portraits, mandatory opening annals, road-first Oric/Wolf tutorial, balanced Old Road rewards, illustrated expedition report, and partial Greyfen content.
 
-Post-merge verification:
-- [Final-head Playwright workflow #41540785980](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41540785980) is running on bb77a6e. Dependency installation and the critical JavaScript syntax gate have passed; the full browser suite is executing. Do **not** mark the suite green until its run completes.
-- [GitHub Pages deployment #41540782943](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41540782943) succeeded for bb77a6e.
-- The live game is https://tdtria.github.io/LEGEND-RPG/. The development chronicle is https://tdtria.github.io/LEGEND-RPG/blog.html and the updated dispatch is https://tdtria.github.io/LEGEND-RPG/updates.html.
+The latest audio work is staged separately in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98):
+- The import workflow completed successfully and the branch contains 13 ambience loops and 35 one-shot audio effects.
+- The original main-theme source was corrected after the first render attempt failed on malformed encoded input. The replacement MP3 must still be confirmed and the new sound must be integrated before this audio work is considered shipped.
+- The PR Playwright run is still pending at this checkpoint. Do not mark the branch green until the final-head workflow completes; do not treat its status as a verification of the live main branch.
 
-The earlier v0.30.2 Playwright run #41531298438 failed with 15 test failures. The main causes were the runtime version file overwriting v0.30.2 with v0.27.0, tests still clicking the removed annals skip control, stale expected counts/data, missing navigation setup in one standalone contract test, and unseeded random token reward assertions. Those source/test issues were corrected in v0.30.3; this final-head run is the authoritative check.
+The active production engine is hybrid: Phaser 4.1 renders the persistent world layer, while the existing browser modules still own most UI, dialogue, account, combat, expedition, and save behavior. Phaser migration itself must be verified surface by surface; no save migration is part of it.
 
-Coverage in the current release includes mandatory three-part annals with no skip control, four distinct traveler identity emblems, rare Road Token and Bell Fragment outcomes, road encounter cadence, result and level progression, fragment-aware return dialogue, Greyfen Ferry Nets, the saved Silted Storehouse detour, and the Waterline Gauge handoff.
-
-The default workflow runs the full regression suite on Desktop Chrome plus the touch-critical mobile-smoke.spec.js suite on Mobile Safari and Mobile Chrome. CI uses two workers and retries failing tests once; the optional full matrix adds Firefox and all tests on the mobile projects. Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) rather than relying on a historical count.
+Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) for the live status rather than reusing historical run counts or treating a queued/running job as passed. GitHub Pages deployment and the deployed smoke test must succeed after merge before claiming a release is live.
 
 ## Remaining high-value test gaps
 
