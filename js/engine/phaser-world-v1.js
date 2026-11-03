@@ -531,6 +531,20 @@
           nativeAnnalsUiStep: Number(root()?.querySelector('.opening-lore-v220')?.dataset.loreStep ?? -1),
           nativeAnnalsUiScrollTargetBound: Boolean(this.nativeAnnalsUiScrollTarget),
           nativeAnnalsUiButtonFocused: Boolean(this.nativeAnnalsUiButtonFocus?.visible),
+          nativeAnnalsUiSceneSize: this.dimensions(),
+          nativeAnnalsUiButtonBounds: (() => {
+            const button = root()?.querySelector('.opening-lore-v220-continue');
+            const rect = button?.getBoundingClientRect();
+            if (!rect) return null;
+            const width = Math.max(1, window.innerWidth || this.dimensions().width);
+            const height = Math.max(1, window.innerHeight || this.dimensions().height);
+            return {
+              x: rect.left * this.dimensions().width / width,
+              y: rect.top * this.dimensions().height / height,
+              width: rect.width * this.dimensions().width / width,
+              height: rect.height * this.dimensions().height / height
+            };
+          })(),
           rendererType: this.sys.game.renderer?.type ?? null
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
@@ -1113,7 +1127,8 @@
           padding: { left: 1, right: 2, top: 1, bottom: 2 },
           align: style.textAlign || 'left'
         };
-        return addObject(this.add.text(rect.x, rect.y, text, config).setOrigin(0, 0));
+        const textX = rect.x + Math.max(0, Number(overrides.insetLeft) || 0) * sx;
+        return addObject(this.add.text(textX, rect.y, text, config).setOrigin(0, 0));
       };
 
       const screenRect = readRect(screen);
@@ -1161,7 +1176,7 @@
       makeText(kicker, readRect(kicker), { color: '#e0c780' });
       makeText(heading, readRect(heading), { color: '#fff0cf' });
       paragraphs.forEach(node => makeText(node, readRect(node), { color: '#f0f0e5' }));
-      makeText(quote, readRect(quote), { color: '#ffe6b2' });
+      makeText(quote, readRect(quote), { color: '#ffe6b2', insetLeft: 19 });
 
       if (progress) {
         const track = readRect(progress);
