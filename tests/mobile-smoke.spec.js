@@ -229,7 +229,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await expect(page.locator('#item')).toBeEnabled();
     await tap(page, page.locator('#item'));
     await expect(page.locator('.rpg-dialogue')).toContainText(/drink a Healing Potion and recover 30 HP/i);
-    await expect(page.locator('.rpg-dialogue')).toContainText(/hits you for \\d+ damage/i);
+    await expect(page.locator('.rpg-dialogue')).toContainText(/hits you for \d+ damage/i);
     const afterPotion = await page.evaluate(() => {
       const pl = window.LegendRuntimeV120.loadPlayer();
       return { hp:pl.hp, potion:pl.inventory.potion };
