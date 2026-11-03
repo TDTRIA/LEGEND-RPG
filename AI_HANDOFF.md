@@ -101,6 +101,7 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/SAVE_DATA_CONTRACT.md
 
 ## Current project links
 
+- Realm Hub: https://tdtria.github.io/LEGEND-RPG/portal.html
 - Live game: https://tdtria.github.io/LEGEND-RPG/
 - Development chronicle: https://tdtria.github.io/LEGEND-RPG/blog.html
 - Development dispatch: https://tdtria.github.io/LEGEND-RPG/updates.html
