@@ -815,3 +815,106 @@ body.chronicle-article .shell{
   .chronicle-entry:hover .chronicle-entry-media img{transform:none}
   html{scroll-behavior:auto}
 }
+
+
+/* Content-specific companion surfaces used by the guide, dispatch,
+   Save Vault, feedback and lightweight QA pages. */
+.chronicle-article .box,
+.chronicle-article .stat,
+.chronicle-article .signup-box,
+.chronicle-article .status-card,
+.chronicle-article .update-card,
+.chronicle-article .feedback-box,
+.chronicle-article .manual,
+.chronicle-article .entry{
+  border:1px solid rgba(191,160,100,.22)!important;
+  border-radius:2px!important;
+  background:linear-gradient(180deg,rgba(22,30,21,.90),rgba(8,13,9,.91))!important;
+  box-shadow:inset 0 0 24px rgba(231,201,130,.018);
+}
+.chronicle-article .stat{padding:13px}
+.chronicle-article .label,
+.chronicle-article .small{color:#b0b8a8!important}
+.chronicle-article .value,
+.chronicle-article .update-card strong,
+.chronicle-article .status-tag{color:#e7c982!important}
+.chronicle-article .status-tag{
+  border:1px solid rgba(191,160,100,.35);
+  border-radius:2px;
+  background:rgba(191,160,100,.08);
+}
+.chronicle-article input:not([type="checkbox"]):not([type="radio"]),
+.chronicle-article select,
+.chronicle-article textarea{
+  border:1px solid rgba(191,160,100,.35)!important;
+  border-radius:2px!important;
+  background:rgba(3,7,5,.76)!important;
+  color:#efe7d4!important;
+  accent-color:#bfa064;
+}
+.chronicle-article input::placeholder,
+.chronicle-article textarea::placeholder{color:#8f9888}
+.chronicle-article input:focus-visible,
+.chronicle-article select:focus-visible,
+.chronicle-article textarea:focus-visible,
+.chronicle-article button:focus-visible{
+  outline:2px solid #e7c982;
+  outline-offset:3px;
+}
+.chronicle-article input[type="file"]{
+  border:1px dashed rgba(191,160,100,.42)!important;
+  background:rgba(191,160,100,.055)!important;
+}
+.chronicle-article button{
+  min-height:43px;
+  padding:10px 14px;
+  border:1px solid rgba(191,160,100,.40);
+  border-radius:2px;
+  background:linear-gradient(180deg,rgba(31,40,29,.96),rgba(9,14,10,.96));
+  color:#eee5d1;
+  font:inherit;
+  font-size:.78rem;
+  font-weight:800;
+  cursor:pointer;
+  transition:border-color .16s ease,transform .16s ease,background .16s ease;
+}
+.chronicle-article button:hover{
+  transform:translateY(-1px);
+  border-color:#e7c982;
+  background:linear-gradient(180deg,#293327,#141c14);
+}
+.chronicle-article button.primary{
+  color:#1a1409;
+  border-color:rgba(255,229,169,.85);
+  background:linear-gradient(180deg,#f2d99f,#b78a46);
+}
+.chronicle-article button.danger{
+  color:#f4d9d0;
+  border-color:rgba(185,111,95,.54);
+  background:linear-gradient(180deg,rgba(91,40,32,.72),rgba(28,13,11,.96));
+}
+.chronicle-article .notice,
+.chronicle-article .callout,
+.chronicle-article .danger{
+  border-left-color:#bfa064;
+  background:linear-gradient(100deg,rgba(191,160,100,.09),rgba(8,13,9,.72));
+  color:#e4dcc8;
+}
+.chronicle-article .notice.danger,
+.chronicle-article .callout.danger{
+  border-left-color:#b96f5f;
+  background:linear-gradient(100deg,rgba(185,111,95,.12),rgba(8,13,9,.72));
+}
+.chronicle-article .grid,
+.chronicle-article .update-grid,
+.chronicle-article .stat-grid{gap:12px}
+.chronicle-article .feedback-page .question-list{column-gap:32px}
+.chronicle-article .signup-form input{min-width:0}
+.chronicle-article .signup-form button{white-space:normal}
+@media(max-width:640px){
+  .chronicle-article .grid,
+  .chronicle-article .update-grid,
+  .chronicle-article .stat-grid{grid-template-columns:1fr}
+  .chronicle-article .signup-form{grid-template-columns:1fr}
+  .chronicle-article button{width:100%}
+}
