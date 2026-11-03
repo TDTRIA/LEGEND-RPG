@@ -144,15 +144,30 @@ async function allocatePendingGrowth(page) {
   await expect(overlay).toHaveCount(0);
 }
 
-async function ensureShellActionsOpen(page) {
+async function ensureShellPanelOpen(page, side = 'right') {
   const isMobile = await page.evaluate(() => matchMedia('(max-width: 1199px)').matches);
-  if (!isMobile) return;
-  const isOpen = await page.evaluate(() => document.body.classList.contains('legend-shell-right-open'));
-  if (!isOpen) await page.locator('#legend-world-shell-root [data-world-action="toggle-right"]').click();
-  await expect(page.locator('#legend-world-shell-root #lws-panel-right')).toBeVisible();
+  if (isMobile) {
+    const isOpen = await page.evaluate(sideName => document.body.classList.contains('legend-shell-' + sideName + '-open'), side);
+    if (!isOpen) await page.locator('#legend-world-shell-root [data-world-action="toggle-' + side + '"]').click();
+  }
+  await expect(page.locator('#legend-world-shell-root #lws-panel-' + side)).toBeVisible();
+}
+
+async function ensureShellActionsOpen(page) {
+  return ensureShellPanelOpen(page, 'right');
 }
 
 async function visitTownRoute(page, view) {
+  if (view === 'routes') {
+    await page.locator('#legend-world-shell-root [data-world-action="map"]').click();
+    return;
+  }
+  if (view === 'profile' || view === 'sheet') {
+    await ensureShellPanelOpen(page, 'left');
+    const action = view === 'profile' ? 'account-profile' : 'traveler-sheet';
+    await page.locator('#legend-world-shell-root [data-world-action="' + action + '"]').click();
+    return;
+  }
   await ensureShellActionsOpen(page);
   const landmarkForView = { inn: 'inn', trader: 'market', smith: 'forge', road: 'road' };
   const landmark = landmarkForView[view];
@@ -627,7 +642,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.ash100-town')).toContainText('Greyfen');
     await expect(page.locator('.ash100-destinations')).toContainText('Reedlight Inn');
     await expect(page.locator('.ash100-destinations')).toContainText('Marsh Market');
-    await expect(page.getByRole('navigation', { name: 'Greyfen town navigation' })).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root #lws-panel-right')).toBeVisible();
     await expect(page.locator('.ash100-bottom-panel')).toHaveCount(0);
   });
 
@@ -822,8 +837,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
     });
 
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' })
-      .getByRole('button', { name: /Routes/i }).click();
+    await visitTownRoute(page, 'routes');
     await enterOldRoadFromDeparture(page);
     await page.locator('#push').click();
     await expect(page.locator('.exp100-combat')).toBeVisible();
@@ -2203,12 +2217,12 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(hubVisibility.legacyNav).toBe('none');
     expect(hubVisibility.legacyRoutes).toBe('none');
     await ensureShellActionsOpen(page);
-    const routes = page.locator('#legend-world-shell-root [data-world-route="routes"]');
+    const routes = page.locator('#legend-world-shell-root .lws-bottom-bar [data-world-action="map"]');
     const box = await routes.boundingBox();
     expect(box).not.toBeNull();
     expect(box.height).toBeGreaterThanOrEqual(40);
     await routes.click();
-    await expect(page.locator('.ash099-screen')).toContainText(/Routes|Region/i);
+    await expect(page.locator('.reg100-screen')).toBeVisible();
   });
 
   test('cinematic title layer and road transition controller load', async ({ page }) => {
