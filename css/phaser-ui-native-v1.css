@@ -217,3 +217,14 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
   border-left: 2px solid rgba(235,125,108,.74) !important;
   padding: 7px 10px !important;
 }
+
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v140-creation-brand {
+  border-bottom-color: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v140-creation-brand > span:last-child {
+  border-left-color: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-stepper-track,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-stepper-track i {
+  background: transparent !important;
+}
