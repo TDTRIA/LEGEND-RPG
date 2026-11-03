@@ -20,7 +20,7 @@ jobs:
       - name: Download four standalone Runway emblems
         env:
           WOMAN_URL: "https://dnznrvs05pmza.cloudfront.net/a8b51540-bea8-4702-b93e-7b3cd25e831a.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNGE1ZjBkYjQyMTllMjg5MCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg3NzgxMn0.4NAkSScLHs1VJIznbXnnn7gAIJ4nWVbwWPDGm_U8D2Q"
-          MAN_URL: "https://dnznrvs05pmza.cloudfront.net/MAN_PENDING_URL"
+          MAN_URL: "https://dnznrvs05pmza.cloudfront.net/5aa98b8e-a3c1-43fd-9f07-3369b0194b17.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiMzcxMThkZTc4ZWE3ZjQ5MiIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg1ODkxOX0.IDywNsSPDgfK_EZZH3dNXBxMCJ8EYuL0ePkvf7GEEp0"
           NONBINARY_URL: "https://dnznrvs05pmza.cloudfront.net/57492754-60ec-4c0e-b2f3-9c49667646f8.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYmM1YjE0NGJkMDYzZWM5NSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg0MjM3OX0.7N9jG6gRCNrXzyVcTHAMYKhA_HB9GQ0EwOiR3bAvQyc"
           UNSPOKEN_URL: "https://dnznrvs05pmza.cloudfront.net/952b972b-9e0b-4d38-957a-0ebb926f8934.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYThiZDY3NzJlMWI4NzFmOSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzgzOTQ3NH0.C6zBCGkwrFO9J52u6BK-gSMEU1Kv3vxoHZMR0dE80Kk"
         run: |
