@@ -55,6 +55,9 @@
     const curtain = overlay();
     const location = curtain.querySelector('.legend-transition-location');
     if (location) location.textContent = String(label || 'The road turns').toUpperCase();
+    // Set hit-testing explicitly: Mobile Safari can retain the curtain's
+    // previous hit-test state when CSS visibility/opacity transitions are composed.
+    curtain.style.pointerEvents = 'auto';
     curtain.classList.remove('is-revealing');
     curtain.classList.add('is-covering');
 
@@ -75,8 +78,12 @@
       window.setTimeout(() => {
         curtain.classList.remove('is-covering');
         curtain.classList.add('is-revealing');
+        // The scene is now rendered behind a transparent fade. Never let the
+        // visual curtain keep intercepting real touch input during or after it.
+        curtain.style.pointerEvents = 'none';
         window.setTimeout(() => {
           curtain.classList.remove('is-revealing');
+          curtain.style.pointerEvents = 'none';
           busy = false;
         }, 580);
       }, minimumCoverMs);
