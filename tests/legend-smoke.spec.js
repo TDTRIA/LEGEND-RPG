@@ -2543,6 +2543,34 @@ test('opening annals are painted by Phaser while the existing chapter controls r
   expect(firstChapter.headingColor).toBe('rgba(0, 0, 0, 0)');
   expect(firstChapter.scrollBridge).toBe(true);
 
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => page.evaluate(() => {
+    const snapshot = window.LegendPhaserWorldV1?.snapshot?.();
+    const button = document.querySelector('#openingLoreContinue')?.getBoundingClientRect();
+    const native = snapshot?.nativeAnnalsUiButtonBounds;
+    const scene = snapshot?.nativeAnnalsUiSceneSize;
+    if (!button || !native || !scene || !snapshot.nativeAnnalsUi) return false;
+    return Math.max(
+      Math.abs(native.x - button.left * scene.width / window.innerWidth),
+      Math.abs(native.y - button.top * scene.height / window.innerHeight),
+      Math.abs(native.width - button.width * scene.width / window.innerWidth),
+      Math.abs(native.height - button.height * scene.height / window.innerHeight)
+    ) < 2;
+  })).toBe(true);
+  const mobileLayout = await page.evaluate(() => ({
+    overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    screenHeight: document.querySelector('.opening-lore-v220').scrollHeight,
+    viewportHeight: document.querySelector('.opening-lore-v220').clientHeight
+  }));
+  expect(mobileLayout.overflow).toBe(false);
+  if (mobileLayout.screenHeight > mobileLayout.viewportHeight + 2) {
+    await page.locator('.opening-lore-v220').evaluate(element => {
+      element.scrollTop = element.scrollHeight;
+      element.dispatchEvent(new Event('scroll'));
+    });
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiObjectCount > 10)).toBe(true);
+  }
+
   // Chapter order and the real hand-off remain owned by the original annals controller.
   await page.locator('#openingLoreContinue').click();
   await expect(page.getByRole('heading', { name: 'The Pact Beneath the Stone' })).toBeVisible();
