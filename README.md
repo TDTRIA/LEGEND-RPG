@@ -1,185 +1,94 @@
 # LEGEND: The Awakening
 
-**LEGEND: The Awakening** is a dark-fantasy role-playing game about a frontier realm, dangerous expeditions, monsters, returning magic, and the people caught between them.
+**LEGEND: The Awakening** is an in-development dark-fantasy browser RPG about a traveler waking on a dangerous road, finding a home in Ashmere, and carrying the consequences of each expedition back into the world.
 
-The project is now in its **full RPG development phase**. The old recovery/remake phase is historical context, not the current identity.
+- **Production build:** v0.30.4
+- **Platform:** HTML5 browser game; desktop-first with responsive mobile support
+- **Live game:** https://tdtria.github.io/LEGEND-RPG/
+- **Status:** Active development; not a finished 1.0 release
 
-## Current Build
+## Current production snapshot
 
-**Production main: v0.30.4 — locally hosted Runway traveler portraits.** Main now includes four locally hosted Runway traveler portraits and mandatory three-part opening annals, the road-first Oric/Wolf tutorial, recurring Old Road encounters, tactical Guard/stagger follow-through, a rare-token reward roll, uncommon Bell Fragment sources, an illustrated expedition ledger with generated Road Token reward art, XP progress, and the saved attribute-allocation level-up. Greyfen now also includes **Patch the Ferry Nets** and the optional **Silted Storehouse** salvage stop. The existing save key, player records, combat foundation, expedition length, and five-token Greyfen gate are preserved.
+The production game includes three mandatory opening annals, a memory-led traveler creator, the dead-lantern road opening, Captain Oric and the Blackroot Wolf tutorial, a five-stage Old Road expedition, turn-based combat, Ashmere services, traveler progression, and early Greyfen activities.
 
-**Progression balance:** a completed five-stage expedition pays 80g and 33 XP at the baseline pressure of 20, plus a 65% chance to recover a Road Token. Early returns award no completion token. Rare Bandit/Road Cache drops remain possible. Bell Fragments are not guaranteed: the Reed Cut roll is 35%, recurring clue interactions are 25%, and a Lantern Wisp drop is 15%. Higher Road Pressure can increase the settlement payment, but also sharpens the threats. The Old Road now forces an encounter after two travel stretches even when careful play keeps pressure low.
+The first journey leads players onto the Old Road before they return to Ashmere. The road has High Ridge and Reed Cut route choices, discoveries, camps, a saved map/field journal, travel time, Road Pressure, and recurring danger. A careful route is not a guaranteed safe route: an encounter is forced after two travel stretches.
 
-The three opening annals are mandatory in the production renderer: there is no skip control. The first-session story cannot be skipped through the annals. The expedition report presents the route, discoveries, gold, XP, token outcome, and current-level progress as an in-world field ledger; a level-up keeps the existing saved stat-allocation choices. Greyfen remains an active partial region, not a claim that the first three towns or Ironpass are complete. Long-run economy tuning and human playtesting remain important next checks.
+At the baseline Pressure of 20, a completed five-stage expedition settles 80 gold and 33 XP and has a 65% Road Token roll. Early returns do not receive that completion token. Bell Fragments are uncommon: 35% on the Reed Cut roll, 25% from recurring clue interactions, and 15% from a Lantern Wisp. The result ledger shows settlement, discoveries, token outcome, and level progress. Level-ups preserve the existing saved attribute-allocation choice.
 
-## Development Roadmap
+Ashmere contains the town hub and its working destinations and services: Inn, Market, Forge/Workshop, Archive, people, Work Board, trading, crafting, equipment, recovery, records, and expedition preparation. Greyfen has playable pieces including Patch the Ferry Nets, Marsh Path activity, local progression materials, and the optional Silted Storehouse detour. **Greyfen is not yet a complete town/story/economy loop; Ironpass is future content.** The first three towns are a target, not a claim that all three are finished.
 
-The prioritized active plan, acceptance criteria, and compatibility guardrails are in [docs/ROADMAP.md](docs/ROADMAP.md). Store-page copy for Game Jolt and itch.io is prepared in [docs/STORE_PAGE_COPY_2026-11.md](docs/STORE_PAGE_COPY_2026-11.md); it describes only current playable features.
+## Engine transition
 
-## Art & Asset Direction
+The owner approved moving production toward **Phaser** on 2026-11-03. Phaser 4.1 is now loaded in the production game, and the production world renderer manages the persistent environment, atmosphere, transitions, and Ashmere landmarks.
 
-The shared visual style, image-family specifications, prompt template, and web/mobile integration checklist live in [docs/ART-DIRECTION.md](docs/ART-DIRECTION.md). This keeps generated art consistent across Ashmere, the Old Road, class portraits, enemies, and item icons.
+The game is currently hybrid: most menus, dialogue, account/settings, combat rules, expedition logic, and save handling still run through the existing classic JavaScript modules and DOM. The full production migration is in progress. Move real gameplay surfaces into Phaser one at a time, preserving the existing save system and gameplay behavior until each replacement has parity and regression coverage.
 
-**Current creative direction:** [docs/LEGEND_FANTASY_RPG_DIRECTION.md](docs/LEGEND_FANTASY_RPG_DIRECTION.md) establishes the preferred Monster Wars & Awakening direction: a fantasy RPG built around monster incursions, returning magic, regional conflicts, and a deeper supernatural threat. The [Game Reboot & Playable Foundation Plan](docs/LEGEND_GAME_REBOOT_PLAN.md) is a proposal for future gameplay systems and an isolated engine experiment, governed by the locked decisions in [CANON.md](docs/CANON.md). The Veil, Last Mercy/Hollow Saint relationship, echo rules, and old monster-war agreement are canon; the Five Arts as named disciplines, Strain, the Afterwake, and any production-engine migration remain proposals. The existing [world bible](docs/LEGEND_WORLD_BIBLE.md), [first-session story spine](docs/ASHMERE_STORY_SPINE.md), and [mystery/story arc blueprint](docs/LEGEND_MYSTERY_AND_STORY_ARC.md) now include reconciliation notes that preserve implemented Ashmere evidence while demoting the former Pale Surveyor/Hollow Mile mythology from the primary franchise explanation. The older [series myth arc](docs/LEGEND_SERIES_MYTH_ARC.md) and [deep canon foundation](docs/LEGEND_DEEP_CANON_FOUNDATION.md) remain available as legacy proposal references, not approved central canon.
+## Audio transition
 
-**World and franchise foundation:** [docs/LEGEND_WORLD_BIBLE.md](docs/LEGEND_WORLD_BIBLE.md) separates established canon from open mysteries, while [docs/FRANCHISE_STRATEGY.md](docs/FRANCHISE_STRATEGY.md) lays out the longer-term IP path across games, stories, art, and audio. The ongoing first-impression work is captured in [docs/OPENING_EXPERIENCE_REDESIGN.md](docs/OPENING_EXPERIENCE_REDESIGN.md), covering an alive title scene, roleplay-led character creation, and the first arrival in Ashmere. The [first-session story spine](docs/ASHMERE_STORY_SPINE.md) connects established scenes and mechanics into a coherent early journey while keeping proposed revelations separate from canon. The [mystery and story arc blueprint](docs/LEGEND_MYSTERY_AND_STORY_ARC.md) maps the first game's reveal ladder and route quests. The archived [series myth arc](docs/LEGEND_SERIES_MYTH_ARC.md) and [deep canon foundation](docs/LEGEND_DEEP_CANON_FOUNDATION.md) preserve the former Pale Surveyor/Hollow Mile proposal for reference only; they are not the current central mythology. The [character compendium](docs/LEGEND_CHARACTER_COMPENDIUM.md) adds proposed character arcs and relationships, while the [culture and history atlas](docs/LEGEND_CULTURE_AND_HISTORY_ATLAS.md) deepens the regions, customs, folklore, and historical eras. The [Series & Title Reframe](docs/LEGEND_SERIES_CONTINUITY_REFRAME.md) preserves connected geography; the current product title is **LEGEND: The Awakening**. The newer [Game Reboot Plan](docs/LEGEND_GAME_REBOOT_PLAN.md) is now the primary design proposal for a wider magic system, the world-level threat, trainable skills, combat, cinematic presentation, and engine evaluation. It supersedes the earlier Pale Surveyor/Hollow Mile cosmology as the default direction. The isolated [reboot prototype](prototypes/reboot/README.md) explores animated presentation, a draft opening cinematic, combat feel, and rune training without changing production saves. New lore remains proposed, not locked canon.
+A new **48-asset original audio collection** has been generated: 13 thirty-second location/prologue ambience loops and 35 one-shot effects for UI, story, battle, creatures, rewards, footsteps, town interactions, and Bell Cellar. These assets are staged for review in [audio PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98); they are **not in the live build yet**.
 
-## Play Now
+Replacing the recurring gameplay theme is a priority. The replacement main-theme score is in progress and still needs a verified rendered MP3, integration, loop checks, and gameplay playback tests. The live game continues using its older music setup until the replacement actually lands.
+
+## Current priorities
+
+1. Replace the recurring main gameplay theme and integrate/review the new sound library.
+2. Continue the approved Phaser production migration one complete playable surface at a time.
+3. Complete Greyfen's services, local economy, story resolution, expeditions, rewards, and return loop.
+4. Keep the Old Road challenging and progression meaningful through long-run balance and real-player testing.
+5. Keep the live game, blog, development dispatch, player guide, store copy, roadmap, and changelog aligned with what is truly playable.
+
+See [docs/ROADMAP.md](docs/ROADMAP.md) for priorities and acceptance criteria. See [docs/CANON.md](docs/CANON.md) before making story or dialogue changes.
+
+## Play now and follow development
 
 - **Live game:** https://tdtria.github.io/LEGEND-RPG/
-- **Experimental reboot prototype:** https://tdtria.github.io/LEGEND-RPG/prototypes/reboot/ (isolated from the production game)
-- **Save Vault:** https://tdtria.github.io/LEGEND-RPG/save.html
+- **Player guide:** https://tdtria.github.io/LEGEND-RPG/guide.html
+- **Development chronicle:** https://tdtria.github.io/LEGEND-RPG/blog.html
+- **Development dispatch:** https://tdtria.github.io/LEGEND-RPG/updates.html
 - **Playtest feedback:** https://tdtria.github.io/LEGEND-RPG/feedback.html
-- **Devlog:** https://tdtria.github.io/LEGEND-RPG/blog.html
-- **Development updates:** https://tdtria.github.io/LEGEND-RPG/updates.html
+- **Save Vault:** https://tdtria.github.io/LEGEND-RPG/save.html
+- **Experimental reboot prototype:** https://tdtria.github.io/LEGEND-RPG/prototypes/reboot/ (isolated proof of concept; not the production runtime)
+- **Repository:** https://github.com/TDTRIA/LEGEND-RPG
 
-## Current Direction
+## Architecture and important files
 
-LEGEND is being developed as a **desktop-first, progression-focused fantasy RPG**, while retaining mobile compatibility.
+- index.html — production entry point, script order, and Phaser loading
+- js/engine/phaser-world-v1.js — active Phaser world renderer
+- js/game.js — title/bootstrap/navigation adapter
+- js/data.js — shared game data and active version
+- js/storage.js — authoritative player save/load/normalization facade
+- js/systems/ashmere-controller-v099.js — Ashmere town routing
+- js/systems/road-controller-v100.js — active Old Road expedition controller
+- js/systems/road/road-audio-v100.js — road sound preference, effects, and current battle music lifecycle
+- js/systems/title-audio-v120.js — title ambience, menu cues, and audio unlock
+- docs/ARCHITECTURE.md — module map and script-order contracts
+- docs/SAVE_DATA_CONTRACT.md — persistent player fields and compatibility rules
+- docs/ADDING_FEATURES.md — safe feature insertion points
+- docs/CANON.md — locked story decisions
+- prototypes/reboot/ — isolated engine/design proof of concept
 
-The intended loop is:
+## Development and testing
 
-**Ashmere → prepare → choose an expedition → survive encounters → bring home loot and proof → improve the traveler → unlock more of Ashmere and the road → go farther**
+Node.js 22 LTS or newer is recommended.
 
-The Old Road has six distinct journey scenes, route choices, optional discoveries, camps, field notes, Road Pressure, and turn-based encounters. A completed run is not a guaranteed safe trip or token payout: two travel stretches force danger, pressure sharpens enemies, and rare resources require repeated expeditions and luck. Preparation, supplies, gear, and deliberate route choices make survival more reliable, not automatic.
+```bash
+npm install
+npx playwright install
+npm run test:e2e
+```
 
-The earlier skill-check philosophy remains useful under the hood, but the player-facing experience is moving toward **choices first, resolution second**. Stats, gear, traits, supplies, and preparation should influence outcomes without making every interaction feel like a tabletop dice prompt.
+Use the [Playwright Tests workflow](https://github.com/TDTRIA/LEGEND-RPG/actions) for hosted regression checks. The lightweight playtest.html support runner is not a replacement for the full Playwright suite. See [TESTING.md](TESTING.md) for the current verification checkpoint.
 
-## Previous Build Notes
+## Compatibility guardrails
 
-### v0.17.0 — A Friendlier Beginning & Living Road Combat
+- Preserve the active player save key: legend-roads-of-ashmere-v09.
+- Keep LegendStorage as the only owner of player save/load/normalization.
+- Preserve quest flags, inventory, combat formulas, progression, reward odds, account/cloud-save behavior, and accessibility during the Phaser migration.
+- Do not describe Greyfen or future regions as complete before their full playable loops are implemented and tested.
+- Do not claim an audio asset or engine surface is shipped until it is merged, integrated, and verified in the production build.
 
-The current development pass is focused on a more immersive traveler origin, readable tactical battles, and expeditions that feel like journeys rather than menus.
+## Credits and license
 
-### Ashmere
+Original concept and Windows Batch version created by **Keegan Lewis VanOrder**. Developed as **LEGEND: The Awakening**.
 
-Ashmere is organized around five clear destinations:
-
-- **Ashmere Inn** — rest, recovery, supplies, rumors
-- **Market** — buy essentials and sell road loot
-- **Forge & Workshop** — weapons, armor, and crafting
-- **Town Hall** — people, jobs, records, and town progression
-- **Old Road Gate** — begin an expedition
-
-Character creation now uses a guided seven-step story flow with persistent selections, contextual field notes, and a clear review before entering the world. The traveler panel, journal, character sheet, and profile remain available without forcing the player through the title screen.
-
-### Old Road
-
-The new expedition layer introduces:
-
-- Five-stage expeditions
-- Road Pressure
-- Meaningful travel choices
-- Discoveries and roadside resources
-- Telegraph-based turn combat with distinct class techniques
-- Road Pressure narration that warns when danger is building
-- Combat as part of the expedition
-- Clear fall-back and return options
-- Rewards that feed the Ashmere progression loop
-- Road Tokens and discoveries as progression resources
-- Touch-friendly responsive controls
-
-## Current Features
-
-- Browser-based HTML5 RPG
-- GitHub Pages deployment
-- Desktop-first responsive presentation with mobile compatibility
-- Local browser saves
-- Supabase account/auth integration
-- Cloud traveler slots
-- Character creation with identity, personality, origin, class, and keepsake choices
-- Ashmere town hub
-- Old Road expedition system
-- Road encounters and combat
-- NPCs and town services
-- Work board and town jobs
-- Trading and crafting
-- Character sheet and inventory
-- Settings and accessibility options
-- Portable Save Vault
-- Dark fantasy art and interface assets
-- Playtest / smoke-test tooling (full desktop regression suite plus focused mobile compatibility checks)
-
-## Progression Philosophy
-
-LEGEND is moving toward a long-term progression structure inspired by the satisfying clarity of games such as **Melvor Idle** while keeping its own town, road, narrative, encounter, and choice identity.
-
-Progress should come from connected loops:
-
-- Traveler level and attributes
-- Skills and mastery
-- Weapons and armor
-- Inventory and crafting
-- Gold and trade
-- Road Tokens and discoveries
-- Ashmere jobs and favor
-- NPC relationships and story progression
-- Deeper road tiers and new destinations
-
-Rewards should feed another meaningful choice instead of simply filling a number.
-
-## Desktop-first Development, Mobile Compatibility
-
-Desktop browsers are the primary development and visual-polish target, starting around 1440×900. The game must remain responsive and playable on phones around 360–430px wide, but layouts are no longer designed mobile-first.
-
-That means:
-
-- Large touch targets
-- Clear one-screen decisions
-- No hover-dependent interactions
-- Persistent Back / Continue / Return paths
-- Shorter information blocks
-- Menus that do not trap the player
-- Mobile layouts that adapt the desktop presentation without horizontal overflow
-
-## Important Files
-
-- `index.html` — live game shell and load order
-- `js/data.js` — shared game data
-- `js/storage.js` — save normalization and settings
-- `js/game.js` — current game bootstrap / portal flow
-- `js/systems/ashmere-controller-v099.js` — Ashmere town controller
-- `js/systems/road-controller-v100.js` — current Old Road expedition layer
-- `js/content/roads/old-road-v100.js` — active Old Road content data
-- `js/systems/account-v09x.js` — account/profile/cloud-save UI
-- `docs/ARCHITECTURE.md` — current production module map and script-order contracts
-- `docs/SAVE_DATA_CONTRACT.md` — player fields, IDs, and persistence rules
-- `docs/ADDING_FEATURES.md` — where new features belong and how to wire them without growing the facades
-- `supabase/traveler-slots.sql` — cloud traveler slot schema
-- `playtest.html` — QA and manual playtest runner
-- `docs/LEGEND_GAME_REBOOT_PLAN.md` — reboot proposal for magic, skills, combat, cinematic presentation, engine choice, and acceptance criteria
-- `prototypes/reboot/` — isolated Phaser proof of concept; it does not change the production runtime or saves
-
-## Development Philosophy
-
-Historical source files may remain as archive material, but the active application runs only the current v100 road controller and current save key. Legacy recovered-build saves and the v087 road state are not imported.
-
-For active development:
-
-1. Treat the live game and current modular controllers as the source of truth.
-2. Preserve established architecture and load order unless a change is deliberate.
-3. Prefer coherent system-level changes over temporary UI patches.
-4. Test the main desktop flow after meaningful changes and run focused mobile smoke checks.
-5. Keep public documentation synchronized with the current build.
-6. Record meaningful development changes in the changelog and devlog.
-
-## Tech Stack
-
-- HTML
-- CSS
-- JavaScript
-- Browser localStorage
-- Supabase
-- GitHub Pages
-
-No build pipeline is required for the live web game.
-
-## Credits
-
-Original concept and Windows Batch version created by **Keegan Lewis VanOrder**.
-
-Developed as **LEGEND: The Awakening**, a dark fantasy RPG focused on travelers, towns, roads, encounters, and progression.
-
-## License
-
-This project does not currently have a selected license.
+The project has not selected a software license yet.
