@@ -195,3 +195,14 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
   box-shadow: none !important;
   filter: none !important;
 }
+
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-actions .v094-btn,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice:hover,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-actions .v094-btn:hover,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice:active,
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-actions .v094-btn:active {
+  transform: none !important;
+  transition: none !important;
+  filter: none !important;
+}
