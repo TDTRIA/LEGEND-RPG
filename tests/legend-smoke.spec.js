@@ -2184,3 +2184,34 @@ test('Credits dialog opens accessibly and closes with Escape', async ({ page }) 
   await expect(dialog).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Credits' })).toBeFocused();
 });
+
+
+test('production root launches the canonical Phaser world without replacing production persistence', async ({ page }) => {
+  await openTitle(page);
+  await expect(page.locator('#game-container canvas')).toHaveCount(1);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.environment)).toBe('title');
+
+  const runtime = await page.evaluate(() => ({
+    mode: window.LegendPhaserWorldV1?.mode,
+    engineVersion: window.LegendPhaserWorldV1?.version,
+    engineSaveKey: window.LegendPhaserWorldV1?.saveKey,
+    declaredSaveKey: window.LEGEND_DATA?.SAVE_KEY,
+    productionAdapter: typeof window.LegendStorage?.loadPlayer === 'function' &&
+      typeof window.LegendStorage?.savePlayer === 'function',
+    productionRuntime: typeof window.LegendRuntimeV120?.loadPlayer === 'function',
+    accountModule: Boolean(window.LegendAccountV09x),
+    gameBootstrap: typeof window.LegendGameBootstrap?.continueGame === 'function',
+    previewSaveKey: window.__legendRebootSaveKey || null,
+    previewSave: localStorage.getItem('legend-reboot-prototype-save-v1')
+  }));
+  expect(runtime.mode).toBe('production');
+  expect(runtime.engineVersion).toBe('phaser-world-v1');
+  expect(runtime.engineSaveKey).toBe(runtime.declaredSaveKey);
+  expect(runtime.productionAdapter).toBe(true);
+  expect(runtime.productionRuntime).toBe(true);
+  expect(runtime.accountModule).toBe(true);
+  expect(runtime.gameBootstrap).toBe(true);
+  expect(runtime.previewSaveKey).toBeNull();
+  expect(runtime.previewSave).toBeNull();
+});
