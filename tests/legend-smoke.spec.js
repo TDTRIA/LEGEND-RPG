@@ -1118,16 +1118,21 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(pageErrors).toEqual([]);
   });
 
-  test('Ranger expedition encounter presents its distinct class technique', async ({ page }) => {
+  test('Ranger encounter exposes intent and uses a Healing Potion through the live battle UI', async ({ page }) => {
     await startFreshCharacter(page, 'BattleQA');
     // Prime pressure so the first advance deterministically triggers combat.
     await page.evaluate(() => {
       const rt=window.LegendRuntimeV120, pl=rt.loadPlayer();
       pl.flags=pl.flags||{};
+      pl.hp = 40;
+      pl.maxHp = 100;
+      pl.inventory = pl.inventory || {};
+      pl.inventory.potion = 1;
       pl.flags.roadExpeditionV100={...(pl.flags.roadExpeditionV100||{}),stage:0,pressure:53,trips:0,events:0,finds:0,battles:0};
-      // Pin this browser test to the goblin so its intent pattern is deterministic.
+      // Pin this browser test to a known Road Goblin and counterattack so the
+      // potion's real UI result can be checked without random damage variance.
       const road = window.LegendRoadsV100.oldRoad;
-      road.enemies = road.enemies.filter(enemy => enemy.id === 'goblin');
+      road.enemies = road.enemies.filter(enemy => enemy.id === 'goblin').map(enemy => ({...enemy, damage:[3,3]}));
       rt.savePlayer(pl);
     });
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
@@ -1145,9 +1150,26 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('#strike')).toContainText('FIGHT');
     await expect(page.locator('#skill')).toContainText('ACT');
     await expect(page.locator('#item')).toContainText('ITEM');
-    await page.locator('#guard').click();
+    await expect(page.locator('#item')).toBeEnabled();
+    const beforePotion = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      return { hp:pl.hp, potion:pl.inventory.potion };
+    });
+    expect(beforePotion).toEqual({ hp:40, potion:1 });
+    await page.locator('#item').click();
+    await expect(page.locator('.rpg-dialogue')).toContainText(/drink a Healing Potion and recover 30 HP/i);
+    await expect(page.locator('.rpg-dialogue')).toContainText(/hits you for \\d+ damage/i);
+    await expect(page.locator('.rpg-battle-topline strong')).toContainText('TURN 2');
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-attack/);
-    await expect(page.locator('.rpg-foe-nameplate')).toContainText('OPPONENT');
+    const afterPotion = await page.evaluate(() => {
+      const pl = window.LegendRuntimeV120.loadPlayer();
+      return { hp:pl.hp, potion:pl.inventory.potion };
+    });
+    expect(afterPotion.potion).toBe(0);
+    expect(afterPotion.hp).toBeGreaterThan(40);
+    expect(afterPotion.hp).toBeLessThan(70);
+
+    // The enemy's next telegraphed action remains visible after the item turn.
     await page.locator('#guard').click();
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-heavy/);
     await expect(page.locator('.rpg-foe-nameplate')).toContainText('HEAVY WIND-UP');
