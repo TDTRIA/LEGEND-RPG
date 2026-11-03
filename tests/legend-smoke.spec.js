@@ -2264,3 +2264,22 @@ test('the production Phaser world follows all six Old Road scene stages and the 
     bellCellar: 'cellar'
   });
 });
+
+
+test('the production root falls back to its original artwork when the Phaser CDN is unavailable', async ({ page }) => {
+  await page.route('https://cdn.jsdelivr.net/npm/phaser@4.1.0/dist/phaser.min.js', route => route.abort());
+  await openTitle(page);
+  await expect(page.locator('.v120-title-backdrop')).toBeVisible();
+  const fallback = await page.evaluate(() => ({
+    engineMode: window.LegendPhaserWorldV1?.mode,
+    engineReady: window.LegendPhaserWorldV1?.ready,
+    phaserWorldClass: document.body.classList.contains('legend-phaser-world-active'),
+    backdropVisibility: getComputedStyle(document.querySelector('.v120-title-backdrop')).visibility,
+    titleVisible: Boolean(document.querySelector('.v120-title'))
+  }));
+  expect(fallback.engineMode).toBe('production');
+  expect(fallback.engineReady).toBe(false);
+  expect(fallback.phaserWorldClass).toBe(false);
+  expect(fallback.backdropVisibility).toBe('visible');
+  expect(fallback.titleVisible).toBe(true);
+});
