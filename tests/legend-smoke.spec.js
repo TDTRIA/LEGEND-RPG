@@ -1158,7 +1158,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(beforePotion).toEqual({ hp:40, potion:1 });
     await page.locator('#item').click();
     await expect(page.locator('.rpg-dialogue')).toContainText(/drink a Healing Potion and recover 30 HP/i);
-    await expect(page.locator('.rpg-dialogue')).toContainText(/hits you for \\d+ damage/i);
+    await expect(page.locator('.rpg-dialogue')).toContainText(/hits you for \d+ damage/i);
     await expect(page.locator('.rpg-battle-topline strong')).toContainText('TURN 2');
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-attack/);
     const afterPotion = await page.evaluate(() => {
