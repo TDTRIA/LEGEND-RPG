@@ -451,7 +451,13 @@
           engineAwakened: this.engineAwakened,
           surface: this.surface,
           surfaceTransitionCount: this.surfaceTransitionCount,
-          ashmereLandmarks: this.ashmereLandmarks.map(item => ({ id: item.id, x: item.x, y: item.y })),
+          ashmereLandmarks: this.ashmereLandmarks.map(item => ({
+            id: item.id,
+            x: item.x,
+            y: item.y,
+            clientX: item.x / Math.max(1, this.dimensions().width) * Math.max(1, window.innerWidth),
+            clientY: item.y / Math.max(1, this.dimensions().height) * Math.max(1, window.innerHeight)
+          })),
           hoveredAshmereLandmark: this.hoveredAshmereLandmark
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
