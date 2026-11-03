@@ -20,6 +20,20 @@ async function openPrototype(page, viewport = { width: 1440, height: 900 }) {
 }
 
 test.describe('LEGEND Phaser reboot prototype', () => {
+  test('plays the Phaser-native engine awakening and supports an accessible skip', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/prototypes/reboot/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#engine-skip')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains('engine-intro-active'))).toBe(true);
+    await page.locator('#engine-skip').click();
+    await page.waitForFunction(() => window.__legendRebootReady === true, null, { timeout: 15000 });
+    await expect(page.locator('.v120-title')).toBeVisible();
+    const state = await page.evaluate(() => window.__legendRebootBridge.snapshot());
+    expect(state.engineAwakened).toBe(true);
+    expect(state.environment).toBe('title');
+    await expect(page.locator('#engine-skip')).toBeHidden();
+  });
+
   test('loads a responsive Phaser world canvas and the correct title', async ({ page }) => {
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
@@ -36,7 +50,11 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     await expect(page.locator('#account')).toHaveCount(0);
     await expect(page.locator('#game-container canvas')).toHaveCount(1);
     await expect.poll(async () => page.locator('#game-container canvas').evaluate(canvas => canvas.width)).toBeGreaterThan(0);
-    expect(await page.evaluate(() => window.__legendRebootBridge?.version)).toBe('phaser-atmosphere-v2');
+    expect(await page.evaluate(() => window.__legendRebootBridge?.version)).toBe('phaser-engine-v1');
+    const engineSnapshot = await page.evaluate(() => window.__legendRebootBridge.snapshot());
+    expect(engineSnapshot.engineAwakened).toBe(true);
+    await expect(page.locator('#engine-skip')).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.classList.contains('engine-intro-active'))).toBe(false);
     const titleAtmosphere = await page.evaluate(() => window.__legendRebootBridge?.snapshot?.());
     expect(titleAtmosphere.environment).toBe('title');
     expect(titleAtmosphere.atmosphereCount).toBeGreaterThanOrEqual(30);
@@ -55,6 +73,8 @@ test.describe('LEGEND Phaser reboot prototype', () => {
 
     await page.locator('#dispatches').click();
     await expect(page.locator('.dispatches-v140')).toBeVisible();
+    await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surface)).toBe('dispatches');
+    await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surfaceTransitionCount)).toBeGreaterThan(0);
     await expect(page.getByRole('heading', { name: 'News & Roadmap' })).toBeVisible();
     await page.locator('#dispatchesBack').click();
     await expect(page.locator('.v120-title')).toBeVisible();
