@@ -57,3 +57,43 @@ body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-
     transition: none !important;
   }
 }
+
+/* Opening annals use the same native scene treatment. Text remains in the
+   accessibility tree as transparent semantic content while Phaser paints it. */
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220 {
+  color: transparent !important;
+  background: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220-backdrop,
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220-grain {
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220-top,
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220-footer {
+  border-color: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220 *,
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220 *::before,
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220 *::after {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220-side i {
+  background: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220-progress,
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220-progress i {
+  background: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220-continue {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lore-v220-continue:focus-visible {
+  outline: 2px solid transparent !important;
+  outline-offset: 3px !important;
+}

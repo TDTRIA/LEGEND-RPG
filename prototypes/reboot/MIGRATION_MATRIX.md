@@ -103,6 +103,17 @@ The production title menu now uses `RealmScene` for its panel and button artwork
 
 **Next surface order:** traveler creation and story dialogue; the persistent HUD and contextual journal/map/action shell; expedition interactions and results; then combat presentation and command controls. Each surface must retain its existing accessible input bridge and pass the same production journey/save regression tests before the next is moved.
 
+## Native Phaser opening annals — 2026-11-03
+
+The mandatory three-chapter prologue is being presented inside the persistent Phaser scene rather than as a separate HTML page:
+
+- Phaser paints the historical chapter heading, body copy, pull quote, chapter rail, header/footer rules, reading progress, and Continue control, aligned to the existing responsive semantic layout.
+- The original text remains in the document for accessibility and the original `LegendOpeningPrologueV220` controller still advances the chapters and starts the real traveler-creation flow.
+- Resize and scroll changes remeasure the live layout. Focus on the chapter control is reflected in the Phaser frame.
+- No story text, chapter order, save data, character-creation rules or progression behavior is changed.
+
+**Next surface order:** traveler-creation choices and inputs, then Oric's scene dialogue/response controls; after that, the persistent HUD/contextual journal/map/action shell, expedition interactions/results, and combat controls/presentation. Each is a separate production-parity slice.
+
 ## Native Phaser service interiors — 2026-11-03
 
 The Ashmere service backdrops now receive scene-native set dressing while their existing accessible service consoles remain interactive HTML:
