@@ -2300,13 +2300,19 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
     document.dispatchEvent(new PointerEvent('pointerup', {
       bubbles: true, cancelable: true, button: 0, clientX: x, clientY: y
     }));
-  }, { x: market.x, y: market.y });
+  }, { x: market.clientX, y: market.clientY });
 
   await expect(page.locator('#legend-world-shell-root .lws-selected-place h3')).toHaveText('Market');
   await expect(page.locator('#legend-world-shell-root [data-world-action="visit-selected-place"]')).toBeEnabled();
   await page.locator('#legend-world-shell-root [data-world-action="visit-selected-place"]').click();
   await expect(page.locator('.ash099-market-console')).toBeVisible();
   await expect(page.locator('[data-market-tab="buy"]')).toHaveAttribute('aria-selected', 'true');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('market');
+  expect(await page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.ashmereLandmarks)).toHaveLength(0);
+
+  await page.locator('#ashBack').click();
+  await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.ashmereLandmarks?.length)).toBe(4);
 });
 
 test('the production root falls back to its original artwork when the Phaser CDN is unavailable', async ({ page }) => {
