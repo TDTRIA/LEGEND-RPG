@@ -173,6 +173,9 @@ test('capture genuine v0.30.4 store-page screenshots from the production game UI
   // Greyfen is deliberately presented as in-progress content, not as a finished town.
   await page.goto('/');
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
+  // Greyfen's live expedition panel is narrower than the main shell. Capture it
+  // at 1280×720 so the real responsive layout fills a useful 16:9 store frame.
+  await page.setViewportSize({ width: 1280, height: 720 });
   // Leave transitions enabled for this region change: the game's scene curtain
   // uses its transition lifecycle to reveal the Greyfen screen.
   await page.evaluate(() => {
@@ -235,7 +238,7 @@ test('capture genuine v0.30.4 store-page screenshots from the production game UI
     return style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) < 0.05;
   }, null, { timeout: 20000 });
   await page.waitForTimeout(300);
-  await capture(page, '11-greyfen-marsh-path-in-progress-1920x1080.png');
+  await capture(page, '11-greyfen-marsh-path-in-progress-1280x720.png');
 
   fs.writeFileSync(path.join(outputDir, 'README.txt'), [
     'LEGEND: The Awakening — Store Page Screenshot Pack',
