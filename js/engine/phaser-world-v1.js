@@ -550,6 +550,7 @@
           nativeCreationUiChoiceIds: this.nativeCreationUiControls.filter(item => item.kind === 'choice').map(item => item.id),
           nativeCreationUiControlBounds: this.nativeCreationUiControls.map(item => ({ id: item.id, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible), selected: Boolean(item.selected) })),
           nativeCreationUiTextureCount: this.nativeCreationUiTextures.length,
+          nativeCreationUiSceneSize: this.dimensions(),
           nativeCreationUiScrollTargetBound: Boolean(this.nativeCreationUiScrollTarget),
           nativeAnnalsUiSceneSize: this.dimensions(),
           nativeAnnalsUiButtonBounds: (() => {
