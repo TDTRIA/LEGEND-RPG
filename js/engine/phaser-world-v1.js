@@ -260,6 +260,7 @@
       realmScene?.syncNativeTitleUi?.(surface);
       realmScene?.syncNativeAnnalsUi?.(surface);
       realmScene?.syncNativeCreationUi?.(surface);
+      realmScene?.syncNativeOpeningUi?.(surface);
     }
   }
 
@@ -287,6 +288,7 @@
       ));
       if (!affectsWorldSurface) {
         realmScene?.syncNativeCreationUi?.(currentSurface);
+        realmScene?.syncNativeOpeningUi?.(currentSurface);
         return;
       }
       inferEnvironment();
@@ -477,6 +479,12 @@
       this.nativeCreationUiLayoutEvent = null;
       this.nativeCreationUiScrollTarget = null;
       this.nativeCreationUiTextureCounter = 0;
+      this.nativeOpeningUiActive = false;
+      this.nativeOpeningUiObjects = [];
+      this.nativeOpeningUiControls = [];
+      this.nativeOpeningUiSignature = '';
+      this.nativeOpeningUiLayoutEvent = null;
+      this.nativeOpeningUiScrollTarget = null;
     }
 
     preload() {
@@ -496,6 +504,7 @@
         this.syncNativeTitleUi(this.surface);
         this.syncNativeAnnalsUi(this.surface);
         this.syncNativeCreationUi(this.surface);
+        this.syncNativeOpeningUi(this.surface);
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -552,6 +561,11 @@
           nativeCreationUiTextureCount: this.nativeCreationUiTextures.length,
           nativeCreationUiSceneSize: this.dimensions(),
           nativeCreationUiScrollTargetBound: Boolean(this.nativeCreationUiScrollTarget),
+          nativeOpeningUi: this.nativeOpeningUiActive,
+          nativeOpeningUiObjectCount: this.nativeOpeningUiObjects.filter(item => item?.active).length,
+          nativeOpeningUiControlBounds: this.nativeOpeningUiControls.map(item => ({ id: item.id, label: item.label, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible) })),
+          nativeOpeningUiSceneSize: this.dimensions(),
+          nativeOpeningUiScrollTargetBound: Boolean(this.nativeOpeningUiScrollTarget),
           nativeAnnalsUiSceneSize: this.dimensions(),
           nativeAnnalsUiButtonBounds: (() => {
             const button = root()?.querySelector('.opening-lore-v220-continue');
@@ -783,6 +797,7 @@
         this.syncNativeTitleUi(next);
         this.syncNativeAnnalsUi(next);
         this.syncNativeCreationUi(next);
+        this.syncNativeOpeningUi(next);
         return;
       }
       const previous = this.surface;
@@ -791,6 +806,7 @@
       this.syncNativeTitleUi(next);
       this.syncNativeAnnalsUi(next);
       this.syncNativeCreationUi(next);
+      this.syncNativeOpeningUi(next);
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -1729,6 +1745,224 @@
           button.addEventListener('blur', () => this.setNativeCreationControlFocus(id, button.matches(':hover')));
           button.addEventListener('pointerenter', () => this.setNativeCreationControlFocus(id, true));
           button.addEventListener('pointerleave', () => this.setNativeCreationControlFocus(id, document.activeElement === button));
+        }
+      });
+    }
+
+    clearNativeOpeningUi(removeClass = true) {
+      this.nativeOpeningUiLayoutEvent?.remove?.(false);
+      this.nativeOpeningUiLayoutEvent = null;
+      if (this.nativeOpeningUiScrollTarget) {
+        this.nativeOpeningUiScrollTarget.removeEventListener('scroll', this.nativeOpeningUiScrollTarget.__legendOpeningScrollHandler);
+        this.nativeOpeningUiScrollTarget = null;
+      }
+      this.nativeOpeningUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeOpeningUiObjects = [];
+      this.nativeOpeningUiControls = [];
+      this.nativeOpeningUiSignature = '';
+      this.nativeOpeningUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-opening-ui-active');
+    }
+
+    setNativeOpeningControlFocus(id, active) {
+      const control = this.nativeOpeningUiControls.find(item => item.id === id);
+      if (!control?.focusFrame?.active) return;
+      control.focusFrame.setVisible(Boolean(active));
+      if (!control.container?.active) return;
+      const offset = active && !reducedMotion() ? 1.5 : 0;
+      if (reducedMotion()) control.container.x = control.x + offset;
+      else this.tweens.add({
+        targets: control.container,
+        x: control.x + offset,
+        duration: 115,
+        ease: 'Sine.easeOut',
+        overwrite: true
+      });
+    }
+
+    syncNativeOpeningUi(surface = this.surface) {
+      const screen = root()?.querySelector('.opening-road-v140');
+      if (String(surface || '') !== 'awakening' || !screen) {
+        if (this.nativeOpeningUiActive || document.body?.classList.contains('legend-phaser-opening-ui-active')) {
+          this.clearNativeOpeningUi();
+        }
+        return;
+      }
+
+      const animations = typeof screen.getAnimations === 'function'
+        ? screen.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' || animation.playState === 'pending')
+        : [];
+      if (animations.length) {
+        this.nativeOpeningUiLayoutEvent?.remove?.(false);
+        this.nativeOpeningUiLayoutEvent = this.time.delayedCall(700, () => {
+          this.nativeOpeningUiLayoutEvent = null;
+          this.syncNativeOpeningUi(surface);
+        });
+        return;
+      }
+      this.nativeOpeningUiLayoutEvent?.remove?.(false);
+      this.nativeOpeningUiLayoutEvent = null;
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const rectFor = node => {
+        const rect = node?.getBoundingClientRect();
+        if (!rect || !rect.width || !rect.height) return null;
+        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+      };
+      const cards = Array.from(screen.querySelectorAll('.opening-road-v140-card,.opening-road-v140-prologue-card'));
+      const sceneNotes = Array.from(screen.querySelectorAll('.opening-road-v140-scene-note'));
+      const quotes = Array.from(screen.querySelectorAll('blockquote'));
+      const buttons = Array.from(screen.querySelectorAll('.opening-road-v140-choice,.opening-road-v140-primary,.opening-road-v140-secondary'));
+      const textNodes = Array.from(screen.querySelectorAll('.opening-road-v140-kicker,h1,h2,p,blockquote strong,blockquote p,.opening-road-v140-choice strong,.opening-road-v140-choice span'))
+        .filter(node => !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
+      const panels = [...cards, ...sceneNotes, ...quotes, ...buttons];
+      const signature = JSON.stringify([
+        screen.className, Math.round(window.innerWidth), Math.round(window.innerHeight), screen.scrollTop,
+        ...panels.map(node => {
+          const rect = node.getBoundingClientRect();
+          return [node.className || node.tagName, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...textNodes.map(node => [node.tagName, node.textContent?.replace(/\s+/g, ' ').trim() || '', Math.round(node.getBoundingClientRect().left), Math.round(node.getBoundingClientRect().top)]),
+        ...buttons.map(button => [button.id, button.dataset.oricResponse || '', button.textContent?.trim() || ''])
+      ]);
+      if (this.nativeOpeningUiActive && signature === this.nativeOpeningUiSignature) return;
+
+      this.clearNativeOpeningUi(false);
+      this.nativeOpeningUiActive = true;
+      this.nativeOpeningUiSignature = signature;
+      document.body?.classList.add('legend-phaser-opening-ui-active');
+
+      if (!this.nativeOpeningUiScrollTarget) {
+        this.nativeOpeningUiScrollTarget = screen;
+        const handler = () => {
+          this.nativeOpeningUiLayoutEvent?.remove?.(false);
+          this.nativeOpeningUiLayoutEvent = this.time.delayedCall(48, () => {
+            this.nativeOpeningUiLayoutEvent = null;
+            this.syncNativeOpeningUi(surface);
+          });
+        };
+        screen.__legendOpeningScrollHandler = handler;
+        screen.addEventListener('scroll', handler, { passive: true });
+      }
+
+      const add = (object, depth = 13) => {
+        if (!object) return object;
+        object.setDepth?.(depth);
+        this.nativeOpeningUiObjects.push(object);
+        return object;
+      };
+      const drawPanel = (node, style = {}) => {
+        const rect = rectFor(node);
+        if (!rect) return;
+        const graphics = this.add.graphics();
+        graphics.fillStyle(style.fill ?? 0x0b120d, style.alpha ?? 0.94);
+        graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+        graphics.lineStyle(style.lineWidth ?? 1, style.stroke ?? 0xd7b66e, style.strokeAlpha ?? 0.62);
+        graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        if (style.inset !== false && rect.width > 20 && rect.height > 20) {
+          graphics.lineStyle(1, 0xd7b66e, 0.16);
+          graphics.strokeRect(rect.x + 7 * sx, rect.y + 7 * sy, rect.width - 14 * sx, rect.height - 14 * sy);
+        }
+        add(graphics, 12);
+      };
+      cards.forEach(node => drawPanel(node, { fill: 0x0b120d, alpha: 0.96, stroke: 0xd7b66e, strokeAlpha: 0.82, lineWidth: 1.4 }));
+      sceneNotes.forEach(node => drawPanel(node, { fill: 0x282319, alpha: 0.78, stroke: 0xc9a55e, strokeAlpha: 0.74, inset: false }));
+      quotes.forEach(node => drawPanel(node, { fill: 0x090f0b, alpha: 0.62, stroke: 0x9b8352, strokeAlpha: 0.54, inset: false }));
+      buttons.forEach(node => {
+        const choice = node.classList.contains('opening-road-v140-choice');
+        const primary = node.classList.contains('opening-road-v140-primary');
+        drawPanel(node, {
+          fill: primary ? 0x674b20 : choice ? 0x152319 : 0x111a13,
+          alpha: 0.98,
+          stroke: primary ? 0xe8c878 : 0xc6a666,
+          strokeAlpha: primary ? 0.94 : 0.68,
+          lineWidth: primary ? 1.4 : 1,
+          inset: false
+        });
+      });
+
+      textNodes.forEach(node => {
+        const rect = rectFor(node);
+        if (!rect) return;
+        const style = window.getComputedStyle(node);
+        let text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
+        if (style.textTransform === 'uppercase') text = text.toLocaleUpperCase();
+        if (!text) return;
+        let color = style.color || '#e5e0d1';
+        if (node.matches('.opening-road-v140-kicker,.opening-road-v140-scene-note > span,blockquote strong')) color = '#e2c47f';
+        else if (node.matches('h1,h2')) color = '#f4e8c6';
+        else if (node.matches('.opening-road-v140-choice strong')) color = '#fff0ca';
+        else if (node.matches('.opening-road-v140-choice span')) color = '#c4d0c4';
+        else if (node.matches('.opening-road-v140-footnote')) color = '#a7b5a8';
+        const fontSize = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
+        const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.45;
+        add(this.add.text(rect.x, rect.y, text, {
+          fontFamily: style.fontFamily || 'Georgia, Times New Roman, serif',
+          fontSize: fontSize + 'px',
+          fontStyle: Number(style.fontWeight) >= 650 || style.fontWeight === 'bold' ? 'bold' : (style.fontStyle || 'normal'),
+          color,
+          lineSpacing: Math.max(0, (lineHeight - (parseFloat(style.fontSize) || 14)) * sy),
+          letterSpacing: Number.isFinite(parseFloat(style.letterSpacing)) ? Math.max(0, parseFloat(style.letterSpacing) * sx) : 0,
+          wordWrap: { width: Math.max(36, rect.width), useAdvancedWrap: true },
+          padding: { left: 1, right: 2, top: 1, bottom: 2 },
+          align: style.textAlign || 'left'
+        }).setOrigin(0, 0), 14);
+      });
+
+      buttons.forEach((button, index) => {
+        const id = button.dataset.oricResponse ? 'oric-' + button.dataset.oricResponse : (button.id || 'opening-action-' + index);
+        const label = button.textContent?.replace(/\s+/g, ' ').trim() || id;
+        button.setAttribute('aria-label', label);
+        const rect = rectFor(button);
+        if (!rect) return;
+        const container = this.add.container(rect.x, rect.y).setDepth(15);
+        const focusFrame = this.add.graphics();
+        focusFrame.lineStyle(2, button.classList.contains('opening-road-v140-choice') ? 0xe5c78c : 0xffe7a6, 0.98);
+        focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
+        focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
+        const objects = [focusFrame];
+        if (button.classList.contains('opening-road-v140-choice')) {
+          const title = button.querySelector('strong')?.textContent?.trim() || label;
+          const description = button.querySelector('span')?.textContent?.trim() || '';
+          objects.push(this.add.text(12 * sx, rect.height * 0.30, title, {
+            fontFamily: 'Georgia, Times New Roman, serif',
+            fontSize: Math.max(10, 15 * sy) + 'px',
+            fontStyle: 'bold',
+            color: '#fff0ca',
+            wordWrap: { width: Math.max(32, rect.width - 24 * sx), useAdvancedWrap: true }
+          }).setOrigin(0, 0.5));
+          objects.push(this.add.text(12 * sx, rect.height * 0.72, description, {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: Math.max(9, 12 * sy) + 'px',
+            color: '#c4d0c4',
+            wordWrap: { width: Math.max(32, rect.width - 24 * sx), useAdvancedWrap: true }
+          }).setOrigin(0, 0.5));
+        } else {
+          objects.push(this.add.text(rect.width / 2, rect.height / 2, label, {
+            fontFamily: 'Arial, sans-serif',
+            fontSize: Math.max(10, 14 * sy) + 'px',
+            fontStyle: 'bold',
+            color: button.classList.contains('opening-road-v140-primary') ? '#261c08' : '#f4efdd',
+            align: 'center',
+            wordWrap: { width: Math.max(36, rect.width - 22 * sx), useAdvancedWrap: true }
+          }).setOrigin(0.5));
+        }
+        container.add(objects);
+        add(container, 15);
+        const control = { id, x: rect.x, y: rect.y, width: rect.width, height: rect.height, container, focusFrame, button, label };
+        this.nativeOpeningUiControls.push(control);
+        if (!button.__legendNativeOpeningBound) {
+          button.__legendNativeOpeningBound = true;
+          button.addEventListener('focus', () => this.setNativeOpeningControlFocus(id, true));
+          button.addEventListener('blur', () => this.setNativeOpeningControlFocus(id, button.matches(':hover')));
+          button.addEventListener('pointerenter', () => this.setNativeOpeningControlFocus(id, true));
+          button.addEventListener('pointerleave', () => this.setNativeOpeningControlFocus(id, document.activeElement === button));
         }
       });
     }
