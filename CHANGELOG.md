@@ -1,3 +1,16 @@
+# LEGEND: The Awakening — Changelog
+
+All notable changes to the current project are recorded here. Historical entries may retain old names and versions from the build they describe.
+
+## 2026-11-03 — Audio library, production migration, and repository catch-up (in progress; not a game version bump)
+
+- Generate a 48-asset original audio collection: 13 location/prologue ambience loops and 35 gameplay effects for UI, story, combat, creatures, rewards, travel, town services, and Bell Cellar. Stage the files for review in PR #98; they are not in the live build yet.
+- Begin replacing the recurring gameplay theme. The original score is being prepared for a verified rendered MP3 and production integration; do not mark the old game theme as replaced until the new music is playing in the live game and audio transitions pass checks.
+- Record the owner-approved Phaser production migration (2026-11-03). Phaser 4.1 is active as the persistent world-rendering layer; the rest of the gameplay migration remains incremental and in progress.
+- Refresh the public development chronicle, dispatch, player guide, Save Vault labeling, lightweight QA runner, README, roadmap, architecture notes, and active AI handoff to match production v0.30.4.
+- Archive the superseded AI handoff snapshot without deleting its historical build and PR notes.
+- No player-save migration, reward/balance change, gameplay-rule change, or new release version is introduced by this documentation/audio-preparation pass.
+
 ## v0.30.4 — Runway traveler identity portraits
 
 - Replace the temporary identity glyphs with four separate local Runway WebP portraits for Woman, Man, Nonbinary, and Keep It Unspoken.
@@ -307,7 +320,7 @@
 
 # Changelog
 
-All notable changes to **LEGEND: Roads of Ashmere** will be documented in this file.
+All notable changes to **LEGEND: The Awakening** are recorded in this file. Historical entries retain the title and version language used at the time; they are not current product descriptions.
 
 This project is an HTML5 fantasy RPG. Earlier remake history is retained below as a development record. of the original Windows Batch RPG **LegendTFC**.
 
