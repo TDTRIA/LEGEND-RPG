@@ -27,7 +27,7 @@ The game is currently hybrid: most menus, dialogue, account/settings, combat rul
 
 A new **48-asset original audio collection** has been generated: 13 thirty-second location/prologue ambience loops and 35 one-shot effects for UI, story, battle, creatures, rewards, footsteps, town interactions, and Bell Cellar. These assets are staged for review in [audio PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98); they are **not in the live build yet**.
 
-Replacing the recurring gameplay theme is a priority. The replacement main-theme score is in progress and still needs a verified rendered MP3, integration, loop checks, and gameplay playback tests. The live game continues using its older music setup until the replacement actually lands.
+Replacing the recurring gameplay theme is a priority. A replacement main-theme MP3 has now been rendered as a roughly 10½-minute loop and is staged in PR #98 with the effects collection. It still needs in-game listening, mix/loop verification, and integration. The live game continues using its older music setup until the replacement actually lands.
 
 ## Current priorities
 
