@@ -80,6 +80,7 @@ Choose real screenshots from the live build, not concept art:
 - Use the exact product name **LEGEND: The Awakening**.
 - Replace old “Roads of Ashmere” branding or v0.10/v0.20-era descriptions.
 - Upload real current screenshots from the live game and update them when major screens change.
+- Link the central Realm Hub: https://tdtria.github.io/LEGEND-RPG/portal.html
 - Link the current devlog: https://tdtria.github.io/LEGEND-RPG/blog.html
 - Link development updates: https://tdtria.github.io/LEGEND-RPG/updates.html
 - Link the project repository: https://github.com/TDTRIA/LEGEND-RPG
