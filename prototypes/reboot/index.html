@@ -5,35 +5,55 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <base href="../../">
   <meta name="theme-color" content="#090d0c">
-  <meta name="description" content="An isolated Phaser reboot prototype using the current LEGEND: The Awakening game content and gameplay systems.">
+  <meta name="description" content="An isolated Phaser presentation of the current LEGEND: The Awakening game and its production systems.">
+  <link rel="icon" type="image/webp" href="assets/generated/ui/icons/service-milestone.webp">
+  <link rel="stylesheet" href="css/style.css?v=0.6.4">
+  <link rel="stylesheet" href="css/game-ui-v090.css?v=0.22.1-runway-world-bg">
+  <link rel="stylesheet" href="css/beginning-v094.css?v=0.30.4-gender-art">
+  <link rel="stylesheet" href="css/road-combat-v093.css?v=0.9.3">
+  <link rel="stylesheet" href="css/ashmere-v099.css?v=0.9.x-polish">
+  <link rel="stylesheet" href="css/ashmere-town-terminal-v09x.css?v=0.9.x-town-terminal-1">
+  <link rel="stylesheet" href="css/settings-v09x.css?v=0.9.x">
+  <link rel="stylesheet" href="css/game-polish-v09x.css?v=0.22.1-runway-world-bg">
+  <link rel="stylesheet" href="css/title-realm-polish-v09x.css?v=0.22.1-runway-world-bg">
+  <link rel="stylesheet" href="css/title-menu-cleanup-v09x.css?v=0.22.1-runway-bg-r2">
+  <link rel="stylesheet" href="css/intro-gate-cinematic-v09x.css?v=0.20.3-gate-accessibility">
+  <link rel="stylesheet" href="css/realm-portal-comfort-v09x.css?v=0.9.x-comfort-1">
+  <link rel="stylesheet" href="css/realm-portal-gamefeel-v09x.css?v=0.9.x-gamefeel-1">
+  <link rel="stylesheet" href="css/mobile-safety-v09x.css?v=0.9.x-mobile-safety-3">
+  <link rel="stylesheet" href="css/road-expedition-v100.css?v=0.29.4-guided-tutorial-abandon-gate">
+  <link rel="stylesheet" href="css/ashmere-town-v100.css?v=0.29.1-crisp-hub-icons">
+  <link rel="stylesheet" href="css/ashmere-workshops-v100.css?v=0.29.0-rpg-service-panels">
+  <link rel="stylesheet" href="css/region-travel-v100.css?v=0.22.1-ashmere-map-art">
+  <link rel="stylesheet" href="css/title-cinematic-v120.css?v=0.21.0-runway-logo-fallback">
+  <link rel="stylesheet" href="css/title-awakening-v130.css?v=0.20.31-title-logo">
+  <link rel="stylesheet" href="css/title-logo-fit-v131.css?v=0.20.31-title-logo">
+  <link rel="stylesheet" href="css/title-interaction-polish-v133.css?v=0.20.33-menu-motion">
+  <link rel="stylesheet" href="css/title-finish-v134.css?v=0.20.34-title-finish">
+  <link rel="stylesheet" href="css/title-screen-v135.css?v=0.20.36-cinematic-layout-final">
+  <link rel="stylesheet" href="css/title-rpg-menu-v136.css?v=0.20.36-rpg-menu">
+  <link rel="stylesheet" href="css/title-dispatches-v140.css?v=0.22.1-runway-bg">
+  <link rel="stylesheet" href="css/opening-road-v140.css?v=0.29.4-oric-field-guide">
+  <link rel="stylesheet" href="css/immersive-world-v150.css?v=0.24.1-title-ring-removed-5">
+  <link rel="stylesheet" href="css/bell-vault-v100.css?v=0.21.0-first-delve">
+  <link rel="stylesheet" href="css/world-client-boot-v100.css?v=0.27.1-cinematic-boot-1">
+  <link rel="stylesheet" href="css/runway-art-pass-v151.css?v=0.24.1-runway-icon-square-1">
+  <link rel="stylesheet" href="css/progression-results-v152.css?v=0.23.0-growth-results">
+  <link rel="stylesheet" href="css/greyfen-marsh-v160.css?v=0.24.0-marsh-path">
+  <link rel="stylesheet" href="css/greyfen-storehouse-v170.css?v=0.25.0-storehouse-delve-1">
+  <link rel="stylesheet" href="css/legend-ui-system-v160.css?v=0.27.6-scene-visibility-1">
+  <link rel="stylesheet" href="css/legend-world-shell-v170.css?v=0.27.6-global-visibility-2">
+  <link rel="stylesheet" href="css/legend-ui-rollout-v180.css?v=0.27.6-global-visibility-1">
+  <link rel="stylesheet" href="css/opening-cinematic-v170.css?v=0.27.4-world-scene-translucency-2">
+  <link rel="stylesheet" href="css/title-realm-entry-v191.css?v=0.27.4-title-scene-brightness-2">
+  <link rel="stylesheet" href="css/opening-story-cinematic-v201.css?v=0.27.4-opening-scene-brightness-1">
+  <link rel="stylesheet" href="css/ashmere-world-visibility-v181.css?v=0.27.3-ashmere-brightness-fix-3">
+  <link rel="stylesheet" href="css/combat-scene-staging-v210.css?v=0.29.3-stagger-window">
+  <link rel="stylesheet" href="css/opening-lore-v220.css?v=0.30.0-mandatory-annals">
+  <link rel="stylesheet" href="css/title-screen-renewal-v220.css?v=0.29.1-realm-dispatch">
+  <link rel="stylesheet" href="css/legend-visibility-contract-v220.css?v=0.30.3-release-visibility">
   <title>LEGEND: The Awakening — Phaser Reboot</title>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/game-ui-v090.css">
-  <link rel="stylesheet" href="css/beginning-v094.css">
-  <link rel="stylesheet" href="css/road-combat-v093.css">
-  <link rel="stylesheet" href="css/ashmere-v099.css">
-  <link rel="stylesheet" href="css/ashmere-town-terminal-v09x.css">
-  <link rel="stylesheet" href="css/road-expedition-v100.css">
-  <link rel="stylesheet" href="css/ashmere-town-v100.css">
-  <link rel="stylesheet" href="css/ashmere-workshops-v100.css">
-  <link rel="stylesheet" href="css/region-travel-v100.css">
-  <link rel="stylesheet" href="css/opening-road-v140.css">
-  <link rel="stylesheet" href="css/bell-vault-v100.css">
-  <link rel="stylesheet" href="css/progression-results-v152.css">
-  <link rel="stylesheet" href="css/greyfen-marsh-v160.css">
-  <link rel="stylesheet" href="css/greyfen-storehouse-v170.css">
-  <link rel="stylesheet" href="css/legend-ui-system-v160.css">
-  <link rel="stylesheet" href="css/legend-world-shell-v170.css">
-  <link rel="stylesheet" href="css/mobile-safety-v09x.css">
-  <link rel="stylesheet" href="css/immersive-world-v150.css">
-  <link rel="stylesheet" href="css/runway-art-pass-v151.css">
-  <link rel="stylesheet" href="css/legend-ui-rollout-v180.css">
-  <link rel="stylesheet" href="css/opening-cinematic-v170.css">
-  <link rel="stylesheet" href="css/ashmere-world-visibility-v181.css">
-  <link rel="stylesheet" href="css/combat-scene-staging-v210.css">
-  <link rel="stylesheet" href="css/legend-visibility-contract-v220.css">
-  <link rel="stylesheet" href="css/opening-lore-v220.css">
   <style>
     :root { color-scheme: dark; --ink: #f0ead8; --muted: #bec1b4; --gold: #dbb979; --deep: #080d0c; --line: rgba(226,205,158,.28); }
     * { box-sizing: border-box; }
@@ -161,6 +181,7 @@
   <script defer src="js/data.js"></script>
   <script defer src="js/core/html-utils-v120.js"></script>
   <script defer src="js/storage/player-normalizer-v120.js"></script>
+  <script defer src="js/storage/settings-storage-v120.js"></script>
   <script defer src="js/systems/assets-v090.js"></script>
   <script defer src="js/systems/progression-v100.js"></script>
   <script defer src="js/systems/player/progression-level-up-v152.js"></script>
@@ -222,7 +243,15 @@
   <script defer src="js/systems/road-opening-v140.js"></script>
   <script defer src="js/systems/opening-prologue-v220.js"></script>
   <script defer src="js/systems/scene-transitions-v120.js"></script>
+  <script defer src="js/screens/settings-screen-v090.js"></script>
+  <script defer src="js/screens/title-extras-v120.js"></script>
+  <script defer src="js/screens/title-dispatches-v140.js"></script>
+  <script defer src="js/screens/title-screen-view-v120.js"></script>
+  <script defer src="js/screens/title-screen-v120.js"></script>
   <script defer src="js/systems/road/greyfen-marsh-expedition-v160.js"></script>
   <script defer src="prototypes/reboot/prototype.js"></script>
+  <script defer src="js/ui/panels-v170.js"></script>
+  <script defer src="js/ui/modals-v170.js"></script>
+  <script defer src="js/ui/world-shell-v170.js"></script>
 </body>
 </html>
