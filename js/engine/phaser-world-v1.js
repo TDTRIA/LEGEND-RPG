@@ -466,6 +466,7 @@
           })),
           hoveredAshmereLandmark: this.hoveredAshmereLandmark,
           pointLightCount: this.ashmerePointLights.filter(item => item.light?.active).length,
+          landmarkIconsLoaded: this.ashmereLandmarks.every(item => this.textures.exists(item.iconKey)),
           rendererType: this.sys.game.renderer?.type ?? null
         }),
         finishAwakening: () => this.finishEngineAwakening(true),
