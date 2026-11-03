@@ -1589,7 +1589,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'StoryReedQA');
     await page.evaluate(() => window.LegendAshmereV099.route('routes'));
     await enterOldRoadFromDeparture(page);
-    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('routeReeds')?.click(); Math.random = random; });
+    await page.evaluate(() => { window.__reedRouteRandom = Math.random; Math.random = () => 0.1; });
+    await page.locator('#routeReeds').click();
+    await page.evaluate(() => { Math.random = window.__reedRouteRandom; delete window.__reedRouteRandom; });
     await page.evaluate(() => {
       const rt = window.LegendRuntimeV120;
       const pl = rt.loadPlayer();
@@ -1600,9 +1602,18 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
       window.LegendRoadControllerV100.renderExpedition();
     });
-    await page.evaluate(() => { const random = Math.random; Math.random = () => 0.1; document.getElementById('finish')?.click(); Math.random = random; });
+    await expect(page.locator('#finish')).toBeVisible();
+    // Keep the reward roll deterministic until the delayed production finish handler runs.
+    await page.evaluate(() => { window.__reedFinishRandom = Math.random; Math.random = () => 0.1; });
+    await page.locator('#finish').click();
+    await expect(page.locator('.exp100-outcome')).toBeVisible({ timeout: 10000 });
     await expect(page.locator('.exp100-outcome')).toContainText(/tracks beneath the blue light/i);
+    await page.evaluate(() => { Math.random = window.__reedFinishRandom; delete window.__reedFinishRandom; });
     await page.locator('#outcomeReturn').click();
+    await expect(page.locator('.ash100-town')).toBeVisible();
+    await expect.poll(() => page.locator('#legend-scene-curtain').evaluate(el =>
+      !el.classList.contains('is-covering') && getComputedStyle(el).pointerEvents === 'none'
+    )).toBe(true);
     await page.evaluate(() => window.LegendAshmereV099.route('mara'));
     await expect(page.locator('.ash099-lines')).toContainText(/Bell Fragment is physical evidence/i);
     const result = await page.evaluate(() => {
