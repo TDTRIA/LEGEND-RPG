@@ -5,7 +5,7 @@ const path = require('node:path');
 const outputDir = path.resolve(__dirname, '../store-page-screenshots');
 
 async function openTitle(page) {
-  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.setViewportSize({ width: 1920, height: 1080 });
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
@@ -58,7 +58,7 @@ async function capture(page, filename) {
 async function createTravelerThroughOpening(page) {
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
   await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
-  await capture(page, '02-the-old-war-annals-1600x900.png');
+  await capture(page, '02-the-old-war-annals-1920x1080.png');
 
   await page.getByRole('button', { name: /^Continue$/ }).click();
   await page.getByRole('button', { name: /^Continue$/ }).click();
@@ -72,7 +72,7 @@ async function createTravelerThroughOpening(page) {
   await expect.poll(() => page.locator('.v094-gender-emblem img').evaluateAll(images =>
     images.every(image => image.complete && image.naturalWidth === 512 && image.naturalHeight === 512)
   )).toBe(true);
-  await capture(page, '03-traveler-creation-portraits-1600x900.png');
+  await capture(page, '03-traveler-creation-portraits-1920x1080.png');
 
   await page.locator('[data-gender="unspoken"]').click();
   await page.locator('#v094Next').click();
@@ -88,12 +88,12 @@ async function createTravelerThroughOpening(page) {
 
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
   await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
-  await capture(page, '04-one-bell-no-tower-opening-1600x900.png');
+  await capture(page, '04-one-bell-no-tower-opening-1920x1080.png');
 
   await page.getByRole('button', { name: 'Lift your head' }).click();
   await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
   await expect(page.locator('.opening-road-v140-card')).toContainText('I was taking your boots off');
-  await capture(page, '05-captain-oric-on-the-road-1600x900.png');
+  await capture(page, '05-captain-oric-on-the-road-1920x1080.png');
 }
 
 test('capture genuine v0.30.4 store-page screenshots from the production game UI', async ({ page }) => {
@@ -101,20 +101,20 @@ test('capture genuine v0.30.4 store-page screenshots from the production game UI
   fs.mkdirSync(outputDir, { recursive: true });
 
   await openTitle(page);
-  await capture(page, '01-title-screen-1600x900.png');
+  await capture(page, '01-title-screen-1920x1080.png');
 
   await createTravelerThroughOpening(page);
 
   await page.locator('[data-oric-response="honest"]').click();
   await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
   await expect(page.locator('.opening-road-v140-ambush')).toContainText('A Blackroot Wolf slams into his side');
-  await capture(page, '06-blackroot-wolf-ambush-1600x900.png');
+  await capture(page, '06-blackroot-wolf-ambush-1920x1080.png');
 
   await page.getByRole('button', { name: 'Help Oric' }).click();
   await expect(page.locator('.rpg-battle')).toBeVisible();
   await expect(page.locator('.rpg-battle')).toContainText('Blackroot Wolf');
   await expect(page.locator('#skill')).toContainText('Awaken');
-  await capture(page, '07-turn-based-blackroot-wolf-combat-1600x900.png');
+  await capture(page, '07-turn-based-blackroot-wolf-combat-1920x1080.png');
 
   await page.locator('#skill').click();
   await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
@@ -124,7 +124,7 @@ test('capture genuine v0.30.4 store-page screenshots from the production game UI
   await page.locator('#routeRidge').click();
   await expect(page.locator('.exp150-world-page')).toBeVisible();
   await expect(page.locator('.exp150-world-page')).toContainText(/High Ridge/i);
-  await capture(page, '08-old-road-high-ridge-expedition-1600x900.png');
+  await capture(page, '08-old-road-high-ridge-expedition-1920x1080.png');
 
   await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
@@ -133,7 +133,7 @@ test('capture genuine v0.30.4 store-page screenshots from the production game UI
   });
   await expect(page.locator('.ash100-town')).toBeVisible();
   await expect(page.locator('.ash100-town')).toContainText('Ashmere');
-  await capture(page, '09-ashmere-town-hub-1600x900.png');
+  await capture(page, '09-ashmere-town-hub-1920x1080.png');
 
   await page.evaluate(() => {
     const player = window.LegendRuntimeV120.loadPlayer();
@@ -168,14 +168,13 @@ test('capture genuine v0.30.4 store-page screenshots from the production game UI
   });
   await expect(page.locator('.v152-expedition-summary')).toBeVisible({ timeout: 15000 });
   await expect(page.locator('.v152-expedition-summary')).toContainText('5 / 5');
-  await capture(page, '10-old-road-field-ledger-results-1600x900.png');
+  await capture(page, '10-old-road-field-ledger-results-1920x1080.png');
 
   // Greyfen is deliberately presented as in-progress content, not as a finished town.
   await page.goto('/');
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
-  await page.addStyleTag({
-    content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }'
-  });
+  // Leave transitions enabled for this region change: the game's scene curtain
+  // uses its transition lifecycle to reveal the Greyfen screen.
   await page.evaluate(() => {
     window.LegendStorage.deleteSaves();
     const player = {
@@ -229,12 +228,19 @@ test('capture genuine v0.30.4 store-page screenshots from the production game UI
   await expect(page.locator('.ash100-town')).toBeVisible();
   await page.locator('[data-ash-view="marsh"]').first().click();
   await expect(page.getByRole('main', { name: 'Greyfen Marsh Path expedition' })).toBeVisible();
-  await capture(page, '11-greyfen-marsh-path-in-progress-1600x900.png');
+  await page.waitForFunction(() => {
+    const curtain = document.querySelector('#legend-scene-curtain');
+    if (!curtain) return true;
+    const style = window.getComputedStyle(curtain);
+    return style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) < 0.05;
+  }, null, { timeout: 20000 });
+  await page.waitForTimeout(300);
+  await capture(page, '11-greyfen-marsh-path-in-progress-1920x1080.png');
 
   fs.writeFileSync(path.join(outputDir, 'README.txt'), [
     'LEGEND: The Awakening — Store Page Screenshot Pack',
     'Build: v0.30.4',
-    'Capture: 1600 × 900 px (16:9), genuine in-game UI captured by Playwright from the production source',
+    'Capture: 1920 × 1080 px (16:9 Full HD), genuine in-game UI captured by Playwright from the production source',
     '',
     'Recommended primary store-page order:',
     '01 — Title screen / product identity',
