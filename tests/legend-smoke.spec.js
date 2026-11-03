@@ -2587,6 +2587,114 @@ test('opening annals are painted by Phaser while the existing chapter controls r
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUi)).toBe(false);
 });
 
+test('traveler creation draws choice cards and dialogue in Phaser while preserving the real form inputs', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openTitle(page);
+  await page.locator('#newPrimary').click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /^Continue$/ }).click();
+  await page.getByRole('button', { name: /Shape the traveler/i }).click();
+  await expect(page.locator('.v140-creation:not(.v140-arrival)')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeCreationUi)).toBe(true);
+
+  const nameStep = await page.evaluate(() => {
+    const input = document.querySelector('#v094Name');
+    const next = document.querySelector('#v094Next');
+    const snapshot = window.LegendPhaserWorldV1.snapshot();
+    return {
+      active: document.body.classList.contains('legend-phaser-creation-ui-active'),
+      step: snapshot.nativeCreationUiStep,
+      surface: snapshot.surface,
+      objects: snapshot.nativeCreationUiObjectCount,
+      textures: snapshot.nativeCreationUiTextureCount,
+      scrollBridge: snapshot.nativeCreationUiScrollTargetBound,
+      inputVisible: input ? getComputedStyle(input).visibility === 'visible' : false,
+      inputBackground: input ? getComputedStyle(input).backgroundColor : '',
+      inputColor: input ? getComputedStyle(input).color : '',
+      nextBackground: next ? getComputedStyle(next).backgroundColor : '',
+      nextLabel: next?.getAttribute('aria-label') || ''
+    };
+  });
+  expect(nameStep.active).toBe(true);
+  expect(nameStep.step).toBe(1);
+  expect(nameStep.surface).toBe('creation');
+  expect(nameStep.objects).toBeGreaterThan(10);
+  expect(nameStep.textures).toBeGreaterThanOrEqual(2);
+  expect(nameStep.scrollBridge).toBe(true);
+  expect(nameStep.inputVisible).toBe(true);
+  expect(nameStep.inputBackground).not.toBe('rgba(0, 0, 0, 0)');
+  expect(nameStep.inputColor).not.toBe('rgba(0, 0, 0, 0)');
+  expect(nameStep.nextBackground).toBe('rgba(0, 0, 0, 0)');
+  expect(nameStep.nextLabel).toMatch(/Choose Identity/i);
+
+  // The live name field remains a real editable input; only its surrounding UI is Phaser artwork.
+  await page.locator('#v094Name').fill('NativePhaserQA');
+  await page.locator('#v094Next').click();
+  await expect(page.locator('[data-gender="woman"]')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCreationUiStep)).toBe(2);
+
+  const identityStep = await page.evaluate(() => {
+    const snapshot = window.LegendPhaserWorldV1.snapshot();
+    const woman = document.querySelector('[data-gender="woman"]');
+    const man = document.querySelector('[data-gender="man"]');
+    const nonbinary = document.querySelector('[data-gender="nonbinary"]');
+    const unspoken = document.querySelector('[data-gender="unspoken"]');
+    return {
+      ids: snapshot.nativeCreationUiChoiceIds,
+      textures: snapshot.nativeCreationUiTextureCount,
+      imagesHidden: [woman, man, nonbinary, unspoken].every(button =>
+        button && button.querySelector('img') && getComputedStyle(button.querySelector('img')).visibility === 'hidden'
+      ),
+      accessibleNames: [woman, man, nonbinary, unspoken].map(button => button?.getAttribute('aria-label') || ''),
+      allControlsInsideViewport: snapshot.nativeCreationUiControlBounds.every(item =>
+        item.x >= 0 && item.x + item.width <= snapshot.nativeCreationUiSceneSize.width + 1
+      )
+    };
+  });
+  for (const id of ['choice-gender-woman','choice-gender-man','choice-gender-nonbinary','choice-gender-unspoken']) {
+    expect(identityStep.ids).toContain(id);
+  }
+  expect(identityStep.textures).toBeGreaterThanOrEqual(5);
+  expect(identityStep.imagesHidden).toBe(true);
+  expect(identityStep.accessibleNames.every(name => name.length > 8)).toBe(true);
+  expect(identityStep.allControlsInsideViewport).toBe(true);
+
+  const woman = page.locator('[data-gender="woman"]');
+  await woman.focus();
+  await expect.poll(() => page.evaluate(() =>
+    Boolean(window.LegendPhaserWorldV1.snapshot()?.nativeCreationUiControlBounds?.find(item => item.id === 'choice-gender-woman')?.focused)
+  )).toBe(true);
+  await woman.click();
+  await expect(woman).toHaveAttribute('aria-pressed', 'true');
+  await expect.poll(() => page.evaluate(() =>
+    Boolean(window.LegendPhaserWorldV1.snapshot()?.nativeCreationUiControlBounds?.find(item => item.id === 'choice-gender-woman')?.selected)
+  )).toBe(true);
+
+  // Confirm the Phaser card geometry tracks the real DOM hit targets after a mobile resize.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => page.evaluate(() => {
+    const button = document.querySelector('[data-gender="woman"]')?.getBoundingClientRect();
+    const snapshot = window.LegendPhaserWorldV1.snapshot();
+    const native = snapshot?.nativeCreationUiControlBounds?.find(item => item.id === 'choice-gender-woman');
+    const scene = snapshot?.nativeCreationUiSceneSize;
+    if (!button || !native || !scene) return false;
+    const deltas = [
+      Math.abs(native.x - button.left * scene.width / window.innerWidth),
+      Math.abs(native.y - button.top * scene.height / window.innerHeight),
+      Math.abs(native.width - button.width * scene.width / window.innerWidth),
+      Math.abs(native.height - button.height * scene.height / window.innerHeight)
+    ];
+    return deltas.every(delta => delta < 2);
+  })).toBe(true);
+  const mobile = await page.evaluate(() => ({
+    overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    inputVisible: getComputedStyle(document.querySelector('#v094Name') || document.querySelector('[data-gender="woman"]')).visibility === 'visible',
+    native: window.LegendPhaserWorldV1.snapshot()?.nativeCreationUi
+  }));
+  expect(mobile.overflow).toBe(false);
+  expect(mobile.native).toBe(true);
+});
+
 test('the production root plays its Phaser awakening and exposes the skip control on first visit', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
