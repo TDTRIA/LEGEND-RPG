@@ -1,19 +1,28 @@
 # LEGEND: The Awakening — Product Roadmap
 
-**Last updated:** 2026-11-02  
+**Last updated:** 2026-11-03  
 **Purpose:** One shared source of truth for what we are building next, why it matters, and how we decide each slice is finished. This is a player-impact order, not a date promise.
 
 ## The north star
 
 LEGEND should feel like a dark-fantasy RPG taking place in a continuous world—not a collection of unrelated website screens. The player should see a place, make a decision in that place, see a consequence, and carry the result forward.
 
-The intended presentation borrows the *clarity* of a traditional RPG: a strong title scene, a persistent world view, contextual actions, readable HUD and journal, tactile dialogue, tactical turn-based combat, visible rewards, and transitions that feel intentional. It is not a plan to turn the project into an MMO or to replace the existing game with a large engine rewrite.
+The intended presentation borrows the *clarity* of a traditional RPG: a strong title scene, a persistent world view, contextual actions, readable HUD and journal, tactile dialogue, tactical turn-based combat, visible rewards, and transitions that feel intentional. The owner has approved a production move to Phaser. This is an incremental migration of the real game, not a big-bang rewrite or a plan to turn the project into an MMO.
 
 **The core loop is:**
 
 **Prepare in town → choose a road → explore and make choices → face danger → bring back loot, evidence, and discoveries → improve the traveler → unlock more of the world → prepare to go farther.**
 
 The story and the systems should reinforce that loop. Town is a place the player wants to return to; the road is where their choices are tested.
+
+## Current implementation checkpoint — 2026-11-03
+
+- **Production main:** v0.30.4. The road-first opening, mandatory annals, Oric/Wolf tutorial, five-stage Old Road, Ashmere services, progression, and early Greyfen activities are part of the browser build.
+- **Phaser migration:** approved by the owner and in progress. Phaser 4.1 is loaded in index.html; js/engine/phaser-world-v1.js supplies the persistent environment renderer, atmosphere, transitions, and Ashmere landmarks. Most UI and gameplay systems have not yet been rewritten into Phaser.
+- **Audio:** 48 original generated assets (13 ambience loops and 35 one-shot effects) are staged in [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98), not shipped. Replacing the recurring main gameplay theme is the priority; its new score/render/integration still require verification.
+- **Region status:** Ashmere and the Old Road form the main playable foundation. Greyfen is an active partial region; Ironpass is future content. The first three towns are still a release target.
+- **Active sequence:** review/integrate audio; migrate one real playable surface into Phaser with parity tests; complete Greyfen; continue long-run balance and human playtesting.
+
 
 ## The player experience we are aiming for
 
@@ -26,7 +35,7 @@ The story and the systems should reinforce that loop. Town is a place the player
 ## Non-negotiable guardrails
 
 - **Protect the production game.** The current browser game is the source of truth while we improve it. Preserve existing save keys and player state. Do not replace gameplay systems, change combat formulas, reset saves, or alter account/cloud-save behavior as a shortcut. Any required migration must be deliberate, documented, and tested.
-- **Use the current project incrementally.** Favor changes to the existing controllers and presentation layers over a broad rewrite. The isolated reboot/engine prototype is an experiment only; production migration is not approved by this roadmap.
+- **Use the current project incrementally.** Production Phaser migration was explicitly approved by the owner on 2026-11-03 and is underway. Phaser 4.1 is active as the persistent production world renderer, while most gameplay screens and rules remain in the existing browser modules. Move one complete playable surface at a time; the isolated reboot prototype is still a separate experiment, not a substitute for production parity.
 - **Use approved raster art.** Follow the Runway-based art direction for new visual assets. Do not create an SVG title logo or use homemade geometric placeholders in place of character/world art. Keep menu labels and UI text as real accessible text, not baked into artwork. Do not ship watermarked preview images.
 - **Keep the world visible.** World artwork should remain readable behind contextual panels. Scene lighting can be moody, but “dark fantasy” must not mean scenes are black or important art disappears. Keep text/cards readable without covering the whole environment in opaque layers.
 - **Desktop first, mobile supported.** Target desktop around 1440×900 and check critical flows around 390px wide. No horizontal overflow, hover-only controls, or trapped menus.
@@ -63,7 +72,7 @@ Scope:
 **Done means:** a new player can start from the title, create a traveler, experience the road opening and first encounter, and arrive at the next playable step without dead ends, broken branding, or static placeholder screens.
 
 ### Phase 2 — Make the world shell consistent and alive
-**Status: shared shell and visibility pass shipped in v0.30.0; continue only for observed defects.**
+**Status: shared shell and visibility pass shipped in v0.30.0; the Phaser production world renderer is now active, while full gameplay-surface migration remains in progress.**
 
 **Goal:** one cohesive presentation across Ashmere, the Old Road, and regional scenes.
 
