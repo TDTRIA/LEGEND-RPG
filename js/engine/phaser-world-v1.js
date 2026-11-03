@@ -235,8 +235,13 @@
     const host = root();
     if (!host) return;
     const modal = byId('legend-world-shell-modal-root');
+    const growthOverlay = byId('legendLevelUpOverlay');
+    const growthOverlayVisible = Boolean(growthOverlay && !growthOverlay.hidden &&
+      window.getComputedStyle(growthOverlay).display !== 'none' &&
+      window.getComputedStyle(growthOverlay).visibility !== 'hidden');
     let surface = 'title';
     if (modal && !modal.hidden) surface = 'modal';
+    else if (growthOverlayVisible) surface = 'modal';
     else if (host.querySelector('.dispatches-v140')) surface = 'dispatches';
     else if (host.querySelector('.settings09x')) surface = 'settings';
     else if (host.querySelector('.legend-credits-overlay')) surface = 'credits';
@@ -589,6 +594,7 @@
           nativeGameplayUiControlBounds: this.nativeGameplayUiControls.map(item => ({ id: item.id, label: item.label, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible), selected: Boolean(item.selected) })),
           nativeGameplayUiSceneSize: this.dimensions(),
           nativeGameplayUiObserverBound: Boolean(this.nativeGameplayUiObserverRoot),
+          nativeGameplayUiProgressionOverlay: Boolean(document.getElementById('legendLevelUpOverlay')),
           nativeAnnalsUiSceneSize: this.dimensions(),
           nativeAnnalsUiButtonBounds: (() => {
             const button = root()?.querySelector('.opening-lore-v220-continue');
@@ -2160,8 +2166,8 @@
       }
     }
 
-    observeNativeGameplayUi(shell, rootNode, modalRoot) {
-      const targets = [document.body, shell, rootNode, modalRoot].filter(Boolean);
+    observeNativeGameplayUi(shell, rootNode, modalRoot, progressionRoot) {
+      const targets = [document.body, shell, rootNode, modalRoot, progressionRoot].filter(Boolean);
       const signature = targets.map(node => node === document.body ? 'body' : node.id || node.tagName).join('|');
       if (this.nativeGameplayUiObserver && this.nativeGameplayUiObserverRoot === signature) return;
       this.nativeGameplayUiObserver?.disconnect?.();
@@ -2215,10 +2221,14 @@
       ]);
       const modalRoot = document.getElementById('legend-world-shell-modal-root');
       const modalVisible = Boolean(surface === 'modal' && modalRoot && !modalRoot.hidden);
+      const progressionRoot = document.getElementById('legendLevelUpOverlay');
+      const progressionVisible = Boolean(progressionRoot && !progressionRoot.hidden &&
+        window.getComputedStyle(progressionRoot).display !== 'none' &&
+        window.getComputedStyle(progressionRoot).visibility !== 'hidden');
       const dedicated = host?.querySelector('.v120-title,.title-v100,.title-v136-rpg,.opening-lore-v220,.v140-creation,.opening-road-v140');
       const shellVisible = Boolean(shell && !shell.hidden && gameplaySurfaces.has(String(surface || '')));
       const rootVisible = Boolean(host && gameplaySurfaces.has(String(surface || '')) && !dedicated);
-      if (!shellVisible && !rootVisible && !modalVisible) {
+      if (!shellVisible && !rootVisible && !modalVisible && !progressionVisible) {
         if (this.nativeGameplayUiActive || document.body?.classList.contains('legend-phaser-gameplay-ui-active')) {
           this.clearNativeGameplayUi();
         }
@@ -2229,6 +2239,7 @@
       if (rootVisible) roots.push(host);
       if (shellVisible) roots.push(shell);
       if (modalVisible) roots.push(modalRoot);
+      if (progressionVisible) roots.push(progressionRoot);
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -2296,13 +2307,13 @@
         ...roots.map(node => [node.scrollTop,node.dataset?.context || '',node.dataset?.region || ''])
       ]);
       if (this.nativeGameplayUiActive && signature === this.nativeGameplayUiSignature) {
-        this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null, modalVisible ? modalRoot : null);
+        this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null, modalVisible ? modalRoot : null, progressionVisible ? progressionRoot : null);
         document.body?.classList.add('legend-phaser-gameplay-ui-active');
         return;
       }
 
       this.clearNativeGameplayUi(false);
-      this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null, modalVisible ? modalRoot : null);
+      this.observeNativeGameplayUi(shellVisible ? shell : null, rootVisible ? host : null, modalVisible ? modalRoot : null, progressionVisible ? progressionRoot : null);
       this.nativeGameplayUiActive = true;
       this.nativeGameplayUiSignature = signature;
       document.body?.classList.add('legend-phaser-gameplay-ui-active');
