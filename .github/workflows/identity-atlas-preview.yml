@@ -1,4 +1,4 @@
-name: Preview Runway traveler identity atlas
+name: Preview Runway traveler identity emblems
 
 on:
   push:
@@ -11,51 +11,59 @@ permissions:
   contents: read
 
 jobs:
-  crop:
+  preview:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout preview branch
         uses: actions/checkout@v4
 
-      - name: Download generated Runway sheet
+      - name: Download four standalone Runway emblems
         env:
-          RUNWAY_ATLAS_URL: "https://dnznrvs05pmza.cloudfront.net/3afa3050-3bad-4492-ad0b-a073dbc8c8f0.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNGU3NDI2MjAyM2IzZWM0ZCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg1Mzk4NH0.GCcN2lAiiGzkfbtbZ-NCh0Ai8SWIsFMHvKski2OMxfg"
+          WOMAN_URL: "https://dnznrvs05pmza.cloudfront.net/a8b51540-bea8-4702-b93e-7b3cd25e831a.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiNGE1ZjBkYjQyMTllMjg5MCIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg3NzgxMn0.4NAkSScLHs1VJIznbXnnn7gAIJ4nWVbwWPDGm_U8D2Q"
+          MAN_URL: "https://dnznrvs05pmza.cloudfront.net/MAN_PENDING_URL"
+          NONBINARY_URL: "https://dnznrvs05pmza.cloudfront.net/57492754-60ec-4c0e-b2f3-9c49667646f8.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYmM1YjE0NGJkMDYzZWM5NSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5Mzg0MjM3OX0.7N9jG6gRCNrXzyVcTHAMYKhA_HB9GQ0EwOiR3bAvQyc"
+          UNSPOKEN_URL: "https://dnznrvs05pmza.cloudfront.net/952b972b-9e0b-4d38-957a-0ebb926f8934.png?_jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlIYXNoIjoiYThiZDY3NzJlMWI4NzFmOSIsImJ1Y2tldCI6InJ1bndheS10YXNrLWFydGlmYWN0cyIsInN0YWdlIjoicHJvZCIsImV4cCI6MTc5MzgzOTQ3NH0.C6zBCGkwrFO9J52u6BK-gSMEU1Kv3vxoHZMR0dE80Kk"
         run: |
           set -euo pipefail
-          curl --fail --location --silent --show-error "$RUNWAY_ATLAS_URL" --output /tmp/identity-atlas.png
-          file /tmp/identity-atlas.png
+          mkdir -p /tmp/identity-source
+          curl --fail --location --silent --show-error "$WOMAN_URL" --output /tmp/identity-source/woman.png
+          curl --fail --location --silent --show-error "$MAN_URL" --output /tmp/identity-source/man.png
+          curl --fail --location --silent --show-error "$NONBINARY_URL" --output /tmp/identity-source/nonbinary.png
+          curl --fail --location --silent --show-error "$UNSPOKEN_URL" --output /tmp/identity-source/unspoken.png
+          file /tmp/identity-source/*.png
 
-      - name: Crop four square identity emblems for review
+      - name: Prepare consistent preview sizes
         run: |
           python -m pip install --quiet Pillow
           python - <<'PY'
           from pathlib import Path
-          from PIL import Image, ImageOps
+          from PIL import Image
           import json
 
-          source = Image.open('/tmp/identity-atlas.png').convert('RGBA')
-          width, height = source.size
-          cell_w, cell_h = width // 2, height // 2
-          side = min(cell_w, cell_h)
-          names = ['woman', 'man', 'nonbinary', 'unspoken']
+          source = Path('/tmp/identity-source')
           output = Path('/tmp/identity-preview')
           output.mkdir(parents=True, exist_ok=True)
-          crops = []
-          for index, name in enumerate(names):
-              col, row = index % 2, index // 2
-              left = col * cell_w + (cell_w - side) // 2
-              top = row * cell_h + (cell_h - side) // 2
-              crop = source.crop((left, top, left + side, top + side))
-              crop.save(output / f'{name}.webp', 'WEBP', quality=92, method=6)
-              crops.append((name, crop))
-          canvas = Image.new('RGBA', (side * 2, side * 2), (18, 20, 17, 255))
-          for index, (name, crop) in enumerate(crops):
-              canvas.alpha_composite(crop, ((index % 2) * side, (index // 2) * side))
+          names = ['woman', 'man', 'nonbinary', 'unspoken']
+          tile_size = 512
+          gutter = 28
+          canvas = Image.new('RGBA', (tile_size * 2 + gutter * 3, tile_size * 2 + gutter * 3), (14, 19, 16, 255))
+          for i, name in enumerate(names):
+              img = Image.open(source / f'{name}.png').convert('RGBA')
+              if img.width != img.height:
+                  side = min(img.width, img.height)
+                  left = (img.width - side) // 2
+                  top = (img.height - side) // 2
+                  img = img.crop((left, top, left + side, top + side))
+              img = img.resize((tile_size, tile_size), Image.Resampling.LANCZOS)
+              img.save(output / f'{name}.webp', 'WEBP', quality=94, method=6)
+              x = gutter + (i % 2) * (tile_size + gutter)
+              y = gutter + (i // 2) * (tile_size + gutter)
+              canvas.alpha_composite(img, (x, y))
           canvas.save(output / 'contact-sheet.png')
-          print(json.dumps({'atlas_size': source.size, 'cell_size': (cell_w, cell_h), 'crop_size': (side, side), 'files': [f'{n}.webp' for n in names]}))
+          print(json.dumps({'emblems': names, 'tile': tile_size, 'contact': canvas.size}))
           PY
 
-      - name: Upload preview crops
+      - name: Upload identity artwork preview
         uses: actions/upload-artifact@v4
         with:
           name: runway-traveler-identity-preview
