@@ -1,23 +1,35 @@
-# LEGEND: The Awakening — Reboot Prototype
+# LEGEND: The Awakening — Phaser Reboot Prototype
 
-**Status:** Experimental, isolated, and not production gameplay.
+**Status:** Isolated Phaser prototype using the current game's authored content and gameplay systems.
 
 Live preview after GitHub Pages deployment: https://tdtria.github.io/LEGEND-RPG/prototypes/reboot/
 
-This prototype tests the direction proposed in [LEGEND Game Reboot Plan](../../docs/LEGEND_GAME_REBOOT_PLAN.md):
-- Animated illustrated title scene using existing approved/local environment art.
-- A short, skippable opening-cinematic proof using moving/crossfading scenes and draft narration.
-- A first combat feel test with enemy intent text, animated strike/guard/spell actions, feedback, and a retreat action.
-- A small rune-pattern mini-game as a proof of skill training.
-- Sound toggle and a responsive layout; desktop is the primary review target.
+## What this build is
 
-## Boundaries
+The Phaser canvas now provides the world presentation layer: responsive environments, subtle moving atmosphere, scene fades, restrained camera effects and combat/rune feedback. The existing game's accessible HTML interfaces remain over the canvas. This allows the prototype to retain the actual controls and written content while introducing Phaser where it materially improves the experience.
 
-- It is deliberately separate from the production game.
-- It does not write to or migrate production saves.
-- The cinematic dialogue and Last Mercy / Veil references are experimental draft ideas, not approved canon.
-- This version uses existing project art/audio; no new production assets are generated here.
-- It loads the pinned Phaser 4.1.0 browser build from jsDelivr; a production migration should pin and vendor dependencies deliberately and review license/cache/deployment requirements first.
-- This prototype does not yet implement walking exploration, quests, party progression, or a production combat system. Those must be proven after feedback on the presentation and the core battle feel.
+The current production modules are loaded directly for:
+- Mandatory annals and the existing anonymous-presence traveler creator.
+- Oric's dead-lantern opening and the Blackroot Wolf awakening encounter.
+- The Old Road route choice, discoveries, field journal/map, searches, travel, camp, pressure and encounters.
+- The original turn-based combat engine, enemy intent, class techniques, equipment mitigation, items, rewards and progression.
+- Ashmere's town hub, NPC dialogue, inn, market, forge, crafting, jobs, daily board, journal, traveler sheet and contracts.
+- Region unlock/travel, Greyfen Marsh Path, the optional Silted Storehouse and Ashmere's Bell Cellar.
 
-Use the “Open current game” link to leave the experiment and play the existing production build.
+The detailed feature-by-feature inventory and known exclusions are in [MIGRATION_MATRIX.md](./MIGRATION_MATRIX.md).
+
+## Save and integration boundary
+
+- The prototype writes only the browser-local key legend-reboot-prototype-save-v1.
+- It does not read or write the production legend-roads-of-ashmere-v09 save key.
+- It does not connect to Supabase, cloud saves, production account slots or sign-in.
+- It uses current local production artwork and the existing game modules; no story, enemy, item, reward or region content is fabricated to fill gaps.
+
+## Controls and layout
+
+- Mouse/touch controls use the same production actions and panels as the original game.
+- Keyboard focus remains on the HTML controls; Phaser handles canvas rendering and scene effects.
+- The canvas and content panels resize with the browser window. Reduced-motion preferences suppress the larger scene transitions and mote animations.
+- The “Open Current Game” link leaves the isolated prototype and opens the production game.
+
+The older experimental rune-training mini-game and sample-only goblin combat have been removed because they were not connected to the current game's implemented mechanics.
