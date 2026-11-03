@@ -548,7 +548,7 @@
           nativeCreationUiStep: Number(root()?.querySelector('.v140-creation')?.dataset.creationStep ?? -1),
           nativeCreationUiObjectCount: this.nativeCreationUiObjects.filter(item => item?.active).length,
           nativeCreationUiChoiceIds: this.nativeCreationUiControls.filter(item => item.kind === 'choice').map(item => item.id),
-          nativeCreationUiControlBounds: this.nativeCreationUiControls.map(item => ({ id: item.id, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible), selected: Boolean(item.selected) })),
+          nativeCreationUiControlBounds: this.nativeCreationUiControls.map(item => ({ id: item.id, label: item.label, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible), selected: Boolean(item.selected) })),
           nativeCreationUiTextureCount: this.nativeCreationUiTextures.length,
           nativeCreationUiSceneSize: this.dimensions(),
           nativeCreationUiScrollTargetBound: Boolean(this.nativeCreationUiScrollTarget),
@@ -1656,6 +1656,21 @@
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         const objects = [focusFrame];
+        if (!choice) {
+          const actionStyle = window.getComputedStyle(button);
+          const actionText = button.textContent?.replace(/\\s+/g, ' ').trim() || id;
+          const primaryAction = button.classList.contains('primary');
+          const actionLabel = this.add.text(rect.width / 2, rect.height / 2, actionText, {
+            fontFamily: actionStyle.fontFamily || 'Arial, sans-serif',
+            fontSize: Math.max(10, (parseFloat(actionStyle.fontSize) || 13) * sy) + 'px',
+            fontStyle: 'bold',
+            color: primaryAction ? '#241803' : '#e9e2cf',
+            letterSpacing: 0.25 * sx,
+            align: 'center',
+            wordWrap: { width: Math.max(40, rect.width - 24 * sx), useAdvancedWrap: true }
+          }).setOrigin(0.5);
+          objects.push(actionLabel);
+        }
         if (choice && (button.classList.contains('is-selected') || button.getAttribute('aria-pressed') === 'true')) {
           const tick = this.add.text(rect.width - 18 * sx, 15 * sy, '✓', {
             fontFamily: 'Arial, sans-serif',
@@ -1669,6 +1684,7 @@
         addObject(container, 15);
         const control = {
           id,
+          label: labelText,
           kind: choice ? 'choice' : 'action',
           x: rect.x,
           y: rect.y,
