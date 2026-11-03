@@ -4,6 +4,7 @@
 
 - **Production build:** v0.30.4
 - **Platform:** HTML5 browser game; desktop-first with responsive mobile support
+- **Realm Hub:** https://tdtria.github.io/LEGEND-RPG/portal.html
 - **Live game:** https://tdtria.github.io/LEGEND-RPG/
 - **Status:** Active development; not a finished 1.0 release
 
