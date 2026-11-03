@@ -2,13 +2,14 @@
   "name": "legend-the-awakening",
   "version": "0.30.4",
   "private": true,
-  "description": "Browser game support and Playwright regression tooling for LEGEND: The Awakening.",
+  "description": "Production Playwright regression tooling and isolated Phaser preview checks for LEGEND: The Awakening.",
   "scripts": {
     "serve": "http-server . -p 4173 -c-1",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:phaser-preview": "playwright test --config=playwright.phaser.config.js"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",

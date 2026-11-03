@@ -172,6 +172,47 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     expect(errors).toEqual([]);
   });
 
+  test('Ashmere Phaser actions drawer masks the hub beneath it and still opens real services', async ({ page }) => {
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await page.setViewportSize({ width: 390, height: 844 });
+    await startFreshCharacter(page, 'MobilePhaserHubQA');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
+
+    const shell = page.locator('#legend-world-shell-root');
+    const actionsToggle = shell.locator('[data-world-action="toggle-right"]');
+    await tap(page, actionsToggle);
+    await expect(actionsToggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(shell.locator('#lws-panel-right')).toBeVisible();
+
+    // The right drawer overlaps the legacy hub at touch widths. Its surface and
+    // its large place buttons must be opaque so the hub controls do not show
+    // through them or create a confusing double-button appearance.
+    const surfaceAlphas = await page.evaluate(() => {
+      const alphaValues = value => Array.from(String(value || '').matchAll(
+        /rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/g
+      ), match => Number(match[1]));
+      const panel = document.querySelector('#lws-panel-right');
+      const option = panel?.querySelector('.lws-place-option');
+      return {
+        panel: alphaValues(getComputedStyle(panel).backgroundImage),
+        option: alphaValues(getComputedStyle(option).backgroundImage)
+      };
+    });
+    expect(surfaceAlphas.panel.length).toBeGreaterThan(0);
+    expect(surfaceAlphas.option.length).toBeGreaterThan(0);
+    expect(Math.min(...surfaceAlphas.panel)).toBeGreaterThanOrEqual(0.94);
+    expect(Math.min(...surfaceAlphas.option)).toBeGreaterThanOrEqual(0.94);
+
+    await tap(page, shell.locator('#lws-panel-right [data-world-place="market"]'));
+    await expect(shell.locator('#lws-panel-right .lws-selected-place h3')).toHaveText('Market');
+    await tap(page, shell.locator('#lws-panel-right [data-world-action="visit-selected-place"]'));
+    await expect(page.locator('.ash099-market-console')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.environment)).toBe('market');
+    await expectNoHorizontalOverflow(page);
+    expect(errors).toEqual([]);
+  });
+
   test('Work Board signal job accepts taps and fits the viewport', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await startFreshCharacter(page, 'MobileWorkQA');

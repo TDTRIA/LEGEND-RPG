@@ -2332,7 +2332,10 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
 
   // Forge and Inn interiors are classified by the explicit town-service key,
   // not brittle visible-text matching, and get their own native Phaser dressing.
-  await page.locator('.ash100-destination[data-ash-view="smith"]').click();
+  const shellRight = page.locator('#legend-world-shell-root #lws-panel-right');
+  await shellRight.locator('[data-world-place="forge"]').click();
+  await expect(shellRight.locator('.lws-selected-place h3')).toHaveText('Forge & Workshop');
+  await shellRight.locator('[data-world-action="visit-selected-place"]').click();
   await expect(page.locator('.ash099-forge-console')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('forge');
   const forgeScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
@@ -2342,7 +2345,9 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
   await page.locator('#ashBack').click();
   await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.serviceDressingCount)).toBe(0);
-  await page.locator('.ash100-destination[data-ash-view="inn"]').click();
+  await shellRight.locator('[data-world-place="inn"]').click();
+  await expect(shellRight.locator('.lws-selected-place h3')).toHaveText('Ashmere Inn');
+  await shellRight.locator('[data-world-action="visit-selected-place"]').click();
   await expect(page.locator('.ash099-service-dashboard')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('inn');
   const innScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
