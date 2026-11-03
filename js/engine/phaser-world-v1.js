@@ -80,9 +80,12 @@
   }
 
   function clearPlayer() {
-    if (!IS_PROTOTYPE) return window.LegendStorage?.deleteSaves?.();
+    // The production engine must never clear a player's real save through a
+    // preview/new-traveler helper. Production deletion stays with the game UI.
+    if (!IS_PROTOTYPE) return false;
     activePlayer = null;
     try { localStorage.removeItem(SAVE_KEY); } catch (error) { console.warn(error); }
+    return true;
   }
 
   // Only the isolated preview installs its adapter. Production retains the real
