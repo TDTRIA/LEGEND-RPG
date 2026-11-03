@@ -2277,8 +2277,8 @@
           .replace(/\s+/g, ' ')
           .trim();
         if (!directText && node.childElementCount === 0) directText = String(node.textContent || '').replace(/\s+/g, ' ').trim();
-        if (!directText && node.matches('button,a[href],[role="button"]')) {
-          directText = String(node.getAttribute('aria-label') || '').trim();
+        if (!directText && node.childElementCount === 0 && node.matches('button,a[href],[role="button"]')) {
+          directText = String(node.getAttribute('aria-label') || node.textContent || '').replace(/\s+/g, ' ').trim();
         }
         if (directText) textNodes.push({ node, rect, text: directText, style });
       });
@@ -2357,8 +2357,7 @@
       });
 
       textNodes.forEach(item => {
-        const textStyle = this.nativeGameplayUiStyle(item.node);
-        item.style = textStyle;
+        // Styles were captured before the native class hides the DOM paint.
         const fontPx = Math.max(8, (parseFloat(item.style.fontSize) || 12) * sy);
         const linePx = parseFloat(item.style.lineHeight) || (parseFloat(item.style.fontSize) || 12) * 1.4;
         let value = item.text;
