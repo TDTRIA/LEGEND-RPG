@@ -177,6 +177,7 @@
     return modal;
   }
 
+  /** Rebuilds the persistent shell and refreshes only Phaser layers whose DOM controls were just replaced. */
   function renderShell(player, context) {
     const shell = ensureShellRoot();
     const rootNode = root();
@@ -246,6 +247,7 @@
     updateDrawer('right', '[data-world-action="toggle-right"]');
   }
 
+  /** Hides the shell and clears its Phaser presentations so no stale drawer or navigation layer remains visible. */
   function hideShell() {
     const shell = document.getElementById(SHELL_ID);
     if (shell) shell.hidden = true;
@@ -334,6 +336,7 @@
     return false;
   }
 
+  /** Closes the active shell modal, restores the previously open drawer state, and refreshes its Phaser panel. */
   function closeShellModal() {
     MODALS().close?.();
   }
@@ -353,6 +356,7 @@
     }
   }
 
+  /** Dispatches the real shell button actions and synchronizes the affected Phaser drawers after state changes. */
   function handleShellClick(event) {
     const actionButton = event.target.closest('[data-world-action]');
     const routeButton = event.target.closest('[data-world-route]');
