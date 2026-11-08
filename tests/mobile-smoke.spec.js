@@ -94,6 +94,7 @@ async function startFreshCharacter(page, name) {
   await tap(page, page.locator('#v094Next'));
   await tap(page, page.locator('[data-origin]').first());
   await tap(page, page.locator('#v094Next'));
+  await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
   await tap(page, page.locator('[data-class="Ranger"]'));
   await tap(page, page.locator('#v094Next'));
   await tap(page, page.locator('[data-keepsake="Old Map"]'));
@@ -324,6 +325,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await tap(page, page.locator('#v094Next'));
     await tap(page, page.locator('[data-origin]').first());
     await tap(page, page.locator('#v094Next'));
+    await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
     await tap(page, page.locator('[data-class="Ranger"]'));
     await tap(page, page.locator('#v094Next'));
     await tap(page, page.locator('[data-keepsake="Old Map"]'));
