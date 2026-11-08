@@ -492,6 +492,17 @@
       this.nativeOpeningUiSignature = '';
       this.nativeOpeningUiLayoutEvent = null;
       this.nativeOpeningUiScrollTarget = null;
+      this.nativeExpeditionHudUiActive = false;
+      this.nativeExpeditionHudUiObjects = [];
+      this.nativeExpeditionHudUiTaggedNodes = [];
+      this.nativeExpeditionHudUiTextNodes = [];
+      this.nativeExpeditionHudUiControls = [];
+      this.nativeExpeditionHudUiIconNodes = [];
+      this.nativeExpeditionHudUiSignature = '';
+      this.nativeExpeditionHudUiBoundHost = null;
+      this.nativeExpeditionHudUiInteractionHandler = null;
+      this.nativeExpeditionHudUiScrollHandler = null;
+      this.nativeExpeditionHudUiLayoutEvent = null;
       this.nativeRoadMapUiActive = false;
       this.nativeRoadMapUiKind = '';
       this.nativeRoadMapUiObjects = [];
@@ -610,6 +621,7 @@
         this.syncNativeLeftDrawerUi();
         this.syncNativeRightDrawerUi();
         this.syncNativeRoadMapUi();
+        this.syncNativeExpeditionHudUi();
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -730,6 +742,14 @@
           nativeRoadMapUiMaskBounds: this.nativeRoadMapUiMaskBounds,
           nativeRoadMapUiMaskFilterActive: Boolean(this.nativeRoadMapUiMaskFilter),
           nativeRoadMapUiSceneSize: this.dimensions(),
+          nativeExpeditionHudUi: this.nativeExpeditionHudUiActive,
+          nativeExpeditionHudUiObjectCount: this.nativeExpeditionHudUiObjects.filter(item => item?.active).length,
+          nativeExpeditionHudUiTextCount: this.nativeExpeditionHudUiTextNodes.filter(node => node?.isConnected).length,
+          nativeExpeditionHudUiTextValues: this.nativeExpeditionHudUiTextNodes.filter(node => node?.isConnected)
+            .map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeExpeditionHudUiControlIds: this.nativeExpeditionHudUiControls.filter(node => node?.isConnected)
+            .map(node => node.id || node.getAttribute('aria-label') || ''),
+          nativeExpeditionHudUiSceneSize: this.dimensions(),
           nativeBottomBarUi: this.nativeBottomBarUiActive,
           nativeBottomBarUiObjectCount: this.nativeBottomBarUiObjects.filter(item => item?.active).length,
           nativeBottomBarUiTextCount: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).length,
@@ -994,6 +1014,8 @@
         this.syncNativeBottomBarUi();
         this.syncNativeLeftDrawerUi();
         this.syncNativeRightDrawerUi();
+        this.syncNativeRoadMapUi();
+        this.syncNativeExpeditionHudUi();
         return;
       }
       const previous = this.surface;
@@ -1008,6 +1030,8 @@
       this.syncNativeBottomBarUi();
       this.syncNativeLeftDrawerUi();
       this.syncNativeRightDrawerUi();
+      this.syncNativeRoadMapUi();
+      this.syncNativeExpeditionHudUi();
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -2774,6 +2798,301 @@
     }
 
 
+
+
+    clearNativeExpeditionHudUi(removeClass = true, removeListeners = true) {
+      this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
+      this.nativeExpeditionHudUiLayoutEvent = null;
+      if (removeListeners) {
+        if (this.nativeExpeditionHudUiBoundHost && this.nativeExpeditionHudUiInteractionHandler) {
+          ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+            this.nativeExpeditionHudUiBoundHost.removeEventListener(type, this.nativeExpeditionHudUiInteractionHandler)
+          );
+        }
+        if (this.nativeExpeditionHudUiScrollHandler) {
+          document.removeEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, true);
+          window.removeEventListener('scroll', this.nativeExpeditionHudUiScrollHandler);
+        }
+        this.nativeExpeditionHudUiBoundHost = null;
+        this.nativeExpeditionHudUiInteractionHandler = null;
+        this.nativeExpeditionHudUiScrollHandler = null;
+      }
+      this.nativeExpeditionHudUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeExpeditionHudUiObjects = [];
+      this.nativeExpeditionHudUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserExpeditionText;
+        delete node.dataset.legendPhaserExpeditionControl;
+        delete node.dataset.legendPhaserExpeditionIcon;
+      });
+      this.nativeExpeditionHudUiTaggedNodes = [];
+      this.nativeExpeditionHudUiTextNodes = [];
+      this.nativeExpeditionHudUiControls = [];
+      this.nativeExpeditionHudUiIconNodes = [];
+      this.nativeExpeditionHudUiSignature = '';
+      this.nativeExpeditionHudUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-expedition-hud-ui-active');
+    }
+
+    syncNativeExpeditionHudUi() {
+      const host = document.querySelector('.exp100:has(.exp150-world-page)');
+      const page = host?.querySelector('.exp150-world-page');
+      const regions = [
+        host?.querySelector('.exp150-expedition-head'),
+        host?.querySelector('.exp150-road-clock'),
+        host?.querySelector('.exp150-route-tracker'),
+        host?.querySelector('.exp150-journey-aside')
+      ].filter(Boolean);
+      const visible = Boolean(host && page && !host.hidden &&
+        window.getComputedStyle(host).display !== 'none' &&
+        regions.length === 4);
+      if (!visible) {
+        if (this.nativeExpeditionHudUiActive ||
+            document.body?.classList.contains('legend-phaser-expedition-hud-ui-active')) {
+          this.clearNativeExpeditionHudUi();
+        }
+        return;
+      }
+
+      if (this.nativeExpeditionHudUiBoundHost !== host) {
+        this.clearNativeExpeditionHudUi();
+        this.nativeExpeditionHudUiBoundHost = host;
+        this.nativeExpeditionHudUiInteractionHandler = () => {
+          this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
+          this.nativeExpeditionHudUiLayoutEvent = this.time.delayedCall(24, () => {
+            this.nativeExpeditionHudUiLayoutEvent = null;
+            this.syncNativeExpeditionHudUi();
+          });
+        };
+        this.nativeExpeditionHudUiScrollHandler = () => this.nativeExpeditionHudUiInteractionHandler?.();
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          host.addEventListener(type, this.nativeExpeditionHudUiInteractionHandler)
+        );
+        document.addEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, true);
+        window.addEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, { passive: true });
+      }
+
+      if (this.hasFiniteEntranceAnimation(page)) {
+        this.clearNativeExpeditionHudUi(true, false);
+        this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
+        this.nativeExpeditionHudUiLayoutEvent = this.time.delayedCall(230, () => {
+          this.nativeExpeditionHudUiLayoutEvent = null;
+          this.syncNativeExpeditionHudUi();
+        });
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          x: rect.left * sx, y: rect.top * sy,
+          width: rect.width * sx, height: rect.height * sy
+        };
+      };
+      const textSelector = [
+        '.exp150-title-group .exp150-kicker',
+        '.exp150-title-group h1',
+        '.exp150-title-group p',
+        '.exp150-meter > div > span',
+        '.exp150-meter > div > strong',
+        '.exp150-utility-actions > button',
+        '.exp150-clock-symbol',
+        '.exp150-clock-main > strong',
+        '.exp150-clock-main > span',
+        '.exp150-road-clock > p',
+        '.exp150-tracker-label > span',
+        '.exp150-tracker-label > small',
+        '.exp150-stop-marker',
+        '.exp150-stop-name',
+        '.exp150-journey-aside .exp150-kicker',
+        '.exp150-journey-aside .exp150-aside-card h2',
+        '.exp150-journey-aside .exp150-aside-card p',
+        '.exp150-route-reminder > span',
+        '.exp150-route-reminder > strong',
+        '.exp150-route-reminder > small',
+        '.exp150-aside-title > span',
+        '.exp150-supply-row > span',
+        '.exp150-supply-row > strong',
+        '.exp150-text-action'
+      ].join(',');
+      const textNodes = Array.from(new Set(regions.flatMap(region =>
+        Array.from(region.querySelectorAll(textSelector))
+      ))).filter(node => Boolean(node.textContent?.trim()) && readRect(node));
+      const controls = Array.from(host.querySelectorAll(
+        '.exp150-utility-actions > button,.exp150-journey-aside .exp150-text-action'
+      )).filter(node => readRect(node));
+      const iconNodes = Array.from(host.querySelectorAll(
+        '.exp150-clock-symbol,.exp150-stop-marker'
+      )).filter(node => readRect(node));
+      const surfaces = Array.from(new Set([
+        ...host.querySelectorAll([
+          '.exp150-expedition-head',
+          '.exp150-meter',
+          '.exp150-meter > i',
+          '.exp150-road-clock',
+          '.exp150-route-tracker',
+          '.exp150-aside-card',
+          '.exp150-pressure-track'
+        ].join(','))
+      ])).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const fills = Array.from(host.querySelectorAll('.exp150-meter > i > b,.exp150-pressure-track > i'))
+        .map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const trackerItems = Array.from(host.querySelectorAll('.exp150-route-tracker li')).map(node => ({
+        node, markerRect: readRect(node.querySelector('.exp150-stop-marker'))
+      })).filter(item => item.markerRect);
+
+      const signature = JSON.stringify([
+        Math.round(window.innerWidth), Math.round(window.innerHeight),
+        Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
+        ...regions.map(node => {
+          const rect = readRect(node);
+          return [node.className, rect && Math.round(rect.x), rect && Math.round(rect.y),
+            rect && Math.round(rect.width), rect && Math.round(rect.height)];
+        }),
+        ...textNodes.map(node => {
+          const rect = readRect(node);
+          return [node.textContent?.replace(/\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [node.id || '', node.textContent?.replace(/\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height),
+            Boolean(node.disabled), node === document.activeElement || node.matches(':focus-visible'),
+            node.matches(':hover')];
+        })
+      ]);
+      const tagsCurrent =
+        textNodes.length === this.nativeExpeditionHudUiTextNodes.length &&
+        textNodes.every((node,index) => node === this.nativeExpeditionHudUiTextNodes[index] &&
+          node.dataset.legendPhaserExpeditionText === 'true') &&
+        controls.length === this.nativeExpeditionHudUiControls.length &&
+        controls.every((node,index) => node === this.nativeExpeditionHudUiControls[index] &&
+          node.dataset.legendPhaserExpeditionControl === 'true') &&
+        iconNodes.length === this.nativeExpeditionHudUiIconNodes.length &&
+        iconNodes.every((node,index) => node === this.nativeExpeditionHudUiIconNodes[index] &&
+          node.dataset.legendPhaserExpeditionIcon === 'true');
+      if (this.nativeExpeditionHudUiActive && tagsCurrent && signature === this.nativeExpeditionHudUiSignature) return;
+
+      this.clearNativeExpeditionHudUi(false, false);
+      document.body?.classList.remove('legend-phaser-expedition-hud-ui-active');
+
+      const container = this.add.container(0, 0).setDepth(53);
+      const graphics = this.add.graphics();
+      container.add(graphics);
+      this.nativeExpeditionHudUiObjects.push(container);
+
+      surfaces.forEach(({node,rect}) => {
+        const classes = node.classList;
+        if (classes.contains('exp150-expedition-head')) {
+          graphics.fillStyle(0x101810, 0.88);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1,sy), 0xbfa064, 0.34);
+          graphics.lineBetween(rect.x, rect.y + rect.height - sy, rect.x + rect.width, rect.y + rect.height - sy);
+        } else if (classes.contains('exp150-road-clock')) {
+          const isNight = classes.contains('night') || classes.contains('deep-night');
+          const isDusk = classes.contains('dusk') || classes.contains('golden-hour');
+          graphics.fillStyle(isNight ? 0x111928 : isDusk ? 0x30221c : 0x152017, 0.96);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1,sx), isNight ? 0x8293b6 : isDusk ? 0xc08b58 : 0xbfa064, 0.42);
+          graphics.strokeRect(rect.x + sx/2, rect.y + sy/2,
+            Math.max(1,rect.width-sx), Math.max(1,rect.height-sy));
+        } else if (classes.contains('exp150-route-tracker')) {
+          graphics.fillStyle(0x0d140f, 0.82);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1,sy), 0xbfa064, 0.24);
+          graphics.lineBetween(rect.x, rect.y + rect.height - sy, rect.x + rect.width, rect.y + rect.height - sy);
+        } else if (classes.contains('exp150-meter')) {
+          graphics.fillStyle(0x182116, 0.78);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3*sx);
+        } else if (classes.contains('exp150-aside-card')) {
+          const next = classes.contains('exp150-next-stop');
+          const journal = classes.contains('exp150-journal-callout');
+          graphics.fillStyle(next ? 0x2b2719 : journal ? 0x17251a : 0x121a13, 0.96);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 4*sx);
+          graphics.lineStyle(Math.max(1,sx), next ? 0xbfa064 : 0x71816d, next ? 0.48 : 0.30);
+          graphics.strokeRoundedRect(rect.x + sx/2, rect.y + sy/2,
+            Math.max(1,rect.width-sx), Math.max(1,rect.height-sy), 4*sx);
+          graphics.fillStyle(0xd4b174, next ? 0.8 : 0.38);
+          graphics.fillRect(rect.x, rect.y, Math.max(2*sx,2), Math.max(2*sy,2));
+        } else if (classes.contains('exp150-pressure-track') || node.matches('.exp150-meter > i')) {
+          graphics.fillStyle(0x2a3025, 0.98);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 5*sy);
+        }
+      });
+
+      if (trackerItems.length > 1) {
+        const first = trackerItems[0].markerRect, last = trackerItems[trackerItems.length - 1].markerRect;
+        const cy = first.y + first.height/2;
+        graphics.lineStyle(Math.max(1,sy), 0x82907b, 0.34);
+        graphics.lineBetween(first.x + first.width/2, cy, last.x + last.width/2, cy);
+      }
+      trackerItems.forEach(({node,markerRect}) => {
+        const current = node.classList.contains('is-current');
+        const visited = node.classList.contains('is-visited');
+        graphics.fillStyle(current ? 0x4a4127 : visited ? 0x243326 : 0x101710, 1);
+        graphics.fillCircle(markerRect.x + markerRect.width/2, markerRect.y + markerRect.height/2, markerRect.width/2);
+        graphics.lineStyle(Math.max(1,sx), current ? 0xdfc578 : visited ? 0x829d75 : 0x556454, 0.9);
+        graphics.strokeCircle(markerRect.x + markerRect.width/2, markerRect.y + markerRect.height/2, markerRect.width/2);
+      });
+      fills.forEach(({node,rect}) => {
+        const isPressure = node.matches('.exp150-pressure-track > i') || node.closest('.exp150-meter')?.classList.contains('pressure');
+        graphics.fillStyle(isPressure ? 0xb98752 : 0xb1b979, 0.96);
+        graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 4*sy);
+      });
+
+      textNodes.forEach(node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const style = window.getComputedStyle(node);
+        const isIcon = node.matches('.exp150-clock-symbol,.exp150-stop-marker');
+        const originalColor = style.color;
+        const color = originalColor && originalColor !== 'rgba(0, 0, 0, 0)' ? originalColor
+          : node.matches('.exp150-title-group h1,.exp150-journey-aside h2') ? '#efe7d4'
+          : node.matches('.exp150-kicker,.exp150-tracker-label > span') ? '#c9ad6e'
+          : '#b6c0b2';
+        const textObject = this.add.text(rect.x, rect.y,
+          node.textContent?.replace(/\s+/g, ' ').trim() || '', {
+            fontFamily: style.fontFamily || 'Arial, sans-serif',
+            fontSize: Math.max(isIcon ? 10 : 8,
+              Math.round((parseFloat(style.fontSize) || (isIcon ? 14 : 10))*sy)) + 'px',
+            fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
+            color,
+            letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+            align: style.textAlign || 'left'
+          }).setDepth(54).setOrigin(0,0);
+        textObject.setResolution?.(2);
+        textObject.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
+        container.add(textObject);
+        node.dataset.legendPhaserExpeditionText = 'true';
+        this.nativeExpeditionHudUiTaggedNodes.push(node);
+      });
+      controls.forEach(node => {
+        node.dataset.legendPhaserExpeditionControl = 'true';
+        this.nativeExpeditionHudUiTaggedNodes.push(node);
+      });
+      iconNodes.forEach(node => {
+        node.dataset.legendPhaserExpeditionIcon = 'true';
+        this.nativeExpeditionHudUiTaggedNodes.push(node);
+      });
+
+      this.nativeExpeditionHudUiTextNodes = textNodes;
+      this.nativeExpeditionHudUiControls = controls;
+      this.nativeExpeditionHudUiIconNodes = iconNodes;
+      this.nativeExpeditionHudUiSignature = signature;
+      this.nativeExpeditionHudUiActive = true;
+      document.body?.classList.add('legend-phaser-expedition-hud-ui-active');
+    }
 
     clearNativeRoadMapUi(removeClass = true, removeListeners = true) {
       this.nativeRoadMapUiLayoutEvent?.remove?.(false);
@@ -5227,6 +5546,7 @@
     refreshRightDrawer: () => realmScene?.syncNativeRightDrawerUi?.(),
     refreshRoadMap: () => realmScene?.syncNativeRoadMapUi?.(),
     clearRoadMap: () => realmScene?.clearNativeRoadMapUi?.(),
+    refreshExpedition: () => realmScene?.syncNativeExpeditionHudUi?.(),
     refresh: () => inferEnvironment(),
     selectAshmereLandmark: id => realmScene?.selectAshmereLandmark?.(id) || false,
     get saveKey() { return SAVE_KEY; }

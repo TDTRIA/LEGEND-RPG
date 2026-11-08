@@ -133,6 +133,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       return {
         painterActive: snapshot.nativeGameplayUi,
         painterClass: document.body.classList.contains('legend-phaser-gameplay-ui-active'),
+        nativeHudActive: snapshot.nativeExpeditionHudUi,
+        nativeHudText: snapshot.nativeExpeditionHudUiTextValues || [],
+        nativeHudControlIds: snapshot.nativeExpeditionHudUiControlIds || [],
         mapControl: Boolean(mapButton && !mapButton.disabled),
         mapText: mapButton?.textContent?.trim() || '',
         mapColor: style?.color || '',
@@ -141,11 +144,18 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     });
     expect(roadDom.painterActive).toBe(false);
     expect(roadDom.painterClass).toBe(false);
+    expect(roadDom.nativeHudActive).toBe(true);
+    expect(roadDom.nativeHudText).toEqual(expect.arrayContaining([
+      'OLD ROAD · EXPEDITION', 'South Fork', 'YOUR JOURNEY', 'ROAD PRESSURE', 'FIELD SUPPLIES'
+    ]));
+    expect(roadDom.nativeHudControlIds).toEqual(expect.arrayContaining(['exp150OpenMap','exp150OpenJournal','exp150OpenJournalAside']));
     expect(roadDom.mapControl).toBe(true);
     expect(roadDom.mapText.length).toBeGreaterThan(0);
-    expect(roadDom.mapColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(roadDom.mapColor).toBe('rgba(0, 0, 0, 0)');
     expect(roadDom.mapVisibility).toBe('visible');
     await expect(page.locator('.exp150-expedition-head')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionHudUi)).toBe(true);
+    await expect(page.locator('.exp150-title-group h1')).toHaveCSS('color','rgba(0, 0, 0, 0)');
     await expect(page.locator('.exp150-vitals')).toBeVisible();
     await expect(page.locator('#exp150OpenMap')).toBeEnabled();
     await expect(page.locator('#exp150OpenJournal')).toBeEnabled();

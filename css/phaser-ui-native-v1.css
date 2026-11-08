@@ -627,3 +627,45 @@ body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-
   outline-offset: 3px !important;
   box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
 }
+
+
+/* Old Road journey header, weather/time, six-leg progress and travel side rail
+   are Phaser-painted. Original map/journal DOM buttons remain functional. */
+body.legend-phaser-expedition-hud-ui-active .exp150-expedition-head,
+body.legend-phaser-expedition-hud-ui-active .exp150-meter,
+body.legend-phaser-expedition-hud-ui-active .exp150-meter > i,
+body.legend-phaser-expedition-hud-ui-active .exp150-meter > i > b,
+body.legend-phaser-expedition-hud-ui-active .exp150-road-clock,
+body.legend-phaser-expedition-hud-ui-active .exp150-route-tracker,
+body.legend-phaser-expedition-hud-ui-active .exp150-aside-card,
+body.legend-phaser-expedition-hud-ui-active .exp150-route-reminder,
+body.legend-phaser-expedition-hud-ui-active .exp150-supply-row,
+body.legend-phaser-expedition-hud-ui-active .exp150-pressure-track,
+body.legend-phaser-expedition-hud-ui-active .exp150-pressure-track > i {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-expedition-hud-ui-active .exp150-route-tracker li:before {
+  content: none !important;
+}
+body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}

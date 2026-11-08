@@ -378,6 +378,7 @@
       '<div class="exp150-modal-layer" id="exp150Modal" hidden tabindex="-1"><section class="exp150-modal-dialog" role="dialog" aria-modal="true" aria-label="Road map or field journal"><div id="exp150ModalContent"></div></section></div></div>';
     shell(markup);
     bindHotspotDelegation();
+    window.LegendPhaserWorldV1?.refreshExpedition?.();
     document.getElementById('poiLeave')?.addEventListener('click',()=>{const player=p();if(!player)return;const state=ensure(player);state.discoveryOpen=false;state.discoveryStage=null;roadDiscovery.hide();save(player);document.querySelector('.exp150-interactions .exp100-discovery-beat')?.remove();});
     document.getElementById('poiInspect')?.addEventListener('click',roadDiscovery.inspectPointOfInterest);
     document.getElementById('exp160VisitOptional')?.addEventListener('click',button=>beginOptionalSite(button.currentTarget.dataset.node));
