@@ -639,6 +639,11 @@
       this.nativeCombatUiHealthRatio = null;
       this.nativeCombatUiHealthLabel = '';
       this.nativeCombatUiCornerCount = 0;
+      this.nativeCombatUiHealthOrbState = null;
+      this.nativeCombatUiHealthOrbContainer = null;
+      this.nativeCombatUiHealthOrbMaskGraphics = null;
+      this.nativeCombatUiHealthOrbMask = null;
+      this.nativeCombatUiHealthOrbMaskFilter = null;
       this.nativeTownBoardUiActive = false;
       this.nativeTownBoardUiObjects = [];
       this.nativeTownBoardUiTextNodes = [];
@@ -865,6 +870,11 @@
           nativeGameplayUiObserverBound: Boolean(this.nativeGameplayUiObserverRoot),
           nativeGameplayUiProgressionOverlay: Boolean(document.getElementById('legendLevelUpOverlay')),
           nativeCombatUi: this.nativeCombatUiActive,
+          nativeCombatUiAssetsLoaded: this.textures.exists('healthOrbBezel') && this.textures.exists('healthOrbFill'),
+          nativeCombatUiHealthOrb: this.nativeCombatUiHealthOrbState,
+          nativeCombatUiHealthOrbMaskMode: this.nativeCombatUiHealthOrbMaskFilter
+            ? 'webgl-filter'
+            : this.nativeCombatUiHealthOrbMask ? 'canvas-geometry' : 'none',
           nativeTownBoardUi: this.nativeTownBoardUiActive,
           nativeTownBoardUiObjectCount: this.nativeTownBoardUiObjects.filter(item => item?.active).length,
           nativeTownBoardUiTextCount: this.nativeTownBoardUiTextNodes.filter(node => node?.isConnected).length,
@@ -4882,6 +4892,16 @@
     clearNativeCombatUi(removeClass = true, removeListeners = true) {
       this.nativeCombatUiLayoutEvent?.remove?.(false);
       this.nativeCombatUiLayoutEvent = null;
+      if (this.nativeCombatUiHealthOrbContainer && this.nativeCombatUiHealthOrbMaskFilter) {
+        this.nativeCombatUiHealthOrbContainer.filters?.internal?.remove?.(
+          this.nativeCombatUiHealthOrbMaskFilter, true
+        );
+      }
+      this.nativeCombatUiHealthOrbMaskFilter = null;
+      if (this.nativeCombatUiHealthOrbContainer && this.nativeCombatUiHealthOrbMask) {
+        this.nativeCombatUiHealthOrbContainer.clearMask?.(true);
+      }
+      this.nativeCombatUiHealthOrbMask = null;
       if (this.nativeCombatUiObserver) {
         this.nativeCombatUiObserver.disconnect();
         this.nativeCombatUiObserver = null;
@@ -4909,6 +4929,11 @@
       this.nativeCombatUiTextNodes = [];
       this.nativeCombatUiControls = [];
       this.nativeCombatUiSignature = '';
+      this.nativeCombatUiHealthOrbState = null;
+      this.nativeCombatUiHealthOrbContainer = null;
+      this.nativeCombatUiHealthOrbMaskGraphics = null;
+      this.nativeCombatUiHealthOrbMask = null;
+      this.nativeCombatUiHealthOrbMaskFilter = null;
       this.nativeCombatUiActive = false;
       if (removeClass) document.body?.classList.remove('legend-phaser-combat-ui-active');
     }
@@ -4950,7 +4975,7 @@
             subtree: true,
             characterData: true,
             attributes: true,
-            attributeFilter: ['class', 'disabled', 'aria-disabled']
+            attributeFilter: ['class', 'disabled', 'aria-disabled', 'data-health-pct', 'data-hp', 'data-max-hp']
           });
         }
       }
@@ -5002,12 +5027,22 @@
       const controls = Array.from(battle.querySelectorAll('button')).map(node => ({
         node, rect: readRect(node)
       })).filter(item => item.rect);
+      const portraitNode = battle.querySelector('.rpg-hero-portrait');
+      const portraitRect = readRect(portraitNode);
+      const healthOrbState = {
+        hp: Math.max(0, Number(portraitNode?.dataset.hp || 0)),
+        maxHp: Math.max(1, Number(portraitNode?.dataset.maxHp || 1)),
+        percent: Math.max(0, Math.min(100, Number(portraitNode?.dataset.healthPct || 0)))
+      };
       const expected = ['battleSound','strike','skill','item','guard','heavy','poultice','flee'];
       const ids = controls.map(item => item.node.id);
       const complete = expected.every(id => ids.includes(id)) &&
         expected.length === controls.length &&
         panels.length >= 12 &&
-        textNodes.length >= 22;
+        textNodes.length >= 22 &&
+        Boolean(portraitRect) &&
+        this.textures.exists('healthOrbBezel') &&
+        this.textures.exists('healthOrbFill');
       if (!complete) {
         this.clearNativeCombatUi();
         return;
@@ -5016,6 +5051,11 @@
         Math.round(size.width), Math.round(size.height),
         Math.round(window.innerWidth), Math.round(window.innerHeight),
         battle.className,
+        healthOrbState.hp, healthOrbState.maxHp, healthOrbState.percent,
+        portraitRect && [
+          Math.round(portraitRect.x), Math.round(portraitRect.y),
+          Math.round(portraitRect.width), Math.round(portraitRect.height)
+        ],
         ...panels.map(({node, rect}) => [
           node.className, Math.round(rect.x), Math.round(rect.y),
           Math.round(rect.width), Math.round(rect.height)
@@ -5107,6 +5147,67 @@
           node.setAttribute('aria-label', cleanText(node.textContent) || id);
         }
       });
+
+      // A separate red fill is revealed from the bottom up using the live HP
+      // percentage. The production combat controller remains authoritative.
+      const orbSize = Math.max(48, Math.min(portraitRect.width, portraitRect.height));
+      const orbX = portraitRect.x + portraitRect.width / 2;
+      const orbY = portraitRect.y + portraitRect.height / 2;
+      const visibleFillHeight = orbSize * healthOrbState.percent / 100;
+      const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+      maskGraphics.fillStyle(0xffffff, 1);
+      if (visibleFillHeight > 0) {
+        maskGraphics.fillRect(
+          orbX - orbSize / 2,
+          orbY + orbSize / 2 - visibleFillHeight,
+          orbSize,
+          visibleFillHeight
+        );
+      }
+      const healthContainer = this.add.container(0, 0).setDepth(61);
+      const rendererType = this.sys.game.renderer?.type;
+      let healthMask = null;
+      let healthMaskFilter = null;
+      if (rendererType === Phaser.WEBGL) {
+        try {
+          healthContainer.enableFilters?.();
+          healthContainer.setFiltersFocusContext?.(true);
+          healthMaskFilter = healthContainer.filters?.internal?.addMask?.(
+            maskGraphics, false, this.cameras.main, 'world'
+          ) || null;
+        } catch (error) {
+          console.warn('[LEGEND Phaser] Combat health-orb WebGL mask could not be created; restoring the DOM battle.', error);
+        }
+        if (!healthMaskFilter) {
+          healthContainer.destroy(true);
+          maskGraphics.destroy(true);
+          throw new Error('Combat health-orb WebGL mask unavailable.');
+        }
+      } else {
+        healthMask = maskGraphics.createGeometryMask();
+        healthContainer.setMask(healthMask);
+      }
+      this.nativeCombatUiHealthOrbContainer = healthContainer;
+      this.nativeCombatUiHealthOrbMaskGraphics = maskGraphics;
+      this.nativeCombatUiHealthOrbMask = healthMask;
+      this.nativeCombatUiHealthOrbMaskFilter = healthMaskFilter;
+      this.nativeCombatUiObjects.push(healthContainer, maskGraphics);
+      const healthFill = this.add.image(orbX, orbY, 'healthOrbFill')
+        .setDisplaySize(orbSize, orbSize);
+      healthContainer.add(healthFill);
+      const healthBezel = this.add.image(orbX, orbY, 'healthOrbBezel')
+        .setDisplaySize(orbSize, orbSize)
+        .setDepth(63);
+      this.nativeCombatUiObjects.push(healthBezel);
+      this.nativeCombatUiHealthOrbState = {
+        hp: healthOrbState.hp,
+        maxHp: healthOrbState.maxHp,
+        percent: healthOrbState.percent,
+        x: portraitRect.x,
+        y: portraitRect.y,
+        width: portraitRect.width,
+        height: portraitRect.height
+      };
 
       textNodes.forEach(({node, text, rect, style}) => {
         const disabled = Boolean(node.closest('button:disabled,[aria-disabled="true"]'));
