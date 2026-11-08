@@ -10,7 +10,7 @@ Use this as the source text when updating the Game Jolt and itch.io project page
 
 **Development status:** In active development.
 
-**Current public build:** v0.30.4
+**Current public build:** v0.30.5
 
 **Primary format:** HTML5 browser game. Desktop-first presentation with responsive mobile compatibility.
 
