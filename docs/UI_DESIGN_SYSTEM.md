@@ -4,7 +4,7 @@
 
 ## Design intent
 
-LEGEND should feel like entering a living frontier: confident game-interface hierarchy, visible place art, purposeful status information, crafted material edges, readable feedback and distinct compositions for launcher, town and expedition. The World of Warcraft reference is only about a strong immersive game-interface feeling. This system does not copy that game's frames, layouts, icons, assets, factions, typography or branding.
+LEGEND should feel like entering a dangerous illustrated frontier: expedition-led scene composition, strong character silhouettes, tactile field-ledger details, purposeful status information, crafted material edges, readable feedback, and distinct compositions for title, refuge, road and battle. **Darkest Dungeon is the primary high-level creative reference** for atmosphere, characterful presentation, and tactical readability. This is not a clone: do not copy its frames, layouts, icons, assets, characters, typography, writing, sound, or branding. Follow [the approved creative-direction document](DARKEST_DUNGEON_DIRECTION.md) while preserving LEGEND's own world and systems.
 
 ## Material and color tokens
 
