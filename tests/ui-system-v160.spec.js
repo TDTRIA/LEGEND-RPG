@@ -137,7 +137,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         headingColor: panel?.querySelector('h2') ? getComputedStyle(panel.querySelector('h2')).color : '',
         actionColor: panel?.querySelector('#routeRidge') ? getComputedStyle(panel.querySelector('#routeRidge')).color : '',
         routeButtons: Array.from(panel?.querySelectorAll('button') || []).map(button => ({
-          id: button.id, disabled: button.disabled, text: button.textContent.replace(/\\s+/g,' ').trim()
+          id: button.id, disabled: button.disabled, text: button.textContent.replace(/\s+/g,' ').trim()
         }))
       };
     });
