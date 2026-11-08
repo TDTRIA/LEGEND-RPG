@@ -814,6 +814,31 @@ test.describe('LEGEND persistent world shell v170', () => {
     const unlocked = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTownBoardUiCards);
     expect(unlocked.map(card => card.id)).toContain('dungeon');
     expect(unlocked.find(card => card.id === 'dungeon')?.title).toBe('The Bell Cellar');
+    expect(await page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiExpectedIds
+    )).toEqual(['inn','trader','smith','people','work','dungeon','quests','road','regions']);
+
+    // The unlocked board must fall back if its progression-only Bell Cellar card is missing.
+    const unlockedFallback = await page.evaluate(() => {
+      const section = document.querySelector('.ash100-destination-section');
+      const cellar = section.querySelector('[data-ash-view="dungeon"]');
+      const parent = cellar.parentNode;
+      const next = cellar.nextSibling;
+      cellar.remove();
+      window.LegendPhaserWorldV1.refreshTownBoard();
+      const result = {
+        active: window.LegendPhaserWorldV1.snapshot().nativeTownBoardUi,
+        titleColor: getComputedStyle(section.querySelector('.ash100-destination-copy strong')).color
+      };
+      parent.insertBefore(cellar, next);
+      window.LegendPhaserWorldV1.refreshTownBoard();
+      return result;
+    });
+    expect(unlockedFallback.active).toBe(false);
+    expect(unlockedFallback.titleColor).not.toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
+    )).toBe(true);
 
     // The live destination buttons still call the original market and work-board routes.
     await page.locator('.ash100-destination[data-ash-view="trader"]').click();
