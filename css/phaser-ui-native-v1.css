@@ -496,3 +496,44 @@ body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world
   outline-offset: 2px !important;
   box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
 }
+
+
+/* Left traveler journal/quest drawer is rendered by RealmScene. The DOM keeps
+   live content, scroll, keyboard focus and the real Journal action targets. */
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-panel-header,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-section,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-quest-item,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-vital,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-meter,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-tag,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-btn {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-icon="true"] {
+  opacity: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-control="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}

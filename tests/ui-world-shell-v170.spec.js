@@ -173,6 +173,105 @@ test.describe('LEGEND persistent world shell v170', () => {
   });
 
 
+
+  test('Phaser paints the traveler journal drawer while preserving saved values and its real Journal action', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await enterAshmere(page, 'PhaserJournalQA');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeLeftDrawerUi)).toBe(true);
+
+    const desktop = await page.evaluate(() => {
+      const panel = document.querySelector('#lws-panel-left');
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const player = window.LegendStorage.loadPlayer();
+      const label = panel?.querySelector('.lws-panel-eyebrow');
+      const journalButton = panel?.querySelector('[data-world-action="journal"]');
+      return {
+        active: document.body.classList.contains('legend-phaser-left-drawer-ui-active'),
+        objectCount: snapshot.nativeLeftDrawerUiObjectCount,
+        textCount: snapshot.nativeLeftDrawerUiTextCount,
+        textValues: snapshot.nativeLeftDrawerUiTextValues || [],
+        controlIds: snapshot.nativeLeftDrawerUiControlIds || [],
+        labelColor: label ? getComputedStyle(label).color : '',
+        hp: player.hp + ' / ' + player.maxHp,
+        gold: player.gold + 'g',
+        scrollRect: (() => {
+          const r = panel?.querySelector('.lws-panel-scroll')?.getBoundingClientRect();
+          return r ? { left:r.left, top:r.top, width:r.width, height:r.height } : null;
+        })(),
+        buttonName: journalButton?.textContent?.replace(/\\s+/g,' ').trim() || '',
+        buttonStillEnabled: Boolean(journalButton && !journalButton.disabled)
+      };
+    });
+    expect(desktop.active).toBe(true);
+    expect(desktop.objectCount).toBeGreaterThan(10);
+    expect(desktop.textCount).toBeGreaterThan(10);
+    expect(desktop.textValues).toEqual(expect.arrayContaining([
+      'Traveler record', 'PhaserJournalQA', 'Vitality', 'Current lead', 'Quest log', 'Field journal'
+    ]));
+    expect(desktop.textValues).toContain(desktop.hp);
+    expect(desktop.textValues).toContain(desktop.gold);
+    expect(desktop.labelColor).toBe('rgba(0, 0, 0, 0)');
+    expect(desktop.buttonStillEnabled).toBe(true);
+    expect(desktop.buttonName).toContain('Open journal');
+    expect(desktop.controlIds).toContain('journal');
+
+    // renderShell rebuilds this panel's innerHTML on refresh too. Native text
+    // tags must be re-applied to the new nodes even if the copy is unchanged.
+    await page.evaluate(() => window.LegendWorldShellV170.refresh());
+    await expect.poll(() => page.evaluate(() => {
+      const eyebrow = document.querySelector('#lws-panel-left .lws-panel-eyebrow');
+      return eyebrow ? getComputedStyle(eyebrow).color : '';
+    })).toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUiTextCount || 0))
+      .toBeGreaterThan(10);
+
+    const scroll = page.locator('#lws-panel-left .lws-panel-scroll');
+    await scroll.evaluate(node => { node.scrollTop = Math.max(0, node.scrollHeight - node.clientHeight); node.dispatchEvent(new Event('scroll')); });
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUiScrollTop || 0))
+      .toBeGreaterThanOrEqual(0);
+    const desktopClip = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const mask = snapshot.nativeLeftDrawerUiMaskBounds;
+      const rect = document.querySelector('#lws-panel-left .lws-panel-scroll')?.getBoundingClientRect();
+      const size = snapshot.nativeLeftDrawerUiSceneSize;
+      const sx = size.width / Math.max(1, window.innerWidth);
+      const sy = size.height / Math.max(1, window.innerHeight);
+      return Boolean(mask && rect &&
+        Math.abs(mask.x - rect.left * sx) < 1 &&
+        Math.abs(mask.y - rect.top * sy) < 1 &&
+        Math.abs(mask.width - rect.width * sx) < 1 &&
+        Math.abs(mask.height - rect.height * sy) < 1);
+    });
+    expect(desktopClip).toBe(true);
+    await expectNoHorizontalOverflow(page);
+
+    // The native visual leaves the original production journal action intact.
+    await page.locator('#lws-panel-left [data-world-action="journal"]').click();
+    await expect(page.locator('.ash099-screen, [data-legend-game-screen]')).toBeVisible();
+  });
+
+  test('mobile journal drawer is DOM-backed while closed and Phaser-painted once opened', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await enterAshmere(page, 'MobilePhaserJournalQA');
+    const panel = page.locator('#lws-panel-left');
+    await expect(panel).toHaveAttribute('aria-hidden', 'true');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUi)).toBe(false);
+    await expectNoHorizontalOverflow(page);
+
+    await page.locator('#legend-world-shell-root [data-world-action="toggle-left"]').click();
+    await expect(page.locator('body')).toHaveClass(/legend-shell-left-open/);
+    await expect(panel).toHaveAttribute('aria-hidden', 'false');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUi)).toBe(true);
+    await expect(panel.locator('.lws-panel-eyebrow')).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+    await expect(panel).toContainText('MobilePhaserJournalQA');
+    await expect(panel.locator('[data-world-action="journal"]')).toBeEnabled();
+    await expectNoHorizontalOverflow(page);
+
+    await page.locator('#legend-world-shell-root [data-world-action="toggle-left"]').click();
+    await expect(panel).toHaveAttribute('aria-hidden', 'true');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUi)).toBe(false);
+  });
+
   test('Phaser paints the persistent bottom navigation without replacing production action handlers', async ({ page }) => {
     await enterAshmere(page, 'PhaserBottomBarQA');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeBottomBarUi)).toBe(true);

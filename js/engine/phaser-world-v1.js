@@ -492,6 +492,23 @@
       this.nativeOpeningUiSignature = '';
       this.nativeOpeningUiLayoutEvent = null;
       this.nativeOpeningUiScrollTarget = null;
+      this.nativeLeftDrawerUiActive = false;
+      this.nativeLeftDrawerUiObjects = [];
+      this.nativeLeftDrawerUiTaggedNodes = [];
+      this.nativeLeftDrawerUiTextNodes = [];
+      this.nativeLeftDrawerUiControls = [];
+      this.nativeLeftDrawerUiIconNodes = [];
+      this.nativeLeftDrawerUiSignature = '';
+      this.nativeLeftDrawerUiBoundPanel = null;
+      this.nativeLeftDrawerUiBoundScroll = null;
+      this.nativeLeftDrawerUiInteractionHandler = null;
+      this.nativeLeftDrawerUiTransitionHandler = null;
+      this.nativeLeftDrawerUiLayoutEvent = null;
+      this.nativeLeftDrawerUiMask = null;
+      this.nativeLeftDrawerUiMaskFilter = null;
+      this.nativeLeftDrawerUiMaskGraphics = null;
+      this.nativeLeftDrawerUiMaskBounds = null;
+      this.nativeLeftDrawerUiContainer = null;
       this.nativeHudUiActive = false;
       this.nativeHudUiObjects = [];
       this.nativeHudUiTaggedNodes = [];
@@ -555,6 +572,7 @@
         this.syncNativeGameplayUi(this.surface);
         this.syncNativeHudUi();
         this.syncNativeBottomBarUi();
+        this.syncNativeLeftDrawerUi();
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -636,6 +654,17 @@
           nativeHudUiControlIds: this.nativeHudUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || node.getAttribute('aria-label') || node.textContent?.trim() || ''),
           nativeHudUiFocusedControlIds: this.nativeHudUiControls.filter(node => node?.isConnected && (node === document.activeElement || node.matches(':focus-visible'))).map(node => node.dataset.worldAction || node.getAttribute('aria-label') || node.textContent?.trim() || ''),
           nativeHudUiSceneSize: this.dimensions(),
+          nativeLeftDrawerUi: this.nativeLeftDrawerUiActive,
+          nativeLeftDrawerUiObjectCount: this.nativeLeftDrawerUiObjects.filter(item => item?.active).length,
+          nativeLeftDrawerUiTextCount: this.nativeLeftDrawerUiTextNodes.filter(node => node?.isConnected).length,
+          nativeLeftDrawerUiTextValues: this.nativeLeftDrawerUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\\s+/g, ' ').trim() || ''),
+          nativeLeftDrawerUiControlIds: this.nativeLeftDrawerUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || ''),
+          nativeLeftDrawerUiIconCount: this.nativeLeftDrawerUiObjects.filter(item => item?.active && item.type === 'Image').length,
+          nativeLeftDrawerUiScrollTop: Number(this.nativeLeftDrawerUiBoundScroll?.scrollTop || 0),
+          nativeLeftDrawerUiMaskMode: this.nativeLeftDrawerUiMaskFilter ? 'webgl-filter' : this.nativeLeftDrawerUiMask ? 'canvas-geometry' : 'none',
+          nativeLeftDrawerUiMaskBounds: this.nativeLeftDrawerUiMaskBounds,
+          nativeLeftDrawerUiMaskFilterActive: Boolean(this.nativeLeftDrawerUiMaskFilter),
+          nativeLeftDrawerUiSceneSize: this.dimensions(),
           nativeBottomBarUi: this.nativeBottomBarUiActive,
           nativeBottomBarUiObjectCount: this.nativeBottomBarUiObjects.filter(item => item?.active).length,
           nativeBottomBarUiTextCount: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).length,
@@ -898,6 +927,7 @@
         this.syncNativeGameplayUi(next);
         this.syncNativeHudUi();
         this.syncNativeBottomBarUi();
+        this.syncNativeLeftDrawerUi();
         return;
       }
       const previous = this.surface;
@@ -910,6 +940,7 @@
       this.syncNativeGameplayUi(next);
       this.syncNativeHudUi();
       this.syncNativeBottomBarUi();
+      this.syncNativeLeftDrawerUi();
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -2625,6 +2656,363 @@
       document.body?.classList.add('legend-phaser-bottom-bar-ui-active');
     }
 
+
+    clearNativeLeftDrawerUi(removeClass = true, removeListeners = true) {
+      this.nativeLeftDrawerUiLayoutEvent?.remove?.(false);
+      this.nativeLeftDrawerUiLayoutEvent = null;
+      if (removeListeners) {
+        if (this.nativeLeftDrawerUiBoundScroll && this.nativeLeftDrawerUiInteractionHandler) {
+          ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+            this.nativeLeftDrawerUiBoundScroll.removeEventListener(type, this.nativeLeftDrawerUiInteractionHandler)
+          );
+        }
+        if (this.nativeLeftDrawerUiBoundPanel && this.nativeLeftDrawerUiTransitionHandler) {
+          this.nativeLeftDrawerUiBoundPanel.removeEventListener('transitionend', this.nativeLeftDrawerUiTransitionHandler);
+        }
+        this.nativeLeftDrawerUiBoundPanel = null;
+        this.nativeLeftDrawerUiBoundScroll = null;
+        this.nativeLeftDrawerUiInteractionHandler = null;
+        this.nativeLeftDrawerUiTransitionHandler = null;
+      }
+      if (this.nativeLeftDrawerUiContainer && this.nativeLeftDrawerUiMaskFilter) {
+        this.nativeLeftDrawerUiContainer.filters?.internal?.remove?.(this.nativeLeftDrawerUiMaskFilter, true);
+      }
+      this.nativeLeftDrawerUiMaskFilter = null;
+      if (this.nativeLeftDrawerUiContainer && this.nativeLeftDrawerUiMask) {
+        this.nativeLeftDrawerUiContainer.clearMask?.(true);
+      }
+      this.nativeLeftDrawerUiMask = null;
+      this.nativeLeftDrawerUiMaskBounds = null;
+      this.nativeLeftDrawerUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeLeftDrawerUiObjects = [];
+      this.nativeLeftDrawerUiContainer = null;
+      this.nativeLeftDrawerUiMaskGraphics = null;
+      this.nativeLeftDrawerUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserLeftText;
+        delete node.dataset.legendPhaserLeftControl;
+        delete node.dataset.legendPhaserLeftIcon;
+      });
+      this.nativeLeftDrawerUiTaggedNodes = [];
+      this.nativeLeftDrawerUiTextNodes = [];
+      this.nativeLeftDrawerUiControls = [];
+      this.nativeLeftDrawerUiIconNodes = [];
+      this.nativeLeftDrawerUiSignature = '';
+      this.nativeLeftDrawerUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-left-drawer-ui-active');
+    }
+
+    syncNativeLeftDrawerUi() {
+      const shell = document.getElementById('legend-world-shell-root');
+      const panel = shell?.querySelector('#lws-panel-left');
+      const scroll = panel?.querySelector('.lws-panel-scroll');
+      const mobile = window.matchMedia?.('(max-width: 1199px)').matches || false;
+      const hidden = !panel || !scroll || !shell || shell.hidden || panel.hidden ||
+        (mobile && (panel.inert || panel.getAttribute('aria-hidden') === 'true'));
+      if (hidden) {
+        if (this.nativeLeftDrawerUiActive || document.body?.classList.contains('legend-phaser-left-drawer-ui-active')) {
+          this.clearNativeLeftDrawerUi();
+        }
+        return;
+      }
+
+      if (this.nativeLeftDrawerUiBoundPanel !== panel || this.nativeLeftDrawerUiBoundScroll !== scroll) {
+        this.clearNativeLeftDrawerUi();
+        this.nativeLeftDrawerUiBoundPanel = panel;
+        this.nativeLeftDrawerUiBoundScroll = scroll;
+        this.nativeLeftDrawerUiInteractionHandler = () => {
+          this.nativeLeftDrawerUiLayoutEvent?.remove?.(false);
+          this.nativeLeftDrawerUiLayoutEvent = this.time.delayedCall(28, () => {
+            this.nativeLeftDrawerUiLayoutEvent = null;
+            this.syncNativeLeftDrawerUi();
+          });
+        };
+        this.nativeLeftDrawerUiTransitionHandler = event => {
+          if (event.target !== panel || (event.propertyName && event.propertyName !== 'transform')) return;
+          this.nativeLeftDrawerUiInteractionHandler?.();
+        };
+        ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          scroll.addEventListener(type, this.nativeLeftDrawerUiInteractionHandler, { passive: type === 'scroll' })
+        );
+        panel.addEventListener('transitionend', this.nativeLeftDrawerUiTransitionHandler);
+      }
+
+      // Do not paint against a moving drawer. The DOM stays visible through its
+      // slide, then the final settled geometry is sampled for Phaser.
+      if (this.hasFiniteEntranceAnimation(panel)) {
+        this.clearNativeLeftDrawerUi(false, false);
+        this.nativeLeftDrawerUiLayoutEvent?.remove?.(false);
+        this.nativeLeftDrawerUiLayoutEvent = this.time.delayedCall(230, () => {
+          this.nativeLeftDrawerUiLayoutEvent = null;
+          this.syncNativeLeftDrawerUi();
+        });
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          x: rect.left * sx,
+          y: rect.top * sy,
+          width: rect.width * sx,
+          height: rect.height * sy
+        };
+      };
+      const panelRect = readRect(panel);
+      const scrollRect = readRect(scroll);
+      if (!panelRect || !scrollRect) {
+        this.clearNativeLeftDrawerUi();
+        return;
+      }
+      const content = node => node.textContent?.replace(/\\s+/g, ' ').trim() || '';
+      const headerNodes = Array.from(panel.querySelectorAll(
+        '.lws-panel-eyebrow,.lws-panel-header h2,.lws-panel-header p,.lws-panel-header .lws-tag'
+      )).filter(node => Boolean(content(node)) && readRect(node));
+      const scrollTextSelector = [
+        '.lws-section-title > span',
+        '.lws-health-line > span',
+        '.lws-health-line > strong',
+        '.lws-quest-item > strong',
+        '.lws-quest-item > p',
+        '.lws-small-list li > span',
+        '.lws-small-list li > strong',
+        '.lws-note',
+        '.lws-btn-copy > strong',
+        '.lws-btn-copy > small'
+      ].join(',');
+      const scrollTextNodes = Array.from(new Set(scroll.querySelectorAll(scrollTextSelector))).filter(node =>
+        Boolean(content(node)) && readRect(node)
+      );
+      const textNodes = [...headerNodes, ...scrollTextNodes];
+      const controls = Array.from(scroll.querySelectorAll('button[data-world-action]')).filter(node => readRect(node));
+      const iconNodes = Array.from(scroll.querySelectorAll('.lws-btn-icon')).filter(node => readRect(node));
+      const surfaces = [
+        ...Array.from(scroll.querySelectorAll('.lws-section,.lws-quest-item,.lws-vital,.lws-meter,.lws-tag,.lws-btn'))
+      ].map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const meters = Array.from(scroll.querySelectorAll('.lws-meter')).map(node => ({
+        track: node,
+        trackRect: readRect(node),
+        fill: node.querySelector('span'),
+        fillRect: readRect(node.querySelector('span'))
+      })).filter(item => item.trackRect);
+      const signature = JSON.stringify([
+        Math.round(panelRect.x), Math.round(panelRect.y), Math.round(panelRect.width), Math.round(panelRect.height),
+        Math.round(scrollRect.x), Math.round(scrollRect.y), Math.round(scrollRect.width), Math.round(scrollRect.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight), Number(scroll.scrollTop || 0),
+        ...textNodes.map(node => {
+          const rect = readRect(node);
+          return [content(node), Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [node.dataset.worldAction || '', content(node), Math.round(rect.x), Math.round(rect.y),
+            Math.round(rect.width), Math.round(rect.height), Boolean(node.disabled),
+            node === document.activeElement || node.matches(':focus-visible'), node.matches(':hover')];
+        })
+      ]);
+      const tagsCurrent =
+        controls.length === this.nativeLeftDrawerUiControls.length &&
+        controls.every((node, index) => node === this.nativeLeftDrawerUiControls[index] &&
+          node.dataset.legendPhaserLeftControl === 'true') &&
+        textNodes.length === this.nativeLeftDrawerUiTextNodes.length &&
+        textNodes.every((node, index) => node === this.nativeLeftDrawerUiTextNodes[index] &&
+          node.dataset.legendPhaserLeftText === 'true') &&
+        iconNodes.length === this.nativeLeftDrawerUiIconNodes.length &&
+        iconNodes.every((node, index) => node === this.nativeLeftDrawerUiIconNodes[index] &&
+          node.dataset.legendPhaserLeftIcon === 'true');
+      if (this.nativeLeftDrawerUiActive && tagsCurrent && signature === this.nativeLeftDrawerUiSignature) return;
+
+      this.clearNativeLeftDrawerUi(false, false);
+      // The DOM remains visible while Phaser's replacement is constructed.
+      document.body?.classList.remove('legend-phaser-left-drawer-ui-active');
+
+      const panelGraphics = this.add.graphics().setDepth(39);
+      panelGraphics.fillStyle(0x10180f, 0.96);
+      panelGraphics.fillRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height);
+      panelGraphics.fillStyle(0x1d281b, 0.22);
+      panelGraphics.fillRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height * 0.42);
+      panelGraphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.68);
+      panelGraphics.strokeRect(panelRect.x + 0.5, panelRect.y + 0.5,
+        Math.max(1, panelRect.width - 1), Math.max(1, panelRect.height - 1));
+      panelGraphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.42);
+      const headerRect = readRect(panel.querySelector('.lws-panel-header'));
+      if (headerRect) {
+        panelGraphics.lineBetween(headerRect.x, headerRect.y + headerRect.height - sy,
+          headerRect.x + headerRect.width, headerRect.y + headerRect.height - sy);
+      }
+      panelGraphics.fillStyle(0xe4c17d, 0.58);
+      panelGraphics.fillRect(panelRect.x, panelRect.y, Math.max(2 * sx, 2), Math.max(2 * sy, 2));
+      this.nativeLeftDrawerUiObjects.push(panelGraphics);
+
+      const addHeaderText = node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const css = window.getComputedStyle(node);
+        const text = this.add.text(rect.x, rect.y, content(node), {
+          fontFamily: css.fontFamily || 'Arial, sans-serif',
+          fontSize: Math.max(9, Math.round((parseFloat(css.fontSize) || 11) * sy)) + 'px',
+          fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+          color: node.matches('.lws-panel-eyebrow') ? '#c9a96e'
+            : node.matches('.lws-panel-header h2') ? '#efe7d4'
+            : node.matches('.lws-panel-header .lws-tag') ? '#d8cba9'
+            : '#b1b8aa',
+          letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
+          align: css.textAlign || 'left'
+        }).setDepth(41).setOrigin(0, 0);
+        text.setResolution?.(2);
+        text.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        this.nativeLeftDrawerUiObjects.push(text);
+        node.dataset.legendPhaserLeftText = 'true';
+        this.nativeLeftDrawerUiTaggedNodes.push(node);
+      };
+      headerNodes.forEach(addHeaderText);
+
+      const contentContainer = this.add.container(0, 0).setDepth(40);
+      const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+      maskGraphics.fillStyle(0xffffff, 1);
+      maskGraphics.fillRect(scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
+      const rendererType = this.sys.game.renderer?.type;
+      let mask = null;
+      let maskFilter = null;
+      if (rendererType === Phaser.WEBGL) {
+        try {
+          contentContainer.enableFilters?.();
+          contentContainer.setFiltersFocusContext?.(true);
+          maskFilter = contentContainer.filters?.internal?.addMask?.(
+            maskGraphics, false, this.cameras.main, 'world'
+          ) || null;
+        } catch (error) {
+          console.warn('[LEGEND Phaser] Left drawer WebGL mask could not be created; keeping the accessible DOM drawer visible.', error);
+        }
+        if (!maskFilter) {
+          panelGraphics.destroy();
+          this.nativeLeftDrawerUiObjects = [];
+          contentContainer.destroy(true);
+          maskGraphics.destroy(true);
+          return;
+        }
+        this.nativeLeftDrawerUiMaskFilter = maskFilter;
+      } else {
+        mask = maskGraphics.createGeometryMask();
+        contentContainer.setMask(mask);
+        this.nativeLeftDrawerUiMask = mask;
+      }
+      this.nativeLeftDrawerUiContainer = contentContainer;
+      this.nativeLeftDrawerUiMaskGraphics = maskGraphics;
+      this.nativeLeftDrawerUiMaskBounds = {
+        x: scrollRect.x, y: scrollRect.y, width: scrollRect.width, height: scrollRect.height
+      };
+      this.nativeLeftDrawerUiObjects.push(contentContainer, maskGraphics);
+
+      const addContent = object => {
+        if (!object) return object;
+        contentContainer.add(object);
+        return object;
+      };
+      const draw = addContent(this.add.graphics());
+      surfaces.forEach(({ node, rect }) => {
+        if (node.classList.contains('lws-section')) {
+          draw.fillStyle(0xbfa064, 0.035);
+          draw.fillRect(rect.x, rect.y, rect.width, rect.height);
+          draw.lineStyle(Math.max(1, sy), 0xbfa064, 0.21);
+          draw.lineBetween(rect.x, rect.y + rect.height - sy, rect.x + rect.width, rect.y + rect.height - sy);
+        } else if (node.classList.contains('lws-quest-item')) {
+          draw.fillStyle(0xbfa064, 0.10);
+          draw.fillRect(rect.x, rect.y, rect.width, rect.height);
+          draw.fillStyle(0xd4b174, 0.80);
+          draw.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
+        } else if (node.classList.contains('lws-vital') || node.classList.contains('lws-tag')) {
+          draw.fillStyle(0x1d281b, 0.94);
+          draw.fillRect(rect.x, rect.y, rect.width, rect.height);
+          draw.lineStyle(Math.max(1, sx), 0xbfa064, 0.35);
+          draw.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        } else if (node.classList.contains('lws-meter')) {
+          draw.fillStyle(0x030604, 0.95);
+          draw.fillRect(rect.x, rect.y, rect.width, rect.height);
+          draw.lineStyle(Math.max(1, sy), 0xbfa064, 0.30);
+          draw.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        } else if (node.classList.contains('lws-btn')) {
+          const focused = node === document.activeElement || node.matches(':focus-visible');
+          const hovered = node.matches(':hover');
+          const disabled = node.disabled || node.getAttribute('aria-disabled') === 'true';
+          draw.fillStyle(focused || hovered ? 0x39412a : 0x172116, disabled ? 0.34 : 0.95);
+          draw.fillRect(rect.x, rect.y, rect.width, rect.height);
+          draw.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
+            focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xbfa064, disabled ? 0.30 : 0.62);
+          draw.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        }
+      });
+      meters.forEach(({ trackRect, fillRect }) => {
+        if (!fillRect) return;
+        draw.fillStyle(0xb97c5c, 0.96);
+        draw.fillRect(fillRect.x, fillRect.y, fillRect.width, fillRect.height);
+      });
+
+      scrollTextNodes.forEach(node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const css = window.getComputedStyle(node);
+        const color = node.matches('.lws-section-title > span') ? '#d8cba9'
+          : node.matches('.lws-health-line > strong') ? '#f1d9c5'
+          : node.matches('.lws-quest-item > strong') ? '#ece4d0'
+          : node.matches('.lws-small-list li > strong') ? '#efe7d4'
+          : node.matches('.lws-btn-copy > strong') ? '#f0ead9'
+          : node.matches('.lws-note,.lws-quest-item > p,.lws-small-list li > span,.lws-health-line > span,.lws-btn-copy > small') ? '#b1b8aa'
+          : '#eee7d6';
+        const text = addContent(this.add.text(rect.x, rect.y, content(node), {
+          fontFamily: css.fontFamily || 'Arial, sans-serif',
+          fontSize: Math.max(8, Math.round((parseFloat(css.fontSize) || 10) * sy)) + 'px',
+          fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+          color,
+          letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
+          align: css.textAlign || 'left'
+        }).setOrigin(0, 0).setDepth(42));
+        text.setResolution?.(2);
+        text.setFixedSize?.(Math.max(10, rect.width), Math.max(9, rect.height));
+        node.dataset.legendPhaserLeftText = 'true';
+        this.nativeLeftDrawerUiTaggedNodes.push(node);
+      });
+
+      const iconTextures = Object.freeze({ journal: 'menuJournal' });
+      controls.forEach(button => {
+        const rect = readRect(button);
+        if (!rect) return;
+        const icon = button.querySelector('.lws-btn-icon');
+        const iconRect = readRect(icon);
+        const key = iconTextures[button.dataset.worldAction || ''];
+        if (icon && iconRect && key && this.textures.exists(key)) {
+          const image = addContent(this.add.image(
+            iconRect.x + iconRect.width / 2, iconRect.y + iconRect.height / 2, key
+          ).setDisplaySize(
+            Math.max(10, Math.min(iconRect.width - 2 * sx, 24 * sx)),
+            Math.max(10, Math.min(iconRect.height - 2 * sy, 24 * sy))
+          ).setAlpha(0.96).setDepth(43));
+          this.nativeLeftDrawerUiTaggedNodes.push(icon);
+          icon.dataset.legendPhaserLeftIcon = 'true';
+          void image;
+        }
+        button.dataset.legendPhaserLeftControl = 'true';
+        this.nativeLeftDrawerUiTaggedNodes.push(button);
+      });
+
+      this.nativeLeftDrawerUiTextNodes = textNodes;
+      this.nativeLeftDrawerUiControls = controls;
+      this.nativeLeftDrawerUiIconNodes = iconNodes;
+      this.nativeLeftDrawerUiSignature = signature;
+      this.nativeLeftDrawerUiActive = true;
+      document.body?.classList.add('legend-phaser-left-drawer-ui-active');
+    }
+
     syncNativeHudUi() {
       const shell = document.getElementById('legend-world-shell-root');
       const hud = shell?.querySelector('.lws-hud');
@@ -4027,6 +4415,7 @@
     setSurface: surface => realmScene?.setSurface?.(surface),
     refreshHud: () => realmScene?.syncNativeHudUi?.(),
     refreshNavigation: () => realmScene?.syncNativeBottomBarUi?.(),
+    refreshLeftDrawer: () => realmScene?.syncNativeLeftDrawerUi?.(),
     refresh: () => inferEnvironment(),
     selectAshmereLandmark: id => realmScene?.selectAshmereLandmark?.(id) || false,
     get saveKey() { return SAVE_KEY; }

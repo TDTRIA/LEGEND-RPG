@@ -223,6 +223,7 @@
     // bottom-bar innerHTML replacement above, so node identity/tags stay current.
     window.LegendPhaserWorldV1?.refreshHud?.();
     window.LegendPhaserWorldV1?.refreshNavigation?.();
+    window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
   }
 
   function refreshMobileToggleState(shell = document.getElementById(SHELL_ID)) {
@@ -249,6 +250,7 @@
     if (shell) shell.hidden = true;
     document.body.classList.remove('legend-world-shell-active', 'legend-shell-left-open', 'legend-shell-right-open');
     syncSceneAtmosphere(null, null);
+    window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
     lastContext = null;
   }
 
@@ -531,12 +533,14 @@
         document.body.classList.toggle('legend-shell-left-open');
         document.body.classList.remove('legend-shell-right-open');
         refreshMobileToggleState();
+        window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
         break;
       case 'toggle-right':
         event.preventDefault();
         document.body.classList.toggle('legend-shell-right-open');
         document.body.classList.remove('legend-shell-left-open');
         refreshMobileToggleState();
+        window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
         break;
       default:
         break;
@@ -555,6 +559,7 @@
         closeShellModal();
         document.body.classList.remove('legend-shell-left-open', 'legend-shell-right-open');
         refreshMobileToggleState(shell);
+        window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
         if (leftWasOpen) shell?.querySelector('[data-world-action="toggle-left"]')?.focus();
         else if (rightWasOpen) shell?.querySelector('[data-world-action="toggle-right"]')?.focus();
       }
