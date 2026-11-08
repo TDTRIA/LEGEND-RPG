@@ -118,7 +118,16 @@
     let tries = 0;
     const attempt = () => {
       tries += 1;
-      if (handlePendingReturn() || tries >= 60) clearInterval(timer);
+      const handled = handlePendingReturn();
+      if (handled) {
+        clearInterval(timer);
+        return;
+      }
+      if (tries >= 60) {
+        clearInterval(timer);
+        clearPendingReturn();
+        window.LegendGameBootstrap?.title?.();
+      }
     };
     const timer = setInterval(attempt, 100);
     setTimeout(attempt, 0);
