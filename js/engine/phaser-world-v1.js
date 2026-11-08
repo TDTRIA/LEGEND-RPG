@@ -272,6 +272,7 @@
       realmScene?.syncNativeCreationUi?.(surface);
       realmScene?.syncNativeOpeningUi?.(surface);
       realmScene?.syncNativeGameplayUi?.(surface);
+      realmScene?.syncNativeCombatUi?.(surface);
     }
   }
 
@@ -607,6 +608,16 @@
       this.nativeGameplayUiLayoutEvent = null;
       this.nativeGameplayUiTextureCounter = 0;
       this.nativeGameplayUiScrollHandler = null;
+      this.nativeCombatUiActive = false;
+      this.nativeCombatUiObjects = [];
+      this.nativeCombatUiTextNodes = [];
+      this.nativeCombatUiControls = [];
+      this.nativeCombatUiSignature = '';
+      this.nativeCombatUiBoundBattle = null;
+      this.nativeCombatUiInteractionHandler = null;
+      this.nativeCombatUiScrollHandler = null;
+      this.nativeCombatUiObserver = null;
+      this.nativeCombatUiLayoutEvent = null;
     }
 
     preload() {
@@ -633,6 +644,7 @@
         this.syncNativeCreationUi(this.surface);
         this.syncNativeOpeningUi(this.surface);
         this.syncNativeGameplayUi(this.surface);
+        this.syncNativeCombatUi(this.surface);
         this.syncNativeHudUi();
         this.syncNativeBottomBarUi();
         this.syncNativeLeftDrawerUi();
@@ -807,6 +819,13 @@
           nativeGameplayUiSceneSize: this.dimensions(),
           nativeGameplayUiObserverBound: Boolean(this.nativeGameplayUiObserverRoot),
           nativeGameplayUiProgressionOverlay: Boolean(document.getElementById('legendLevelUpOverlay')),
+          nativeCombatUi: this.nativeCombatUiActive,
+          nativeCombatUiObjectCount: this.nativeCombatUiObjects.filter(item => item?.active).length,
+          nativeCombatUiTextValues: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\\s+/g, ' ').trim()).filter(Boolean),
+          nativeCombatUiTextCount: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text' && String(item.text || '').trim()).length,
+          nativeCombatUiControlIds: this.nativeCombatUiControls.filter(node => node?.isConnected).map(node => node.id || node.getAttribute('aria-label') || ''),
+          nativeCombatUiSceneSize: this.dimensions(),
+          nativeCombatUiObserverBound: Boolean(this.nativeCombatUiObserver && this.nativeCombatUiBoundBattle?.isConnected),
           nativeAnnalsUiSceneSize: this.dimensions(),
           nativeAnnalsUiButtonBounds: (() => {
             const button = root()?.querySelector('.opening-lore-v220-continue');
@@ -1040,6 +1059,7 @@
         this.syncNativeCreationUi(next);
         this.syncNativeOpeningUi(next);
         this.syncNativeGameplayUi(next);
+        this.syncNativeCombatUi(next);
         this.syncNativeHudUi();
         this.syncNativeBottomBarUi();
         this.syncNativeLeftDrawerUi();
@@ -1057,6 +1077,7 @@
       this.syncNativeCreationUi(next);
       this.syncNativeOpeningUi(next);
       this.syncNativeGameplayUi(next);
+      this.syncNativeCombatUi(next);
       this.syncNativeHudUi();
       this.syncNativeBottomBarUi();
       this.syncNativeLeftDrawerUi();
@@ -5897,6 +5918,7 @@
     clearRoadMap: () => realmScene?.clearNativeRoadMapUi?.(),
     refreshExpedition: () => realmScene?.syncNativeExpeditionHudUi?.(),
     refreshExpeditionActions: () => realmScene?.syncNativeExpeditionActionsUi?.(),
+    refreshCombat: () => realmScene?.syncNativeCombatUi?.(realmScene?.surface),
     refresh: () => inferEnvironment(),
     selectAshmereLandmark: id => realmScene?.selectAshmereLandmark?.(id) || false,
     get saveKey() { return SAVE_KEY; }
