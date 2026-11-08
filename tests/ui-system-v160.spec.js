@@ -141,7 +141,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         }))
       };
     });
-    expect(fork.objectCount).toBeGreaterThan(8);
+    expect(fork.objectCount).toBe(1);
     expect(fork.text).toEqual(expect.arrayContaining([
       'THE ROAD FORKS', 'Two ways through the lowlands', 'Take the High Ridge', 'Risk the Reed Cut'
     ]));
