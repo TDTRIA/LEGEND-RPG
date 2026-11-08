@@ -1326,16 +1326,16 @@
           wordWrap: { width: labelWidth, useAdvancedWrap: true },
           padding: { left: 1, right: 2, top: 1, bottom: 1 }
         })).setOrigin(0, 0.5);
-        subtitle.setFixedSize?.(labelWidth, Math.max(12, rect.height * 0.30));
+        subtitle.setFixedSize?.(labelWidth, Math.max(15, rect.height * 0.34));
         const arrow = crispText(this.add.text(rect.width - 17 * sx, Math.round(rect.height / 2), '›', {
           fontFamily: 'Georgia, serif',
           fontSize: `${Math.max(22, Math.round(24 * sy))}px`,
           fontStyle: 'bold',
-          color: primary ? '#36230b' : '#f1d58f',
+          color: disabled ? '#8e8778' : '#fff0cf',
           padding: { left: 1, right: 2, top: 1, bottom: 1 }
         })).setOrigin(0.5);
         const focusFrame = this.add.graphics();
-        focusFrame.lineStyle(2.4, primary ? 0x5a3b14 : 0xffe6a5, 1);
+        focusFrame.lineStyle(2.4, 0xffe6a5, 1);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         group.add([buttonSurface, art, icon, title, subtitle, arrow, focusFrame]);
