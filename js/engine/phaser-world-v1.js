@@ -843,6 +843,7 @@
           nativeTownBoardUiCards: this.nativeTownBoardUiCardSnapshot || [],
           nativeTownBoardUiExpectedIds: this.nativeTownBoardUiExpectedIds || [],
           nativeTownBoardUiObserverBound: Boolean(this.nativeTownBoardUiObserver && this.nativeTownBoardUiBoundSection?.isConnected),
+          nativeTownBoardUiSceneSize: this.dimensions(),
           nativeCombatUiObjectCount: this.nativeCombatUiObjects.filter(item => item?.active).length,
           nativeCombatUiTextValues: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
           nativeCombatUiTextCount: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text' && String(item.text || '').trim()).length,
