@@ -43,7 +43,7 @@ This promotion is not a save migration: the production key and stored player sch
 When a source system is implemented in the original game, this prototype should call the existing module or use its authored data. It should not create a second reward table, combat formula, quest truth, save schema, or contradictory dialogue. When the original game does not implement a region or feature, the prototype should say so rather than inventing it.
 
 
-## Parity update — current production main (v0.30.4)
+## Parity update — current production main (v0.30.5)
 
 The prototype now also reuses the current production title and persistent world-shell presentation rather than the earlier simplified title/menu wrapper.
 
