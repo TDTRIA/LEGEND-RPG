@@ -8,6 +8,8 @@ The reference is about atmosphere, expedition storytelling, strong silhouettes, 
 
 Art should support the game's expedition loop. Images are scene-setting and readable on a phone; they should not overpower the gameplay interface. Darkness must create mood without hiding faces, scenery, labels, controls, or important state.
 
+The approved high-level reference is documented in [Darkest Dungeon Creative Direction](DARKEST_DUNGEON_DIRECTION.md). Use it for atmosphere and scene presentation while keeping LEGEND's own material palette, world, characters, and readable interface.
+
 ## Visual rules
 
 - **Watermark policy:** Never ship an image with a visible watermark, platform badge, or preview overlay. Do not integrate watermarked OpenArt previews; only use clean exports whose usage rights and export terms are suitable for the project. If a generator only provides watermarked previews on its current tier, treat those as reference-only and use another source for production art.
