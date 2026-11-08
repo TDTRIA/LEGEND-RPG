@@ -2871,7 +2871,7 @@
         host?.querySelector('.exp150-camp')
       ].filter(Boolean);
       const visible = Boolean(host && page && !host.hidden &&
-        window.getComputedStyle(host).display !== 'none' && regions.length >= 3);
+        window.getComputedStyle(host).display !== 'none' && regions.length >= 2);
       if (!visible) {
         if (this.nativeExpeditionActionsUiActive ||
             document.body?.classList.contains('legend-phaser-road-actions-ui-active')) {
@@ -2922,6 +2922,7 @@
         'h2','h3','h4','p','strong','small','em',
         '.exp100-kicker','.exp150-kicker',
         '.exp100-poi-copy > span','.exp100-poi-copy > strong','.exp100-poi-copy > p',
+        '.exp100-poi-copy > button','.exp100-poi-icon','.exp150-action > b','.exp150-abandon',
         '.exp100-camp-heading > span','.exp100-camp-heading > strong','.exp100-camp-heading > small',
         '.exp150-camp-atmosphere > span','.exp150-camp-atmosphere > p','.exp150-camp-atmosphere > small',
         '.exp150-section-heading > span','.exp150-current-mark',
@@ -2943,9 +2944,10 @@
         '.exp160-optional-detour','.exp160-optional-site','.exp160-field-contract',
         '.exp160-field-report-note','.exp160-site-complete'
       ].join(',');
-      const surfaces = Array.from(new Set(regions.flatMap(region =>
-        Array.from(region.querySelectorAll(surfaceSelector))
-      ))).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const surfaces = Array.from(new Set(regions.flatMap(region => [
+        ...(region.matches(surfaceSelector) ? [region] : []),
+        ...Array.from(region.querySelectorAll(surfaceSelector))
+      ]))).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
 
       const signature = JSON.stringify([
         Math.round(window.innerWidth), Math.round(window.innerHeight),
