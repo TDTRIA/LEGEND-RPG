@@ -527,7 +527,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(desktop.healthOrb.width).toBeGreaterThan(0);
     expect(desktop.healthOrb.height).toBeGreaterThan(0);
     expect(['webgl-filter','canvas-geometry']).toContain(desktop.healthOrbMaskMode);
-    expect(desktop.portrait.src).toMatch(/class-ranger\\.webp/);
+    expect(desktop.portrait.src).toMatch(/class-ranger\.webp/);
     expect(desktop.portrait.opacity).toBe('0');
     expect(desktop.portrait.borderRadius).toBe('50%');
     expect(desktop.textCount).toBeGreaterThan(22);
