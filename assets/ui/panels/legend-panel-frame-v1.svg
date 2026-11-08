@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600">
+<!-- CodeRabbit LEGEND polished UI concept: fixed-aspect ornate frame with an open centre. -->
+<defs>
+<linearGradient id="metal" x2="0" y2="1"><stop stop-color="#d8bb80"/><stop offset=".17" stop-color="#74512f"/><stop offset=".48" stop-color="#cda76a"/><stop offset=".7" stop-color="#54381e"/><stop offset="1" stop-color="#a67f4d"/></linearGradient>
+<g id="corner" fill="none" stroke="url(#metal)" stroke-linejoin="round"><path d="M7 112V32L32 7h80M18 90V38L38 18h52" stroke="#110e0a" stroke-width="8"/><path d="M7 112V32L32 7h80M18 90V38L38 18h52" stroke-width="3"/><path d="M10 55 55 10M20 68 24 42 42 24 68 20 54 31 39 39 31 54Z" fill="#382716" stroke-width="2"/><path d="m21 21 10-9 7 10-11 11-11-6z" fill="#85633b"/><circle cx="12" cy="80" r="3" fill="#d5b578"/><circle cx="80" cy="12" r="3" fill="#d5b578"/></g>
+</defs>
+<path fill="#130f0aef" fill-rule="evenodd" d="M0 0h960v600H0z M22 22v556h916V22z"/>
+<rect x="4" y="4" width="952" height="592" fill="none" stroke="#17100a" stroke-width="8"/><rect x="8" y="8" width="944" height="584" fill="none" stroke="url(#metal)" stroke-width="4"/><rect x="17" y="17" width="926" height="566" fill="none" stroke="#795b34" stroke-width="2"/><rect x="22" y="22" width="916" height="556" fill="none" stroke="#d7b879" stroke-opacity=".4" stroke-width="1"/>
+<use href="#corner"/><use href="#corner" transform="translate(960 0) scale(-1 1)"/><use href="#corner" transform="translate(0 600) scale(1 -1)"/><use href="#corner" transform="translate(960 600) scale(-1 -1)"/>
+</svg>
