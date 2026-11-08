@@ -4807,7 +4807,9 @@
         text: directText(node),
         rect: readRect(node),
         style: window.getComputedStyle(node)
-      })).filter(item => item.text && item.rect);
+      })).filter(item => item.text && item.rect &&
+        !item.node.matches('.rpg-dialogue-star,.rpg-tell-mark') &&
+        !item.node.closest('.rpg-hero-stage-art,.rpg-foe-sprite,.rpg-hero-portrait'));
       const controls = Array.from(battle.querySelectorAll('button')).map(node => ({
         node, rect: readRect(node)
       })).filter(item => item.rect);
