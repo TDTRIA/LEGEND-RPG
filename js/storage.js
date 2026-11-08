@@ -179,6 +179,9 @@ window.LegendStorage = (() => {
       if (!isCompatiblePlayerShape(parsed)) {
         throw new TypeError('Saved traveler data has an unsupported shape.');
       }
+      if (parsed.version != null && parsed.version !== '' && !parseVersion(parsed.version)) {
+        throw new TypeError('Saved traveler version is not recognized.');
+      }
       if (isFutureSaveVersion(parsed.version)) {
         throw new TypeError(
           'Saved traveler version ' + parsed.version + ' is newer than this game (' + D.VERSION + ').'
