@@ -686,7 +686,7 @@
           nativeRightDrawerUi: this.nativeRightDrawerUiActive,
           nativeRightDrawerUiObjectCount: this.nativeRightDrawerUiObjects.filter(item => item?.active).length,
           nativeRightDrawerUiTextCount: this.nativeRightDrawerUiTextNodes.filter(node => node?.isConnected).length,
-          nativeRightDrawerUiTextValues: this.nativeRightDrawerUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\\s+/g, ' ').trim() || ''),
+          nativeRightDrawerUiTextValues: this.nativeRightDrawerUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
           nativeRightDrawerUiControlIds: this.nativeRightDrawerUiControls.filter(node => node?.isConnected).map(node =>
             node.dataset.worldAction || node.dataset.worldRoute || node.dataset.worldPlace || ''),
           nativeRightDrawerUiIconCount: this.nativeRightDrawerUiObjects.filter(item => item?.active && item.type === 'Image').length,
@@ -2855,7 +2855,7 @@
         this.clearNativeRightDrawerUi();
         return;
       }
-      const content = node => node.textContent?.replace(/\\s+/g, ' ').trim() || '';
+      const content = node => node.textContent?.replace(/\s+/g, ' ').trim() || '';
       const headerNodes = Array.from(panel.querySelectorAll(
         '.lws-panel-eyebrow,.lws-panel-header h2,.lws-panel-header p'
       )).filter(node => Boolean(content(node)) && readRect(node));
@@ -2913,7 +2913,7 @@
           node.dataset.legendPhaserRightText === 'true') &&
         iconNodes.length === this.nativeRightDrawerUiIconNodes.length &&
         iconNodes.every((node, index) => node === this.nativeRightDrawerUiIconNodes[index] &&
-          node.dataset.legendPhaserRightIcon === 'true');
+          Boolean(node.dataset.legendPhaserRightIcon));
       if (this.nativeRightDrawerUiActive && tagsCurrent && signature === this.nativeRightDrawerUiSignature) return;
 
       this.clearNativeRightDrawerUi(false, false);
@@ -3047,16 +3047,19 @@
       iconNodes.forEach(node => {
         const rect = readRect(node);
         const key = textureByIcon[iconName(node)] || '';
-        if (!rect || !key || !this.textures.exists(key)) return;
-        const image = addContent(this.add.image(
-          rect.x + rect.width / 2, rect.y + rect.height / 2, key
-        ).setDisplaySize(
-          Math.max(10, Math.min(rect.width - 2 * sx, 28 * sx)),
-          Math.max(10, Math.min(rect.height - 2 * sy, 28 * sy))
-        ).setAlpha(0.96).setDepth(43));
-        node.dataset.legendPhaserRightIcon = 'true';
+        if (rect && key && this.textures.exists(key)) {
+          const image = addContent(this.add.image(
+            rect.x + rect.width / 2, rect.y + rect.height / 2, key
+          ).setDisplaySize(
+            Math.max(10, Math.min(rect.width - 2 * sx, 28 * sx)),
+            Math.max(10, Math.min(rect.height - 2 * sy, 28 * sy))
+          ).setAlpha(0.96).setDepth(43));
+          node.dataset.legendPhaserRightIcon = 'true';
+          void image;
+        } else {
+          node.dataset.legendPhaserRightIcon = 'dom';
+        }
         this.nativeRightDrawerUiTaggedNodes.push(node);
-        void image;
       });
       controls.forEach(node => {
         node.dataset.legendPhaserRightControl = 'true';
@@ -3087,7 +3090,7 @@
 
       this.nativeRightDrawerUiTextNodes = textNodes;
       this.nativeRightDrawerUiControls = controls;
-      this.nativeRightDrawerUiIconNodes = iconNodes.filter(node => node.dataset.legendPhaserRightIcon === 'true');
+      this.nativeRightDrawerUiIconNodes = iconNodes;
       // Any icon that cannot be converted is left in the DOM and is not hidden.
       this.nativeRightDrawerUiSignature = signature;
       this.nativeRightDrawerUiActive = true;
