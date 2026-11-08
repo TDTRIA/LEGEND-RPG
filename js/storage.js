@@ -79,6 +79,8 @@ window.LegendStorage = (() => {
     'bank', 'traits', 'questLog', 'memories', 'discoveredRoutes',
     'discoveredTowns', 'unlockedRegions', 'discoveredRegions'
   ];
+  let lastPlayerLoadStatus = 'not-read';
+  let sessionPlayer = null;
 
   function isRecord(value) {
     return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -149,22 +151,34 @@ window.LegendStorage = (() => {
         throw new TypeError('Traveler serialization did not produce JSON text.');
       }
       window.localStorage.setItem(D.SAVE_KEY, serialized);
+      sessionPlayer = null;
+      lastPlayerLoadStatus = 'loaded';
       return true;
     } catch (error) {
+      // Preserve the latest in-memory traveler for the current tab. A later
+      // successful save replaces this fallback with durable browser storage.
+      sessionPlayer = player;
+      lastPlayerLoadStatus = 'session-only';
       reportStorageFailure(
         'save the traveler',
         error,
-        'Your traveler could not be saved. Browser storage may be disabled or full.'
+        'Your traveler could not be saved permanently. Your current journey remains available in this tab; check browser storage before leaving.'
       );
       return false;
     }
   }
 
   function loadPlayer() {
+    if (sessionPlayer) {
+      lastPlayerLoadStatus = 'session-only';
+      return normalize(sessionPlayer);
+    }
+
     let raw;
     try {
       raw = window.localStorage.getItem(D.SAVE_KEY);
     } catch (error) {
+      lastPlayerLoadStatus = 'unavailable';
       reportStorageFailure(
         'read the traveler save',
         error,
@@ -172,41 +186,57 @@ window.LegendStorage = (() => {
       );
       return null;
     }
-    if (raw == null) return null;
+    if (raw == null) {
+      lastPlayerLoadStatus = 'empty';
+      return null;
+    }
 
     try {
       const parsed = JSON.parse(raw);
       if (!isCompatiblePlayerShape(parsed)) {
+        lastPlayerLoadStatus = 'malformed';
         throw new TypeError('Saved traveler data has an unsupported shape.');
       }
       if (parsed.version != null && parsed.version !== '' && !parseVersion(parsed.version)) {
+        lastPlayerLoadStatus = 'incompatible';
         throw new TypeError('Saved traveler version is not recognized.');
       }
       if (isFutureSaveVersion(parsed.version)) {
+        lastPlayerLoadStatus = 'incompatible';
         throw new TypeError(
           'Saved traveler version ' + parsed.version + ' is newer than this game (' + D.VERSION + ').'
         );
       }
       const player = normalize(parsed);
       if (!isRecord(player)) {
+        lastPlayerLoadStatus = 'malformed';
         throw new TypeError('Traveler normalization did not produce a record.');
       }
+      lastPlayerLoadStatus = 'loaded';
       return player;
     } catch (error) {
+      if (lastPlayerLoadStatus !== 'incompatible') lastPlayerLoadStatus = 'malformed';
       reportStorageFailure(
         'load the traveler save',
         error,
-        'The traveler save is malformed or incompatible. The original data was left untouched.'
+        'The traveler save is malformed or incompatible. The original data was left untouched; export a recovery copy before replacing it.'
       );
       return null;
     }
   }
 
+  function getPlayerSaveStatus() {
+    return lastPlayerLoadStatus;
+  }
+
   function deleteSaves() {
     try {
       window.localStorage.removeItem(D.SAVE_KEY);
+      sessionPlayer = null;
+      lastPlayerLoadStatus = 'empty';
       return true;
     } catch (error) {
+      lastPlayerLoadStatus = sessionPlayer ? 'session-only' : 'delete-failed';
       reportStorageFailure(
         'delete the traveler save',
         error,
@@ -260,6 +290,7 @@ window.LegendStorage = (() => {
     normalize,
     savePlayer,
     loadPlayer,
+    getPlayerSaveStatus,
     deleteSaves,
     loadSettings,
     saveSettings,
