@@ -294,6 +294,7 @@
     const places=journal.visitedPlaces.length?journal.visitedPlaces.map(name=>'<span class="exp150-place-chip">'+esc(name)+'</span>').join(''):'<p class="exp150-journal-muted">Places appear as your journey reaches them.</p>';
     return '<div class="exp150-journal-sheet"><div class="exp150-map-intro"><span class="exp150-kicker">TRAVELER’S FIELD JOURNAL</span><h2>What the road remembers</h2><p>Your discoveries persist between expeditions. Quest evidence and inventory remain in their own existing records.</p></div><section class="exp150-journal-section"><h3>Places visited <span>'+journal.visitedPlaces.length+'</span></h3><div class="exp150-place-list">'+places+'</div></section><section class="exp150-journal-section"><h3>Clues & discoveries <span>'+discoveries.length+'</span></h3>'+discoveryMarkup+'</section><section class="exp150-journal-section"><h3>Route decisions <span>'+routes.length+'</span></h3>'+routeMarkup+'</section><section class="exp150-journal-section"><h3>Camp reports <span>'+campReports.length+'</span></h3>'+campMarkup+'</section></div>';
   }
+  /** Opens the road map or field journal, binds its existing controls, and manages focus return and Phaser refresh. */
   function openPanel(kind){
     const pl=p();if(!pl)return;
     const s=ensure(pl),stage=clamp(Number(s.stage||0),0,5),overlay=document.getElementById('exp150Modal');
@@ -347,6 +348,7 @@
       }
     };
   }
+  /** Renders the current production expedition state and refreshes its dedicated Phaser HUD and decision layers. */
   function renderExpedition(note=''){
     const pl=p();if(!pl)return;
     const s=ensure(pl),stage=clamp(Number(s.stage||0),0,5),graph=graphForState(pl,s,stage);
