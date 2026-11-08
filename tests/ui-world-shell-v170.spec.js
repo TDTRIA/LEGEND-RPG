@@ -363,6 +363,8 @@ test.describe('LEGEND persistent world shell v170', () => {
         objectCount: snapshot.nativeBottomBarUiObjectCount,
         iconCount: snapshot.nativeBottomBarUiIconCount,
         values: snapshot.nativeBottomBarUiTextValues || [],
+        paintedValues: snapshot.nativeBottomBarUiPaintedTextValues || [],
+        paintedCount: snapshot.nativeBottomBarUiPaintedTextCount || 0,
         actions: snapshot.nativeBottomBarUiControlIds || [],
         labelColors: labels.map(node => getComputedStyle(node).color),
         iconOpacities: Array.from(bar?.querySelectorAll('.lws-btn-icon') || []).map(node => getComputedStyle(node).opacity),
@@ -376,6 +378,8 @@ test.describe('LEGEND persistent world shell v170', () => {
     await page.locator('.lws-bottom-bar [data-world-action="journal"]').hover();
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeBottomBarUiIconCount || 0)).toBeGreaterThanOrEqual(5);
     expect(desktop.values).toEqual(expect.arrayContaining(['World', 'Inventory', 'Journal', 'Map', 'Combat', 'Settings']));
+    expect(desktop.paintedCount).toBe(6);
+    expect(desktop.paintedValues).toEqual(expect.arrayContaining(['World', 'Inventory', 'Journal', 'Map', 'Combat', 'Settings']));
     expect(desktop.actions).toEqual(expect.arrayContaining(['world', 'inventory', 'journal', 'map', 'combat', 'settings']));
     expect(desktop.buttonCount).toBe(6);
     expect(desktop.labelColors.every(color => color === 'rgba(0, 0, 0, 0)')).toBe(true);
@@ -404,8 +408,11 @@ test.describe('LEGEND persistent world shell v170', () => {
     const mobile = await page.evaluate(() => {
       const bar = document.querySelector('.lws-bottom-bar');
       const labels = Array.from(bar?.querySelectorAll('.lws-btn-copy strong') || []);
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
       return {
         barWidth: bar?.clientWidth || 0,
+        paintedCount: snapshot.nativeBottomBarUiPaintedTextCount || 0,
+        paintedValues: snapshot.nativeBottomBarUiPaintedTextValues || [],
         scrollWidth: bar?.scrollWidth || 0,
         labelCount: labels.filter(node => getComputedStyle(node).display !== 'none').length,
         actions: Array.from(bar?.querySelectorAll('button[data-world-action]') || []).map(node => node.dataset.worldAction),
@@ -419,6 +426,8 @@ test.describe('LEGEND persistent world shell v170', () => {
     expect(mobile.scrollWidth).toBeGreaterThanOrEqual(mobile.barWidth);
     expect(mobile.labelCount).toBeGreaterThanOrEqual(4);
     expect(mobile.actions).toHaveLength(6);
+    expect(mobile.paintedCount).toBe(6);
+    expect(mobile.paintedValues).toEqual(expect.arrayContaining(['World', 'Inventory', 'Journal', 'Map', 'Combat', 'Settings']));
     await page.evaluate(() => {
       const bar = document.querySelector('.lws-bottom-bar');
       if (bar) {
