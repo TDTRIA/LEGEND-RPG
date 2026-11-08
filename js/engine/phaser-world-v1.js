@@ -501,6 +501,18 @@
       this.nativeHudUiLayoutEvent = null;
       this.nativeHudUiBoundElement = null;
       this.nativeHudUiInteractionHandler = null;
+      this.nativeBottomBarUiActive = false;
+      this.nativeBottomBarUiObjects = [];
+      this.nativeBottomBarUiTaggedNodes = [];
+      this.nativeBottomBarUiTextNodes = [];
+      this.nativeBottomBarUiControls = [];
+      this.nativeBottomBarUiSignature = '';
+      this.nativeBottomBarUiBoundElement = null;
+      this.nativeBottomBarUiInteractionHandler = null;
+      this.nativeBottomBarUiLayoutEvent = null;
+      this.nativeBottomBarUiMask = null;
+      this.nativeBottomBarUiMaskGraphics = null;
+      this.nativeBottomBarUiContainer = null;
       this.nativeGameplayUiActive = false;
       this.nativeGameplayUiObjects = [];
       this.nativeGameplayUiTextures = [];
@@ -539,6 +551,7 @@
         this.syncNativeOpeningUi(this.surface);
         this.syncNativeGameplayUi(this.surface);
         this.syncNativeHudUi();
+        this.syncNativeBottomBarUi();
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -620,6 +633,14 @@
           nativeHudUiControlIds: this.nativeHudUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || node.getAttribute('aria-label') || node.textContent?.trim() || ''),
           nativeHudUiFocusedControlIds: this.nativeHudUiControls.filter(node => node?.isConnected && (node === document.activeElement || node.matches(':focus-visible'))).map(node => node.dataset.worldAction || node.getAttribute('aria-label') || node.textContent?.trim() || ''),
           nativeHudUiSceneSize: this.dimensions(),
+          nativeBottomBarUi: this.nativeBottomBarUiActive,
+          nativeBottomBarUiObjectCount: this.nativeBottomBarUiObjects.filter(item => item?.active).length,
+          nativeBottomBarUiTextCount: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).length,
+          nativeBottomBarUiTextValues: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeBottomBarUiControlIds: this.nativeBottomBarUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || ''),
+          nativeBottomBarUiIconCount: this.nativeBottomBarUiObjects.filter(item => item?.active && item.type === 'Image').length,
+          nativeBottomBarUiScrollLeft: Number(this.nativeBottomBarUiBoundElement?.scrollLeft || 0),
+          nativeBottomBarUiSceneSize: this.dimensions(),
           nativeGameplayUi: this.nativeGameplayUiActive,
           nativeGameplayUiSurface: this.surface,
           nativeGameplayUiObjectCount: this.nativeGameplayUiObjects.filter(item => item?.active).length,
@@ -864,6 +885,7 @@
         this.syncNativeOpeningUi(next);
         this.syncNativeGameplayUi(next);
         this.syncNativeHudUi();
+        this.syncNativeBottomBarUi();
         return;
       }
       const previous = this.surface;
@@ -875,6 +897,7 @@
       this.syncNativeOpeningUi(next);
       this.syncNativeGameplayUi(next);
       this.syncNativeHudUi();
+      this.syncNativeBottomBarUi();
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -2311,6 +2334,217 @@
       if (removeClass) document.body?.classList.remove('legend-phaser-hud-ui-active');
     }
 
+
+    clearNativeBottomBarUi(removeClass = true) {
+      this.nativeBottomBarUiLayoutEvent?.remove?.(false);
+      this.nativeBottomBarUiLayoutEvent = null;
+      if (removeClass && this.nativeBottomBarUiBoundElement && this.nativeBottomBarUiInteractionHandler) {
+        ['focusin', 'focusout', 'pointerover', 'pointerout', 'scroll'].forEach(type =>
+          this.nativeBottomBarUiBoundElement.removeEventListener(type, this.nativeBottomBarUiInteractionHandler)
+        );
+        this.nativeBottomBarUiBoundElement = null;
+        this.nativeBottomBarUiInteractionHandler = null;
+      }
+      this.nativeBottomBarUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeBottomBarUiObjects = [];
+      this.nativeBottomBarUiContainer?.clearMask?.(true);
+      this.nativeBottomBarUiContainer = null;
+      this.nativeBottomBarUiMask = null;
+      this.nativeBottomBarUiMaskGraphics = null;
+      this.nativeBottomBarUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserBottomText;
+        delete node.dataset.legendPhaserBottomIcon;
+        delete node.dataset.legendPhaserBottomControl;
+      });
+      this.nativeBottomBarUiTaggedNodes = [];
+      this.nativeBottomBarUiTextNodes = [];
+      this.nativeBottomBarUiControls = [];
+      this.nativeBottomBarUiSignature = '';
+      this.nativeBottomBarUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-bottom-bar-ui-active');
+    }
+
+    syncNativeBottomBarUi() {
+      const shell = document.getElementById('legend-world-shell-root');
+      const bar = shell?.querySelector('.lws-bottom-bar');
+      if (!bar || shell.hidden) {
+        if (this.nativeBottomBarUiActive || document.body?.classList.contains('legend-phaser-bottom-bar-ui-active')) {
+          this.clearNativeBottomBarUi();
+        }
+        return;
+      }
+
+      if (this.nativeBottomBarUiBoundElement !== bar) {
+        this.clearNativeBottomBarUi();
+        this.nativeBottomBarUiBoundElement = bar;
+        this.nativeBottomBarUiInteractionHandler = () => {
+          this.nativeBottomBarUiLayoutEvent?.remove?.(false);
+          this.nativeBottomBarUiLayoutEvent = this.time.delayedCall(24, () => {
+            this.nativeBottomBarUiLayoutEvent = null;
+            this.syncNativeBottomBarUi();
+          });
+        };
+        ['focusin', 'focusout', 'pointerover', 'pointerout', 'scroll'].forEach(type =>
+          bar.addEventListener(type, this.nativeBottomBarUiInteractionHandler, { passive: type === 'scroll' })
+        );
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          x: rect.left * sx, y: rect.top * sy,
+          width: rect.width * sx, height: rect.height * sy
+        };
+      };
+      const barRect = readRect(bar);
+      if (!barRect) {
+        this.clearNativeBottomBarUi();
+        return;
+      }
+
+      const controls = Array.from(bar.querySelectorAll('button[data-world-action]')).filter(node => readRect(node));
+      const content = node => node.textContent?.replace(/\s+/g, ' ').trim() || '';
+      const textNodes = controls.map(node => node.querySelector('.lws-btn-copy strong')).filter(node =>
+        Boolean(node && content(node) && readRect(node))
+      );
+      const icons = controls.map(node => ({
+        button: node,
+        node: node.querySelector('.lws-btn-icon'),
+        rect: readRect(node.querySelector('.lws-btn-icon'))
+      })).filter(item => item.node && item.rect);
+      const signature = JSON.stringify([
+        Math.round(barRect.x), Math.round(barRect.y), Math.round(barRect.width), Math.round(barRect.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight), Number(bar.scrollLeft || 0),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [
+            node.dataset.worldAction || '', content(node), Math.round(rect.x), Math.round(rect.y),
+            Math.round(rect.width), Math.round(rect.height), Boolean(node.disabled),
+            node === document.activeElement || node.matches(':focus-visible'), node.matches(':hover')
+          ];
+        })
+      ]);
+      if (this.nativeBottomBarUiActive && signature === this.nativeBottomBarUiSignature) return;
+
+      this.clearNativeBottomBarUi(false);
+      // Keep the semantic DOM visible until every native object is constructed.
+      document.body?.classList.remove('legend-phaser-bottom-bar-ui-active');
+      const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+      maskGraphics.fillStyle(0xffffff, 1);
+      maskGraphics.fillRect(barRect.x, barRect.y, barRect.width, barRect.height);
+      const mask = maskGraphics.createGeometryMask();
+      const container = this.add.container(0, 0).setDepth(46);
+      container.setMask(mask);
+      this.nativeBottomBarUiMask = mask;
+      this.nativeBottomBarUiMaskGraphics = maskGraphics;
+      this.nativeBottomBarUiContainer = container;
+      this.nativeBottomBarUiObjects.push(container, maskGraphics);
+      const add = object => {
+        if (object) {
+          container.add(object);
+          this.nativeBottomBarUiObjects.push(object);
+        }
+        return object;
+      };
+      const graphics = add(this.add.graphics());
+      graphics.fillStyle(0x07100a, 0.96);
+      graphics.fillRect(barRect.x, barRect.y, barRect.width, barRect.height);
+      graphics.fillStyle(0x1d281c, 0.24);
+      graphics.fillRect(barRect.x, barRect.y, barRect.width, Math.max(1, barRect.height * 0.44));
+      graphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.68);
+      graphics.strokeRect(barRect.x + 0.5, barRect.y + 0.5, Math.max(1, barRect.width - 1), Math.max(1, barRect.height - 1));
+      graphics.lineStyle(Math.max(1, sy), 0xe7c982, 0.24);
+      graphics.lineBetween(barRect.x + 8 * sx, barRect.y + 2 * sy, barRect.x + barRect.width - 8 * sx, barRect.y + 2 * sy);
+
+      const textureByAction = Object.freeze({
+        world: 'menuInn',
+        inventory: 'menuTraveler',
+        journal: 'menuJournal',
+        map: 'menuCompass',
+        combat: 'menuMilestone',
+        settings: 'menuSettings'
+      });
+
+      controls.forEach(button => {
+        const rect = readRect(button);
+        if (!rect) return;
+        const action = String(button.dataset.worldAction || '');
+        const primary = button.classList.contains('primary');
+        const disabled = Boolean(button.disabled || button.getAttribute('aria-disabled') === 'true');
+        const focused = button === document.activeElement || button.matches(':focus-visible');
+        const hovered = button.matches(':hover');
+        const fill = primary ? 0x49391e : hovered || focused ? 0x38432b : 0x142016;
+        const line = focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xa98d55;
+        graphics.fillStyle(fill, disabled ? 0.30 : primary ? 0.98 : 0.92);
+        graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+        graphics.lineStyle(focused ? Math.max(2, 2 * Math.min(sx, sy)) : Math.max(1, sx), line, disabled ? 0.26 : focused ? 0.98 : 0.68);
+        graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        graphics.fillStyle(primary ? 0xffd98b : 0xbfa064, primary ? 0.92 : 0.58);
+        graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
+
+        const iconNode = button.querySelector('.lws-btn-icon');
+        const iconRect = readRect(iconNode);
+        const textureKey = textureByAction[action];
+        if (iconRect) {
+          graphics.fillStyle(0x0a120b, 0.9);
+          graphics.fillRect(iconRect.x, iconRect.y, iconRect.width, iconRect.height);
+          graphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.38);
+          graphics.strokeRect(iconRect.x + 0.5, iconRect.y + 0.5, Math.max(1, iconRect.width - 1), Math.max(1, iconRect.height - 1));
+          if (textureKey && this.textures.exists(textureKey)) {
+            const image = add(this.add.image(
+              iconRect.x + iconRect.width / 2,
+              iconRect.y + iconRect.height / 2,
+              textureKey
+            ).setDisplaySize(
+              Math.max(10, Math.min(iconRect.width - 3 * sx, 28 * sx)),
+              Math.max(10, Math.min(iconRect.height - 3 * sy, 28 * sy))
+            ));
+            image.setAlpha(disabled ? 0.36 : 0.96);
+            iconNode.dataset.legendPhaserBottomIcon = 'true';
+            this.nativeBottomBarUiTaggedNodes.push(iconNode);
+          }
+        }
+
+        const label = button.querySelector('.lws-btn-copy strong');
+        const labelRect = readRect(label);
+        if (labelRect) {
+          const style = window.getComputedStyle(label);
+          const fontSize = Math.max(9, Math.round((parseFloat(style.fontSize) || 11) * sy));
+          const text = add(this.add.text(labelRect.x, labelRect.y, content(label), {
+            fontFamily: style.fontFamily || 'Arial, sans-serif',
+            fontSize: fontSize + 'px',
+            fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+            color: disabled ? '#9b9a8a' : '#f0ead9',
+            align: 'center'
+          }).setOrigin(0, 0));
+          text.setResolution?.(2);
+          text.setFixedSize?.(Math.max(10, labelRect.width), Math.max(10, labelRect.height));
+          text.setAlign?.('center');
+          label.dataset.legendPhaserBottomText = 'true';
+          this.nativeBottomBarUiTaggedNodes.push(label);
+        }
+        button.dataset.legendPhaserBottomControl = 'true';
+        this.nativeBottomBarUiTaggedNodes.push(button);
+      });
+
+      this.nativeBottomBarUiTextNodes = textNodes;
+      this.nativeBottomBarUiControls = controls;
+      this.nativeBottomBarUiSignature = signature;
+      this.nativeBottomBarUiActive = true;
+      document.body?.classList.add('legend-phaser-bottom-bar-ui-active');
+    }
+
     syncNativeHudUi() {
       const shell = document.getElementById('legend-world-shell-root');
       const hud = shell?.querySelector('.lws-hud');
@@ -3712,6 +3946,7 @@
     pulse: kind => realmScene?.pulse?.(kind),
     setSurface: surface => realmScene?.setSurface?.(surface),
     refreshHud: () => realmScene?.syncNativeHudUi?.(),
+    refreshNavigation: () => realmScene?.syncNativeBottomBarUi?.(),
     refresh: () => inferEnvironment(),
     selectAshmereLandmark: id => realmScene?.selectAshmereLandmark?.(id) || false,
     get saveKey() { return SAVE_KEY; }

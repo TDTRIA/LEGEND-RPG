@@ -12,9 +12,9 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 
 **Status: In progress**
 
-- **Native in RealmScene:** persistent world environments and atmosphere; Ashmere landmarks; new-player title/menu; mandatory annals; traveler creation; Oric opening-road prologue/response/ambush presentation.
+- **Native in RealmScene:** persistent world environments and atmosphere; Ashmere landmarks; new-player title/menu; mandatory annals; traveler creation; Oric opening-road prologue/response/ambush presentation; persistent HUD and bottom action navigation (Phaser-painted panels, text and raster icons with DOM-backed accessible controls).
 - **DOM safety fallback:** returning-player title with Continue. Its labels and interaction remain in the original styled DOM until Phaser text parity is verified.
-- **Still DOM-rendered over Phaser world:** persistent HUD, journal/map drawers, bottom action bar, town terminal, services, jobs, market, blacksmith/crafting, Old Road/expedition, field map/journal, combat commands/status, combat results, level-up/stat allocation, Bell Cellar, Greyfen/Storehouse, settings, dispatches, credits and shell modals.
+- **Still DOM-rendered over Phaser world:** journal/quest and map drawers; contextual action panel; town terminal; services, jobs, market, blacksmith/crafting; Old Road/expedition; field map/journal; combat commands/status; combat results; level-up/stat allocation; Bell Cellar; Greyfen/Storehouse; settings, dispatches, credits and shell modals.
 - **Safety note:** the previous shared DOM-to-Phaser gameplay mirror is disabled. It made DOM text transparent and recreated CSS panels incompletely, which caused missing copy and weak/blurred panel presentation. Do not turn it back on globally.
 
 ## Migration order
@@ -26,9 +26,10 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
    - [ ] Complete and verify Continue text, focus, hover, selected/disabled states and responsive geometry in Phaser before removing that fallback.
 
 2. **Persistent shell**
-   - [ ] HUD and traveler vitals.
+   - [x] HUD and traveler vitals.
    - [ ] Journal/quest and map drawers.
-   - [ ] Contextual action panel and bottom navigation.
+   - [ ] Contextual action panel.
+   - [x] Bottom navigation.
    - [ ] Shell toast, inventory and character-sheet modals.
    - [ ] Mobile side-panel states and scrolling.
 

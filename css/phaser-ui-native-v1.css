@@ -436,8 +436,8 @@ body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-
 body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-brand-mark,
 body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-vital,
 body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-btn,
-body.legend-phaser-world-active.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-location,
-body.legend-phaser-world-active.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-objective {
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-location,
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-objective {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -459,4 +459,40 @@ body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-
   outline: 2px solid #ffe6a0 !important;
   outline-offset: 3px !important;
   box-shadow: 0 0 0 4px rgba(231, 201, 130, .18) !important;
+}
+
+
+/* The persistent bottom action bar is painted in RealmScene. Its semantic DOM
+   buttons stay on top as real touch/keyboard targets and retain accessible names. */
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar .lws-btn {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar [data-legend-phaser-bottom-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar [data-legend-phaser-bottom-icon="true"] {
+  visibility: hidden !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar [data-legend-phaser-bottom-control="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar [data-legend-phaser-bottom-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
 }
