@@ -505,13 +505,16 @@
       this.nativeBottomBarUiObjects = [];
       this.nativeBottomBarUiTaggedNodes = [];
       this.nativeBottomBarUiTextNodes = [];
+      this.nativeBottomBarUiIconNodes = [];
       this.nativeBottomBarUiControls = [];
       this.nativeBottomBarUiSignature = '';
       this.nativeBottomBarUiBoundElement = null;
       this.nativeBottomBarUiInteractionHandler = null;
       this.nativeBottomBarUiLayoutEvent = null;
       this.nativeBottomBarUiMask = null;
+      this.nativeBottomBarUiMaskFilter = null;
       this.nativeBottomBarUiMaskGraphics = null;
+      this.nativeBottomBarUiMaskBounds = null;
       this.nativeBottomBarUiContainer = null;
       this.nativeGameplayUiActive = false;
       this.nativeGameplayUiObjects = [];
@@ -639,6 +642,15 @@
           nativeBottomBarUiTextValues: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
           nativeBottomBarUiControlIds: this.nativeBottomBarUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || ''),
           nativeBottomBarUiIconCount: this.nativeBottomBarUiObjects.filter(item => item?.active && item.type === 'Image').length,
+          nativeBottomBarUiMaskMode: this.nativeBottomBarUiMaskFilter ? 'webgl-filter' : this.nativeBottomBarUiMask ? 'canvas-geometry' : 'none',
+          nativeBottomBarUiMaskBounds: this.nativeBottomBarUiMaskBounds,
+          nativeBottomBarUiMaskFilterActive: Boolean(this.nativeBottomBarUiMaskFilter),
+          nativeBottomBarUiControlBounds: this.nativeBottomBarUiControls.filter(node => node?.isConnected).map(node => {
+            const rect = node.getBoundingClientRect();
+            const sx = this.dimensions().width / Math.max(1, window.innerWidth || this.dimensions().width);
+            const sy = this.dimensions().height / Math.max(1, window.innerHeight || this.dimensions().height);
+            return { action: node.dataset.worldAction || '', x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+          }),
           nativeBottomBarUiScrollLeft: Number(this.nativeBottomBarUiBoundElement?.scrollLeft || 0),
           nativeBottomBarUiSceneSize: this.dimensions(),
           nativeGameplayUi: this.nativeGameplayUiActive,
@@ -2345,15 +2357,24 @@
         this.nativeBottomBarUiBoundElement = null;
         this.nativeBottomBarUiInteractionHandler = null;
       }
+      // Phaser 4.1 WebGL masks are Filters, while Canvas uses a GeometryMask.
+      // Remove the filter through its owning list before destroying the container.
+      if (this.nativeBottomBarUiContainer && this.nativeBottomBarUiMaskFilter) {
+        this.nativeBottomBarUiContainer.filters?.internal?.remove?.(this.nativeBottomBarUiMaskFilter, true);
+      }
+      this.nativeBottomBarUiMaskFilter = null;
+      if (this.nativeBottomBarUiContainer && this.nativeBottomBarUiMask) {
+        this.nativeBottomBarUiContainer.clearMask?.(true);
+      }
+      this.nativeBottomBarUiMask = null;
+      this.nativeBottomBarUiMaskBounds = null;
       this.nativeBottomBarUiObjects.forEach(object => {
         if (!object?.active) return;
         this.tweens.killTweensOf(object);
         object.destroy(true);
       });
       this.nativeBottomBarUiObjects = [];
-      this.nativeBottomBarUiContainer?.clearMask?.(true);
       this.nativeBottomBarUiContainer = null;
-      this.nativeBottomBarUiMask = null;
       this.nativeBottomBarUiMaskGraphics = null;
       this.nativeBottomBarUiTaggedNodes.forEach(node => {
         if (!node?.dataset) return;
@@ -2363,6 +2384,7 @@
       });
       this.nativeBottomBarUiTaggedNodes = [];
       this.nativeBottomBarUiTextNodes = [];
+      this.nativeBottomBarUiIconNodes = [];
       this.nativeBottomBarUiControls = [];
       this.nativeBottomBarUiSignature = '';
       this.nativeBottomBarUiActive = false;
@@ -2435,18 +2457,75 @@
           ];
         })
       ]);
-      if (this.nativeBottomBarUiActive && signature === this.nativeBottomBarUiSignature) return;
+      // The shell rebuilds bottom.innerHTML on every refresh. Check the actual
+      // nodes and tags as well as their visual signature before reusing a paint.
+      const tagsCurrent =
+        controls.length === this.nativeBottomBarUiControls.length &&
+        controls.every((node, index) =>
+          node === this.nativeBottomBarUiControls[index] &&
+          node.dataset.legendPhaserBottomControl === 'true'
+        ) &&
+        textNodes.length === this.nativeBottomBarUiTextNodes.length &&
+        textNodes.every((node, index) =>
+          node === this.nativeBottomBarUiTextNodes[index] &&
+          node.dataset.legendPhaserBottomText === 'true'
+        ) &&
+        icons.length === this.nativeBottomBarUiIconNodes.length &&
+        icons.every((item, index) =>
+          item.node === this.nativeBottomBarUiIconNodes[index] &&
+          item.node.dataset.legendPhaserBottomIcon === 'true'
+        );
+      if (this.nativeBottomBarUiActive && tagsCurrent && signature === this.nativeBottomBarUiSignature) return;
 
       this.clearNativeBottomBarUi(false);
-      // Keep the semantic DOM visible until every native object is constructed.
+      // Keep the semantic DOM visible until the native painter and its clip
+      // are both ready. GeometryMask is Canvas-only in Phaser 4.1; WebGL uses
+      // the internal Mask filter on this container.
       document.body?.classList.remove('legend-phaser-bottom-bar-ui-active');
       const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
       maskGraphics.fillStyle(0xffffff, 1);
       maskGraphics.fillRect(barRect.x, barRect.y, barRect.width, barRect.height);
-      const mask = maskGraphics.createGeometryMask();
       const container = this.add.container(0, 0).setDepth(46);
-      container.setMask(mask);
-      this.nativeBottomBarUiMask = mask;
+      const rendererType = this.sys.game.renderer?.type;
+      let mask = null;
+      let maskFilter = null;
+      if (rendererType === Phaser.WEBGL) {
+        try {
+          container.enableFilters?.();
+          container.setFiltersFocusContext?.(true);
+          maskFilter = container.filters?.internal?.addMask?.(
+            maskGraphics,
+            false,
+            this.cameras.main,
+            'world'
+          ) || null;
+        } catch (error) {
+          console.warn('[LEGEND Phaser] Bottom-bar WebGL mask could not be created; keeping the accessible DOM bar visible.', error);
+          maskFilter = null;
+        }
+        if (!maskFilter) {
+          container.destroy(true);
+          maskGraphics.destroy(true);
+          this.nativeBottomBarUiActive = false;
+          this.nativeBottomBarUiObjects = [];
+          this.nativeBottomBarUiContainer = null;
+          this.nativeBottomBarUiMaskGraphics = null;
+          this.nativeBottomBarUiMaskBounds = null;
+          this.nativeBottomBarUiSignature = '';
+          return;
+        }
+        this.nativeBottomBarUiMaskFilter = maskFilter;
+      } else {
+        mask = maskGraphics.createGeometryMask();
+        container.setMask(mask);
+        this.nativeBottomBarUiMask = mask;
+      }
+      this.nativeBottomBarUiMaskBounds = {
+        x: barRect.x,
+        y: barRect.y,
+        width: barRect.width,
+        height: barRect.height
+      };
       this.nativeBottomBarUiMaskGraphics = maskGraphics;
       this.nativeBottomBarUiContainer = container;
       this.nativeBottomBarUiObjects.push(container, maskGraphics);
@@ -2539,6 +2618,7 @@
       });
 
       this.nativeBottomBarUiTextNodes = textNodes;
+      this.nativeBottomBarUiIconNodes = icons.map(item => item.node);
       this.nativeBottomBarUiControls = controls;
       this.nativeBottomBarUiSignature = signature;
       this.nativeBottomBarUiActive = true;

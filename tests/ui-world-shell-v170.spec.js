@@ -203,6 +203,16 @@ test.describe('LEGEND persistent world shell v170', () => {
     expect(desktop.buttonCount).toBe(6);
     expect(desktop.labelColors.every(color => color === 'rgba(0, 0, 0, 0)')).toBe(true);
 
+    // renderShell replaces the bottom-bar DOM nodes even if all visible content
+    // is identical. The native painter must re-tag the replacement nodes.
+    await page.evaluate(() => window.LegendWorldShellV170.refresh());
+    await expect.poll(() => page.evaluate(() => {
+      const bar = document.querySelector('.lws-bottom-bar');
+      return Array.from(bar?.querySelectorAll('.lws-btn-copy strong') || [])
+        .every(node => getComputedStyle(node).color === 'rgba(0, 0, 0, 0)');
+    })).toBe(true);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeBottomBarUiTextCount || 0)).toBe(6);
+
     // A native visual does not intercept the actual DOM click. The existing
     // inventory callback must still open the same production inventory modal.
     await page.locator('.lws-bottom-bar [data-world-action="inventory"]').click();
@@ -221,7 +231,11 @@ test.describe('LEGEND persistent world shell v170', () => {
         barWidth: bar?.clientWidth || 0,
         scrollWidth: bar?.scrollWidth || 0,
         labelCount: labels.filter(node => getComputedStyle(node).display !== 'none').length,
-        actions: Array.from(bar?.querySelectorAll('button[data-world-action]') || []).map(node => node.dataset.worldAction)
+        actions: Array.from(bar?.querySelectorAll('button[data-world-action]') || []).map(node => node.dataset.worldAction),
+        rect: (() => {
+          const r = bar?.getBoundingClientRect();
+          return r ? { left: r.left, top: r.top, width: r.width, height: r.height } : null;
+        })()
       };
     });
     expect(mobile.barWidth).toBeGreaterThan(0);
@@ -237,6 +251,35 @@ test.describe('LEGEND persistent world shell v170', () => {
     });
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeBottomBarUiScrollLeft || 0)).toBeGreaterThan(0);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeBottomBarUi)).toBe(true);
+    const clipped = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const mask = snapshot.nativeBottomBarUiMaskBounds;
+      const scene = snapshot.nativeBottomBarUiSceneSize;
+      const sx = scene.width / Math.max(1, window.innerWidth);
+      const sy = scene.height / Math.max(1, window.innerHeight);
+      const bar = document.querySelector('.lws-bottom-bar')?.getBoundingClientRect();
+      const controls = snapshot.nativeBottomBarUiControlBounds || [];
+      return {
+        maskMode: snapshot.nativeBottomBarUiMaskMode,
+        filterActive: snapshot.nativeBottomBarUiMaskFilterActive,
+        mask,
+        controlCount: controls.length,
+        hasOffscreenControl: controls.some(rect =>
+          rect.x < mask.x - 1 || rect.x + rect.width > mask.x + mask.width + 1
+        ),
+        maskMatchesDom: Boolean(bar && mask &&
+          Math.abs(mask.x - bar.left * sx) < 1 &&
+          Math.abs(mask.y - bar.top * sy) < 1 &&
+          Math.abs(mask.width - bar.width * sx) < 1 &&
+          Math.abs(mask.height - bar.height * sy) < 1
+        )
+      };
+    });
+    expect(clipped.controlCount).toBe(6);
+    expect(clipped.hasOffscreenControl).toBe(true);
+    expect(clipped.maskMatchesDom).toBe(true);
+    expect(['webgl-filter', 'canvas-geometry']).toContain(clipped.maskMode);
+    if (clipped.maskMode === 'webgl-filter') expect(clipped.filterActive).toBe(true);
   });
 
   test('inventory overlay reads real saved quantities without changing inventory or leaving the world', async ({ page }) => {

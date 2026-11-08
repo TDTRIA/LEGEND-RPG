@@ -219,9 +219,10 @@
     document.body.classList.add('legend-world-shell-active');
     syncSceneAtmosphere(player, context);
     refreshMobileToggleState(shell);
-    // Phaser paints the HUD while the original buttons remain the real,
-    // accessible controls. Other shell panels stay on the DOM until migrated.
+    // Phaser paints the HUD and bottom navigation. Refresh only after the
+    // bottom-bar innerHTML replacement above, so node identity/tags stay current.
     window.LegendPhaserWorldV1?.refreshHud?.();
+    window.LegendPhaserWorldV1?.refreshNavigation?.();
   }
 
   function refreshMobileToggleState(shell = document.getElementById(SHELL_ID)) {
