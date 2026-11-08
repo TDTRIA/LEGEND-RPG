@@ -26,6 +26,7 @@ The approved high-level reference is documented in [Darkest Dungeon Creative Dir
 - **Brand:** Use LEGEND: The Awakening as the product title. “The Unquiet Road” is a retired working subtitle; do not add it beneath the wordmark or elsewhere in current UI.
 - **Title composition:** Start from the approved full-screen Ashmere panorama and antique-gold wordmark. Keep the scene visible and leave deliberate dark negative space behind a left-side menu.
 - **Menu language:** Aim for an established fantasy RPG: dark-stained timber/blackened iron, aged-gold edge work, restrained engraved details, compact symbols, clear vertical hierarchy, and one luminous primary action. Avoid dashboard cards or a SaaS/website hero look.
+- **Polished UI reference:** Follow [the CodeRabbit iron-and-bronze concept](CODERABBIT_POLISHED_UI_CONCEPT.md) for the title plaque, engraved corner pieces, button states, Ashmere destination dock, and framed combat controls. Keep the concept's sample values and reduced menu/action set out of production.
 - **UI rule:** Buttons, labels, version numbers, and status text remain accessible HTML/CSS. Never bake menu text into generated art.
 - **Interaction rule:** Keep Continue/Begin dominant; keep New Traveler, Profile, Settings, and Credits visible but quieter. Reduced-motion mode must neutralize animation.
 
