@@ -5075,6 +5075,20 @@
       // Keep the observer and focus handlers bound to the live battle root while
       // replacing only Phaser display objects after a state or layout change.
       try {
+      // Detach the previous HP mask before destroying its display objects.
+      if (this.nativeCombatUiHealthOrbContainer && this.nativeCombatUiHealthOrbMaskFilter) {
+        this.nativeCombatUiHealthOrbContainer.filters?.internal?.remove?.(
+          this.nativeCombatUiHealthOrbMaskFilter, true
+        );
+      }
+      if (this.nativeCombatUiHealthOrbContainer && this.nativeCombatUiHealthOrbMask) {
+        this.nativeCombatUiHealthOrbContainer.clearMask?.(true);
+      }
+      this.nativeCombatUiHealthOrbState = null;
+      this.nativeCombatUiHealthOrbContainer = null;
+      this.nativeCombatUiHealthOrbMaskGraphics = null;
+      this.nativeCombatUiHealthOrbMask = null;
+      this.nativeCombatUiHealthOrbMaskFilter = null;
       this.nativeCombatUiObjects.forEach(object => {
         if (!object?.active) return;
         this.tweens.killTweensOf(object);
