@@ -292,3 +292,19 @@
 @media(prefers-reduced-motion:reduce) {
   .rpg-battle.rpg-intent-staggered .rpg-foe-sprite { animation: none !important; }
 }
+
+
+/* Phaser's combat painter replaces the portrait tile with the live iron/bronze
+   health orb. If its assets or masking fail, the class is removed and this
+   original portrait is fully restored by the DOM fallback. */
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-portrait {
+  position: relative !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-portrait > img,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-portrait > span {
+  opacity: 0 !important;
+}
