@@ -624,6 +624,8 @@
       this.nativeTownBoardUiTextNodes = [];
       this.nativeTownBoardUiControls = [];
       this.nativeTownBoardUiSignature = '';
+      this.nativeTownBoardUiExpectedIds = [];
+      this.nativeTownBoardUiFrameHandle = null;
       this.nativeTownBoardUiBoundSection = null;
       this.nativeTownBoardUiInteractionHandler = null;
       this.nativeTownBoardUiScrollHandler = null;
@@ -5230,6 +5232,10 @@
     /** Clears the native town board, detaches observers, and restores its semantic destination cards. */
     clearNativeTownBoardUi(removeClass = true, removeListeners = true) {
       this.nativeTownBoardUiLayoutEvent?.remove?.(false);
+      if (this.nativeTownBoardUiFrameHandle != null) {
+        window.cancelAnimationFrame?.(this.nativeTownBoardUiFrameHandle);
+        this.nativeTownBoardUiFrameHandle = null;
+      }
       this.nativeTownBoardUiLayoutEvent = null;
       if (removeListeners && this.nativeTownBoardUiObserver) {
         this.nativeTownBoardUiObserver.disconnect();
@@ -5258,6 +5264,7 @@
       this.nativeTownBoardUiTextNodes = [];
       this.nativeTownBoardUiControls = [];
       this.nativeTownBoardUiCardSnapshot = [];
+      this.nativeTownBoardUiExpectedIds = [];
       this.nativeTownBoardUiSignature = '';
       this.nativeTownBoardUiActive = false;
       if (removeClass) document.body?.classList.remove('legend-phaser-town-board-ui-active');
@@ -5277,9 +5284,15 @@
         this.clearNativeTownBoardUi();
         this.nativeTownBoardUiBoundSection = section;
         this.nativeTownBoardUiInteractionHandler = () => {
-          this.nativeTownBoardUiLayoutEvent?.remove?.(false);
-          this.nativeTownBoardUiLayoutEvent = this.time.delayedCall(28, () => {
-            this.nativeTownBoardUiLayoutEvent = null;
+          // Scroll events can fire continuously. Coalesce them to one repaint
+          // per browser frame instead of resetting a delay until scrolling stops.
+          if (this.nativeTownBoardUiFrameHandle != null) return;
+          if (typeof window.requestAnimationFrame !== 'function') {
+            this.syncNativeTownBoardUi(this.surface);
+            return;
+          }
+          this.nativeTownBoardUiFrameHandle = window.requestAnimationFrame(() => {
+            this.nativeTownBoardUiFrameHandle = null;
             this.syncNativeTownBoardUi(this.surface);
           });
         };
@@ -5380,6 +5393,7 @@
       if (this.nativeTownBoardUiActive && signature === this.nativeTownBoardUiSignature) return;
 
       // Keep the observer and listeners attached while rebuilding only Phaser display objects.
+      try {
       this.nativeTownBoardUiObjects.forEach(object => {
         if (!object?.active) return;
         this.tweens.killTweensOf(object);
@@ -5455,6 +5469,11 @@
       this.nativeTownBoardUiSignature = signature;
       this.nativeTownBoardUiActive = true;
       document.body?.classList.add('legend-phaser-town-board-ui-active');
+      } catch (error) {
+        // A failed canvas operation must never leave the semantic board hidden.
+        this.clearNativeTownBoardUi();
+        console.warn('Phaser Ashmere board paint failed; restoring the visible DOM board.', error);
+      }
     }
 
     syncAshmereLandmarks() {
