@@ -40,7 +40,11 @@
   }
 
   function create() {
+    // Keep a failed write available to this tab until a later write succeeds.
+    let sessionSettings = null;
+
     function loadSettings() {
+      if (sessionSettings) return { ...DEFAULT_SETTINGS, ...sessionSettings };
       try {
         const raw = window.localStorage.getItem(SETTINGS_KEY);
         if (raw == null) return { ...DEFAULT_SETTINGS };
@@ -81,16 +85,19 @@
         return false;
       }
 
+      const next = { ...DEFAULT_SETTINGS, ...settings };
       // Apply preferences immediately even when persistence is unavailable.
-      applySettings(settings);
+      applySettings(next);
       try {
-        const serialized = JSON.stringify(settings);
+        const serialized = JSON.stringify(next);
         if (typeof serialized !== 'string') {
           throw new TypeError('Settings serialization did not produce JSON text.');
         }
         window.localStorage.setItem(SETTINGS_KEY, serialized);
+        sessionSettings = null;
         return true;
       } catch (error) {
+        sessionSettings = next;
         reportStorageFailure('write', error);
         return false;
       }
