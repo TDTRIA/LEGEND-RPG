@@ -110,6 +110,29 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     ]);
     expect(freshMenu.decorationLabels.every(item => item.text)).toBe(true);
     expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','credits']);
+
+    // If any required title copy disappears, Phaser must reveal the complete
+    // accessible DOM title instead of leaving a partially painted blank panel.
+    const fallback = await page.evaluate(() => {
+      const name = document.querySelector('.v120-traveler-line strong');
+      const original = name.textContent;
+      name.textContent = '';
+      window.LegendPhaserWorldV1.refresh();
+      const visibleFallback = {
+        active: window.LegendPhaserWorldV1.snapshot().nativeTitleUi,
+        logoVisibility: getComputedStyle(document.querySelector('.v150-logo-lockup .v120-legend-logo')).visibility,
+        menuTextColor: getComputedStyle(document.querySelector('.v136-menu-btn .v136-menu-copy strong')).color
+      };
+      name.textContent = original;
+      window.LegendPhaserWorldV1.refresh();
+      return visibleFallback;
+    });
+    expect(fallback.active).toBe(false);
+    expect(fallback.logoVisibility).toBe('visible');
+    expect(fallback.menuTextColor).not.toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi
+    )).toBe(true);
     expect(freshMenu.labels.map(item => item.title)).toEqual([
       'Begin Your Journey','Profile','Settings','News & Roadmap','Credits'
     ]);
