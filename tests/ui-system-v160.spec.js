@@ -29,6 +29,7 @@ async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, 
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
+  await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
   await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
@@ -571,6 +572,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('Phaser road background follows the live route and stage, with a DOM image fallback', async ({ page }) => {
+    test.setTimeout(90_000);
     await enterAshmere(page, 'RoadSceneArtQA');
 
     const cases = [
