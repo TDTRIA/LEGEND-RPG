@@ -3127,6 +3127,12 @@
     }
 
     syncNativeExpeditionActionsUi() {
+      // Safe production fallback: the DOM decision deck owns the real road
+      // actions and stays fully readable until Phaser copy/card parity is proven.
+      // Clear any stale canvas paint and never hide the source labels/buttons.
+      this.clearNativeExpeditionActionsUi();
+      return;
+
       const host = document.querySelector('.exp100:has(.exp150-world-page)');
       const page = host?.querySelector('.exp150-world-page');
       const regions = [
@@ -3396,6 +3402,11 @@
     }
 
     syncNativeExpeditionHudUi() {
+      // Keep the production route tracker, clock, supplies and journey rail
+      // in crisp DOM while the Phaser HUD painter remains under verification.
+      this.clearNativeExpeditionHudUi();
+      return;
+
       const host = document.querySelector('.exp100:has(.exp150-world-page)');
       const page = host?.querySelector('.exp150-world-page');
       const regions = [
@@ -3702,6 +3713,12 @@
     }
 
     syncNativeRoadMapUi() {
+      // The connected map and field journal contain live route/discovery
+      // controls. Keep their complete semantic DOM visible until the Phaser
+      // modal painter has full content, focus and mobile parity.
+      this.clearNativeRoadMapUi();
+      return;
+
       const overlay = document.getElementById('exp150Modal');
       const dialog = overlay?.querySelector('.exp150-modal-dialog,[role="dialog"]');
       const content = document.getElementById('exp150ModalContent');
