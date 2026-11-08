@@ -136,11 +136,17 @@ window.LegendStorage = (() => {
 
   function savePlayer(player) {
     if (!player) return false;
-    if (!isRecord(player)) {
+    if (!isCompatiblePlayerShape(player) ||
+        (player.version != null && player.version !== '' &&
+          (!parseVersion(player.version) || isFutureSaveVersion(player.version)))) {
+      lastPlayerLoadStatus = player.version != null && player.version !== '' &&
+        (!parseVersion(player.version) || isFutureSaveVersion(player.version))
+        ? 'incompatible'
+        : 'malformed';
       reportStorageFailure(
-        'save the traveler because the record is invalid',
-        new TypeError('Expected a traveler record object.'),
-        'Your traveler could not be saved because its record is invalid.'
+        'save the traveler because its record is incompatible',
+        new TypeError('Expected a compatible traveler record for ' + D.VERSION + '.'),
+        'Your traveler could not be saved because its record is malformed or from an incompatible game version.'
       );
       return false;
     }
