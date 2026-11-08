@@ -74,6 +74,9 @@ function shell(body){
    if(soundOn())tone('success');
   });
  }
+ // Re-evaluate the stage/route background after each DOM-preserving expedition
+ // update. Phaser hides the authored image only when its matching texture is live.
+ window.LegendPhaserWorldV1?.refreshRoadScene?.();
 }
 function handleHotspotAction(btn){
  const action=btn?.dataset?.hotspot;
