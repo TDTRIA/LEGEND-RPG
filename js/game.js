@@ -70,6 +70,20 @@
     };
   }
 
+  function storageUnavailable() {
+    const host = root();
+    if (!host) return false;
+    host.innerHTML =
+      '<main class="settings09x"><div class="settings09x-wrap">' +
+      '<h1>Traveler storage unavailable</h1>' +
+      '<p>The game could not initialize its save system. Your existing traveler data has not been changed. Refresh the page; if this continues, report the failed startup module.</p>' +
+      '<button id="reloadGame" type="button">Reload Game</button>' +
+      '</div></main>';
+    host.querySelector('#reloadGame')?.addEventListener('click', () => window.location.reload());
+    console.error('LEGEND startup stopped because LegendStorage did not initialize.');
+    return false;
+  }
+
   function title() {
     const screen = window.LegendTitleScreenV120;
     if (screen?.render) return screen.render(titleScreenConfig());
@@ -215,7 +229,7 @@
 
   // DOMContentLoaded fires after the document's ordered deferred scripts finish.
   // The game modules below this bootstrap entry in index.html are therefore ready here.
-  const boot = () => title();
+  const boot = () => window.LegendStorage ? title() : storageUnavailable();
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 })();
