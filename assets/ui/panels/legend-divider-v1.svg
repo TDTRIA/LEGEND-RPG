@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 60">
+<!-- coderabbit-ai-generated:v1: original LEGEND UI starter decorative separator -->
+<defs><linearGradient id="edge"><stop stop-color="#a8814d" stop-opacity="0"/><stop offset=".3" stop-color="#bd9860"/><stop offset=".5" stop-color="#ebcf91"/><stop offset=".7" stop-color="#bd9860"/><stop offset="1" stop-color="#a8814d" stop-opacity="0"/></linearGradient></defs>
+<path d="M12 30h410m56 0h410" stroke="url(#edge)" stroke-width="3"/><path d="m450 11 14 19-14 19-14-19z" fill="#322517" stroke="#d9bb7d" stroke-width="2"/><path d="m450 20 7 10-7 10-7-10z" fill="#c99f61"/><path d="m425 25 5 5-5 5-5-5zm50 0 5 5-5 5-5-5z" fill="#c39b60"/>
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+<!-- coderabbit-ai-generated:v1: original LEGEND UI starter decorative vector corner -->
+<defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#f1d99c"/><stop offset=".28" stop-color="#9e7543"/><stop offset=".55" stop-color="#f4d394"/><stop offset="1" stop-color="#4c321b"/></linearGradient></defs>
+<path d="M3 77V19L19 3h58v5H23L8 23v54z" fill="#16100b" stroke="#1a1009" stroke-width="5"/>
+<path d="M4 76V20L20 4h56M12 58V27L27 12h31" fill="none" stroke="url(#g)" stroke-width="2"/>
+<path d="M5 38L38 5M14 48l3-18 13-13 18-3-10 8-11 5-5 11z" fill="#302317" stroke="url(#g)" stroke-width="1.5"/>
+<path d="M8 21L21 8l12 3-12 10-10 12z" fill="#51391f" stroke="#cfaa6d" stroke-width="1"/>
+<path d="M13 13l6-4 4 6-6 7-7-4z" fill="#372716" stroke="#e1c487" stroke-width="1.2"/>
+<circle cx="8" cy="48" r="2" fill="#e4c58a"/><circle cx="48" cy="8" r="2" fill="#e4c58a"/>
+</svg>

@@ -174,6 +174,9 @@ test('expedition map and field journal preserve keyboard focus and recorded disc
   await journalButton.click();
   const journalDialog = page.getByRole('dialog', { name: 'Field journal' });
   await expect(journalDialog).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUi)).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUiKind)).toBe('journal');
+  await expect(journalDialog.locator('.exp150-map-intro h2')).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
   await expect(journalDialog).toContainText('What the road remembers');
   await expect(journalDialog).toContainText('The Split Milestone');
   const journalClose = page.getByRole('button', { name: 'Return to the road' });
@@ -189,6 +192,8 @@ test('expedition map and field journal preserve keyboard focus and recorded disc
   await mapButton.click();
   const mapDialog = page.getByRole('dialog', { name: 'Road map' });
   await expect(mapDialog).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUiKind)).toBe('map');
+  await expect(mapDialog.locator('.exp150-map-intro h2')).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
   await expect(mapDialog).toContainText('The road you know');
   await expect(mapDialog).toContainText('The Split Milestone');
   await expect(mapDialog.locator('.exp150-map-discovery')).toHaveCount(1);
@@ -216,6 +221,41 @@ test('expedition map and field journal preserve keyboard focus and recorded disc
   expect(savedJournal.visitedPlaces).toContain('South Fork');
 });
 
+
+test('road map keyboard focus reaches and activates route choices', async ({ page }) => {
+  await startFreshTraveler(page);
+  await enterDeparture(page);
+  await beginRoadExpedition(page);
+
+  const mapButton=page.locator('#exp150OpenMap');
+  await mapButton.click();
+  const dialog=page.getByRole('dialog',{name:'Road map'});
+  await expect(dialog).toBeVisible();
+  const routeButtons=dialog.locator('[data-exp160-map-route]');
+  await expect(routeButtons).toHaveCount(2);
+  const close=dialog.getByRole('button',{name:'Return to the road'});
+  await expect(close).toBeFocused();
+
+  await page.keyboard.press('Tab');
+  await expect(routeButtons.nth(0)).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(routeButtons.nth(1)).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(close).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(routeButtons.nth(0)).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(close).toBeFocused();
+
+  await page.keyboard.press('Tab');
+  await expect(routeButtons.nth(0)).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(dialog).toBeHidden();
+  await expect.poll(() => page.evaluate(() =>
+    window.LegendRuntimeV120.loadPlayer()?.flags?.roadExpeditionV100?.routeChoice
+  )).toBe('ridge');
+  await expect(page.locator('.exp150-world-page')).toBeVisible();
+});
 
 test('waystation watch spends one ration, lowers pressure, and persists its camp report', async ({ page }) => {
   await startFreshTraveler(page);

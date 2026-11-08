@@ -103,7 +103,30 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
     await expect(page.getByRole('button', { name: /Skip the annals/i })).toHaveCount(0);
     await expect(page.locator('.opening-lore-v220')).toContainText('human kingdoms and monster nations');
-    await page.getByRole('button', { name: /^Continue$/ }).click();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1?.snapshot?.()?.nativeAnnalsUi
+    )).toBe(true);
+    const annalsButton = page.getByRole('button', { name: /^Continue$/ });
+    const normalButton = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      return {
+        texture: snapshot.nativeAnnalsUiButtonTexture,
+        bounds: snapshot.nativeAnnalsUiButtonBounds,
+        label: snapshot.nativeAnnalsUiButtonLabelPosition
+      };
+    });
+    expect(normalButton.texture).toBe('menuButtonNormal');
+    expect(Math.abs(normalButton.label.x - (normalButton.bounds.x + normalButton.bounds.width / 2))).toBeLessThan(1);
+    expect(Math.abs(normalButton.label.y - (normalButton.bounds.y + normalButton.bounds.height / 2))).toBeLessThan(1);
+    await page.keyboard.press('Tab');
+    await expect(annalsButton).toBeFocused();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiButtonTexture
+    )).toBe('menuButtonSelected');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiButtonFocused
+    )).toBe(true);
+    await page.keyboard.press('Enter');
     await expect(page.getByRole('heading', { name: 'The Pact Beneath the Stone' })).toBeVisible();
     await expect(page.locator('.opening-lore-v220')).toContainText('seal over the deep ways');
     await page.getByRole('button', { name: /^Continue$/ }).click();

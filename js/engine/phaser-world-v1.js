@@ -147,6 +147,19 @@
     menuSettings: 'assets/generated/ui/icons/legend-icon-settings.webp',
     menuRoad: 'assets/generated/ui/icons/legend-icon-road.webp',
     menuMilestone: 'assets/generated/ui/icons/legend-icon-milestone.webp',
+    menuButtonNormal: 'assets/ui/panels/legend-button-normal-v1.svg',
+    menuButtonSelected: 'assets/ui/panels/legend-button-selected-v1.svg',
+    menuButtonDisabled: 'assets/ui/panels/legend-button-disabled-v1.svg',
+    menuFrameCorner: 'assets/ui/panels/legend-frame-corner-v1.svg',
+    menuDivider: 'assets/ui/panels/legend-divider-v1.svg',
+    menuTitleLogo: 'assets/ui/logos/logo_legend_awakening_wordmark.png?v=0.21.0-local-raster-wordmark',
+    panelFrame: 'assets/ui/panels/legend-panel-frame-v1.svg',
+    healthOrbBezel: 'assets/ui/panels/legend-health-orb-bezel-v1.svg',
+    healthOrbFill: 'assets/ui/panels/legend-health-orb-fill-v1.svg',
+    combatFightIcon: 'assets/generated/skills/icons/weapon-mastery.webp',
+    combatActIcon: 'assets/generated/skills/icons/veil.webp',
+    combatItemIcon: 'assets/generated/items/healing-potion.webp',
+    combatGuardIcon: 'assets/generated/items/round-shield.webp',
     oric: 'assets/generated/npcs/captain-oric.webp',
     wolf: 'assets/generated/enemies/blackroot-wolf.webp',
     goblin: 'assets/generated/enemies/road-goblin.webp',
@@ -267,6 +280,8 @@
       realmScene?.syncNativeCreationUi?.(surface);
       realmScene?.syncNativeOpeningUi?.(surface);
       realmScene?.syncNativeGameplayUi?.(surface);
+      realmScene?.syncNativeCombatUi?.(surface);
+      realmScene?.syncNativeTownBoardUi?.(surface);
     }
   }
 
@@ -470,6 +485,9 @@
       this.nativeTitleUiActive = false;
       this.nativeTitleUiObjects = [];
       this.nativeTitleUiControls = [];
+      this.nativeTitleUiDecorations = [];
+      this.nativeTitleUiLogoObject = null;
+      this.nativeTitleUiDividerObject = null;
       this.nativeTitleUiSignature = '';
       this.nativeTitleUiLayoutEvent = null;
       this.nativeAnnalsUiActive = false;
@@ -478,6 +496,11 @@
       this.nativeAnnalsUiLayoutEvent = null;
       this.nativeAnnalsUiScrollTarget = null;
       this.nativeAnnalsUiButtonFocus = null;
+      this.nativeAnnalsUiButtonBackground = null;
+      this.nativeAnnalsUiButtonLabel = null;
+      this.nativeAnnalsUiButtonNode = null;
+      this.nativeAnnalsUiButtonHovered = false;
+      this.nativeAnnalsUiButtonKeyboardFocused = false;
       this.nativeCreationUiActive = false;
       this.nativeCreationUiObjects = [];
       this.nativeCreationUiTextures = [];
@@ -492,6 +515,81 @@
       this.nativeOpeningUiSignature = '';
       this.nativeOpeningUiLayoutEvent = null;
       this.nativeOpeningUiScrollTarget = null;
+      this.nativeExpeditionActionsUiActive = false;
+      this.nativeExpeditionActionsUiObjects = [];
+      this.nativeExpeditionActionsUiTaggedNodes = [];
+      this.nativeExpeditionActionsUiTextNodes = [];
+      this.nativeExpeditionActionsUiControls = [];
+      this.nativeExpeditionActionsUiIconNodes = [];
+      this.nativeExpeditionActionsUiSignature = '';
+      this.nativeExpeditionActionsUiBoundHost = null;
+      this.nativeExpeditionActionsUiInteractionHandler = null;
+      this.nativeExpeditionActionsUiScrollHandler = null;
+      this.nativeExpeditionActionsUiLayoutEvent = null;
+      this.nativeExpeditionActionsUiMutationObserver = null;
+      this.nativeExpeditionHudUiActive = false;
+      this.nativeExpeditionHudUiObjects = [];
+      this.nativeExpeditionHudUiTaggedNodes = [];
+      this.nativeExpeditionHudUiTextNodes = [];
+      this.nativeExpeditionHudUiControls = [];
+      this.nativeExpeditionHudUiIconNodes = [];
+      this.nativeExpeditionHudUiSignature = '';
+      this.nativeExpeditionHudUiBoundHost = null;
+      this.nativeExpeditionHudUiInteractionHandler = null;
+      this.nativeExpeditionHudUiScrollHandler = null;
+      this.nativeExpeditionHudUiLayoutEvent = null;
+      this.nativeRoadMapUiActive = false;
+      this.nativeRoadMapUiKind = '';
+      this.nativeRoadMapUiObjects = [];
+      this.nativeRoadMapUiTaggedNodes = [];
+      this.nativeRoadMapUiTextNodes = [];
+      this.nativeRoadMapUiControls = [];
+      this.nativeRoadMapUiIconNodes = [];
+      this.nativeRoadMapUiSignature = '';
+      this.nativeRoadMapUiBoundOverlay = null;
+      this.nativeRoadMapUiBoundDialog = null;
+      this.nativeRoadMapUiInteractionHandler = null;
+      this.nativeRoadMapUiTransitionHandler = null;
+      this.nativeRoadMapUiLayoutEvent = null;
+      this.nativeRoadMapUiMask = null;
+      this.nativeRoadMapUiMaskFilter = null;
+      this.nativeRoadMapUiMaskGraphics = null;
+      this.nativeRoadMapUiMaskBounds = null;
+      this.nativeRoadMapUiContainer = null;
+      this.nativeRightDrawerUiActive = false;
+      this.nativeRightDrawerUiObjects = [];
+      this.nativeRightDrawerUiTaggedNodes = [];
+      this.nativeRightDrawerUiTextNodes = [];
+      this.nativeRightDrawerUiControls = [];
+      this.nativeRightDrawerUiIconNodes = [];
+      this.nativeRightDrawerUiSignature = '';
+      this.nativeRightDrawerUiBoundPanel = null;
+      this.nativeRightDrawerUiBoundScroll = null;
+      this.nativeRightDrawerUiInteractionHandler = null;
+      this.nativeRightDrawerUiTransitionHandler = null;
+      this.nativeRightDrawerUiLayoutEvent = null;
+      this.nativeRightDrawerUiMask = null;
+      this.nativeRightDrawerUiMaskFilter = null;
+      this.nativeRightDrawerUiMaskGraphics = null;
+      this.nativeRightDrawerUiMaskBounds = null;
+      this.nativeRightDrawerUiContainer = null;
+      this.nativeLeftDrawerUiActive = false;
+      this.nativeLeftDrawerUiObjects = [];
+      this.nativeLeftDrawerUiTaggedNodes = [];
+      this.nativeLeftDrawerUiTextNodes = [];
+      this.nativeLeftDrawerUiControls = [];
+      this.nativeLeftDrawerUiIconNodes = [];
+      this.nativeLeftDrawerUiSignature = '';
+      this.nativeLeftDrawerUiBoundPanel = null;
+      this.nativeLeftDrawerUiBoundScroll = null;
+      this.nativeLeftDrawerUiInteractionHandler = null;
+      this.nativeLeftDrawerUiTransitionHandler = null;
+      this.nativeLeftDrawerUiLayoutEvent = null;
+      this.nativeLeftDrawerUiMask = null;
+      this.nativeLeftDrawerUiMaskFilter = null;
+      this.nativeLeftDrawerUiMaskGraphics = null;
+      this.nativeLeftDrawerUiMaskBounds = null;
+      this.nativeLeftDrawerUiContainer = null;
       this.nativeHudUiActive = false;
       this.nativeHudUiObjects = [];
       this.nativeHudUiTaggedNodes = [];
@@ -501,6 +599,21 @@
       this.nativeHudUiLayoutEvent = null;
       this.nativeHudUiBoundElement = null;
       this.nativeHudUiInteractionHandler = null;
+      this.nativeBottomBarUiActive = false;
+      this.nativeBottomBarUiObjects = [];
+      this.nativeBottomBarUiTaggedNodes = [];
+      this.nativeBottomBarUiTextNodes = [];
+      this.nativeBottomBarUiIconNodes = [];
+      this.nativeBottomBarUiControls = [];
+      this.nativeBottomBarUiSignature = '';
+      this.nativeBottomBarUiBoundElement = null;
+      this.nativeBottomBarUiInteractionHandler = null;
+      this.nativeBottomBarUiLayoutEvent = null;
+      this.nativeBottomBarUiMask = null;
+      this.nativeBottomBarUiMaskFilter = null;
+      this.nativeBottomBarUiMaskGraphics = null;
+      this.nativeBottomBarUiMaskBounds = null;
+      this.nativeBottomBarUiContainer = null;
       this.nativeGameplayUiActive = false;
       this.nativeGameplayUiObjects = [];
       this.nativeGameplayUiTextures = [];
@@ -512,6 +625,34 @@
       this.nativeGameplayUiLayoutEvent = null;
       this.nativeGameplayUiTextureCounter = 0;
       this.nativeGameplayUiScrollHandler = null;
+      this.nativeCombatUiActive = false;
+      this.nativeCombatUiObjects = [];
+      this.nativeCombatUiTextNodes = [];
+      this.nativeCombatUiControls = [];
+      this.nativeCombatUiSignature = '';
+      this.nativeCombatUiBoundBattle = null;
+      this.nativeCombatUiInteractionHandler = null;
+      this.nativeCombatUiScrollHandler = null;
+      this.nativeCombatUiObserver = null;
+      this.nativeCombatUiLayoutEvent = null;
+      this.nativeCombatUiIconIds = [];
+      this.nativeCombatUiHealthRatio = null;
+      this.nativeCombatUiHealthLabel = '';
+      this.nativeCombatUiCornerCount = 0;
+      this.nativeTownBoardUiActive = false;
+      this.nativeTownBoardUiObjects = [];
+      this.nativeTownBoardUiTextNodes = [];
+      this.nativeTownBoardUiControls = [];
+      this.nativeTownBoardUiSignature = '';
+      this.nativeTownBoardUiExpectedIds = [];
+      this.nativeTownBoardUiEntrancePending = false;
+      this.nativeTownBoardUiFrameHandle = null;
+      this.nativeTownBoardUiBoundSection = null;
+      this.nativeTownBoardUiInteractionHandler = null;
+      this.nativeTownBoardUiScrollHandler = null;
+      this.nativeTownBoardUiObserver = null;
+      this.nativeTownBoardUiLayoutEvent = null;
+      this.nativeTownBoardUiCardSnapshot = [];
     }
 
     preload() {
@@ -521,7 +662,7 @@
       // encounter, dialogue, creation and result scenes when those screens move
       // fully into RealmScene.
       Object.entries(ASSETS).forEach(([key, path]) => {
-        if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp)$/i.test(path)) {
+        if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(path)) {
           this.load.image(key, path);
         }
       });
@@ -538,7 +679,15 @@
         this.syncNativeCreationUi(this.surface);
         this.syncNativeOpeningUi(this.surface);
         this.syncNativeGameplayUi(this.surface);
+        this.syncNativeCombatUi(this.surface);
+        this.syncNativeTownBoardUi(this.surface);
         this.syncNativeHudUi();
+        this.syncNativeBottomBarUi();
+        this.syncNativeLeftDrawerUi();
+        this.syncNativeRightDrawerUi();
+        this.syncNativeRoadMapUi();
+        this.syncNativeExpeditionHudUi();
+        this.syncNativeExpeditionActionsUi();
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -575,6 +724,12 @@
           serviceDressingKey: this.serviceDressingKey,
           nativeTitleUi: this.nativeTitleUiActive,
           nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
+          nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo'].every(key => this.textures.exists(key)),
+          nativeTitleUiLogoPainted: Boolean(this.nativeTitleUiLogoObject?.active),
+          nativeTitleUiDividerPainted: Boolean(this.nativeTitleUiDividerObject?.active),
+          nativeTitleUiDecorationLabels: this.nativeTitleUiDecorations.map(item => ({ id: item.id, text: item.object?.text || '' })),
+          nativeTitleUiDecorationTextCount: this.nativeTitleUiDecorations.filter(item => item.object?.active && item.object?.text?.trim()).length,
+          nativeTitleUiLabels: this.nativeTitleUiControls.map(item => ({ id: item.id, title: item.titleText?.text || '', subtitle: item.subtitleText?.text || '' })),
           nativeTitleUiControlCount: this.nativeTitleUiControls.length,
           nativeTitleUiControlIds: this.nativeTitleUiControls.map(item => item.id),
           nativeTitleUiSceneSize: this.dimensions(),
@@ -600,6 +755,11 @@
           nativeAnnalsUiStep: Number(root()?.querySelector('.opening-lore-v220')?.dataset.loreStep ?? -1),
           nativeAnnalsUiScrollTargetBound: Boolean(this.nativeAnnalsUiScrollTarget),
           nativeAnnalsUiButtonFocused: Boolean(this.nativeAnnalsUiButtonFocus?.visible),
+          nativeAnnalsUiButtonHovered: Boolean(this.nativeAnnalsUiButtonHovered),
+          nativeAnnalsUiButtonTexture: this.nativeAnnalsUiButtonBackground?.texture?.key || '',
+          nativeAnnalsUiButtonLabelPosition: this.nativeAnnalsUiButtonLabel
+            ? { x: this.nativeAnnalsUiButtonLabel.x, y: this.nativeAnnalsUiButtonLabel.y }
+            : null,
           nativeCreationUi: this.nativeCreationUiActive,
           nativeCreationUiStep: Number(root()?.querySelector('.v140-creation')?.dataset.creationStep ?? -1),
           nativeCreationUiObjectCount: this.nativeCreationUiObjects.filter(item => item?.active).length,
@@ -620,6 +780,80 @@
           nativeHudUiControlIds: this.nativeHudUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || node.getAttribute('aria-label') || node.textContent?.trim() || ''),
           nativeHudUiFocusedControlIds: this.nativeHudUiControls.filter(node => node?.isConnected && (node === document.activeElement || node.matches(':focus-visible'))).map(node => node.dataset.worldAction || node.getAttribute('aria-label') || node.textContent?.trim() || ''),
           nativeHudUiSceneSize: this.dimensions(),
+          nativeLeftDrawerUi: this.nativeLeftDrawerUiActive,
+          nativeLeftDrawerUiObjectCount: this.nativeLeftDrawerUiObjects.filter(item => item?.active).length,
+          nativeLeftDrawerUiTextCount: this.nativeLeftDrawerUiTextNodes.filter(node => node?.isConnected).length,
+          nativeLeftDrawerUiTextValues: this.nativeLeftDrawerUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeLeftDrawerUiControlIds: this.nativeLeftDrawerUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || ''),
+          nativeLeftDrawerUiIconCount: this.nativeLeftDrawerUiObjects.filter(item => item?.active && item.type === 'Image').length,
+          nativeLeftDrawerUiScrollTop: Number(this.nativeLeftDrawerUiBoundScroll?.scrollTop || 0),
+          nativeLeftDrawerUiMaskMode: this.nativeLeftDrawerUiMaskFilter ? 'webgl-filter' : this.nativeLeftDrawerUiMask ? 'canvas-geometry' : 'none',
+          nativeLeftDrawerUiMaskBounds: this.nativeLeftDrawerUiMaskBounds,
+          nativeLeftDrawerUiMaskFilterActive: Boolean(this.nativeLeftDrawerUiMaskFilter),
+          nativeLeftDrawerUiSceneSize: this.dimensions(),
+          nativeRightDrawerUi: this.nativeRightDrawerUiActive,
+          nativeRightDrawerUiObjectCount: this.nativeRightDrawerUiObjects.filter(item => item?.active).length,
+          nativeRightDrawerUiTextCount: this.nativeRightDrawerUiTextNodes.filter(node => node?.isConnected).length,
+          nativeRightDrawerUiTextValues: this.nativeRightDrawerUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeRightDrawerUiControlIds: this.nativeRightDrawerUiControls.filter(node => node?.isConnected).map(node =>
+            node.dataset.worldAction || node.dataset.worldRoute || node.dataset.worldPlace || ''),
+          nativeRightDrawerUiIconCount: this.nativeRightDrawerUiObjects.filter(item => item?.active && item.type === 'Image').length,
+          nativeRightDrawerUiScrollTop: Number(this.nativeRightDrawerUiBoundScroll?.scrollTop || 0),
+          nativeRightDrawerUiMaskMode: this.nativeRightDrawerUiMaskFilter ? 'webgl-filter' : this.nativeRightDrawerUiMask ? 'canvas-geometry' : 'none',
+          nativeRightDrawerUiMaskBounds: this.nativeRightDrawerUiMaskBounds,
+          nativeRightDrawerUiMaskFilterActive: Boolean(this.nativeRightDrawerUiMaskFilter),
+          nativeRightDrawerUiSceneSize: this.dimensions(),
+          nativeRoadMapUi: this.nativeRoadMapUiActive,
+          nativeRoadMapUiKind: this.nativeRoadMapUiKind,
+          nativeRoadMapUiObjectCount: this.nativeRoadMapUiObjects.filter(item => item?.active).length,
+          nativeRoadMapUiTextCount: this.nativeRoadMapUiTextNodes.filter(node => node?.isConnected).length,
+          nativeRoadMapUiTextValues: this.nativeRoadMapUiTextNodes.filter(node => node?.isConnected)
+            .map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeRoadMapUiControlIds: this.nativeRoadMapUiControls.filter(node => node?.isConnected).map(node =>
+            node.dataset.exp160MapRoute ? 'route:' + node.dataset.exp160MapRoute
+              : node.dataset.exp160MapVisit ? 'visit:' + node.dataset.exp160MapVisit
+              : node.id || ''),
+          nativeRoadMapUiScrollTop: Number(this.nativeRoadMapUiBoundDialog?.scrollTop || 0),
+          nativeRoadMapUiMaskMode: this.nativeRoadMapUiMaskFilter ? 'webgl-filter'
+            : this.nativeRoadMapUiMask ? 'canvas-geometry' : 'none',
+          nativeRoadMapUiMaskBounds: this.nativeRoadMapUiMaskBounds,
+          nativeRoadMapUiMaskFilterActive: Boolean(this.nativeRoadMapUiMaskFilter),
+          nativeRoadMapUiSceneSize: this.dimensions(),
+          nativeExpeditionHudUi: this.nativeExpeditionHudUiActive,
+          nativeExpeditionHudUiObjectCount: this.nativeExpeditionHudUiObjects.filter(item => item?.active).length,
+          nativeExpeditionHudUiTextCount: this.nativeExpeditionHudUiTextNodes.filter(node => node?.isConnected).length,
+          nativeExpeditionHudUiTextValues: this.nativeExpeditionHudUiTextNodes.filter(node => node?.isConnected)
+            .map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeExpeditionHudUiControlIds: this.nativeExpeditionHudUiControls.filter(node => node?.isConnected)
+            .map(node => node.id || node.getAttribute('aria-label') || ''),
+          nativeExpeditionHudUiSceneSize: this.dimensions(),
+          nativeExpeditionActionsUi: this.nativeExpeditionActionsUiActive,
+          nativeExpeditionActionsUiObjectCount: this.nativeExpeditionActionsUiObjects.filter(item => item?.active).length,
+          nativeExpeditionActionsUiTextCount: this.nativeExpeditionActionsUiTextNodes.filter(node => node?.isConnected).length,
+          nativeExpeditionActionsUiTextValues: this.nativeExpeditionActionsUiTextNodes.filter(node => node?.isConnected)
+            .map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeExpeditionActionsUiControlIds: this.nativeExpeditionActionsUiControls.filter(node => node?.isConnected)
+            .map(node => node.id || node.dataset.blackrootSurvey || node.dataset.node || ''),
+          nativeExpeditionActionsUiSceneSize: this.dimensions(),
+          nativeBottomBarUi: this.nativeBottomBarUiActive,
+          nativeBottomBarUiObjectCount: this.nativeBottomBarUiObjects.filter(item => item?.active).length,
+          nativeBottomBarUiTextCount: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).length,
+          nativeBottomBarUiTextValues: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeBottomBarUiPaintedTextValues: this.nativeBottomBarUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
+          nativeBottomBarUiPaintedTextCount: this.nativeBottomBarUiObjects.filter(item => item?.active && item.type === 'Text' && String(item.text || '').trim()).length,
+          nativeBottomBarUiControlIds: this.nativeBottomBarUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || ''),
+          nativeBottomBarUiIconCount: this.nativeBottomBarUiObjects.filter(item => item?.active && item.type === 'Image').length,
+          nativeBottomBarUiMaskMode: this.nativeBottomBarUiMaskFilter ? 'webgl-filter' : this.nativeBottomBarUiMask ? 'canvas-geometry' : 'none',
+          nativeBottomBarUiMaskBounds: this.nativeBottomBarUiMaskBounds,
+          nativeBottomBarUiMaskFilterActive: Boolean(this.nativeBottomBarUiMaskFilter),
+          nativeBottomBarUiControlBounds: this.nativeBottomBarUiControls.filter(node => node?.isConnected).map(node => {
+            const rect = node.getBoundingClientRect();
+            const sx = this.dimensions().width / Math.max(1, window.innerWidth || this.dimensions().width);
+            const sy = this.dimensions().height / Math.max(1, window.innerHeight || this.dimensions().height);
+            return { action: node.dataset.worldAction || '', x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+          }),
+          nativeBottomBarUiScrollLeft: Number(this.nativeBottomBarUiBoundElement?.scrollLeft || 0),
+          nativeBottomBarUiSceneSize: this.dimensions(),
           nativeGameplayUi: this.nativeGameplayUiActive,
           nativeGameplayUiSurface: this.surface,
           nativeGameplayUiObjectCount: this.nativeGameplayUiObjects.filter(item => item?.active).length,
@@ -630,6 +864,24 @@
           nativeGameplayUiSceneSize: this.dimensions(),
           nativeGameplayUiObserverBound: Boolean(this.nativeGameplayUiObserverRoot),
           nativeGameplayUiProgressionOverlay: Boolean(document.getElementById('legendLevelUpOverlay')),
+          nativeCombatUi: this.nativeCombatUiActive,
+          nativeTownBoardUi: this.nativeTownBoardUiActive,
+          nativeTownBoardUiObjectCount: this.nativeTownBoardUiObjects.filter(item => item?.active).length,
+          nativeTownBoardUiTextCount: this.nativeTownBoardUiTextNodes.filter(node => node?.isConnected).length,
+          nativeTownBoardUiTextValues: this.nativeTownBoardUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
+          nativeTownBoardUiControlIds: this.nativeTownBoardUiControls.filter(node => node?.isConnected).map(node => node.dataset.ashView || ''),
+          nativeTownBoardUiCards: this.nativeTownBoardUiCardSnapshot || [],
+          nativeTownBoardUiExpectedIds: this.nativeTownBoardUiExpectedIds || [],
+          nativeTownBoardUiObserverBound: Boolean(this.nativeTownBoardUiObserver && this.nativeTownBoardUiBoundSection?.isConnected),
+          nativeTownBoardUiSceneSize: this.dimensions(),
+          nativeCombatUiObjectCount: this.nativeCombatUiObjects.filter(item => item?.active).length,
+          nativeCombatUiTextValues: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
+          nativeCombatUiTextCount: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text' && String(item.text || '').trim()).length,
+          nativeCombatUiControlIds: this.nativeCombatUiControls.filter(node => node?.isConnected).map(node => node.id || node.getAttribute('aria-label') || ''),
+          nativeCombatUiFocusedControlIds: this.nativeCombatUiControls.filter(node => node?.isConnected && (node === document.activeElement || node.matches(':focus-visible'))).map(node => node.id || ''),
+          nativeCombatUiHoveredControlIds: this.nativeCombatUiControls.filter(node => node?.isConnected && node.matches(':hover')).map(node => node.id || ''),
+          nativeCombatUiSceneSize: this.dimensions(),
+          nativeCombatUiObserverBound: Boolean(this.nativeCombatUiObserver && this.nativeCombatUiBoundBattle?.isConnected),
           nativeAnnalsUiSceneSize: this.dimensions(),
           nativeAnnalsUiButtonBounds: (() => {
             const button = root()?.querySelector('.opening-lore-v220-continue');
@@ -863,7 +1115,15 @@
         this.syncNativeCreationUi(next);
         this.syncNativeOpeningUi(next);
         this.syncNativeGameplayUi(next);
+        this.syncNativeCombatUi(next);
+        this.syncNativeTownBoardUi(next);
         this.syncNativeHudUi();
+        this.syncNativeBottomBarUi();
+        this.syncNativeLeftDrawerUi();
+        this.syncNativeRightDrawerUi();
+        this.syncNativeRoadMapUi();
+        this.syncNativeExpeditionHudUi();
+        this.syncNativeExpeditionActionsUi();
         return;
       }
       const previous = this.surface;
@@ -874,7 +1134,15 @@
       this.syncNativeCreationUi(next);
       this.syncNativeOpeningUi(next);
       this.syncNativeGameplayUi(next);
+      this.syncNativeCombatUi(next);
+      this.syncNativeTownBoardUi(next);
       this.syncNativeHudUi();
+      this.syncNativeBottomBarUi();
+      this.syncNativeLeftDrawerUi();
+      this.syncNativeRightDrawerUi();
+      this.syncNativeRoadMapUi();
+      this.syncNativeExpeditionHudUi();
+      this.syncNativeExpeditionActionsUi();
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -933,6 +1201,9 @@
       });
       this.nativeTitleUiObjects = [];
       this.nativeTitleUiControls = [];
+      this.nativeTitleUiDecorations = [];
+      this.nativeTitleUiLogoObject = null;
+      this.nativeTitleUiDividerObject = null;
       this.nativeTitleUiSignature = '';
       this.nativeTitleUiActive = false;
       if (removeClass) document.body?.classList.remove('legend-phaser-title-ui-active');
@@ -958,14 +1229,10 @@
 
     syncNativeTitleUi(surface = this.surface) {
       const hero = root()?.querySelector('.title-v136-rpg .v120-title-hero');
-      // Continue is the returning-player title state. Keep this button set in
-      // the already-styled DOM until the native canvas painter has a proven
-      // returning-save parity path. This prevents a gold canvas button from
-      // becoming the only visible surface if its label texture/layout fails.
-      if (String(surface || '') === 'title' && hero?.querySelector('#continue')) {
-        this.clearNativeTitleUi();
-        return;
-      }
+      // Returning saves use the same native menu painter as first-time players.
+      // The DOM remains visible until every required action has a real Phaser
+      // label, state texture, and semantic button target. Any failed preflight
+      // leaves the existing title menu untouched as a safe fallback.
       if (String(surface || '') !== 'title' || !hero) {
         if (this.nativeTitleUiActive || document.body?.classList.contains('legend-phaser-title-ui-active')) {
           this.clearNativeTitleUi();
@@ -1004,8 +1271,40 @@
         width: rect.width * sx,
         height: rect.height * sy
       });
+      const logoNode = hero.querySelector('.v150-logo-lockup .v120-legend-logo');
+      const dividerNode = hero.querySelector('.v120-divider');
+      const titleDecorationNodes = [
+        { id: 'kicker', node: hero.querySelector('.portal100-kicker'), color: '#efcf83' },
+        { id: 'intro', node: hero.querySelector('.v120-title-hero > p'), color: '#f0f1e8' },
+        { id: 'traveler-label', node: hero.querySelector('.v120-traveler-line small'), color: '#d7ba7b' },
+        { id: 'traveler-name', node: hero.querySelector('.v120-traveler-line strong'), color: '#fff2cb' },
+        { id: 'traveler-detail', node: hero.querySelector('.v120-traveler-line div > span'), color: '#c6d0c5' },
+        { id: 'menu-heading', node: hero.querySelector('.v136-menu-heading > span'), color: '#b9c4b9' },
+        { id: 'divider-caption', node: dividerNode?.querySelector('b'), color: '#edcc81' }
+      ].map(item => {
+        const rect = item.node?.getBoundingClientRect();
+        return {
+          ...item,
+          text: item.node?.textContent?.replace(/\s+/g, ' ').trim() || '',
+          rect: rect && rect.width && rect.height ? rect : null
+        };
+      });
+      const logoRect = logoNode?.getBoundingClientRect();
+      const dividerRect = dividerNode?.getBoundingClientRect();
+      const decorationReady = Boolean(
+        logoNode?.isConnected && logoRect?.width && logoRect?.height &&
+        dividerNode?.isConnected && dividerRect?.width && dividerRect?.height &&
+        titleDecorationNodes.every(item => item.node?.isConnected && item.rect && item.text)
+      );
       const signature = JSON.stringify([
         Math.round(panelRect.left), Math.round(panelRect.top), Math.round(panelRect.width), Math.round(panelRect.height),
+        logoRect && [Math.round(logoRect.left), Math.round(logoRect.top), Math.round(logoRect.width), Math.round(logoRect.height)],
+        dividerRect && [Math.round(dividerRect.left), Math.round(dividerRect.top), Math.round(dividerRect.width), Math.round(dividerRect.height)],
+        ...titleDecorationNodes.map(item => [
+          item.id, item.text,
+          Math.round(item.rect?.left || 0), Math.round(item.rect?.top || 0),
+          Math.round(item.rect?.width || 0), Math.round(item.rect?.height || 0)
+        ]),
         ...buttons.map(button => {
           const rect = button.getBoundingClientRect();
           return [button.id, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
@@ -1015,26 +1314,107 @@
       ]);
       if (this.nativeTitleUiActive && signature === this.nativeTitleUiSignature) return;
 
-      this.clearNativeTitleUi(false);
-      this.nativeTitleUiActive = true;
-      this.nativeTitleUiSignature = signature;
-      document.body?.classList.add('legend-phaser-title-ui-active');
+      const expectedIds = hero.querySelector('#continue')
+        ? ['continue','new','account','settings','dispatches','credits']
+        : ['newPrimary','account','settings','dispatches','credits'];
+      const presentIds = buttons.map(button => button.id);
+      const hasAllActions = expectedIds.every(id => presentIds.includes(id));
+      const requiredTextures = [
+        'menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo',
+        'menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'
+      ];
+      if (!hasAllActions || presentIds.length !== expectedIds.length || !decorationReady ||
+          !requiredTextures.every(key => this.textures.exists(key))) {
+        this.clearNativeTitleUi();
+        return;
+      }
 
+      // Reveal the semantic DOM while this frame is being rebuilt. Only hide
+      // it after all expected Phaser controls and their live labels are ready.
+      this.clearNativeTitleUi();
+      try {
       const panel = sceneRect(panelRect);
       const frame = this.add.graphics().setDepth(12);
-      frame.fillStyle(0x020604, 0.48);
+      frame.fillStyle(0x020302, 0.54);
       frame.fillRect(panel.x - 7 * sx, panel.y + 8 * sy, panel.width + 14 * sx, panel.height + 8 * sy);
-      frame.fillStyle(0x08110b, 0.90);
+      frame.fillStyle(0x17110c, 0.96);
       frame.fillRect(panel.x, panel.y, panel.width, panel.height);
-      frame.lineStyle(1.2, 0xd5b775, 0.78);
+      frame.lineStyle(Math.max(1.2, 1.2 * sx), 0x8f6a3d, 0.82);
       frame.strokeRect(panel.x + 0.5, panel.y + 0.5, panel.width - 1, panel.height - 1);
-      frame.lineStyle(1, 0x9c895d, 0.34);
+      frame.lineStyle(Math.max(1, sx), 0xe0c18a, 0.28);
       frame.strokeRect(panel.x + 8 * sx, panel.y + 8 * sy, panel.width - 16 * sx, panel.height - 16 * sy);
-      frame.fillStyle(0xe0bd75, 0.66);
-      frame.fillRect(panel.x + 1 * sx, panel.y + 18 * sy, 2 * sx, Math.max(12, panel.height - 36 * sy));
-      frame.fillStyle(0xe8cf9a, 0.78);
-      frame.fillRect(panel.x + 15 * sx, panel.y + 12 * sy, Math.min(42 * sx, panel.width * 0.15), Math.max(1, sy));
+      frame.fillStyle(0x070705, 0.38);
+      frame.fillRect(panel.x + 12 * sx, panel.y + 12 * sy, Math.max(1, panel.width - 24 * sx), Math.max(1, panel.height - 24 * sy));
       this.nativeTitleUiObjects.push(frame);
+
+      const cornerSize = Math.max(34, Math.min(62, 54 * Math.min(sx, sy)));
+      const addFrameCorner = (x, y, flipX, flipY) => {
+        const corner = this.add.image(x, y, 'menuFrameCorner')
+          .setOrigin(0, 0)
+          .setDisplaySize(cornerSize, cornerSize)
+          .setFlip(flipX, flipY)
+          .setDepth(14);
+        this.nativeTitleUiObjects.push(corner);
+      };
+      addFrameCorner(panel.x, panel.y, false, false);
+      addFrameCorner(panel.x + panel.width - cornerSize, panel.y, true, false);
+      addFrameCorner(panel.x, panel.y + panel.height - cornerSize, false, true);
+      addFrameCorner(panel.x + panel.width - cornerSize, panel.y + panel.height - cornerSize, true, true);
+
+      const logoBounds = sceneRect(logoRect);
+      const logoSource = this.textures.get('menuTitleLogo')?.getSourceImage?.();
+      const logoRatio = logoSource?.width && logoSource?.height
+        ? logoSource.width / logoSource.height
+        : (logoNode.naturalWidth && logoNode.naturalHeight ? logoNode.naturalWidth / logoNode.naturalHeight : 2.72);
+      const logoWidth = Math.min(logoBounds.width, logoBounds.height * logoRatio);
+      const logoHeight = logoWidth / Math.max(0.1, logoRatio);
+      const logoObject = this.add.image(
+        logoBounds.x + logoBounds.width / 2,
+        logoBounds.y + logoBounds.height / 2,
+        'menuTitleLogo'
+      ).setDisplaySize(logoWidth, logoHeight).setDepth(15);
+      this.nativeTitleUiLogoObject = logoObject;
+      this.nativeTitleUiObjects.push(logoObject);
+
+      const dividerBounds = sceneRect(dividerRect);
+      const dividerObject = this.add.image(
+        dividerBounds.x + dividerBounds.width / 2,
+        dividerBounds.y + dividerBounds.height / 2,
+        'menuDivider'
+      ).setDisplaySize(dividerBounds.width, dividerBounds.height).setAlpha(0.92).setDepth(15);
+      this.nativeTitleUiDividerObject = dividerObject;
+      this.nativeTitleUiObjects.push(dividerObject);
+
+      titleDecorationNodes.forEach(item => {
+        const rect = sceneRect(item.rect);
+        const css = window.getComputedStyle(item.node);
+        const centered = css.textAlign === 'center';
+        const fontSize = Math.max(item.id === 'intro' ? 11 : 9,
+          Math.min(item.id === 'intro' ? 20 : 16, (parseFloat(css.fontSize) || 12) * sy));
+        const object = this.add.text(
+          centered ? rect.x + rect.width / 2 : rect.x,
+          rect.y,
+          item.text,
+          {
+            fontFamily: css.fontFamily || 'Arial, sans-serif',
+            fontSize: fontSize + 'px',
+            fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+            color: item.color,
+            stroke: '#080b07',
+            strokeThickness: fontSize >= 14 ? 0.7 : 0.35,
+            letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
+            lineSpacing: Math.max(0, (parseFloat(css.lineHeight) || fontSize * 1.4) - fontSize),
+            align: css.textAlign || 'left',
+            wordWrap: { width: Math.max(12, rect.width), useAdvancedWrap: true },
+            padding: { left: 1, right: 2, top: 1, bottom: 2 }
+          }
+        ).setOrigin(centered ? 0.5 : 0, 0).setDepth(16);
+        object.setResolution?.(2);
+        object.autoRound = true;
+        object.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        this.nativeTitleUiDecorations.push({ id: item.id, node: item.node, object });
+        this.nativeTitleUiObjects.push(object);
+      });
 
       const iconTextures = {
         continue: 'menuCompass',
@@ -1056,22 +1436,22 @@
         const mainSize = Math.max(10, Math.round((parseFloat(mainCss.fontSize) || 13) * sy));
         const detailSize = Math.max(9, Math.round((parseFloat(detailCss.fontSize) || 10) * sy));
         const group = this.add.container(rect.x, rect.y).setDepth(13);
+        const disabled = Boolean(button.disabled || button.getAttribute('aria-disabled') === 'true');
+        const focused = button === document.activeElement || button.matches(':focus-visible');
+        const hovered = button.matches(':hover');
+        const stateTexture = disabled ? 'menuButtonDisabled'
+          : primary || focused || hovered ? 'menuButtonSelected' : 'menuButtonNormal';
+        const buttonSurface = this.add.image(rect.width / 2, rect.height / 2, stateTexture)
+          .setDisplaySize(rect.width, rect.height)
+          .setAlpha(0.99);
         const art = this.add.graphics();
-        // Use deliberate, fully opaque menu surfaces. The DOM underneath is an
-        // accessible hit target only, so these are the actual visible buttons.
-        const idleFill = primary ? 0xd5a44e : 0x09150d;
-        const idleLine = primary ? 0xffe6aa : 0xe0c17d;
-        art.fillStyle(idleFill, 0.99);
-        art.fillRect(0, 0, rect.width, rect.height);
-        art.lineStyle(primary ? 1.8 : 1.35, idleLine, 0.98);
-        art.strokeRect(0.5, 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
-        art.fillStyle(primary ? 0x704918 : 0xe0bd75, 0.96);
-        art.fillRect(0, 0, primary ? 4 * sx : 3 * sx, rect.height);
+        art.fillStyle(primary ? 0xd5a44e : 0xe0bd75, primary ? 0.72 : 0.52);
+        art.fillRect(2 * sx, 3 * sy, Math.max(2 * sx, 2), Math.max(2, rect.height - 6 * sy));
         const iconX = 10 * sx;
         const iconY = Math.max(4 * sy, (rect.height - 28 * sy) / 2);
-        art.fillStyle(primary ? 0x5a3d18 : 0x030905, 0.92);
+        art.fillStyle(0x100d09, 0.94);
         art.fillRect(iconX, iconY, 28 * sx, Math.min(28 * sy, rect.height - 8 * sy));
-        art.lineStyle(1.1, primary ? 0xffedc5 : 0xe5c985, 0.92);
+        art.lineStyle(1.1, disabled ? 0x75664f : 0xe5c985, disabled ? 0.36 : 0.92);
         art.strokeRect(iconX + 0.5, iconY + 0.5, 27 * sx, Math.min(27 * sy, rect.height - 9 * sy));
 
         const iconKey = iconTextures[button.id] || 'menuMilestone';
@@ -1094,37 +1474,42 @@
           })).setOrigin(0.5);
         const labelX = Math.round(52 * sx);
         const titleY = Math.round(rect.height * (detail ? 0.38 : 0.5));
+        const labelWidth = Math.max(40, rect.width - labelX - 34 * sx);
         const title = crispText(this.add.text(labelX, titleY, main, {
           fontFamily: 'Georgia, Times New Roman, serif',
-          fontSize: `${Math.max(primary ? 17 : 16, mainSize)}px`,
+          fontSize: `${Math.max(13, Math.min(primary ? 17 : 16, mainSize))}px`,
           fontStyle: 'bold',
-          color: primary ? '#241707' : '#fff3d7',
-          stroke: primary ? '#f0d28f' : '#020704',
-          strokeThickness: primary ? 0 : 1,
-          letterSpacing: 0.22 * sx,
+          color: disabled ? '#aaa18f' : '#f5ead5',
+          stroke: '#100c08',
+          strokeThickness: 1,
+          letterSpacing: 0.16 * sx,
+          wordWrap: { width: labelWidth, useAdvancedWrap: true },
           padding: { left: 1, right: 2, top: 2, bottom: 2 }
         })).setOrigin(0, 0.5);
+        title.setFixedSize?.(labelWidth, Math.max(16, rect.height * (detail ? 0.48 : 0.72)));
         const subtitle = crispText(this.add.text(labelX, Math.round(rect.height * 0.73), detail, {
           fontFamily: 'Arial, sans-serif',
-          fontSize: `${Math.max(12, detailSize)}px`,
+          fontSize: `${Math.max(10, Math.min(12, detailSize))}px`,
           fontStyle: primary ? 'bold' : 'normal',
-          color: primary ? '#3e2b10' : '#dce6d9',
-          stroke: primary ? '#f0d28f' : '#020704',
-          strokeThickness: primary ? 0 : 0.55,
+          color: disabled ? '#8e8778' : '#dccba8',
+          stroke: '#100c08',
+          strokeThickness: 0.5,
+          wordWrap: { width: labelWidth, useAdvancedWrap: true },
           padding: { left: 1, right: 2, top: 1, bottom: 1 }
         })).setOrigin(0, 0.5);
+        subtitle.setFixedSize?.(labelWidth, Math.max(15, rect.height * 0.34));
         const arrow = crispText(this.add.text(rect.width - 17 * sx, Math.round(rect.height / 2), '›', {
           fontFamily: 'Georgia, serif',
           fontSize: `${Math.max(22, Math.round(24 * sy))}px`,
           fontStyle: 'bold',
-          color: primary ? '#36230b' : '#f1d58f',
+          color: disabled ? '#8e8778' : '#fff0cf',
           padding: { left: 1, right: 2, top: 1, bottom: 1 }
         })).setOrigin(0.5);
         const focusFrame = this.add.graphics();
-        focusFrame.lineStyle(2.4, primary ? 0x5a3b14 : 0xffe6a5, 1);
+        focusFrame.lineStyle(2.4, 0xffe6a5, 1);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
-        group.add([art, icon, title, subtitle, arrow, focusFrame]);
+        group.add([buttonSurface, art, icon, title, subtitle, arrow, focusFrame]);
         group.setSize(rect.width, rect.height);
         this.nativeTitleUiObjects.push(group);
         const control = {
@@ -1150,6 +1535,27 @@
           button.addEventListener('blur', () => this.setNativeTitleControlFocus(button.id, button.matches(':hover')));
         }
       });
+
+      // Never conceal the DOM fallback until every production action has
+      // corresponding, non-empty Phaser text and an active scene container.
+      const complete = this.nativeTitleUiControls.length === expectedIds.length &&
+        this.nativeTitleUiControls.every(item =>
+          item.container?.active && item.titleText?.text?.trim() &&
+          item.button?.isConnected && item.button.tagName === 'BUTTON') &&
+        this.nativeTitleUiLogoObject?.active && this.nativeTitleUiDividerObject?.active &&
+        this.nativeTitleUiDecorations.length === titleDecorationNodes.length &&
+        this.nativeTitleUiDecorations.every(item => item.object?.active && item.object?.text?.trim());
+      if (!complete) {
+        this.clearNativeTitleUi();
+        return;
+      }
+      this.nativeTitleUiActive = true;
+      this.nativeTitleUiSignature = signature;
+      document.body?.classList.add('legend-phaser-title-ui-active');
+      } catch (error) {
+        this.clearNativeTitleUi();
+        console.warn('Phaser title menu paint failed; leaving the accessible DOM menu visible.', error);
+      }
     }
 
     clearNativeAnnalsUi(removeClass = true) {
@@ -1168,6 +1574,11 @@
       this.nativeAnnalsUiSignature = '';
       this.nativeAnnalsUiActive = false;
       this.nativeAnnalsUiButtonFocus = null;
+      this.nativeAnnalsUiButtonBackground = null;
+      this.nativeAnnalsUiButtonLabel = null;
+      this.nativeAnnalsUiButtonNode = null;
+      this.nativeAnnalsUiButtonHovered = false;
+      this.nativeAnnalsUiButtonKeyboardFocused = false;
       if (removeClass) document.body?.classList.remove('legend-phaser-annals-ui-active');
     }
 
@@ -1273,10 +1684,19 @@
           letterSpacing: Number.isFinite(parseFloat(style.letterSpacing)) ? Math.max(0, parseFloat(style.letterSpacing) * sx) : 0,
           wordWrap: { width: Math.max(36, rect.width), useAdvancedWrap: true },
           padding: { left: 1, right: 2, top: 1, bottom: 2 },
-          align: style.textAlign || 'left'
+          align: overrides.align || style.textAlign || 'left'
         };
-        const textX = rect.x + Math.max(0, Number(overrides.insetLeft) || 0) * sx;
-        return addObject(this.add.text(textX, rect.y, text, config).setOrigin(0, 0));
+        const centered = overrides.center === true;
+        const textX = centered
+          ? rect.x + rect.width / 2
+          : rect.x + Math.max(0, Number(overrides.insetLeft) || 0) * sx;
+        const textY = centered ? rect.y + rect.height / 2 : rect.y;
+        const label = addObject(this.add.text(textX, textY, text, config)
+          .setOrigin(centered ? 0.5 : 0, centered ? 0.5 : 0));
+        if (centered && node.classList?.contains('opening-lore-v220-continue')) {
+          this.nativeAnnalsUiButtonLabel = label;
+        }
+        return label;
       };
 
       const screenRect = readRect(screen);
@@ -1343,27 +1763,32 @@
         const rect = readRect(button);
         if (rect) {
           button.setAttribute('aria-label', button.textContent.replace(/→/g, '').trim());
-          const buttonGraphics = this.add.graphics();
-          buttonGraphics.fillStyle(0x57421f, 0.98);
-          buttonGraphics.fillRect(rect.x, rect.y, rect.width, rect.height);
-          buttonGraphics.lineStyle(1.35, 0xe8c47a, 0.9);
-          buttonGraphics.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.width - 1, rect.height - 1);
-          buttonGraphics.fillStyle(0xf0ca76, 0.96);
-          buttonGraphics.fillRect(rect.x, rect.y, 3 * sx, rect.height);
-          addObject(buttonGraphics);
+          this.nativeAnnalsUiButtonNode = button;
+          const initialTexture = button.disabled ? 'menuButtonDisabled'
+            : button.matches(':hover') || button.matches(':focus-visible')
+              ? 'menuButtonSelected' : 'menuButtonNormal';
+          const background = this.add.image(
+            rect.x + rect.width / 2, rect.y + rect.height / 2, initialTexture
+          ).setDisplaySize(rect.width, rect.height).setDepth(11);
+          addObject(background);
+          this.nativeAnnalsUiButtonBackground = background;
+          this.nativeAnnalsUiButtonHovered = button.matches(':hover');
+          this.nativeAnnalsUiButtonKeyboardFocused = button.matches(':focus-visible');
           const labelRect = readRect(button);
-          makeText(button, labelRect, { color: '#fff0c5' });
+          makeText(button, labelRect, { color: '#fff0c5', align: 'center', center: true });
           if (!button.__legendNativeAnnalsBound) {
             button.__legendNativeAnnalsBound = true;
-            button.addEventListener('focus', () => this.setNativeAnnalsButtonFocus(true));
+            button.addEventListener('focus', () =>
+              this.setNativeAnnalsButtonFocus(button.matches(':focus-visible'))
+            );
             button.addEventListener('blur', () => this.setNativeAnnalsButtonFocus(false));
-            button.addEventListener('pointerenter', () => this.setNativeAnnalsButtonFocus(true));
-            button.addEventListener('pointerleave', () => this.setNativeAnnalsButtonFocus(document.activeElement === button));
+            button.addEventListener('pointerenter', () => this.setNativeAnnalsButtonHover(true));
+            button.addEventListener('pointerleave', () => this.setNativeAnnalsButtonHover(false));
           }
           const focus = this.add.graphics();
-          focus.lineStyle(2, 0xffe7a6, 0.98);
-          focus.strokeRect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
-          focus.setVisible(button === document.activeElement || button.matches(':hover'));
+          focus.lineStyle(2, 0xffe7a6, 0.96);
+          focus.strokeRoundedRect(rect.x - 2, rect.y - 2, rect.width + 4, rect.height + 4, 3);
+          focus.setVisible(this.nativeAnnalsUiButtonKeyboardFocused);
           addObject(focus);
           this.nativeAnnalsUiButtonFocus = focus;
         }
@@ -1371,7 +1796,24 @@
     }
 
     setNativeAnnalsButtonFocus(active) {
-      this.nativeAnnalsUiButtonFocus?.setVisible?.(Boolean(active));
+      this.nativeAnnalsUiButtonKeyboardFocused = Boolean(active);
+      this.nativeAnnalsUiButtonFocus?.setVisible?.(this.nativeAnnalsUiButtonKeyboardFocused);
+      this.refreshNativeAnnalsButtonTexture();
+    }
+
+    setNativeAnnalsButtonHover(active) {
+      this.nativeAnnalsUiButtonHovered = Boolean(active);
+      this.refreshNativeAnnalsButtonTexture();
+    }
+
+    refreshNativeAnnalsButtonTexture() {
+      const button = this.nativeAnnalsUiButtonNode;
+      const background = this.nativeAnnalsUiButtonBackground;
+      if (!button?.isConnected || !background?.active) return;
+      const texture = button.disabled ? 'menuButtonDisabled'
+        : this.nativeAnnalsUiButtonKeyboardFocused || this.nativeAnnalsUiButtonHovered
+          ? 'menuButtonSelected' : 'menuButtonNormal';
+      if (background.texture?.key !== texture) background.setTexture(texture);
     }
 
     clearNativeCreationUi(removeClass = true) {
@@ -2311,6 +2753,1950 @@
       if (removeClass) document.body?.classList.remove('legend-phaser-hud-ui-active');
     }
 
+
+    clearNativeBottomBarUi(removeClass = true) {
+      this.nativeBottomBarUiLayoutEvent?.remove?.(false);
+      this.nativeBottomBarUiLayoutEvent = null;
+      if (removeClass && this.nativeBottomBarUiBoundElement && this.nativeBottomBarUiInteractionHandler) {
+        ['focusin', 'focusout', 'pointerover', 'pointerout', 'scroll'].forEach(type =>
+          this.nativeBottomBarUiBoundElement.removeEventListener(type, this.nativeBottomBarUiInteractionHandler)
+        );
+        this.nativeBottomBarUiBoundElement = null;
+        this.nativeBottomBarUiInteractionHandler = null;
+      }
+      // Phaser 4.1 WebGL masks are Filters, while Canvas uses a GeometryMask.
+      // Remove the filter through its owning list before destroying the container.
+      if (this.nativeBottomBarUiContainer && this.nativeBottomBarUiMaskFilter) {
+        this.nativeBottomBarUiContainer.filters?.internal?.remove?.(this.nativeBottomBarUiMaskFilter, true);
+      }
+      this.nativeBottomBarUiMaskFilter = null;
+      if (this.nativeBottomBarUiContainer && this.nativeBottomBarUiMask) {
+        this.nativeBottomBarUiContainer.clearMask?.(true);
+      }
+      this.nativeBottomBarUiMask = null;
+      this.nativeBottomBarUiMaskBounds = null;
+      this.nativeBottomBarUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeBottomBarUiObjects = [];
+      this.nativeBottomBarUiContainer = null;
+      this.nativeBottomBarUiMaskGraphics = null;
+      this.nativeBottomBarUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserBottomText;
+        delete node.dataset.legendPhaserBottomIcon;
+        delete node.dataset.legendPhaserBottomControl;
+      });
+      this.nativeBottomBarUiTaggedNodes = [];
+      this.nativeBottomBarUiTextNodes = [];
+      this.nativeBottomBarUiIconNodes = [];
+      this.nativeBottomBarUiControls = [];
+      this.nativeBottomBarUiSignature = '';
+      this.nativeBottomBarUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-bottom-bar-ui-active');
+    }
+
+    syncNativeBottomBarUi() {
+      const shell = document.getElementById('legend-world-shell-root');
+      const bar = shell?.querySelector('.lws-bottom-bar');
+      if (!bar || shell.hidden) {
+        if (this.nativeBottomBarUiActive || document.body?.classList.contains('legend-phaser-bottom-bar-ui-active')) {
+          this.clearNativeBottomBarUi();
+        }
+        return;
+      }
+
+      if (this.nativeBottomBarUiBoundElement !== bar) {
+        this.clearNativeBottomBarUi();
+        this.nativeBottomBarUiBoundElement = bar;
+        this.nativeBottomBarUiInteractionHandler = () => {
+          this.nativeBottomBarUiLayoutEvent?.remove?.(false);
+          this.nativeBottomBarUiLayoutEvent = this.time.delayedCall(24, () => {
+            this.nativeBottomBarUiLayoutEvent = null;
+            this.syncNativeBottomBarUi();
+          });
+        };
+        ['focusin', 'focusout', 'pointerover', 'pointerout', 'scroll'].forEach(type =>
+          bar.addEventListener(type, this.nativeBottomBarUiInteractionHandler, { passive: type === 'scroll' })
+        );
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          x: rect.left * sx, y: rect.top * sy,
+          width: rect.width * sx, height: rect.height * sy
+        };
+      };
+      const barRect = readRect(bar);
+      if (!barRect) {
+        this.clearNativeBottomBarUi();
+        return;
+      }
+
+      const controls = Array.from(bar.querySelectorAll('button[data-world-action]')).filter(node => readRect(node));
+      const content = node => node.textContent?.replace(/\s+/g, ' ').trim() || '';
+      const textNodes = controls.map(node => node.querySelector('.lws-btn-copy strong')).filter(node =>
+        Boolean(node && content(node) && readRect(node))
+      );
+      const icons = controls.map(node => ({
+        button: node,
+        node: node.querySelector('.lws-btn-icon'),
+        rect: readRect(node.querySelector('.lws-btn-icon'))
+      })).filter(item => item.node && item.rect);
+      const signature = JSON.stringify([
+        Math.round(barRect.x), Math.round(barRect.y), Math.round(barRect.width), Math.round(barRect.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight), Number(bar.scrollLeft || 0),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [
+            node.dataset.worldAction || '', content(node), Math.round(rect.x), Math.round(rect.y),
+            Math.round(rect.width), Math.round(rect.height), Boolean(node.disabled),
+            node === document.activeElement || node.matches(':focus-visible'), node.matches(':hover')
+          ];
+        })
+      ]);
+      // The shell rebuilds bottom.innerHTML on every refresh. Check the actual
+      // nodes and tags as well as their visual signature before reusing a paint.
+      const tagsCurrent =
+        controls.length === this.nativeBottomBarUiControls.length &&
+        controls.every((node, index) =>
+          node === this.nativeBottomBarUiControls[index] &&
+          node.dataset.legendPhaserBottomControl === 'true'
+        ) &&
+        textNodes.length === this.nativeBottomBarUiTextNodes.length &&
+        textNodes.every((node, index) =>
+          node === this.nativeBottomBarUiTextNodes[index] &&
+          node.dataset.legendPhaserBottomText === 'true'
+        ) &&
+        icons.length === this.nativeBottomBarUiIconNodes.length &&
+        icons.every((item, index) =>
+          item.node === this.nativeBottomBarUiIconNodes[index] &&
+          item.node.dataset.legendPhaserBottomIcon === 'true'
+        );
+      if (this.nativeBottomBarUiActive && tagsCurrent && signature === this.nativeBottomBarUiSignature) return;
+
+      this.clearNativeBottomBarUi(false);
+      // Keep the semantic DOM visible until the native painter and its clip
+      // are both ready. GeometryMask is Canvas-only in Phaser 4.1; WebGL uses
+      // the internal Mask filter on this container.
+      document.body?.classList.remove('legend-phaser-bottom-bar-ui-active');
+      const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+      maskGraphics.fillStyle(0xffffff, 1);
+      maskGraphics.fillRect(barRect.x, barRect.y, barRect.width, barRect.height);
+      const container = this.add.container(0, 0).setDepth(46);
+      const rendererType = this.sys.game.renderer?.type;
+      let mask = null;
+      let maskFilter = null;
+      if (rendererType === Phaser.WEBGL) {
+        try {
+          container.enableFilters?.();
+          container.setFiltersFocusContext?.(true);
+          maskFilter = container.filters?.internal?.addMask?.(
+            maskGraphics,
+            false,
+            this.cameras.main,
+            'world'
+          ) || null;
+        } catch (error) {
+          console.warn('[LEGEND Phaser] Bottom-bar WebGL mask could not be created; keeping the accessible DOM bar visible.', error);
+          maskFilter = null;
+        }
+        if (!maskFilter) {
+          container.destroy(true);
+          maskGraphics.destroy(true);
+          this.nativeBottomBarUiActive = false;
+          this.nativeBottomBarUiObjects = [];
+          this.nativeBottomBarUiContainer = null;
+          this.nativeBottomBarUiMaskGraphics = null;
+          this.nativeBottomBarUiMaskBounds = null;
+          this.nativeBottomBarUiSignature = '';
+          return;
+        }
+        this.nativeBottomBarUiMaskFilter = maskFilter;
+      } else {
+        mask = maskGraphics.createGeometryMask();
+        container.setMask(mask);
+        this.nativeBottomBarUiMask = mask;
+      }
+      this.nativeBottomBarUiMaskBounds = {
+        x: barRect.x,
+        y: barRect.y,
+        width: barRect.width,
+        height: barRect.height
+      };
+      this.nativeBottomBarUiMaskGraphics = maskGraphics;
+      this.nativeBottomBarUiContainer = container;
+      this.nativeBottomBarUiObjects.push(container, maskGraphics);
+      const add = object => {
+        if (object) {
+          container.add(object);
+          this.nativeBottomBarUiObjects.push(object);
+        }
+        return object;
+      };
+      const graphics = add(this.add.graphics());
+      graphics.fillStyle(0x07100a, 0.96);
+      graphics.fillRect(barRect.x, barRect.y, barRect.width, barRect.height);
+      graphics.fillStyle(0x1d281c, 0.24);
+      graphics.fillRect(barRect.x, barRect.y, barRect.width, Math.max(1, barRect.height * 0.44));
+      graphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.68);
+      graphics.strokeRect(barRect.x + 0.5, barRect.y + 0.5, Math.max(1, barRect.width - 1), Math.max(1, barRect.height - 1));
+      graphics.lineStyle(Math.max(1, sy), 0xe7c982, 0.24);
+      graphics.lineBetween(barRect.x + 8 * sx, barRect.y + 2 * sy, barRect.x + barRect.width - 8 * sx, barRect.y + 2 * sy);
+
+      const textureByAction = Object.freeze({
+        world: 'menuInn',
+        inventory: 'menuTraveler',
+        journal: 'menuJournal',
+        map: 'menuCompass',
+        combat: 'menuMilestone',
+        settings: 'menuSettings'
+      });
+
+      controls.forEach(button => {
+        const rect = readRect(button);
+        if (!rect) return;
+        const action = String(button.dataset.worldAction || '');
+        const primary = button.classList.contains('primary');
+        const disabled = Boolean(button.disabled || button.getAttribute('aria-disabled') === 'true');
+        const focused = button === document.activeElement || button.matches(':focus-visible');
+        const hovered = button.matches(':hover');
+        const fill = primary ? 0x49391e : hovered || focused ? 0x38432b : 0x142016;
+        const line = focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xa98d55;
+        graphics.fillStyle(fill, disabled ? 0.30 : primary ? 0.98 : 0.92);
+        graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+        graphics.lineStyle(focused ? Math.max(2, 2 * Math.min(sx, sy)) : Math.max(1, sx), line, disabled ? 0.26 : focused ? 0.98 : 0.68);
+        graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        graphics.fillStyle(primary ? 0xffd98b : 0xbfa064, primary ? 0.92 : 0.58);
+        graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
+
+        const iconNode = button.querySelector('.lws-btn-icon');
+        const iconRect = readRect(iconNode);
+        const textureKey = textureByAction[action];
+        if (iconRect) {
+          graphics.fillStyle(0x0a120b, 0.9);
+          graphics.fillRect(iconRect.x, iconRect.y, iconRect.width, iconRect.height);
+          graphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.38);
+          graphics.strokeRect(iconRect.x + 0.5, iconRect.y + 0.5, Math.max(1, iconRect.width - 1), Math.max(1, iconRect.height - 1));
+          if (textureKey && this.textures.exists(textureKey)) {
+            const image = add(this.add.image(
+              iconRect.x + iconRect.width / 2,
+              iconRect.y + iconRect.height / 2,
+              textureKey
+            ).setDisplaySize(
+              Math.max(10, Math.min(iconRect.width - 3 * sx, 28 * sx)),
+              Math.max(10, Math.min(iconRect.height - 3 * sy, 28 * sy))
+            ));
+            image.setAlpha(disabled ? 0.36 : 0.96);
+            iconNode.dataset.legendPhaserBottomIcon = 'true';
+            this.nativeBottomBarUiTaggedNodes.push(iconNode);
+          }
+        }
+
+        const label = button.querySelector('.lws-btn-copy strong');
+        const labelRect = readRect(label);
+        if (labelRect) {
+          const style = window.getComputedStyle(label);
+          const fontSize = Math.max(9, Math.round((parseFloat(style.fontSize) || 11) * sy));
+          const text = add(this.add.text(labelRect.x, labelRect.y, content(label), {
+            fontFamily: style.fontFamily || 'Arial, sans-serif',
+            fontSize: fontSize + 'px',
+            fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+            color: disabled ? '#9b9a8a' : '#f0ead9',
+            align: 'center'
+          }).setOrigin(0, 0));
+          text.setResolution?.(2);
+          text.setFixedSize?.(Math.max(10, labelRect.width), Math.max(10, labelRect.height));
+          text.setAlign?.('center');
+          label.dataset.legendPhaserBottomText = 'true';
+          this.nativeBottomBarUiTaggedNodes.push(label);
+        }
+        button.dataset.legendPhaserBottomControl = 'true';
+        this.nativeBottomBarUiTaggedNodes.push(button);
+      });
+
+      this.nativeBottomBarUiTextNodes = textNodes;
+      this.nativeBottomBarUiIconNodes = icons.map(item => item.node);
+      this.nativeBottomBarUiControls = controls;
+      this.nativeBottomBarUiSignature = signature;
+      this.nativeBottomBarUiActive = true;
+      document.body?.classList.add('legend-phaser-bottom-bar-ui-active');
+    }
+
+
+    clearNativeLeftDrawerUi(removeClass = true, removeListeners = true) {
+      this.nativeLeftDrawerUiLayoutEvent?.remove?.(false);
+      this.nativeLeftDrawerUiLayoutEvent = null;
+      if (removeListeners) {
+        if (this.nativeLeftDrawerUiBoundScroll && this.nativeLeftDrawerUiInteractionHandler) {
+          ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+            this.nativeLeftDrawerUiBoundScroll.removeEventListener(type, this.nativeLeftDrawerUiInteractionHandler)
+          );
+        }
+        if (this.nativeLeftDrawerUiBoundPanel && this.nativeLeftDrawerUiTransitionHandler) {
+          this.nativeLeftDrawerUiBoundPanel.removeEventListener('transitionend', this.nativeLeftDrawerUiTransitionHandler);
+        }
+        this.nativeLeftDrawerUiBoundPanel = null;
+        this.nativeLeftDrawerUiBoundScroll = null;
+        this.nativeLeftDrawerUiInteractionHandler = null;
+        this.nativeLeftDrawerUiTransitionHandler = null;
+      }
+      if (this.nativeLeftDrawerUiContainer && this.nativeLeftDrawerUiMaskFilter) {
+        this.nativeLeftDrawerUiContainer.filters?.internal?.remove?.(this.nativeLeftDrawerUiMaskFilter, true);
+      }
+      this.nativeLeftDrawerUiMaskFilter = null;
+      if (this.nativeLeftDrawerUiContainer && this.nativeLeftDrawerUiMask) {
+        this.nativeLeftDrawerUiContainer.clearMask?.(true);
+      }
+      this.nativeLeftDrawerUiMask = null;
+      this.nativeLeftDrawerUiMaskBounds = null;
+      this.nativeLeftDrawerUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeLeftDrawerUiObjects = [];
+      this.nativeLeftDrawerUiContainer = null;
+      this.nativeLeftDrawerUiMaskGraphics = null;
+      this.nativeLeftDrawerUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserLeftText;
+        delete node.dataset.legendPhaserLeftControl;
+        delete node.dataset.legendPhaserLeftIcon;
+      });
+      this.nativeLeftDrawerUiTaggedNodes = [];
+      this.nativeLeftDrawerUiTextNodes = [];
+      this.nativeLeftDrawerUiControls = [];
+      this.nativeLeftDrawerUiIconNodes = [];
+      this.nativeLeftDrawerUiSignature = '';
+      this.nativeLeftDrawerUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-left-drawer-ui-active');
+    }
+
+
+
+
+
+    clearNativeExpeditionActionsUi(removeClass = true, removeListeners = true) {
+      this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
+      this.nativeExpeditionActionsUiLayoutEvent = null;
+      this.nativeExpeditionActionsUiMutationObserver?.disconnect?.();
+      this.nativeExpeditionActionsUiMutationObserver = null;
+      if (removeListeners) {
+        if (this.nativeExpeditionActionsUiBoundHost && this.nativeExpeditionActionsUiInteractionHandler) {
+          ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+            this.nativeExpeditionActionsUiBoundHost.removeEventListener(type, this.nativeExpeditionActionsUiInteractionHandler)
+          );
+        }
+        if (this.nativeExpeditionActionsUiScrollHandler) {
+          document.removeEventListener('scroll', this.nativeExpeditionActionsUiScrollHandler, true);
+          window.removeEventListener('scroll', this.nativeExpeditionActionsUiScrollHandler);
+        }
+        this.nativeExpeditionActionsUiBoundHost = null;
+        this.nativeExpeditionActionsUiInteractionHandler = null;
+        this.nativeExpeditionActionsUiScrollHandler = null;
+      }
+      this.nativeExpeditionActionsUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeExpeditionActionsUiObjects = [];
+      this.nativeExpeditionActionsUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserRoadActionText;
+        delete node.dataset.legendPhaserRoadActionControl;
+        delete node.dataset.legendPhaserRoadActionIcon;
+      });
+      this.nativeExpeditionActionsUiTaggedNodes = [];
+      this.nativeExpeditionActionsUiTextNodes = [];
+      this.nativeExpeditionActionsUiControls = [];
+      this.nativeExpeditionActionsUiIconNodes = [];
+      this.nativeExpeditionActionsUiSignature = '';
+      this.nativeExpeditionActionsUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-road-actions-ui-active');
+    }
+
+    syncNativeExpeditionActionsUi() {
+      const host = document.querySelector('.exp100:has(.exp150-world-page)');
+      const page = host?.querySelector('.exp150-world-page');
+      const regions = [
+        host?.querySelector('.exp150-guide'),
+        host?.querySelector('.exp150-interactions'),
+        host?.querySelector('.exp150-action-dock'),
+        host?.querySelector('.exp150-camp')
+      ].filter(Boolean);
+      const visible = Boolean(host && page && !host.hidden &&
+        window.getComputedStyle(host).display !== 'none' && regions.length >= 2);
+      if (!visible) {
+        if (this.nativeExpeditionActionsUiActive ||
+            document.body?.classList.contains('legend-phaser-road-actions-ui-active')) {
+          this.clearNativeExpeditionActionsUi();
+        }
+        return;
+      }
+
+      if (this.nativeExpeditionActionsUiBoundHost !== host) {
+        this.clearNativeExpeditionActionsUi();
+        this.nativeExpeditionActionsUiBoundHost = host;
+        this.nativeExpeditionActionsUiInteractionHandler = () => {
+          this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
+          this.nativeExpeditionActionsUiLayoutEvent = this.time.delayedCall(24, () => {
+            this.nativeExpeditionActionsUiLayoutEvent = null;
+            this.syncNativeExpeditionActionsUi();
+          });
+        };
+        this.nativeExpeditionActionsUiScrollHandler = () => this.nativeExpeditionActionsUiInteractionHandler?.();
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          host.addEventListener(type, this.nativeExpeditionActionsUiInteractionHandler)
+        );
+        document.addEventListener('scroll', this.nativeExpeditionActionsUiScrollHandler, true);
+        window.addEventListener('scroll', this.nativeExpeditionActionsUiScrollHandler, { passive: true });
+        if (typeof window.MutationObserver === 'function') {
+          this.nativeExpeditionActionsUiMutationObserver = new window.MutationObserver(() =>
+            this.nativeExpeditionActionsUiInteractionHandler?.()
+          );
+          this.nativeExpeditionActionsUiMutationObserver.observe(host, { childList: true, subtree: true });
+        }
+      }
+
+      if (this.hasFiniteEntranceAnimation(page)) {
+        this.clearNativeExpeditionActionsUi(true, false);
+        this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
+        this.nativeExpeditionActionsUiLayoutEvent = this.time.delayedCall(230, () => {
+          this.nativeExpeditionActionsUiLayoutEvent = null;
+          this.syncNativeExpeditionActionsUi();
+        });
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected || node.closest('[hidden],[aria-hidden="true"]')) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+      };
+      const textSelector = [
+        'h2','h3','h4','p','strong','small','em',
+        '.exp100-kicker','.exp150-kicker',
+        '.exp100-poi-copy > span','.exp100-poi-copy > strong','.exp100-poi-copy > p',
+        '.exp100-poi-copy > button','.exp100-poi-icon','.exp150-action > b','.exp150-abandon',
+        '.exp100-choice > span',
+        '.exp100-camp-heading > span','.exp100-camp-heading > strong','.exp100-camp-heading > small',
+        '.exp150-camp-atmosphere > span','.exp150-camp-atmosphere > p','.exp150-camp-atmosphere > small',
+        '.exp150-section-heading > span','.exp150-current-mark',
+        '.exp150-action-symbol'
+      ].join(',');
+      const textNodes = Array.from(new Set(regions.flatMap(region =>
+        Array.from(region.querySelectorAll(textSelector))
+      ))).filter(node => Boolean(node.textContent?.trim()) && readRect(node));
+      const controls = Array.from(new Set(regions.flatMap(region =>
+        Array.from(region.querySelectorAll('button'))
+      ))).filter(node => readRect(node));
+      const iconNodes = Array.from(new Set(regions.flatMap(region =>
+        Array.from(region.querySelectorAll('.exp100-poi-icon,.exp150-action-symbol,.exp150-action > b'))
+      ))).filter(node => readRect(node));
+      const surfaceSelector = [
+        '.exp150-guide','.exp100-panel','.exp100-poi','.exp100-camp',
+        '.exp150-camp-atmosphere','.exp100-camp-heading','.exp150-action-dock',
+        '.exp150-section-heading','.exp150-action','.exp100-choice',
+        '.exp160-optional-detour','.exp160-optional-site','.exp160-field-contract',
+        '.exp160-field-report-note','.exp160-site-complete'
+      ].join(',');
+      const surfaces = Array.from(new Set(regions.flatMap(region => [
+        ...(region.matches(surfaceSelector) ? [region] : []),
+        ...Array.from(region.querySelectorAll(surfaceSelector))
+      ]))).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+
+      const signature = JSON.stringify([
+        Math.round(window.innerWidth), Math.round(window.innerHeight),
+        Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
+        ...regions.map(node => {
+          const rect = readRect(node);
+          return [node.className, rect && Math.round(rect.x), rect && Math.round(rect.y),
+            rect && Math.round(rect.width), rect && Math.round(rect.height)];
+        }),
+        ...textNodes.map(node => {
+          const rect = readRect(node);
+          return [node.textContent?.replace(/\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [node.id || node.dataset.blackrootSurvey || node.dataset.node || '',
+            node.textContent?.replace(/\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height),
+            Boolean(node.disabled), node === document.activeElement || node.matches(':focus-visible'),
+            node.matches(':hover')];
+        })
+      ]);
+      const tagsCurrent =
+        textNodes.length === this.nativeExpeditionActionsUiTextNodes.length &&
+        textNodes.every((node,index) => node === this.nativeExpeditionActionsUiTextNodes[index] &&
+          node.dataset.legendPhaserRoadActionText === 'true') &&
+        controls.length === this.nativeExpeditionActionsUiControls.length &&
+        controls.every((node,index) => node === this.nativeExpeditionActionsUiControls[index] &&
+          node.dataset.legendPhaserRoadActionControl === 'true') &&
+        iconNodes.length === this.nativeExpeditionActionsUiIconNodes.length &&
+        iconNodes.every((node,index) => node === this.nativeExpeditionActionsUiIconNodes[index] &&
+          node.dataset.legendPhaserRoadActionIcon === 'true');
+      if (this.nativeExpeditionActionsUiActive && tagsCurrent && signature === this.nativeExpeditionActionsUiSignature) return;
+
+      this.clearNativeExpeditionActionsUi(false, false);
+      document.body?.classList.remove('legend-phaser-road-actions-ui-active');
+
+      const container = this.add.container(0, 0).setDepth(56);
+      const graphics = this.add.graphics();
+      container.add(graphics);
+      this.nativeExpeditionActionsUiObjects.push(container);
+
+      surfaces.forEach(({node,rect}) => {
+        const classes = node.classList;
+        if (classes.contains('exp150-guide')) {
+          graphics.fillStyle(0x352b18, 0.82);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.fillStyle(0xd7b86a, 0.86);
+          graphics.fillRect(rect.x, rect.y, Math.max(2*sx,2), rect.height);
+        } else if (classes.contains('exp150-action-dock')) {
+          graphics.fillStyle(0x0d140f, 0.74);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1,sy), 0xbfa064, 0.32);
+          graphics.lineBetween(rect.x, rect.y, rect.x + rect.width, rect.y);
+        } else if (classes.contains('exp100-panel') || classes.contains('exp100-poi') ||
+                   classes.contains('exp100-camp') || classes.contains('exp160-optional-detour') ||
+                   classes.contains('exp160-optional-site') || classes.contains('exp160-field-contract')) {
+          const poi = classes.contains('exp100-poi');
+          const camp = classes.contains('exp100-camp');
+          graphics.fillStyle(poi ? 0x29271a : camp ? 0x152017 : 0x121b13, 0.97);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 5*sx);
+          graphics.lineStyle(Math.max(1,sx), poi ? 0xc4a25d : 0xbfa064, 0.44);
+          graphics.strokeRoundedRect(rect.x + sx/2, rect.y + sy/2,
+            Math.max(1,rect.width-sx), Math.max(1,rect.height-sy), 5*sx);
+          graphics.fillStyle(0xd4b174, 0.48);
+          graphics.fillRect(rect.x, rect.y, Math.max(2*sx,2), Math.max(2*sy,2));
+        } else if (classes.contains('exp150-camp-atmosphere') ||
+                   classes.contains('exp100-camp-heading') ||
+                   classes.contains('exp150-section-heading') ||
+                   classes.contains('exp160-field-report-note') ||
+                   classes.contains('exp160-site-complete')) {
+          graphics.fillStyle(0xbfa064, 0.07);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3*sx);
+          graphics.lineStyle(Math.max(1,sx), 0xbfa064, 0.24);
+          graphics.strokeRoundedRect(rect.x + sx/2, rect.y + sy/2,
+            Math.max(1,rect.width-sx), Math.max(1,rect.height-sy), 3*sx);
+        } else if (classes.contains('exp150-action') || classes.contains('exp100-choice')) {
+          const focused = node === document.activeElement || node.matches(':focus-visible');
+          const hovered = node.matches(':hover');
+          const disabled = node.disabled || node.getAttribute('aria-disabled') === 'true';
+          const primary = classes.contains('primary');
+          graphics.fillStyle(focused || hovered ? 0x3a3925 : primary ? 0x39321e : 0x152017,
+            disabled ? 0.32 : 0.97);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 4*sx);
+          graphics.lineStyle(focused ? 2*Math.min(sx,sy) : Math.max(1,sx),
+            focused ? 0xffe6a0 : primary ? 0xd7b86a : 0x829078, disabled ? 0.30 : 0.62);
+          graphics.strokeRoundedRect(rect.x + sx/2, rect.y + sy/2,
+            Math.max(1,rect.width-sx), Math.max(1,rect.height-sy), 4*sx);
+          graphics.fillStyle(primary ? 0xe7c982 : 0x91a080, disabled ? 0.26 : 0.66);
+          graphics.fillRect(rect.x, rect.y, Math.max(2*sx,2), rect.height);
+        }
+      });
+
+      textNodes.forEach(node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const style = window.getComputedStyle(node);
+        const isIcon = node.matches('.exp100-poi-icon,.exp150-action-symbol,.exp150-action > b');
+        const color = isIcon ? '#d8bd79'
+          : node.matches('.exp100-kicker,.exp150-kicker,.exp100-poi-copy > span,.exp150-current-mark') ? '#c9ad6e'
+          : node.matches('h2,h3,h4,strong') ? '#eee7d6'
+          : node.matches('small,em') ? '#d6c18b'
+          : '#b6c0b2';
+        const value = node.textContent?.replace(/\s+/g, ' ').trim() || '';
+        const object = this.add.text(rect.x, rect.y, value, {
+          fontFamily: style.fontFamily || 'Arial, sans-serif',
+          fontSize: Math.max(isIcon ? 10 : 8,
+            Math.round((parseFloat(style.fontSize) || (isIcon ? 15 : 10)) * sy)) + 'px',
+          fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
+          color,
+          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+          align: style.textAlign || 'left'
+        }).setDepth(58).setOrigin(0,0);
+        object.setResolution?.(2);
+        object.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
+        container.add(object);
+        node.dataset.legendPhaserRoadActionText = 'true';
+        this.nativeExpeditionActionsUiTaggedNodes.push(node);
+      });
+      controls.forEach(node => {
+        node.dataset.legendPhaserRoadActionControl = 'true';
+        this.nativeExpeditionActionsUiTaggedNodes.push(node);
+      });
+      iconNodes.forEach(node => {
+        node.dataset.legendPhaserRoadActionIcon = 'true';
+        this.nativeExpeditionActionsUiTaggedNodes.push(node);
+      });
+
+      this.nativeExpeditionActionsUiTextNodes = textNodes;
+      this.nativeExpeditionActionsUiControls = controls;
+      this.nativeExpeditionActionsUiIconNodes = iconNodes;
+      this.nativeExpeditionActionsUiSignature = signature;
+      this.nativeExpeditionActionsUiActive = true;
+      document.body?.classList.add('legend-phaser-road-actions-ui-active');
+    }
+
+    clearNativeExpeditionHudUi(removeClass = true, removeListeners = true) {
+      this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
+      this.nativeExpeditionHudUiLayoutEvent = null;
+      if (removeListeners) {
+        if (this.nativeExpeditionHudUiBoundHost && this.nativeExpeditionHudUiInteractionHandler) {
+          ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+            this.nativeExpeditionHudUiBoundHost.removeEventListener(type, this.nativeExpeditionHudUiInteractionHandler)
+          );
+        }
+        if (this.nativeExpeditionHudUiScrollHandler) {
+          document.removeEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, true);
+          window.removeEventListener('scroll', this.nativeExpeditionHudUiScrollHandler);
+        }
+        this.nativeExpeditionHudUiBoundHost = null;
+        this.nativeExpeditionHudUiInteractionHandler = null;
+        this.nativeExpeditionHudUiScrollHandler = null;
+      }
+      this.nativeExpeditionHudUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeExpeditionHudUiObjects = [];
+      this.nativeExpeditionHudUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserExpeditionText;
+        delete node.dataset.legendPhaserExpeditionControl;
+        delete node.dataset.legendPhaserExpeditionIcon;
+      });
+      this.nativeExpeditionHudUiTaggedNodes = [];
+      this.nativeExpeditionHudUiTextNodes = [];
+      this.nativeExpeditionHudUiControls = [];
+      this.nativeExpeditionHudUiIconNodes = [];
+      this.nativeExpeditionHudUiSignature = '';
+      this.nativeExpeditionHudUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-expedition-hud-ui-active');
+    }
+
+    syncNativeExpeditionHudUi() {
+      const host = document.querySelector('.exp100:has(.exp150-world-page)');
+      const page = host?.querySelector('.exp150-world-page');
+      const regions = [
+        host?.querySelector('.exp150-expedition-head'),
+        host?.querySelector('.exp150-road-clock'),
+        host?.querySelector('.exp150-route-tracker'),
+        host?.querySelector('.exp150-journey-aside')
+      ].filter(Boolean);
+      const visible = Boolean(host && page && !host.hidden &&
+        window.getComputedStyle(host).display !== 'none' &&
+        regions.length === 4);
+      if (!visible) {
+        if (this.nativeExpeditionHudUiActive ||
+            document.body?.classList.contains('legend-phaser-expedition-hud-ui-active')) {
+          this.clearNativeExpeditionHudUi();
+        }
+        return;
+      }
+
+      if (this.nativeExpeditionHudUiBoundHost !== host) {
+        this.clearNativeExpeditionHudUi();
+        this.nativeExpeditionHudUiBoundHost = host;
+        this.nativeExpeditionHudUiInteractionHandler = () => {
+          this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
+          this.nativeExpeditionHudUiLayoutEvent = this.time.delayedCall(24, () => {
+            this.nativeExpeditionHudUiLayoutEvent = null;
+            this.syncNativeExpeditionHudUi();
+          });
+        };
+        this.nativeExpeditionHudUiScrollHandler = () => this.nativeExpeditionHudUiInteractionHandler?.();
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          host.addEventListener(type, this.nativeExpeditionHudUiInteractionHandler)
+        );
+        document.addEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, true);
+        window.addEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, { passive: true });
+      }
+
+      if (this.hasFiniteEntranceAnimation(page)) {
+        this.clearNativeExpeditionHudUi(true, false);
+        this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
+        this.nativeExpeditionHudUiLayoutEvent = this.time.delayedCall(230, () => {
+          this.nativeExpeditionHudUiLayoutEvent = null;
+          this.syncNativeExpeditionHudUi();
+        });
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          x: rect.left * sx, y: rect.top * sy,
+          width: rect.width * sx, height: rect.height * sy
+        };
+      };
+      const textSelector = [
+        '.exp150-title-group .exp150-kicker',
+        '.exp150-title-group h1',
+        '.exp150-title-group p',
+        '.exp150-meter > div > span',
+        '.exp150-meter > div > strong',
+        '.exp150-utility-actions > button',
+        '.exp150-clock-symbol',
+        '.exp150-clock-main > strong',
+        '.exp150-clock-main > span',
+        '.exp150-road-clock > p',
+        '.exp150-tracker-label > span',
+        '.exp150-tracker-label > small',
+        '.exp150-stop-marker',
+        '.exp150-stop-name',
+        '.exp150-journey-aside .exp150-kicker',
+        '.exp150-journey-aside .exp150-aside-card h2',
+        '.exp150-journey-aside .exp150-aside-card p',
+        '.exp150-route-reminder > span',
+        '.exp150-route-reminder > strong',
+        '.exp150-route-reminder > small',
+        '.exp150-aside-title > span',
+        '.exp150-supply-row > span',
+        '.exp150-supply-row > strong',
+        '.exp150-text-action'
+      ].join(',');
+      const textNodes = Array.from(new Set(regions.flatMap(region =>
+        Array.from(region.querySelectorAll(textSelector))
+      ))).filter(node => Boolean(node.textContent?.trim()) && readRect(node));
+      const controls = Array.from(host.querySelectorAll(
+        '.exp150-utility-actions > button,.exp150-journey-aside .exp150-text-action'
+      )).filter(node => readRect(node));
+      const iconNodes = Array.from(host.querySelectorAll(
+        '.exp150-clock-symbol,.exp150-stop-marker,.exp150-utility-actions button > span,.exp150-utility-actions button > i'
+      )).filter(node => readRect(node));
+      const surfaces = Array.from(new Set([
+        ...host.querySelectorAll([
+          '.exp150-expedition-head',
+          '.exp150-meter',
+          '.exp150-meter > i',
+          '.exp150-road-clock',
+          '.exp150-route-tracker',
+          '.exp150-aside-card',
+          '.exp150-pressure-track'
+        ].join(','))
+      ])).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const fills = Array.from(host.querySelectorAll('.exp150-meter > i > b,.exp150-pressure-track > i'))
+        .map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const trackerItems = Array.from(host.querySelectorAll('.exp150-route-tracker li')).map(node => ({
+        node, markerRect: readRect(node.querySelector('.exp150-stop-marker'))
+      })).filter(item => item.markerRect);
+
+      const signature = JSON.stringify([
+        Math.round(window.innerWidth), Math.round(window.innerHeight),
+        Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
+        ...regions.map(node => {
+          const rect = readRect(node);
+          return [node.className, rect && Math.round(rect.x), rect && Math.round(rect.y),
+            rect && Math.round(rect.width), rect && Math.round(rect.height)];
+        }),
+        ...textNodes.map(node => {
+          const rect = readRect(node);
+          return [node.textContent?.replace(/\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [node.id || '', node.textContent?.replace(/\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height),
+            Boolean(node.disabled), node === document.activeElement || node.matches(':focus-visible'),
+            node.matches(':hover')];
+        })
+      ]);
+      const tagsCurrent =
+        textNodes.length === this.nativeExpeditionHudUiTextNodes.length &&
+        textNodes.every((node,index) => node === this.nativeExpeditionHudUiTextNodes[index] &&
+          node.dataset.legendPhaserExpeditionText === 'true') &&
+        controls.length === this.nativeExpeditionHudUiControls.length &&
+        controls.every((node,index) => node === this.nativeExpeditionHudUiControls[index] &&
+          node.dataset.legendPhaserExpeditionControl === 'true') &&
+        iconNodes.length === this.nativeExpeditionHudUiIconNodes.length &&
+        iconNodes.every((node,index) => node === this.nativeExpeditionHudUiIconNodes[index] &&
+          node.dataset.legendPhaserExpeditionIcon === 'true');
+      if (this.nativeExpeditionHudUiActive && tagsCurrent && signature === this.nativeExpeditionHudUiSignature) return;
+
+      this.clearNativeExpeditionHudUi(false, false);
+      document.body?.classList.remove('legend-phaser-expedition-hud-ui-active');
+
+      const container = this.add.container(0, 0).setDepth(53);
+      const graphics = this.add.graphics();
+      container.add(graphics);
+      this.nativeExpeditionHudUiObjects.push(container);
+
+      surfaces.forEach(({node,rect}) => {
+        const classes = node.classList;
+        if (classes.contains('exp150-expedition-head')) {
+          graphics.fillStyle(0x101810, 0.88);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1,sy), 0xbfa064, 0.34);
+          graphics.lineBetween(rect.x, rect.y + rect.height - sy, rect.x + rect.width, rect.y + rect.height - sy);
+        } else if (classes.contains('exp150-road-clock')) {
+          const isNight = classes.contains('night') || classes.contains('deep-night');
+          const isDusk = classes.contains('dusk') || classes.contains('golden-hour');
+          graphics.fillStyle(isNight ? 0x111928 : isDusk ? 0x30221c : 0x152017, 0.96);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1,sx), isNight ? 0x8293b6 : isDusk ? 0xc08b58 : 0xbfa064, 0.42);
+          graphics.strokeRect(rect.x + sx/2, rect.y + sy/2,
+            Math.max(1,rect.width-sx), Math.max(1,rect.height-sy));
+        } else if (classes.contains('exp150-route-tracker')) {
+          graphics.fillStyle(0x0d140f, 0.82);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1,sy), 0xbfa064, 0.24);
+          graphics.lineBetween(rect.x, rect.y + rect.height - sy, rect.x + rect.width, rect.y + rect.height - sy);
+        } else if (classes.contains('exp150-meter')) {
+          graphics.fillStyle(0x182116, 0.78);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3*sx);
+        } else if (classes.contains('exp150-aside-card')) {
+          const next = classes.contains('exp150-next-stop');
+          const journal = classes.contains('exp150-journal-callout');
+          graphics.fillStyle(next ? 0x2b2719 : journal ? 0x17251a : 0x121a13, 0.96);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 4*sx);
+          graphics.lineStyle(Math.max(1,sx), next ? 0xbfa064 : 0x71816d, next ? 0.48 : 0.30);
+          graphics.strokeRoundedRect(rect.x + sx/2, rect.y + sy/2,
+            Math.max(1,rect.width-sx), Math.max(1,rect.height-sy), 4*sx);
+          graphics.fillStyle(0xd4b174, next ? 0.8 : 0.38);
+          graphics.fillRect(rect.x, rect.y, Math.max(2*sx,2), Math.max(2*sy,2));
+        } else if (classes.contains('exp150-pressure-track') || node.matches('.exp150-meter > i')) {
+          graphics.fillStyle(0x2a3025, 0.98);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 5*sy);
+        }
+      });
+
+      if (trackerItems.length > 1) {
+        const first = trackerItems[0].markerRect, last = trackerItems[trackerItems.length - 1].markerRect;
+        const cy = first.y + first.height/2;
+        graphics.lineStyle(Math.max(1,sy), 0x82907b, 0.34);
+        graphics.lineBetween(first.x + first.width/2, cy, last.x + last.width/2, cy);
+      }
+      trackerItems.forEach(({node,markerRect}) => {
+        const current = node.classList.contains('is-current');
+        const visited = node.classList.contains('is-visited');
+        graphics.fillStyle(current ? 0x4a4127 : visited ? 0x243326 : 0x101710, 1);
+        graphics.fillCircle(markerRect.x + markerRect.width/2, markerRect.y + markerRect.height/2, markerRect.width/2);
+        graphics.lineStyle(Math.max(1,sx), current ? 0xdfc578 : visited ? 0x829d75 : 0x556454, 0.9);
+        graphics.strokeCircle(markerRect.x + markerRect.width/2, markerRect.y + markerRect.height/2, markerRect.width/2);
+      });
+      fills.forEach(({node,rect}) => {
+        const isPressure = node.matches('.exp150-pressure-track > i') || node.closest('.exp150-meter')?.classList.contains('pressure');
+        graphics.fillStyle(isPressure ? 0xb98752 : 0xb1b979, 0.96);
+        graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 4*sy);
+      });
+
+      textNodes.forEach(node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const style = window.getComputedStyle(node);
+        const isIcon = node.matches('.exp150-clock-symbol,.exp150-stop-marker');
+        const originalColor = style.color;
+        const color = originalColor && originalColor !== 'rgba(0, 0, 0, 0)' ? originalColor
+          : node.matches('.exp150-title-group h1,.exp150-journey-aside h2') ? '#efe7d4'
+          : node.matches('.exp150-kicker,.exp150-tracker-label > span') ? '#c9ad6e'
+          : '#b6c0b2';
+        const textObject = this.add.text(rect.x, rect.y,
+          node.textContent?.replace(/\s+/g, ' ').trim() || '', {
+            fontFamily: style.fontFamily || 'Arial, sans-serif',
+            fontSize: Math.max(isIcon ? 10 : 8,
+              Math.round((parseFloat(style.fontSize) || (isIcon ? 14 : 10))*sy)) + 'px',
+            fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
+            color,
+            letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+            align: style.textAlign || 'left'
+          }).setDepth(54).setOrigin(0,0);
+        textObject.setResolution?.(2);
+        textObject.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
+        container.add(textObject);
+        node.dataset.legendPhaserExpeditionText = 'true';
+        this.nativeExpeditionHudUiTaggedNodes.push(node);
+      });
+      controls.forEach(node => {
+        node.dataset.legendPhaserExpeditionControl = 'true';
+        this.nativeExpeditionHudUiTaggedNodes.push(node);
+      });
+      iconNodes.forEach(node => {
+        node.dataset.legendPhaserExpeditionIcon = 'true';
+        this.nativeExpeditionHudUiTaggedNodes.push(node);
+      });
+
+      this.nativeExpeditionHudUiTextNodes = textNodes;
+      this.nativeExpeditionHudUiControls = controls;
+      this.nativeExpeditionHudUiIconNodes = iconNodes;
+      this.nativeExpeditionHudUiSignature = signature;
+      this.nativeExpeditionHudUiActive = true;
+      document.body?.classList.add('legend-phaser-expedition-hud-ui-active');
+    }
+
+    clearNativeRoadMapUi(removeClass = true, removeListeners = true) {
+      this.nativeRoadMapUiLayoutEvent?.remove?.(false);
+      this.nativeRoadMapUiLayoutEvent = null;
+      if (removeListeners) {
+        if (this.nativeRoadMapUiBoundDialog && this.nativeRoadMapUiInteractionHandler) {
+          ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+            this.nativeRoadMapUiBoundDialog.removeEventListener(type, this.nativeRoadMapUiInteractionHandler)
+          );
+        }
+        if (this.nativeRoadMapUiBoundOverlay && this.nativeRoadMapUiTransitionHandler) {
+          this.nativeRoadMapUiBoundOverlay.removeEventListener('transitionend', this.nativeRoadMapUiTransitionHandler);
+        }
+        this.nativeRoadMapUiBoundOverlay = null;
+        this.nativeRoadMapUiBoundDialog = null;
+        this.nativeRoadMapUiInteractionHandler = null;
+        this.nativeRoadMapUiTransitionHandler = null;
+      }
+      if (this.nativeRoadMapUiContainer && this.nativeRoadMapUiMaskFilter) {
+        this.nativeRoadMapUiContainer.filters?.internal?.remove?.(this.nativeRoadMapUiMaskFilter, true);
+      }
+      this.nativeRoadMapUiMaskFilter = null;
+      if (this.nativeRoadMapUiContainer && this.nativeRoadMapUiMask) {
+        this.nativeRoadMapUiContainer.clearMask?.(true);
+      }
+      this.nativeRoadMapUiMask = null;
+      this.nativeRoadMapUiMaskBounds = null;
+      this.nativeRoadMapUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeRoadMapUiObjects = [];
+      this.nativeRoadMapUiContainer = null;
+      this.nativeRoadMapUiMaskGraphics = null;
+      this.nativeRoadMapUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserRoadMapText;
+        delete node.dataset.legendPhaserRoadMapControl;
+        delete node.dataset.legendPhaserRoadMapIcon;
+      });
+      this.nativeRoadMapUiTaggedNodes = [];
+      this.nativeRoadMapUiTextNodes = [];
+      this.nativeRoadMapUiControls = [];
+      this.nativeRoadMapUiIconNodes = [];
+      this.nativeRoadMapUiSignature = '';
+      this.nativeRoadMapUiKind = '';
+      this.nativeRoadMapUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-road-map-ui-active');
+    }
+
+    syncNativeRoadMapUi() {
+      const overlay = document.getElementById('exp150Modal');
+      const dialog = overlay?.querySelector('.exp150-modal-dialog,[role="dialog"]');
+      const content = document.getElementById('exp150ModalContent');
+      const overlayStyle = overlay ? window.getComputedStyle(overlay) : null;
+      const visible = Boolean(overlay && dialog && content && !overlay.hidden &&
+        overlayStyle?.display !== 'none' && overlayStyle?.visibility !== 'hidden');
+      if (!visible) {
+        if (this.nativeRoadMapUiActive || document.body?.classList.contains('legend-phaser-road-map-ui-active')) {
+          this.clearNativeRoadMapUi();
+        }
+        return;
+      }
+
+      if (this.nativeRoadMapUiBoundOverlay !== overlay || this.nativeRoadMapUiBoundDialog !== dialog) {
+        this.clearNativeRoadMapUi();
+        this.nativeRoadMapUiBoundOverlay = overlay;
+        this.nativeRoadMapUiBoundDialog = dialog;
+        this.nativeRoadMapUiInteractionHandler = () => {
+          this.nativeRoadMapUiLayoutEvent?.remove?.(false);
+          this.nativeRoadMapUiLayoutEvent = this.time.delayedCall(28, () => {
+            this.nativeRoadMapUiLayoutEvent = null;
+            this.syncNativeRoadMapUi();
+          });
+        };
+        this.nativeRoadMapUiTransitionHandler = event => {
+          if (event.target !== overlay || (event.propertyName && event.propertyName !== 'opacity')) return;
+          this.nativeRoadMapUiInteractionHandler?.();
+        };
+        ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          dialog.addEventListener(type, this.nativeRoadMapUiInteractionHandler, { passive: type === 'scroll' })
+        );
+        overlay.addEventListener('transitionend', this.nativeRoadMapUiTransitionHandler);
+      }
+
+      // Keep the original map/journal fully visible until its modal transition ends
+      // and the native painter is ready to replace every visible label and surface.
+      if (this.hasFiniteEntranceAnimation(overlay)) {
+        this.clearNativeRoadMapUi(true, false);
+        this.nativeRoadMapUiLayoutEvent?.remove?.(false);
+        this.nativeRoadMapUiLayoutEvent = this.time.delayedCall(240, () => {
+          this.nativeRoadMapUiLayoutEvent = null;
+          this.syncNativeRoadMapUi();
+        });
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          x: rect.left * sx, y: rect.top * sy,
+          width: rect.width * sx, height: rect.height * sy
+        };
+      };
+      const overlayRect = readRect(overlay);
+      const dialogRect = readRect(dialog);
+      if (!overlayRect || !dialogRect) {
+        this.clearNativeRoadMapUi();
+        return;
+      }
+
+      const textSelector = [
+        '.exp150-map-intro .exp150-kicker',
+        '.exp150-map-intro h2',
+        '.exp150-map-intro p',
+        '.exp160-graph-legend span',
+        '.exp160-map-connectors span',
+        '.exp160-map-node-head strong',
+        '.exp160-map-node-head > div > span',
+        '.exp160-map-node > p',
+        '.exp160-map-node-status',
+        '.exp160-map-action',
+        '.exp150-map-discoveries-heading > span',
+        '.exp150-map-discoveries-heading > strong',
+        '.exp150-map-discovery strong',
+        '.exp150-map-discovery small',
+        '.exp150-map-discovery p',
+        '.exp150-map-discovery-empty',
+        '.exp150-journal-section h3',
+        '.exp150-journal-entry-type',
+        '.exp150-journal-entry strong',
+        '.exp150-journal-entry p',
+        '.exp150-route-entry > span',
+        '.exp150-route-entry strong',
+        '.exp150-route-entry small',
+        '.exp150-place-chip',
+        '.exp150-journal-empty > strong',
+        '.exp150-journal-empty > p',
+        '.exp150-journal-muted',
+        '.exp150-modal-close'
+      ].join(',');
+      const textNodes = Array.from(new Set(content.querySelectorAll(textSelector))).filter(node =>
+        Boolean(node.textContent?.trim()) && readRect(node)
+      );
+      const controls = Array.from(content.querySelectorAll(
+        'button[data-exp160-map-route],button[data-exp160-map-visit],button#exp150ModalClose'
+      )).filter(node => readRect(node));
+      const iconNodes = Array.from(content.querySelectorAll(
+        '.exp160-map-symbol,.exp150-map-discovery-pin,.exp150-journal-empty > span'
+      )).filter(node => readRect(node));
+      const surfaces = Array.from(new Set(content.querySelectorAll([
+        '.exp160-route-graph',
+        '.exp160-map-node',
+        '.exp160-map-action',
+        '.exp150-map-discovery',
+        '.exp150-journal-section',
+        '.exp150-journal-entry',
+        '.exp150-route-entry',
+        '.exp150-place-chip',
+        '.exp150-journal-empty',
+        '.exp150-modal-close'
+      ].join(',')))).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const intro = content.querySelector('.exp150-map-intro');
+      const currentKind = content.querySelector('.exp160-route-graph') ? 'map' : 'journal';
+      const signature = JSON.stringify([
+        currentKind,
+        Math.round(overlayRect.x), Math.round(overlayRect.y),
+        Math.round(overlayRect.width), Math.round(overlayRect.height),
+        Math.round(dialogRect.x), Math.round(dialogRect.y),
+        Math.round(dialogRect.width), Math.round(dialogRect.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight),
+        Number(dialog.scrollTop || 0),
+        ...textNodes.map(node => {
+          const rect = readRect(node);
+          return [node.textContent?.replace(/\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [node.id || node.dataset.exp160MapRoute || node.dataset.exp160MapVisit || '',
+            node.textContent?.replace(/\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height),
+            Boolean(node.disabled), node === document.activeElement || node.matches(':focus-visible'),
+            node.matches(':hover')];
+        })
+      ]);
+      const tagsCurrent =
+        controls.length === this.nativeRoadMapUiControls.length &&
+        controls.every((node, index) => node === this.nativeRoadMapUiControls[index] &&
+          node.dataset.legendPhaserRoadMapControl === 'true') &&
+        textNodes.length === this.nativeRoadMapUiTextNodes.length &&
+        textNodes.every((node, index) => node === this.nativeRoadMapUiTextNodes[index] &&
+          node.dataset.legendPhaserRoadMapText === 'true') &&
+        iconNodes.length === this.nativeRoadMapUiIconNodes.length &&
+        iconNodes.every((node, index) => node === this.nativeRoadMapUiIconNodes[index] &&
+          node.dataset.legendPhaserRoadMapIcon === 'true');
+      if (this.nativeRoadMapUiActive && this.nativeRoadMapUiKind === currentKind &&
+          tagsCurrent && signature === this.nativeRoadMapUiSignature) return;
+
+      this.clearNativeRoadMapUi(false, false);
+      document.body?.classList.remove('legend-phaser-road-map-ui-active');
+
+      // Native modal backdrop and framed parchment/iron panel.
+      const backdrop = this.add.graphics().setDepth(78);
+      backdrop.fillStyle(0x020503, 0.76);
+      backdrop.fillRect(overlayRect.x, overlayRect.y, overlayRect.width, overlayRect.height);
+      this.nativeRoadMapUiObjects.push(backdrop);
+
+      const panelGraphics = this.add.graphics().setDepth(79);
+      panelGraphics.fillStyle(0x111a12, 0.985);
+      panelGraphics.fillRoundedRect(dialogRect.x, dialogRect.y, dialogRect.width, dialogRect.height, 7 * sx);
+      panelGraphics.fillStyle(0x202a1d, 0.18);
+      panelGraphics.fillRect(dialogRect.x + sx, dialogRect.y + sy, Math.max(1, dialogRect.width - 2 * sx), Math.min(50 * sy, dialogRect.height * 0.24));
+      panelGraphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.78);
+      panelGraphics.strokeRoundedRect(dialogRect.x + sx / 2, dialogRect.y + sy / 2,
+        Math.max(1, dialogRect.width - sx), Math.max(1, dialogRect.height - sy), 7 * sx);
+      this.nativeRoadMapUiObjects.push(panelGraphics);
+
+      const contentContainer = this.add.container(0, 0).setDepth(80);
+      const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+      maskGraphics.fillStyle(0xffffff, 1);
+      maskGraphics.fillRect(dialogRect.x, dialogRect.y, dialogRect.width, dialogRect.height);
+      const rendererType = this.sys.game.renderer?.type;
+      let mask = null;
+      let maskFilter = null;
+      if (rendererType === Phaser.WEBGL) {
+        try {
+          contentContainer.enableFilters?.();
+          contentContainer.setFiltersFocusContext?.(true);
+          maskFilter = contentContainer.filters?.internal?.addMask?.(
+            maskGraphics, false, this.cameras.main, 'world'
+          ) || null;
+        } catch (error) {
+          console.warn('[LEGEND Phaser] Road map WebGL mask could not be created; keeping the accessible DOM modal visible.', error);
+        }
+        if (!maskFilter) {
+          backdrop.destroy();
+          panelGraphics.destroy();
+          contentContainer.destroy(true);
+          maskGraphics.destroy(true);
+          this.nativeRoadMapUiObjects = [];
+          return;
+        }
+        this.nativeRoadMapUiMaskFilter = maskFilter;
+      } else {
+        mask = maskGraphics.createGeometryMask();
+        contentContainer.setMask(mask);
+        this.nativeRoadMapUiMask = mask;
+      }
+      this.nativeRoadMapUiContainer = contentContainer;
+      this.nativeRoadMapUiMaskGraphics = maskGraphics;
+      this.nativeRoadMapUiMaskBounds = {
+        x: dialogRect.x, y: dialogRect.y, width: dialogRect.width, height: dialogRect.height
+      };
+      this.nativeRoadMapUiObjects.push(contentContainer, maskGraphics);
+
+      const addContent = object => {
+        if (!object) return object;
+        contentContainer.add(object);
+        return object;
+      };
+      const graphics = addContent(this.add.graphics());
+      surfaces.forEach(({ node, rect }) => {
+        const classes = node.classList;
+        if (classes.contains('exp160-route-graph')) {
+          graphics.fillStyle(0x162117, 0.96);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 5 * sx);
+          graphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.40);
+          graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
+            Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 5 * sx);
+        } else if (classes.contains('exp160-map-node')) {
+          const current = classes.contains('is-current');
+          const visited = classes.contains('is-visited');
+          const reachable = classes.contains('is-reachable');
+          const offRoute = classes.contains('is-off-route');
+          graphics.fillStyle(current ? 0x40351c : classes.contains('is-optional') ? 0x2b2718 : 0x111b13,
+            offRoute ? 0.48 : 0.98);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 4 * sx);
+          graphics.lineStyle(Math.max(1, sx),
+            current ? 0xeccf7f : visited ? 0x8db08b : reachable ? 0xd7b86a : 0x71816d,
+            offRoute ? 0.30 : 0.62);
+          graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
+            Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 4 * sx);
+          graphics.fillStyle(current ? 0xe7c982 : visited ? 0x9bbc95 : reachable ? 0xe0c178 : 0x849180, 0.86);
+          graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
+        } else if (classes.contains('exp160-map-action') || classes.contains('exp150-modal-close')) {
+          const focused = node === document.activeElement || node.matches(':focus-visible');
+          const hovered = node.matches(':hover');
+          graphics.fillStyle(focused || hovered ? 0x4a4328 : 0x292f22, 0.98);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3 * sx);
+          graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
+            focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xbfa064, 0.72);
+          graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
+            Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 3 * sx);
+        } else if (classes.contains('exp150-map-discovery')) {
+          graphics.fillStyle(0xbfa064, 0.065);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.24);
+          graphics.lineBetween(rect.x, rect.y + rect.height - sy, rect.x + rect.width, rect.y + rect.height - sy);
+        } else if (classes.contains('exp150-journal-section') ||
+                   classes.contains('exp150-journal-entry') ||
+                   classes.contains('exp150-route-entry') ||
+                   classes.contains('exp150-journal-empty')) {
+          graphics.fillStyle(0xbfa064, 0.045);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.20);
+          graphics.lineBetween(rect.x, rect.y + rect.height - sy, rect.x + rect.width, rect.y + rect.height - sy);
+        } else if (classes.contains('exp150-place-chip')) {
+          graphics.fillStyle(0x263525, 0.96);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3 * sx);
+          graphics.lineStyle(Math.max(1, sx), 0x819b72, 0.42);
+          graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
+            Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 3 * sx);
+        }
+      });
+
+      // Draw subtle separators and route connectors independently of the DOM.
+      const introRect = readRect(intro);
+      if (introRect && currentKind === 'map') {
+        graphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.30);
+        graphics.lineBetween(introRect.x, introRect.y + introRect.height,
+          introRect.x + introRect.width, introRect.y + introRect.height);
+      }
+      const addText = (node, isIcon = false) => {
+        const rect = readRect(node);
+        if (!rect) return null;
+        const style = window.getComputedStyle(node);
+        const textValue = node.textContent?.replace(/\s+/g, ' ').trim() || '';
+        if (!textValue) return null;
+        const selectorColor = node.matches('.exp150-map-intro .exp150-kicker,.exp160-map-node-status,.exp150-map-discovery small,.exp150-journal-entry-type,.exp150-route-entry > span,.exp150-map-discoveries-heading > span')
+          ? '#c9a96e'
+          : node.matches('.exp150-map-intro h2,.exp160-map-node-head strong,.exp150-map-discovery strong,.exp150-journal-entry strong,.exp150-route-entry strong,.exp150-journal-section h3,.exp150-journal-empty > strong,.exp150-modal-close')
+            ? '#eee7d6'
+            : node.matches('.exp160-graph-legend span,.exp160-map-connectors span')
+              ? '#c6b37e'
+              : node.matches('.exp160-map-node > p,.exp150-map-intro p,.exp150-map-discovery p,.exp150-journal-entry p,.exp150-route-entry small,.exp150-journal-empty > p,.exp150-journal-muted')
+                ? '#aeb9a8'
+                : node.matches('.exp160-map-action')
+                  ? '#f0dfac' : '#d9d4c3';
+        const textObject = this.add.text(rect.x, rect.y, textValue, {
+          fontFamily: style.fontFamily || 'Arial, sans-serif',
+          fontSize: Math.max(isIcon ? 10 : 8, Math.round((parseFloat(style.fontSize) || (isIcon ? 14 : 10)) * sy)) + 'px',
+          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+          color: selectorColor,
+          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+          align: style.textAlign || 'left'
+        }).setOrigin(0, 0).setDepth(82);
+        textObject.setResolution?.(2);
+        textObject.setFixedSize?.(Math.max(10, rect.width), Math.max(9, rect.height));
+        addContent(textObject);
+        node.dataset.legendPhaserRoadMapText = 'true';
+        this.nativeRoadMapUiTaggedNodes.push(node);
+        return textObject;
+      };
+      textNodes.forEach(node => addText(node));
+      iconNodes.forEach(node => {
+        const icon = addText(node, true);
+        if (!icon) return;
+        node.dataset.legendPhaserRoadMapIcon = 'true';
+        this.nativeRoadMapUiTaggedNodes.push(node);
+      });
+      controls.forEach(node => {
+        node.dataset.legendPhaserRoadMapControl = 'true';
+        this.nativeRoadMapUiTaggedNodes.push(node);
+      });
+
+      this.nativeRoadMapUiTextNodes = textNodes;
+      this.nativeRoadMapUiControls = controls;
+      this.nativeRoadMapUiIconNodes = iconNodes;
+      this.nativeRoadMapUiSignature = signature;
+      this.nativeRoadMapUiKind = currentKind;
+      this.nativeRoadMapUiActive = true;
+      document.body?.classList.add('legend-phaser-road-map-ui-active');
+    }
+
+    clearNativeRightDrawerUi(removeClass = true, removeListeners = true) {
+      this.nativeRightDrawerUiLayoutEvent?.remove?.(false);
+      this.nativeRightDrawerUiLayoutEvent = null;
+      if (removeListeners) {
+        if (this.nativeRightDrawerUiBoundScroll && this.nativeRightDrawerUiInteractionHandler) {
+          ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+            this.nativeRightDrawerUiBoundScroll.removeEventListener(type, this.nativeRightDrawerUiInteractionHandler)
+          );
+        }
+        if (this.nativeRightDrawerUiBoundPanel && this.nativeRightDrawerUiTransitionHandler) {
+          this.nativeRightDrawerUiBoundPanel.removeEventListener('transitionend', this.nativeRightDrawerUiTransitionHandler);
+        }
+        this.nativeRightDrawerUiBoundPanel = null;
+        this.nativeRightDrawerUiBoundScroll = null;
+        this.nativeRightDrawerUiInteractionHandler = null;
+        this.nativeRightDrawerUiTransitionHandler = null;
+      }
+      if (this.nativeRightDrawerUiContainer && this.nativeRightDrawerUiMaskFilter) {
+        this.nativeRightDrawerUiContainer.filters?.internal?.remove?.(this.nativeRightDrawerUiMaskFilter, true);
+      }
+      this.nativeRightDrawerUiMaskFilter = null;
+      if (this.nativeRightDrawerUiContainer && this.nativeRightDrawerUiMask) {
+        this.nativeRightDrawerUiContainer.clearMask?.(true);
+      }
+      this.nativeRightDrawerUiMask = null;
+      this.nativeRightDrawerUiMaskBounds = null;
+      this.nativeRightDrawerUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeRightDrawerUiObjects = [];
+      this.nativeRightDrawerUiContainer = null;
+      this.nativeRightDrawerUiMaskGraphics = null;
+      this.nativeRightDrawerUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserRightText;
+        delete node.dataset.legendPhaserRightControl;
+        delete node.dataset.legendPhaserRightIcon;
+      });
+      this.nativeRightDrawerUiTaggedNodes = [];
+      this.nativeRightDrawerUiTextNodes = [];
+      this.nativeRightDrawerUiControls = [];
+      this.nativeRightDrawerUiIconNodes = [];
+      this.nativeRightDrawerUiSignature = '';
+      this.nativeRightDrawerUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-right-drawer-ui-active');
+    }
+
+    syncNativeRightDrawerUi() {
+      const shell = document.getElementById('legend-world-shell-root');
+      const panel = shell?.querySelector('#lws-panel-right');
+      const scroll = panel?.querySelector('.lws-panel-scroll');
+      const mobile = window.matchMedia?.('(max-width: 1199px)').matches || false;
+      const hidden = !panel || !scroll || !shell || shell.hidden || panel.hidden ||
+        (mobile && (panel.inert || panel.getAttribute('aria-hidden') === 'true'));
+      if (hidden) {
+        if (this.nativeRightDrawerUiActive || document.body?.classList.contains('legend-phaser-right-drawer-ui-active')) {
+          this.clearNativeRightDrawerUi();
+        }
+        return;
+      }
+
+      if (this.nativeRightDrawerUiBoundPanel !== panel || this.nativeRightDrawerUiBoundScroll !== scroll) {
+        this.clearNativeRightDrawerUi();
+        this.nativeRightDrawerUiBoundPanel = panel;
+        this.nativeRightDrawerUiBoundScroll = scroll;
+        this.nativeRightDrawerUiInteractionHandler = () => {
+          this.nativeRightDrawerUiLayoutEvent?.remove?.(false);
+          this.nativeRightDrawerUiLayoutEvent = this.time.delayedCall(28, () => {
+            this.nativeRightDrawerUiLayoutEvent = null;
+            this.syncNativeRightDrawerUi();
+          });
+        };
+        this.nativeRightDrawerUiTransitionHandler = event => {
+          if (event.target !== panel || (event.propertyName && event.propertyName !== 'transform')) return;
+          this.nativeRightDrawerUiInteractionHandler?.();
+        };
+        ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          scroll.addEventListener(type, this.nativeRightDrawerUiInteractionHandler, { passive: type === 'scroll' })
+        );
+        panel.addEventListener('transitionend', this.nativeRightDrawerUiTransitionHandler);
+      }
+
+      // Let mobile drawer motion finish before sampling its final geometry.
+      if (this.hasFiniteEntranceAnimation(panel)) {
+        this.clearNativeRightDrawerUi(true, false);
+        this.nativeRightDrawerUiLayoutEvent?.remove?.(false);
+        this.nativeRightDrawerUiLayoutEvent = this.time.delayedCall(230, () => {
+          this.nativeRightDrawerUiLayoutEvent = null;
+          this.syncNativeRightDrawerUi();
+        });
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          x: rect.left * sx,
+          y: rect.top * sy,
+          width: rect.width * sx,
+          height: rect.height * sy
+        };
+      };
+      const panelRect = readRect(panel);
+      const scrollRect = readRect(scroll);
+      if (!panelRect || !scrollRect) {
+        this.clearNativeRightDrawerUi();
+        return;
+      }
+      const content = node => node.textContent?.replace(/\s+/g, ' ').trim() || '';
+      const headerNodes = Array.from(panel.querySelectorAll(
+        '.lws-panel-eyebrow,.lws-panel-header h2,.lws-panel-header p'
+      )).filter(node => Boolean(content(node)) && readRect(node));
+      const selectors = [
+        '.lws-btn-copy > strong',
+        '.lws-btn-copy > small',
+        '.lws-context-copy',
+        '.lws-quest-item > strong',
+        '.lws-quest-item > p',
+        '.lws-place-option-copy > strong',
+        '.lws-place-option-copy > small',
+        '.lws-place-option-state',
+        '.lws-selected-place > .lws-panel-eyebrow',
+        '.lws-selected-place h3',
+        '.lws-selected-place p',
+        '.lws-poi-hint > strong',
+        '.lws-poi-hint > p',
+        '.lws-other-destinations .lws-section-title > span'
+      ].join(',');
+      const scrollTextNodes = Array.from(new Set(scroll.querySelectorAll(selectors))).filter(node =>
+        Boolean(content(node)) && readRect(node)
+      );
+      const textNodes = [...headerNodes, ...scrollTextNodes];
+      const controls = Array.from(scroll.querySelectorAll(
+        'button[data-world-action],button[data-world-route],button[data-world-place]'
+      )).filter(node => readRect(node));
+      const iconNodes = Array.from(scroll.querySelectorAll('.lws-btn-icon,.lws-place-option-icon')).filter(node => readRect(node));
+      const surfaces = Array.from(new Set(scroll.querySelectorAll(
+        '.lws-btn,.lws-place-option,.lws-selected-place,.lws-poi-hint,.lws-other-destinations,.lws-quest-item,.lws-status'
+      ))).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const signature = JSON.stringify([
+        Math.round(panelRect.x), Math.round(panelRect.y), Math.round(panelRect.width), Math.round(panelRect.height),
+        Math.round(scrollRect.x), Math.round(scrollRect.y), Math.round(scrollRect.width), Math.round(scrollRect.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight), Number(scroll.scrollTop || 0),
+        ...textNodes.map(node => {
+          const rect = readRect(node);
+          return [content(node), Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [
+            node.dataset.worldAction || node.dataset.worldRoute || node.dataset.worldPlace || '',
+            content(node), Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height),
+            Boolean(node.disabled), node.getAttribute('aria-pressed') || '',
+            node === document.activeElement || node.matches(':focus-visible'), node.matches(':hover')
+          ];
+        })
+      ]);
+      const tagsCurrent =
+        controls.length === this.nativeRightDrawerUiControls.length &&
+        controls.every((node, index) => node === this.nativeRightDrawerUiControls[index] &&
+          node.dataset.legendPhaserRightControl === 'true') &&
+        textNodes.length === this.nativeRightDrawerUiTextNodes.length &&
+        textNodes.every((node, index) => node === this.nativeRightDrawerUiTextNodes[index] &&
+          node.dataset.legendPhaserRightText === 'true') &&
+        iconNodes.length === this.nativeRightDrawerUiIconNodes.length &&
+        iconNodes.every((node, index) => node === this.nativeRightDrawerUiIconNodes[index] &&
+          Boolean(node.dataset.legendPhaserRightIcon));
+      if (this.nativeRightDrawerUiActive && tagsCurrent && signature === this.nativeRightDrawerUiSignature) return;
+
+      this.clearNativeRightDrawerUi(false, false);
+      document.body?.classList.remove('legend-phaser-right-drawer-ui-active');
+
+      const panelGraphics = this.add.graphics().setDepth(37);
+      panelGraphics.fillStyle(0x10180f, 0.96);
+      panelGraphics.fillRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height);
+      panelGraphics.fillStyle(0x1d281b, 0.20);
+      panelGraphics.fillRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height * 0.42);
+      panelGraphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.68);
+      panelGraphics.strokeRect(panelRect.x + 0.5, panelRect.y + 0.5,
+        Math.max(1, panelRect.width - 1), Math.max(1, panelRect.height - 1));
+      const headerRect = readRect(panel.querySelector('.lws-panel-header'));
+      if (headerRect) {
+        panelGraphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.42);
+        panelGraphics.lineBetween(headerRect.x, headerRect.y + headerRect.height - sy,
+          headerRect.x + headerRect.width, headerRect.y + headerRect.height - sy);
+      }
+      panelGraphics.fillStyle(0xe4c17d, 0.58);
+      panelGraphics.fillRect(panelRect.x + panelRect.width - Math.max(2 * sx, 2), panelRect.y,
+        Math.max(2 * sx, 2), Math.max(2 * sy, 2));
+      this.nativeRightDrawerUiObjects.push(panelGraphics);
+
+      const drawHeader = node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const style = window.getComputedStyle(node);
+        const text = this.add.text(rect.x, rect.y, content(node), {
+          fontFamily: style.fontFamily || 'Arial, sans-serif',
+          fontSize: Math.max(9, Math.round((parseFloat(style.fontSize) || 11) * sy)) + 'px',
+          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+          color: node.matches('.lws-panel-eyebrow') ? '#c9a96e'
+            : node.matches('.lws-panel-header h2') ? '#efe7d4'
+            : '#b1b8aa',
+          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+          align: style.textAlign || 'left'
+        }).setDepth(39).setOrigin(0, 0);
+        text.setResolution?.(2);
+        text.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        this.nativeRightDrawerUiObjects.push(text);
+        node.dataset.legendPhaserRightText = 'true';
+        this.nativeRightDrawerUiTaggedNodes.push(node);
+      };
+      headerNodes.forEach(drawHeader);
+
+      const contentContainer = this.add.container(0, 0).setDepth(38);
+      const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+      maskGraphics.fillStyle(0xffffff, 1);
+      maskGraphics.fillRect(scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
+      const rendererType = this.sys.game.renderer?.type;
+      let mask = null;
+      let maskFilter = null;
+      if (rendererType === Phaser.WEBGL) {
+        try {
+          contentContainer.enableFilters?.();
+          contentContainer.setFiltersFocusContext?.(true);
+          maskFilter = contentContainer.filters?.internal?.addMask?.(
+            maskGraphics, false, this.cameras.main, 'world'
+          ) || null;
+        } catch (error) {
+          console.warn('[LEGEND Phaser] Right drawer WebGL mask could not be created; keeping the accessible DOM drawer visible.', error);
+        }
+        if (!maskFilter) {
+          panelGraphics.destroy();
+          this.nativeRightDrawerUiObjects = [];
+          contentContainer.destroy(true);
+          maskGraphics.destroy(true);
+          return;
+        }
+        this.nativeRightDrawerUiMaskFilter = maskFilter;
+      } else {
+        mask = maskGraphics.createGeometryMask();
+        contentContainer.setMask(mask);
+        this.nativeRightDrawerUiMask = mask;
+      }
+      this.nativeRightDrawerUiContainer = contentContainer;
+      this.nativeRightDrawerUiMaskGraphics = maskGraphics;
+      this.nativeRightDrawerUiMaskBounds = {
+        x: scrollRect.x, y: scrollRect.y, width: scrollRect.width, height: scrollRect.height
+      };
+      this.nativeRightDrawerUiObjects.push(contentContainer, maskGraphics);
+      const addContent = object => {
+        if (!object) return object;
+        contentContainer.add(object);
+        return object;
+      };
+      const graphics = addContent(this.add.graphics());
+      surfaces.forEach(({ node, rect }) => {
+        const pressed = node.getAttribute('aria-pressed') === 'true' || node.classList.contains('is-selected');
+        if (node.classList.contains('lws-selected-place')) {
+          graphics.fillStyle(0xbfa064, 0.12);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.48);
+          graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        } else if (node.classList.contains('lws-poi-hint') || node.classList.contains('lws-other-destinations') || node.classList.contains('lws-status')) {
+          graphics.fillStyle(0xbfa064, 0.075);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.28);
+          graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        } else if (node.classList.contains('lws-quest-item')) {
+          graphics.fillStyle(0xbfa064, 0.09);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.fillStyle(0xd4b174, 0.82);
+          graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
+        } else {
+          const isPlace = node.classList.contains('lws-place-option');
+          const focused = node === document.activeElement || node.matches(':focus-visible');
+          const hovered = node.matches(':hover');
+          const disabled = node.disabled || node.getAttribute('aria-disabled') === 'true';
+          graphics.fillStyle(pressed ? 0x3a3622 : (focused || hovered) ? 0x35402a : isPlace ? 0x172116 : 0x172116,
+            disabled ? 0.3 : pressed ? 0.98 : 0.93);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
+            focused ? 0xffe6a0 : pressed || hovered ? 0xe7c982 : 0xbfa064, disabled ? 0.28 : 0.60);
+          graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+          graphics.fillStyle(0xe7c982, pressed ? 0.92 : 0.56);
+          graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
+        }
+      });
+
+      const textureByIcon = Object.freeze({
+        compass: 'menuCompass', journal: 'menuJournal', traveler: 'menuTraveler',
+        inn: 'menuInn', market: 'serviceMarketIcon', forge: 'serviceForgeIcon',
+        road: 'menuRoad', settings: 'menuSettings', milestone: 'menuMilestone'
+      });
+      const iconName = node => {
+        const match = String(node?.className?.baseVal || node?.className || '').match(/runway-icon-([a-z-]+)/);
+        return match?.[1] || '';
+      };
+      iconNodes.forEach(node => {
+        const rect = readRect(node);
+        const key = textureByIcon[iconName(node)] || '';
+        if (rect && key && this.textures.exists(key)) {
+          const image = addContent(this.add.image(
+            rect.x + rect.width / 2, rect.y + rect.height / 2, key
+          ).setDisplaySize(
+            Math.max(10, Math.min(rect.width - 2 * sx, 28 * sx)),
+            Math.max(10, Math.min(rect.height - 2 * sy, 28 * sy))
+          ).setAlpha(0.96).setDepth(43));
+          node.dataset.legendPhaserRightIcon = 'true';
+          void image;
+        } else {
+          node.dataset.legendPhaserRightIcon = 'dom';
+        }
+        this.nativeRightDrawerUiTaggedNodes.push(node);
+      });
+      controls.forEach(node => {
+        node.dataset.legendPhaserRightControl = 'true';
+        this.nativeRightDrawerUiTaggedNodes.push(node);
+      });
+
+      scrollTextNodes.forEach(node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const style = window.getComputedStyle(node);
+        const color = node.matches('.lws-panel-eyebrow,.lws-place-option-state') ? '#c9a96e'
+          : node.matches('.lws-place-option-copy > strong,.lws-selected-place h3,.lws-quest-item > strong,.lws-poi-hint > strong') ? '#eee7d6'
+          : node.matches('.lws-context-copy,.lws-quest-item > p,.lws-place-option-copy > small,.lws-selected-place p,.lws-poi-hint > p,.lws-btn-copy > small') ? '#b1b8aa'
+          : '#f0ead9';
+        const text = addContent(this.add.text(rect.x, rect.y, content(node), {
+          fontFamily: style.fontFamily || 'Arial, sans-serif',
+          fontSize: Math.max(8, Math.round((parseFloat(style.fontSize) || 10) * sy)) + 'px',
+          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+          color,
+          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+          align: style.textAlign || 'left'
+        }).setOrigin(0, 0).setDepth(42));
+        text.setResolution?.(2);
+        text.setFixedSize?.(Math.max(12, rect.width), Math.max(9, rect.height));
+        node.dataset.legendPhaserRightText = 'true';
+        this.nativeRightDrawerUiTaggedNodes.push(node);
+      });
+
+      this.nativeRightDrawerUiTextNodes = textNodes;
+      this.nativeRightDrawerUiControls = controls;
+      this.nativeRightDrawerUiIconNodes = iconNodes;
+      // Any icon that cannot be converted is left in the DOM and is not hidden.
+      this.nativeRightDrawerUiSignature = signature;
+      this.nativeRightDrawerUiActive = true;
+      document.body?.classList.add('legend-phaser-right-drawer-ui-active');
+    }
+
+    syncNativeLeftDrawerUi() {
+      const shell = document.getElementById('legend-world-shell-root');
+      const panel = shell?.querySelector('#lws-panel-left');
+      const scroll = panel?.querySelector('.lws-panel-scroll');
+      const mobile = window.matchMedia?.('(max-width: 1199px)').matches || false;
+      const hidden = !panel || !scroll || !shell || shell.hidden || panel.hidden ||
+        (mobile && (panel.inert || panel.getAttribute('aria-hidden') === 'true'));
+      if (hidden) {
+        if (this.nativeLeftDrawerUiActive || document.body?.classList.contains('legend-phaser-left-drawer-ui-active')) {
+          this.clearNativeLeftDrawerUi();
+        }
+        return;
+      }
+
+      if (this.nativeLeftDrawerUiBoundPanel !== panel || this.nativeLeftDrawerUiBoundScroll !== scroll) {
+        this.clearNativeLeftDrawerUi();
+        this.nativeLeftDrawerUiBoundPanel = panel;
+        this.nativeLeftDrawerUiBoundScroll = scroll;
+        this.nativeLeftDrawerUiInteractionHandler = () => {
+          this.nativeLeftDrawerUiLayoutEvent?.remove?.(false);
+          this.nativeLeftDrawerUiLayoutEvent = this.time.delayedCall(28, () => {
+            this.nativeLeftDrawerUiLayoutEvent = null;
+            this.syncNativeLeftDrawerUi();
+          });
+        };
+        this.nativeLeftDrawerUiTransitionHandler = event => {
+          if (event.target !== panel || (event.propertyName && event.propertyName !== 'transform')) return;
+          this.nativeLeftDrawerUiInteractionHandler?.();
+        };
+        ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          scroll.addEventListener(type, this.nativeLeftDrawerUiInteractionHandler, { passive: type === 'scroll' })
+        );
+        panel.addEventListener('transitionend', this.nativeLeftDrawerUiTransitionHandler);
+      }
+
+      // Do not paint against a moving drawer. The DOM stays visible through its
+      // slide, then the final settled geometry is sampled for Phaser.
+      if (this.hasFiniteEntranceAnimation(panel)) {
+        this.clearNativeLeftDrawerUi(true, false);
+        this.nativeLeftDrawerUiLayoutEvent?.remove?.(false);
+        this.nativeLeftDrawerUiLayoutEvent = this.time.delayedCall(230, () => {
+          this.nativeLeftDrawerUiLayoutEvent = null;
+          this.syncNativeLeftDrawerUi();
+        });
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          x: rect.left * sx,
+          y: rect.top * sy,
+          width: rect.width * sx,
+          height: rect.height * sy
+        };
+      };
+      const panelRect = readRect(panel);
+      const scrollRect = readRect(scroll);
+      if (!panelRect || !scrollRect) {
+        this.clearNativeLeftDrawerUi();
+        return;
+      }
+      const content = node => node.textContent?.replace(/\s+/g, ' ').trim() || '';
+      const headerNodes = Array.from(panel.querySelectorAll(
+        '.lws-panel-eyebrow,.lws-panel-header h2,.lws-panel-header p,.lws-panel-header .lws-tag'
+      )).filter(node => Boolean(content(node)) && readRect(node));
+      const scrollTextSelector = [
+        '.lws-section-title > span',
+        '.lws-health-line > span',
+        '.lws-health-line > strong',
+        '.lws-quest-item > strong',
+        '.lws-quest-item > p',
+        '.lws-small-list li > span',
+        '.lws-small-list li > strong',
+        '.lws-note',
+        '.lws-btn-copy > strong',
+        '.lws-btn-copy > small'
+      ].join(',');
+      const scrollTextNodes = Array.from(new Set(scroll.querySelectorAll(scrollTextSelector))).filter(node =>
+        Boolean(content(node)) && readRect(node)
+      );
+      const textNodes = [...headerNodes, ...scrollTextNodes];
+      const controls = Array.from(scroll.querySelectorAll('button[data-world-action]')).filter(node => readRect(node));
+      const iconNodes = Array.from(scroll.querySelectorAll('.lws-btn-icon')).filter(node => readRect(node));
+      const surfaces = [
+        ...Array.from(scroll.querySelectorAll('.lws-section,.lws-quest-item,.lws-vital,.lws-meter,.lws-tag,.lws-btn'))
+      ].map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const meters = Array.from(scroll.querySelectorAll('.lws-meter')).map(node => ({
+        track: node,
+        trackRect: readRect(node),
+        fill: node.querySelector('span'),
+        fillRect: readRect(node.querySelector('span'))
+      })).filter(item => item.trackRect);
+      const signature = JSON.stringify([
+        Math.round(panelRect.x), Math.round(panelRect.y), Math.round(panelRect.width), Math.round(panelRect.height),
+        Math.round(scrollRect.x), Math.round(scrollRect.y), Math.round(scrollRect.width), Math.round(scrollRect.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight), Number(scroll.scrollTop || 0),
+        ...textNodes.map(node => {
+          const rect = readRect(node);
+          return [content(node), Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [node.dataset.worldAction || '', content(node), Math.round(rect.x), Math.round(rect.y),
+            Math.round(rect.width), Math.round(rect.height), Boolean(node.disabled),
+            node === document.activeElement || node.matches(':focus-visible'), node.matches(':hover')];
+        })
+      ]);
+      const tagsCurrent =
+        controls.length === this.nativeLeftDrawerUiControls.length &&
+        controls.every((node, index) => node === this.nativeLeftDrawerUiControls[index] &&
+          node.dataset.legendPhaserLeftControl === 'true') &&
+        textNodes.length === this.nativeLeftDrawerUiTextNodes.length &&
+        textNodes.every((node, index) => node === this.nativeLeftDrawerUiTextNodes[index] &&
+          node.dataset.legendPhaserLeftText === 'true') &&
+        iconNodes.length === this.nativeLeftDrawerUiIconNodes.length &&
+        iconNodes.every((node, index) => node === this.nativeLeftDrawerUiIconNodes[index] &&
+          node.dataset.legendPhaserLeftIcon === 'true');
+      if (this.nativeLeftDrawerUiActive && tagsCurrent && signature === this.nativeLeftDrawerUiSignature) return;
+
+      this.clearNativeLeftDrawerUi(false, false);
+      // The DOM remains visible while Phaser's replacement is constructed.
+      document.body?.classList.remove('legend-phaser-left-drawer-ui-active');
+
+      const panelGraphics = this.add.graphics().setDepth(39);
+      panelGraphics.fillStyle(0x10180f, 0.96);
+      panelGraphics.fillRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height);
+      panelGraphics.fillStyle(0x1d281b, 0.22);
+      panelGraphics.fillRect(panelRect.x, panelRect.y, panelRect.width, panelRect.height * 0.42);
+      panelGraphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.68);
+      panelGraphics.strokeRect(panelRect.x + 0.5, panelRect.y + 0.5,
+        Math.max(1, panelRect.width - 1), Math.max(1, panelRect.height - 1));
+      panelGraphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.42);
+      const headerRect = readRect(panel.querySelector('.lws-panel-header'));
+      if (headerRect) {
+        panelGraphics.lineBetween(headerRect.x, headerRect.y + headerRect.height - sy,
+          headerRect.x + headerRect.width, headerRect.y + headerRect.height - sy);
+      }
+      panelGraphics.fillStyle(0xe4c17d, 0.58);
+      panelGraphics.fillRect(panelRect.x, panelRect.y, Math.max(2 * sx, 2), Math.max(2 * sy, 2));
+      this.nativeLeftDrawerUiObjects.push(panelGraphics);
+
+      const addHeaderText = node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const css = window.getComputedStyle(node);
+        const text = this.add.text(rect.x, rect.y, content(node), {
+          fontFamily: css.fontFamily || 'Arial, sans-serif',
+          fontSize: Math.max(9, Math.round((parseFloat(css.fontSize) || 11) * sy)) + 'px',
+          fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+          color: node.matches('.lws-panel-eyebrow') ? '#c9a96e'
+            : node.matches('.lws-panel-header h2') ? '#efe7d4'
+            : node.matches('.lws-panel-header .lws-tag') ? '#d8cba9'
+            : '#b1b8aa',
+          letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
+          align: css.textAlign || 'left'
+        }).setDepth(41).setOrigin(0, 0);
+        text.setResolution?.(2);
+        text.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        this.nativeLeftDrawerUiObjects.push(text);
+        node.dataset.legendPhaserLeftText = 'true';
+        this.nativeLeftDrawerUiTaggedNodes.push(node);
+      };
+      headerNodes.forEach(addHeaderText);
+
+      const contentContainer = this.add.container(0, 0).setDepth(40);
+      const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+      maskGraphics.fillStyle(0xffffff, 1);
+      maskGraphics.fillRect(scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
+      const rendererType = this.sys.game.renderer?.type;
+      let mask = null;
+      let maskFilter = null;
+      if (rendererType === Phaser.WEBGL) {
+        try {
+          contentContainer.enableFilters?.();
+          contentContainer.setFiltersFocusContext?.(true);
+          maskFilter = contentContainer.filters?.internal?.addMask?.(
+            maskGraphics, false, this.cameras.main, 'world'
+          ) || null;
+        } catch (error) {
+          console.warn('[LEGEND Phaser] Left drawer WebGL mask could not be created; keeping the accessible DOM drawer visible.', error);
+        }
+        if (!maskFilter) {
+          panelGraphics.destroy();
+          this.nativeLeftDrawerUiObjects = [];
+          contentContainer.destroy(true);
+          maskGraphics.destroy(true);
+          return;
+        }
+        this.nativeLeftDrawerUiMaskFilter = maskFilter;
+      } else {
+        mask = maskGraphics.createGeometryMask();
+        contentContainer.setMask(mask);
+        this.nativeLeftDrawerUiMask = mask;
+      }
+      this.nativeLeftDrawerUiContainer = contentContainer;
+      this.nativeLeftDrawerUiMaskGraphics = maskGraphics;
+      this.nativeLeftDrawerUiMaskBounds = {
+        x: scrollRect.x, y: scrollRect.y, width: scrollRect.width, height: scrollRect.height
+      };
+      this.nativeLeftDrawerUiObjects.push(contentContainer, maskGraphics);
+
+      const addContent = object => {
+        if (!object) return object;
+        contentContainer.add(object);
+        return object;
+      };
+      const draw = addContent(this.add.graphics());
+      surfaces.forEach(({ node, rect }) => {
+        if (node.classList.contains('lws-section')) {
+          draw.fillStyle(0xbfa064, 0.035);
+          draw.fillRect(rect.x, rect.y, rect.width, rect.height);
+          draw.lineStyle(Math.max(1, sy), 0xbfa064, 0.21);
+          draw.lineBetween(rect.x, rect.y + rect.height - sy, rect.x + rect.width, rect.y + rect.height - sy);
+        } else if (node.classList.contains('lws-quest-item')) {
+          draw.fillStyle(0xbfa064, 0.10);
+          draw.fillRect(rect.x, rect.y, rect.width, rect.height);
+          draw.fillStyle(0xd4b174, 0.80);
+          draw.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
+        } else if (node.classList.contains('lws-vital') || node.classList.contains('lws-tag')) {
+          draw.fillStyle(0x1d281b, 0.94);
+          draw.fillRect(rect.x, rect.y, rect.width, rect.height);
+          draw.lineStyle(Math.max(1, sx), 0xbfa064, 0.35);
+          draw.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        } else if (node.classList.contains('lws-meter')) {
+          draw.fillStyle(0x030604, 0.95);
+          draw.fillRect(rect.x, rect.y, rect.width, rect.height);
+          draw.lineStyle(Math.max(1, sy), 0xbfa064, 0.30);
+          draw.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        } else if (node.classList.contains('lws-btn')) {
+          const focused = node === document.activeElement || node.matches(':focus-visible');
+          const hovered = node.matches(':hover');
+          const disabled = node.disabled || node.getAttribute('aria-disabled') === 'true';
+          draw.fillStyle(focused || hovered ? 0x39412a : 0x172116, disabled ? 0.34 : 0.95);
+          draw.fillRect(rect.x, rect.y, rect.width, rect.height);
+          draw.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
+            focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xbfa064, disabled ? 0.30 : 0.62);
+          draw.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        }
+      });
+      meters.forEach(({ trackRect, fillRect }) => {
+        if (!fillRect) return;
+        draw.fillStyle(0xb97c5c, 0.96);
+        draw.fillRect(fillRect.x, fillRect.y, fillRect.width, fillRect.height);
+      });
+
+      scrollTextNodes.forEach(node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const css = window.getComputedStyle(node);
+        const color = node.matches('.lws-section-title > span') ? '#d8cba9'
+          : node.matches('.lws-health-line > strong') ? '#f1d9c5'
+          : node.matches('.lws-quest-item > strong') ? '#ece4d0'
+          : node.matches('.lws-small-list li > strong') ? '#efe7d4'
+          : node.matches('.lws-btn-copy > strong') ? '#f0ead9'
+          : node.matches('.lws-note,.lws-quest-item > p,.lws-small-list li > span,.lws-health-line > span,.lws-btn-copy > small') ? '#b1b8aa'
+          : '#eee7d6';
+        const text = addContent(this.add.text(rect.x, rect.y, content(node), {
+          fontFamily: css.fontFamily || 'Arial, sans-serif',
+          fontSize: Math.max(8, Math.round((parseFloat(css.fontSize) || 10) * sy)) + 'px',
+          fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+          color,
+          letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
+          align: css.textAlign || 'left'
+        }).setOrigin(0, 0).setDepth(42));
+        text.setResolution?.(2);
+        text.setFixedSize?.(Math.max(10, rect.width), Math.max(9, rect.height));
+        node.dataset.legendPhaserLeftText = 'true';
+        this.nativeLeftDrawerUiTaggedNodes.push(node);
+      });
+
+      const iconTextures = Object.freeze({ journal: 'menuJournal' });
+      controls.forEach(button => {
+        const rect = readRect(button);
+        if (!rect) return;
+        const icon = button.querySelector('.lws-btn-icon');
+        const iconRect = readRect(icon);
+        const key = iconTextures[button.dataset.worldAction || ''];
+        if (icon && iconRect && key && this.textures.exists(key)) {
+          const image = addContent(this.add.image(
+            iconRect.x + iconRect.width / 2, iconRect.y + iconRect.height / 2, key
+          ).setDisplaySize(
+            Math.max(10, Math.min(iconRect.width - 2 * sx, 24 * sx)),
+            Math.max(10, Math.min(iconRect.height - 2 * sy, 24 * sy))
+          ).setAlpha(0.96).setDepth(43));
+          this.nativeLeftDrawerUiTaggedNodes.push(icon);
+          icon.dataset.legendPhaserLeftIcon = 'true';
+          void image;
+        }
+        button.dataset.legendPhaserLeftControl = 'true';
+        this.nativeLeftDrawerUiTaggedNodes.push(button);
+      });
+
+      this.nativeLeftDrawerUiTextNodes = textNodes;
+      this.nativeLeftDrawerUiControls = controls;
+      this.nativeLeftDrawerUiIconNodes = iconNodes;
+      this.nativeLeftDrawerUiSignature = signature;
+      this.nativeLeftDrawerUiActive = true;
+      document.body?.classList.add('legend-phaser-left-drawer-ui-active');
+    }
+
     syncNativeHudUi() {
       const shell = document.getElementById('legend-world-shell-root');
       const hud = shell?.querySelector('.lws-hud');
@@ -2489,6 +4875,273 @@
         node.dataset.legendPhaserHudControl = 'true';
         this.nativeHudUiTaggedNodes.push(node);
       });
+    }
+
+
+    /** Clears combat scene objects and releases observers while revealing the accessible DOM battle fallback. */
+    clearNativeCombatUi(removeClass = true, removeListeners = true) {
+      this.nativeCombatUiLayoutEvent?.remove?.(false);
+      this.nativeCombatUiLayoutEvent = null;
+      if (this.nativeCombatUiObserver) {
+        this.nativeCombatUiObserver.disconnect();
+        this.nativeCombatUiObserver = null;
+      }
+      if (removeListeners && this.nativeCombatUiBoundBattle && this.nativeCombatUiInteractionHandler) {
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          this.nativeCombatUiBoundBattle.removeEventListener(type, this.nativeCombatUiInteractionHandler)
+        );
+      }
+      if (removeListeners && this.nativeCombatUiScrollHandler) {
+        document.removeEventListener('scroll', this.nativeCombatUiScrollHandler, true);
+        window.removeEventListener('scroll', this.nativeCombatUiScrollHandler);
+      }
+      if (removeListeners) {
+        this.nativeCombatUiBoundBattle = null;
+        this.nativeCombatUiInteractionHandler = null;
+        this.nativeCombatUiScrollHandler = null;
+      }
+      this.nativeCombatUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeCombatUiObjects = [];
+      this.nativeCombatUiTextNodes = [];
+      this.nativeCombatUiControls = [];
+      this.nativeCombatUiSignature = '';
+      this.nativeCombatUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-combat-ui-active');
+    }
+
+    /** Paints the tactical combat panels and live labels in Phaser without taking ownership of any battle action. */
+    syncNativeCombatUi(surface = this.surface) {
+      const host = root();
+      const battle = host?.querySelector('.rpg-battle');
+      if (String(surface || '') !== 'combat' || !battle || !battle.getBoundingClientRect().width || battle.hidden) {
+        if (this.nativeCombatUiActive || document.body?.classList.contains('legend-phaser-combat-ui-active') ||
+            this.nativeCombatUiBoundBattle) {
+          this.clearNativeCombatUi();
+        }
+        return;
+      }
+
+      if (this.nativeCombatUiBoundBattle !== battle) {
+        this.clearNativeCombatUi();
+        this.nativeCombatUiBoundBattle = battle;
+        this.nativeCombatUiInteractionHandler = () => {
+          this.nativeCombatUiLayoutEvent?.remove?.(false);
+          this.nativeCombatUiLayoutEvent = this.time.delayedCall(24, () => {
+            this.nativeCombatUiLayoutEvent = null;
+            this.syncNativeCombatUi(this.surface);
+          });
+        };
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          battle.addEventListener(type, this.nativeCombatUiInteractionHandler)
+        );
+        this.nativeCombatUiScrollHandler = () => this.nativeCombatUiInteractionHandler?.();
+        document.addEventListener('scroll', this.nativeCombatUiScrollHandler, true);
+        window.addEventListener('scroll', this.nativeCombatUiScrollHandler, { passive: true });
+        if (typeof window.MutationObserver === 'function') {
+          this.nativeCombatUiObserver = new window.MutationObserver(() =>
+            this.nativeCombatUiInteractionHandler?.()
+          );
+          this.nativeCombatUiObserver.observe(battle, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+            attributes: true,
+            attributeFilter: ['class', 'disabled', 'aria-disabled']
+          });
+        }
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected || node.closest('[hidden]')) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+      };
+      const cleanText = value => String(value || '').replace(/\s+/g, ' ').trim();
+      const directText = node => Array.from(node.childNodes || [])
+        .filter(child => child.nodeType === 3)
+        .map(child => child.textContent || '')
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      const panelSelector = [
+        '.rpg-battle-topline',
+        '.rpg-hero-stage-plate',
+        '.rpg-foe-nameplate',
+        '.rpg-combat-status',
+        '.rpg-dialogue',
+        '.rpg-battle-log',
+        '.rpg-enemy-tell',
+        '.rpg-turn-heading',
+        '.rpg-command-grid',
+        '.rpg-command',
+        '.rpg-battle-utilities',
+        '.rpg-utility-command'
+      ].join(',');
+      const panels = Array.from(new Set([
+        ...(battle.matches(panelSelector) ? [battle] : []),
+        ...Array.from(battle.querySelectorAll(panelSelector))
+      ])).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const textSelector = 'h1,h2,h3,h4,p,small,strong,em,span,li,button,i,b';
+      const textNodes = Array.from(battle.querySelectorAll(textSelector)).map(node => ({
+        node,
+        text: directText(node),
+        rect: readRect(node),
+        style: window.getComputedStyle(node)
+      })).filter(item => item.text && item.rect &&
+        !item.node.matches('.rpg-dialogue-star,.rpg-tell-mark') &&
+        !item.node.closest('.rpg-hero-stage-art,.rpg-foe-sprite,.rpg-hero-portrait'));
+      const controls = Array.from(battle.querySelectorAll('button')).map(node => ({
+        node, rect: readRect(node)
+      })).filter(item => item.rect);
+      const expected = ['battleSound','strike','skill','item','guard','heavy','poultice','flee'];
+      const ids = controls.map(item => item.node.id);
+      const complete = expected.every(id => ids.includes(id)) &&
+        expected.length === controls.length &&
+        panels.length >= 12 &&
+        textNodes.length >= 22;
+      if (!complete) {
+        this.clearNativeCombatUi();
+        return;
+      }
+      const signature = JSON.stringify([
+        Math.round(size.width), Math.round(size.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight),
+        battle.className,
+        ...panels.map(({node, rect}) => [
+          node.className, Math.round(rect.x), Math.round(rect.y),
+          Math.round(rect.width), Math.round(rect.height)
+        ]),
+        ...textNodes.map(({node, text, rect}) => [
+          node.tagName, node.className, text,
+          Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)
+        ]),
+        ...controls.map(({node, rect}) => [
+          node.id, Boolean(node.disabled), node === document.activeElement || node.matches(':focus-visible'),
+          node.matches(':hover'), Math.round(rect.x), Math.round(rect.y),
+          Math.round(rect.width), Math.round(rect.height)
+        ])
+      ]);
+      if (this.nativeCombatUiActive && signature === this.nativeCombatUiSignature) return;
+
+      // Keep the observer and focus handlers bound to the live battle root while
+      // replacing only Phaser display objects after a state or layout change.
+      try {
+      this.nativeCombatUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeCombatUiObjects = [];
+      const graphics = this.add.graphics().setDepth(60);
+      this.nativeCombatUiObjects.push(graphics);
+      const intent = battle.classList.contains('rpg-intent-staggered') ? 'staggered'
+        : battle.classList.contains('rpg-intent-heavy') ? 'heavy'
+        : battle.classList.contains('rpg-intent-guardbreak') ? 'guardbreak'
+        : battle.classList.contains('rpg-intent-snared') ? 'snared' : 'attack';
+      const intentLine = intent === 'staggered' ? 0xe4c47d
+        : intent === 'heavy' || intent === 'guardbreak' ? 0xc97b5d
+        : intent === 'snared' ? 0x9db6a1 : 0xb18d62;
+      const panelSkin = node => {
+        const cls = node.classList;
+        if (cls.contains('rpg-hero-stage-plate')) return { fill: 0x10170f, alpha: 0.91, line: 0xb89b61 };
+        if (cls.contains('rpg-foe-nameplate')) return { fill: intent === 'staggered' ? 0x352a17 : 0x211714, alpha: 0.94, line: intentLine };
+        if (cls.contains('rpg-combat-status')) return { fill: 0x0b120d, alpha: 0.96, line: 0x9f8a5d };
+        if (cls.contains('rpg-dialogue')) return { fill: 0x172016, alpha: 0.96, line: 0xb99b60 };
+        if (cls.contains('rpg-battle-log')) return { fill: 0x0c130e, alpha: 0.88, line: 0x82734f };
+        if (cls.contains('rpg-enemy-tell')) return { fill: intent === 'staggered' ? 0x302716 : 0x281711, alpha: 0.94, line: intentLine };
+        if (cls.contains('rpg-turn-heading')) return { fill: 0x1a2118, alpha: 0.92, line: 0x9f8a5d };
+        if (cls.contains('rpg-command-grid')) return { fill: 0x070c08, alpha: 0.90, line: 0x9f8a5d };
+        if (cls.contains('rpg-battle-utilities')) return { fill: 0x0a100b, alpha: 0.90, line: 0x88754e };
+        if (cls.contains('rpg-battle-topline')) return { fill: 0x0b120d, alpha: 0.92, line: 0x9f8a5d };
+        return null;
+      };
+      panels.forEach(({node, rect}) => {
+        const skin = panelSkin(node);
+        if (!skin) return;
+        const radius = Math.max(2, Math.min(6 * sx, rect.height * 0.08));
+        graphics.fillStyle(skin.fill, skin.alpha);
+        graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, radius);
+        graphics.lineStyle(Math.max(1, sx), skin.line, node.classList.contains('rpg-foe-nameplate') ? 0.62 : 0.38);
+        graphics.strokeRoundedRect(
+          rect.x + 0.5, rect.y + 0.5,
+          Math.max(1, rect.width - 1), Math.max(1, rect.height - 1), radius
+        );
+        if (node.classList.contains('rpg-hero-stage-plate')) {
+          graphics.fillStyle(0x9f8957, 0.86);
+          graphics.fillRect(rect.x, rect.y, Math.max(3 * sx, 3), rect.height);
+        } else if (node.classList.contains('rpg-foe-nameplate')) {
+          graphics.fillStyle(intentLine, 0.92);
+          graphics.fillRect(rect.x + rect.width - Math.max(3 * sx, 3), rect.y, Math.max(3 * sx, 3), rect.height);
+        }
+      });
+
+      controls.forEach(({node, rect}) => {
+        const disabled = Boolean(node.disabled || node.getAttribute('aria-disabled') === 'true');
+        const focused = node === document.activeElement || node.matches(':focus-visible');
+        const hovered = node.matches(':hover');
+        const id = String(node.id || '');
+        let fill = 0x151e16, accent = 0xb79a62;
+        if (id === 'strike') { fill = 0x38291c; accent = 0xd6ad6c; }
+        else if (id === 'skill') { fill = 0x1e2b20; accent = 0x9fba96; }
+        else if (id === 'item' || id === 'poultice') { fill = 0x243023; accent = 0xa6bd83; }
+        else if (id === 'guard') { fill = 0x202b2b; accent = 0x9db9b9; }
+        else if (id === 'heavy') { fill = 0x3a2119; accent = 0xd08c67; }
+        else if (id === 'flee') { fill = 0x211c18; accent = 0xa99172; }
+        else if (id === 'battleSound') { fill = 0x121a13; accent = 0xc4a86a; }
+        graphics.fillStyle(disabled ? 0x20221d : hovered || focused ? fill + 0x060000 : fill, disabled ? 0.48 : 0.96);
+        graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, Math.max(2, 4 * sx));
+        graphics.lineStyle(focused ? Math.max(2, 2 * sx) : Math.max(1, sx), focused ? 0xffe6a0 : hovered ? 0xe7c982 : accent, disabled ? 0.30 : focused ? 1 : 0.72);
+        graphics.strokeRoundedRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1), Math.max(2, 4 * sx));
+        graphics.fillStyle(accent, disabled ? 0.24 : 0.80);
+        graphics.fillRect(rect.x + 1, rect.y + 3 * sy, Math.max(2, 2 * sx), Math.max(1, rect.height - 6 * sy));
+        if (!node.getAttribute('aria-label')) {
+          node.setAttribute('aria-label', cleanText(node.textContent) || id);
+        }
+      });
+
+      textNodes.forEach(({node, text, rect, style}) => {
+        const disabled = Boolean(node.closest('button:disabled,[aria-disabled="true"]'));
+        const classText = String(node.className?.baseVal || node.className || '');
+        const kicker = /overline|kicker|tell-mark|intent|rpg-vital-label|rpg-command-glyph|rpg-hero-resources/.test(classText);
+        const isFoe = Boolean(node.closest('.rpg-foe-nameplate') || node.closest('.rpg-enemy-tell'));
+        const color = disabled ? '#918c7c' : kicker ? '#d9bf82' : isFoe ? '#f0d7b5' : '#f0ead9';
+        const rectHeight = Math.max(10, rect.height);
+        const fontSize = Math.max(9, Math.min(36, (parseFloat(style.fontSize) || 12) * sy));
+        const label = this.add.text(rect.x, rect.y, text, {
+          fontFamily: style.fontFamily || 'Arial, sans-serif',
+          fontSize: fontSize + 'px',
+          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+          color,
+          stroke: '#070a07',
+          strokeThickness: fontSize >= 16 ? 1 : 0.45,
+          align: style.textAlign === 'center' ? 'center' : style.textAlign === 'right' ? 'right' : 'left',
+          wordWrap: { width: Math.max(12, rect.width), useAdvancedWrap: true },
+          padding: { left: 1, right: 2, top: 1, bottom: 2 }
+        }).setOrigin(0, 0).setDepth(62);
+        label.setResolution?.(2);
+        label.setFixedSize?.(Math.max(12, rect.width), rectHeight);
+        this.nativeCombatUiObjects.push(label);
+      });
+
+      this.nativeCombatUiTextNodes = textNodes.map(item => item.node);
+      this.nativeCombatUiControls = controls.map(item => item.node);
+      this.nativeCombatUiSignature = signature;
+      this.nativeCombatUiActive = true;
+      document.body?.classList.add('legend-phaser-combat-ui-active');
+      } catch (error) {
+        // Never leave source labels transparent after a failed canvas paint.
+        this.clearNativeCombatUi();
+        console.warn('Phaser combat UI paint failed; leaving the accessible DOM battle visible.', error);
+      }
     }
 
     syncNativeGameplayUi(surface = this.surface) {
@@ -2733,6 +5386,263 @@
         { id: 'forge', view: 'smith', label: 'FORGE', icon: 'serviceForgeIcon', x: mobile ? 0.62 : 0.58, y: mobile ? 0.43 : 0.38 },
         { id: 'road', view: 'road', label: 'OLD ROAD', icon: 'serviceRoadIcon', x: mobile ? 0.85 : 0.75, y: mobile ? 0.48 : 0.43 }
       ];
+    }
+
+
+    /** Clears the native town board, detaches observers, and restores its semantic destination cards. */
+    clearNativeTownBoardUi(removeClass = true, removeListeners = true) {
+      this.nativeTownBoardUiLayoutEvent?.remove?.(false);
+      if (this.nativeTownBoardUiFrameHandle != null) {
+        window.cancelAnimationFrame?.(this.nativeTownBoardUiFrameHandle);
+        this.nativeTownBoardUiFrameHandle = null;
+      }
+      this.nativeTownBoardUiLayoutEvent = null;
+      if (removeListeners && this.nativeTownBoardUiObserver) {
+        this.nativeTownBoardUiObserver.disconnect();
+        this.nativeTownBoardUiObserver = null;
+      }
+      if (removeListeners && this.nativeTownBoardUiBoundSection && this.nativeTownBoardUiInteractionHandler) {
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          this.nativeTownBoardUiBoundSection.removeEventListener(type, this.nativeTownBoardUiInteractionHandler)
+        );
+      }
+      if (removeListeners && this.nativeTownBoardUiScrollHandler) {
+        document.removeEventListener('scroll', this.nativeTownBoardUiScrollHandler, true);
+        window.removeEventListener('scroll', this.nativeTownBoardUiScrollHandler);
+      }
+      if (removeListeners) {
+        this.nativeTownBoardUiBoundSection = null;
+        this.nativeTownBoardUiEntrancePending = false;
+        this.nativeTownBoardUiInteractionHandler = null;
+        this.nativeTownBoardUiScrollHandler = null;
+      }
+      this.nativeTownBoardUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeTownBoardUiObjects = [];
+      this.nativeTownBoardUiTextNodes = [];
+      this.nativeTownBoardUiControls = [];
+      this.nativeTownBoardUiCardSnapshot = [];
+      this.nativeTownBoardUiExpectedIds = [];
+      this.nativeTownBoardUiSignature = '';
+      this.nativeTownBoardUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-town-board-ui-active');
+    }
+
+    /** Paints Ashmere's existing destination-card board in Phaser while its real DOM buttons retain navigation and accessibility. */
+    syncNativeTownBoardUi(surface = this.surface) {
+      const host = root();
+      const town = host?.querySelector('.ash100-town-ashmere');
+      const section = town?.querySelector('.ash100-destination-section');
+      if (String(surface || '') !== 'town' || this.environment !== 'ashmere' || !section || !section.getBoundingClientRect().width) {
+        if (this.nativeTownBoardUiActive || document.body?.classList.contains('legend-phaser-town-board-ui-active') ||
+            this.nativeTownBoardUiBoundSection) this.clearNativeTownBoardUi();
+        return;
+      }
+      const enteringNewBoard = this.nativeTownBoardUiBoundSection !== section;
+      if (enteringNewBoard) {
+        this.clearNativeTownBoardUi();
+        this.nativeTownBoardUiBoundSection = section;
+        this.nativeTownBoardUiInteractionHandler = () => {
+          // Scroll events can fire continuously. Coalesce them to one repaint
+          // per browser frame instead of resetting a delay until scrolling stops.
+          if (this.nativeTownBoardUiFrameHandle != null) return;
+          if (typeof window.requestAnimationFrame !== 'function') {
+            this.syncNativeTownBoardUi(this.surface);
+            return;
+          }
+          this.nativeTownBoardUiFrameHandle = window.requestAnimationFrame(() => {
+            this.nativeTownBoardUiFrameHandle = null;
+            this.syncNativeTownBoardUi(this.surface);
+          });
+        };
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          section.addEventListener(type, this.nativeTownBoardUiInteractionHandler)
+        );
+        this.nativeTownBoardUiScrollHandler = () => this.nativeTownBoardUiInteractionHandler?.();
+        document.addEventListener('scroll', this.nativeTownBoardUiScrollHandler, true);
+        window.addEventListener('scroll', this.nativeTownBoardUiScrollHandler, { passive: true });
+        if (typeof window.MutationObserver === 'function') {
+          this.nativeTownBoardUiObserver = new window.MutationObserver(() =>
+            this.nativeTownBoardUiInteractionHandler?.()
+          );
+          this.nativeTownBoardUiObserver.observe(section, {
+            childList: true, subtree: true, characterData: true, attributes: true,
+            attributeFilter: ['class', 'disabled', 'aria-disabled']
+          });
+        }
+      }
+
+      // Defer only the initial board entrance. Hover/focus transitions are
+      // normal interaction feedback and must not hide an already-painted board.
+      if (enteringNewBoard && this.hasFiniteEntranceAnimation(section)) {
+        this.nativeTownBoardUiEntrancePending = true;
+      }
+      if (this.nativeTownBoardUiEntrancePending) {
+        if (this.hasFiniteEntranceAnimation(section)) {
+          this.clearNativeTownBoardUi(true, false);
+          if (!this.nativeTownBoardUiLayoutEvent) {
+            this.nativeTownBoardUiLayoutEvent = this.time.delayedCall(100, () => {
+              this.nativeTownBoardUiLayoutEvent = null;
+              this.syncNativeTownBoardUi(surface);
+            });
+          }
+          return;
+        }
+        this.nativeTownBoardUiEntrancePending = false;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected || node.closest('[hidden]')) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+      };
+      const clean = node => node?.textContent?.replace(/\s+/g, ' ').trim() || '';
+      const heading = section.querySelector('.ash100-section-head h2');
+      const kicker = section.querySelector('.ash100-section-head .ash099-kicker');
+      const sectionRect = readRect(section);
+      const headingRect = readRect(heading);
+      const kickerRect = readRect(kicker);
+      const buttons = Array.from(section.querySelectorAll('.ash100-destination[data-ash-view]'));
+      // The production catalog is authoritative for optional/progression-gated
+      // places. A card count alone would accept an incomplete unlocked board.
+      const player = window.LegendRuntimeV120?.loadPlayer?.() || null;
+      const catalog = window.LegendAshmereDestinationCatalogV099;
+      const expectedDestinations = catalog?.forRegion?.(
+        player?.currentRegion || 'Ashmere', '', player?.flags || {}
+      );
+      const expectedIds = Array.isArray(expectedDestinations)
+        ? expectedDestinations.map(destination => String(destination?.view || '')).filter(Boolean)
+        : [];
+      const renderedIds = buttons.map(button => String(button.dataset.ashView || ''));
+      const cards = buttons.map(button => {
+        const title = button.querySelector('.ash100-destination-copy strong');
+        const description = button.querySelector('.ash100-destination-copy small');
+        const action = button.querySelector('em');
+        return {
+          button, title, description, action,
+          titleText: clean(title), descriptionText: clean(description), actionText: clean(action),
+          rect: readRect(button), titleRect: readRect(title),
+          descriptionRect: readRect(description), actionRect: readRect(action),
+          iconRect: readRect(button.querySelector('.ash100-destination-icon'))
+        };
+      });
+      const complete = Boolean(sectionRect && headingRect && kickerRect && clean(heading) && clean(kicker)) &&
+        expectedIds.length >= 8 &&
+        renderedIds.length === expectedIds.length &&
+        new Set(renderedIds).size === renderedIds.length &&
+        expectedIds.every(id => renderedIds.includes(id)) &&
+        cards.every(item => item.rect && item.titleRect && item.descriptionRect && item.actionRect &&
+          item.iconRect && item.titleText && item.descriptionText && item.actionText);
+      if (!complete) {
+        this.clearNativeTownBoardUi();
+        return;
+      }
+      const signature = JSON.stringify([
+        Math.round(size.width), Math.round(size.height), Math.round(window.innerWidth), Math.round(window.innerHeight),
+        Math.round(sectionRect.x), Math.round(sectionRect.y), Math.round(sectionRect.width), Math.round(sectionRect.height),
+        clean(kicker), clean(heading), expectedIds,
+        ...cards.map(item => [
+          item.button.dataset.ashView, item.titleText, item.descriptionText, item.actionText,
+          Boolean(item.button.disabled), item.button === document.activeElement || item.button.matches(':focus-visible'),
+          item.button.matches(':hover'),
+          Math.round(item.rect.x), Math.round(item.rect.y), Math.round(item.rect.width), Math.round(item.rect.height),
+          Math.round(item.titleRect.x), Math.round(item.titleRect.y),
+          Math.round(item.descriptionRect.x), Math.round(item.descriptionRect.y),
+          Math.round(item.actionRect.x), Math.round(item.actionRect.y)
+        ])
+      ]);
+      if (this.nativeTownBoardUiActive && signature === this.nativeTownBoardUiSignature) return;
+
+      // Keep the observer and listeners attached while rebuilding only Phaser display objects.
+      try {
+      this.nativeTownBoardUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeTownBoardUiObjects = [];
+      const graphics = this.add.graphics().setDepth(22);
+      this.nativeTownBoardUiObjects.push(graphics);
+      graphics.fillStyle(0x0b100c, 0.90);
+      graphics.fillRoundedRect(sectionRect.x, sectionRect.y, sectionRect.width, sectionRect.height, Math.max(5, 9 * sx));
+      graphics.lineStyle(Math.max(1, sx), 0x92784b, 0.55);
+      graphics.strokeRoundedRect(sectionRect.x + 0.5, sectionRect.y + 0.5,
+        Math.max(1, sectionRect.width - 1), Math.max(1, sectionRect.height - 1), Math.max(5, 9 * sx));
+      graphics.fillStyle(0xd3b574, 0.62);
+      graphics.fillRect(sectionRect.x + 1, sectionRect.y + 1,
+        Math.min(Math.max(1, sectionRect.width - 2), 150 * sx), Math.max(2, 2 * sy));
+      graphics.fillStyle(0x8e7548, 0.42);
+      graphics.fillRect(sectionRect.x + 12 * sx, headingRect.y + headingRect.height + 5 * sy,
+        Math.max(10, sectionRect.width - 24 * sx), Math.max(1, sy));
+
+      const paintText = (text, rect, style, kind) => {
+        const fontSize = Math.max(kind === 'title' ? 12 : 9,
+          Math.min(kind === 'title' ? 22 : 15, (parseFloat(style.fontSize) || 12) * sy));
+        const object = this.add.text(rect.x, rect.y, kind === 'action' ? text.toUpperCase() : text, {
+          fontFamily: kind === 'title' ? "Georgia, 'Times New Roman', serif" : (style.fontFamily || 'Arial, sans-serif'),
+          fontSize: fontSize + 'px',
+          fontStyle: kind === 'title' || kind === 'action' ? 'bold' : 'normal',
+          color: kind === 'title' ? '#f0e8d5' : kind === 'action' ? '#d8bd7c' : '#c2c6b8',
+          stroke: '#070b08',
+          strokeThickness: kind === 'title' ? 0.8 : 0.4,
+          wordWrap: { width: Math.max(14, rect.width), useAdvancedWrap: true },
+          align: style.textAlign === 'center' ? 'center' : 'left',
+          padding: { left: 1, right: 2, top: 1, bottom: 2 }
+        }).setOrigin(0, 0).setDepth(24);
+        object.setResolution?.(2);
+        object.setFixedSize?.(Math.max(14, rect.width), Math.max(12, rect.height));
+        this.nativeTownBoardUiObjects.push(object);
+      };
+      paintText(clean(kicker), kickerRect, window.getComputedStyle(kicker), 'kicker');
+      paintText(clean(heading), headingRect, window.getComputedStyle(heading), 'title');
+
+      const snapshots = [];
+      cards.forEach(item => {
+        const disabled = Boolean(item.button.disabled || item.button.getAttribute('aria-disabled') === 'true');
+        const focused = item.button === document.activeElement || item.button.matches(':focus-visible');
+        const hovered = item.button.matches(':hover');
+        const featured = item.button.classList.contains('featured') || item.button.classList.contains('lws-poi-active');
+        const rect = item.rect;
+        const fill = featured ? 0x34291a : disabled ? 0x191b17 : hovered || focused ? 0x24291f : 0x151c16;
+        const border = focused ? 0xffe5a0 : hovered || featured ? 0xd6b66f : 0x8b7952;
+        graphics.fillStyle(fill, disabled ? 0.62 : 0.96);
+        graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, Math.max(3, 6 * sx));
+        graphics.lineStyle(focused ? Math.max(2, 2 * sx) : Math.max(1, sx), border, disabled ? 0.34 : focused ? 1 : 0.62);
+        graphics.strokeRoundedRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1),
+          Math.max(1, rect.height - 1), Math.max(3, 6 * sx));
+        graphics.fillStyle(featured ? 0xd7b56f : 0x96794b, disabled ? 0.28 : 0.82);
+        graphics.fillRect(rect.x + 1, rect.y + 4 * sy, Math.max(2, 2 * sx), Math.max(2, rect.height - 8 * sy));
+        paintText(item.titleText, item.titleRect, window.getComputedStyle(item.title), 'title');
+        paintText(item.descriptionText, item.descriptionRect, window.getComputedStyle(item.description), 'description');
+        paintText(item.actionText, item.actionRect, window.getComputedStyle(item.action), 'action');
+        if (!item.button.getAttribute('aria-label')) {
+          item.button.setAttribute('aria-label', [item.titleText, item.descriptionText, item.actionText].filter(Boolean).join('. '));
+        }
+        snapshots.push({
+          id: item.button.dataset.ashView, title: item.titleText, action: item.actionText,
+          x: rect.x, y: rect.y, width: rect.width, height: rect.height, focused, hovered, disabled
+        });
+      });
+      this.nativeTownBoardUiTextNodes = [kicker, heading, ...cards.flatMap(item => [item.title, item.description, item.action])];
+      this.nativeTownBoardUiControls = buttons;
+      this.nativeTownBoardUiCardSnapshot = snapshots;
+      this.nativeTownBoardUiExpectedIds = expectedIds.slice();
+      this.nativeTownBoardUiSignature = signature;
+      this.nativeTownBoardUiActive = true;
+      document.body?.classList.add('legend-phaser-town-board-ui-active');
+      } catch (error) {
+        // A failed canvas operation must never leave the semantic board hidden.
+        this.clearNativeTownBoardUi();
+        console.warn('Phaser Ashmere board paint failed; restoring the visible DOM board.', error);
+      }
     }
 
     syncAshmereLandmarks() {
@@ -3712,6 +6622,15 @@
     pulse: kind => realmScene?.pulse?.(kind),
     setSurface: surface => realmScene?.setSurface?.(surface),
     refreshHud: () => realmScene?.syncNativeHudUi?.(),
+    refreshNavigation: () => realmScene?.syncNativeBottomBarUi?.(),
+    refreshLeftDrawer: () => realmScene?.syncNativeLeftDrawerUi?.(),
+    refreshRightDrawer: () => realmScene?.syncNativeRightDrawerUi?.(),
+    refreshRoadMap: () => realmScene?.syncNativeRoadMapUi?.(),
+    clearRoadMap: () => realmScene?.clearNativeRoadMapUi?.(),
+    refreshExpedition: () => realmScene?.syncNativeExpeditionHudUi?.(),
+    refreshExpeditionActions: () => realmScene?.syncNativeExpeditionActionsUi?.(),
+    refreshCombat: () => realmScene?.syncNativeCombatUi?.(realmScene?.surface),
+    refreshTownBoard: () => realmScene?.syncNativeTownBoardUi?.(realmScene?.surface),
     refresh: () => inferEnvironment(),
     selectAshmereLandmark: id => realmScene?.selectAshmereLandmark?.(id) || false,
     get saveKey() { return SAVE_KEY; }

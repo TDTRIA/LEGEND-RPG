@@ -98,6 +98,11 @@ test('the map can choose a route and shows the unchosen branch explicitly', asyn
   await seedRoadStage(page, 0, null);
   await page.locator('#exp150OpenMap').click();
   const dialog = page.getByRole('dialog', { name: 'Road map' });
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUi)).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUiKind)).toBe('map');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUiControlIds || []))
+    .toEqual(expect.arrayContaining(['route:ridge','route:reeds','exp150ModalClose']));
+  await expect(dialog.locator('.exp160-map-node-head strong').first()).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
   await expect(dialog.locator('[data-exp160-map-route="ridge"]')).toBeVisible();
   await expect(dialog.locator('[data-exp160-map-route="reeds"]')).toBeVisible();
   await dialog.locator('[data-exp160-map-route="reeds"]').click();
@@ -173,7 +178,33 @@ test('the map remains usable at 390px without horizontal overflow', async ({ pag
   }));
   expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewport);
   expect(layout.mapWidth).toBeLessThanOrEqual(layout.mapClientWidth);
-  await expect(page.getByRole('dialog', { name: 'Road map' }).locator('[data-exp160-map-visit="sunken-cart"]')).toBeVisible();
+  const mapDialog = page.getByRole('dialog', { name: 'Road map' });
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUi)).toBe(true);
+  await expect(mapDialog.locator('[data-exp160-map-visit="sunken-cart"]')).toBeVisible();
+  await expect(mapDialog.locator('[data-exp160-map-visit="sunken-cart"]')).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+  /** Reads the Phaser map mask bounds and compares them with the live dialog geometry. */
+  const readMask = () => page.evaluate(() => {
+    const snapshot = window.LegendPhaserWorldV1.snapshot();
+    const rect = document.querySelector('#exp150Modal .exp150-modal-dialog')?.getBoundingClientRect();
+    const size = snapshot.nativeRoadMapUiSceneSize;
+    const sx = size.width / Math.max(1, window.innerWidth);
+    const sy = size.height / Math.max(1, window.innerHeight);
+    return {
+      mode: snapshot.nativeRoadMapUiMaskMode,
+      active: snapshot.nativeRoadMapUiMaskFilterActive,
+      bounds: snapshot.nativeRoadMapUiMaskBounds,
+      matches: Boolean(rect && snapshot.nativeRoadMapUiMaskBounds &&
+        Math.abs(snapshot.nativeRoadMapUiMaskBounds.x - rect.left * sx) < 1 &&
+        Math.abs(snapshot.nativeRoadMapUiMaskBounds.y - rect.top * sy) < 1 &&
+        Math.abs(snapshot.nativeRoadMapUiMaskBounds.width - rect.width * sx) < 1 &&
+        Math.abs(snapshot.nativeRoadMapUiMaskBounds.height - rect.height * sy) < 1)
+    };
+  });
+  await expect.poll(async () => (await readMask()).matches).toBe(true);
+  const mask = await readMask();
+  expect(mask.matches).toBe(true);
+  expect(['webgl-filter','canvas-geometry']).toContain(mask.mode);
+  if (mask.mode === 'webgl-filter') expect(mask.active).toBe(true);
 });
 
 test('Sunken Cart salvage discloses cost and records the recovered material without gating the route', async ({ page }) => {

@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+<!-- coderabbit-ai-generated:v1: transparent red LEGEND health-orb fill; runtime controls the mask -->
+<defs><radialGradient id="orb" cx=".36" cy=".25" r=".75"><stop stop-color="#f5a079"/><stop offset=".16" stop-color="#cb5039"/><stop offset=".48" stop-color="#8b211d"/><stop offset=".78" stop-color="#4b100f"/><stop offset="1" stop-color="#210a08"/></radialGradient><radialGradient id="glint"><stop stop-color="#fff0c8" stop-opacity=".65"/><stop offset="1" stop-color="#fff0c8" stop-opacity="0"/></radialGradient></defs><circle cx="128" cy="128" r="90" fill="url(#orb)"/><ellipse cx="97" cy="79" rx="45" ry="22" fill="url(#glint)" opacity=".52"/><path d="M61 151c22 32 56 52 97 50-25 13-74 1-97-50z" fill="#ff9372" opacity=".10"/>
+</svg>

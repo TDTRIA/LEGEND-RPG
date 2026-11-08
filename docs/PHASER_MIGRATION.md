@@ -12,34 +12,47 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 
 **Status: In progress**
 
-- **Native in RealmScene:** persistent world environments and atmosphere; Ashmere landmarks; new-player title/menu; mandatory annals; traveler creation; Oric opening-road prologue/response/ambush presentation.
-- **DOM safety fallback:** returning-player title with Continue. Its labels and interaction remain in the original styled DOM until Phaser text parity is verified.
-- **Still DOM-rendered over Phaser world:** persistent HUD, journal/map drawers, bottom action bar, town terminal, services, jobs, market, blacksmith/crafting, Old Road/expedition, field map/journal, combat commands/status, combat results, level-up/stat allocation, Bell Cellar, Greyfen/Storehouse, settings, dispatches, credits and shell modals.
+- **Native in RealmScene:** persistent world environments and atmosphere; Ashmere landmarks; new-player title/menu; mandatory annals; traveler creation; Oric opening-road prologue/response/ambush presentation; persistent HUD; bottom action navigation; traveler journal/quest drawer; contextual action/POI drawer; Old Road connected map and field-journal modal; Old Road journey header, time/conditions strip, health/pressure vitals, six-leg tracker, next-stop/supplies side rail and road route/POI/optional-detour/camp/next-move decision cards. Migrated surfaces have dedicated Phaser panel/text/icon rendering, with original DOM controls retained as accessible action targets.
+- **DOM safety fallback:** the original semantic returning-player title remains visible during its finite entrance animation and while Phaser initializes; it also remains visible whenever Phaser is unavailable, a required asset/action/label is missing, or native painting fails. After the entrance pose settles and all required assets, production actions and live Phaser labels pass preflight, Phaser becomes the normal visual presentation while the DOM buttons remain the real accessible action targets.
+- **Under active verification:** a dedicated RealmScene combat painter now draws the tactical panels, intent/status text, dialogue/log, turn heading and eight command surfaces. The existing DOM combat buttons remain the real actions; actor/enemy artwork and combat results remain in their production views. The painter keeps the DOM presentation visible whenever its preflight or draw step fails.
+- **Under active verification:** Ashmere's existing destination-card terminal board now has a dedicated RealmScene painter for its frame, headings, card surfaces, live labels and focus/hover states. Its preflight compares rendered IDs against the live destination catalog, including progression-gated destinations. Scroll/hover/focus updates are coalesced to one Phaser repaint per animation frame, and any incomplete content or draw exception restores the styled DOM board. The original destination buttons and service icons stay in the DOM; service interiors, transaction/job/crafting logic and Greyfen destination screens remain in their original feature modules.
 - **Safety note:** the previous shared DOM-to-Phaser gameplay mirror is disabled. It made DOM text transparent and recreated CSS panels incompletely, which caused missing copy and weak/blurred panel presentation. Do not turn it back on globally.
+
+- **Combat acceptance gate:** prove that all eight existing actions remain keyboard/touch usable, the current enemy intent and live dialogue/log repaint after every turn, save/reward settlement is unchanged, and the same painter remains readable at desktop and 390px mobile. Do not check combat off until the live expedition fight, potion use, guard/intent change, retreat or victory/defeat handoff, and results transition pass Playwright.
 
 ## Migration order
 
 1. **Title and first-session shell**
    - [x] New-player title/menu and world backdrop in Phaser.
    - [x] Annals, traveler creation and Oric opening-road presentation in Phaser.
-   - [x] Keep the returning-player Continue state readable with a DOM fallback.
-   - [ ] Complete and verify Continue text, focus, hover, selected/disabled states and responsive geometry in Phaser before removing that fallback.
+   - [x] Keep the original returning-player menu as a safe DOM fallback when Phaser preflight fails.
+   - [ ] Complete and verify Phaser Continue text, focus, hover, selected/disabled states and responsive geometry through the desktop/mobile Playwright run; retain the DOM fallback permanently for any failed preflight.
 
 2. **Persistent shell**
-   - [ ] HUD and traveler vitals.
-   - [ ] Journal/quest and map drawers.
-   - [ ] Contextual action panel and bottom navigation.
+   - [x] HUD and traveler vitals.
+   - [x] Journal/quest drawer.
+   - [ ] Persistent shell map drawer.
+   - [x] Contextual action/POI drawer.
+   - [x] Old Road map / field-journal modal.
+   - [x] Bottom navigation.
    - [ ] Shell toast, inventory and character-sheet modals.
-   - [ ] Mobile side-panel states and scrolling.
+   - [x] Mobile journal/context side-panel states and scrolling.
+   - [x] Old Road map/journal modal scroll clipping at mobile width.
+   - [ ] Remaining shell map drawer/modal scrolling.
 
 3. **Ashmere and services**
-   - [ ] Ashmere/Greyfen hub labels, service markers and destination selection.
+   - [ ] Verify the Phaser-painted Ashmere destination-card board on desktop/mobile, including focus/hover, dynamic unlocked destinations and DOM fallback.
+   - [ ] Ashmere/Greyfen service interiors, service markers and destination selection parity.
+   - [ ] Redesign Ashmere hub service selection so visible buttons are anchored to town locations or a clear terminal board; do not simply float Phaser labels over the current town background.
    - [ ] Inn, market, blacksmith, crafting, workboard/daily board and NPC/dialogue screens.
    - [ ] Preserve the existing purchase, craft, job, quest and save callbacks.
 
 4. **Old Road and expedition**
    - [ ] Departure, route choice, exploration scene, points of interest and discoveries.
-   - [ ] Field map, journal, camp, route events and expedition result screen.
+   - [x] Connected Old Road map and field-journal modal (live route state, discoveries, visit/route choice targets).
+   - [x] Road journey HUD: location/title, time and conditions, health/pressure meters, six-leg progress and supplies/next-stop/field-notes rail.
+   - [x] Road decision deck: route fork, discoveries/POI inspection, optional detours, Blackroot survey, camp choices and next-move actions (existing handlers retained).
+   - [ ] Main road scene and expedition result presentation.
    - [ ] Keep route state, pressure, rewards, evidence and Road Token settlement in existing modules.
 
 5. **Combat and progression**

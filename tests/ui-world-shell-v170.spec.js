@@ -172,6 +172,302 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(page.getByRole('button', { name: /The Old Road/i })).toHaveCount(1);
   });
 
+
+
+
+  test('Phaser paints Ashmere contextual actions and preserves the real POI selection and visit flow', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await enterAshmere(page, 'PhaserContextQA');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRightDrawerUi)).toBe(true);
+
+    const initial = await page.evaluate(() => {
+      const panel = document.querySelector('#lws-panel-right');
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const labels = Array.from(panel?.querySelectorAll('.lws-place-option-copy strong') || []);
+      return {
+        active: document.body.classList.contains('legend-phaser-right-drawer-ui-active'),
+        count: snapshot.nativeRightDrawerUiObjectCount,
+        textValues: snapshot.nativeRightDrawerUiTextValues || [],
+        controls: snapshot.nativeRightDrawerUiControlIds || [],
+        icons: snapshot.nativeRightDrawerUiIconCount,
+        labelColors: labels.map(node => getComputedStyle(node).color)
+      };
+    });
+    expect(initial.active).toBe(true);
+    expect(initial.count).toBeGreaterThan(10);
+    expect(initial.textValues).toEqual(expect.arrayContaining([
+      'Ashmere · Under the lanterns', 'Landmarks & Services', 'Ashmere Inn', 'Market', 'Forge & Workshop', 'Old Road Gate'
+    ]));
+    expect(initial.controls).toEqual(expect.arrayContaining(['inn','market','forge','road','visit-selected-place']));
+    expect(initial.icons).toBeGreaterThanOrEqual(4);
+    expect(initial.labelColors.every(color => color === 'rgba(0, 0, 0, 0)')).toBe(true);
+
+    // Selecting a location is still the original data-world-place callback.
+    await page.locator('#lws-panel-right [data-world-place="market"]').click();
+    await expect(page.locator('#lws-panel-right .lws-selected-place h3')).toHaveText('Market');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUiTextValues || []))
+      .toEqual(expect.arrayContaining(['Landmark in view', 'Market', 'Visit the Market', 'Enter this place']));
+    await expect(page.locator('#lws-panel-right .lws-visit-place .lws-btn-copy strong'))
+      .toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+    await page.locator('#lws-panel-right [data-world-action="visit-selected-place"]').click();
+    await expect(page.locator('.ash099-screen')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+  });
+
+  test('Phaser contextual action drawer tracks Old Road actions and remains a real mobile drawer', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await enterAshmere(page, 'MobilePhaserContextQA');
+    const panel = page.locator('#lws-panel-right');
+    await expect(panel).toHaveAttribute('aria-hidden', 'true');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUi)).toBe(false);
+    await expectNoHorizontalOverflow(page);
+
+    await page.locator('#legend-world-shell-root [data-world-action="toggle-right"]').click();
+    await expect(page.locator('body')).toHaveClass(/legend-shell-right-open/);
+    await expect(panel).toHaveAttribute('aria-hidden', 'false');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUi)).toBe(true);
+    await expect(panel).toContainText('Landmarks & Services');
+    await expectNoHorizontalOverflow(page);
+    await page.locator('#legend-world-shell-root [data-world-action="toggle-right"]').click();
+    await expect(panel).toHaveAttribute('aria-hidden', 'true');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUi)).toBe(false);
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await seedRoad(page);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUi)).toBe(true);
+    const roadLabels = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUiTextValues || []);
+    expect(roadLabels).toEqual(expect.arrayContaining(['The Old Road', 'Press onward', 'Search the area', 'Read the road', 'Road map', 'Field journal']));
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test('Phaser paints the traveler journal drawer while preserving saved values and its real Journal action', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await enterAshmere(page, 'PhaserJournalQA');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeLeftDrawerUi)).toBe(true);
+
+    const desktop = await page.evaluate(() => {
+      const panel = document.querySelector('#lws-panel-left');
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const player = window.LegendStorage.loadPlayer();
+      const label = panel?.querySelector('.lws-panel-eyebrow');
+      const journalButton = panel?.querySelector('[data-world-action="journal"]');
+      return {
+        active: document.body.classList.contains('legend-phaser-left-drawer-ui-active'),
+        objectCount: snapshot.nativeLeftDrawerUiObjectCount,
+        textCount: snapshot.nativeLeftDrawerUiTextCount,
+        textValues: snapshot.nativeLeftDrawerUiTextValues || [],
+        controlIds: snapshot.nativeLeftDrawerUiControlIds || [],
+        labelColor: label ? getComputedStyle(label).color : '',
+        hp: player.hp + ' / ' + player.maxHp,
+        gold: player.gold + 'g',
+        scrollRect: (() => {
+          const r = panel?.querySelector('.lws-panel-scroll')?.getBoundingClientRect();
+          return r ? { left:r.left, top:r.top, width:r.width, height:r.height } : null;
+        })(),
+        buttonName: journalButton?.textContent?.replace(/\s+/g,' ').trim() || '',
+        buttonStillEnabled: Boolean(journalButton && !journalButton.disabled)
+      };
+    });
+    expect(desktop.active).toBe(true);
+    expect(desktop.objectCount).toBeGreaterThan(10);
+    expect(desktop.textCount).toBeGreaterThan(10);
+    expect(desktop.textValues).toEqual(expect.arrayContaining([
+      'Traveler record', 'PhaserJournalQA', 'Vitality', 'Current lead', 'Quest log', 'Field journal'
+    ]));
+    expect(desktop.textValues).toContain(desktop.hp);
+    expect(desktop.textValues).toContain(desktop.gold);
+    expect(desktop.labelColor).toBe('rgba(0, 0, 0, 0)');
+    expect(desktop.buttonStillEnabled).toBe(true);
+    expect(desktop.buttonName).toContain('Open journal');
+    expect(desktop.controlIds).toContain('journal');
+
+    // renderShell rebuilds this panel's innerHTML on refresh too. Native text
+    // tags must be re-applied to the new nodes even if the copy is unchanged.
+    await page.evaluate(() => window.LegendWorldShellV170.refresh());
+    await expect.poll(() => page.evaluate(() => {
+      const eyebrow = document.querySelector('#lws-panel-left .lws-panel-eyebrow');
+      return eyebrow ? getComputedStyle(eyebrow).color : '';
+    })).toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUiTextCount || 0))
+      .toBeGreaterThan(10);
+
+    await page.evaluate(() => {
+      const player = window.LegendStorage.loadPlayer();
+      player.questLog = [
+        ...(Array.isArray(player.questLog) ? player.questLog : []),
+        ...Array.from({ length: 12 }, (_, index) =>
+          'Journal overflow note ' + (index + 1) + ': ' + 'A remembered detail from the road beyond the lantern line. '.repeat(2)
+        )
+      ];
+      window.LegendStorage.savePlayer(player);
+      window.LegendWorldShellV170.refresh();
+    });
+    const scroll = page.locator('#lws-panel-left .lws-panel-scroll');
+    await expect.poll(() => scroll.evaluate(node => node.scrollHeight > node.clientHeight)).toBe(true);
+    await scroll.evaluate(node => { node.scrollTop = node.scrollHeight; node.dispatchEvent(new Event('scroll')); });
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUiScrollTop || 0))
+      .toBeGreaterThan(0);
+    const desktopClip = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const mask = snapshot.nativeLeftDrawerUiMaskBounds;
+      const rect = document.querySelector('#lws-panel-left .lws-panel-scroll')?.getBoundingClientRect();
+      const size = snapshot.nativeLeftDrawerUiSceneSize;
+      const sx = size.width / Math.max(1, window.innerWidth);
+      const sy = size.height / Math.max(1, window.innerHeight);
+      return Boolean(mask && rect &&
+        Math.abs(mask.x - rect.left * sx) < 1 &&
+        Math.abs(mask.y - rect.top * sy) < 1 &&
+        Math.abs(mask.width - rect.width * sx) < 1 &&
+        Math.abs(mask.height - rect.height * sy) < 1);
+    });
+    expect(desktopClip).toBe(true);
+    await expectNoHorizontalOverflow(page);
+
+    // The native visual leaves the original production journal action intact.
+    await page.locator('#lws-panel-left [data-world-action="journal"]').click();
+    await expect(page.locator('.ash099-screen, [data-legend-game-screen]')).toBeVisible();
+  });
+
+  test('mobile journal drawer is DOM-backed while closed and Phaser-painted once opened', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await enterAshmere(page, 'MobilePhaserJournalQA');
+    const panel = page.locator('#lws-panel-left');
+    await expect(panel).toHaveAttribute('aria-hidden', 'true');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUi)).toBe(false);
+    await expectNoHorizontalOverflow(page);
+
+    await page.locator('#legend-world-shell-root [data-world-action="toggle-left"]').click();
+    await expect(page.locator('body')).toHaveClass(/legend-shell-left-open/);
+    await expect(panel).toHaveAttribute('aria-hidden', 'false');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUi)).toBe(true);
+    await expect(panel.locator('.lws-panel-eyebrow')).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+    await expect(panel).toContainText('MobilePhaserJournalQA');
+    await expect(panel.locator('[data-world-action="journal"]')).toBeEnabled();
+    await expectNoHorizontalOverflow(page);
+
+    await page.locator('#legend-world-shell-root [data-world-action="toggle-left"]').click();
+    await expect(panel).toHaveAttribute('aria-hidden', 'true');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUi)).toBe(false);
+  });
+
+  test('Phaser paints the persistent bottom navigation without replacing production action handlers', async ({ page }) => {
+    await enterAshmere(page, 'PhaserBottomBarQA');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeBottomBarUi)).toBe(true);
+
+    const desktop = await page.evaluate(() => {
+      const bar = document.querySelector('.lws-bottom-bar');
+      const labels = Array.from(bar?.querySelectorAll('.lws-btn-copy strong') || []);
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      return {
+        active: document.body.classList.contains('legend-phaser-bottom-bar-ui-active'),
+        objectCount: snapshot.nativeBottomBarUiObjectCount,
+        iconCount: snapshot.nativeBottomBarUiIconCount,
+        values: snapshot.nativeBottomBarUiTextValues || [],
+        paintedValues: snapshot.nativeBottomBarUiPaintedTextValues || [],
+        paintedCount: snapshot.nativeBottomBarUiPaintedTextCount || 0,
+        actions: snapshot.nativeBottomBarUiControlIds || [],
+        labelColors: labels.map(node => getComputedStyle(node).color),
+        iconOpacities: Array.from(bar?.querySelectorAll('.lws-btn-icon') || []).map(node => getComputedStyle(node).opacity),
+        buttonCount: bar?.querySelectorAll('button[data-world-action]').length || 0
+      };
+    });
+    expect(desktop.active).toBe(true);
+    expect(desktop.objectCount).toBeGreaterThan(2);
+    expect(desktop.iconCount).toBeGreaterThanOrEqual(5);
+    expect(desktop.iconOpacities.every(opacity => opacity === '0')).toBe(true);
+    await page.locator('.lws-bottom-bar [data-world-action="journal"]').hover();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeBottomBarUiIconCount || 0)).toBeGreaterThanOrEqual(5);
+    expect(desktop.values).toEqual(expect.arrayContaining(['World', 'Inventory', 'Journal', 'Map', 'Combat', 'Settings']));
+    expect(desktop.paintedCount).toBe(6);
+    expect(desktop.paintedValues).toEqual(expect.arrayContaining(['World', 'Inventory', 'Journal', 'Map', 'Combat', 'Settings']));
+    expect(desktop.actions).toEqual(expect.arrayContaining(['world', 'inventory', 'journal', 'map', 'combat', 'settings']));
+    expect(desktop.buttonCount).toBe(6);
+    expect(desktop.labelColors.every(color => color === 'rgba(0, 0, 0, 0)')).toBe(true);
+
+    // renderShell replaces the bottom-bar DOM nodes even if all visible content
+    // is identical. The native painter must re-tag the replacement nodes.
+    await page.evaluate(() => window.LegendWorldShellV170.refresh());
+    await expect.poll(() => page.evaluate(() => {
+      const bar = document.querySelector('.lws-bottom-bar');
+      return Array.from(bar?.querySelectorAll('.lws-btn-copy strong') || [])
+        .every(node => getComputedStyle(node).color === 'rgba(0, 0, 0, 0)');
+    })).toBe(true);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeBottomBarUiTextCount || 0)).toBe(6);
+
+    // A native visual does not intercept the actual DOM click. The existing
+    // inventory callback must still open the same production inventory modal.
+    await page.locator('.lws-bottom-bar [data-world-action="inventory"]').click();
+    await expect(page.locator('#legend-world-shell-modal-root .lws-modal')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-modal-root .lws-modal-header h2')).toHaveText('Inventory');
+    await page.locator('#legend-world-shell-modal-root [data-shell-modal-close]').first().click();
+    await expect(page.locator('#legend-world-shell-modal-root .lws-modal')).toHaveCount(0);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeBottomBarUiSceneSize?.width)).toBeGreaterThan(0);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+    const mobile = await page.evaluate(() => {
+      const bar = document.querySelector('.lws-bottom-bar');
+      const labels = Array.from(bar?.querySelectorAll('.lws-btn-copy strong') || []);
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      return {
+        barWidth: bar?.clientWidth || 0,
+        paintedCount: snapshot.nativeBottomBarUiPaintedTextCount || 0,
+        paintedValues: snapshot.nativeBottomBarUiPaintedTextValues || [],
+        scrollWidth: bar?.scrollWidth || 0,
+        labelCount: labels.filter(node => getComputedStyle(node).display !== 'none').length,
+        actions: Array.from(bar?.querySelectorAll('button[data-world-action]') || []).map(node => node.dataset.worldAction),
+        rect: (() => {
+          const r = bar?.getBoundingClientRect();
+          return r ? { left: r.left, top: r.top, width: r.width, height: r.height } : null;
+        })()
+      };
+    });
+    expect(mobile.barWidth).toBeGreaterThan(0);
+    expect(mobile.scrollWidth).toBeGreaterThanOrEqual(mobile.barWidth);
+    expect(mobile.labelCount).toBeGreaterThanOrEqual(4);
+    expect(mobile.actions).toHaveLength(6);
+    expect(mobile.paintedCount).toBe(6);
+    expect(mobile.paintedValues).toEqual(expect.arrayContaining(['World', 'Inventory', 'Journal', 'Map', 'Combat', 'Settings']));
+    await page.evaluate(() => {
+      const bar = document.querySelector('.lws-bottom-bar');
+      if (bar) {
+        bar.scrollLeft = Math.min(120, bar.scrollWidth - bar.clientWidth);
+        bar.dispatchEvent(new Event('scroll'));
+      }
+    });
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeBottomBarUiScrollLeft || 0)).toBeGreaterThan(0);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeBottomBarUi)).toBe(true);
+    const clipped = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const mask = snapshot.nativeBottomBarUiMaskBounds;
+      const scene = snapshot.nativeBottomBarUiSceneSize;
+      const sx = scene.width / Math.max(1, window.innerWidth);
+      const sy = scene.height / Math.max(1, window.innerHeight);
+      const bar = document.querySelector('.lws-bottom-bar')?.getBoundingClientRect();
+      const controls = snapshot.nativeBottomBarUiControlBounds || [];
+      return {
+        maskMode: snapshot.nativeBottomBarUiMaskMode,
+        filterActive: snapshot.nativeBottomBarUiMaskFilterActive,
+        mask,
+        controlCount: controls.length,
+        hasOffscreenControl: controls.some(rect =>
+          rect.x < mask.x - 1 || rect.x + rect.width > mask.x + mask.width + 1
+        ),
+        maskMatchesDom: Boolean(bar && mask &&
+          Math.abs(mask.x - bar.left * sx) < 1 &&
+          Math.abs(mask.y - bar.top * sy) < 1 &&
+          Math.abs(mask.width - bar.width * sx) < 1 &&
+          Math.abs(mask.height - bar.height * sy) < 1
+        )
+      };
+    });
+    expect(clipped.controlCount).toBe(6);
+    expect(clipped.hasOffscreenControl).toBe(true);
+    expect(clipped.maskMatchesDom).toBe(true);
+    expect(['webgl-filter', 'canvas-geometry']).toContain(clipped.maskMode);
+    if (clipped.maskMode === 'webgl-filter') expect(clipped.filterActive).toBe(true);
+  });
+
   test('inventory overlay reads real saved quantities without changing inventory or leaving the world', async ({ page }) => {
     await enterAshmere(page, 'PackReader');
     const before = await page.evaluate(() => {
@@ -443,6 +739,200 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(leftPanel).toHaveAttribute('aria-hidden', 'true');
     await expect.poll(() => leftPanel.evaluate(panel => panel.inert)).toBe(true);
     await expect(leftPanel).not.toBeInViewport();
+  });
+
+  test('Ashmere destination board is Phaser-painted while real town actions and fallback remain usable', async ({ page }) => {
+    await enterAshmere(page, 'AshmereBoardQA');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1?.snapshot?.()?.nativeTownBoardUi
+    )).toBe(true);
+
+    const initial = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const section = document.querySelector('.ash100-destination-section');
+      return {
+        active: snapshot.nativeTownBoardUi,
+        textCount: snapshot.nativeTownBoardUiTextCount,
+        text: snapshot.nativeTownBoardUiTextValues || [],
+        ids: snapshot.nativeTownBoardUiControlIds || [],
+        cards: snapshot.nativeTownBoardUiCards || [],
+        heading: section?.querySelector('h2')?.textContent || '',
+        iconCount: section?.querySelectorAll('.ash100-destination-icon').length || 0
+      };
+    });
+    expect(initial.active).toBe(true);
+    expect(initial.textCount).toBeGreaterThanOrEqual(26);
+    expect(initial.text).toEqual(expect.arrayContaining([
+      'ASHMERE', 'Where next?', 'Ashmere Inn', 'Market', 'Forge & Workshop',
+      'Town Square', 'Work Board', 'Daily Field Board', 'Old Road Gate', 'Road Network'
+    ]));
+    expect(initial.ids).toEqual(['inn','trader','smith','people','work','quests','road','regions']);
+    expect(initial.cards).toHaveLength(8);
+    expect(initial.iconCount).toBe(8);
+    expect(initial.cards.every(card => card.width > 0 && card.height > 0 && card.title && card.action)).toBe(true);
+    await page.locator('.ash100-destination[data-ash-view="inn"]').hover();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.find(card => card.id === 'inn')?.hovered
+    )).toBe(true);
+    expect(await page.locator('.ash100-destination-copy strong').first().evaluate(node =>
+      getComputedStyle(node).color
+    )).toBe('rgba(0, 0, 0, 0)');
+
+    // A missing destination forces the full styled DOM board back on-screen.
+    const fallback = await page.evaluate(() => {
+      const section = document.querySelector('.ash100-destination-section');
+      const button = section.querySelector('[data-ash-view="regions"]');
+      const parent = button.parentNode;
+      const next = button.nextSibling;
+      button.remove();
+      window.LegendPhaserWorldV1.refreshTownBoard();
+      const result = {
+        active: window.LegendPhaserWorldV1.snapshot().nativeTownBoardUi,
+        titleColor: getComputedStyle(section.querySelector('.ash100-destination-copy strong')).color
+      };
+      parent.insertBefore(button, next);
+      window.LegendPhaserWorldV1.refreshTownBoard();
+      return result;
+    });
+    expect(fallback.active).toBe(false);
+    expect(fallback.titleColor).not.toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
+    )).toBe(true);
+
+    // The Bell Cellar appears only after the existing progression flag is set.
+    await page.evaluate(() => {
+      const player = window.LegendRuntimeV120.loadPlayer();
+      player.flags = player.flags || {};
+      player.flags.firstRoadReturnSeen = true;
+      window.LegendStorage.savePlayer(player);
+      window.LegendAshmereV099.renderAshmere();
+    });
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.length
+    )).toBe(9);
+    const unlocked = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTownBoardUiCards);
+    expect(unlocked.map(card => card.id)).toContain('dungeon');
+    expect(unlocked.find(card => card.id === 'dungeon')?.title).toBe('The Bell Cellar');
+    expect(await page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiExpectedIds
+    )).toEqual(['inn','trader','smith','people','work','dungeon','quests','road','regions']);
+
+    // The unlocked board must fall back if its progression-only Bell Cellar card is missing.
+    const unlockedFallback = await page.evaluate(() => {
+      const section = document.querySelector('.ash100-destination-section');
+      const cellar = section.querySelector('[data-ash-view="dungeon"]');
+      const parent = cellar.parentNode;
+      const next = cellar.nextSibling;
+      cellar.remove();
+      window.LegendPhaserWorldV1.refreshTownBoard();
+      const result = {
+        active: window.LegendPhaserWorldV1.snapshot().nativeTownBoardUi,
+        titleColor: getComputedStyle(section.querySelector('.ash100-destination-copy strong')).color
+      };
+      parent.insertBefore(cellar, next);
+      window.LegendPhaserWorldV1.refreshTownBoard();
+      return result;
+    });
+    expect(unlockedFallback.active).toBe(false);
+    expect(unlockedFallback.titleColor).not.toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
+    )).toBe(true);
+
+    // The live destination buttons still call the original market and work-board routes.
+    await page.locator('.ash100-destination[data-ash-view="trader"]').click();
+    await expect(page.locator('.ash099-market-console')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Trading Post' })).toBeVisible();
+    await page.locator('#ashBack').click();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
+    )).toBe(true);
+    await page.locator('.ash100-destination[data-ash-view="work"]').click();
+    await expect(page.locator('.ash099-job-board')).toBeVisible();
+    await expect(page.locator('#openDailyFieldBoard')).toBeVisible();
+    await page.locator('#ashBack').click();
+    await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
+
+    // A forced Phaser text-construction error must restore the entire DOM board.
+    const paintError = await page.evaluate(() => {
+      const Factory = window.Phaser?.GameObjects?.GameObjectFactory;
+      const prototype = Factory?.prototype;
+      const originalText = prototype?.text;
+      if (typeof originalText !== 'function') return { supported: false };
+      const section = document.querySelector('.ash100-destination-section');
+      const description = section.querySelector('.ash100-destination-copy small');
+      const originalDescription = description.textContent;
+      prototype.text = function () { throw new Error('Forced Ashmere painter failure test'); };
+      let result;
+      try {
+        description.textContent = originalDescription + ' · test repaint';
+        window.LegendPhaserWorldV1.refreshTownBoard();
+        result = {
+          active: window.LegendPhaserWorldV1.snapshot().nativeTownBoardUi,
+          titleColor: getComputedStyle(section.querySelector('.ash100-destination-copy strong')).color
+        };
+      } finally {
+        prototype.text = originalText;
+        description.textContent = originalDescription;
+        window.LegendPhaserWorldV1.refreshTownBoard();
+      }
+      return { supported: true, ...result };
+    });
+    expect(paintError.supported).toBe(true);
+    expect(paintError.active).toBe(false);
+    expect(paintError.titleColor).not.toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
+    )).toBe(true);
+
+    // Under a continuous scroll burst, Phaser updates each frame rather than
+    // waiting for scrolling to stop; its label bounds must track real buttons.
+    const scrollAlignment = await page.evaluate(async () => {
+      const scroller = document.scrollingElement;
+      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
+      if (maxScroll < 32) return { scrollable: false };
+      for (let step = 1; step <= 12; step += 1) {
+        scroller.scrollTop = maxScroll * step / 12;
+        window.dispatchEvent(new Event('scroll'));
+      }
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const button = document.querySelector('.ash100-destination[data-ash-view="inn"]');
+      const dom = button.getBoundingClientRect();
+      const painted = snapshot.nativeTownBoardUiCards.find(card => card.id === 'inn');
+      const sx = snapshot.nativeTownBoardUiSceneSize.width / window.innerWidth;
+      const sy = snapshot.nativeTownBoardUiSceneSize.height / window.innerHeight;
+      return {
+        scrollable: true,
+        xDelta: Math.abs(painted.x - dom.left * sx),
+        yDelta: Math.abs(painted.y - dom.top * sy)
+      };
+    });
+    expect(scrollAlignment.scrollable).toBe(true);
+    expect(scrollAlignment.xDelta).toBeLessThan(2);
+    expect(scrollAlignment.yDelta).toBeLessThan(2);
+
+    // Focus remains on the real DOM button while its visible focus state is painted in Phaser.
+    await page.setViewportSize({ width: 390, height: 844 });
+    const inn = page.locator('.ash100-destination[data-ash-view="inn"]');
+    await inn.focus();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.find(card => card.id === 'inn')?.focused
+    )).toBe(true);
+    const townFocusStyle = await inn.evaluate(node => ({
+      outlineColor: getComputedStyle(node).outlineColor,
+      outlineStyle: getComputedStyle(node).outlineStyle
+    }));
+    expect(townFocusStyle).toEqual({ outlineColor: 'rgb(255, 230, 160)', outlineStyle: 'solid' });
+    await expectNoHorizontalOverflow(page);
+    const mobile = await page.evaluate(() => ({
+      width: document.documentElement.clientWidth,
+      board: document.querySelector('.ash100-destination-section')?.getBoundingClientRect().width || 0,
+      cardCount: window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.length || 0
+    }));
+    expect(mobile.board).toBeGreaterThan(0);
+    expect(mobile.cardCount).toBe(9);
   });
 
   test('Ashmere POI selection updates the contextual scene without changing saved gameplay state', async ({ page }) => {

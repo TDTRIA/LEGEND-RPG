@@ -21,6 +21,28 @@ body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-
   content: none !important;
   background: none !important;
 }
+
+/* Phaser paints the title wordmark, decorative divider and panel copy.
+   Keep the original semantic title text/image in the DOM as the safe fallback. */
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v150-logo-lockup > img.v120-legend-logo {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-title-hero > .portal100-kicker,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-title-hero > p,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-divider > b,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-traveler-line small,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-traveler-line strong,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-traveler-line div > span,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-heading > span {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-divider > span {
+  opacity: 0 !important;
+  background: transparent !important;
+}
 body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn {
   color: transparent !important;
   background: transparent !important;
@@ -436,8 +458,8 @@ body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-
 body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-brand-mark,
 body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-vital,
 body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-btn,
-body.legend-phaser-world-active.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-location,
-body.legend-phaser-world-active.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-objective {
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-location,
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-objective {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -459,4 +481,394 @@ body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-
   outline: 2px solid #ffe6a0 !important;
   outline-offset: 3px !important;
   box-shadow: 0 0 0 4px rgba(231, 201, 130, .18) !important;
+}
+
+
+/* The persistent bottom action bar is painted in RealmScene. Its semantic DOM
+   buttons stay on top as real touch/keyboard targets and retain accessible names. */
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar .lws-btn {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar [data-legend-phaser-bottom-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar [data-legend-phaser-bottom-icon="true"] {
+  opacity: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar [data-legend-phaser-bottom-control="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar [data-legend-phaser-bottom-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 2px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}
+
+
+/* Left traveler journal/quest drawer is rendered by RealmScene. The DOM keeps
+   live content, scroll, keyboard focus and the real Journal action targets. */
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-panel-header,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-section,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-quest-item,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-vital,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-meter,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-tag,
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left .lws-btn {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-icon="true"] {
+  opacity: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-control="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}
+
+
+/* Right contextual/action drawer uses native Phaser artwork and text; its
+   original action/place/route buttons remain the accessible live targets. */
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-panel-header,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-panel-scroll .lws-btn,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-place-option,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-selected-place,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-poi-hint,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-other-destinations,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-quest-item,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-status {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right [data-legend-phaser-right-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right [data-legend-phaser-right-icon="true"] {
+  opacity: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right [data-legend-phaser-right-control="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right [data-legend-phaser-right-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}
+
+
+/* Old Road connected map and field journal: Phaser paints the modal frame,
+   graph/cards and copy; native DOM controls remain the focusable action layer. */
+body.legend-phaser-road-map-ui-active #exp150Modal {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-modal-dialog {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-map-intro,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp160-route-graph,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp160-map-node,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp160-map-action,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-map-discovery,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-journal-section,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-journal-entry,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-route-entry,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-place-chip,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-journal-empty,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-modal-close {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}
+
+
+/* Old Road journey header, weather/time, six-leg progress and travel side rail
+   are Phaser-painted. Original map/journal DOM buttons remain functional. */
+body.legend-phaser-expedition-hud-ui-active .exp150-expedition-head,
+body.legend-phaser-expedition-hud-ui-active .exp150-meter,
+body.legend-phaser-expedition-hud-ui-active .exp150-meter > i,
+body.legend-phaser-expedition-hud-ui-active .exp150-meter > i > b,
+body.legend-phaser-expedition-hud-ui-active .exp150-road-clock,
+body.legend-phaser-expedition-hud-ui-active .exp150-route-tracker,
+body.legend-phaser-expedition-hud-ui-active .exp150-aside-card,
+body.legend-phaser-expedition-hud-ui-active .exp150-route-reminder,
+body.legend-phaser-expedition-hud-ui-active .exp150-supply-row,
+body.legend-phaser-expedition-hud-ui-active .exp150-pressure-track,
+body.legend-phaser-expedition-hud-ui-active .exp150-pressure-track > i {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-expedition-hud-ui-active .exp150-route-tracker li:before {
+  content: none !important;
+}
+body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}
+
+
+/* Old Road decision deck: route forks, field discoveries, optional stops,
+   Blackroot survey, next-move and camp cards are Phaser-painted. */
+body.legend-phaser-road-actions-ui-active .exp150-guide,
+body.legend-phaser-road-actions-ui-active .exp100-panel,
+body.legend-phaser-road-actions-ui-active .exp100-poi,
+body.legend-phaser-road-actions-ui-active .exp100-camp,
+body.legend-phaser-road-actions-ui-active .exp150-camp-atmosphere,
+body.legend-phaser-road-actions-ui-active .exp100-camp-heading,
+body.legend-phaser-road-actions-ui-active .exp150-action-dock,
+body.legend-phaser-road-actions-ui-active .exp150-section-heading,
+body.legend-phaser-road-actions-ui-active .exp150-action,
+body.legend-phaser-road-actions-ui-active .exp100-choice,
+body.legend-phaser-road-actions-ui-active .exp160-optional-detour,
+body.legend-phaser-road-actions-ui-active .exp160-optional-site,
+body.legend-phaser-road-actions-ui-active .exp160-field-contract,
+body.legend-phaser-road-actions-ui-active .exp160-field-report-note,
+body.legend-phaser-road-actions-ui-active .exp160-site-complete {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}
+
+
+/* The tactical battle presentation is painted by RealmScene. Character/enemy
+   illustrations and the semantic battle buttons stay in the DOM; only their
+   duplicated text/surfaces are visually masked after the Phaser preflight. */
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-topline,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-stage-plate,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-foe-nameplate,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-combat-status,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-dialogue,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-log,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-enemy-tell,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-turn-heading,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command-grid,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-utilities {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-utility-command,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root #battleSound {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  outline-color: transparent !important;
+  filter: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-topline .rpg-overline,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-topline > div > strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-stage-plate > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-stage-plate > strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-stage-plate > small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-foe-nameplate > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-foe-nameplate > strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-foe-nameplate > small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-name > strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-name > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-vital-label > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-vital-label > strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-resources > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-resources b,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-dialogue-kicker,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-dialogue p,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-log li,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-enemy-tell small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-enemy-tell .exp100-intent,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-turn-heading span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-turn-heading strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-turn-heading small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command-glyph,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command-label strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command-label small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command em,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-utilities > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-utility-command,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-utility-command small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-footnote,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root #battleSound {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle button:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle button {
+    transition: none !important;
+  }
+}
+
+
+/* Ashmere service terminal: Phaser paints a single framed destination board
+   using the real DOM card geometry. Raster icons and semantic buttons remain
+   in the DOM so every existing town action stays accessible and functional. */
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination-section {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  outline-color: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:hover,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:active,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:focus-visible {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-section-head .ash099-kicker,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-section-head h2,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination-copy strong,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination-copy small,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination > em {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination-icon,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination-icon img {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination {
+    transition: none !important;
+  }
 }

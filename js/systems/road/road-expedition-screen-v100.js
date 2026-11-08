@@ -294,6 +294,7 @@
     const places=journal.visitedPlaces.length?journal.visitedPlaces.map(name=>'<span class="exp150-place-chip">'+esc(name)+'</span>').join(''):'<p class="exp150-journal-muted">Places appear as your journey reaches them.</p>';
     return '<div class="exp150-journal-sheet"><div class="exp150-map-intro"><span class="exp150-kicker">TRAVELER’S FIELD JOURNAL</span><h2>What the road remembers</h2><p>Your discoveries persist between expeditions. Quest evidence and inventory remain in their own existing records.</p></div><section class="exp150-journal-section"><h3>Places visited <span>'+journal.visitedPlaces.length+'</span></h3><div class="exp150-place-list">'+places+'</div></section><section class="exp150-journal-section"><h3>Clues & discoveries <span>'+discoveries.length+'</span></h3>'+discoveryMarkup+'</section><section class="exp150-journal-section"><h3>Route decisions <span>'+routes.length+'</span></h3>'+routeMarkup+'</section><section class="exp150-journal-section"><h3>Camp reports <span>'+campReports.length+'</span></h3>'+campMarkup+'</section></div>';
   }
+  /** Opens the road map or field journal, binds its existing controls, and manages focus return and Phaser refresh. */
   function openPanel(kind){
     const pl=p();if(!pl)return;
     const s=ensure(pl),stage=clamp(Number(s.stage||0),0,5),overlay=document.getElementById('exp150Modal');
@@ -306,10 +307,12 @@
     overlay.classList.add('is-open');
     document.body.classList.add('exp150-modal-open');
     document.getElementById('exp150ModalClose')?.focus();
+    window.LegendPhaserWorldV1?.refreshRoadMap?.();
     const close=()=>{
       overlay.hidden=true;
       overlay.classList.remove('is-open');
       document.body.classList.remove('exp150-modal-open');
+      window.LegendPhaserWorldV1?.clearRoadMap?.();
       if(returnFocus&&typeof returnFocus.focus==='function'&&returnFocus.isConnected)returnFocus.focus();
     };
     content.querySelectorAll('[data-exp160-map-route]').forEach(button=>button.addEventListener('click',()=>{
@@ -322,14 +325,30 @@
     overlay.onclick=event=>{if(event.target===overlay)close();};
     overlay.onkeydown=event=>{
       if(event.key==='Escape'){event.preventDefault();close();return;}
-      // This dialog currently has one action. Keep keyboard focus inside it until
-      // additional interactive controls are deliberately added to the modal.
       if(event.key==='Tab'){
-        event.preventDefault();
-        document.getElementById('exp150ModalClose')?.focus();
+        // Route and optional-stop buttons are real actions inside the Phaser-
+        // painted map. Keep keyboard navigation within every enabled dialog
+        // control instead of trapping users on the close button alone.
+        const controls=Array.from(content.querySelectorAll(
+          'button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+        )).filter(node=>node.getAttribute('aria-hidden')!=='true'&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=='hidden');
+        if(!controls.length){
+          event.preventDefault();
+          document.getElementById('exp150ModalClose')?.focus();
+          return;
+        }
+        const first=controls[0],last=controls[controls.length-1],active=document.activeElement;
+        if(event.shiftKey&&(active===first||!content.contains(active))){
+          event.preventDefault();
+          last.focus();
+        }else if(!event.shiftKey&&(active===last||!content.contains(active))){
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
   }
+  /** Renders the current production expedition state and refreshes its dedicated Phaser HUD and decision layers. */
   function renderExpedition(note=''){
     const pl=p();if(!pl)return;
     const s=ensure(pl),stage=clamp(Number(s.stage||0),0,5),graph=graphForState(pl,s,stage);
@@ -376,6 +395,8 @@
       '<div class="exp150-modal-layer" id="exp150Modal" hidden tabindex="-1"><section class="exp150-modal-dialog" role="dialog" aria-modal="true" aria-label="Road map or field journal"><div id="exp150ModalContent"></div></section></div></div>';
     shell(markup);
     bindHotspotDelegation();
+    window.LegendPhaserWorldV1?.refreshExpedition?.();
+    window.LegendPhaserWorldV1?.refreshExpeditionActions?.();
     document.getElementById('poiLeave')?.addEventListener('click',()=>{const player=p();if(!player)return;const state=ensure(player);state.discoveryOpen=false;state.discoveryStage=null;roadDiscovery.hide();save(player);document.querySelector('.exp150-interactions .exp100-discovery-beat')?.remove();});
     document.getElementById('poiInspect')?.addEventListener('click',roadDiscovery.inspectPointOfInterest);
     document.getElementById('exp160VisitOptional')?.addEventListener('click',button=>beginOptionalSite(button.currentTarget.dataset.node));
