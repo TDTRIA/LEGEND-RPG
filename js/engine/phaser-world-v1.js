@@ -567,6 +567,15 @@
             height: item.height,
             focused: Boolean(item.focusFrame?.visible)
           })),
+          nativeTitleUiTextQuality: this.nativeTitleUiControls.map(item => ({
+            id: item.id,
+            titleFontSize: Number.parseFloat(item.titleText?.style?.fontSize) || 0,
+            titleResolution: Number(item.titleText?.style?.resolution) || 1,
+            titleColor: item.titleText?.style?.color || '',
+            subtitleFontSize: Number.parseFloat(item.subtitleText?.style?.fontSize) || 0,
+            subtitleResolution: Number(item.subtitleText?.style?.resolution) || 1,
+            subtitleColor: item.subtitleText?.style?.color || ''
+          })),
           nativeAnnalsUi: this.nativeAnnalsUiActive,
           nativeAnnalsUiObjectCount: this.nativeAnnalsUiObjects.filter(item => item?.active).length,
           nativeAnnalsUiStep: Number(root()?.querySelector('.opening-lore-v220')?.dataset.loreStep ?? -1),
@@ -1012,52 +1021,71 @@
         const detailSize = Math.max(9, Math.round((parseFloat(detailCss.fontSize) || 10) * sy));
         const group = this.add.container(rect.x, rect.y).setDepth(13);
         const art = this.add.graphics();
-        const idleFill = primary ? 0x57421f : 0x101a12;
-        const idleLine = primary ? 0xe8c47a : 0x9e895d;
-        art.fillStyle(idleFill, primary ? 0.96 : 0.92);
+        // Use deliberate, fully opaque menu surfaces. The DOM underneath is an
+        // accessible hit target only, so these are the actual visible buttons.
+        const idleFill = primary ? 0xd5a44e : 0x09150d;
+        const idleLine = primary ? 0xffe6aa : 0xe0c17d;
+        art.fillStyle(idleFill, 0.99);
         art.fillRect(0, 0, rect.width, rect.height);
-        art.lineStyle(primary ? 1.35 : 1, idleLine, primary ? 0.82 : 0.54);
+        art.lineStyle(primary ? 1.8 : 1.35, idleLine, 0.98);
         art.strokeRect(0.5, 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
-        art.fillStyle(primary ? 0xf0ca76 : 0xc6a766, primary ? 0.96 : 0.72);
-        art.fillRect(0, 0, primary ? 3 * sx : 2 * sx, rect.height);
+        art.fillStyle(primary ? 0x704918 : 0xe0bd75, 0.96);
+        art.fillRect(0, 0, primary ? 4 * sx : 3 * sx, rect.height);
         const iconX = 10 * sx;
-        const iconY = Math.max(4 * sy, (rect.height - 25 * sy) / 2);
-        art.fillStyle(primary ? 0x211a0e : 0x050a07, 0.56);
-        art.fillRect(iconX, iconY, 25 * sx, Math.min(25 * sy, rect.height - 8 * sy));
-        art.lineStyle(1, primary ? 0xf0d28f : 0xc5a96c, 0.55);
-        art.strokeRect(iconX + 0.5, iconY + 0.5, 24 * sx, Math.min(24 * sy, rect.height - 9 * sy));
+        const iconY = Math.max(4 * sy, (rect.height - 28 * sy) / 2);
+        art.fillStyle(primary ? 0x5a3d18 : 0x030905, 0.92);
+        art.fillRect(iconX, iconY, 28 * sx, Math.min(28 * sy, rect.height - 8 * sy));
+        art.lineStyle(1.1, primary ? 0xffedc5 : 0xe5c985, 0.92);
+        art.strokeRect(iconX + 0.5, iconY + 0.5, 27 * sx, Math.min(27 * sy, rect.height - 9 * sy));
 
         const iconKey = iconTextures[button.id] || 'menuMilestone';
+        const crispText = textObject => {
+          // Phaser Text uses an internal canvas texture. A 2x texture prevents
+          // small menu labels from looking soft when the full-screen scene is
+          // composited or resized; autoRound keeps glyph placement on whole pixels.
+          textObject.setResolution?.(2);
+          textObject.autoRound = true;
+          return textObject;
+        };
         const icon = this.textures.exists(iconKey)
-          ? this.add.image(iconX + 12.5 * sx, rect.height / 2, iconKey)
-            .setDisplaySize(23 * sx, 23 * sy)
-            .setAlpha(0.98)
-          : this.add.text(iconX + 12.5 * sx, rect.height / 2, '✦', {
+          ? this.add.image(iconX + 14 * sx, rect.height / 2, iconKey)
+            .setDisplaySize(25 * sx, 25 * sy)
+            .setAlpha(1)
+          : crispText(this.add.text(iconX + 14 * sx, rect.height / 2, '✦', {
             fontFamily: 'Georgia, serif',
-            fontSize: (Math.max(12, Math.round(15 * sy))) + 'px',
-            color: primary ? '#ffe5a2' : '#e4cb91'
-          }).setOrigin(0.5);
-        const labelX = 48 * sx;
-        const titleY = rect.height * (detail ? 0.39 : 0.5);
-        const title = this.add.text(labelX, titleY, main, {
+            fontSize: (Math.max(14, Math.round(16 * sy))) + 'px',
+            color: primary ? '#fff2cf' : '#f4d995'
+          })).setOrigin(0.5);
+        const labelX = Math.round(52 * sx);
+        const titleY = Math.round(rect.height * (detail ? 0.38 : 0.5));
+        const title = crispText(this.add.text(labelX, titleY, main, {
           fontFamily: 'Georgia, Times New Roman, serif',
-          fontSize: `${mainSize}px`,
+          fontSize: `${Math.max(primary ? 17 : 16, mainSize)}px`,
           fontStyle: 'bold',
-          color: primary ? '#fff0c5' : '#f0ead9',
-          letterSpacing: 0.15 * sx
-        }).setOrigin(0, 0.5);
-        const subtitle = this.add.text(labelX, rect.height * 0.72, detail, {
+          color: primary ? '#241707' : '#fff3d7',
+          stroke: primary ? '#f0d28f' : '#020704',
+          strokeThickness: primary ? 0 : 1,
+          letterSpacing: 0.22 * sx,
+          padding: { left: 1, right: 2, top: 2, bottom: 2 }
+        })).setOrigin(0, 0.5);
+        const subtitle = crispText(this.add.text(labelX, Math.round(rect.height * 0.73), detail, {
           fontFamily: 'Arial, sans-serif',
-          fontSize: `${detailSize}px`,
-          color: primary ? '#ead9ac' : '#c6d0c5'
-        }).setOrigin(0, 0.5);
-        const arrow = this.add.text(rect.width - 17 * sx, rect.height / 2, '›', {
+          fontSize: `${Math.max(12, detailSize)}px`,
+          fontStyle: primary ? 'bold' : 'normal',
+          color: primary ? '#3e2b10' : '#dce6d9',
+          stroke: primary ? '#f0d28f' : '#020704',
+          strokeThickness: primary ? 0 : 0.55,
+          padding: { left: 1, right: 2, top: 1, bottom: 1 }
+        })).setOrigin(0, 0.5);
+        const arrow = crispText(this.add.text(rect.width - 17 * sx, Math.round(rect.height / 2), '›', {
           fontFamily: 'Georgia, serif',
-          fontSize: `${Math.max(20, Math.round(23 * sy))}px`,
-          color: primary ? '#ffe5a2' : '#d6bd7d'
-        }).setOrigin(0.5);
+          fontSize: `${Math.max(22, Math.round(24 * sy))}px`,
+          fontStyle: 'bold',
+          color: primary ? '#36230b' : '#f1d58f',
+          padding: { left: 1, right: 2, top: 1, bottom: 1 }
+        })).setOrigin(0.5);
         const focusFrame = this.add.graphics();
-        focusFrame.lineStyle(2, 0xffe7a6, 0.96);
+        focusFrame.lineStyle(2.4, primary ? 0x5a3b14 : 0xffe6a5, 1);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         group.add([art, icon, title, subtitle, arrow, focusFrame]);
@@ -1072,6 +1100,8 @@
           height: rect.height,
           container: group,
           focusFrame,
+          titleText: title,
+          subtitleText: subtitle,
           button
         };
         this.nativeTitleUiControls.push(control);
