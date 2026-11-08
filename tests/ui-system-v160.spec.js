@@ -655,6 +655,10 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
 
     // Simulate a failed Phaser texture request independently of the DOM image.
     // The DOM source remains correct, but a missing Phaser texture must restore it.
+    await seedRoad(page, 1, 'ridge');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
+    )).toBe(true);
     const missingTextureFallback = await page.evaluate(() => {
       const scene = document.querySelector('.exp100-scene-live');
       const image = scene?.querySelector(':scope > img');
