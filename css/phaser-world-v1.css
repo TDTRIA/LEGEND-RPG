@@ -137,7 +137,9 @@ body.legend-phaser-world-active #root .exp100 {
 body.legend-phaser-world-active #root .exp100-scene-live {
   background: transparent !important;
 }
-body.legend-phaser-world-active #root .exp100-scene-live > img {
+/* Hide the DOM scene image only after RealmScene confirms the matching stage
+   texture is loaded and active. Otherwise the authored image stays as fallback. */
+body.legend-phaser-world-active.legend-phaser-road-scene-art-active #root .exp100-scene-live > img {
   opacity: 0 !important;
   visibility: hidden !important;
   animation: none !important;
