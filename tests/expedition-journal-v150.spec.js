@@ -174,9 +174,8 @@ test('expedition map and field journal preserve keyboard focus and recorded disc
   await journalButton.click();
   const journalDialog = page.getByRole('dialog', { name: 'Field journal' });
   await expect(journalDialog).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUi)).toBe(true);
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUiKind)).toBe('journal');
-  await expect(journalDialog.locator('.exp150-map-intro h2')).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUi)).toBe(false);
+  await expect(journalDialog.locator('.exp150-map-intro h2')).not.toHaveCSS('color', 'rgba(0, 0, 0, 0)');
   await expect(journalDialog).toContainText('What the road remembers');
   await expect(journalDialog).toContainText('The Split Milestone');
   const journalClose = page.getByRole('button', { name: 'Return to the road' });
@@ -192,8 +191,8 @@ test('expedition map and field journal preserve keyboard focus and recorded disc
   await mapButton.click();
   const mapDialog = page.getByRole('dialog', { name: 'Road map' });
   await expect(mapDialog).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUiKind)).toBe('map');
-  await expect(mapDialog.locator('.exp150-map-intro h2')).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUi)).toBe(false);
+  await expect(mapDialog.locator('.exp150-map-intro h2')).not.toHaveCSS('color', 'rgba(0, 0, 0, 0)');
   await expect(mapDialog).toContainText('The road you know');
   await expect(mapDialog).toContainText('The Split Milestone');
   await expect(mapDialog.locator('.exp150-map-discovery')).toHaveCount(1);
