@@ -14,6 +14,7 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await expect(page.locator('.v120-title-hero .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
 }
 
+/** Creates a fresh traveler through the live title/opening flow at the requested desktop or mobile viewport. */
 async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, height: 900 }) {
   await openTitle(page, viewport);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
