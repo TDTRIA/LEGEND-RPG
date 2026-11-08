@@ -2894,3 +2894,59 @@ test('the production root plays its Phaser awakening and exposes the skip contro
   expect(boot.active).toBe(false);
   await expect(page.locator('#engine-skip')).toBeHidden();
 });
+
+test('looping intro and creation atmosphere does not block the Phaser screen painter or leave stale overlays', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+    // Keep this regression focused on screen painters rather than the separate
+    // first-visit engine awakening sequence.
+    sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready');
+  });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
+
+  // The identity scene includes an intentionally infinite presence-haze loop.
+  // That decorative loop must not keep the creation painter waiting forever.
+  await page.evaluate(() => window.LegendBeginningV094.startCreation());
+  await expect(page.locator('.v140-creation')).toBeVisible();
+  await page.locator('#v094Name').fill('OverlayProof');
+  await page.locator('#v094Next').click();
+  await expect(page.locator('[data-gender="unspoken"]')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCreationUi)).toBe(true);
+
+  await page.locator('[data-gender="unspoken"]').click();
+  await page.locator('#v094Next').click();
+  await page.locator('[data-personality="kind"]').click();
+  await page.locator('#v094Next').click();
+  await page.locator('[data-origin]').first().click();
+  await page.locator('#v094Next').click();
+  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('#v094Next').click();
+  await page.locator('[data-keepsake="Old Map"]').click();
+  await page.locator('#v094Next').click();
+  await expect(page.getByRole('heading', { name: 'OverlayProof', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: /Let Me Wake/i }).click();
+
+  // The Old Road prologue has infinite drifting-background and lantern-sweep
+  // animations. Those loops must not block its Phaser-native panels either.
+  await expect(page.locator('.opening-road-v140-prologue')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(true);
+  const layers = await page.evaluate(() => ({
+    creation: document.body.classList.contains('legend-phaser-creation-ui-active'),
+    opening: document.body.classList.contains('legend-phaser-opening-ui-active'),
+    creationScreenCount: document.querySelectorAll('#root .v140-creation:not(.v140-arrival)').length,
+    openingScreenCount: document.querySelectorAll('#root .opening-road-v140').length,
+    creationObjects: window.LegendPhaserWorldV1.snapshot()?.nativeCreationUiObjectCount || 0,
+    openingObjects: window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUiObjectCount || 0
+  }));
+  expect(layers.creation).toBe(false);
+  expect(layers.opening).toBe(true);
+  expect(layers.creationScreenCount).toBe(0);
+  expect(layers.openingScreenCount).toBe(1);
+  expect(layers.creationObjects).toBe(0);
+  expect(layers.openingObjects).toBeGreaterThan(10);
+});
