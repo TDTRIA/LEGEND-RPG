@@ -4,7 +4,18 @@
 
 ## Design intent
 
-LEGEND should feel like entering a dangerous illustrated frontier: expedition-led scene composition, strong character silhouettes, tactile field-ledger details, purposeful status information, crafted material edges, readable feedback, and distinct compositions for title, refuge, road and battle. **Darkest Dungeon is the primary high-level creative reference** for atmosphere, characterful presentation, and tactical readability. This is not a clone: do not copy its frames, layouts, icons, assets, characters, typography, writing, sound, or branding. Follow [the approved creative-direction document](DARKEST_DUNGEON_DIRECTION.md) while preserving LEGEND's own world and systems.
+LEGEND should feel like entering a dangerous illustrated frontier: expedition-led scene composition, strong character silhouettes, tactile field-ledger details, purposeful status information, crafted material edges, readable feedback, and distinct compositions for title, refuge, road and battle. **Darkest Dungeon is the primary high-level creative reference** for atmosphere, characterful presentation, and tactical readability. This is not a clone: do not copy its frames, layouts, icons, assets, characters, typography, writing, sound, or branding. Follow [the approved creative-direction document](DARKEST_DUNGEON_DIRECTION.md) while preserving LEGEND's own world and systems. The [CodeRabbit Polished UI Concept](CODERABBIT_POLISHED_UI_CONCEPT.md) supplies the concrete iron-and-bronze material and screen-composition reference for the current migration.
+
+## Polished iron-and-bronze concept
+
+The [CodeRabbit Polished UI Concept](CODERABBIT_POLISHED_UI_CONCEPT.md) is the concrete treatment for the current Phaser UI rollout:
+- Weathered dark iron backing, layered bronze/gold keylines, engraved corner details, and restrained surface texture.
+- Warm selected/primary states against readable dark-iron secondary controls; disabled controls stay legible.
+- Serif display headings and place names paired with clear system/UI text for instructions, values, and small labels.
+- Full-bleed scene art with framed information plaques and deliberate action docks rather than a generic grid of rounded web cards.
+- Original semantic DOM controls remain the real actions until matching Phaser visuals pass text, state, accessibility, desktop/mobile, and failure-fallback checks.
+
+The ZIP's title screen, Ashmere hub, and battle screens are layout references. Their sample menu options, player identity, HP, gold, enemy state, and demo button reactions are not production data. Keep all current actions and live state.
 
 ## Material and color tokens
 
