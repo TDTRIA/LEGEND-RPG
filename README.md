@@ -2,7 +2,7 @@
 
 **LEGEND: The Awakening** is an in-development dark-fantasy browser RPG about a traveler waking on a dangerous road, finding a home in Ashmere, and carrying the consequences of each expedition back into the world.
 
-- **Production build:** v0.30.4
+- **Production build:** v0.30.5
 - **Platform:** HTML5 browser game; desktop-first with responsive mobile support
 - **Realm Hub:** https://tdtria.github.io/LEGEND-RPG/portal.html
 - **Live game:** https://tdtria.github.io/LEGEND-RPG/
@@ -20,9 +20,17 @@ Ashmere contains the town hub and its working destinations and services: Inn, Ma
 
 ## Engine transition
 
-The owner approved moving production toward **Phaser** on 2026-11-03. Phaser 4.1 is now loaded in the production game, and the production world renderer manages the persistent environment, atmosphere, transitions, and Ashmere landmarks.
+The owner approved moving the **entire production game's presentation and interactive surfaces into Phaser 4.1** on 2026-11-03. Phaser is already active in production for the persistent world scene, atmosphere, transitions, Ashmere landmarks, new-player title, annals, traveler creation, and Oric's opening-road presentation.
 
-The game is currently hybrid: most menus, dialogue, account/settings, combat rules, expedition logic, and save handling still run through the existing classic JavaScript modules and DOM. The full production migration is in progress. Move real gameplay surfaces into Phaser one at a time, preserving the existing save system and gameplay behavior until each replacement has parity and regression coverage.
+**The whole-game migration is still in progress.** The remaining work is not a new-game rewrite: migrate every existing production surface—persistent HUD/navigation/drawers, Ashmere and services, Old Road/maps/journal, dialogue/events, combat, results/level-up, dungeons/regions, inventory, settings, account, and remaining overlays—into Phaser one complete playable surface at a time.
+
+Keep the existing production controllers and systems authoritative. Phaser should own scene presentation and the migrated interaction layer while calling the real callbacks and consuming the real state. Do not replace or duplicate combat, quests, rewards, progression, economy, inventory, player storage, account/cloud saves, or save schemas as a shortcut. Keep the working DOM presentation visible until its Phaser replacement passes desktop/mobile visual, accessibility, interaction, state, persistence, and focused Playwright checks. See [the full migration inventory and acceptance gates](docs/PHASER_MIGRATION.md).
+
+## Creative direction
+
+**Darkest Dungeon is now LEGEND's primary high-level creative reference**, replacing the earlier World of Warcraft / Diablo comparison. We are taking inspiration from expedition-led dark fantasy, stark illustrated atmosphere, strong character silhouettes, expressive dialogue, tactical clarity, and in-world field reports—not copying its art, characters, interface, writing, sounds, or mechanics. This direction shapes how the existing game is presented in Phaser; it does not pause or narrow the migration.
+
+Read [docs/DARKEST_DUNGEON_DIRECTION.md](docs/DARKEST_DUNGEON_DIRECTION.md) for the approved principles and boundaries.
 
 ## Audio transition
 
@@ -34,11 +42,11 @@ The replacement theme is integrated, but final human listening is still required
 
 ## Current priorities
 
-1. Replace the recurring main gameplay theme and integrate/review the new sound library.
-2. Continue the approved Phaser production migration one complete playable surface at a time.
-3. Complete Greyfen's services, local economy, story resolution, expeditions, rewards, and return loop.
-4. Keep the Old Road challenging and progression meaningful through long-run balance and real-player testing.
-5. Keep the live game, blog, development dispatch, player guide, store copy, roadmap, and changelog aligned with what is truly playable.
+1. **Finish the full production Phaser migration.** Continue from the persistent shell and Old Road work, then migrate Ashmere/services, remaining journey and journal surfaces, combat, results/level-up, dungeons/regions, and all auxiliary overlays. Preserve the existing systems and prove parity screen by screen.
+2. **Complete audio QA.** Listen to the deployed theme and ambience in the real browser build, verify levels and loop seams, then wire the remaining generated world/town/reward effects to their successful gameplay actions.
+3. **Finish Greyfen as a coherent region.** Complete its town services, local economy, story resolution, expeditions, rewards, and return loop.
+4. **Keep the Old Road challenging and progression meaningful** through long-run balance and real-player testing.
+5. **Keep public information current.** Blog, development dispatch, player guide, store copy, roadmap, and changelog must distinguish shipped features from preview/in-progress work.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md) for priorities and acceptance criteria. See [docs/CANON.md](docs/CANON.md) before making story or dialogue changes.
 
@@ -68,6 +76,8 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for priorities and acceptance criteria. S
 - docs/SAVE_DATA_CONTRACT.md — persistent player fields and compatibility rules
 - docs/ADDING_FEATURES.md — safe feature insertion points
 - docs/CANON.md — locked story decisions
+- docs/PHASER_MIGRATION.md — complete production Phaser migration inventory and gates
+- docs/DARKEST_DUNGEON_DIRECTION.md — approved creative reference and presentation principles
 - prototypes/reboot/ — isolated engine/design proof of concept
 
 ## Development and testing
