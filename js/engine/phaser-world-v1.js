@@ -657,7 +657,7 @@
           nativeLeftDrawerUi: this.nativeLeftDrawerUiActive,
           nativeLeftDrawerUiObjectCount: this.nativeLeftDrawerUiObjects.filter(item => item?.active).length,
           nativeLeftDrawerUiTextCount: this.nativeLeftDrawerUiTextNodes.filter(node => node?.isConnected).length,
-          nativeLeftDrawerUiTextValues: this.nativeLeftDrawerUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\\s+/g, ' ').trim() || ''),
+          nativeLeftDrawerUiTextValues: this.nativeLeftDrawerUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
           nativeLeftDrawerUiControlIds: this.nativeLeftDrawerUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || ''),
           nativeLeftDrawerUiIconCount: this.nativeLeftDrawerUiObjects.filter(item => item?.active && item.type === 'Image').length,
           nativeLeftDrawerUiScrollTop: Number(this.nativeLeftDrawerUiBoundScroll?.scrollTop || 0),
@@ -2744,7 +2744,7 @@
       // Do not paint against a moving drawer. The DOM stays visible through its
       // slide, then the final settled geometry is sampled for Phaser.
       if (this.hasFiniteEntranceAnimation(panel)) {
-        this.clearNativeLeftDrawerUi(false, false);
+        this.clearNativeLeftDrawerUi(true, false);
         this.nativeLeftDrawerUiLayoutEvent?.remove?.(false);
         this.nativeLeftDrawerUiLayoutEvent = this.time.delayedCall(230, () => {
           this.nativeLeftDrawerUiLayoutEvent = null;
@@ -2774,7 +2774,7 @@
         this.clearNativeLeftDrawerUi();
         return;
       }
-      const content = node => node.textContent?.replace(/\\s+/g, ' ').trim() || '';
+      const content = node => node.textContent?.replace(/\s+/g, ' ').trim() || '';
       const headerNodes = Array.from(panel.querySelectorAll(
         '.lws-panel-eyebrow,.lws-panel-header h2,.lws-panel-header p,.lws-panel-header .lws-tag'
       )).filter(node => Boolean(content(node)) && readRect(node));

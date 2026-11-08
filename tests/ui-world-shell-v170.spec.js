@@ -198,7 +198,7 @@ test.describe('LEGEND persistent world shell v170', () => {
           const r = panel?.querySelector('.lws-panel-scroll')?.getBoundingClientRect();
           return r ? { left:r.left, top:r.top, width:r.width, height:r.height } : null;
         })(),
-        buttonName: journalButton?.textContent?.replace(/\\s+/g,' ').trim() || '',
+        buttonName: journalButton?.textContent?.replace(/\s+/g,' ').trim() || '',
         buttonStillEnabled: Boolean(journalButton && !journalButton.disabled)
       };
     });
@@ -225,10 +225,22 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUiTextCount || 0))
       .toBeGreaterThan(10);
 
+    await page.evaluate(() => {
+      const player = window.LegendStorage.loadPlayer();
+      player.questLog = [
+        ...(Array.isArray(player.questLog) ? player.questLog : []),
+        ...Array.from({ length: 12 }, (_, index) =>
+          'Journal overflow note ' + (index + 1) + ': ' + 'A remembered detail from the road beyond the lantern line. '.repeat(2)
+        )
+      ];
+      window.LegendStorage.savePlayer(player);
+      window.LegendWorldShellV170.refresh();
+    });
     const scroll = page.locator('#lws-panel-left .lws-panel-scroll');
-    await scroll.evaluate(node => { node.scrollTop = Math.max(0, node.scrollHeight - node.clientHeight); node.dispatchEvent(new Event('scroll')); });
+    await expect.poll(() => scroll.evaluate(node => node.scrollHeight > node.clientHeight)).toBe(true);
+    await scroll.evaluate(node => { node.scrollTop = node.scrollHeight; node.dispatchEvent(new Event('scroll')); });
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUiScrollTop || 0))
-      .toBeGreaterThanOrEqual(0);
+      .toBeGreaterThan(0);
     const desktopClip = await page.evaluate(() => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       const mask = snapshot.nativeLeftDrawerUiMaskBounds;
