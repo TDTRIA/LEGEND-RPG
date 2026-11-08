@@ -719,7 +719,7 @@
           nativeRoadMapUiObjectCount: this.nativeRoadMapUiObjects.filter(item => item?.active).length,
           nativeRoadMapUiTextCount: this.nativeRoadMapUiTextNodes.filter(node => node?.isConnected).length,
           nativeRoadMapUiTextValues: this.nativeRoadMapUiTextNodes.filter(node => node?.isConnected)
-            .map(node => node.textContent?.replace(/\\s+/g, ' ').trim() || ''),
+            .map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
           nativeRoadMapUiControlIds: this.nativeRoadMapUiControls.filter(node => node?.isConnected).map(node =>
             node.dataset.exp160MapRoute ? 'route:' + node.dataset.exp160MapRoute
               : node.dataset.exp160MapVisit ? 'visit:' + node.dataset.exp160MapVisit
@@ -2955,13 +2955,13 @@
         Number(dialog.scrollTop || 0),
         ...textNodes.map(node => {
           const rect = readRect(node);
-          return [node.textContent?.replace(/\\s+/g, ' ').trim() || '',
+          return [node.textContent?.replace(/\s+/g, ' ').trim() || '',
             Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
         }),
         ...controls.map(node => {
           const rect = readRect(node);
           return [node.id || node.dataset.exp160MapRoute || node.dataset.exp160MapVisit || '',
-            node.textContent?.replace(/\\s+/g, ' ').trim() || '',
+            node.textContent?.replace(/\s+/g, ' ').trim() || '',
             Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height),
             Boolean(node.disabled), node === document.activeElement || node.matches(':focus-visible'),
             node.matches(':hover')];
@@ -3108,7 +3108,7 @@
         const rect = readRect(node);
         if (!rect) return null;
         const style = window.getComputedStyle(node);
-        const textValue = node.textContent?.replace(/\\s+/g, ' ').trim() || '';
+        const textValue = node.textContent?.replace(/\s+/g, ' ').trim() || '';
         if (!textValue) return null;
         const selectorColor = node.matches('.exp150-map-intro .exp150-kicker,.exp160-map-node-status,.exp150-map-discovery small,.exp150-journal-entry-type,.exp150-route-entry > span,.exp150-map-discoveries-heading > span')
           ? '#c9a96e'
