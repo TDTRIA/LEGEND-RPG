@@ -471,7 +471,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       const fallback = {
         native: window.LegendPhaserWorldV1.snapshot().nativeCombatUi,
         commandColor: getComputedStyle(document.querySelector('#strike')).color,
-        dialogueColor: getComputedStyle(document.querySelector('.rpg-dialogue p')).color
+        dialogueColor: getComputedStyle(document.querySelector('.rpg-dialogue p')).color,
+        portraitOpacity: getComputedStyle(document.querySelector('.rpg-hero-portrait img')).opacity
       };
       parent.insertBefore(heavy, next);
       window.LegendPhaserWorldV1.refreshCombat();
@@ -480,6 +481,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(fallbackProof.native).toBe(false);
     expect(fallbackProof.commandColor).not.toBe('rgba(0, 0, 0, 0)');
     expect(fallbackProof.dialogueColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(fallbackProof.portraitOpacity).toBe('1');
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeCombatUi
     )).toBe(true);
@@ -494,6 +496,14 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         ids: snapshot.nativeCombatUiControlIds || [],
         scene: snapshot.nativeCombatUiSceneSize,
         observerBound: snapshot.nativeCombatUiObserverBound,
+        orbAssetsLoaded: snapshot.nativeCombatUiAssetsLoaded,
+        healthOrb: snapshot.nativeCombatUiHealthOrb,
+        healthOrbMaskMode: snapshot.nativeCombatUiHealthOrbMaskMode,
+        portrait: {
+          src: document.querySelector('.rpg-hero-portrait img')?.getAttribute('src') || '',
+          opacity: getComputedStyle(document.querySelector('.rpg-hero-portrait img')).opacity,
+          borderRadius: getComputedStyle(document.querySelector('.rpg-hero-portrait')).borderRadius
+        },
         controls: controls.map(id => {
           const node = document.getElementById(id);
           return {
@@ -512,6 +522,14 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     });
     expect(desktop.native).toBe(true);
     expect(desktop.observerBound).toBe(true);
+    expect(desktop.orbAssetsLoaded).toBe(true);
+    expect(desktop.healthOrb).toMatchObject({ hp: 40, maxHp: 100, percent: 40 });
+    expect(desktop.healthOrb.width).toBeGreaterThan(0);
+    expect(desktop.healthOrb.height).toBeGreaterThan(0);
+    expect(['webgl-filter','canvas-geometry']).toContain(desktop.healthOrbMaskMode);
+    expect(desktop.portrait.src).toMatch(/class-ranger\\.webp/);
+    expect(desktop.portrait.opacity).toBe('0');
+    expect(desktop.portrait.borderRadius).toBe('50%');
     expect(desktop.textCount).toBeGreaterThan(22);
     expect(desktop.text).toEqual(expect.arrayContaining([
       'YOUR STANCE', 'GUARD BREAK', 'YOUR TURN', 'FIGHT', 'ACT', 'Healing potion'
@@ -541,12 +559,22 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(afterPotion.potion).toBe(0);
     expect(afterPotion.hp).toBeGreaterThan(40);
     expect(afterPotion.hp).toBeLessThan(70);
+    await expect.poll(() => page.evaluate(() => {
+      const orb = window.LegendPhaserWorldV1.snapshot()?.nativeCombatUiHealthOrb;
+      const player = window.LegendRuntimeV120.loadPlayer();
+      const percent = Number(document.querySelector('.rpg-hero-portrait')?.dataset.healthPct);
+      return Boolean(orb && orb.hp === player.hp && orb.maxHp === player.maxHp &&
+        orb.percent === percent && orb.percent > 40);
+    })).toBe(true);
 
     await page.setViewportSize({ width: 390, height: 844 });
     await expect.poll(() => page.evaluate(() => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       return snapshot?.nativeCombatUi && snapshot.nativeCombatUiTextCount >= 22;
     })).toBe(true);
+    const mobileOrb = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCombatUiHealthOrb);
+    expect(mobileOrb.width).toBeGreaterThan(0);
+    expect(mobileOrb.height).toBeGreaterThan(0);
     await expectNoHorizontalOverflow(page);
     await expect(page.locator('#guard')).toBeEnabled();
     await page.locator('#guard').focus();
