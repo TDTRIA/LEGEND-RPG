@@ -84,6 +84,15 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       const incompatibleRaw = localStorage.getItem(key);
 
       localStorage.setItem(key, JSON.stringify({
+        username: 'FutureBuildSave',
+        version: 'v99.0.0',
+        inventory: { roadToken: 50 },
+        flags: { firstRoadComplete: true }
+      }));
+      const future = window.LegendStorage.loadPlayer();
+      const futureRaw = localStorage.getItem(key);
+
+      localStorage.setItem(key, JSON.stringify({
         username: 'LegacyButValid',
         className: 'Ranger',
         inventory: { roadToken: 2, customLoot: 7 },
@@ -93,6 +102,9 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       const compatible = window.LegendStorage.loadPlayer();
 
       return {
+        futureIsNull: future === null,
+        futureStillPresent: futureRaw === localStorage.getItem(key) || Boolean(futureRaw),
+        futureRawVersion: JSON.parse(futureRaw).version,
         malformedIsNull: malformed === null,
         malformedStillPresent: malformedRaw === '{not valid json',
         incompatibleIsNull: incompatible === null,
@@ -108,6 +120,9 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       malformedStillPresent: true,
       incompatibleIsNull: true,
       incompatibleStillPresent: true,
+      futureIsNull: true,
+      futureStillPresent: true,
+      futureRawVersion: 'v99.0.0',
       compatibleName: 'LegacyButValid',
       compatibleUnknownData: true,
       compatibleInventory: 7
