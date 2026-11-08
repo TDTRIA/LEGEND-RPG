@@ -150,6 +150,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(menu.buttons).toHaveLength(6);
     expect(menu.buttons.every(button => button.tag === 'BUTTON' && button.type === 'button' &&
       button.accessibleName && button.handler === 'function')).toBe(true);
+    expect(menu.textQuality).toHaveLength(6);
     expect(menu.textQuality.every(item => item.titleFontSize >= 13 && item.titleResolution === 2 &&
       item.subtitleFontSize >= 10 && item.subtitleResolution === 2)).toBe(true);
     const saveAfterPaint = await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()));
