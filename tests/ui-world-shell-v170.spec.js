@@ -920,6 +920,11 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.find(card => card.id === 'inn')?.focused
     )).toBe(true);
+    const townFocusStyle = await inn.evaluate(node => ({
+      outlineColor: getComputedStyle(node).outlineColor,
+      outlineStyle: getComputedStyle(node).outlineStyle
+    }));
+    expect(townFocusStyle).toEqual({ outlineColor: 'rgb(255, 230, 160)', outlineStyle: 'solid' });
     await expectNoHorizontalOverflow(page);
     const mobile = await page.evaluate(() => ({
       width: document.documentElement.clientWidth,
