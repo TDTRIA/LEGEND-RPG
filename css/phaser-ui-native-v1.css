@@ -21,6 +21,28 @@ body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-
   content: none !important;
   background: none !important;
 }
+
+/* Phaser paints the title wordmark, decorative divider and panel copy.
+   Keep the original semantic title text/image in the DOM as the safe fallback. */
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v150-logo-lockup > img.v120-legend-logo {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-title-hero > .portal100-kicker,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-title-hero > p,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-divider > b,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-traveler-line small,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-traveler-line strong,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-traveler-line div > span,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-heading > span {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-divider > span {
+  opacity: 0 !important;
+  background: transparent !important;
+}
 body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn {
   color: transparent !important;
   background: transparent !important;
