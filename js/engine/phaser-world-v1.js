@@ -6302,6 +6302,10 @@
       this.layoutServiceDressing();
     }
 
+    /**
+     * Changes the persistent world art and keeps HTML scene art visible until
+     * the incoming Phaser image is fully opaque and safe to take over.
+     */
     setEnvironment(name, immediate = false) {
       const key = ASSETS[name] ? name : 'title';
       if (key === this.environment && !immediate) {
@@ -6356,11 +6360,17 @@
           targets: next,
           alpha: 1,
           duration: 720,
-          ease: 'Sine.easeOut'
+          ease: 'Sine.easeOut',
+          onComplete: () => this.syncNativeRoadSceneArt()
         });
       }
     }
 
+    /**
+     * Hands an expedition image to Phaser only when the matching texture exists,
+     * its source matches the live route artwork, and the Phaser background is
+     * actually visible. Any failed check restores the authored DOM image.
+     */
     syncNativeRoadSceneArt() {
       const scene = document.querySelector('#root .exp100-scene-live');
       const image = scene?.querySelector(':scope > img');
@@ -6380,7 +6390,8 @@
       const active = Boolean(
         scene && image && sourceMatches &&
         source?.width > 0 && source?.height > 0 &&
-        this.backgroundIsImage && this.background?.active
+        this.backgroundIsImage && this.background?.active &&
+        Number(this.background.alpha) >= 0.99
       );
 
       this.nativeRoadSceneArtActive = active;
@@ -6390,7 +6401,8 @@
         expectedSource,
         actualSource,
         sourceWidth: Number(source?.width || 0),
-        sourceHeight: Number(source?.height || 0)
+        sourceHeight: Number(source?.height || 0),
+        backgroundAlpha: Number(this.background?.alpha || 0)
       } : null;
       document.body?.classList.toggle('legend-phaser-road-scene-art-active', active);
       return active;
