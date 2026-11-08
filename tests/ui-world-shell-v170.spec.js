@@ -854,6 +854,65 @@ test.describe('LEGEND persistent world shell v170', () => {
     await page.locator('#ashBack').click();
     await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
 
+    // A forced Phaser text-construction error must restore the entire DOM board.
+    const paintError = await page.evaluate(() => {
+      const Factory = window.Phaser?.GameObjects?.GameObjectFactory;
+      const prototype = Factory?.prototype;
+      const originalText = prototype?.text;
+      if (typeof originalText !== 'function') return { supported: false };
+      const section = document.querySelector('.ash100-destination-section');
+      const description = section.querySelector('.ash100-destination-copy small');
+      const originalDescription = description.textContent;
+      prototype.text = function () { throw new Error('Forced Ashmere painter failure test'); };
+      let result;
+      try {
+        description.textContent = originalDescription + ' · test repaint';
+        window.LegendPhaserWorldV1.refreshTownBoard();
+        result = {
+          active: window.LegendPhaserWorldV1.snapshot().nativeTownBoardUi,
+          titleColor: getComputedStyle(section.querySelector('.ash100-destination-copy strong')).color
+        };
+      } finally {
+        prototype.text = originalText;
+        description.textContent = originalDescription;
+        window.LegendPhaserWorldV1.refreshTownBoard();
+      }
+      return { supported: true, ...result };
+    });
+    expect(paintError.supported).toBe(true);
+    expect(paintError.active).toBe(false);
+    expect(paintError.titleColor).not.toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
+    )).toBe(true);
+
+    // Under a continuous scroll burst, Phaser updates each frame rather than
+    // waiting for scrolling to stop; its label bounds must track real buttons.
+    const scrollAlignment = await page.evaluate(async () => {
+      const scroller = document.scrollingElement;
+      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
+      if (maxScroll < 32) return { scrollable: false };
+      for (let step = 1; step <= 12; step += 1) {
+        scroller.scrollTop = maxScroll * step / 12;
+        window.dispatchEvent(new Event('scroll'));
+      }
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const button = document.querySelector('.ash100-destination[data-ash-view="inn"]');
+      const dom = button.getBoundingClientRect();
+      const painted = snapshot.nativeTownBoardUiCards.find(card => card.id === 'inn');
+      const sx = snapshot.nativeTownBoardUiSceneSize.width / window.innerWidth;
+      const sy = snapshot.nativeTownBoardUiSceneSize.height / window.innerHeight;
+      return {
+        scrollable: true,
+        xDelta: Math.abs(painted.x - dom.left * sx),
+        yDelta: Math.abs(painted.y - dom.top * sy)
+      };
+    });
+    expect(scrollAlignment.scrollable).toBe(true);
+    expect(scrollAlignment.xDelta).toBeLessThan(2);
+    expect(scrollAlignment.yDelta).toBeLessThan(2);
+
     // Focus remains on the real DOM button while its visible focus state is painted in Phaser.
     await page.setViewportSize({ width: 390, height: 844 });
     const inn = page.locator('.ash100-destination[data-ash-view="inn"]');
