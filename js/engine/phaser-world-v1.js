@@ -496,6 +496,11 @@
       this.nativeAnnalsUiLayoutEvent = null;
       this.nativeAnnalsUiScrollTarget = null;
       this.nativeAnnalsUiButtonFocus = null;
+      this.nativeAnnalsUiButtonBackground = null;
+      this.nativeAnnalsUiButtonLabel = null;
+      this.nativeAnnalsUiButtonNode = null;
+      this.nativeAnnalsUiButtonHovered = false;
+      this.nativeAnnalsUiButtonKeyboardFocused = false;
       this.nativeCreationUiActive = false;
       this.nativeCreationUiObjects = [];
       this.nativeCreationUiTextures = [];
@@ -750,6 +755,11 @@
           nativeAnnalsUiStep: Number(root()?.querySelector('.opening-lore-v220')?.dataset.loreStep ?? -1),
           nativeAnnalsUiScrollTargetBound: Boolean(this.nativeAnnalsUiScrollTarget),
           nativeAnnalsUiButtonFocused: Boolean(this.nativeAnnalsUiButtonFocus?.visible),
+          nativeAnnalsUiButtonHovered: Boolean(this.nativeAnnalsUiButtonHovered),
+          nativeAnnalsUiButtonTexture: this.nativeAnnalsUiButtonBackground?.texture?.key || '',
+          nativeAnnalsUiButtonLabelPosition: this.nativeAnnalsUiButtonLabel
+            ? { x: this.nativeAnnalsUiButtonLabel.x, y: this.nativeAnnalsUiButtonLabel.y }
+            : null,
           nativeCreationUi: this.nativeCreationUiActive,
           nativeCreationUiStep: Number(root()?.querySelector('.v140-creation')?.dataset.creationStep ?? -1),
           nativeCreationUiObjectCount: this.nativeCreationUiObjects.filter(item => item?.active).length,
@@ -1564,6 +1574,11 @@
       this.nativeAnnalsUiSignature = '';
       this.nativeAnnalsUiActive = false;
       this.nativeAnnalsUiButtonFocus = null;
+      this.nativeAnnalsUiButtonBackground = null;
+      this.nativeAnnalsUiButtonLabel = null;
+      this.nativeAnnalsUiButtonNode = null;
+      this.nativeAnnalsUiButtonHovered = false;
+      this.nativeAnnalsUiButtonKeyboardFocused = false;
       if (removeClass) document.body?.classList.remove('legend-phaser-annals-ui-active');
     }
 
@@ -1669,10 +1684,19 @@
           letterSpacing: Number.isFinite(parseFloat(style.letterSpacing)) ? Math.max(0, parseFloat(style.letterSpacing) * sx) : 0,
           wordWrap: { width: Math.max(36, rect.width), useAdvancedWrap: true },
           padding: { left: 1, right: 2, top: 1, bottom: 2 },
-          align: style.textAlign || 'left'
+          align: overrides.align || style.textAlign || 'left'
         };
-        const textX = rect.x + Math.max(0, Number(overrides.insetLeft) || 0) * sx;
-        return addObject(this.add.text(textX, rect.y, text, config).setOrigin(0, 0));
+        const centered = overrides.center === true;
+        const textX = centered
+          ? rect.x + rect.width / 2
+          : rect.x + Math.max(0, Number(overrides.insetLeft) || 0) * sx;
+        const textY = centered ? rect.y + rect.height / 2 : rect.y;
+        const label = addObject(this.add.text(textX, textY, text, config)
+          .setOrigin(centered ? 0.5 : 0, centered ? 0.5 : 0));
+        if (centered && node.classList?.contains('opening-lore-v220-continue')) {
+          this.nativeAnnalsUiButtonLabel = label;
+        }
+        return label;
       };
 
       const screenRect = readRect(screen);
@@ -1739,27 +1763,32 @@
         const rect = readRect(button);
         if (rect) {
           button.setAttribute('aria-label', button.textContent.replace(/→/g, '').trim());
-          const buttonGraphics = this.add.graphics();
-          buttonGraphics.fillStyle(0x57421f, 0.98);
-          buttonGraphics.fillRect(rect.x, rect.y, rect.width, rect.height);
-          buttonGraphics.lineStyle(1.35, 0xe8c47a, 0.9);
-          buttonGraphics.strokeRect(rect.x + 0.5, rect.y + 0.5, rect.width - 1, rect.height - 1);
-          buttonGraphics.fillStyle(0xf0ca76, 0.96);
-          buttonGraphics.fillRect(rect.x, rect.y, 3 * sx, rect.height);
-          addObject(buttonGraphics);
+          this.nativeAnnalsUiButtonNode = button;
+          const initialTexture = button.disabled ? 'menuButtonDisabled'
+            : button.matches(':hover') || button.matches(':focus-visible')
+              ? 'menuButtonSelected' : 'menuButtonNormal';
+          const background = this.add.image(
+            rect.x + rect.width / 2, rect.y + rect.height / 2, initialTexture
+          ).setDisplaySize(rect.width, rect.height).setDepth(11);
+          addObject(background);
+          this.nativeAnnalsUiButtonBackground = background;
+          this.nativeAnnalsUiButtonHovered = button.matches(':hover');
+          this.nativeAnnalsUiButtonKeyboardFocused = button.matches(':focus-visible');
           const labelRect = readRect(button);
-          makeText(button, labelRect, { color: '#fff0c5' });
+          makeText(button, labelRect, { color: '#fff0c5', align: 'center', center: true });
           if (!button.__legendNativeAnnalsBound) {
             button.__legendNativeAnnalsBound = true;
-            button.addEventListener('focus', () => this.setNativeAnnalsButtonFocus(true));
+            button.addEventListener('focus', () =>
+              this.setNativeAnnalsButtonFocus(button.matches(':focus-visible'))
+            );
             button.addEventListener('blur', () => this.setNativeAnnalsButtonFocus(false));
-            button.addEventListener('pointerenter', () => this.setNativeAnnalsButtonFocus(true));
-            button.addEventListener('pointerleave', () => this.setNativeAnnalsButtonFocus(document.activeElement === button));
+            button.addEventListener('pointerenter', () => this.setNativeAnnalsButtonHover(true));
+            button.addEventListener('pointerleave', () => this.setNativeAnnalsButtonHover(false));
           }
           const focus = this.add.graphics();
-          focus.lineStyle(2, 0xffe7a6, 0.98);
-          focus.strokeRect(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
-          focus.setVisible(button === document.activeElement || button.matches(':hover'));
+          focus.lineStyle(2, 0xffe7a6, 0.96);
+          focus.strokeRoundedRect(rect.x - 2, rect.y - 2, rect.width + 4, rect.height + 4, 3);
+          focus.setVisible(this.nativeAnnalsUiButtonKeyboardFocused);
           addObject(focus);
           this.nativeAnnalsUiButtonFocus = focus;
         }
@@ -1767,7 +1796,24 @@
     }
 
     setNativeAnnalsButtonFocus(active) {
-      this.nativeAnnalsUiButtonFocus?.setVisible?.(Boolean(active));
+      this.nativeAnnalsUiButtonKeyboardFocused = Boolean(active);
+      this.nativeAnnalsUiButtonFocus?.setVisible?.(this.nativeAnnalsUiButtonKeyboardFocused);
+      this.refreshNativeAnnalsButtonTexture();
+    }
+
+    setNativeAnnalsButtonHover(active) {
+      this.nativeAnnalsUiButtonHovered = Boolean(active);
+      this.refreshNativeAnnalsButtonTexture();
+    }
+
+    refreshNativeAnnalsButtonTexture() {
+      const button = this.nativeAnnalsUiButtonNode;
+      const background = this.nativeAnnalsUiButtonBackground;
+      if (!button?.isConnected || !background?.active) return;
+      const texture = button.disabled ? 'menuButtonDisabled'
+        : this.nativeAnnalsUiButtonKeyboardFocused || this.nativeAnnalsUiButtonHovered
+          ? 'menuButtonSelected' : 'menuButtonNormal';
+      if (background.texture?.key !== texture) background.setTexture(texture);
     }
 
     clearNativeCreationUi(removeClass = true) {
