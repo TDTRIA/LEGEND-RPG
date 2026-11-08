@@ -502,6 +502,11 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeCombatUiFocusedControlIds || []
     )).toContain('guard');
+    const combatFocusStyle = await page.locator('#guard').evaluate(node => ({
+      outlineColor: getComputedStyle(node).outlineColor,
+      outlineStyle: getComputedStyle(node).outlineStyle
+    }));
+    expect(combatFocusStyle).toEqual({ outlineColor: 'rgb(255, 230, 160)', outlineStyle: 'solid' });
     await page.locator('#guard').click();
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-heavy/);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCombatUi)).toBe(true);
