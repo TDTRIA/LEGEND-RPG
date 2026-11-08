@@ -574,6 +574,33 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   test('Phaser road background follows the live route and stage, with a DOM image fallback', async ({ page }) => {
     test.setTimeout(90_000);
     await enterAshmere(page, 'RoadSceneArtQA');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+
+    // Keep the DOM image during the first 720ms while the new Phaser
+    // background fades in; hide it only after the tween completes.
+    await seedRoad(page, 0, null);
+    const duringFade = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const image = document.querySelector('.exp100-scene-live > img');
+      return {
+        alpha: snapshot.nativeRoadSceneArt?.backgroundAlpha,
+        nativeActive: snapshot.nativeRoadSceneArt?.active,
+        handoffClass: document.body.classList.contains('legend-phaser-road-scene-art-active'),
+        domOpacity: getComputedStyle(image).opacity,
+        domVisibility: getComputedStyle(image).visibility
+      };
+    });
+    expect(duringFade.alpha).toBeLessThan(0.99);
+    expect(duringFade.nativeActive).toBe(false);
+    expect(duringFade.handoffClass).toBe(false);
+    expect(duringFade.domOpacity).toBe('1');
+    expect(duringFade.domVisibility).toBe('visible');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
+    )).toBe(true);
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.backgroundAlpha || 0
+    )).toBeGreaterThanOrEqual(0.99);
 
     const cases = [
       { stage: 0, route: null, environment: 'road' },
@@ -625,6 +652,44 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       expect(proof.fallbackVisibility).toBe('hidden');
       expect(proof.sceneLabel).toContain('THE OLD ROAD');
     }
+
+    // Simulate a failed Phaser texture request independently of the DOM image.
+    // The DOM source remains correct, but a missing Phaser texture must restore it.
+    const missingTextureFallback = await page.evaluate(() => {
+      const scene = document.querySelector('.exp100-scene-live');
+      const image = scene?.querySelector(':scope > img');
+      const originalExists = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').textures.exists;
+      const textureManager = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').textures;
+      let proof;
+      try {
+        textureManager.exists = function(key) {
+          if (key === 'ridge') return false;
+          return originalExists.call(this, key);
+        };
+        const active = window.LegendPhaserWorldV1.refreshRoadScene();
+        const style = getComputedStyle(image);
+        proof = {
+          active,
+          classActive: document.body.classList.contains('legend-phaser-road-scene-art-active'),
+          expectedSource: window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.expectedSource,
+          actualSource: image?.getAttribute('src') || '',
+          opacity: style.opacity,
+          visibility: style.visibility
+        };
+      } finally {
+        textureManager.exists = originalExists;
+        window.LegendPhaserWorldV1.refreshRoadScene();
+      }
+      return proof;
+    });
+    expect(missingTextureFallback.active).toBe(false);
+    expect(missingTextureFallback.classActive).toBe(false);
+    expect(missingTextureFallback.actualSource).toBe(missingTextureFallback.expectedSource);
+    expect(missingTextureFallback.opacity).toBe('1');
+    expect(missingTextureFallback.visibility).toBe('visible');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
+    )).toBe(true);
 
     // Simulate an image/texture mismatch without changing any expedition state.
     // Phaser must stop hiding the authored DOM image when its source no longer
