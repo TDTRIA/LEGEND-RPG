@@ -93,9 +93,9 @@ npm run test:e2e:report
 
 ---
 
-## Current validation checkpoint (2026-11-03)
+## Current validation checkpoint (2026-11-08)
 
-Production main is **v0.30.4**. The road-first opening, mandatory annals, Oric/Wolf tutorial, five-stage Old Road, Ashmere services, progression, and early Greyfen activities remain the production content baseline.
+Production main is **v0.30.5**. The road-first opening, mandatory annals, Oric/Wolf tutorial, five-stage Old Road, Ashmere services, progression, and early Greyfen activities remain the production content baseline. The Darkest Dungeon creative reference is presentation-only; no gameplay systems or rules were changed by the documentation alignment.
 
 The generated soundtrack and Phaser shell changes are merged into main:
 - [PR #98 — generated soundtrack/audio integration](https://github.com/TDTRIA/LEGEND-RPG/pull/98) merged as `807696aa177c9a45bd1b5f62a8bdea466e082551`. The 48-asset pack (13 ambience loops and 35 one-shot effects) plus the separately rendered roughly 10½-minute main-theme MP3 are included in production. The controller keeps one theme loop and one location ambience loop, follows Phaser environment/surface transitions, preserves `legend-road-sound`, and routes generated title/menu and battle effects.
@@ -104,7 +104,7 @@ The generated soundtrack and Phaser shell changes are merged into main:
 - The merged-main Playwright workflow [#41718563547](https://github.com/TDTRIA/LEGEND-RPG/actions/runs/41718563547) is running. Do not treat it as green until GitHub reports completion.
 - Earlier PR-head Playwright runs #41717026033 (audio) and #41716283770 (Phaser) remain separate historical runs; their eventual conclusions do not replace verification of the merged main commit.
 
-The active production engine is still hybrid: Phaser 4.1 renders the persistent world layer, atmosphere, transitions, audio environment/surface cues, and Ashmere landmarks, while existing browser modules own most UI, dialogue, account, combat rules, expedition logic, and persistence. The full production UI migration is not complete; continue surface by surface without a parallel save system or changes to gameplay source-of-truth logic.
+The active production engine is still hybrid. In main, Phaser 4.1 renders the persistent world layer, atmosphere, transitions, audio environment/surface cues, Ashmere landmarks, the new-player title, annals, traveler creation, and Oric's opening-road presentation. The remaining gameplay UI and interactive surfaces still need migration. Open [PR #111](https://github.com/TDTRIA/LEGEND-RPG/pull/111) advances the persistent HUD/navigation/drawers and Old Road presentation, but it is not part of main until merged and deployed. Continue moving every existing production surface into Phaser without creating parallel controllers, changing gameplay source-of-truth logic, or adding a second save system. The authoritative surface inventory and parity gates are in [docs/PHASER_MIGRATION.md](docs/PHASER_MIGRATION.md).
 
 The main theme is integrated but has not yet received a human listening pass for real-browser playback, levels, repeat seam, and long-session fatigue. Additional generated world/town/reward effects are available through the audio director and should be wired to their individual successful gameplay actions incrementally.
 
@@ -112,7 +112,6 @@ Use the [latest Actions page](https://github.com/TDTRIA/LEGEND-RPG/actions) for 
 
 ## Remaining high-value test gaps
 
-- End-to-end Healing Potion use and enemy response on the live UI (unit/contract coverage exists).
 - Region-appropriate enemy behaviors and readable intent patterns across multiple encounters.
 - The complete first-session loop over a longer play session on desktop and the critical path on mobile.
 - Full Firefox matrix and manual audible-output checks when deliberately scheduled.
