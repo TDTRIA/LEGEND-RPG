@@ -4,6 +4,13 @@
 
 All notable changes to the current project are recorded here. Historical entries may retain old names and versions from the build they describe.
 
+## 2026-11-08 — Creative direction and documentation alignment (docs only)
+
+- Establish [Darkest Dungeon](docs/DARKEST_DUNGEON_DIRECTION.md) as LEGEND's primary high-level creative reference, replacing the earlier World of Warcraft / Diablo comparison.
+- Align the art direction, UI design system, roadmap, README, active AI handoff, and public development dispatch around expedition-led dark fantasy, illustrated character storytelling, tactical readability, and in-world field reports.
+- Clarify that the full production Phaser migration remains the top technical priority: migrate every existing production presentation surface while preserving the authoritative gameplay systems, rules, and save/account behavior.
+- No gameplay mechanics, story canon, balance, player data, or save schema are changed by this documentation update.
+
 ## v0.30.5 — Greyfen crossing story and mobile reliability
 
 - Successful **A Dry Crossing** completions preserve a single post-flood landing rumor in traveler memories; failed attempts do not record it, and older completed saves backfill it on the next visit.
