@@ -787,9 +787,9 @@ body.legend-phaser-world-active.legend-phaser-combat-ui-active #root #battleSoun
   text-shadow: none !important;
 }
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle button:focus-visible {
-  outline: 2px solid transparent !important;
+  outline: 2px solid #ffe6a0 !important;
   outline-offset: 3px !important;
-  box-shadow: none !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
 }
 @media (prefers-reduced-motion: reduce) {
   body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle button {
@@ -837,8 +837,9 @@ body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100
   visibility: visible !important;
 }
 body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:focus-visible {
-  outline: 2px solid transparent !important;
+  outline: 2px solid #ffe6a0 !important;
   outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
 }
 @media (prefers-reduced-motion: reduce) {
   body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination {
