@@ -75,6 +75,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       localStorage.setItem(key, '{not valid json');
       const malformed = window.LegendStorage.loadPlayer();
       const malformedRaw = localStorage.getItem(key);
+      const malformedStatus = window.LegendStorage.getPlayerSaveStatus();
 
       localStorage.setItem(key, JSON.stringify({
         username: 'WrongContainerShape',
@@ -101,6 +102,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       const future = window.LegendStorage.loadPlayer();
       const futureRaw = localStorage.getItem(key);
       const futureStillPresent = futureRaw === localStorage.getItem(key);
+      const futureStatus = window.LegendStorage.getPlayerSaveStatus();
 
       localStorage.setItem(key, JSON.stringify({
         username: 'LegacyButValid',
@@ -120,6 +122,8 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
         futureRawVersion: JSON.parse(futureRaw).version,
         malformedIsNull: malformed === null,
         malformedStillPresent: malformedRaw === '{not valid json',
+        malformedStatus,
+        futureStatus,
         incompatibleIsNull: incompatible === null,
         incompatibleStillPresent: Boolean(incompatibleRaw),
         compatibleName: compatible?.username,
@@ -132,6 +136,8 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
     expect(result).toEqual({
       malformedIsNull: true,
       malformedStillPresent: true,
+      malformedStatus: 'malformed',
+      futureStatus: 'incompatible',
       incompatibleIsNull: true,
       incompatibleStillPresent: true,
       unrecognizedVersionIsNull: true,
@@ -148,7 +154,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
     )).toBe(await page.evaluate(() => window.LEGEND_DATA.VERSION));
   });
 
-  test('player and settings storage failures return safe fallbacks instead of throwing', async ({ page }) => {
+  test('player and settings storage failures retain safe in-session fallbacks', async ({ page }) => {
     await openGame(page);
     const result = await page.evaluate(() => {
       const prototype = Storage.prototype;
@@ -164,16 +170,25 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
         };
         report.playerRead = window.LegendStorage.loadPlayer() === null;
         report.settingsRead = window.LegendStorage.loadSettings().largeText === false;
+        report.readStatus = window.LegendStorage.getPlayerSaveStatus();
 
         prototype.getItem = originalGet;
         prototype.setItem = function () {
           throw new DOMException('Storage quota denied', 'QuotaExceededError');
         };
         report.playerWrite = window.LegendStorage.savePlayer({ username: 'CannotPersist' }) === false;
-        report.settingsWrite = window.LegendSettingsStorageV120.create()
-          .saveSettings({ largeText: true }) === false;
+        const sessionPlayer = window.LegendStorage.loadPlayer();
+        report.sessionPlayer = sessionPlayer?.username === 'CannotPersist';
+        report.sessionStatus = window.LegendStorage.getPlayerSaveStatus();
+
+        report.settingsWrite = window.LegendStorage.saveSettings({ largeText: true }) === false;
+        report.settingsInMemory = window.LegendStorage.loadSettings().largeText === true;
+        report.settingsApplied = document.body.classList.contains('a11y-large-text');
 
         prototype.setItem = originalSet;
+        report.settingsRetry = window.LegendStorage.saveSettings({ largeText: false }) === true;
+        report.settingsAfterRetry = window.LegendStorage.loadSettings().largeText === false;
+
         prototype.removeItem = function () {
           throw new DOMException('Storage access denied', 'SecurityError');
         };
@@ -190,8 +205,15 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
     expect(result).toEqual({
       playerRead: true,
       settingsRead: true,
+      readStatus: 'unavailable',
       playerWrite: true,
+      sessionPlayer: true,
+      sessionStatus: 'session-only',
       settingsWrite: true,
+      settingsInMemory: true,
+      settingsApplied: true,
+      settingsRetry: true,
+      settingsAfterRetry: true,
       playerDelete: true
     });
   });
@@ -278,6 +300,140 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
 
     await expect(page.getByRole('heading', { name: 'Traveler storage unavailable' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Reload Game' })).toBeVisible();
+  });
+
+  test('title fallback exposes a reload control when its screen module is missing', async ({ page }) => {
+    await openGame(page);
+    await page.evaluate(() => {
+      window.LegendTitleScreenV120 = null;
+      window.LegendGameBootstrap.title();
+    });
+    await expect(page.getByRole('heading', { name: 'Title screen unavailable' })).toBeVisible();
+    await expect(page.locator('#retryTitle')).toBeVisible();
+  });
+
+  test('traveler creation does not overwrite an unreadable save or proceed after a failed first write', async ({ page }) => {
+    await openGame(page);
+    await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
+    await expect(page.locator('.v120-title')).toBeVisible();
+
+    await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+    await page.getByRole('button', { name: /^Continue$/ }).click();
+    await page.getByRole('button', { name: /^Continue$/ }).click();
+    await page.getByRole('button', { name: /Shape the traveler/i }).click();
+    await page.locator('#v094Name').fill('SaveProtectionQA');
+    await page.locator('#v094Next').click();
+    await page.locator('[data-gender="unspoken"]').click();
+    await page.locator('#v094Next').click();
+    await page.locator('[data-personality="kind"]').click();
+    await page.locator('#v094Next').click();
+    await page.locator('[data-origin]').first().click();
+    await page.locator('#v094Next').click();
+    await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+    await page.locator('#v094Next').click();
+    await page.locator('[data-keepsake="Old Map"]').click();
+    await page.locator('#v094Next').click();
+    await expect(page.locator('.v094-soul-confirmation')).toBeVisible();
+
+    const key = await page.evaluate(() => window.LEGEND_DATA.SAVE_KEY);
+    await page.evaluate(key => localStorage.setItem(key, '{unreadable existing traveler'));
+    await page.getByRole('button', { name: /Let Me Wake/i }).click();
+    await expect(page.locator('#v094CreationError')).toContainText(/existing traveler save could not be read safely/i);
+    await expect(page.locator('.v094-soul-confirmation')).toBeVisible();
+    expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe('{unreadable existing traveler');
+    await expect(page.locator('.opening-road-v140')).toHaveCount(0);
+
+    await page.evaluate(() => {
+      const prototype = Storage.prototype;
+      window.__legendOriginalSetItem = prototype.setItem;
+      prototype.setItem = function () {
+        throw new DOMException('Storage quota denied', 'QuotaExceededError');
+      };
+    });
+    await page.locator('#v094CreationError').waitFor({ state: 'visible' });
+    // Remove the unreadable record explicitly, simulating the player recovering
+    // their slot, then verify a failed first write keeps the confirmation open.
+    await page.evaluate(key => {
+      Storage.prototype.setItem = window.__legendOriginalSetItem;
+      localStorage.removeItem(key);
+      const prototype = Storage.prototype;
+      prototype.setItem = function () {
+        throw new DOMException('Storage quota denied', 'QuotaExceededError');
+      };
+    }, key);
+    await page.locator('#v094Next').click();
+    await expect(page.locator('#v094CreationError')).toContainText(/could not be saved permanently/i);
+    await expect(page.locator('.v094-soul-confirmation')).toBeVisible();
+    await page.evaluate(() => {
+      Storage.prototype.setItem = window.__legendOriginalSetItem;
+      delete window.__legendOriginalSetItem;
+    });
+  });
+
+  test('cloud restore and region unlock/travel report failed local persistence', async ({ page }) => {
+    await openGame(page);
+    const result = await page.evaluate(async () => {
+      const query = {
+        select() { return this; },
+        eq() { return this; },
+        async maybeSingle() {
+          return {
+            data: { traveler_data: { username: 'CloudFallbackQA', inventory: {}, flags: {} } },
+            error: null
+          };
+        }
+      };
+      const cloud = window.LegendAccountCloudV09x.create({
+        getClient: () => ({ from: () => query }),
+        isConnected: () => true,
+        getHealth: () => ({ ok: true }),
+        loadLocalPlayer: () => null,
+        saveLocalPlayer: () => false
+      });
+      const cloudResult = await cloud.cloudLoad({ user: { id: 'qa-user' } }, 1);
+
+      const unlockPlayer = {
+        inventory: { roadToken: 5 },
+        discoveredRegions: ['Ashmere'],
+        currentRegion: 'Ashmere',
+        stats: {},
+        memories: [],
+        flags: {}
+      };
+      const travelPlayer = {
+        inventory: {},
+        discoveredRegions: ['Ashmere', 'Greyfen'],
+        currentRegion: 'Ashmere',
+        gold: 100,
+        memories: []
+      };
+      const messages = [];
+      const regionService = window.LegendRegionServiceV100.create({
+        getPlayer: () => unlockPlayer,
+        savePlayer: () => false,
+        getRegions: () => ({
+          Ashmere: { id: 'Ashmere', name: 'Ashmere', travelCost: 0 },
+          Greyfen: { id: 'Greyfen', name: 'Greyfen', unlockTokens: 5, travelCost: 25 }
+        }),
+        renderMessage: message => { messages.push(message); },
+        formatGold: amount => String(amount) + 'g'
+      });
+      regionService.unlock('Greyfen');
+      regionService.travel('Greyfen');
+      return {
+        cloudOk: cloudResult.ok,
+        cloudMessage: cloudResult.message,
+        unlockMessage: messages[0],
+        travelMessage: messages[1]
+      };
+    });
+
+    expect(result.cloudOk).toBe(false);
+    expect(result.cloudMessage).toContain('could not save it locally');
+    expect(result.unlockMessage).toContain('available for this session');
+    expect(result.unlockMessage).toContain('could not save the unlock');
+    expect(result.travelMessage).toContain('for this session');
+    expect(result.travelMessage).toContain('could not save the crossing');
   });
 
   test('blocked sessionStorage does not crash the pending town-return handler', async ({ page }) => {
