@@ -152,6 +152,7 @@
     menuButtonDisabled: 'assets/ui/panels/legend-button-disabled-v1.svg',
     menuFrameCorner: 'assets/ui/panels/legend-frame-corner-v1.svg',
     menuDivider: 'assets/ui/panels/legend-divider-v1.svg',
+    menuTitleLogo: 'assets/ui/logos/logo_legend_awakening_wordmark.png?v=0.21.0-local-raster-wordmark',
     panelFrame: 'assets/ui/panels/legend-panel-frame-v1.svg',
     healthOrbBezel: 'assets/ui/panels/legend-health-orb-bezel-v1.svg',
     healthOrbFill: 'assets/ui/panels/legend-health-orb-fill-v1.svg',
@@ -484,6 +485,9 @@
       this.nativeTitleUiActive = false;
       this.nativeTitleUiObjects = [];
       this.nativeTitleUiControls = [];
+      this.nativeTitleUiDecorations = [];
+      this.nativeTitleUiLogoObject = null;
+      this.nativeTitleUiDividerObject = null;
       this.nativeTitleUiSignature = '';
       this.nativeTitleUiLayoutEvent = null;
       this.nativeAnnalsUiActive = false;
@@ -715,7 +719,11 @@
           serviceDressingKey: this.serviceDressingKey,
           nativeTitleUi: this.nativeTitleUiActive,
           nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
-          nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner'].every(key => this.textures.exists(key)),
+          nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo'].every(key => this.textures.exists(key)),
+          nativeTitleUiLogoPainted: Boolean(this.nativeTitleUiLogoObject?.active),
+          nativeTitleUiDividerPainted: Boolean(this.nativeTitleUiDividerObject?.active),
+          nativeTitleUiDecorationLabels: this.nativeTitleUiDecorations.map(item => ({ id: item.id, text: item.object?.text || '' })),
+          nativeTitleUiDecorationTextCount: this.nativeTitleUiDecorations.filter(item => item.object?.active && item.object?.text?.trim()).length,
           nativeTitleUiLabels: this.nativeTitleUiControls.map(item => ({ id: item.id, title: item.titleText?.text || '', subtitle: item.subtitleText?.text || '' })),
           nativeTitleUiControlCount: this.nativeTitleUiControls.length,
           nativeTitleUiControlIds: this.nativeTitleUiControls.map(item => item.id),
@@ -1183,6 +1191,9 @@
       });
       this.nativeTitleUiObjects = [];
       this.nativeTitleUiControls = [];
+      this.nativeTitleUiDecorations = [];
+      this.nativeTitleUiLogoObject = null;
+      this.nativeTitleUiDividerObject = null;
       this.nativeTitleUiSignature = '';
       this.nativeTitleUiActive = false;
       if (removeClass) document.body?.classList.remove('legend-phaser-title-ui-active');
@@ -1250,8 +1261,40 @@
         width: rect.width * sx,
         height: rect.height * sy
       });
+      const logoNode = hero.querySelector('.v150-logo-lockup .v120-legend-logo');
+      const dividerNode = hero.querySelector('.v120-divider');
+      const titleDecorationNodes = [
+        { id: 'kicker', node: hero.querySelector('.portal100-kicker'), color: '#efcf83' },
+        { id: 'intro', node: hero.querySelector('.v120-title-hero > p'), color: '#f0f1e8' },
+        { id: 'traveler-label', node: hero.querySelector('.v120-traveler-line small'), color: '#d7ba7b' },
+        { id: 'traveler-name', node: hero.querySelector('.v120-traveler-line strong'), color: '#fff2cb' },
+        { id: 'traveler-detail', node: hero.querySelector('.v120-traveler-line div > span'), color: '#c6d0c5' },
+        { id: 'menu-heading', node: hero.querySelector('.v136-menu-heading > span'), color: '#b9c4b9' },
+        { id: 'divider-caption', node: dividerNode?.querySelector('b'), color: '#edcc81' }
+      ].map(item => {
+        const rect = item.node?.getBoundingClientRect();
+        return {
+          ...item,
+          text: item.node?.textContent?.replace(/\s+/g, ' ').trim() || '',
+          rect: rect && rect.width && rect.height ? rect : null
+        };
+      });
+      const logoRect = logoNode?.getBoundingClientRect();
+      const dividerRect = dividerNode?.getBoundingClientRect();
+      const decorationReady = Boolean(
+        logoNode?.isConnected && logoRect?.width && logoRect?.height &&
+        dividerNode?.isConnected && dividerRect?.width && dividerRect?.height &&
+        titleDecorationNodes.every(item => item.node?.isConnected && item.rect && item.text)
+      );
       const signature = JSON.stringify([
         Math.round(panelRect.left), Math.round(panelRect.top), Math.round(panelRect.width), Math.round(panelRect.height),
+        logoRect && [Math.round(logoRect.left), Math.round(logoRect.top), Math.round(logoRect.width), Math.round(logoRect.height)],
+        dividerRect && [Math.round(dividerRect.left), Math.round(dividerRect.top), Math.round(dividerRect.width), Math.round(dividerRect.height)],
+        ...titleDecorationNodes.map(item => [
+          item.id, item.text,
+          Math.round(item.rect?.left || 0), Math.round(item.rect?.top || 0),
+          Math.round(item.rect?.width || 0), Math.round(item.rect?.height || 0)
+        ]),
         ...buttons.map(button => {
           const rect = button.getBoundingClientRect();
           return [button.id, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
@@ -1267,10 +1310,10 @@
       const presentIds = buttons.map(button => button.id);
       const hasAllActions = expectedIds.every(id => presentIds.includes(id));
       const requiredTextures = [
-        'menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner',
+        'menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo',
         'menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'
       ];
-      if (!hasAllActions || presentIds.length !== expectedIds.length ||
+      if (!hasAllActions || presentIds.length !== expectedIds.length || !decorationReady ||
           !requiredTextures.every(key => this.textures.exists(key))) {
         this.clearNativeTitleUi();
         return;
@@ -1307,6 +1350,61 @@
       addFrameCorner(panel.x + panel.width - cornerSize, panel.y, true, false);
       addFrameCorner(panel.x, panel.y + panel.height - cornerSize, false, true);
       addFrameCorner(panel.x + panel.width - cornerSize, panel.y + panel.height - cornerSize, true, true);
+
+      const logoBounds = sceneRect(logoRect);
+      const logoSource = this.textures.get('menuTitleLogo')?.getSourceImage?.();
+      const logoRatio = logoSource?.width && logoSource?.height
+        ? logoSource.width / logoSource.height
+        : (logoNode.naturalWidth && logoNode.naturalHeight ? logoNode.naturalWidth / logoNode.naturalHeight : 2.72);
+      const logoWidth = Math.min(logoBounds.width, logoBounds.height * logoRatio);
+      const logoHeight = logoWidth / Math.max(0.1, logoRatio);
+      const logoObject = this.add.image(
+        logoBounds.x + logoBounds.width / 2,
+        logoBounds.y + logoBounds.height / 2,
+        'menuTitleLogo'
+      ).setDisplaySize(logoWidth, logoHeight).setDepth(15);
+      this.nativeTitleUiLogoObject = logoObject;
+      this.nativeTitleUiObjects.push(logoObject);
+
+      const dividerBounds = sceneRect(dividerRect);
+      const dividerObject = this.add.image(
+        dividerBounds.x + dividerBounds.width / 2,
+        dividerBounds.y + dividerBounds.height / 2,
+        'menuDivider'
+      ).setDisplaySize(dividerBounds.width, dividerBounds.height).setAlpha(0.92).setDepth(15);
+      this.nativeTitleUiDividerObject = dividerObject;
+      this.nativeTitleUiObjects.push(dividerObject);
+
+      titleDecorationNodes.forEach(item => {
+        const rect = sceneRect(item.rect);
+        const css = window.getComputedStyle(item.node);
+        const centered = css.textAlign === 'center';
+        const fontSize = Math.max(item.id === 'intro' ? 11 : 9,
+          Math.min(item.id === 'intro' ? 20 : 16, (parseFloat(css.fontSize) || 12) * sy));
+        const object = this.add.text(
+          centered ? rect.x + rect.width / 2 : rect.x,
+          rect.y,
+          item.text,
+          {
+            fontFamily: css.fontFamily || 'Arial, sans-serif',
+            fontSize: fontSize + 'px',
+            fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+            color: item.color,
+            stroke: '#080b07',
+            strokeThickness: fontSize >= 14 ? 0.7 : 0.35,
+            letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
+            lineSpacing: Math.max(0, (parseFloat(css.lineHeight) || fontSize * 1.4) - fontSize),
+            align: css.textAlign || 'left',
+            wordWrap: { width: Math.max(12, rect.width), useAdvancedWrap: true },
+            padding: { left: 1, right: 2, top: 1, bottom: 2 }
+          }
+        ).setOrigin(centered ? 0.5 : 0, 0).setDepth(16);
+        object.setResolution?.(2);
+        object.autoRound = true;
+        object.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        this.nativeTitleUiDecorations.push({ id: item.id, node: item.node, object });
+        this.nativeTitleUiObjects.push(object);
+      });
 
       const iconTextures = {
         continue: 'menuCompass',
@@ -1433,7 +1531,10 @@
       const complete = this.nativeTitleUiControls.length === expectedIds.length &&
         this.nativeTitleUiControls.every(item =>
           item.container?.active && item.titleText?.text?.trim() &&
-          item.button?.isConnected && item.button.tagName === 'BUTTON');
+          item.button?.isConnected && item.button.tagName === 'BUTTON') &&
+        this.nativeTitleUiLogoObject?.active && this.nativeTitleUiDividerObject?.active &&
+        this.nativeTitleUiDecorations.length === titleDecorationNodes.length &&
+        this.nativeTitleUiDecorations.every(item => item.object?.active && item.object?.text?.trim());
       if (!complete) {
         this.clearNativeTitleUi();
         return;
