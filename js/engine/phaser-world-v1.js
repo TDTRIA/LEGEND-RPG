@@ -464,6 +464,8 @@
       this.background = null;
       this.backgroundBaseScale = 1;
       this.backgroundIsImage = false;
+      this.nativeRoadSceneArtActive = false;
+      this.nativeRoadSceneArtState = null;
       this.ambienceObjects = [];
       this.environment = '';
       this.lookTarget = { x: 0, y: 0 };
@@ -673,6 +675,7 @@
       this.motionReduced = reducedMotion();
       this.scale.on('resize', () => {
         this.layoutBackground();
+        this.syncNativeRoadSceneArt();
         this.layoutAshmereLandmarks();
         this.syncNativeTitleUi(this.surface);
         this.syncNativeAnnalsUi(this.surface);
@@ -700,6 +703,8 @@
         lookAt: (x, y) => this.setLookTarget(x, y),
         snapshot: () => ({
           environment: this.environment,
+          nativeRoadSceneArtActive: this.nativeRoadSceneArtActive,
+          nativeRoadSceneArt: this.nativeRoadSceneArtState,
           worldArtTextureStatus: Object.keys(ASSETS).map(key => ({
             key,
             loaded: this.textures.exists(key)
@@ -6299,7 +6304,10 @@
 
     setEnvironment(name, immediate = false) {
       const key = ASSETS[name] ? name : 'title';
-      if (key === this.environment && !immediate) return;
+      if (key === this.environment && !immediate) {
+        this.syncNativeRoadSceneArt();
+        return;
+      }
       this.environment = key;
       const size = this.dimensions();
       const texture = this.textures.exists(key) ? this.textures.get(key) : null;
@@ -6334,6 +6342,7 @@
       this.createServiceDressing(key);
       this.layoutBackground();
       this.syncAshmereLandmarks();
+      this.syncNativeRoadSceneArt();
       if (!immediate && !reducedMotion()) {
         const camera = this.cameras.main;
         camera.setZoom(1.018);
@@ -6350,6 +6359,41 @@
           ease: 'Sine.easeOut'
         });
       }
+    }
+
+    syncNativeRoadSceneArt() {
+      const scene = document.querySelector('#root .exp100-scene-live');
+      const image = scene?.querySelector(':scope > img');
+      const textureKey = String(this.environment || '');
+      const expectedSource = ASSETS[textureKey] || '';
+      const actualSource = image?.getAttribute('src') || '';
+      const cleanSource = value => String(value || '')
+        .split(/[?#]/, 1)[0]
+        .replace(/^(?:\.\/|\/)+/, '')
+        .replace(/\\/g, '/');
+      const texture = expectedSource && this.textures.exists(textureKey)
+        ? this.textures.get(textureKey)
+        : null;
+      const source = texture?.getSourceImage?.();
+      const sourceMatches = Boolean(expectedSource && actualSource &&
+        cleanSource(actualSource) === cleanSource(expectedSource));
+      const active = Boolean(
+        scene && image && sourceMatches &&
+        source?.width > 0 && source?.height > 0 &&
+        this.backgroundIsImage && this.background?.active
+      );
+
+      this.nativeRoadSceneArtActive = active;
+      this.nativeRoadSceneArtState = scene ? {
+        active,
+        textureKey,
+        expectedSource,
+        actualSource,
+        sourceWidth: Number(source?.width || 0),
+        sourceHeight: Number(source?.height || 0)
+      } : null;
+      document.body?.classList.toggle('legend-phaser-road-scene-art-active', active);
+      return active;
     }
 
     backgroundOverscan(size) {
@@ -6646,6 +6690,10 @@
     clearRoadMap: () => realmScene?.clearNativeRoadMapUi?.(),
     refreshExpedition: () => realmScene?.syncNativeExpeditionHudUi?.(),
     refreshExpeditionActions: () => realmScene?.syncNativeExpeditionActionsUi?.(),
+    refreshRoadScene: () => {
+      inferEnvironment();
+      return realmScene?.syncNativeRoadSceneArt?.() || false;
+    },
     refreshCombat: () => realmScene?.syncNativeCombatUi?.(realmScene?.surface),
     refreshTownBoard: () => realmScene?.syncNativeTownBoardUi?.(realmScene?.surface),
     refresh: () => inferEnvironment(),
