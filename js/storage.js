@@ -97,7 +97,7 @@ window.LegendStorage = (() => {
   }
 
   function parseVersion(value) {
-    const match = String(value || '').trim().match(/^v?(\\d+(?:\\.\\d+){0,2})(?:[-+][0-9a-z.-]+)?$/i);
+    const match = String(value || '').trim().match(/^v?(\d+(?:\.\d+){0,2})(?:[-+][0-9a-z.-]+)?$/i);
     return match ? match[1].split('.').map(Number) : null;
   }
 
