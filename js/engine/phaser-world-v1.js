@@ -147,6 +147,11 @@
     menuSettings: 'assets/generated/ui/icons/legend-icon-settings.webp',
     menuRoad: 'assets/generated/ui/icons/legend-icon-road.webp',
     menuMilestone: 'assets/generated/ui/icons/legend-icon-milestone.webp',
+    menuButtonNormal: 'assets/ui/panels/legend-button-normal-v1.svg',
+    menuButtonSelected: 'assets/ui/panels/legend-button-selected-v1.svg',
+    menuButtonDisabled: 'assets/ui/panels/legend-button-disabled-v1.svg',
+    menuFrameCorner: 'assets/ui/panels/legend-frame-corner-v1.svg',
+    menuDivider: 'assets/ui/panels/legend-divider-v1.svg',
     oric: 'assets/generated/npcs/captain-oric.webp',
     wolf: 'assets/generated/enemies/blackroot-wolf.webp',
     goblin: 'assets/generated/enemies/road-goblin.webp',
@@ -611,7 +616,7 @@
       // encounter, dialogue, creation and result scenes when those screens move
       // fully into RealmScene.
       Object.entries(ASSETS).forEach(([key, path]) => {
-        if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp)$/i.test(path)) {
+        if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(path)) {
           this.load.image(key, path);
         }
       });
@@ -671,6 +676,8 @@
           serviceDressingKey: this.serviceDressingKey,
           nativeTitleUi: this.nativeTitleUiActive,
           nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
+          nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner'].every(key => this.textures.exists(key)),
+          nativeTitleUiLabels: this.nativeTitleUiControls.map(item => ({ id: item.id, title: item.titleText?.text || '', subtitle: item.subtitleText?.text || '' })),
           nativeTitleUiControlCount: this.nativeTitleUiControls.length,
           nativeTitleUiControlIds: this.nativeTitleUiControls.map(item => item.id),
           nativeTitleUiSceneSize: this.dimensions(),
@@ -1138,14 +1145,10 @@
 
     syncNativeTitleUi(surface = this.surface) {
       const hero = root()?.querySelector('.title-v136-rpg .v120-title-hero');
-      // Continue is the returning-player title state. Keep this button set in
-      // the already-styled DOM until the native canvas painter has a proven
-      // returning-save parity path. This prevents a gold canvas button from
-      // becoming the only visible surface if its label texture/layout fails.
-      if (String(surface || '') === 'title' && hero?.querySelector('#continue')) {
-        this.clearNativeTitleUi();
-        return;
-      }
+      // Returning saves use the same native menu painter as first-time players.
+      // The DOM remains visible until every required action has a real Phaser
+      // label, state texture, and semantic button target. Any failed preflight
+      // leaves the existing title menu untouched as a safe fallback.
       if (String(surface || '') !== 'title' || !hero) {
         if (this.nativeTitleUiActive || document.body?.classList.contains('legend-phaser-title-ui-active')) {
           this.clearNativeTitleUi();
@@ -1195,26 +1198,52 @@
       ]);
       if (this.nativeTitleUiActive && signature === this.nativeTitleUiSignature) return;
 
-      this.clearNativeTitleUi(false);
-      this.nativeTitleUiActive = true;
-      this.nativeTitleUiSignature = signature;
-      document.body?.classList.add('legend-phaser-title-ui-active');
+      const expectedIds = hero.querySelector('#continue')
+        ? ['continue','new','account','settings','dispatches','credits']
+        : ['newPrimary','account','settings','dispatches','credits'];
+      const presentIds = buttons.map(button => button.id);
+      const hasAllActions = expectedIds.every(id => presentIds.includes(id));
+      const requiredTextures = [
+        'menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner',
+        'menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'
+      ];
+      if (!hasAllActions || presentIds.length !== expectedIds.length ||
+          !requiredTextures.every(key => this.textures.exists(key))) {
+        this.clearNativeTitleUi();
+        return;
+      }
 
+      // Reveal the semantic DOM while this frame is being rebuilt. Only hide
+      // it after all expected Phaser controls and their live labels are ready.
+      this.clearNativeTitleUi();
+      try {
       const panel = sceneRect(panelRect);
       const frame = this.add.graphics().setDepth(12);
-      frame.fillStyle(0x020604, 0.48);
+      frame.fillStyle(0x020302, 0.54);
       frame.fillRect(panel.x - 7 * sx, panel.y + 8 * sy, panel.width + 14 * sx, panel.height + 8 * sy);
-      frame.fillStyle(0x08110b, 0.90);
+      frame.fillStyle(0x17110c, 0.96);
       frame.fillRect(panel.x, panel.y, panel.width, panel.height);
-      frame.lineStyle(1.2, 0xd5b775, 0.78);
+      frame.lineStyle(Math.max(1.2, 1.2 * sx), 0x8f6a3d, 0.82);
       frame.strokeRect(panel.x + 0.5, panel.y + 0.5, panel.width - 1, panel.height - 1);
-      frame.lineStyle(1, 0x9c895d, 0.34);
+      frame.lineStyle(Math.max(1, sx), 0xe0c18a, 0.28);
       frame.strokeRect(panel.x + 8 * sx, panel.y + 8 * sy, panel.width - 16 * sx, panel.height - 16 * sy);
-      frame.fillStyle(0xe0bd75, 0.66);
-      frame.fillRect(panel.x + 1 * sx, panel.y + 18 * sy, 2 * sx, Math.max(12, panel.height - 36 * sy));
-      frame.fillStyle(0xe8cf9a, 0.78);
-      frame.fillRect(panel.x + 15 * sx, panel.y + 12 * sy, Math.min(42 * sx, panel.width * 0.15), Math.max(1, sy));
+      frame.fillStyle(0x070705, 0.38);
+      frame.fillRect(panel.x + 12 * sx, panel.y + 12 * sy, Math.max(1, panel.width - 24 * sx), Math.max(1, panel.height - 24 * sy));
       this.nativeTitleUiObjects.push(frame);
+
+      const cornerSize = Math.max(34, Math.min(62, 54 * Math.min(sx, sy)));
+      const addFrameCorner = (x, y, flipX, flipY) => {
+        const corner = this.add.image(x, y, 'menuFrameCorner')
+          .setOrigin(0, 0)
+          .setDisplaySize(cornerSize, cornerSize)
+          .setFlip(flipX, flipY)
+          .setDepth(14);
+        this.nativeTitleUiObjects.push(corner);
+      };
+      addFrameCorner(panel.x, panel.y, false, false);
+      addFrameCorner(panel.x + panel.width - cornerSize, panel.y, true, false);
+      addFrameCorner(panel.x, panel.y + panel.height - cornerSize, false, true);
+      addFrameCorner(panel.x + panel.width - cornerSize, panel.y + panel.height - cornerSize, true, true);
 
       const iconTextures = {
         continue: 'menuCompass',
@@ -1236,22 +1265,22 @@
         const mainSize = Math.max(10, Math.round((parseFloat(mainCss.fontSize) || 13) * sy));
         const detailSize = Math.max(9, Math.round((parseFloat(detailCss.fontSize) || 10) * sy));
         const group = this.add.container(rect.x, rect.y).setDepth(13);
+        const disabled = Boolean(button.disabled || button.getAttribute('aria-disabled') === 'true');
+        const focused = button === document.activeElement || button.matches(':focus-visible');
+        const hovered = button.matches(':hover');
+        const stateTexture = disabled ? 'menuButtonDisabled'
+          : primary || focused || hovered ? 'menuButtonSelected' : 'menuButtonNormal';
+        const buttonSurface = this.add.image(rect.width / 2, rect.height / 2, stateTexture)
+          .setDisplaySize(rect.width, rect.height)
+          .setAlpha(0.99);
         const art = this.add.graphics();
-        // Use deliberate, fully opaque menu surfaces. The DOM underneath is an
-        // accessible hit target only, so these are the actual visible buttons.
-        const idleFill = primary ? 0xd5a44e : 0x09150d;
-        const idleLine = primary ? 0xffe6aa : 0xe0c17d;
-        art.fillStyle(idleFill, 0.99);
-        art.fillRect(0, 0, rect.width, rect.height);
-        art.lineStyle(primary ? 1.8 : 1.35, idleLine, 0.98);
-        art.strokeRect(0.5, 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
-        art.fillStyle(primary ? 0x704918 : 0xe0bd75, 0.96);
-        art.fillRect(0, 0, primary ? 4 * sx : 3 * sx, rect.height);
+        art.fillStyle(primary ? 0xd5a44e : 0xe0bd75, primary ? 0.72 : 0.52);
+        art.fillRect(2 * sx, 3 * sy, Math.max(2 * sx, 2), Math.max(2, rect.height - 6 * sy));
         const iconX = 10 * sx;
         const iconY = Math.max(4 * sy, (rect.height - 28 * sy) / 2);
-        art.fillStyle(primary ? 0x5a3d18 : 0x030905, 0.92);
+        art.fillStyle(0x100d09, 0.94);
         art.fillRect(iconX, iconY, 28 * sx, Math.min(28 * sy, rect.height - 8 * sy));
-        art.lineStyle(1.1, primary ? 0xffedc5 : 0xe5c985, 0.92);
+        art.lineStyle(1.1, disabled ? 0x75664f : 0xe5c985, disabled ? 0.36 : 0.92);
         art.strokeRect(iconX + 0.5, iconY + 0.5, 27 * sx, Math.min(27 * sy, rect.height - 9 * sy));
 
         const iconKey = iconTextures[button.id] || 'menuMilestone';
@@ -1274,25 +1303,30 @@
           })).setOrigin(0.5);
         const labelX = Math.round(52 * sx);
         const titleY = Math.round(rect.height * (detail ? 0.38 : 0.5));
+        const labelWidth = Math.max(40, rect.width - labelX - 34 * sx);
         const title = crispText(this.add.text(labelX, titleY, main, {
           fontFamily: 'Georgia, Times New Roman, serif',
-          fontSize: `${Math.max(primary ? 17 : 16, mainSize)}px`,
+          fontSize: `${Math.max(13, Math.min(primary ? 17 : 16, mainSize))}px`,
           fontStyle: 'bold',
-          color: primary ? '#241707' : '#fff3d7',
-          stroke: primary ? '#f0d28f' : '#020704',
-          strokeThickness: primary ? 0 : 1,
-          letterSpacing: 0.22 * sx,
+          color: disabled ? '#aaa18f' : '#f5ead5',
+          stroke: '#100c08',
+          strokeThickness: 1,
+          letterSpacing: 0.16 * sx,
+          wordWrap: { width: labelWidth, useAdvancedWrap: true },
           padding: { left: 1, right: 2, top: 2, bottom: 2 }
         })).setOrigin(0, 0.5);
+        title.setFixedSize?.(labelWidth, Math.max(16, rect.height * (detail ? 0.48 : 0.72)));
         const subtitle = crispText(this.add.text(labelX, Math.round(rect.height * 0.73), detail, {
           fontFamily: 'Arial, sans-serif',
-          fontSize: `${Math.max(12, detailSize)}px`,
+          fontSize: `${Math.max(10, Math.min(12, detailSize))}px`,
           fontStyle: primary ? 'bold' : 'normal',
-          color: primary ? '#3e2b10' : '#dce6d9',
-          stroke: primary ? '#f0d28f' : '#020704',
-          strokeThickness: primary ? 0 : 0.55,
+          color: disabled ? '#8e8778' : '#dccba8',
+          stroke: '#100c08',
+          strokeThickness: 0.5,
+          wordWrap: { width: labelWidth, useAdvancedWrap: true },
           padding: { left: 1, right: 2, top: 1, bottom: 1 }
         })).setOrigin(0, 0.5);
+        subtitle.setFixedSize?.(labelWidth, Math.max(12, rect.height * 0.30));
         const arrow = crispText(this.add.text(rect.width - 17 * sx, Math.round(rect.height / 2), '›', {
           fontFamily: 'Georgia, serif',
           fontSize: `${Math.max(22, Math.round(24 * sy))}px`,
@@ -1304,7 +1338,7 @@
         focusFrame.lineStyle(2.4, primary ? 0x5a3b14 : 0xffe6a5, 1);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
-        group.add([art, icon, title, subtitle, arrow, focusFrame]);
+        group.add([buttonSurface, art, icon, title, subtitle, arrow, focusFrame]);
         group.setSize(rect.width, rect.height);
         this.nativeTitleUiObjects.push(group);
         const control = {
@@ -1330,6 +1364,24 @@
           button.addEventListener('blur', () => this.setNativeTitleControlFocus(button.id, button.matches(':hover')));
         }
       });
+
+      // Never conceal the DOM fallback until every production action has
+      // corresponding, non-empty Phaser text and an active scene container.
+      const complete = this.nativeTitleUiControls.length === expectedIds.length &&
+        this.nativeTitleUiControls.every(item =>
+          item.container?.active && item.titleText?.text?.trim() &&
+          item.button?.isConnected && item.button.tagName === 'BUTTON');
+      if (!complete) {
+        this.clearNativeTitleUi();
+        return;
+      }
+      this.nativeTitleUiActive = true;
+      this.nativeTitleUiSignature = signature;
+      document.body?.classList.add('legend-phaser-title-ui-active');
+      } catch (error) {
+        this.clearNativeTitleUi();
+        console.warn('Phaser title menu paint failed; leaving the accessible DOM menu visible.', error);
+      }
     }
 
     clearNativeAnnalsUi(removeClass = true) {
