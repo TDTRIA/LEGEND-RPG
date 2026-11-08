@@ -224,6 +224,7 @@
     window.LegendPhaserWorldV1?.refreshHud?.();
     window.LegendPhaserWorldV1?.refreshNavigation?.();
     window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+    window.LegendPhaserWorldV1?.refreshRightDrawer?.();
   }
 
   function refreshMobileToggleState(shell = document.getElementById(SHELL_ID)) {
@@ -251,6 +252,7 @@
     document.body.classList.remove('legend-world-shell-active', 'legend-shell-left-open', 'legend-shell-right-open');
     syncSceneAtmosphere(null, null);
     window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+    window.LegendPhaserWorldV1?.refreshRightDrawer?.();
     lastContext = null;
   }
 
@@ -534,6 +536,7 @@
         document.body.classList.remove('legend-shell-right-open');
         refreshMobileToggleState();
         window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+        window.LegendPhaserWorldV1?.refreshRightDrawer?.();
         break;
       case 'toggle-right':
         event.preventDefault();
@@ -541,6 +544,7 @@
         document.body.classList.remove('legend-shell-left-open');
         refreshMobileToggleState();
         window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+        window.LegendPhaserWorldV1?.refreshRightDrawer?.();
         break;
       default:
         break;
@@ -560,6 +564,7 @@
         document.body.classList.remove('legend-shell-left-open', 'legend-shell-right-open');
         refreshMobileToggleState(shell);
         window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+        window.LegendPhaserWorldV1?.refreshRightDrawer?.();
         if (leftWasOpen) shell?.querySelector('[data-world-action="toggle-left"]')?.focus();
         else if (rightWasOpen) shell?.querySelector('[data-world-action="toggle-right"]')?.focus();
       }

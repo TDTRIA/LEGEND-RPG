@@ -537,3 +537,45 @@ body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-worl
   outline-offset: 3px !important;
   box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
 }
+
+
+/* Right contextual/action drawer uses native Phaser artwork and text; its
+   original action/place/route buttons remain the accessible live targets. */
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-panel-header,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-action-list .lws-btn,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-place-option,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-selected-place,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-poi-hint,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-other-destinations,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-quest-item,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-status {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right [data-legend-phaser-right-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right [data-legend-phaser-right-icon="true"] {
+  opacity: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right [data-legend-phaser-right-control="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right [data-legend-phaser-right-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}

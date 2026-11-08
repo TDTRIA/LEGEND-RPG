@@ -174,6 +174,83 @@ test.describe('LEGEND persistent world shell v170', () => {
 
 
 
+
+  test('Phaser paints Ashmere contextual actions and preserves the real POI selection and visit flow', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await enterAshmere(page, 'PhaserContextQA');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRightDrawerUi)).toBe(true);
+
+    const initial = await page.evaluate(() => {
+      const panel = document.querySelector('#lws-panel-right');
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const labels = Array.from(panel?.querySelectorAll('.lws-place-option-copy strong') || []);
+      return {
+        active: document.body.classList.contains('legend-phaser-right-drawer-ui-active'),
+        count: snapshot.nativeRightDrawerUiObjectCount,
+        textValues: snapshot.nativeRightDrawerUiTextValues || [],
+        controls: snapshot.nativeRightDrawerUiControlIds || [],
+        icons: snapshot.nativeRightDrawerUiIconCount,
+        labelColors: labels.map(node => getComputedStyle(node).color)
+      };
+    });
+    expect(initial.active).toBe(true);
+    expect(initial.count).toBeGreaterThan(10);
+    expect(initial.textValues).toEqual(expect.arrayContaining([
+      'Ashmere · Under the lanterns', 'Landmarks & Services', 'Ashmere Inn', 'Market', 'Forge & Workshop', 'Old Road Gate'
+    ]));
+    expect(initial.controls).toEqual(expect.arrayContaining(['inn','market','forge','road','visit-selected-place']));
+    expect(initial.icons).toBeGreaterThanOrEqual(4);
+    expect(initial.labelColors.every(color => color === 'rgba(0, 0, 0, 0)')).toBe(true);
+
+    // Selecting a location is still the original data-world-place callback.
+    await page.locator('#lws-panel-right [data-world-place="market"]').click();
+    await expect(page.locator('#lws-panel-right .lws-selected-place h3')).toHaveText('Market');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUiTextValues || []))
+      .toEqual(expect.arrayContaining(['Landmark in view', 'Market', 'Visit the Market']));
+    await page.locator('#lws-panel-right [data-world-action="visit-selected-place"]').click();
+    await expect(page.locator('.ash099-screen')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+  });
+
+  test('Phaser contextual action drawer tracks Old Road actions and remains a real mobile drawer', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await enterAshmere(page, 'MobilePhaserContextQA');
+    const panel = page.locator('#lws-panel-right');
+    await expect(panel).toHaveAttribute('aria-hidden', 'true');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUi)).toBe(false);
+    await expectNoHorizontalOverflow(page);
+
+    await page.locator('#legend-world-shell-root [data-world-action="toggle-right"]').click();
+    await expect(page.locator('body')).toHaveClass(/legend-shell-right-open/);
+    await expect(panel).toHaveAttribute('aria-hidden', 'false');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUi)).toBe(true);
+    await expect(panel).toContainText('Landmarks & Services');
+    await expectNoHorizontalOverflow(page);
+    await page.locator('#legend-world-shell-root [data-world-action="toggle-right"]').click();
+    await expect(panel).toHaveAttribute('aria-hidden', 'true');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUi)).toBe(false);
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.evaluate(() => {
+      const player = window.LegendRuntimeV120.loadPlayer();
+      player.inventory = player.inventory || {};
+      player.inventory.food = Math.max(2, Number(player.inventory.food || 0));
+      player.flags = player.flags || {};
+      player.flags.roadExpeditionV100 = {
+        ...(player.flags.roadExpeditionV100 || {}),
+        stage: 1, pressure: 12, trips: 1, events: 0, finds: 0, battles: 0,
+        routeChoice: 'ridge', poiUsed: {}, searchUsed: {}, readUsed: {}, campWatchUsed: {}, roadClockHour: 15
+      };
+      window.LegendRuntimeV120.savePlayer(player);
+      window.LegendRoadControllerV100.renderExpedition();
+    });
+    await expect(page.locator('.exp150-world-page')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUi)).toBe(true);
+    const roadLabels = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUiTextValues || []);
+    expect(roadLabels).toEqual(expect.arrayContaining(['The Old Road', 'Press onward', 'Search the area', 'Read the road', 'Road map', 'Field journal']));
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('Phaser paints the traveler journal drawer while preserving saved values and its real Journal action', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await enterAshmere(page, 'PhaserJournalQA');
