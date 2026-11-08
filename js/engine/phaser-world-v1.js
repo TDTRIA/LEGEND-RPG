@@ -625,6 +625,7 @@
       this.nativeTownBoardUiControls = [];
       this.nativeTownBoardUiSignature = '';
       this.nativeTownBoardUiExpectedIds = [];
+      this.nativeTownBoardUiEntrancePending = false;
       this.nativeTownBoardUiFrameHandle = null;
       this.nativeTownBoardUiBoundSection = null;
       this.nativeTownBoardUiInteractionHandler = null;
@@ -5281,7 +5282,8 @@
             this.nativeTownBoardUiBoundSection) this.clearNativeTownBoardUi();
         return;
       }
-      if (this.nativeTownBoardUiBoundSection !== section) {
+      const enteringNewBoard = this.nativeTownBoardUiBoundSection !== section;
+      if (enteringNewBoard) {
         this.clearNativeTownBoardUi();
         this.nativeTownBoardUiBoundSection = section;
         this.nativeTownBoardUiInteractionHandler = () => {
@@ -5314,16 +5316,23 @@
         }
       }
 
-      // Let finite destination-card entrance motion settle before measuring
-      // geometry; the original DOM board remains visible during this short pose.
-      if (this.hasFiniteEntranceAnimation(section)) {
-        this.clearNativeTownBoardUi(true, false);
-        this.nativeTownBoardUiLayoutEvent?.remove?.(false);
-        this.nativeTownBoardUiLayoutEvent = this.time.delayedCall(820, () => {
-          this.nativeTownBoardUiLayoutEvent = null;
-          this.syncNativeTownBoardUi(surface);
-        });
-        return;
+      // Defer only the initial board entrance. Hover/focus transitions are
+      // normal interaction feedback and must not hide an already-painted board.
+      if (enteringNewBoard && this.hasFiniteEntranceAnimation(section)) {
+        this.nativeTownBoardUiEntrancePending = true;
+      }
+      if (this.nativeTownBoardUiEntrancePending) {
+        if (this.hasFiniteEntranceAnimation(section)) {
+          this.clearNativeTownBoardUi(true, false);
+          if (!this.nativeTownBoardUiLayoutEvent) {
+            this.nativeTownBoardUiLayoutEvent = this.time.delayedCall(100, () => {
+              this.nativeTownBoardUiLayoutEvent = null;
+              this.syncNativeTownBoardUi(surface);
+            });
+          }
+          return;
+        }
+        this.nativeTownBoardUiEntrancePending = false;
       }
 
       const size = this.dimensions();
