@@ -324,11 +324,26 @@
     overlay.onclick=event=>{if(event.target===overlay)close();};
     overlay.onkeydown=event=>{
       if(event.key==='Escape'){event.preventDefault();close();return;}
-      // This dialog currently has one action. Keep keyboard focus inside it until
-      // additional interactive controls are deliberately added to the modal.
       if(event.key==='Tab'){
-        event.preventDefault();
-        document.getElementById('exp150ModalClose')?.focus();
+        // Route and optional-stop buttons are real actions inside the Phaser-
+        // painted map. Keep keyboard navigation within every enabled dialog
+        // control instead of trapping users on the close button alone.
+        const controls=Array.from(content.querySelectorAll(
+          'button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+        )).filter(node=>node.getAttribute('aria-hidden')!=='true'&&node.getClientRects().length>0&&getComputedStyle(node).visibility!=='hidden');
+        if(!controls.length){
+          event.preventDefault();
+          document.getElementById('exp150ModalClose')?.focus();
+          return;
+        }
+        const first=controls[0],last=controls[controls.length-1],active=document.activeElement;
+        if(event.shiftKey&&(active===first||!content.contains(active))){
+          event.preventDefault();
+          last.focus();
+        }else if(!event.shiftKey&&(active===last||!content.contains(active))){
+          event.preventDefault();
+          first.focus();
+        }
       }
     };
   }
