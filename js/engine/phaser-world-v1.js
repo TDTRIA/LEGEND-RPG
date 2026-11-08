@@ -5167,16 +5167,20 @@
       const orbSize = Math.max(48, Math.min(portraitRect.width, portraitRect.height));
       const orbX = portraitRect.x + portraitRect.width / 2;
       const orbY = portraitRect.y + portraitRect.height / 2;
-      const visibleFillHeight = orbSize * healthOrbState.percent / 100;
+      // The supplied red artwork is a circle inset 38px from each edge of
+      // its 256px viewBox (radius 90). Mask against that painted circle, not
+      // the whole square texture, so low HP remains visible until zero and
+      // 100% is the only state that reveals the complete orb.
+      const fillScale = orbSize / 256;
+      const fillDiameter = 180 * fillScale;
+      const fillLeft = orbX - 90 * fillScale;
+      const fillBottom = orbY + 90 * fillScale;
+      const visibleFillHeight = fillDiameter * healthOrbState.percent / 100;
+      const fillTop = fillBottom - visibleFillHeight;
       const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
       maskGraphics.fillStyle(0xffffff, 1);
       if (visibleFillHeight > 0) {
-        maskGraphics.fillRect(
-          orbX - orbSize / 2,
-          orbY + orbSize / 2 - visibleFillHeight,
-          orbSize,
-          visibleFillHeight
-        );
+        maskGraphics.fillRect(fillLeft, fillTop, fillDiameter, visibleFillHeight);
       }
       const healthContainer = this.add.container(0, 0).setDepth(61);
       const rendererType = this.sys.game.renderer?.type;
@@ -5220,7 +5224,11 @@
         x: portraitRect.x,
         y: portraitRect.y,
         width: portraitRect.width,
-        height: portraitRect.height
+        height: portraitRect.height,
+        fillBounds: {
+          x: fillLeft, y: fillTop, width: fillDiameter, height: visibleFillHeight,
+          bottom: fillBottom, diameter: fillDiameter
+        }
       };
 
       textNodes.forEach(({node, text, rect, style}) => {
