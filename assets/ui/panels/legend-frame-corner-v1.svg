@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-<!-- coderabbit-ai-generated:v1: original LEGEND UI starter decorative vector corner -->
+<!-- coderabbit-ai-generated:v1: decorative vector corner -->
 <defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#f1d99c"/><stop offset=".28" stop-color="#9e7543"/><stop offset=".55" stop-color="#f4d394"/><stop offset="1" stop-color="#4c321b"/></linearGradient></defs>
 <path d="M3 77V19L19 3h58v5H23L8 23v54z" fill="#16100b" stroke="#1a1009" stroke-width="5"/>
 <path d="M4 76V20L20 4h56M12 58V27L27 12h31" fill="none" stroke="url(#g)" stroke-width="2"/>
