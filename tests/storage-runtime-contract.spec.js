@@ -91,6 +91,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       }));
       const future = window.LegendStorage.loadPlayer();
       const futureRaw = localStorage.getItem(key);
+      const futureStillPresent = futureRaw === localStorage.getItem(key);
 
       localStorage.setItem(key, JSON.stringify({
         username: 'LegacyButValid',
@@ -103,7 +104,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
 
       return {
         futureIsNull: future === null,
-        futureStillPresent: futureRaw === localStorage.getItem(key) || Boolean(futureRaw),
+        futureStillPresent,
         futureRawVersion: JSON.parse(futureRaw).version,
         malformedIsNull: malformed === null,
         malformedStillPresent: malformedRaw === '{not valid json',
