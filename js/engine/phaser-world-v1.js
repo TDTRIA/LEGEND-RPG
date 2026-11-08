@@ -676,9 +676,9 @@
           serviceDressingKey: this.serviceDressingKey,
           nativeTitleUi: this.nativeTitleUiActive,
           nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
-          nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuDivider'].every(key => this.textures.exists(key)),
+          nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider'].every(key => this.textures.exists(key)),
           nativeTitleUiDividerPainted: this.nativeTitleUiObjects.some(object => object?.active && object.type === 'Image' && object.texture?.key === 'menuDivider'),
-          nativeTitleUiDividerLabel: root()?.querySelector('.v120-divider b')?.textContent?.replace(/\\s+/g, ' ').trim() || '',
+          nativeTitleUiDividerLabel: root()?.querySelector('.v120-divider b')?.textContent?.replace(/\s+/g, ' ').trim() || '',
           nativeTitleUiLabels: this.nativeTitleUiControls.map(item => ({ id: item.id, title: item.titleText?.text || '', subtitle: item.subtitleText?.text || '' })),
           nativeTitleUiControlCount: this.nativeTitleUiControls.length,
           nativeTitleUiControlIds: this.nativeTitleUiControls.map(item => item.id),
@@ -1177,7 +1177,7 @@
 
       const buttons = Array.from(hero.querySelectorAll('.v136-menu-btn'));
       const dividerNode = hero.querySelector('.v120-divider');
-      const dividerLabel = dividerNode?.querySelector('b')?.textContent?.replace(/\\s+/g, ' ').trim() || '';
+      const dividerLabel = dividerNode?.querySelector('b')?.textContent?.replace(/\s+/g, ' ').trim() || '';
       const dividerRect = dividerNode?.getBoundingClientRect();
       const panelRect = hero.getBoundingClientRect();
       if (!panelRect.width || !panelRect.height || !buttons.length || !dividerRect?.width || !dividerRect?.height || !dividerLabel) {
@@ -1212,7 +1212,7 @@
       const presentIds = buttons.map(button => button.id);
       const hasAllActions = expectedIds.every(id => presentIds.includes(id));
       const requiredTextures = [
-        'menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner',
+        'menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider',
         'menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'
       ];
       if (!hasAllActions || presentIds.length !== expectedIds.length ||
@@ -1384,7 +1384,8 @@
 
       // Never conceal the DOM fallback until every production action has
       // corresponding, non-empty Phaser text and an active scene container.
-      const complete = this.nativeTitleUiControls.length === expectedIds.length &&
+      const dividerReady = Boolean(dividerArt?.active && dividerArt.texture?.key === 'menuDivider');
+      const complete = dividerReady && this.nativeTitleUiControls.length === expectedIds.length &&
         this.nativeTitleUiControls.every(item =>
           item.container?.active && item.titleText?.text?.trim() &&
           item.button?.isConnected && item.button.tagName === 'BUTTON');
