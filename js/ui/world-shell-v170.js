@@ -338,7 +338,10 @@
       return;
     }
     try {
-      STORAGE().savePlayer(player);
+      if (STORAGE().savePlayer(player) === false) {
+        showToast('The traveler record could not be saved permanently. Check browser storage and retry.');
+        return;
+      }
       showToast('Traveler record saved locally.');
     } catch (error) {
       console.error('[LEGEND world shell] Save failed', error);
