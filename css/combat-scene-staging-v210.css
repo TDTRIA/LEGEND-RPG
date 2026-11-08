@@ -292,3 +292,18 @@
 @media(prefers-reduced-motion:reduce) {
   .rpg-battle.rpg-intent-staggered .rpg-foe-sprite { animation: none !important; }
 }
+
+
+/* Iron-and-bronze health orb: the Phaser painter supplies the live fill and
+   bezel after combat preflight; preserve the source portrait for DOM fallback. */
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-portrait {
+  position: relative !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-portrait > img,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-portrait > span {
+  opacity: 0 !important;
+}
