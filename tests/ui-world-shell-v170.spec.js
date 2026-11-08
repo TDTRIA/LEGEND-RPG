@@ -741,6 +741,92 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(leftPanel).not.toBeInViewport();
   });
 
+  test('Ashmere destination board is Phaser-painted while real town actions and fallback remain usable', async ({ page }) => {
+    await enterAshmere(page, 'AshmereBoardQA');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1?.snapshot?.()?.nativeTownBoardUi
+    )).toBe(true);
+
+    const initial = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const section = document.querySelector('.ash100-destination-section');
+      return {
+        active: snapshot.nativeTownBoardUi,
+        textCount: snapshot.nativeTownBoardUiTextCount,
+        text: snapshot.nativeTownBoardUiTextValues || [],
+        ids: snapshot.nativeTownBoardUiControlIds || [],
+        cards: snapshot.nativeTownBoardUiCards || [],
+        heading: section?.querySelector('h2')?.textContent || '',
+        iconCount: section?.querySelectorAll('.ash100-destination-icon').length || 0
+      };
+    });
+    expect(initial.active).toBe(true);
+    expect(initial.textCount).toBeGreaterThanOrEqual(26);
+    expect(initial.text).toEqual(expect.arrayContaining([
+      'ASHMERE', 'Where next?', 'Ashmere Inn', 'Market', 'Forge & Workshop',
+      'Town Square', 'Work Board', 'Daily Field Board', 'Old Road Gate', 'Road Network'
+    ]));
+    expect(initial.ids).toEqual(['inn','trader','smith','people','work','quests','road','regions']);
+    expect(initial.cards).toHaveLength(8);
+    expect(initial.iconCount).toBe(8);
+    expect(initial.cards.every(card => card.width > 0 && card.height > 0 && card.title && card.action)).toBe(true);
+    expect(await page.locator('.ash100-destination-copy strong').first().evaluate(node =>
+      getComputedStyle(node).color
+    )).toBe('rgba(0, 0, 0, 0)');
+
+    // A missing destination forces the full styled DOM board back on-screen.
+    const fallback = await page.evaluate(() => {
+      const section = document.querySelector('.ash100-destination-section');
+      const button = section.querySelector('[data-ash-view="regions"]');
+      const parent = button.parentNode;
+      const next = button.nextSibling;
+      button.remove();
+      window.LegendPhaserWorldV1.refreshTownBoard();
+      const result = {
+        active: window.LegendPhaserWorldV1.snapshot().nativeTownBoardUi,
+        titleColor: getComputedStyle(section.querySelector('.ash100-destination-copy strong')).color
+      };
+      parent.insertBefore(button, next);
+      window.LegendPhaserWorldV1.refreshTownBoard();
+      return result;
+    });
+    expect(fallback.active).toBe(false);
+    expect(fallback.titleColor).not.toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
+    )).toBe(true);
+
+    // The live destination buttons still call the original market and work-board routes.
+    await page.locator('.ash100-destination[data-ash-view="trader"]').click();
+    await expect(page.locator('.ash099-market-console')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Trading Post' })).toBeVisible();
+    await page.locator('#ashBack').click();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
+    )).toBe(true);
+    await page.locator('.ash100-destination[data-ash-view="work"]').click();
+    await expect(page.locator('.ash099-job-board')).toBeVisible();
+    await expect(page.locator('#openDailyFieldBoard')).toBeVisible();
+    await page.locator('#ashBack').click();
+    await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
+
+    // Focus remains on the real DOM button while its visible focus state is painted in Phaser.
+    await page.setViewportSize({ width: 390, height: 844 });
+    const inn = page.locator('.ash100-destination[data-ash-view="inn"]');
+    await inn.focus();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.find(card => card.id === 'inn')?.focused
+    )).toBe(true);
+    await expectNoHorizontalOverflow(page);
+    const mobile = await page.evaluate(() => ({
+      width: document.documentElement.clientWidth,
+      board: document.querySelector('.ash100-destination-section')?.getBoundingClientRect().width || 0,
+      cardCount: window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.length || 0
+    }));
+    expect(mobile.board).toBeGreaterThan(0);
+    expect(mobile.cardCount).toBe(8);
+  });
+
   test('Ashmere POI selection updates the contextual scene without changing saved gameplay state', async ({ page }) => {
     await enterAshmere(page, 'AshmerePOITraveler');
     const before = await page.evaluate(() => {
