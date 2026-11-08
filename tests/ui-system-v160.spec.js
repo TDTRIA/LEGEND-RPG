@@ -398,7 +398,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await page.locator('.ash100-destination[data-ash-view="road"]').click();
     await expect(page.locator('.ash100-departure')).toBeVisible();
     await page.locator('#departureBegin').click();
-    await expect(page.locator('.exp100-head')).toBeVisible();
+    await expect(page.locator('.exp150-world-page')).toBeVisible();
+    await expect(page.locator('#push')).toBeEnabled();
     await page.locator('#push').click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
 
@@ -472,6 +473,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expectNoHorizontalOverflow(page);
     await expect(page.locator('#guard')).toBeEnabled();
     await page.locator('#guard').focus();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeCombatUiFocusedControlIds || []
+    )).toContain('guard');
     await page.locator('#guard').click();
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-heavy/);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCombatUi)).toBe(true);
