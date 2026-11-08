@@ -5230,7 +5230,7 @@
     clearNativeTownBoardUi(removeClass = true, removeListeners = true) {
       this.nativeTownBoardUiLayoutEvent?.remove?.(false);
       this.nativeTownBoardUiLayoutEvent = null;
-      if (this.nativeTownBoardUiObserver) {
+      if (removeListeners && this.nativeTownBoardUiObserver) {
         this.nativeTownBoardUiObserver.disconnect();
         this.nativeTownBoardUiObserver = null;
       }
@@ -5430,7 +5430,7 @@
         }
         snapshots.push({
           id: item.button.dataset.ashView, title: item.titleText, action: item.actionText,
-          x: rect.x, y: rect.y, width: rect.width, height: rect.height, focused, disabled
+          x: rect.x, y: rect.y, width: rect.width, height: rect.height, focused, hovered, disabled
         });
       });
       this.nativeTownBoardUiTextNodes = [kicker, heading, ...cards.flatMap(item => [item.title, item.description, item.action])];
