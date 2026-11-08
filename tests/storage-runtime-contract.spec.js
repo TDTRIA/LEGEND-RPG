@@ -4,6 +4,7 @@ const path = require('path');
 
 const indexSource = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8');
 const storageSource = fs.readFileSync(path.join(__dirname, '../js/storage.js'), 'utf8');
+const gameSource = fs.readFileSync(path.join(__dirname, '../js/game.js'), 'utf8');
 
 async function openGame(page) {
   await page.goto('/');
@@ -95,6 +96,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
 
       localStorage.setItem(key, JSON.stringify({
         username: 'LegacyButValid',
+        version: 'v0.20.36',
         className: 'Ranger',
         inventory: { roadToken: 2, customLoot: 7 },
         flags: { customFlag: true },
@@ -111,6 +113,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
         incompatibleIsNull: incompatible === null,
         incompatibleStillPresent: Boolean(incompatibleRaw),
         compatibleName: compatible?.username,
+        compatibleVersion: compatible?.version,
         compatibleUnknownData: compatible?.customState?.preserved,
         compatibleInventory: compatible?.inventory?.customLoot
       };
@@ -125,6 +128,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       futureStillPresent: true,
       futureRawVersion: 'v99.0.0',
       compatibleName: 'LegacyButValid',
+      compatibleVersion: 'v0.30.5',
       compatibleUnknownData: true,
       compatibleInventory: 7
     });
@@ -248,6 +252,18 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       { name: 'newTraveler', rootWasRecreated: true, backWasAvailable: true, titleReturned: true },
       { name: 'continueGame', rootWasRecreated: true, backWasAvailable: true, titleReturned: true }
     ]);
+  });
+
+  test('missing storage bootstrap stops at an actionable recovery screen', async ({ page }) => {
+    await openGame(page);
+    await page.evaluate(source => {
+      window.LegendStorage = undefined;
+      document.getElementById('root')?.remove();
+      window.eval(source);
+    }, gameSource);
+
+    await expect(page.getByRole('heading', { name: 'Traveler storage unavailable' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Reload Game' })).toBeVisible();
   });
 
   test('blocked sessionStorage does not crash the pending town-return handler', async ({ page }) => {
