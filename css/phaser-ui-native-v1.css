@@ -712,3 +712,85 @@ body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-contro
   outline-offset: 3px !important;
   box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
 }
+
+
+/* The tactical battle presentation is painted by RealmScene. Character/enemy
+   illustrations and the semantic battle buttons stay in the DOM; only their
+   duplicated text/surfaces are visually masked after the Phaser preflight. */
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-topline,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-stage-plate,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-foe-nameplate,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-combat-status,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-dialogue,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-log,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-enemy-tell,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-turn-heading,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command-grid,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-utilities {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-utility-command,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root #battleSound {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  outline-color: transparent !important;
+  filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-topline .rpg-overline,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-topline > div > strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-stage-plate > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-stage-plate > strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-stage-plate > small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-foe-nameplate > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-foe-nameplate > strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-foe-nameplate > small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-name > strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-name > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-vital-label > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-vital-label > strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-resources > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-hero-resources b,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-dialogue-kicker,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-dialogue p,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-log li,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-enemy-tell small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-enemy-tell .exp100-intent,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-turn-heading span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-turn-heading strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-turn-heading small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command-glyph,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command-label strong,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command-label small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command em,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-utilities > span,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-utility-command,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-utility-command small,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-footnote,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root #battleSound {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle button:focus-visible {
+  outline: 2px solid transparent !important;
+  outline-offset: 3px !important;
+  box-shadow: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle button {
+    transition: none !important;
+  }
+}
