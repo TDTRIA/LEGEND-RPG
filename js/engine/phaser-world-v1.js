@@ -824,6 +824,8 @@
           nativeCombatUiTextValues: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
           nativeCombatUiTextCount: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text' && String(item.text || '').trim()).length,
           nativeCombatUiControlIds: this.nativeCombatUiControls.filter(node => node?.isConnected).map(node => node.id || node.getAttribute('aria-label') || ''),
+          nativeCombatUiFocusedControlIds: this.nativeCombatUiControls.filter(node => node?.isConnected && (node === document.activeElement || node.matches(':focus-visible'))).map(node => node.id || ''),
+          nativeCombatUiHoveredControlIds: this.nativeCombatUiControls.filter(node => node?.isConnected && node.matches(':hover')).map(node => node.id || ''),
           nativeCombatUiSceneSize: this.dimensions(),
           nativeCombatUiObserverBound: Boolean(this.nativeCombatUiObserver && this.nativeCombatUiBoundBattle?.isConnected),
           nativeAnnalsUiSceneSize: this.dimensions(),
@@ -4691,6 +4693,7 @@
     }
 
 
+    /** Clears combat scene objects and releases observers while revealing the accessible DOM battle fallback. */
     clearNativeCombatUi(removeClass = true, removeListeners = true) {
       this.nativeCombatUiLayoutEvent?.remove?.(false);
       this.nativeCombatUiLayoutEvent = null;
@@ -4725,6 +4728,7 @@
       if (removeClass) document.body?.classList.remove('legend-phaser-combat-ui-active');
     }
 
+    /** Paints the tactical combat panels and live labels in Phaser without taking ownership of any battle action. */
     syncNativeCombatUi(surface = this.surface) {
       const host = root();
       const battle = host?.querySelector('.rpg-battle');
@@ -4845,6 +4849,7 @@
 
       // Keep the observer and focus handlers bound to the live battle root while
       // replacing only Phaser display objects after a state or layout change.
+      try {
       this.nativeCombatUiObjects.forEach(object => {
         if (!object?.active) return;
         this.tweens.killTweensOf(object);
@@ -4947,6 +4952,11 @@
       this.nativeCombatUiSignature = signature;
       this.nativeCombatUiActive = true;
       document.body?.classList.add('legend-phaser-combat-ui-active');
+      } catch (error) {
+        // Never leave source labels transparent after a failed canvas paint.
+        this.clearNativeCombatUi();
+        console.warn('Phaser combat UI paint failed; leaving the accessible DOM battle visible.', error);
+      }
     }
 
     syncNativeGameplayUi(surface = this.surface) {
