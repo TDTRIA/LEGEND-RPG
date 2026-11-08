@@ -177,6 +177,7 @@
     return modal;
   }
 
+  /** Rebuilds the persistent shell and refreshes only Phaser layers whose DOM controls were just replaced. */
   function renderShell(player, context) {
     const shell = ensureShellRoot();
     const rootNode = root();
@@ -219,9 +220,12 @@
     document.body.classList.add('legend-world-shell-active');
     syncSceneAtmosphere(player, context);
     refreshMobileToggleState(shell);
-    // Phaser paints the HUD while the original buttons remain the real,
-    // accessible controls. Other shell panels stay on the DOM until migrated.
+    // Phaser paints the HUD and bottom navigation. Refresh only after the
+    // bottom-bar innerHTML replacement above, so node identity/tags stay current.
     window.LegendPhaserWorldV1?.refreshHud?.();
+    window.LegendPhaserWorldV1?.refreshNavigation?.();
+    window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+    window.LegendPhaserWorldV1?.refreshRightDrawer?.();
   }
 
   function refreshMobileToggleState(shell = document.getElementById(SHELL_ID)) {
@@ -243,11 +247,16 @@
     updateDrawer('right', '[data-world-action="toggle-right"]');
   }
 
+  /** Hides the shell and clears its Phaser presentations so no stale drawer or navigation layer remains visible. */
   function hideShell() {
     const shell = document.getElementById(SHELL_ID);
     if (shell) shell.hidden = true;
     document.body.classList.remove('legend-world-shell-active', 'legend-shell-left-open', 'legend-shell-right-open');
     syncSceneAtmosphere(null, null);
+    window.LegendPhaserWorldV1?.refreshHud?.();
+    window.LegendPhaserWorldV1?.refreshNavigation?.();
+    window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+    window.LegendPhaserWorldV1?.refreshRightDrawer?.();
     lastContext = null;
   }
 
@@ -327,6 +336,7 @@
     return false;
   }
 
+  /** Closes the active shell modal, restores the previously open drawer state, and refreshes its Phaser panel. */
   function closeShellModal() {
     MODALS().close?.();
   }
@@ -349,6 +359,7 @@
     }
   }
 
+  /** Dispatches the real shell button actions and synchronizes the affected Phaser drawers after state changes. */
   function handleShellClick(event) {
     const actionButton = event.target.closest('[data-world-action]');
     const routeButton = event.target.closest('[data-world-route]');
@@ -533,12 +544,16 @@
         document.body.classList.toggle('legend-shell-left-open');
         document.body.classList.remove('legend-shell-right-open');
         refreshMobileToggleState();
+        window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+        window.LegendPhaserWorldV1?.refreshRightDrawer?.();
         break;
       case 'toggle-right':
         event.preventDefault();
         document.body.classList.toggle('legend-shell-right-open');
         document.body.classList.remove('legend-shell-left-open');
         refreshMobileToggleState();
+        window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+        window.LegendPhaserWorldV1?.refreshRightDrawer?.();
         break;
       default:
         break;
@@ -557,6 +572,8 @@
         closeShellModal();
         document.body.classList.remove('legend-shell-left-open', 'legend-shell-right-open');
         refreshMobileToggleState(shell);
+        window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+        window.LegendPhaserWorldV1?.refreshRightDrawer?.();
         if (leftWasOpen) shell?.querySelector('[data-world-action="toggle-left"]')?.focus();
         else if (rightWasOpen) shell?.querySelector('[data-world-action="toggle-right"]')?.focus();
       }
