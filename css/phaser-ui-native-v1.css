@@ -712,3 +712,16 @@ body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-contro
   outline-offset: 3px !important;
   box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
 }
+
+/* Keep the supplied divider as the only visible line art while preserving its live caption. */
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v120-divider > span {
+  background: transparent !important;
+  opacity: 0 !important;
+}
+/* The semantic button remains the actual keyboard target, so its DOM focus ring
+   must remain visible even if the Phaser focus frame is ever unavailable. */
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn:focus-visible {
+  outline: 2px solid #ffe7a6 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 4px rgba(240, 207, 131, .18) !important;
+}
