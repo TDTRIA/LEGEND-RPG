@@ -770,6 +770,10 @@ test.describe('LEGEND persistent world shell v170', () => {
     expect(initial.cards).toHaveLength(8);
     expect(initial.iconCount).toBe(8);
     expect(initial.cards.every(card => card.width > 0 && card.height > 0 && card.title && card.action)).toBe(true);
+    await page.locator('.ash100-destination[data-ash-view="inn"]').hover();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.find(card => card.id === 'inn')?.hovered
+    )).toBe(true);
     expect(await page.locator('.ash100-destination-copy strong').first().evaluate(node =>
       getComputedStyle(node).color
     )).toBe('rgba(0, 0, 0, 0)');
@@ -795,6 +799,21 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
     )).toBe(true);
+
+    // The Bell Cellar appears only after the existing progression flag is set.
+    await page.evaluate(() => {
+      const player = window.LegendRuntimeV120.loadPlayer();
+      player.flags = player.flags || {};
+      player.flags.firstRoadReturnSeen = true;
+      window.LegendStorage.savePlayer(player);
+      window.LegendAshmereV099.renderAshmere();
+    });
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.length
+    )).toBe(9);
+    const unlocked = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTownBoardUiCards);
+    expect(unlocked.map(card => card.id)).toContain('dungeon');
+    expect(unlocked.find(card => card.id === 'dungeon')?.title).toBe('The Bell Cellar');
 
     // The live destination buttons still call the original market and work-board routes.
     await page.locator('.ash100-destination[data-ash-view="trader"]').click();
@@ -824,7 +843,7 @@ test.describe('LEGEND persistent world shell v170', () => {
       cardCount: window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.length || 0
     }));
     expect(mobile.board).toBeGreaterThan(0);
-    expect(mobile.cardCount).toBe(8);
+    expect(mobile.cardCount).toBe(9);
   });
 
   test('Ashmere POI selection updates the contextual scene without changing saved gameplay state', async ({ page }) => {
