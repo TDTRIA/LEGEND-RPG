@@ -526,6 +526,11 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(desktop.healthOrb).toMatchObject({ hp: 40, maxHp: 100, percent: 40 });
     expect(desktop.healthOrb.width).toBeGreaterThan(0);
     expect(desktop.healthOrb.height).toBeGreaterThan(0);
+    expect(desktop.healthOrb.fillBounds.diameter).toBeCloseTo(desktop.healthOrb.width * 180 / 256, 2);
+    expect(desktop.healthOrb.fillBounds.height / desktop.healthOrb.fillBounds.diameter).toBeCloseTo(0.4, 2);
+    expect(desktop.healthOrb.fillBounds.bottom).toBeCloseTo(
+      desktop.healthOrb.y + desktop.healthOrb.height / 2 * 90 / 128, 2
+    );
     expect(['webgl-filter','canvas-geometry']).toContain(desktop.healthOrbMaskMode);
     expect(desktop.portrait.src).toMatch(/class-ranger\.webp/);
     expect(desktop.portrait.opacity).toBe('0');
