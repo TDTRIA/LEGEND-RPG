@@ -579,3 +579,51 @@ body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-wor
   outline-offset: 3px !important;
   box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
 }
+
+
+/* Old Road connected map and field journal: Phaser paints the modal frame,
+   graph/cards and copy; native DOM controls remain the focusable action layer. */
+body.legend-phaser-road-map-ui-active #exp150Modal {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-modal-dialog {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-map-intro,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp160-route-graph,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp160-map-node,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp160-map-action,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-map-discovery,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-journal-section,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-journal-entry,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-route-entry,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-place-chip,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-journal-empty,
+body.legend-phaser-road-map-ui-active #exp150Modal .exp150-modal-close {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}

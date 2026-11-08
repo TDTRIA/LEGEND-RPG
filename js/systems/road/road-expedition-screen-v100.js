@@ -306,10 +306,12 @@
     overlay.classList.add('is-open');
     document.body.classList.add('exp150-modal-open');
     document.getElementById('exp150ModalClose')?.focus();
+    window.LegendPhaserWorldV1?.refreshRoadMap?.();
     const close=()=>{
       overlay.hidden=true;
       overlay.classList.remove('is-open');
       document.body.classList.remove('exp150-modal-open');
+      window.LegendPhaserWorldV1?.clearRoadMap?.();
       if(returnFocus&&typeof returnFocus.focus==='function'&&returnFocus.isConnected)returnFocus.focus();
     };
     content.querySelectorAll('[data-exp160-map-route]').forEach(button=>button.addEventListener('click',()=>{

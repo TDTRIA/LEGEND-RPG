@@ -492,6 +492,24 @@
       this.nativeOpeningUiSignature = '';
       this.nativeOpeningUiLayoutEvent = null;
       this.nativeOpeningUiScrollTarget = null;
+      this.nativeRoadMapUiActive = false;
+      this.nativeRoadMapUiKind = '';
+      this.nativeRoadMapUiObjects = [];
+      this.nativeRoadMapUiTaggedNodes = [];
+      this.nativeRoadMapUiTextNodes = [];
+      this.nativeRoadMapUiControls = [];
+      this.nativeRoadMapUiIconNodes = [];
+      this.nativeRoadMapUiSignature = '';
+      this.nativeRoadMapUiBoundOverlay = null;
+      this.nativeRoadMapUiBoundDialog = null;
+      this.nativeRoadMapUiInteractionHandler = null;
+      this.nativeRoadMapUiTransitionHandler = null;
+      this.nativeRoadMapUiLayoutEvent = null;
+      this.nativeRoadMapUiMask = null;
+      this.nativeRoadMapUiMaskFilter = null;
+      this.nativeRoadMapUiMaskGraphics = null;
+      this.nativeRoadMapUiMaskBounds = null;
+      this.nativeRoadMapUiContainer = null;
       this.nativeRightDrawerUiActive = false;
       this.nativeRightDrawerUiObjects = [];
       this.nativeRightDrawerUiTaggedNodes = [];
@@ -591,6 +609,7 @@
         this.syncNativeBottomBarUi();
         this.syncNativeLeftDrawerUi();
         this.syncNativeRightDrawerUi();
+        this.syncNativeRoadMapUi();
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -695,6 +714,22 @@
           nativeRightDrawerUiMaskBounds: this.nativeRightDrawerUiMaskBounds,
           nativeRightDrawerUiMaskFilterActive: Boolean(this.nativeRightDrawerUiMaskFilter),
           nativeRightDrawerUiSceneSize: this.dimensions(),
+          nativeRoadMapUi: this.nativeRoadMapUiActive,
+          nativeRoadMapUiKind: this.nativeRoadMapUiKind,
+          nativeRoadMapUiObjectCount: this.nativeRoadMapUiObjects.filter(item => item?.active).length,
+          nativeRoadMapUiTextCount: this.nativeRoadMapUiTextNodes.filter(node => node?.isConnected).length,
+          nativeRoadMapUiTextValues: this.nativeRoadMapUiTextNodes.filter(node => node?.isConnected)
+            .map(node => node.textContent?.replace(/\\s+/g, ' ').trim() || ''),
+          nativeRoadMapUiControlIds: this.nativeRoadMapUiControls.filter(node => node?.isConnected).map(node =>
+            node.dataset.exp160MapRoute ? 'route:' + node.dataset.exp160MapRoute
+              : node.dataset.exp160MapVisit ? 'visit:' + node.dataset.exp160MapVisit
+              : node.id || ''),
+          nativeRoadMapUiScrollTop: Number(this.nativeRoadMapUiBoundDialog?.scrollTop || 0),
+          nativeRoadMapUiMaskMode: this.nativeRoadMapUiMaskFilter ? 'webgl-filter'
+            : this.nativeRoadMapUiMask ? 'canvas-geometry' : 'none',
+          nativeRoadMapUiMaskBounds: this.nativeRoadMapUiMaskBounds,
+          nativeRoadMapUiMaskFilterActive: Boolean(this.nativeRoadMapUiMaskFilter),
+          nativeRoadMapUiSceneSize: this.dimensions(),
           nativeBottomBarUi: this.nativeBottomBarUiActive,
           nativeBottomBarUiObjectCount: this.nativeBottomBarUiObjects.filter(item => item?.active).length,
           nativeBottomBarUiTextCount: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).length,
@@ -2738,6 +2773,388 @@
       if (removeClass) document.body?.classList.remove('legend-phaser-left-drawer-ui-active');
     }
 
+
+
+    clearNativeRoadMapUi(removeClass = true, removeListeners = true) {
+      this.nativeRoadMapUiLayoutEvent?.remove?.(false);
+      this.nativeRoadMapUiLayoutEvent = null;
+      if (removeListeners) {
+        if (this.nativeRoadMapUiBoundDialog && this.nativeRoadMapUiInteractionHandler) {
+          ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+            this.nativeRoadMapUiBoundDialog.removeEventListener(type, this.nativeRoadMapUiInteractionHandler)
+          );
+        }
+        if (this.nativeRoadMapUiBoundOverlay && this.nativeRoadMapUiTransitionHandler) {
+          this.nativeRoadMapUiBoundOverlay.removeEventListener('transitionend', this.nativeRoadMapUiTransitionHandler);
+        }
+        this.nativeRoadMapUiBoundOverlay = null;
+        this.nativeRoadMapUiBoundDialog = null;
+        this.nativeRoadMapUiInteractionHandler = null;
+        this.nativeRoadMapUiTransitionHandler = null;
+      }
+      if (this.nativeRoadMapUiContainer && this.nativeRoadMapUiMaskFilter) {
+        this.nativeRoadMapUiContainer.filters?.internal?.remove?.(this.nativeRoadMapUiMaskFilter, true);
+      }
+      this.nativeRoadMapUiMaskFilter = null;
+      if (this.nativeRoadMapUiContainer && this.nativeRoadMapUiMask) {
+        this.nativeRoadMapUiContainer.clearMask?.(true);
+      }
+      this.nativeRoadMapUiMask = null;
+      this.nativeRoadMapUiMaskBounds = null;
+      this.nativeRoadMapUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeRoadMapUiObjects = [];
+      this.nativeRoadMapUiContainer = null;
+      this.nativeRoadMapUiMaskGraphics = null;
+      this.nativeRoadMapUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserRoadMapText;
+        delete node.dataset.legendPhaserRoadMapControl;
+        delete node.dataset.legendPhaserRoadMapIcon;
+      });
+      this.nativeRoadMapUiTaggedNodes = [];
+      this.nativeRoadMapUiTextNodes = [];
+      this.nativeRoadMapUiControls = [];
+      this.nativeRoadMapUiIconNodes = [];
+      this.nativeRoadMapUiSignature = '';
+      this.nativeRoadMapUiKind = '';
+      this.nativeRoadMapUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-road-map-ui-active');
+    }
+
+    syncNativeRoadMapUi() {
+      const overlay = document.getElementById('exp150Modal');
+      const dialog = overlay?.querySelector('.exp150-modal-dialog,[role="dialog"]');
+      const content = document.getElementById('exp150ModalContent');
+      const overlayStyle = overlay ? window.getComputedStyle(overlay) : null;
+      const visible = Boolean(overlay && dialog && content && !overlay.hidden &&
+        overlayStyle?.display !== 'none' && overlayStyle?.visibility !== 'hidden');
+      if (!visible) {
+        if (this.nativeRoadMapUiActive || document.body?.classList.contains('legend-phaser-road-map-ui-active')) {
+          this.clearNativeRoadMapUi();
+        }
+        return;
+      }
+
+      if (this.nativeRoadMapUiBoundOverlay !== overlay || this.nativeRoadMapUiBoundDialog !== dialog) {
+        this.clearNativeRoadMapUi();
+        this.nativeRoadMapUiBoundOverlay = overlay;
+        this.nativeRoadMapUiBoundDialog = dialog;
+        this.nativeRoadMapUiInteractionHandler = () => {
+          this.nativeRoadMapUiLayoutEvent?.remove?.(false);
+          this.nativeRoadMapUiLayoutEvent = this.time.delayedCall(28, () => {
+            this.nativeRoadMapUiLayoutEvent = null;
+            this.syncNativeRoadMapUi();
+          });
+        };
+        this.nativeRoadMapUiTransitionHandler = event => {
+          if (event.target !== overlay || (event.propertyName && event.propertyName !== 'opacity')) return;
+          this.nativeRoadMapUiInteractionHandler?.();
+        };
+        ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          dialog.addEventListener(type, this.nativeRoadMapUiInteractionHandler, { passive: type === 'scroll' })
+        );
+        overlay.addEventListener('transitionend', this.nativeRoadMapUiTransitionHandler);
+      }
+
+      // Keep the original map/journal fully visible until its modal transition ends
+      // and the native painter is ready to replace every visible label and surface.
+      if (this.hasFiniteEntranceAnimation(overlay)) {
+        this.clearNativeRoadMapUi(true, false);
+        this.nativeRoadMapUiLayoutEvent?.remove?.(false);
+        this.nativeRoadMapUiLayoutEvent = this.time.delayedCall(240, () => {
+          this.nativeRoadMapUiLayoutEvent = null;
+          this.syncNativeRoadMapUi();
+        });
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          x: rect.left * sx, y: rect.top * sy,
+          width: rect.width * sx, height: rect.height * sy
+        };
+      };
+      const overlayRect = readRect(overlay);
+      const dialogRect = readRect(dialog);
+      if (!overlayRect || !dialogRect) {
+        this.clearNativeRoadMapUi();
+        return;
+      }
+
+      const textSelector = [
+        '.exp150-map-intro .exp150-kicker',
+        '.exp150-map-intro h2',
+        '.exp150-map-intro p',
+        '.exp160-graph-legend span',
+        '.exp160-map-connectors span',
+        '.exp160-map-node-head strong',
+        '.exp160-map-node-head > div > span',
+        '.exp160-map-node > p',
+        '.exp160-map-node-status',
+        '.exp160-map-action',
+        '.exp150-map-discoveries-heading > span',
+        '.exp150-map-discoveries-heading > strong',
+        '.exp150-map-discovery strong',
+        '.exp150-map-discovery small',
+        '.exp150-map-discovery p',
+        '.exp150-map-discovery-empty',
+        '.exp150-journal-section h3',
+        '.exp150-journal-entry-type',
+        '.exp150-journal-entry strong',
+        '.exp150-journal-entry p',
+        '.exp150-route-entry > span',
+        '.exp150-route-entry strong',
+        '.exp150-route-entry small',
+        '.exp150-place-chip',
+        '.exp150-journal-empty > strong',
+        '.exp150-journal-empty > p',
+        '.exp150-journal-muted',
+        '.exp150-modal-close'
+      ].join(',');
+      const textNodes = Array.from(new Set(content.querySelectorAll(textSelector))).filter(node =>
+        Boolean(node.textContent?.trim()) && readRect(node)
+      );
+      const controls = Array.from(content.querySelectorAll(
+        'button[data-exp160-map-route],button[data-exp160-map-visit],button#exp150ModalClose'
+      )).filter(node => readRect(node));
+      const iconNodes = Array.from(content.querySelectorAll(
+        '.exp160-map-symbol,.exp150-map-discovery-pin,.exp150-journal-empty > span'
+      )).filter(node => readRect(node));
+      const surfaces = Array.from(new Set(content.querySelectorAll([
+        '.exp160-route-graph',
+        '.exp160-map-node',
+        '.exp160-map-action',
+        '.exp150-map-discovery',
+        '.exp150-journal-section',
+        '.exp150-journal-entry',
+        '.exp150-route-entry',
+        '.exp150-place-chip',
+        '.exp150-journal-empty',
+        '.exp150-modal-close'
+      ].join(',')))).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const intro = content.querySelector('.exp150-map-intro');
+      const currentKind = content.querySelector('.exp160-route-graph') ? 'map' : 'journal';
+      const signature = JSON.stringify([
+        currentKind,
+        Math.round(overlayRect.x), Math.round(overlayRect.y),
+        Math.round(overlayRect.width), Math.round(overlayRect.height),
+        Math.round(dialogRect.x), Math.round(dialogRect.y),
+        Math.round(dialogRect.width), Math.round(dialogRect.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight),
+        Number(dialog.scrollTop || 0),
+        ...textNodes.map(node => {
+          const rect = readRect(node);
+          return [node.textContent?.replace(/\\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [node.id || node.dataset.exp160MapRoute || node.dataset.exp160MapVisit || '',
+            node.textContent?.replace(/\\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height),
+            Boolean(node.disabled), node === document.activeElement || node.matches(':focus-visible'),
+            node.matches(':hover')];
+        })
+      ]);
+      const tagsCurrent =
+        controls.length === this.nativeRoadMapUiControls.length &&
+        controls.every((node, index) => node === this.nativeRoadMapUiControls[index] &&
+          node.dataset.legendPhaserRoadMapControl === 'true') &&
+        textNodes.length === this.nativeRoadMapUiTextNodes.length &&
+        textNodes.every((node, index) => node === this.nativeRoadMapUiTextNodes[index] &&
+          node.dataset.legendPhaserRoadMapText === 'true') &&
+        iconNodes.length === this.nativeRoadMapUiIconNodes.length &&
+        iconNodes.every((node, index) => node === this.nativeRoadMapUiIconNodes[index] &&
+          node.dataset.legendPhaserRoadMapIcon === 'true');
+      if (this.nativeRoadMapUiActive && this.nativeRoadMapUiKind === currentKind &&
+          tagsCurrent && signature === this.nativeRoadMapUiSignature) return;
+
+      this.clearNativeRoadMapUi(false, false);
+      document.body?.classList.remove('legend-phaser-road-map-ui-active');
+
+      // Native modal backdrop and framed parchment/iron panel.
+      const backdrop = this.add.graphics().setDepth(78);
+      backdrop.fillStyle(0x020503, 0.76);
+      backdrop.fillRect(overlayRect.x, overlayRect.y, overlayRect.width, overlayRect.height);
+      this.nativeRoadMapUiObjects.push(backdrop);
+
+      const panelGraphics = this.add.graphics().setDepth(79);
+      panelGraphics.fillStyle(0x111a12, 0.985);
+      panelGraphics.fillRoundedRect(dialogRect.x, dialogRect.y, dialogRect.width, dialogRect.height, 7 * sx);
+      panelGraphics.fillStyle(0x202a1d, 0.18);
+      panelGraphics.fillRect(dialogRect.x + sx, dialogRect.y + sy, Math.max(1, dialogRect.width - 2 * sx), Math.min(50 * sy, dialogRect.height * 0.24));
+      panelGraphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.78);
+      panelGraphics.strokeRoundedRect(dialogRect.x + sx / 2, dialogRect.y + sy / 2,
+        Math.max(1, dialogRect.width - sx), Math.max(1, dialogRect.height - sy), 7 * sx);
+      this.nativeRoadMapUiObjects.push(panelGraphics);
+
+      const contentContainer = this.add.container(0, 0).setDepth(80);
+      const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+      maskGraphics.fillStyle(0xffffff, 1);
+      maskGraphics.fillRect(dialogRect.x, dialogRect.y, dialogRect.width, dialogRect.height);
+      const rendererType = this.sys.game.renderer?.type;
+      let mask = null;
+      let maskFilter = null;
+      if (rendererType === Phaser.WEBGL) {
+        try {
+          contentContainer.enableFilters?.();
+          contentContainer.setFiltersFocusContext?.(true);
+          maskFilter = contentContainer.filters?.internal?.addMask?.(
+            maskGraphics, false, this.cameras.main, 'world'
+          ) || null;
+        } catch (error) {
+          console.warn('[LEGEND Phaser] Road map WebGL mask could not be created; keeping the accessible DOM modal visible.', error);
+        }
+        if (!maskFilter) {
+          backdrop.destroy();
+          panelGraphics.destroy();
+          contentContainer.destroy(true);
+          maskGraphics.destroy(true);
+          this.nativeRoadMapUiObjects = [];
+          return;
+        }
+        this.nativeRoadMapUiMaskFilter = maskFilter;
+      } else {
+        mask = maskGraphics.createGeometryMask();
+        contentContainer.setMask(mask);
+        this.nativeRoadMapUiMask = mask;
+      }
+      this.nativeRoadMapUiContainer = contentContainer;
+      this.nativeRoadMapUiMaskGraphics = maskGraphics;
+      this.nativeRoadMapUiMaskBounds = {
+        x: dialogRect.x, y: dialogRect.y, width: dialogRect.width, height: dialogRect.height
+      };
+      this.nativeRoadMapUiObjects.push(contentContainer, maskGraphics);
+
+      const addContent = object => {
+        if (!object) return object;
+        contentContainer.add(object);
+        return object;
+      };
+      const graphics = addContent(this.add.graphics());
+      surfaces.forEach(({ node, rect }) => {
+        const classes = node.classList;
+        if (classes.contains('exp160-route-graph')) {
+          graphics.fillStyle(0x162117, 0.96);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 5 * sx);
+          graphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.40);
+          graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
+            Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 5 * sx);
+        } else if (classes.contains('exp160-map-node')) {
+          const current = classes.contains('is-current');
+          const visited = classes.contains('is-visited');
+          const reachable = classes.contains('is-reachable');
+          const offRoute = classes.contains('is-off-route');
+          graphics.fillStyle(current ? 0x40351c : classes.contains('is-optional') ? 0x2b2718 : 0x111b13,
+            offRoute ? 0.48 : 0.98);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 4 * sx);
+          graphics.lineStyle(Math.max(1, sx),
+            current ? 0xeccf7f : visited ? 0x8db08b : reachable ? 0xd7b86a : 0x71816d,
+            offRoute ? 0.30 : 0.62);
+          graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
+            Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 4 * sx);
+          graphics.fillStyle(current ? 0xe7c982 : visited ? 0x9bbc95 : reachable ? 0xe0c178 : 0x849180, 0.86);
+          graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
+        } else if (classes.contains('exp160-map-action') || classes.contains('exp150-modal-close')) {
+          const focused = node === document.activeElement || node.matches(':focus-visible');
+          const hovered = node.matches(':hover');
+          graphics.fillStyle(focused || hovered ? 0x4a4328 : 0x292f22, 0.98);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3 * sx);
+          graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
+            focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xbfa064, 0.72);
+          graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
+            Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 3 * sx);
+        } else if (classes.contains('exp150-map-discovery')) {
+          graphics.fillStyle(0xbfa064, 0.065);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.24);
+          graphics.lineBetween(rect.x, rect.y + rect.height - sy, rect.x + rect.width, rect.y + rect.height - sy);
+        } else if (classes.contains('exp150-journal-section') ||
+                   classes.contains('exp150-journal-entry') ||
+                   classes.contains('exp150-route-entry') ||
+                   classes.contains('exp150-journal-empty')) {
+          graphics.fillStyle(0xbfa064, 0.045);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.20);
+          graphics.lineBetween(rect.x, rect.y + rect.height - sy, rect.x + rect.width, rect.y + rect.height - sy);
+        } else if (classes.contains('exp150-place-chip')) {
+          graphics.fillStyle(0x263525, 0.96);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3 * sx);
+          graphics.lineStyle(Math.max(1, sx), 0x819b72, 0.42);
+          graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
+            Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 3 * sx);
+        }
+      });
+
+      // Draw subtle separators and route connectors independently of the DOM.
+      const introRect = readRect(intro);
+      if (introRect && currentKind === 'map') {
+        graphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.30);
+        graphics.lineBetween(introRect.x, introRect.y + introRect.height,
+          introRect.x + introRect.width, introRect.y + introRect.height);
+      }
+      const addText = (node, isIcon = false) => {
+        const rect = readRect(node);
+        if (!rect) return null;
+        const style = window.getComputedStyle(node);
+        const textValue = node.textContent?.replace(/\\s+/g, ' ').trim() || '';
+        if (!textValue) return null;
+        const selectorColor = node.matches('.exp150-map-intro .exp150-kicker,.exp160-map-node-status,.exp150-map-discovery small,.exp150-journal-entry-type,.exp150-route-entry > span,.exp150-map-discoveries-heading > span')
+          ? '#c9a96e'
+          : node.matches('.exp150-map-intro h2,.exp160-map-node-head strong,.exp150-map-discovery strong,.exp150-journal-entry strong,.exp150-route-entry strong,.exp150-journal-section h3,.exp150-journal-empty > strong,.exp150-modal-close')
+            ? '#eee7d6'
+            : node.matches('.exp160-graph-legend span,.exp160-map-connectors span')
+              ? '#c6b37e'
+              : node.matches('.exp160-map-node > p,.exp150-map-intro p,.exp150-map-discovery p,.exp150-journal-entry p,.exp150-route-entry small,.exp150-journal-empty > p,.exp150-journal-muted')
+                ? '#aeb9a8'
+                : node.matches('.exp160-map-action')
+                  ? '#f0dfac' : '#d9d4c3';
+        const textObject = this.add.text(rect.x, rect.y, textValue, {
+          fontFamily: style.fontFamily || 'Arial, sans-serif',
+          fontSize: Math.max(isIcon ? 10 : 8, Math.round((parseFloat(style.fontSize) || (isIcon ? 14 : 10)) * sy)) + 'px',
+          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+          color: selectorColor,
+          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+          align: style.textAlign || 'left'
+        }).setOrigin(0, 0).setDepth(82);
+        textObject.setResolution?.(2);
+        textObject.setFixedSize?.(Math.max(10, rect.width), Math.max(9, rect.height));
+        addContent(textObject);
+        node.dataset.legendPhaserRoadMapText = 'true';
+        this.nativeRoadMapUiTaggedNodes.push(node);
+        return textObject;
+      };
+      textNodes.forEach(node => addText(node));
+      iconNodes.forEach(node => {
+        const icon = addText(node, true);
+        if (!icon) return;
+        node.dataset.legendPhaserRoadMapIcon = 'true';
+        this.nativeRoadMapUiTaggedNodes.push(node);
+      });
+      controls.forEach(node => {
+        node.dataset.legendPhaserRoadMapControl = 'true';
+        this.nativeRoadMapUiTaggedNodes.push(node);
+      });
+
+      this.nativeRoadMapUiTextNodes = textNodes;
+      this.nativeRoadMapUiControls = controls;
+      this.nativeRoadMapUiIconNodes = iconNodes;
+      this.nativeRoadMapUiSignature = signature;
+      this.nativeRoadMapUiKind = currentKind;
+      this.nativeRoadMapUiActive = true;
+      document.body?.classList.add('legend-phaser-road-map-ui-active');
+    }
 
     clearNativeRightDrawerUi(removeClass = true, removeListeners = true) {
       this.nativeRightDrawerUiLayoutEvent?.remove?.(false);
@@ -4808,6 +5225,8 @@
     refreshNavigation: () => realmScene?.syncNativeBottomBarUi?.(),
     refreshLeftDrawer: () => realmScene?.syncNativeLeftDrawerUi?.(),
     refreshRightDrawer: () => realmScene?.syncNativeRightDrawerUi?.(),
+    refreshRoadMap: () => realmScene?.syncNativeRoadMapUi?.(),
+    clearRoadMap: () => realmScene?.clearNativeRoadMapUi?.(),
     refresh: () => inferEnvironment(),
     selectAshmereLandmark: id => realmScene?.selectAshmereLandmark?.(id) || false,
     get saveKey() { return SAVE_KEY; }
