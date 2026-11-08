@@ -2187,7 +2187,7 @@
           // must still refresh the Phaser copy.
           if (mutation.target === document.body && mutation.type === 'attributes' &&
               mutation.attributeName === 'class' && mutation.oldValue !== null) {
-            const before = new Set(String(mutation.oldValue || '').split(/\\s+/).filter(Boolean));
+            const before = new Set(String(mutation.oldValue || '').split(/\s+/).filter(Boolean));
             const after = new Set(Array.from(document.body.classList));
             const changed = new Set([...before, ...after].filter(token => before.has(token) !== after.has(token)));
             if (changed.size === 1 && changed.has('legend-phaser-gameplay-ui-active')) return false;
