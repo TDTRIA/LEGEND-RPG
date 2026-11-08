@@ -1,6 +1,6 @@
 # LEGEND: The Awakening — Product Roadmap
 
-**Last updated:** 2026-11-03  
+**Last updated:** 2026-11-08  
 **Purpose:** One shared source of truth for what we are building next, why it matters, and how we decide each slice is finished. This is a player-impact order, not a date promise.
 
 ## The north star
@@ -15,13 +15,13 @@ The intended presentation borrows the *clarity* of a traditional RPG: a strong t
 
 The story and the systems should reinforce that loop. Town is a place the player wants to return to; the road is where their choices are tested.
 
-## Current implementation checkpoint — 2026-11-03
+## Current implementation checkpoint — 2026-11-08
 
 - **Production main:** v0.30.5. The road-first opening, mandatory annals, Oric/Wolf tutorial, five-stage Old Road, Ashmere services, progression, and early Greyfen activities are part of the browser build.
-- **Phaser migration:** approved by the owner and in progress. PRs #101–#104 moved the title, annals, traveler creation and Oric's opening story into the persistent scene. A shared gameplay-surface renderer is now being added for the HUD/drawers, town/services, Old Road/expedition, combat, Bell Cellar, Greyfen field sites and shell overlays. Each surface still needs its own production journey/accessibility/responsive verification; gameplay rules, saves and account behavior stay in their existing production modules.
+- **Phaser migration:** approved and active in the production root. The persistent world renderer, Ashmere landmarks, new-player title presentation, annals, traveler creation and Oric opening-story presentation are native Phaser scene visuals. The returning-player Continue menu uses its readable DOM presentation as a safety fallback. The full gameplay HUD/panels/services/expedition/combat/results/level-up/dungeon/Greyfen/modal UI is not yet migrated into native Phaser and must be converted screen by screen. The previous shared all-screen canvas mirror is disabled because it hid copy and produced incomplete panels. Existing production controllers, combat calculations, player saves, account/cloud behavior and rewards remain unchanged.
 - **Audio:** the 48-asset generated ambience/effect library and separate roughly 10½-minute main-theme MP3 are merged into main and deployed through [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98). The shared director supplies the persistent score, environment ambience, menu cues, and combat effects. Human listening for mix/loop quality and further event-specific world/town/reward SFX wiring remain.
 - **Region status:** Ashmere and the Old Road form the main playable foundation. Greyfen is an active partial region; Ironpass is future content. The first three towns are still a release target.
-- **Active sequence:** validate and refine the shared Phaser gameplay painter across the world shell, town/services, expeditions/results, combat/level-up, dungeon and Greyfen. Add surface-specific tests and fix any interaction/visibility regressions; keep all production game logic and save data authoritative. Once the complete screen flow is stable and playable, return to the Perplexity backlog: multi-skill combat kits, randomized affix loot, enemy families/elites and skill trees.
+- **Active sequence:** finish the Phaser production migration using the acceptance gates in PHASER_MIGRATION.md. Start with the returning-player title state and persistent HUD, then drawers/bottom navigation, Ashmere and services, Old Road/map/journal/results, combat/level-up/results, dungeon/Greyfen, and remaining overlays. Migrate each presentation surface without replacing the underlying feature controller or save contract. Do not hide a DOM label or asset until the Phaser version is visibly present at desktop and mobile sizes, all controls remain keyboard/touch accessible, live text/state updates correctly, and the focused Playwright journey passes. Only after every listed surface is native Phaser and the full production journey is stable should new Phaser gameplay features begin: multi-skill combat kits, enemy intent/animation, randomized affix loot, enemy families/elites and skill trees.
 
 
 ## The player experience we are aiming for
