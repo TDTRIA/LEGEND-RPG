@@ -796,3 +796,52 @@ body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle
     transition: none !important;
   }
 }
+
+
+/* Ashmere service terminal: Phaser paints a single framed destination board
+   using the real DOM card geometry. Raster icons and semantic buttons remain
+   in the DOM so every existing town action stays accessible and functional. */
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination-section {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  transition: none !important;
+  outline-color: transparent !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:hover,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:active,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:focus-visible {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-section-head .ash099-kicker,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-section-head h2,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination-copy strong,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination-copy small,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination > em {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination-icon,
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination-icon img {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:focus-visible {
+  outline: 2px solid transparent !important;
+  outline-offset: 3px !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination {
+    transition: none !important;
+  }
+}
