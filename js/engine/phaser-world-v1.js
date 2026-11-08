@@ -782,6 +782,8 @@
           nativeBottomBarUiObjectCount: this.nativeBottomBarUiObjects.filter(item => item?.active).length,
           nativeBottomBarUiTextCount: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).length,
           nativeBottomBarUiTextValues: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeBottomBarUiPaintedTextValues: this.nativeBottomBarUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
+          nativeBottomBarUiPaintedTextCount: this.nativeBottomBarUiObjects.filter(item => item?.active && item.type === 'Text' && String(item.text || '').trim()).length,
           nativeBottomBarUiControlIds: this.nativeBottomBarUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || ''),
           nativeBottomBarUiIconCount: this.nativeBottomBarUiObjects.filter(item => item?.active && item.type === 'Image').length,
           nativeBottomBarUiMaskMode: this.nativeBottomBarUiMaskFilter ? 'webgl-filter' : this.nativeBottomBarUiMask ? 'canvas-geometry' : 'none',
