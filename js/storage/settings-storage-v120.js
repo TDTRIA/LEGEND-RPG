@@ -1,4 +1,4 @@
-/* LEGEND device-local accessibility settings storage.
+/* LEGEND device-local accessibility settings.
  * Owns only legend-settings-v1 and its document-level presentation classes.
  * LegendStorage continues to expose the settings facade API used by screens.
  */
@@ -14,12 +14,43 @@
     readableFont: false
   });
 
+  function isRecord(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  }
+
+  function reportStorageFailure(operation, error) {
+    const message = operation === 'read'
+      ? 'Accessibility settings could not be read. Default settings are active for this session.'
+      : 'Accessibility settings could not be saved. Your current session settings remain active.';
+    console.warn('[LEGEND] Browser storage could not ' + operation + ' accessibility settings.', error);
+
+    const toast = document.getElementById('toast');
+    if (toast) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(toast.__legendSettingsStorageTimer);
+      toast.__legendSettingsStorageTimer = window.setTimeout(
+        () => toast.classList.remove('show'),
+        4500
+      );
+    }
+    window.dispatchEvent(new CustomEvent('legend:storage-error', {
+      detail: { operation: operation + ' accessibility settings', message }
+    }));
+  }
+
   function create() {
     function loadSettings() {
       try {
-        const stored = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+        const raw = window.localStorage.getItem(SETTINGS_KEY);
+        if (raw == null) return { ...DEFAULT_SETTINGS };
+        const stored = JSON.parse(raw);
+        if (!isRecord(stored)) {
+          throw new TypeError('Stored accessibility settings must be an object.');
+        }
         return { ...DEFAULT_SETTINGS, ...stored };
-      } catch {
+      } catch (error) {
+        reportStorageFailure('read', error);
         return { ...DEFAULT_SETTINGS };
       }
     }
@@ -42,8 +73,27 @@
     }
 
     function saveSettings(settings) {
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+      if (!isRecord(settings)) {
+        reportStorageFailure(
+          'write',
+          new TypeError('Accessibility settings must be an object.')
+        );
+        return false;
+      }
+
+      // Apply preferences immediately even when persistence is unavailable.
       applySettings(settings);
+      try {
+        const serialized = JSON.stringify(settings);
+        if (typeof serialized !== 'string') {
+          throw new TypeError('Settings serialization did not produce JSON text.');
+        }
+        window.localStorage.setItem(SETTINGS_KEY, serialized);
+        return true;
+      } catch (error) {
+        reportStorageFailure('write', error);
+        return false;
+      }
     }
 
     return Object.freeze({ loadSettings, saveSettings, applySettings });
