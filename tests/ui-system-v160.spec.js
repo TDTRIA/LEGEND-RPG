@@ -371,6 +371,113 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('#exp150Modal')).toContainText(/map|road/i);
     await attachProof(page, 'phase1-old-road-map.png');
   });
+  test('combat HUD and eight live controls are painted in Phaser without replacing combat rules', async ({ page }) => {
+    await enterAshmere(page, 'PhaserCombatQA');
+    await page.evaluate(() => {
+      const rt = window.LegendRuntimeV120;
+      const player = rt.loadPlayer();
+      player.hp = 40;
+      player.maxHp = 100;
+      player.inventory = player.inventory || {};
+      player.inventory.potion = 1;
+      player.flags = player.flags || {};
+      player.flags.roadExpeditionV100 = {
+        ...(player.flags.roadExpeditionV100 || {}),
+        stage: 0, pressure: 53, trips: 0, events: 0, finds: 0, battles: 0,
+        routeChoice: null, poiUsed: {}, searchUsed: {}, readUsed: {}
+      };
+      const road = window.LegendRoadsV100.oldRoad;
+      road.enemies = road.enemies
+        .filter(enemy => enemy.id === 'goblin')
+        .map(enemy => ({ ...enemy, damage: [3, 3] }));
+      rt.savePlayer(player);
+    });
+
+    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' })
+      .getByRole('button', { name: /Routes/i }).click();
+    await page.locator('.ash100-destination[data-ash-view="road"]').click();
+    await expect(page.locator('.ash100-departure')).toBeVisible();
+    await page.locator('#departureBegin').click();
+    await expect(page.locator('.exp100-head')).toBeVisible();
+    await page.locator('#push').click();
+    await expect(page.locator('.rpg-battle')).toBeVisible();
+
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1?.snapshot?.()?.nativeCombatUi
+    )).toBe(true);
+
+    const desktop = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const controls = ['battleSound','strike','skill','item','guard','heavy','poultice','flee'];
+      return {
+        native: snapshot.nativeCombatUi,
+        textCount: snapshot.nativeCombatUiTextCount,
+        text: snapshot.nativeCombatUiTextValues || [],
+        ids: snapshot.nativeCombatUiControlIds || [],
+        scene: snapshot.nativeCombatUiSceneSize,
+        observerBound: snapshot.nativeCombatUiObserverBound,
+        controls: controls.map(id => {
+          const node = document.getElementById(id);
+          return {
+            id,
+            exists: Boolean(node),
+            disabled: Boolean(node?.disabled),
+            ariaLabel: node?.getAttribute('aria-label') || '',
+            handler: typeof node?.onclick
+          };
+        }),
+        sourceTextStillAccessible: document.querySelector('#strike')?.textContent.includes('FIGHT') &&
+          document.querySelector('.rpg-dialogue')?.textContent.length > 0,
+        domPaintMasked: getComputedStyle(document.querySelector('#strike')).color === 'rgba(0, 0, 0, 0)' &&
+          getComputedStyle(document.querySelector('.rpg-dialogue p')).color === 'rgba(0, 0, 0, 0)'
+      };
+    });
+    expect(desktop.native).toBe(true);
+    expect(desktop.observerBound).toBe(true);
+    expect(desktop.textCount).toBeGreaterThan(22);
+    expect(desktop.text).toEqual(expect.arrayContaining([
+      'YOUR STANCE', 'GUARD BREAK', 'YOUR TURN', 'FIGHT', 'ACT', 'Healing potion'
+    ]));
+    expect(desktop.ids).toEqual(['battleSound','strike','skill','item','guard','heavy','poultice','flee']);
+    expect(desktop.controls.every(item => item.exists && item.ariaLabel && item.handler === 'function')).toBe(true);
+    expect(desktop.sourceTextStillAccessible).toBe(true);
+    expect(desktop.domPaintMasked).toBe(true);
+    await expect(page.locator('.rpg-hero-stage-art img')).toBeVisible();
+    await expect(page.locator('.rpg-foe-art')).toBeVisible();
+
+    const beforePotion = await page.evaluate(() => {
+      const player = window.LegendRuntimeV120.loadPlayer();
+      return { hp: player.hp, potion: player.inventory.potion };
+    });
+    expect(beforePotion).toEqual({ hp: 40, potion: 1 });
+    await page.locator('#item').click();
+    await expect(page.locator('.rpg-dialogue')).toContainText(/drink a Healing Potion/i);
+    await expect(page.locator('.rpg-battle-topline strong')).toContainText('TURN 2');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1?.snapshot?.()?.nativeCombatUi
+    )).toBe(true);
+    const afterPotion = await page.evaluate(() => {
+      const player = window.LegendRuntimeV120.loadPlayer();
+      return { hp: player.hp, potion: player.inventory.potion };
+    });
+    expect(afterPotion.potion).toBe(0);
+    expect(afterPotion.hp).toBeGreaterThan(40);
+    expect(afterPotion.hp).toBeLessThan(70);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect.poll(() => page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      return snapshot?.nativeCombatUi && snapshot.nativeCombatUiTextCount >= 22;
+    })).toBe(true);
+    await expectNoHorizontalOverflow(page);
+    await expect(page.locator('#guard')).toBeEnabled();
+    await page.locator('#guard').focus();
+    await page.locator('#guard').click();
+    await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-heavy/);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCombatUi)).toBe(true);
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('title, town and expedition stay within a 390px touch viewport', async ({ page }) => {
     await openTitle(page, { width: 390, height: 844 });
     await expect(page.locator('.v140-realm-overview.v151-realm-art')).toBeVisible();
