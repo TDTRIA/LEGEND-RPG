@@ -13,7 +13,6 @@
 
     host = document.createElement('div');
     host.id = 'root';
-    host.setAttribute('role', 'main');
     host.setAttribute('aria-live', 'polite');
 
     const gameContainer = document.getElementById('game-container');
@@ -98,10 +97,12 @@
   }
 
   function dispatches() {
+    const host = root();
+    if (!host) return false;
     const screen = window.LegendTitleDispatchesV140;
     if (typeof screen?.render === 'function') {
       const rendered = screen.render({
-        root: root(),
+        root: host,
         buildVersion: buildVersion(),
         onBack: title
       });
@@ -117,6 +118,8 @@
   }
 
   function continueGame() {
+    const host = root();
+    if (!host) return false;
     const player = loadPlayer();
     if (!player) return title();
     if (typeof window.LegendRoadOpeningV140?.resume === 'function' &&
@@ -146,6 +149,8 @@
   }
 
   function newTraveler() {
+    const host = root();
+    if (!host) return false;
     const beginCreation = () => {
       if (window.LegendBeginningV094?.startCreation) {
         return window.LegendBeginningV094.startCreation();
@@ -165,6 +170,8 @@
   }
 
   function account() {
+    const host = root();
+    if (!host) return false;
     if (window.LegendAccountV09x?.renderAccount) {
       return window.LegendAccountV09x.renderAccount();
     }
@@ -180,10 +187,12 @@
   }
 
   function settings() {
+    const host = root();
+    if (!host) return false;
     const settingsScreen = window.LegendSettingsScreenV090;
     if (settingsScreen && typeof settingsScreen.render === 'function') {
       return settingsScreen.render({
-        root: root(),
+        root: host,
         loadSettings,
         saveSettings,
         buildVersion,
