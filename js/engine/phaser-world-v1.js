@@ -676,7 +676,9 @@
           serviceDressingKey: this.serviceDressingKey,
           nativeTitleUi: this.nativeTitleUiActive,
           nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
-          nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner'].every(key => this.textures.exists(key)),
+          nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuDivider'].every(key => this.textures.exists(key)),
+          nativeTitleUiDividerPainted: this.nativeTitleUiObjects.some(object => object?.active && object.type === 'Image' && object.texture?.key === 'menuDivider'),
+          nativeTitleUiDividerLabel: root()?.querySelector('.v120-divider b')?.textContent?.replace(/\\s+/g, ' ').trim() || '',
           nativeTitleUiLabels: this.nativeTitleUiControls.map(item => ({ id: item.id, title: item.titleText?.text || '', subtitle: item.subtitleText?.text || '' })),
           nativeTitleUiControlCount: this.nativeTitleUiControls.length,
           nativeTitleUiControlIds: this.nativeTitleUiControls.map(item => item.id),
@@ -1174,8 +1176,11 @@
       this.nativeTitleUiLayoutEvent = null;
 
       const buttons = Array.from(hero.querySelectorAll('.v136-menu-btn'));
+      const dividerNode = hero.querySelector('.v120-divider');
+      const dividerLabel = dividerNode?.querySelector('b')?.textContent?.replace(/\\s+/g, ' ').trim() || '';
+      const dividerRect = dividerNode?.getBoundingClientRect();
       const panelRect = hero.getBoundingClientRect();
-      if (!panelRect.width || !panelRect.height || !buttons.length) {
+      if (!panelRect.width || !panelRect.height || !buttons.length || !dividerRect?.width || !dividerRect?.height || !dividerLabel) {
         this.clearNativeTitleUi();
         return;
       }
@@ -1191,6 +1196,7 @@
       });
       const signature = JSON.stringify([
         Math.round(panelRect.left), Math.round(panelRect.top), Math.round(panelRect.width), Math.round(panelRect.height),
+        dividerLabel, Math.round(dividerRect.left), Math.round(dividerRect.top), Math.round(dividerRect.width), Math.round(dividerRect.height),
         ...buttons.map(button => {
           const rect = button.getBoundingClientRect();
           return [button.id, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
@@ -1246,6 +1252,15 @@
       addFrameCorner(panel.x + panel.width - cornerSize, panel.y, true, false);
       addFrameCorner(panel.x, panel.y + panel.height - cornerSize, false, true);
       addFrameCorner(panel.x + panel.width - cornerSize, panel.y + panel.height - cornerSize, true, true);
+
+      // The supplied engraved divider sits behind the live DOM caption.
+      const dividerBounds = sceneRect(dividerRect);
+      const dividerArt = this.add.image(
+        dividerBounds.x + dividerBounds.width / 2,
+        dividerBounds.y + dividerBounds.height / 2,
+        'menuDivider'
+      ).setDisplaySize(dividerBounds.width, Math.max(10 * sy, dividerBounds.height)).setDepth(12.5);
+      this.nativeTitleUiObjects.push(dividerArt);
 
       const iconTextures = {
         continue: 'menuCompass',
