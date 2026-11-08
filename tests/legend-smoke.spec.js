@@ -2583,6 +2583,17 @@ test('native Phaser title menu replaces the floating HTML button paint and keeps
   expect(desktop.snapshot.nativeTitleUiIconsLoaded).toBe(true);
   expect(desktop.snapshot.nativeTitleUiControlIds).toContain('newPrimary');
   expect(desktop.snapshot.nativeTitleUiControlCount).toBeGreaterThanOrEqual(5);
+  expect(desktop.snapshot.nativeTitleUiTextQuality).toHaveLength(desktop.snapshot.nativeTitleUiControlCount);
+  desktop.snapshot.nativeTitleUiTextQuality.forEach(item => {
+    expect(item.titleFontSize).toBeGreaterThanOrEqual(16);
+    expect(item.titleResolution).toBeGreaterThanOrEqual(2);
+    expect(item.subtitleFontSize).toBeGreaterThanOrEqual(12);
+    expect(item.subtitleResolution).toBeGreaterThanOrEqual(2);
+    expect(item.titleColor).not.toBe('');
+    expect(item.subtitleColor).not.toBe('');
+  });
+  const primaryQuality = desktop.snapshot.nativeTitleUiTextQuality.find(item => item.id === 'newPrimary');
+  expect(primaryQuality.titleColor).toBe('rgba(36, 23, 7, 1)');
   expect(desktop.nativeAlignment).not.toBeNull();
   Object.values(desktop.nativeAlignment).forEach(delta => expect(delta).toBeLessThan(2));
   expect(desktop.heroBackground).toBe('rgba(0, 0, 0, 0)');
