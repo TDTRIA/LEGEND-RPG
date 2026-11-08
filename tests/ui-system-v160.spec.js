@@ -139,6 +139,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         mapControl: Boolean(mapButton && !mapButton.disabled),
         mapText: mapButton?.textContent?.trim() || '',
         mapColor: style?.color || '',
+        mapIconColor: mapButton?.querySelector('span') ? getComputedStyle(mapButton.querySelector('span')).color : '',
         mapVisibility: style?.visibility || ''
       };
     });
@@ -152,6 +153,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(roadDom.mapControl).toBe(true);
     expect(roadDom.mapText.length).toBeGreaterThan(0);
     expect(roadDom.mapColor).toBe('rgba(0, 0, 0, 0)');
+    expect(roadDom.mapIconColor).toBe('rgba(0, 0, 0, 0)');
     expect(roadDom.mapVisibility).toBe('visible');
     await expect(page.locator('.exp150-expedition-head')).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionHudUi)).toBe(true);

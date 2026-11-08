@@ -2932,7 +2932,7 @@
         '.exp150-utility-actions > button,.exp150-journey-aside .exp150-text-action'
       )).filter(node => readRect(node));
       const iconNodes = Array.from(host.querySelectorAll(
-        '.exp150-clock-symbol,.exp150-stop-marker'
+        '.exp150-clock-symbol,.exp150-stop-marker,.exp150-utility-actions button > span,.exp150-utility-actions button > i'
       )).filter(node => readRect(node));
       const surfaces = Array.from(new Set([
         ...host.querySelectorAll([
