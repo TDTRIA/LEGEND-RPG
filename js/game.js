@@ -106,7 +106,7 @@
         buildVersion: buildVersion(),
         onBack: title
       });
-      if (rendered) return rendered;
+      if (rendered !== false) return rendered;
     }
     return renderFallback(
       '<main class="settings09x"><div class="settings09x-wrap">' +
@@ -118,8 +118,7 @@
   }
 
   function continueGame() {
-    const host = root();
-    if (!host) return false;
+    if (!root()) return false;
     const player = loadPlayer();
     if (!player) return title();
     if (typeof window.LegendRoadOpeningV140?.resume === 'function' &&
@@ -149,8 +148,7 @@
   }
 
   function newTraveler() {
-    const host = root();
-    if (!host) return false;
+    if (!root()) return false;
     const beginCreation = () => {
       if (window.LegendBeginningV094?.startCreation) {
         return window.LegendBeginningV094.startCreation();
@@ -170,8 +168,7 @@
   }
 
   function account() {
-    const host = root();
-    if (!host) return false;
+    if (!root()) return false;
     if (window.LegendAccountV09x?.renderAccount) {
       return window.LegendAccountV09x.renderAccount();
     }
