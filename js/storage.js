@@ -86,6 +86,7 @@ window.LegendStorage = (() => {
 
   function isCompatiblePlayerShape(player) {
     if (!isRecord(player)) return false;
+    if (player.version != null && typeof player.version !== 'string') return false;
     if (objectFields.some(key => player[key] != null && !isRecord(player[key]))) return false;
     if (arrayFields.some(key => player[key] != null && !Array.isArray(player[key]))) return false;
 
@@ -93,6 +94,25 @@ window.LegendStorage = (() => {
       const creation = player[key];
       return !creation || creation.bonuses == null || isRecord(creation.bonuses);
     });
+  }
+
+  function parseVersion(value) {
+    const match = String(value || '').trim().match(/^v?(\\d+(?:\\.\\d+){0,2})(?:[-+][0-9a-z.-]+)?$/i);
+    return match ? match[1].split('.').map(Number) : null;
+  }
+
+  function isFutureSaveVersion(value) {
+    if (value == null || value === '') return false;
+    const saved = parseVersion(value);
+    const current = parseVersion(D.VERSION);
+    if (!saved || !current) return false;
+
+    for (let index = 0; index < Math.max(saved.length, current.length); index += 1) {
+      const savedPart = saved[index] || 0;
+      const currentPart = current[index] || 0;
+      if (savedPart !== currentPart) return savedPart > currentPart;
+    }
+    return false;
   }
 
   function reportStorageFailure(operation, error, message) {
@@ -158,6 +178,11 @@ window.LegendStorage = (() => {
       const parsed = JSON.parse(raw);
       if (!isCompatiblePlayerShape(parsed)) {
         throw new TypeError('Saved traveler data has an unsupported shape.');
+      }
+      if (isFutureSaveVersion(parsed.version)) {
+        throw new TypeError(
+          'Saved traveler version ' + parsed.version + ' is newer than this game (' + D.VERSION + ').'
+        );
       }
       const player = normalize(parsed);
       if (!isRecord(player)) {
