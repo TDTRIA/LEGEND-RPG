@@ -38,6 +38,7 @@ function scene(stage=0,interactive=true){
   : '<div class="exp100-hotspots" aria-hidden="true"></div>';
  return '<div class="exp100-scene exp100-scene-live '+stageClass+(sideTrip?' exp160-side-trip-scene':'')+(poiDone?' exp160-scene-discovery-registered':'')+'" data-stage="'+stageNum+'" data-scene-location="'+esc(sideInfo?.label||areaForStage(stage).name)+'"><img src="'+esc(scenePath)+'" alt="'+esc(sideInfo?.alt||chosenScene.alt)+'" onerror="if(this.dataset.fallbackApplied){this.style.display=\'none\'}else{this.dataset.fallbackApplied=\'1\';this.src=\''+esc(fallback)+'\'}"><div class="exp100-scene-shade"></div>'+hotspots+'<span class="exp100-scene-label">THE OLD ROAD <i>•</i> '+esc((sideInfo?.label||areaForStage(stage).name).toUpperCase())+'</span><button class="exp100-sound" id="exp100-sound" type="button" aria-label="Toggle sound effects">Sound: '+(soundOn()?'On':'Off')+'</button></div>';
 }
+/** Re-renders the expedition shell while preserving the live scene node and its handlers. */
 function shell(body){
  const host=root(),current=host.querySelector('.exp100-wrap');
  if(current){
