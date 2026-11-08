@@ -1,7 +1,7 @@
 # LEGEND — Canon
 
 Story decisions made by the project owner. **If any other document disagrees with a LOCKED item here, this file wins.**
-Last updated: 2026-11-03.
+Last updated: 2026-11-08.
 
 ## How every AI assistant uses this file
 
@@ -78,6 +78,68 @@ The war had no clean side. An atrocity on each side let leaders escalate; the ki
 - **Replaces:** "reached an agreement, and the peace held." That remains what the world believes. The truth above is author-level and is revealed gradually.
 - **Still open:** names; how many monster peoples beyond the three; which kingdoms and whether they are today's kingdoms; what the Ironpass lords know; what the envoys and the peoples below want now; what the player learns of this and when (the Ironpass story stays local until the owner approves a reveal plan, per `docs/FIRST_THREE_TOWNS_RELEASE_PLAN.md`).
 
+### L8 — The Veil is not evil (locked 2026-11-08)
+
+The Veil is a force that people have used twice for their own ends: first to seal the monsters beneath the mountains, then in the Last Mercy. It is not evil. It is easily manipulated, magic has consequences, and it wants to help the traveler, the first it chose to help. In traveler creation it is the "???" voice and stays unnamed to the player (see the 2026-10-19 approved opening direction).
+
+- **Hidden knowledge:** the voice's identity stays hidden until a reveal plan is approved (L4).
+- **Still open:** the force's own name (until one is chosen, call it "the Veil"); what the Veil wants beyond helping the traveler; how and when the "???" voice's identity is revealed.
+
+### L9 — The deep realm, the seal and why now (locked 2026-11-08)
+
+The sealed place is a literal deep realm beneath the mountains, with real monster societies whose members were born there. A Veil barrier holds the entrances, and the dungeons are gateways. The Veil-thin places where magic can be drawn are the barrier's weak points; using magic there thins the seal (see L13). A few named **envoys** come up to the gates to see what the surface has done. The player can talk, trade and hear their side, including the monsters' own fault, and fights them only by choosing to start it.
+
+Why now: the generations-old wound (L6) crossed a threshold on its own, and the recent Ironpass breach (L7) pushed it over. The dying Veil acts. *(Author-only: the bell that rang once is the Veil waking the traveler. L4's hidden-knowledge rule applies.)*
+
+- **Guardrails:** envoys appear only after the legend's first leaves are in play, and Ironpass's story stays local until the owner approves a reveal plan (`docs/FIRST_THREE_TOWNS_RELEASE_PLAN.md`). Placeholder names from L7 stay out of player-facing text.
+- **Still open:** who the envoys are and where the player first meets them; what they and the peoples below want now; whether the player sees a visible cost for thinning the seal.
+
+### L10 — The legend (locked 2026-11-08)
+
+The legend is true, but only part of it is exposed to the player. It is told as a chronicle in Mara's Archive, in a short, chronicle voice. Six leaves were struck from the reading, and copies are hidden in the first two regions, found on expeditions through a quest from Mara. It describes the peace, the wound, the blackening, and a stranger from a country no map holds. Belief is divided: not everyone thinks the traveler is the hero, and nothing confirms the traveler is the stranger.
+
+- **Hidden knowledge:** closing the wound disperses the traveler's echo. No leaf, NPC or UI states or implies this (L4).
+- **Not locked:** the wording of each leaf. Every leaf's text needs owner approval before it appears in the game, and leaf II must be rewritten to match L6 before it is used. Draft text and placement are proposals only.
+- **Still open:** where each leaf is found; whether the player is shown a count of leaves; whether the hand in the margin that says "Keep the leaf" belongs to Mara's predecessor; what leaf VI ever says and when it is read.
+
+### L11 — The traveler is the first Veil-born (locked 2026-11-08; extends L4)
+
+The traveler is the first **Veil-born**. The Veil's touch interrupted the making and left a new self that was never a copy. When the wound closes, the echo disperses and the borrowed memories go (see the L4 origin reading); the self stays as a real person. The traveler loses some magic at the end, not necessarily all of it. The sequel's protagonist is a new Veil-born, not the original traveler.
+
+- **Decided direction, not yet a reveal plan:** the player first learns the traveler is an echo at the midpoint, plainly, from the Hollow Saint. It is her claim alone, and the player can doubt her because she is an echo who wants the wound open. Clues elsewhere back her up or not.
+- **Hidden knowledge:** L4's rule stays in force until the owner approves a full reveal plan. "Veil-born" stays out of player-facing text before then (L5). Nothing in the game hints at any of this before the plan exists.
+- **Still open:** when the player learns closing the wound ends the echo; whether and when they learn the self survives; what the Veil's touch gave in abilities and limits; how a new Veil-born is born once the wound is closed; whether the original traveler appears in the sequel.
+
+### L12 — The ending (locked 2026-11-08)
+
+When the wound closes, all echoes disperse, including the echoes of the dead that people love. The Hollow Saint ends with them. The traveler's echo goes and the traveler's self stays. The final choice is about the monsters: re-seal or free them, informed by the faults found on both sides (L7). The canon ending is the one where the wound closes.
+
+The player can instead accept the Saint's offer: she finishes the making, the traveler's self ends, the apprentice returns, the wound stays open and the land blackens. That is a short, bleak epilogue and is **not** canon for the sequel.
+
+- **Sequel tie-in (direction):** fixed facts are that the wound is closed, every echo is gone, the coercion is exposed, the traveler's echo is gone and their self lives on, and the Veil is stronger and portable. The variable outcome (re-sealed or freed) stays small. No save import is assumed.
+- **Still open:** what "freeing the monsters" concretely means, and what re-sealing means for a sealed people with a real grievance; how the Saint's offer is staged; how much of the ending is built first (a two-option final choice is the cheaper build).
+
+### L13 — Magic is anchored in the first game (locked 2026-11-08)
+
+Magic is a focus of the first game, not only of what follows it. In the first game it is usable only at Veil-thin places or with relics, and each use drains the place or relic. The Veil-born can draw on the Veil directly. At the end of the first game the Veil becomes stronger and portable, usable beyond its main purpose, which is how people acquire magic abilities.
+
+- **Not implemented:** the shipped game has no spell, Strain or anchor mechanic. This locks the intent only.
+- **Still open:** what the relics are; how the Five Arts, Strain and spell training from the reboot plan map onto anchors; what the Veil-born can do directly and what limits it; whether the player sees a visible cost when anchors are drained (see L9).
+
+### L14 — Human enemies are ordinary people, met in stages (locked 2026-11-08)
+
+The player fights humans as well as monsters. Human enemies stay ordinary people, not echoes (L5). They appear in stages: first people who profit from the faults (smugglers, claim-jumpers, hired guards) in the first two regions and at Ironpass; then the Saint's followers (the bereaved who want the wound kept open to keep their dead), only after the midpoint.
+
+- **Guardrail:** the Saint's followers reveal the Saint and the echoes of the dead, so they stay out of the game until the reveal plan allows them (L4, L15).
+- **Still open:** the human cast; the tone of fighting the bereaved; whether human fights can end in a yield or surrender.
+
+### L15 — The Hollow Saint in the story (locked 2026-11-08)
+
+The player first meets the Hollow Saint around the middle of the game. She recognizes the traveler on sight, persuades rather than fights, and returns in a few short conversations. Before that she is felt through echoes, rumors and the legend. The traveler was going to be the apprentice the healer lost (L6).
+
+- **Hidden knowledge:** none of this is stated or implied in player-facing text before the midpoint scene (L4).
+- **Still open:** her personality; where the midpoint meeting happens; whether she is tied to one place or the exception to L5's place-bound rule; how an echo manipulates the Veil; when she is named.
+
 ## Approved direction (approved by the owner 2026-10-15, as recorded in `AI_HANDOFF.md`)
 
 - **Monster Wars & the Awakening:** a fantasy RPG about monster incursions, returning magic and regional conflict, with a deeper mystery behind it. Details: `docs/LEGEND_FANTASY_RPG_DIRECTION.md`.
@@ -131,15 +193,15 @@ These are facts players can already see. Changing one means updating the game, i
 
 ## Open questions, in the order we will settle them
 
-1. What did the Veil's touch do to the traveler: abilities, limits, and what can they become? Is the traveler a made echo or a touched person? (Next up: a combined draft is awaiting the owner's decision.)
+1. What did the Veil's touch do to the traveler: abilities, limits, and what can they become? Is the traveler a made echo or a touched person? *(Largely answered by L4 and L11 on 2026-11-08: the Veil's touch interrupted the making and left a new self; abilities and limits remain open.)*
 2. What is the force that makes echoes called? (Name open; "the Veil" until chosen.)
-3. The Hollow Saint: does it control what comes out of the wound, what does it want, how does it act, and when is it revealed?
+3. The Hollow Saint: does it control what comes out of the wound, what does it want, how does it act, and when is it revealed? *(Partly answered by L6 and L15 on 2026-11-03 and 2026-11-08. Personality, place and how an echo manipulates the Veil remain open.)*
 4. The old war and the agreement: who fought, who agreed, what were the terms, where was it settled, and when did the Veil begin to break it? *(Answered in L7 on 2026-11-03. Names, peoples beyond the three, and what the player learns when remain open.)*
 5. How does touching work? Can a touched creature be calmed, released or healed? Do orcs and the Changed count? Do ordinary animals and untouched monsters exist? *(Answered in L5 on 2026-11-03: the monsters are echoes and cannot be calmed or spared. Ordinary animals and the Changed remain open.)*
 6. Is the player's chosen origin the echo's inherited memory, or does it stay true to the player? *(Answered by the L4 origin reading on 2026-11-03.)*
-7. The late choice: when the traveler learns what they are, what can the player decide, and how does it shape the ending?
+7. The late choice: when the traveler learns what they are, what can the player decide, and how does it shape the ending? *(Partly answered by L12 on 2026-11-08: the final choice is about the monsters, and the Saint's offer is a bleak non-canon ending. The reveal plan remains open.)*
 8. Greyfen details: why was the lower crossing unsafe (flood damage, or something else), did the Warden re-inspect, was anyone hurt, and how does the player resolve it?
-9. Is the magic system approved: the Afterwake, Strain and the Five Arts (Ember, Tide, Root, Gale, Veil)?
+9. Is the magic system approved: the Afterwake, Strain and the Five Arts (Ember, Tide, Root, Gale, Veil)? *(Partly answered by L13 on 2026-11-08: magic is anchored in the first game. The Arts, Strain and relics remain open.)*
 10. Exactly how do Bells, permits and standing combine to open regions, and is there a separate "Bellmarks" currency?
 11. What crisis does the player solve by the end of the first game?
 
@@ -154,3 +216,4 @@ These are facts players can already see. Changing one means updating the game, i
 - 2026-10-19: The traveler draft is off hold.
 - 2026-10-19: Owner approved the traveler-creation voice as the Veil at the author/story-design level, shown to the player only as "???". Creation is framed as shaping a soul and recovering ambiguous memories; this does not reveal or imply the traveler's L4 nature, and Oric appears only after the sequence.
 - 2026-11-03: Owner approved, in conversation with Claude: (1) L6 reworded so the healer's ritual caused the wound and the Hollow Saint is the healer's echo; (2) the L4 origin reading (creation memories are the apprentice's, scrambled by the Veil's interruption, and they disperse at the end); (3) the opening annals should cover only the old war and the seal, with the Last Mercy moved out to Mara's Chronicle leaves (recorded as approved direction; not yet implemented). The owner asked to proceed with the L5 and L7 rewording alongside these; merging the pull request that carries this change is the owner's lock of that wording. The Veil, deep-realm, legend, traveler (Veil-born), ending, magic, human-enemy and Saint-in-story entries are held back until the owner reviews them.
+- 2026-11-08: Owner locked, in conversation with Claude, entries L8 (the Veil is not evil), L9 (the deep realm, the seal and why now, including envoys), L10 (the legend; leaf wording stays unapproved), L11 (the traveler is the first Veil-born; extends L4), L12 (the ending), L13 (magic is anchored in the first game; intent only, not implemented), L14 (human enemies are ordinary people, met in stages) and L15 (the Hollow Saint in the story), each as written in the lock sheet. The reveal plan, names and the details listed under each entry's "Still open" remain undecided. Open questions 1, 3, 7 and 9 were annotated as partly answered.
