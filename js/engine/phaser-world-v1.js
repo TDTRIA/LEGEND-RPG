@@ -5366,6 +5366,7 @@
       }
       if (removeListeners) {
         this.nativeTownBoardUiBoundSection = null;
+        this.nativeTownBoardUiEntrancePending = false;
         this.nativeTownBoardUiInteractionHandler = null;
         this.nativeTownBoardUiScrollHandler = null;
       }
