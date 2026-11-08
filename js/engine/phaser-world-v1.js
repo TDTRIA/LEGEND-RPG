@@ -5299,6 +5299,18 @@
         }
       }
 
+      // Let finite destination-card entrance motion settle before measuring
+      // geometry; the original DOM board remains visible during this short pose.
+      if (this.hasFiniteEntranceAnimation(section)) {
+        this.clearNativeTownBoardUi(true, false);
+        this.nativeTownBoardUiLayoutEvent?.remove?.(false);
+        this.nativeTownBoardUiLayoutEvent = this.time.delayedCall(820, () => {
+          this.nativeTownBoardUiLayoutEvent = null;
+          this.syncNativeTownBoardUi(surface);
+        });
+        return;
+      }
+
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
