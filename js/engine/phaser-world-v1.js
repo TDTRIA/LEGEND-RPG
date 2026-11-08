@@ -273,6 +273,7 @@
       realmScene?.syncNativeOpeningUi?.(surface);
       realmScene?.syncNativeGameplayUi?.(surface);
       realmScene?.syncNativeCombatUi?.(surface);
+      realmScene?.syncNativeTownBoardUi?.(surface);
     }
   }
 
@@ -618,6 +619,17 @@
       this.nativeCombatUiScrollHandler = null;
       this.nativeCombatUiObserver = null;
       this.nativeCombatUiLayoutEvent = null;
+      this.nativeTownBoardUiActive = false;
+      this.nativeTownBoardUiObjects = [];
+      this.nativeTownBoardUiTextNodes = [];
+      this.nativeTownBoardUiControls = [];
+      this.nativeTownBoardUiSignature = '';
+      this.nativeTownBoardUiBoundSection = null;
+      this.nativeTownBoardUiInteractionHandler = null;
+      this.nativeTownBoardUiScrollHandler = null;
+      this.nativeTownBoardUiObserver = null;
+      this.nativeTownBoardUiLayoutEvent = null;
+      this.nativeTownBoardUiCardSnapshot = [];
     }
 
     preload() {
@@ -645,6 +657,7 @@
         this.syncNativeOpeningUi(this.surface);
         this.syncNativeGameplayUi(this.surface);
         this.syncNativeCombatUi(this.surface);
+        this.syncNativeTownBoardUi(this.surface);
         this.syncNativeHudUi();
         this.syncNativeBottomBarUi();
         this.syncNativeLeftDrawerUi();
@@ -820,6 +833,13 @@
           nativeGameplayUiObserverBound: Boolean(this.nativeGameplayUiObserverRoot),
           nativeGameplayUiProgressionOverlay: Boolean(document.getElementById('legendLevelUpOverlay')),
           nativeCombatUi: this.nativeCombatUiActive,
+          nativeTownBoardUi: this.nativeTownBoardUiActive,
+          nativeTownBoardUiObjectCount: this.nativeTownBoardUiObjects.filter(item => item?.active).length,
+          nativeTownBoardUiTextCount: this.nativeTownBoardUiTextNodes.filter(node => node?.isConnected).length,
+          nativeTownBoardUiTextValues: this.nativeTownBoardUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
+          nativeTownBoardUiControlIds: this.nativeTownBoardUiControls.filter(node => node?.isConnected).map(node => node.dataset.ashView || ''),
+          nativeTownBoardUiCards: this.nativeTownBoardUiCardSnapshot || [],
+          nativeTownBoardUiObserverBound: Boolean(this.nativeTownBoardUiObserver && this.nativeTownBoardUiBoundSection?.isConnected),
           nativeCombatUiObjectCount: this.nativeCombatUiObjects.filter(item => item?.active).length,
           nativeCombatUiTextValues: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
           nativeCombatUiTextCount: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text' && String(item.text || '').trim()).length,
@@ -1062,6 +1082,7 @@
         this.syncNativeOpeningUi(next);
         this.syncNativeGameplayUi(next);
         this.syncNativeCombatUi(next);
+        this.syncNativeTownBoardUi(next);
         this.syncNativeHudUi();
         this.syncNativeBottomBarUi();
         this.syncNativeLeftDrawerUi();
@@ -1080,6 +1101,7 @@
       this.syncNativeOpeningUi(next);
       this.syncNativeGameplayUi(next);
       this.syncNativeCombatUi(next);
+      this.syncNativeTownBoardUi(next);
       this.syncNativeHudUi();
       this.syncNativeBottomBarUi();
       this.syncNativeLeftDrawerUi();
@@ -5201,6 +5223,210 @@
         { id: 'forge', view: 'smith', label: 'FORGE', icon: 'serviceForgeIcon', x: mobile ? 0.62 : 0.58, y: mobile ? 0.43 : 0.38 },
         { id: 'road', view: 'road', label: 'OLD ROAD', icon: 'serviceRoadIcon', x: mobile ? 0.85 : 0.75, y: mobile ? 0.48 : 0.43 }
       ];
+    }
+
+
+    /** Clears the native town board, detaches observers, and restores its semantic destination cards. */
+    clearNativeTownBoardUi(removeClass = true, removeListeners = true) {
+      this.nativeTownBoardUiLayoutEvent?.remove?.(false);
+      this.nativeTownBoardUiLayoutEvent = null;
+      if (this.nativeTownBoardUiObserver) {
+        this.nativeTownBoardUiObserver.disconnect();
+        this.nativeTownBoardUiObserver = null;
+      }
+      if (removeListeners && this.nativeTownBoardUiBoundSection && this.nativeTownBoardUiInteractionHandler) {
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          this.nativeTownBoardUiBoundSection.removeEventListener(type, this.nativeTownBoardUiInteractionHandler)
+        );
+      }
+      if (removeListeners && this.nativeTownBoardUiScrollHandler) {
+        document.removeEventListener('scroll', this.nativeTownBoardUiScrollHandler, true);
+        window.removeEventListener('scroll', this.nativeTownBoardUiScrollHandler);
+      }
+      if (removeListeners) {
+        this.nativeTownBoardUiBoundSection = null;
+        this.nativeTownBoardUiInteractionHandler = null;
+        this.nativeTownBoardUiScrollHandler = null;
+      }
+      this.nativeTownBoardUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeTownBoardUiObjects = [];
+      this.nativeTownBoardUiTextNodes = [];
+      this.nativeTownBoardUiControls = [];
+      this.nativeTownBoardUiCardSnapshot = [];
+      this.nativeTownBoardUiSignature = '';
+      this.nativeTownBoardUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-town-board-ui-active');
+    }
+
+    /** Paints Ashmere's existing destination-card board in Phaser while its real DOM buttons retain navigation and accessibility. */
+    syncNativeTownBoardUi(surface = this.surface) {
+      const host = root();
+      const town = host?.querySelector('.ash100-town-ashmere');
+      const section = town?.querySelector('.ash100-destination-section');
+      if (String(surface || '') !== 'town' || this.environment !== 'ashmere' || !section || !section.getBoundingClientRect().width) {
+        if (this.nativeTownBoardUiActive || document.body?.classList.contains('legend-phaser-town-board-ui-active') ||
+            this.nativeTownBoardUiBoundSection) this.clearNativeTownBoardUi();
+        return;
+      }
+      if (this.nativeTownBoardUiBoundSection !== section) {
+        this.clearNativeTownBoardUi();
+        this.nativeTownBoardUiBoundSection = section;
+        this.nativeTownBoardUiInteractionHandler = () => {
+          this.nativeTownBoardUiLayoutEvent?.remove?.(false);
+          this.nativeTownBoardUiLayoutEvent = this.time.delayedCall(28, () => {
+            this.nativeTownBoardUiLayoutEvent = null;
+            this.syncNativeTownBoardUi(this.surface);
+          });
+        };
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          section.addEventListener(type, this.nativeTownBoardUiInteractionHandler)
+        );
+        this.nativeTownBoardUiScrollHandler = () => this.nativeTownBoardUiInteractionHandler?.();
+        document.addEventListener('scroll', this.nativeTownBoardUiScrollHandler, true);
+        window.addEventListener('scroll', this.nativeTownBoardUiScrollHandler, { passive: true });
+        if (typeof window.MutationObserver === 'function') {
+          this.nativeTownBoardUiObserver = new window.MutationObserver(() =>
+            this.nativeTownBoardUiInteractionHandler?.()
+          );
+          this.nativeTownBoardUiObserver.observe(section, {
+            childList: true, subtree: true, characterData: true, attributes: true,
+            attributeFilter: ['class', 'disabled', 'aria-disabled']
+          });
+        }
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected || node.closest('[hidden]')) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+      };
+      const clean = node => node?.textContent?.replace(/\s+/g, ' ').trim() || '';
+      const heading = section.querySelector('.ash100-section-head h2');
+      const kicker = section.querySelector('.ash100-section-head .ash099-kicker');
+      const sectionRect = readRect(section);
+      const headingRect = readRect(heading);
+      const kickerRect = readRect(kicker);
+      const buttons = Array.from(section.querySelectorAll('.ash100-destination[data-ash-view]'));
+      const cards = buttons.map(button => {
+        const title = button.querySelector('.ash100-destination-copy strong');
+        const description = button.querySelector('.ash100-destination-copy small');
+        const action = button.querySelector('em');
+        return {
+          button, title, description, action,
+          titleText: clean(title), descriptionText: clean(description), actionText: clean(action),
+          rect: readRect(button), titleRect: readRect(title),
+          descriptionRect: readRect(description), actionRect: readRect(action),
+          iconRect: readRect(button.querySelector('.ash100-destination-icon'))
+        };
+      });
+      const complete = Boolean(sectionRect && headingRect && kickerRect && clean(heading) && clean(kicker)) &&
+        cards.length >= 8 &&
+        cards.every(item => item.rect && item.titleRect && item.descriptionRect && item.actionRect &&
+          item.iconRect && item.titleText && item.descriptionText && item.actionText);
+      if (!complete) {
+        this.clearNativeTownBoardUi();
+        return;
+      }
+      const signature = JSON.stringify([
+        Math.round(size.width), Math.round(size.height), Math.round(window.innerWidth), Math.round(window.innerHeight),
+        Math.round(sectionRect.x), Math.round(sectionRect.y), Math.round(sectionRect.width), Math.round(sectionRect.height),
+        clean(kicker), clean(heading),
+        ...cards.map(item => [
+          item.button.dataset.ashView, item.titleText, item.descriptionText, item.actionText,
+          Boolean(item.button.disabled), item.button === document.activeElement || item.button.matches(':focus-visible'),
+          item.button.matches(':hover'),
+          Math.round(item.rect.x), Math.round(item.rect.y), Math.round(item.rect.width), Math.round(item.rect.height),
+          Math.round(item.titleRect.x), Math.round(item.titleRect.y),
+          Math.round(item.descriptionRect.x), Math.round(item.descriptionRect.y),
+          Math.round(item.actionRect.x), Math.round(item.actionRect.y)
+        ])
+      ]);
+      if (this.nativeTownBoardUiActive && signature === this.nativeTownBoardUiSignature) return;
+
+      // Keep the observer and listeners attached while rebuilding only Phaser display objects.
+      this.nativeTownBoardUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeTownBoardUiObjects = [];
+      const graphics = this.add.graphics().setDepth(22);
+      this.nativeTownBoardUiObjects.push(graphics);
+      graphics.fillStyle(0x0b100c, 0.90);
+      graphics.fillRoundedRect(sectionRect.x, sectionRect.y, sectionRect.width, sectionRect.height, Math.max(5, 9 * sx));
+      graphics.lineStyle(Math.max(1, sx), 0x92784b, 0.55);
+      graphics.strokeRoundedRect(sectionRect.x + 0.5, sectionRect.y + 0.5,
+        Math.max(1, sectionRect.width - 1), Math.max(1, sectionRect.height - 1), Math.max(5, 9 * sx));
+      graphics.fillStyle(0xd3b574, 0.62);
+      graphics.fillRect(sectionRect.x + 1, sectionRect.y + 1,
+        Math.min(Math.max(1, sectionRect.width - 2), 150 * sx), Math.max(2, 2 * sy));
+      graphics.fillStyle(0x8e7548, 0.42);
+      graphics.fillRect(sectionRect.x + 12 * sx, headingRect.y + headingRect.height + 5 * sy,
+        Math.max(10, sectionRect.width - 24 * sx), Math.max(1, sy));
+
+      const paintText = (text, rect, style, kind) => {
+        const fontSize = Math.max(kind === 'title' ? 12 : 9,
+          Math.min(kind === 'title' ? 22 : 15, (parseFloat(style.fontSize) || 12) * sy));
+        const object = this.add.text(rect.x, rect.y, kind === 'action' ? text.toUpperCase() : text, {
+          fontFamily: kind === 'title' ? "Georgia, 'Times New Roman', serif" : (style.fontFamily || 'Arial, sans-serif'),
+          fontSize: fontSize + 'px',
+          fontStyle: kind === 'title' || kind === 'action' ? 'bold' : 'normal',
+          color: kind === 'title' ? '#f0e8d5' : kind === 'action' ? '#d8bd7c' : '#c2c6b8',
+          stroke: '#070b08',
+          strokeThickness: kind === 'title' ? 0.8 : 0.4,
+          wordWrap: { width: Math.max(14, rect.width), useAdvancedWrap: true },
+          align: style.textAlign === 'center' ? 'center' : 'left',
+          padding: { left: 1, right: 2, top: 1, bottom: 2 }
+        }).setOrigin(0, 0).setDepth(24);
+        object.setResolution?.(2);
+        object.setFixedSize?.(Math.max(14, rect.width), Math.max(12, rect.height));
+        this.nativeTownBoardUiObjects.push(object);
+      };
+      paintText(clean(kicker), kickerRect, window.getComputedStyle(kicker), 'kicker');
+      paintText(clean(heading), headingRect, window.getComputedStyle(heading), 'title');
+
+      const snapshots = [];
+      cards.forEach(item => {
+        const disabled = Boolean(item.button.disabled || item.button.getAttribute('aria-disabled') === 'true');
+        const focused = item.button === document.activeElement || item.button.matches(':focus-visible');
+        const hovered = item.button.matches(':hover');
+        const featured = item.button.classList.contains('featured') || item.button.classList.contains('lws-poi-active');
+        const rect = item.rect;
+        const fill = featured ? 0x34291a : disabled ? 0x191b17 : hovered || focused ? 0x24291f : 0x151c16;
+        const border = focused ? 0xffe5a0 : hovered || featured ? 0xd6b66f : 0x8b7952;
+        graphics.fillStyle(fill, disabled ? 0.62 : 0.96);
+        graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, Math.max(3, 6 * sx));
+        graphics.lineStyle(focused ? Math.max(2, 2 * sx) : Math.max(1, sx), border, disabled ? 0.34 : focused ? 1 : 0.62);
+        graphics.strokeRoundedRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1),
+          Math.max(1, rect.height - 1), Math.max(3, 6 * sx));
+        graphics.fillStyle(featured ? 0xd7b56f : 0x96794b, disabled ? 0.28 : 0.82);
+        graphics.fillRect(rect.x + 1, rect.y + 4 * sy, Math.max(2, 2 * sx), Math.max(2, rect.height - 8 * sy));
+        paintText(item.titleText, item.titleRect, window.getComputedStyle(item.title), 'title');
+        paintText(item.descriptionText, item.descriptionRect, window.getComputedStyle(item.description), 'description');
+        paintText(item.actionText, item.actionRect, window.getComputedStyle(item.action), 'action');
+        if (!item.button.getAttribute('aria-label')) {
+          item.button.setAttribute('aria-label', [item.titleText, item.descriptionText, item.actionText].filter(Boolean).join('. '));
+        }
+        snapshots.push({
+          id: item.button.dataset.ashView, title: item.titleText, action: item.actionText,
+          x: rect.x, y: rect.y, width: rect.width, height: rect.height, focused, disabled
+        });
+      });
+      this.nativeTownBoardUiTextNodes = [kicker, heading, ...cards.flatMap(item => [item.title, item.description, item.action])];
+      this.nativeTownBoardUiControls = buttons;
+      this.nativeTownBoardUiCardSnapshot = snapshots;
+      this.nativeTownBoardUiSignature = signature;
+      this.nativeTownBoardUiActive = true;
+      document.body?.classList.add('legend-phaser-town-board-ui-active');
     }
 
     syncAshmereLandmarks() {
