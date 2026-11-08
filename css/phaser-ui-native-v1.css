@@ -411,3 +411,14 @@ body.legend-phaser-world-active #legend-world-shell-modal-root .lws-modal,
 body.legend-phaser-world-active #legend-world-shell-modal-root .lws-modal-content {
   background: linear-gradient(145deg, rgba(29, 39, 28, .96), rgba(7, 13, 9, .94)) !important;
 }
+
+
+/* No DOM-owned game UI should be blurred by glass effects while Phaser is
+   active. Keep scene atmosphere in the world renderer; interface typography
+   and card copy remain pixel-sharp across every production screen. */
+body.legend-phaser-world-active #root *,
+body.legend-phaser-world-active #legend-world-shell-root *,
+body.legend-phaser-world-active #legend-world-shell-modal-root * {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
