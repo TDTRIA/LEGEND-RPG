@@ -2,9 +2,11 @@
 
 ## North star
 
-**Weathered storybook dark fantasy.** Ashmere should feel old, lived-in, a little uncanny, and still welcoming enough to return to. The world is grounded medieval fantasy with restrained supernatural details: damp stone, worn timber, moss, fog, charcoal shadows, tarnished brass, parchment, ember light, and rare cold-blue magic.
+**Weathered illustrated dark fantasy, guided by Darkest Dungeon's high-level expedition atmosphere and characterful presentation.** Ashmere should feel old, lived-in, a little uncanny, and still welcoming enough to return to. The world is grounded medieval fantasy with restrained supernatural details: damp stone, worn timber, moss, fog, charcoal shadows, tarnished brass, parchment, ember light, and rare cold-blue magic.
 
-Art should support the game's exploration-first loop. Images are scene-setting and readable on a phone; they should not overpower the gameplay interface.
+The reference is about atmosphere, expedition storytelling, strong silhouettes, tactile ledgers, and readable tactical scenes—not copying another game's art or interface. LEGEND keeps its own visual identity, world, characters, and systems.
+
+Art should support the game's expedition loop. Images are scene-setting and readable on a phone; they should not overpower the gameplay interface. Darkness must create mood without hiding faces, scenery, labels, controls, or important state.
 
 ## Visual rules
 
