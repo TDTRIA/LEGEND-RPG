@@ -15,6 +15,7 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 - **Native in RealmScene:** persistent world environments and atmosphere; Ashmere landmarks; new-player title/menu; mandatory annals; traveler creation; Oric opening-road prologue/response/ambush presentation; persistent HUD; bottom action navigation; traveler journal/quest drawer; contextual action/POI drawer; Old Road connected map and field-journal modal; Old Road journey header, time/conditions strip, health/pressure vitals, six-leg tracker, next-stop/supplies side rail and road route/POI/optional-detour/camp/next-move decision cards. Migrated surfaces have dedicated Phaser panel/text/icon rendering, with original DOM controls retained as accessible action targets.
 - **DOM safety fallback:** the original semantic returning-player title remains visible only when the Phaser title preflight fails. When the required assets, all production actions and live Phaser labels pass, Phaser is the normal visual presentation and the DOM buttons remain the real accessible action targets.
 - **Under active verification:** a dedicated RealmScene combat painter now draws the tactical panels, intent/status text, dialogue/log, turn heading and eight command surfaces. The existing DOM combat buttons remain the real actions; actor/enemy artwork and combat results remain in their production views. The painter keeps the DOM presentation visible whenever its preflight or draw step fails.
+- **Under active verification:** Ashmere's existing destination-card terminal board now has a dedicated RealmScene painter for its frame, headings, card surfaces, live labels and focus/hover states. The original destination buttons and service icons stay in the DOM; missing/incomplete card content restores the styled DOM board. Service interiors, their transaction/job/crafting logic and Greyfen destination screens remain in their original feature modules.
 - **Safety note:** the previous shared DOM-to-Phaser gameplay mirror is disabled. It made DOM text transparent and recreated CSS panels incompletely, which caused missing copy and weak/blurred panel presentation. Do not turn it back on globally.
 
 - **Combat acceptance gate:** prove that all eight existing actions remain keyboard/touch usable, the current enemy intent and live dialogue/log repaint after every turn, save/reward settlement is unchanged, and the same painter remains readable at desktop and 390px mobile. Do not check combat off until the live expedition fight, potion use, guard/intent change, retreat or victory/defeat handoff, and results transition pass Playwright.
@@ -40,7 +41,8 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
    - [ ] Remaining shell map drawer/modal scrolling.
 
 3. **Ashmere and services**
-   - [ ] Ashmere/Greyfen hub labels, service markers and destination selection.
+   - [ ] Verify the Phaser-painted Ashmere destination-card board on desktop/mobile, including focus/hover, dynamic unlocked destinations and DOM fallback.
+   - [ ] Ashmere/Greyfen service interiors, service markers and destination selection parity.
    - [ ] Redesign Ashmere hub service selection so visible buttons are anchored to town locations or a clear terminal board; do not simply float Phaser labels over the current town background.
    - [ ] Inn, market, blacksmith, crafting, workboard/daily board and NPC/dialogue screens.
    - [ ] Preserve the existing purchase, craft, job, quest and save callbacks.
