@@ -438,6 +438,37 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
     expect(result.travelMessage).toContain('could not save the crossing');
   });
 
+  test('return-to-town falls back to the title when both the marker and town renderer are unavailable', async ({ page }) => {
+    await openGame(page);
+    const result = await page.evaluate(() => {
+      const prototype = Storage.prototype;
+      const originalSet = prototype.setItem;
+      const originalStorage = window.LegendStorage;
+      const originalTitle = window.LegendTitleScreenV120;
+      const originalAshmere = window.LegendAshmereV099;
+      prototype.setItem = function () {
+        throw new DOMException('Session storage access denied', 'SecurityError');
+      };
+      window.LegendStorage = {
+        loadPlayer: () => ({ username: 'ReturnFallbackQA', town: 'Greyfen' }),
+        savePlayer: () => false
+      };
+      window.LegendTitleScreenV120 = null;
+      window.LegendAshmereV099 = null;
+      try {
+        window.LegendRuntimeV120.returnToAshmere();
+        return Boolean(document.querySelector('#root #retryTitle'));
+      } finally {
+        prototype.setItem = originalSet;
+        window.LegendStorage = originalStorage;
+        window.LegendTitleScreenV120 = originalTitle;
+        window.LegendAshmereV099 = originalAshmere;
+      }
+    });
+    expect(result).toBe(true);
+    await expect(page.getByRole('heading', { name: 'Title screen unavailable' })).toBeVisible();
+  });
+
   test('blocked sessionStorage does not crash the pending town-return handler', async ({ page }) => {
     await openGame(page);
     const result = await page.evaluate(() => {
