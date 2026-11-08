@@ -265,21 +265,25 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await tap(page,page.locator('#push'));
     await expect(page.locator('.exp100-combat')).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUiSurface)).toBe('combat');
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUi)).toBe(true);
-    const battlePaint = await page.evaluate(() => {
+    const battleDom = await page.evaluate(() => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       const strike = document.querySelector('#strike');
+      const style = strike ? getComputedStyle(strike) : null;
       return {
-        objects: snapshot.nativeGameplayUiObjectCount,
-        text: snapshot.nativeGameplayUiTextCount,
-        strikeControl: snapshot.nativeGameplayUiControlBounds.some(item => item.id === 'strike'),
-        strikeBackground: strike ? getComputedStyle(strike).backgroundImage : ''
+        painterActive: snapshot.nativeGameplayUi,
+        painterClass: document.body.classList.contains('legend-phaser-gameplay-ui-active'),
+        strikeText: strike?.textContent?.trim() || '',
+        strikeColor: style?.color || '',
+        strikeVisibility: style?.visibility || '',
+        strikeOpacity: style?.opacity || ''
       };
     });
-    expect(battlePaint.objects).toBeGreaterThan(10);
-    expect(battlePaint.text).toBeGreaterThan(5);
-    expect(battlePaint.strikeControl).toBe(true);
-    expect(battlePaint.strikeBackground).toBe('none');
+    expect(battleDom.painterActive).toBe(false);
+    expect(battleDom.painterClass).toBe(false);
+    expect(battleDom.strikeText).toContain('FIGHT');
+    expect(battleDom.strikeColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(battleDom.strikeVisibility).toBe('visible');
+    expect(Number(battleDom.strikeOpacity)).toBeGreaterThan(0.9);
     await expect(page.locator('.rpg-command-grid .rpg-command')).toHaveCount(4);
     await expect(page.locator('#strike')).toContainText('FIGHT');
     await expect(page.locator('#skill')).toContainText('ACT');

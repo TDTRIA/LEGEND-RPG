@@ -355,3 +355,59 @@ body.legend-phaser-world-active.legend-phaser-gameplay-ui-active #legend-world-s
   content: none !important;
   display: none !important;
 }
+
+
+/* Production shell readability fallback — keep the original DOM UI crisp.
+   The world remains atmospheric; interface copy and controls must not be
+   blurred or hidden behind a partial canvas reconstruction. */
+body.legend-phaser-world-active #legend-world-shell-root .lws-hud,
+body.legend-phaser-world-active #legend-world-shell-root .lws-panel,
+body.legend-phaser-world-active #legend-world-shell-root .lws-bottom-bar,
+body.legend-phaser-world-active #legend-world-shell-root .lws-selected-place,
+body.legend-phaser-world-active #legend-world-shell-root .lws-place-option,
+body.legend-phaser-world-active #legend-world-shell-root .lws-poi-hint,
+body.legend-phaser-world-active #legend-world-shell-root .lws-poi-scene-note,
+body.legend-phaser-world-active #legend-world-shell-modal-root,
+body.legend-phaser-world-active #legend-world-shell-modal-root .lws-modal,
+body.legend-phaser-world-active #legend-world-shell-modal-root .lws-modal-content,
+body.legend-phaser-world-active #root .ash099-screen,
+body.legend-phaser-world-active #root .reg100-head,
+body.legend-phaser-world-active #root .reg100-panel,
+body.legend-phaser-world-active #root .exp100-head,
+body.legend-phaser-world-active #root .exp100-panel,
+body.legend-phaser-world-active #root .exp150-world-page .exp100-poi,
+body.legend-phaser-world-active #root .exp150-world-page .exp100-camp,
+body.legend-phaser-world-active #root .rpg-battle,
+body.legend-phaser-world-active #root .rpg-foe-nameplate,
+body.legend-phaser-world-active #root .rpg-combat-status,
+body.legend-phaser-world-active #root .rpg-battle-log,
+body.legend-phaser-world-active #root .rpg-command,
+body.legend-phaser-world-active #root .bell-vault-v100,
+body.legend-phaser-world-active #root .v152-levelup-overlay,
+body.legend-phaser-world-active #root .v152-levelup-panel,
+body.legend-phaser-world-active #root .gss170-page,
+body.legend-phaser-world-active #root .gfm160-page {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active #legend-world-shell-root .lws-hud {
+  background:
+    linear-gradient(180deg, rgba(5, 9, 6, .92), rgba(7, 11, 8, .88)),
+    radial-gradient(ellipse at 50% 0, rgba(191, 160, 100, .10), transparent 60%) !important;
+}
+body.legend-phaser-world-active #legend-world-shell-root .lws-panel {
+  background: linear-gradient(150deg, rgba(17, 24, 17, .94), rgba(7, 12, 8, .91) 70%) !important;
+}
+body.legend-phaser-world-active #legend-world-shell-root .lws-bottom-bar {
+  background: linear-gradient(180deg, rgba(15, 21, 15, .92), rgba(6, 10, 7, .89)) !important;
+}
+body.legend-phaser-world-active #legend-world-shell-root .lws-place-option {
+  background: linear-gradient(110deg, rgba(29, 40, 30, .91), rgba(8, 14, 9, .88)) !important;
+}
+body.legend-phaser-world-active #legend-world-shell-modal-root {
+  background: rgba(3, 6, 4, .86) !important;
+}
+body.legend-phaser-world-active #legend-world-shell-modal-root .lws-modal,
+body.legend-phaser-world-active #legend-world-shell-modal-root .lws-modal-content {
+  background: linear-gradient(145deg, rgba(29, 39, 28, .96), rgba(7, 13, 9, .94)) !important;
+}

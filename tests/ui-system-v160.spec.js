@@ -121,28 +121,30 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('Old Road scene, HUD and field map use the design system without changing route controls', async ({ page }) => {
+  test('Old Road scene, HUD and field map keep sharp DOM copy and real controls', async ({ page }) => {
     await enterAshmere(page, 'RoadUIPreview');
     await seedRoad(page, 0, null);
     await expect(page.locator('.exp100-scene-live')).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUiSurface)).toBe('expedition');
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUi)).toBe(true);
-    const roadPhaser = await page.evaluate(() => {
+    const roadDom = await page.evaluate(() => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       const mapButton = document.querySelector('#exp150OpenMap');
+      const style = mapButton ? getComputedStyle(mapButton) : null;
       return {
-        objects: snapshot.nativeGameplayUiObjectCount,
-        text: snapshot.nativeGameplayUiTextCount,
-        mapControl: snapshot.nativeGameplayUiControlBounds.some(item => item.id === 'exp150OpenMap'),
-        mapBackground: mapButton ? getComputedStyle(mapButton).backgroundImage : '',
-        stage: snapshot.nativeGameplayUiSurface
+        painterActive: snapshot.nativeGameplayUi,
+        painterClass: document.body.classList.contains('legend-phaser-gameplay-ui-active'),
+        mapControl: Boolean(mapButton && !mapButton.disabled),
+        mapText: mapButton?.textContent?.trim() || '',
+        mapColor: style?.color || '',
+        mapVisibility: style?.visibility || ''
       };
     });
-    expect(roadPhaser.objects).toBeGreaterThan(10);
-    expect(roadPhaser.text).toBeGreaterThan(5);
-    expect(roadPhaser.mapControl).toBe(true);
-    expect(roadPhaser.mapBackground).toBe('none');
-    expect(roadPhaser.stage).toBe('expedition');
+    expect(roadDom.painterActive).toBe(false);
+    expect(roadDom.painterClass).toBe(false);
+    expect(roadDom.mapControl).toBe(true);
+    expect(roadDom.mapText.length).toBeGreaterThan(0);
+    expect(roadDom.mapColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(roadDom.mapVisibility).toBe('visible');
     await expect(page.locator('.exp150-expedition-head')).toBeVisible();
     await expect(page.locator('.exp150-vitals')).toBeVisible();
     await expect(page.locator('#exp150OpenMap')).toBeEnabled();
@@ -152,11 +154,10 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
 
     await page.locator('#exp150OpenMap').click();
     await expect(page.locator('#exp150Modal')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUiObjectCount || 0)).toBeGreaterThan(10);
     await expect(page.locator('#exp150Modal').getByRole('dialog')).toBeVisible();
+    await expect(page.locator('#exp150Modal')).toContainText(/map|road/i);
     await attachProof(page, 'phase1-old-road-map.png');
   });
-
   test('title, town and expedition stay within a 390px touch viewport', async ({ page }) => {
     await openTitle(page, { width: 390, height: 844 });
     await expect(page.locator('.v140-realm-overview.v151-realm-art')).toBeVisible();

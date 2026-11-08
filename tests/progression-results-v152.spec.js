@@ -46,24 +46,24 @@ test.describe('LEGEND level-up and road results v0.23.0', () => {
     await expect(page.getByRole('dialog', { name: 'Level 2' })).toBeVisible();
     await expect(page.locator('#v152-growth-total')).toHaveText('2');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUiSurface)).toBe('modal');
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUi)).toBe(true);
     const nativeGrowth = await page.evaluate(() => {
-      const snapshot = window.LegendPhaserWorldV1.snapshot();
       const panel = document.querySelector('.v152-levelup-panel');
       const confirm = document.querySelector('#v152-growth-confirm');
       return {
-        objects: snapshot.nativeGameplayUiObjectCount,
-        text: snapshot.nativeGameplayUiTextCount,
-        confirm: snapshot.nativeGameplayUiControlBounds.some(item => item.id === 'v152-growth-confirm'),
+        painterActive: window.LegendPhaserWorldV1.snapshot()?.nativeGameplayUi,
+        painterClass: document.body.classList.contains('legend-phaser-gameplay-ui-active'),
         panelBackground: panel ? getComputedStyle(panel).backgroundImage : '',
-        bodyClass: document.body.classList.contains('legend-phaser-gameplay-ui-active')
+        panelColor: panel ? getComputedStyle(panel).color : '',
+        confirmVisible: Boolean(confirm && getComputedStyle(confirm).visibility === 'visible'),
+        confirmText: confirm?.textContent?.trim() || ''
       };
     });
-    expect(nativeGrowth.objects).toBeGreaterThan(10);
-    expect(nativeGrowth.text).toBeGreaterThan(10);
-    expect(nativeGrowth.confirm).toBe(true);
-    expect(nativeGrowth.panelBackground).toBe('none');
-    expect(nativeGrowth.bodyClass).toBe(true);
+    expect(nativeGrowth.painterActive).toBe(false);
+    expect(nativeGrowth.painterClass).toBe(false);
+    expect(nativeGrowth.panelBackground).not.toBe('none');
+    expect(nativeGrowth.panelColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(nativeGrowth.confirmVisible).toBe(true);
+    expect(nativeGrowth.confirmText.length).toBeGreaterThan(0);
     await expect(page.locator('#v152-growth-confirm')).toBeDisabled();
 
     await page.locator('[data-attr-add="might"]').click();

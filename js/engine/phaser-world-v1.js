@@ -2252,6 +2252,16 @@
     }
 
     syncNativeGameplayUi(surface = this.surface) {
+      // The shared DOM-to-Phaser mirror is intentionally held behind a safe
+      // production fallback. It reconstructs CSS panels/text approximately and
+      // can omit nested copy while its CSS hides the source DOM. Keep the real
+      // production markup visible until the replacement passes full parity
+      // checks for text, artwork, responsive layout and controls on every surface.
+      // Phaser remains the persistent world renderer and continues to own the
+      // environment, atmosphere, transitions, title, annals, creation and Oric UI.
+      this.clearNativeGameplayUi();
+      return;
+
       const host = root();
       const shell = document.getElementById('legend-world-shell-root');
       // Temporarily reveal the semantic layer while measuring its original
