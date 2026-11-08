@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 112">
+<!-- coderabbit-ai-generated:v1: original LEGEND UI starter disabled button background, no label -->
+<defs><linearGradient id="body" x2="0" y2="1"><stop stop-color="#312e27"/><stop offset=".48" stop-color="#1b1c1a"/><stop offset="1" stop-color="#27251f"/></linearGradient><linearGradient id="rim" x2="0" y2="1"><stop stop-color="#efd194"/><stop offset=".32" stop-color="#665945"/><stop offset=".75" stop-color="#513a23"/><stop offset="1" stop-color="#665945"/></linearGradient></defs>
+<path d="M11 3h378l8 8v90l-8 8H11l-8-8V11z" fill="#100d09" stroke="#080807" stroke-width="5"/><path d="M12 6h376l6 6v88l-6 6H12l-6-6V12z" fill="url(#body)" stroke="url(#rim)" stroke-width="5"/><path d="M19 15h362v82H19z" fill="none" stroke="#665945" stroke-opacity=".55" stroke-width="2"/><path d="M26 20h348" stroke="#f5d7a0" stroke-opacity=".22"/><path d="M27 91h346" stroke="#050604" stroke-opacity=".65" stroke-width="3"/><path d="m23 56 6-6 6 6-6 6zm354 0-6-6-6 6 6 6z" fill="#665945"/>
+</svg>
