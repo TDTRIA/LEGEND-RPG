@@ -2645,6 +2645,69 @@ test('native Phaser title menu replaces the floating HTML button paint and keeps
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
 });
 
+
+test('saved-player Continue menu keeps readable DOM labels and the real continue action', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await startFreshCharacter(page, 'ContinueMenuQA');
+  await page.evaluate(() => window.LegendGameBootstrap.title());
+  await expect(page.locator('#continue')).toBeVisible();
+  await expect(page.locator('#continue .v136-menu-copy strong')).toHaveText('Continue Journey');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.surface)).toBe('title');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
+
+  const desktop = await page.evaluate(() => {
+    const button = document.querySelector('#continue');
+    const title = button?.querySelector('.v136-menu-copy strong');
+    const subtitle = button?.querySelector('.v136-menu-copy small');
+    const buttonStyle = button ? getComputedStyle(button) : null;
+    const titleStyle = title ? getComputedStyle(title) : null;
+    const subtitleStyle = subtitle ? getComputedStyle(subtitle) : null;
+    return {
+      nativePainterClass: document.body.classList.contains('legend-phaser-title-ui-active'),
+      buttonText: button?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      buttonVisibility: buttonStyle?.visibility || '',
+      buttonOpacity: buttonStyle?.opacity || '',
+      buttonBackground: buttonStyle?.backgroundImage || '',
+      titleColor: titleStyle?.color || '',
+      titleVisibility: titleStyle?.visibility || '',
+      subtitleColor: subtitleStyle?.color || '',
+      subtitleVisibility: subtitleStyle?.visibility || ''
+    };
+  });
+  expect(desktop.nativePainterClass).toBe(false);
+  expect(desktop.buttonText).toContain('Continue Journey');
+  expect(desktop.buttonVisibility).toBe('visible');
+  expect(Number(desktop.buttonOpacity)).toBeGreaterThan(0.9);
+  expect(desktop.buttonBackground).not.toBe('none');
+  expect(desktop.titleVisibility).toBe('visible');
+  expect(desktop.titleColor).not.toBe('rgba(0, 0, 0, 0)');
+  expect(desktop.subtitleVisibility).toBe('visible');
+  expect(desktop.subtitleColor).not.toBe('rgba(0, 0, 0, 0)');
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator('#continue')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+  await expect(page.locator('#continue .v136-menu-copy strong')).toBeVisible();
+
+  await page.locator('#continue').click();
+  await expect(page.locator('.ash100-town')).toBeVisible();
+});
+
+test('Phaser preloads every configured world, landmark, character, enemy and class asset', async ({ page }) => {
+  await openTitle(page);
+  const assets = await page.evaluate(() => {
+    const snapshot = window.LegendPhaserWorldV1.snapshot();
+    return snapshot.worldArtTextureStatus || [];
+  });
+  expect(assets.length).toBeGreaterThanOrEqual(40);
+  expect(assets.every(item => item.loaded)).toBe(true);
+  expect(assets.map(item => item.key)).toEqual(expect.arrayContaining([
+    'oric','wolf','goblin','wisp','sentinel',
+    'warrior','adventurer','ranger','mage','thief','skiller',
+    'menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'
+  ]));
+});
+
 test('opening annals are painted by Phaser while the existing chapter controls remain accessible', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openTitle(page);

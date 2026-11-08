@@ -506,9 +506,14 @@
     }
 
     preload() {
-      Object.keys(ASSETS).forEach(key => {
-        if (['title','ashmere','road','blackroot','ridge','reeds','camp','greyfen','marsh','inn','market','forge','archive','cellar','greyfenInn','greyfenMarket','greyfenForge','greyfenArchive','serviceInnIcon','serviceMarketIcon','serviceForgeIcon','serviceRoadIcon','menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].includes(key)) {
-          this.load.image(key, ASSETS[key]);
+      // Preload the complete configured Phaser art set, not just the first
+      // environment/background and service icons. NPC, enemy and class art are
+      // part of the same production asset contract and must be available for
+      // encounter, dialogue, creation and result scenes when those screens move
+      // fully into RealmScene.
+      Object.entries(ASSETS).forEach(([key, path]) => {
+        if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp)$/i.test(path)) {
+          this.load.image(key, path);
         }
       });
     }
@@ -536,6 +541,10 @@
         lookAt: (x, y) => this.setLookTarget(x, y),
         snapshot: () => ({
           environment: this.environment,
+          worldArtTextureStatus: Object.keys(ASSETS).map(key => ({
+            key,
+            loaded: this.textures.exists(key)
+          })),
           atmosphereCount: this.ambienceObjects.filter(item => item && item.active).length,
           parallaxEnabled: !reducedMotion(),
           engineAwakened: this.engineAwakened,
@@ -930,6 +939,14 @@
 
     syncNativeTitleUi(surface = this.surface) {
       const hero = root()?.querySelector('.title-v136-rpg .v120-title-hero');
+      // Continue is the returning-player title state. Keep this button set in
+      // the already-styled DOM until the native canvas painter has a proven
+      // returning-save parity path. This prevents a gold canvas button from
+      // becoming the only visible surface if its label texture/layout fails.
+      if (String(surface || '') === 'title' && hero?.querySelector('#continue')) {
+        this.clearNativeTitleUi();
+        return;
+      }
       if (String(surface || '') !== 'title' || !hero) {
         if (this.nativeTitleUiActive || document.body?.classList.contains('legend-phaser-title-ui-active')) {
           this.clearNativeTitleUi();
