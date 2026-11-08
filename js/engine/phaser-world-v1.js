@@ -839,6 +839,7 @@
           nativeTownBoardUiTextValues: this.nativeTownBoardUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
           nativeTownBoardUiControlIds: this.nativeTownBoardUiControls.filter(node => node?.isConnected).map(node => node.dataset.ashView || ''),
           nativeTownBoardUiCards: this.nativeTownBoardUiCardSnapshot || [],
+          nativeTownBoardUiExpectedIds: this.nativeTownBoardUiExpectedIds || [],
           nativeTownBoardUiObserverBound: Boolean(this.nativeTownBoardUiObserver && this.nativeTownBoardUiBoundSection?.isConnected),
           nativeCombatUiObjectCount: this.nativeCombatUiObjects.filter(item => item?.active).length,
           nativeCombatUiTextValues: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
@@ -5328,6 +5329,17 @@
       const headingRect = readRect(heading);
       const kickerRect = readRect(kicker);
       const buttons = Array.from(section.querySelectorAll('.ash100-destination[data-ash-view]'));
+      // The production catalog is authoritative for optional/progression-gated
+      // places. A card count alone would accept an incomplete unlocked board.
+      const player = window.LegendRuntimeV120?.loadPlayer?.() || null;
+      const catalog = window.LegendAshmereDestinationCatalogV099;
+      const expectedDestinations = catalog?.forRegion?.(
+        player?.currentRegion || 'Ashmere', '', player?.flags || {}
+      );
+      const expectedIds = Array.isArray(expectedDestinations)
+        ? expectedDestinations.map(destination => String(destination?.view || '')).filter(Boolean)
+        : [];
+      const renderedIds = buttons.map(button => String(button.dataset.ashView || ''));
       const cards = buttons.map(button => {
         const title = button.querySelector('.ash100-destination-copy strong');
         const description = button.querySelector('.ash100-destination-copy small');
@@ -5341,7 +5353,10 @@
         };
       });
       const complete = Boolean(sectionRect && headingRect && kickerRect && clean(heading) && clean(kicker)) &&
-        cards.length >= 8 &&
+        expectedIds.length >= 8 &&
+        renderedIds.length === expectedIds.length &&
+        new Set(renderedIds).size === renderedIds.length &&
+        expectedIds.every(id => renderedIds.includes(id)) &&
         cards.every(item => item.rect && item.titleRect && item.descriptionRect && item.actionRect &&
           item.iconRect && item.titleText && item.descriptionText && item.actionText);
       if (!complete) {
@@ -5351,7 +5366,7 @@
       const signature = JSON.stringify([
         Math.round(size.width), Math.round(size.height), Math.round(window.innerWidth), Math.round(window.innerHeight),
         Math.round(sectionRect.x), Math.round(sectionRect.y), Math.round(sectionRect.width), Math.round(sectionRect.height),
-        clean(kicker), clean(heading),
+        clean(kicker), clean(heading), expectedIds,
         ...cards.map(item => [
           item.button.dataset.ashView, item.titleText, item.descriptionText, item.actionText,
           Boolean(item.button.disabled), item.button === document.activeElement || item.button.matches(':focus-visible'),
@@ -5436,6 +5451,7 @@
       this.nativeTownBoardUiTextNodes = [kicker, heading, ...cards.flatMap(item => [item.title, item.description, item.action])];
       this.nativeTownBoardUiControls = buttons;
       this.nativeTownBoardUiCardSnapshot = snapshots;
+      this.nativeTownBoardUiExpectedIds = expectedIds.slice();
       this.nativeTownBoardUiSignature = signature;
       this.nativeTownBoardUiActive = true;
       document.body?.classList.add('legend-phaser-town-board-ui-active');
