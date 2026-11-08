@@ -182,7 +182,7 @@ test('the map remains usable at 390px without horizontal overflow', async ({ pag
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadMapUi)).toBe(true);
   await expect(mapDialog.locator('[data-exp160-map-visit="sunken-cart"]')).toBeVisible();
   await expect(mapDialog.locator('[data-exp160-map-visit="sunken-cart"]')).toHaveCSS('color', 'rgba(0, 0, 0, 0)');
-  const mask = await page.evaluate(() => {
+  const readMask = () => page.evaluate(() => {
     const snapshot = window.LegendPhaserWorldV1.snapshot();
     const rect = document.querySelector('#exp150Modal .exp150-modal-dialog')?.getBoundingClientRect();
     const size = snapshot.nativeRoadMapUiSceneSize;
@@ -199,6 +199,8 @@ test('the map remains usable at 390px without horizontal overflow', async ({ pag
         Math.abs(snapshot.nativeRoadMapUiMaskBounds.height - rect.height * sy) < 1)
     };
   });
+  await expect.poll(async () => (await readMask()).matches).toBe(true);
+  const mask = await readMask();
   expect(mask.matches).toBe(true);
   expect(['webgl-filter','canvas-geometry']).toContain(mask.mode);
   if (mask.mode === 'webgl-filter') expect(mask.active).toBe(true);
