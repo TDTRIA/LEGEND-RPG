@@ -55,7 +55,12 @@
       const result = await client().from(CLOUD_TABLE).select('traveler_data').eq('user_id', session.user.id).eq('slot', slot).maybeSingle();
       if(result.error) throw result.error;
       if(!result.data?.traveler_data) return { ok:false, message:'Cloud Slot ' + slot + ' is empty.' };
-      savePlayer(result.data.traveler_data);
+      if (savePlayer(result.data.traveler_data) === false) {
+        return {
+          ok: false,
+          message: 'Cloud Slot ' + slot + ' was retrieved, but this browser could not save it locally. Check browser storage and retry before continuing.'
+        };
+      }
       return { ok:true, message:'Cloud Slot ' + slot + ' loaded into this browser.' };
     } catch(err){
       console.warn('LEGEND cloud load failed:', err);
