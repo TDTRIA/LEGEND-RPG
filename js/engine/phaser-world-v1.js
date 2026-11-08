@@ -4690,6 +4690,263 @@
       });
     }
 
+
+    clearNativeCombatUi(removeClass = true, removeListeners = true) {
+      this.nativeCombatUiLayoutEvent?.remove?.(false);
+      this.nativeCombatUiLayoutEvent = null;
+      if (this.nativeCombatUiObserver) {
+        this.nativeCombatUiObserver.disconnect();
+        this.nativeCombatUiObserver = null;
+      }
+      if (removeListeners && this.nativeCombatUiBoundBattle && this.nativeCombatUiInteractionHandler) {
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          this.nativeCombatUiBoundBattle.removeEventListener(type, this.nativeCombatUiInteractionHandler)
+        );
+      }
+      if (removeListeners && this.nativeCombatUiScrollHandler) {
+        document.removeEventListener('scroll', this.nativeCombatUiScrollHandler, true);
+        window.removeEventListener('scroll', this.nativeCombatUiScrollHandler);
+      }
+      if (removeListeners) {
+        this.nativeCombatUiBoundBattle = null;
+        this.nativeCombatUiInteractionHandler = null;
+        this.nativeCombatUiScrollHandler = null;
+      }
+      this.nativeCombatUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeCombatUiObjects = [];
+      this.nativeCombatUiTextNodes = [];
+      this.nativeCombatUiControls = [];
+      this.nativeCombatUiSignature = '';
+      this.nativeCombatUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-combat-ui-active');
+    }
+
+    syncNativeCombatUi(surface = this.surface) {
+      const host = root();
+      const battle = host?.querySelector('.rpg-battle');
+      if (String(surface || '') !== 'combat' || !battle || !battle.getBoundingClientRect().width || battle.hidden) {
+        if (this.nativeCombatUiActive || document.body?.classList.contains('legend-phaser-combat-ui-active') ||
+            this.nativeCombatUiBoundBattle) {
+          this.clearNativeCombatUi();
+        }
+        return;
+      }
+
+      if (this.nativeCombatUiBoundBattle !== battle) {
+        this.clearNativeCombatUi();
+        this.nativeCombatUiBoundBattle = battle;
+        this.nativeCombatUiInteractionHandler = () => {
+          this.nativeCombatUiLayoutEvent?.remove?.(false);
+          this.nativeCombatUiLayoutEvent = this.time.delayedCall(24, () => {
+            this.nativeCombatUiLayoutEvent = null;
+            this.syncNativeCombatUi(this.surface);
+          });
+        };
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          battle.addEventListener(type, this.nativeCombatUiInteractionHandler)
+        );
+        this.nativeCombatUiScrollHandler = () => this.nativeCombatUiInteractionHandler?.();
+        document.addEventListener('scroll', this.nativeCombatUiScrollHandler, true);
+        window.addEventListener('scroll', this.nativeCombatUiScrollHandler, { passive: true });
+        if (typeof window.MutationObserver === 'function') {
+          this.nativeCombatUiObserver = new window.MutationObserver(() =>
+            this.nativeCombatUiInteractionHandler?.()
+          );
+          this.nativeCombatUiObserver.observe(battle, {
+            childList: true,
+            subtree: true,
+            characterData: true,
+            attributes: true,
+            attributeFilter: ['class', 'disabled', 'aria-disabled']
+          });
+        }
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected || node.closest('[hidden]')) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+      };
+      const cleanText = value => String(value || '').replace(/\s+/g, ' ').trim();
+      const directText = node => Array.from(node.childNodes || [])
+        .filter(child => child.nodeType === 3)
+        .map(child => child.textContent || '')
+        .join(' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+      const panelSelector = [
+        '.rpg-battle-topline',
+        '.rpg-hero-stage-plate',
+        '.rpg-foe-nameplate',
+        '.rpg-combat-status',
+        '.rpg-dialogue',
+        '.rpg-battle-log',
+        '.rpg-enemy-tell',
+        '.rpg-turn-heading',
+        '.rpg-command-grid',
+        '.rpg-command',
+        '.rpg-battle-utilities',
+        '.rpg-utility-command'
+      ].join(',');
+      const panels = Array.from(new Set([
+        ...(battle.matches(panelSelector) ? [battle] : []),
+        ...Array.from(battle.querySelectorAll(panelSelector))
+      ])).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const textSelector = 'h1,h2,h3,h4,p,small,strong,em,span,li,button,i,b';
+      const textNodes = Array.from(battle.querySelectorAll(textSelector)).map(node => ({
+        node,
+        text: directText(node),
+        rect: readRect(node),
+        style: window.getComputedStyle(node)
+      })).filter(item => item.text && item.rect);
+      const controls = Array.from(battle.querySelectorAll('button')).map(node => ({
+        node, rect: readRect(node)
+      })).filter(item => item.rect);
+      const expected = ['battleSound','strike','skill','item','guard','heavy','poultice','flee'];
+      const ids = controls.map(item => item.node.id);
+      const complete = expected.every(id => ids.includes(id)) &&
+        expected.length === controls.length &&
+        panels.length >= 12 &&
+        textNodes.length >= 22;
+      if (!complete) {
+        this.clearNativeCombatUi();
+        return;
+      }
+      const signature = JSON.stringify([
+        Math.round(size.width), Math.round(size.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight),
+        battle.className,
+        ...panels.map(({node, rect}) => [
+          node.className, Math.round(rect.x), Math.round(rect.y),
+          Math.round(rect.width), Math.round(rect.height)
+        ]),
+        ...textNodes.map(({node, text, rect}) => [
+          node.tagName, node.className, text,
+          Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)
+        ]),
+        ...controls.map(({node, rect}) => [
+          node.id, Boolean(node.disabled), node === document.activeElement || node.matches(':focus-visible'),
+          node.matches(':hover'), Math.round(rect.x), Math.round(rect.y),
+          Math.round(rect.width), Math.round(rect.height)
+        ])
+      ]);
+      if (this.nativeCombatUiActive && signature === this.nativeCombatUiSignature) return;
+
+      // Keep the observer and focus handlers bound to the live battle root while
+      // replacing only Phaser display objects after a state or layout change.
+      this.nativeCombatUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeCombatUiObjects = [];
+      const graphics = this.add.graphics().setDepth(60);
+      this.nativeCombatUiObjects.push(graphics);
+      const intent = battle.classList.contains('rpg-intent-staggered') ? 'staggered'
+        : battle.classList.contains('rpg-intent-heavy') ? 'heavy'
+        : battle.classList.contains('rpg-intent-guardbreak') ? 'guardbreak'
+        : battle.classList.contains('rpg-intent-snared') ? 'snared' : 'attack';
+      const intentLine = intent === 'staggered' ? 0xe4c47d
+        : intent === 'heavy' || intent === 'guardbreak' ? 0xc97b5d
+        : intent === 'snared' ? 0x9db6a1 : 0xb18d62;
+      const panelSkin = node => {
+        const cls = node.classList;
+        if (cls.contains('rpg-hero-stage-plate')) return { fill: 0x10170f, alpha: 0.91, line: 0xb89b61 };
+        if (cls.contains('rpg-foe-nameplate')) return { fill: intent === 'staggered' ? 0x352a17 : 0x211714, alpha: 0.94, line: intentLine };
+        if (cls.contains('rpg-combat-status')) return { fill: 0x0b120d, alpha: 0.96, line: 0x9f8a5d };
+        if (cls.contains('rpg-dialogue')) return { fill: 0x172016, alpha: 0.96, line: 0xb99b60 };
+        if (cls.contains('rpg-battle-log')) return { fill: 0x0c130e, alpha: 0.88, line: 0x82734f };
+        if (cls.contains('rpg-enemy-tell')) return { fill: intent === 'staggered' ? 0x302716 : 0x281711, alpha: 0.94, line: intentLine };
+        if (cls.contains('rpg-turn-heading')) return { fill: 0x1a2118, alpha: 0.92, line: 0x9f8a5d };
+        if (cls.contains('rpg-command-grid')) return { fill: 0x070c08, alpha: 0.90, line: 0x9f8a5d };
+        if (cls.contains('rpg-battle-utilities')) return { fill: 0x0a100b, alpha: 0.90, line: 0x88754e };
+        if (cls.contains('rpg-battle-topline')) return { fill: 0x0b120d, alpha: 0.92, line: 0x9f8a5d };
+        return null;
+      };
+      panels.forEach(({node, rect}) => {
+        const skin = panelSkin(node);
+        if (!skin) return;
+        const radius = Math.max(2, Math.min(6 * sx, rect.height * 0.08));
+        graphics.fillStyle(skin.fill, skin.alpha);
+        graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, radius);
+        graphics.lineStyle(Math.max(1, sx), skin.line, node.classList.contains('rpg-foe-nameplate') ? 0.62 : 0.38);
+        graphics.strokeRoundedRect(
+          rect.x + 0.5, rect.y + 0.5,
+          Math.max(1, rect.width - 1), Math.max(1, rect.height - 1), radius
+        );
+        if (node.classList.contains('rpg-hero-stage-plate')) {
+          graphics.fillStyle(0x9f8957, 0.86);
+          graphics.fillRect(rect.x, rect.y, Math.max(3 * sx, 3), rect.height);
+        } else if (node.classList.contains('rpg-foe-nameplate')) {
+          graphics.fillStyle(intentLine, 0.92);
+          graphics.fillRect(rect.x + rect.width - Math.max(3 * sx, 3), rect.y, Math.max(3 * sx, 3), rect.height);
+        }
+      });
+
+      controls.forEach(({node, rect}) => {
+        const disabled = Boolean(node.disabled || node.getAttribute('aria-disabled') === 'true');
+        const focused = node === document.activeElement || node.matches(':focus-visible');
+        const hovered = node.matches(':hover');
+        const id = String(node.id || '');
+        let fill = 0x151e16, accent = 0xb79a62;
+        if (id === 'strike') { fill = 0x38291c; accent = 0xd6ad6c; }
+        else if (id === 'skill') { fill = 0x1e2b20; accent = 0x9fba96; }
+        else if (id === 'item' || id === 'poultice') { fill = 0x243023; accent = 0xa6bd83; }
+        else if (id === 'guard') { fill = 0x202b2b; accent = 0x9db9b9; }
+        else if (id === 'heavy') { fill = 0x3a2119; accent = 0xd08c67; }
+        else if (id === 'flee') { fill = 0x211c18; accent = 0xa99172; }
+        else if (id === 'battleSound') { fill = 0x121a13; accent = 0xc4a86a; }
+        graphics.fillStyle(disabled ? 0x20221d : hovered || focused ? fill + 0x060000 : fill, disabled ? 0.48 : 0.96);
+        graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, Math.max(2, 4 * sx));
+        graphics.lineStyle(focused ? Math.max(2, 2 * sx) : Math.max(1, sx), focused ? 0xffe6a0 : hovered ? 0xe7c982 : accent, disabled ? 0.30 : focused ? 1 : 0.72);
+        graphics.strokeRoundedRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1), Math.max(2, 4 * sx));
+        graphics.fillStyle(accent, disabled ? 0.24 : 0.80);
+        graphics.fillRect(rect.x + 1, rect.y + 3 * sy, Math.max(2, 2 * sx), Math.max(1, rect.height - 6 * sy));
+        if (!node.getAttribute('aria-label')) {
+          node.setAttribute('aria-label', cleanText(node.textContent) || id);
+        }
+      });
+
+      textNodes.forEach(({node, text, rect, style}) => {
+        const disabled = Boolean(node.closest('button:disabled,[aria-disabled="true"]'));
+        const classText = String(node.className?.baseVal || node.className || '');
+        const kicker = /overline|kicker|tell-mark|intent|rpg-vital-label|rpg-command-glyph|rpg-hero-resources/.test(classText);
+        const isFoe = Boolean(node.closest('.rpg-foe-nameplate') || node.closest('.rpg-enemy-tell'));
+        const color = disabled ? '#918c7c' : kicker ? '#d9bf82' : isFoe ? '#f0d7b5' : '#f0ead9';
+        const rectHeight = Math.max(10, rect.height);
+        const fontSize = Math.max(9, Math.min(36, (parseFloat(style.fontSize) || 12) * sy));
+        const label = this.add.text(rect.x, rect.y, text, {
+          fontFamily: style.fontFamily || 'Arial, sans-serif',
+          fontSize: fontSize + 'px',
+          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+          color,
+          stroke: '#070a07',
+          strokeThickness: fontSize >= 16 ? 1 : 0.45,
+          align: style.textAlign === 'center' ? 'center' : style.textAlign === 'right' ? 'right' : 'left',
+          wordWrap: { width: Math.max(12, rect.width), useAdvancedWrap: true },
+          padding: { left: 1, right: 2, top: 1, bottom: 2 }
+        }).setOrigin(0, 0).setDepth(62);
+        label.setResolution?.(2);
+        label.setFixedSize?.(Math.max(12, rect.width), rectHeight);
+        this.nativeCombatUiObjects.push(label);
+      });
+
+      this.nativeCombatUiTextNodes = textNodes.map(item => item.node);
+      this.nativeCombatUiControls = controls.map(item => item.node);
+      this.nativeCombatUiSignature = signature;
+      this.nativeCombatUiActive = true;
+      document.body?.classList.add('legend-phaser-combat-ui-active');
+    }
+
     syncNativeGameplayUi(surface = this.surface) {
       // The shared DOM-to-Phaser mirror is intentionally held behind a safe
       // production fallback. It reconstructs CSS panels/text approximately and
