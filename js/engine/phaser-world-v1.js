@@ -492,6 +492,17 @@
       this.nativeOpeningUiSignature = '';
       this.nativeOpeningUiLayoutEvent = null;
       this.nativeOpeningUiScrollTarget = null;
+      this.nativeExpeditionActionsUiActive = false;
+      this.nativeExpeditionActionsUiObjects = [];
+      this.nativeExpeditionActionsUiTaggedNodes = [];
+      this.nativeExpeditionActionsUiTextNodes = [];
+      this.nativeExpeditionActionsUiControls = [];
+      this.nativeExpeditionActionsUiIconNodes = [];
+      this.nativeExpeditionActionsUiSignature = '';
+      this.nativeExpeditionActionsUiBoundHost = null;
+      this.nativeExpeditionActionsUiInteractionHandler = null;
+      this.nativeExpeditionActionsUiScrollHandler = null;
+      this.nativeExpeditionActionsUiLayoutEvent = null;
       this.nativeExpeditionHudUiActive = false;
       this.nativeExpeditionHudUiObjects = [];
       this.nativeExpeditionHudUiTaggedNodes = [];
@@ -622,6 +633,7 @@
         this.syncNativeRightDrawerUi();
         this.syncNativeRoadMapUi();
         this.syncNativeExpeditionHudUi();
+        this.syncNativeExpeditionActionsUi();
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -750,6 +762,14 @@
           nativeExpeditionHudUiControlIds: this.nativeExpeditionHudUiControls.filter(node => node?.isConnected)
             .map(node => node.id || node.getAttribute('aria-label') || ''),
           nativeExpeditionHudUiSceneSize: this.dimensions(),
+          nativeExpeditionActionsUi: this.nativeExpeditionActionsUiActive,
+          nativeExpeditionActionsUiObjectCount: this.nativeExpeditionActionsUiObjects.filter(item => item?.active).length,
+          nativeExpeditionActionsUiTextCount: this.nativeExpeditionActionsUiTextNodes.filter(node => node?.isConnected).length,
+          nativeExpeditionActionsUiTextValues: this.nativeExpeditionActionsUiTextNodes.filter(node => node?.isConnected)
+            .map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeExpeditionActionsUiControlIds: this.nativeExpeditionActionsUiControls.filter(node => node?.isConnected)
+            .map(node => node.id || node.dataset.blackrootSurvey || node.dataset.node || ''),
+          nativeExpeditionActionsUiSceneSize: this.dimensions(),
           nativeBottomBarUi: this.nativeBottomBarUiActive,
           nativeBottomBarUiObjectCount: this.nativeBottomBarUiObjects.filter(item => item?.active).length,
           nativeBottomBarUiTextCount: this.nativeBottomBarUiTextNodes.filter(node => node?.isConnected).length,
@@ -1016,6 +1036,7 @@
         this.syncNativeRightDrawerUi();
         this.syncNativeRoadMapUi();
         this.syncNativeExpeditionHudUi();
+        this.syncNativeExpeditionActionsUi();
         return;
       }
       const previous = this.surface;
@@ -1032,6 +1053,7 @@
       this.syncNativeRightDrawerUi();
       this.syncNativeRoadMapUi();
       this.syncNativeExpeditionHudUi();
+      this.syncNativeExpeditionActionsUi();
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -2799,6 +2821,267 @@
 
 
 
+
+
+    clearNativeExpeditionActionsUi(removeClass = true, removeListeners = true) {
+      this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
+      this.nativeExpeditionActionsUiLayoutEvent = null;
+      if (removeListeners) {
+        if (this.nativeExpeditionActionsUiBoundHost && this.nativeExpeditionActionsUiInteractionHandler) {
+          ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+            this.nativeExpeditionActionsUiBoundHost.removeEventListener(type, this.nativeExpeditionActionsUiInteractionHandler)
+          );
+        }
+        if (this.nativeExpeditionActionsUiScrollHandler) {
+          document.removeEventListener('scroll', this.nativeExpeditionActionsUiScrollHandler, true);
+          window.removeEventListener('scroll', this.nativeExpeditionActionsUiScrollHandler);
+        }
+        this.nativeExpeditionActionsUiBoundHost = null;
+        this.nativeExpeditionActionsUiInteractionHandler = null;
+        this.nativeExpeditionActionsUiScrollHandler = null;
+      }
+      this.nativeExpeditionActionsUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeExpeditionActionsUiObjects = [];
+      this.nativeExpeditionActionsUiTaggedNodes.forEach(node => {
+        if (!node?.dataset) return;
+        delete node.dataset.legendPhaserRoadActionText;
+        delete node.dataset.legendPhaserRoadActionControl;
+        delete node.dataset.legendPhaserRoadActionIcon;
+      });
+      this.nativeExpeditionActionsUiTaggedNodes = [];
+      this.nativeExpeditionActionsUiTextNodes = [];
+      this.nativeExpeditionActionsUiControls = [];
+      this.nativeExpeditionActionsUiIconNodes = [];
+      this.nativeExpeditionActionsUiSignature = '';
+      this.nativeExpeditionActionsUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-road-actions-ui-active');
+    }
+
+    syncNativeExpeditionActionsUi() {
+      const host = document.querySelector('.exp100:has(.exp150-world-page)');
+      const page = host?.querySelector('.exp150-world-page');
+      const regions = [
+        host?.querySelector('.exp150-guide'),
+        host?.querySelector('.exp150-interactions'),
+        host?.querySelector('.exp150-action-dock'),
+        host?.querySelector('.exp150-camp')
+      ].filter(Boolean);
+      const visible = Boolean(host && page && !host.hidden &&
+        window.getComputedStyle(host).display !== 'none' && regions.length >= 3);
+      if (!visible) {
+        if (this.nativeExpeditionActionsUiActive ||
+            document.body?.classList.contains('legend-phaser-road-actions-ui-active')) {
+          this.clearNativeExpeditionActionsUi();
+        }
+        return;
+      }
+
+      if (this.nativeExpeditionActionsUiBoundHost !== host) {
+        this.clearNativeExpeditionActionsUi();
+        this.nativeExpeditionActionsUiBoundHost = host;
+        this.nativeExpeditionActionsUiInteractionHandler = () => {
+          this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
+          this.nativeExpeditionActionsUiLayoutEvent = this.time.delayedCall(24, () => {
+            this.nativeExpeditionActionsUiLayoutEvent = null;
+            this.syncNativeExpeditionActionsUi();
+          });
+        };
+        this.nativeExpeditionActionsUiScrollHandler = () => this.nativeExpeditionActionsUiInteractionHandler?.();
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          host.addEventListener(type, this.nativeExpeditionActionsUiInteractionHandler)
+        );
+        document.addEventListener('scroll', this.nativeExpeditionActionsUiScrollHandler, true);
+        window.addEventListener('scroll', this.nativeExpeditionActionsUiScrollHandler, { passive: true });
+      }
+
+      if (this.hasFiniteEntranceAnimation(page)) {
+        this.clearNativeExpeditionActionsUi(true, false);
+        this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
+        this.nativeExpeditionActionsUiLayoutEvent = this.time.delayedCall(230, () => {
+          this.nativeExpeditionActionsUiLayoutEvent = null;
+          this.syncNativeExpeditionActionsUi();
+        });
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected || node.closest('[hidden],[aria-hidden="true"]')) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+      };
+      const textSelector = [
+        'h2','h3','h4','p','strong','small','em',
+        '.exp100-kicker','.exp150-kicker',
+        '.exp100-poi-copy > span','.exp100-poi-copy > strong','.exp100-poi-copy > p',
+        '.exp100-camp-heading > span','.exp100-camp-heading > strong','.exp100-camp-heading > small',
+        '.exp150-camp-atmosphere > span','.exp150-camp-atmosphere > p','.exp150-camp-atmosphere > small',
+        '.exp150-section-heading > span','.exp150-current-mark',
+        '.exp150-action-symbol'
+      ].join(',');
+      const textNodes = Array.from(new Set(regions.flatMap(region =>
+        Array.from(region.querySelectorAll(textSelector))
+      ))).filter(node => Boolean(node.textContent?.trim()) && readRect(node));
+      const controls = Array.from(new Set(regions.flatMap(region =>
+        Array.from(region.querySelectorAll('button'))
+      ))).filter(node => readRect(node));
+      const iconNodes = Array.from(new Set(regions.flatMap(region =>
+        Array.from(region.querySelectorAll('.exp100-poi-icon,.exp150-action-symbol,.exp150-action > b'))
+      ))).filter(node => readRect(node));
+      const surfaceSelector = [
+        '.exp150-guide','.exp100-panel','.exp100-poi','.exp100-camp',
+        '.exp150-camp-atmosphere','.exp100-camp-heading','.exp150-action-dock',
+        '.exp150-section-heading','.exp150-action','.exp100-choice',
+        '.exp160-optional-detour','.exp160-optional-site','.exp160-field-contract',
+        '.exp160-field-report-note','.exp160-site-complete'
+      ].join(',');
+      const surfaces = Array.from(new Set(regions.flatMap(region =>
+        Array.from(region.querySelectorAll(surfaceSelector))
+      ))).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+
+      const signature = JSON.stringify([
+        Math.round(window.innerWidth), Math.round(window.innerHeight),
+        Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
+        ...regions.map(node => {
+          const rect = readRect(node);
+          return [node.className, rect && Math.round(rect.x), rect && Math.round(rect.y),
+            rect && Math.round(rect.width), rect && Math.round(rect.height)];
+        }),
+        ...textNodes.map(node => {
+          const rect = readRect(node);
+          return [node.textContent?.replace(/\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [node.id || node.dataset.blackrootSurvey || node.dataset.node || '',
+            node.textContent?.replace(/\s+/g, ' ').trim() || '',
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height),
+            Boolean(node.disabled), node === document.activeElement || node.matches(':focus-visible'),
+            node.matches(':hover')];
+        })
+      ]);
+      const tagsCurrent =
+        textNodes.length === this.nativeExpeditionActionsUiTextNodes.length &&
+        textNodes.every((node,index) => node === this.nativeExpeditionActionsUiTextNodes[index] &&
+          node.dataset.legendPhaserRoadActionText === 'true') &&
+        controls.length === this.nativeExpeditionActionsUiControls.length &&
+        controls.every((node,index) => node === this.nativeExpeditionActionsUiControls[index] &&
+          node.dataset.legendPhaserRoadActionControl === 'true') &&
+        iconNodes.length === this.nativeExpeditionActionsUiIconNodes.length &&
+        iconNodes.every((node,index) => node === this.nativeExpeditionActionsUiIconNodes[index] &&
+          node.dataset.legendPhaserRoadActionIcon === 'true');
+      if (this.nativeExpeditionActionsUiActive && tagsCurrent && signature === this.nativeExpeditionActionsUiSignature) return;
+
+      this.clearNativeExpeditionActionsUi(false, false);
+      document.body?.classList.remove('legend-phaser-road-actions-ui-active');
+
+      const container = this.add.container(0, 0).setDepth(56);
+      const graphics = this.add.graphics();
+      container.add(graphics);
+      this.nativeExpeditionActionsUiObjects.push(container);
+
+      surfaces.forEach(({node,rect}) => {
+        const classes = node.classList;
+        if (classes.contains('exp150-guide')) {
+          graphics.fillStyle(0x352b18, 0.82);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.fillStyle(0xd7b86a, 0.86);
+          graphics.fillRect(rect.x, rect.y, Math.max(2*sx,2), rect.height);
+        } else if (classes.contains('exp150-action-dock')) {
+          graphics.fillStyle(0x0d140f, 0.74);
+          graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+          graphics.lineStyle(Math.max(1,sy), 0xbfa064, 0.32);
+          graphics.lineBetween(rect.x, rect.y, rect.x + rect.width, rect.y);
+        } else if (classes.contains('exp100-panel') || classes.contains('exp100-poi') ||
+                   classes.contains('exp100-camp') || classes.contains('exp160-optional-detour') ||
+                   classes.contains('exp160-optional-site') || classes.contains('exp160-field-contract')) {
+          const poi = classes.contains('exp100-poi');
+          const camp = classes.contains('exp100-camp');
+          graphics.fillStyle(poi ? 0x29271a : camp ? 0x152017 : 0x121b13, 0.97);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 5*sx);
+          graphics.lineStyle(Math.max(1,sx), poi ? 0xc4a25d : 0xbfa064, 0.44);
+          graphics.strokeRoundedRect(rect.x + sx/2, rect.y + sy/2,
+            Math.max(1,rect.width-sx), Math.max(1,rect.height-sy), 5*sx);
+          graphics.fillStyle(0xd4b174, 0.48);
+          graphics.fillRect(rect.x, rect.y, Math.max(2*sx,2), Math.max(2*sy,2));
+        } else if (classes.contains('exp150-camp-atmosphere') ||
+                   classes.contains('exp100-camp-heading') ||
+                   classes.contains('exp150-section-heading') ||
+                   classes.contains('exp160-field-report-note') ||
+                   classes.contains('exp160-site-complete')) {
+          graphics.fillStyle(0xbfa064, 0.07);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3*sx);
+          graphics.lineStyle(Math.max(1,sx), 0xbfa064, 0.24);
+          graphics.strokeRoundedRect(rect.x + sx/2, rect.y + sy/2,
+            Math.max(1,rect.width-sx), Math.max(1,rect.height-sy), 3*sx);
+        } else if (classes.contains('exp150-action') || classes.contains('exp100-choice')) {
+          const focused = node === document.activeElement || node.matches(':focus-visible');
+          const hovered = node.matches(':hover');
+          const disabled = node.disabled || node.getAttribute('aria-disabled') === 'true';
+          const primary = classes.contains('primary');
+          graphics.fillStyle(focused || hovered ? 0x3a3925 : primary ? 0x39321e : 0x152017,
+            disabled ? 0.32 : 0.97);
+          graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 4*sx);
+          graphics.lineStyle(focused ? 2*Math.min(sx,sy) : Math.max(1,sx),
+            focused ? 0xffe6a0 : primary ? 0xd7b86a : 0x829078, disabled ? 0.30 : 0.62);
+          graphics.strokeRoundedRect(rect.x + sx/2, rect.y + sy/2,
+            Math.max(1,rect.width-sx), Math.max(1,rect.height-sy), 4*sx);
+          graphics.fillStyle(primary ? 0xe7c982 : 0x91a080, disabled ? 0.26 : 0.66);
+          graphics.fillRect(rect.x, rect.y, Math.max(2*sx,2), rect.height);
+        }
+      });
+
+      textNodes.forEach(node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const style = window.getComputedStyle(node);
+        const isIcon = node.matches('.exp100-poi-icon,.exp150-action-symbol,.exp150-action > b');
+        const color = isIcon ? '#d8bd79'
+          : node.matches('.exp100-kicker,.exp150-kicker,.exp100-poi-copy > span,.exp150-current-mark') ? '#c9ad6e'
+          : node.matches('h2,h3,h4,strong') ? '#eee7d6'
+          : node.matches('small,em') ? '#d6c18b'
+          : '#b6c0b2';
+        const value = node.textContent?.replace(/\s+/g, ' ').trim() || '';
+        const object = this.add.text(rect.x, rect.y, value, {
+          fontFamily: style.fontFamily || 'Arial, sans-serif',
+          fontSize: Math.max(isIcon ? 10 : 8,
+            Math.round((parseFloat(style.fontSize) || (isIcon ? 15 : 10)) * sy)) + 'px',
+          fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
+          color,
+          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+          align: style.textAlign || 'left'
+        }).setDepth(58).setOrigin(0,0);
+        object.setResolution?.(2);
+        object.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
+        container.add(object);
+        node.dataset.legendPhaserRoadActionText = 'true';
+        this.nativeExpeditionActionsUiTaggedNodes.push(node);
+      });
+      controls.forEach(node => {
+        node.dataset.legendPhaserRoadActionControl = 'true';
+        this.nativeExpeditionActionsUiTaggedNodes.push(node);
+      });
+      iconNodes.forEach(node => {
+        node.dataset.legendPhaserRoadActionIcon = 'true';
+        this.nativeExpeditionActionsUiTaggedNodes.push(node);
+      });
+
+      this.nativeExpeditionActionsUiTextNodes = textNodes;
+      this.nativeExpeditionActionsUiControls = controls;
+      this.nativeExpeditionActionsUiIconNodes = iconNodes;
+      this.nativeExpeditionActionsUiSignature = signature;
+      this.nativeExpeditionActionsUiActive = true;
+      document.body?.classList.add('legend-phaser-road-actions-ui-active');
+    }
 
     clearNativeExpeditionHudUi(removeClass = true, removeListeners = true) {
       this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
@@ -5547,6 +5830,7 @@
     refreshRoadMap: () => realmScene?.syncNativeRoadMapUi?.(),
     clearRoadMap: () => realmScene?.clearNativeRoadMapUi?.(),
     refreshExpedition: () => realmScene?.syncNativeExpeditionHudUi?.(),
+    refreshExpeditionActions: () => realmScene?.syncNativeExpeditionActionsUi?.(),
     refresh: () => inferEnvironment(),
     selectAshmereLandmark: id => realmScene?.selectAshmereLandmark?.(id) || false,
     get saveKey() { return SAVE_KEY; }

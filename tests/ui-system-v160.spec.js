@@ -121,6 +121,63 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+
+  test('Phaser paints Old Road decision cards while retaining real route, detour and camp actions', async ({ page }) => {
+    await enterAshmere(page, 'RoadActionsQA');
+    await seedRoad(page, 0, null);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionActionsUi)).toBe(true);
+
+    const fork = await page.evaluate(() => {
+      const panel = document.querySelector('.exp150-interactions .exp100-route-choice');
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      return {
+        text: snapshot.nativeExpeditionActionsUiTextValues || [],
+        controls: snapshot.nativeExpeditionActionsUiControlIds || [],
+        objectCount: snapshot.nativeExpeditionActionsUiObjectCount,
+        headingColor: panel?.querySelector('h2') ? getComputedStyle(panel.querySelector('h2')).color : '',
+        actionColor: panel?.querySelector('#routeRidge') ? getComputedStyle(panel.querySelector('#routeRidge')).color : '',
+        routeButtons: Array.from(panel?.querySelectorAll('button') || []).map(button => ({
+          id: button.id, disabled: button.disabled, text: button.textContent.replace(/\\s+/g,' ').trim()
+        }))
+      };
+    });
+    expect(fork.objectCount).toBeGreaterThan(8);
+    expect(fork.text).toEqual(expect.arrayContaining([
+      'THE ROAD FORKS', 'Two ways through the lowlands', 'Take the High Ridge', 'Risk the Reed Cut'
+    ]));
+    expect(fork.controls).toEqual(expect.arrayContaining(['routeRidge','routeReeds']));
+    expect(fork.headingColor).toBe('rgba(0, 0, 0, 0)');
+    expect(fork.actionColor).toBe('rgba(0, 0, 0, 0)');
+    expect(fork.routeButtons.every(button => !button.disabled)).toBe(true);
+
+    await page.locator('#routeRidge').click();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendRuntimeV120.loadPlayer().flags.roadExpeditionV100.routeChoice
+    )).toBe('ridge');
+
+    await seedRoad(page, 1, 'ridge');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionActionsUi)).toBe(true);
+    await expect(page.locator('.exp150-interactions .exp160-optional-detour')).toBeVisible();
+    await expect(page.locator('#exp160VisitOptional')).toHaveCSS('color','rgba(0, 0, 0, 0)');
+    await page.locator('#exp160VisitOptional').click();
+    await expect(page.locator('.exp160-optional-site')).toBeVisible();
+    await expect(page.locator('.exp160-optional-site h2')).toHaveCSS('color','rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendRuntimeV120.loadPlayer().flags.roadExpeditionV100.activeSideTripV160
+    )).toBe('windbreak');
+
+    await seedRoad(page, 2, 'ridge');
+    await expect(page.locator('.exp100-camp')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionActionsUiTextValues || []))
+      .toEqual(expect.arrayContaining(['WAYSTATION · NIGHT WATCH','Make this stop count','Rest by the Fire','Craft a Road Poultice','Keep Watch']));
+    await expect(page.locator('#campRest')).toHaveCSS('color','rgba(0, 0, 0, 0)');
+    const beforeDay = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().day);
+    await page.locator('#campRest').click();
+    await expect.poll(() => page.evaluate(() => window.LegendRuntimeV120.loadPlayer().day)).toBe(beforeDay + 1);
+    await expect(page.locator('#campRest')).toBeDisabled();
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('Old Road scene, HUD and field map keep sharp DOM copy and real controls', async ({ page }) => {
     await enterAshmere(page, 'RoadUIPreview');
     await seedRoad(page, 0, null);

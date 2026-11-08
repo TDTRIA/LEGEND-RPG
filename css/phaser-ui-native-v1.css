@@ -669,3 +669,46 @@ body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-contr
   outline-offset: 3px !important;
   box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
 }
+
+
+/* Old Road decision deck: route forks, field discoveries, optional stops,
+   Blackroot survey, next-move and camp cards are Phaser-painted. */
+body.legend-phaser-road-actions-ui-active .exp150-guide,
+body.legend-phaser-road-actions-ui-active .exp100-panel,
+body.legend-phaser-road-actions-ui-active .exp100-poi,
+body.legend-phaser-road-actions-ui-active .exp100-camp,
+body.legend-phaser-road-actions-ui-active .exp150-camp-atmosphere,
+body.legend-phaser-road-actions-ui-active .exp100-camp-heading,
+body.legend-phaser-road-actions-ui-active .exp150-action-dock,
+body.legend-phaser-road-actions-ui-active .exp150-section-heading,
+body.legend-phaser-road-actions-ui-active .exp150-action,
+body.legend-phaser-road-actions-ui-active .exp100-choice,
+body.legend-phaser-road-actions-ui-active .exp160-optional-detour,
+body.legend-phaser-road-actions-ui-active .exp160-optional-site,
+body.legend-phaser-road-actions-ui-active .exp160-field-contract,
+body.legend-phaser-road-actions-ui-active .exp160-field-report-note,
+body.legend-phaser-road-actions-ui-active .exp160-site-complete {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+}
