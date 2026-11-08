@@ -3,10 +3,11 @@
 (() => {
   const RETURN_KEY = 'legend-awakening-return-to-town-v1';
 
-  function reportSessionStorageFailure(operation, error) {
+  function reportSessionStorageFailure(operation, error, notify = false) {
     const message = 'The return-to-town marker could not be stored in this browser session. ' +
       'The game can continue, but automatic return after a reload may not be available.';
     console.warn('[LEGEND] Session storage could not ' + operation + '.', error);
+    if (!notify) return;
     const toast = document.getElementById('toast');
     if (toast) {
       toast.textContent = message;
@@ -33,7 +34,7 @@
       window.sessionStorage.setItem(RETURN_KEY, '1');
       return true;
     } catch (error) {
-      reportSessionStorageFailure('write the return marker', error);
+      reportSessionStorageFailure('write the return marker', error, true);
       return false;
     }
   }
@@ -53,8 +54,8 @@
   }
 
   function savePlayer(player) {
-    if (!player) return;
-    window.LegendStorage?.savePlayer?.(player);
+    if (!player) return false;
+    return window.LegendStorage?.savePlayer?.(player) ?? false;
   }
 
   function isContinueButton(el) {
@@ -99,7 +100,9 @@
       location.reload();
       return true;
     }
-    return continueFromTitle();
+    if (continueFromTitle()) return true;
+    window.LegendGameBootstrap?.title?.();
+    return false;
   }
 
   function handlePendingReturn() {
