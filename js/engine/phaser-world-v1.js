@@ -2860,8 +2860,8 @@
         '.lws-panel-eyebrow,.lws-panel-header h2,.lws-panel-header p'
       )).filter(node => Boolean(content(node)) && readRect(node));
       const selectors = [
-        '.lws-action-list .lws-btn-copy > strong',
-        '.lws-action-list .lws-btn-copy > small',
+        '.lws-btn-copy > strong',
+        '.lws-btn-copy > small',
         '.lws-context-copy',
         '.lws-quest-item > strong',
         '.lws-quest-item > p',
@@ -2884,7 +2884,7 @@
       )).filter(node => readRect(node));
       const iconNodes = Array.from(scroll.querySelectorAll('.lws-btn-icon,.lws-place-option-icon')).filter(node => readRect(node));
       const surfaces = Array.from(new Set(scroll.querySelectorAll(
-        '.lws-action-list .lws-btn,.lws-place-option,.lws-selected-place,.lws-poi-hint,.lws-other-destinations,.lws-quest-item,.lws-status'
+        '.lws-btn,.lws-place-option,.lws-selected-place,.lws-poi-hint,.lws-other-destinations,.lws-quest-item,.lws-status'
       ))).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
       const signature = JSON.stringify([
         Math.round(panelRect.x), Math.round(panelRect.y), Math.round(panelRect.width), Math.round(panelRect.height),

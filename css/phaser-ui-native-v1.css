@@ -548,7 +548,7 @@ body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-wor
   backdrop-filter: none !important;
 }
 body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-panel-header,
-body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-action-list .lws-btn,
+body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-panel-scroll .lws-btn,
 body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-place-option,
 body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-selected-place,
 body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right .lws-poi-hint,

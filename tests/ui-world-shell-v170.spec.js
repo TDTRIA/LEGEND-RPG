@@ -206,7 +206,9 @@ test.describe('LEGEND persistent world shell v170', () => {
     await page.locator('#lws-panel-right [data-world-place="market"]').click();
     await expect(page.locator('#lws-panel-right .lws-selected-place h3')).toHaveText('Market');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUiTextValues || []))
-      .toEqual(expect.arrayContaining(['Landmark in view', 'Market', 'Visit the Market']));
+      .toEqual(expect.arrayContaining(['Landmark in view', 'Market', 'Visit the Market', 'Enter this place']));
+    await expect(page.locator('#lws-panel-right .lws-visit-place .lws-btn-copy strong'))
+      .toHaveCSS('color', 'rgba(0, 0, 0, 0)');
     await page.locator('#lws-panel-right [data-world-action="visit-selected-place"]').click();
     await expect(page.locator('.ash099-screen')).toBeVisible();
     await expect(page.locator('#legend-world-shell-root')).toBeVisible();
