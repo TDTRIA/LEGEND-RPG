@@ -443,6 +443,12 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         ids: snapshot.nativeCombatUiControlIds || [],
         scene: snapshot.nativeCombatUiSceneSize,
         observerBound: snapshot.nativeCombatUiObserverBound,
+        orbAssetsLoaded: snapshot.nativeCombatUiAssetsLoaded,
+        healthOrb: snapshot.nativeCombatUiHealthOrb,
+        portrait: {
+          src: document.querySelector('.rpg-hero-portrait img')?.getAttribute('src') || '',
+          borderRadius: getComputedStyle(document.querySelector('.rpg-hero-portrait')).borderRadius
+        },
         controls: controls.map(id => {
           const node = document.getElementById(id);
           return {
@@ -461,6 +467,12 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     });
     expect(desktop.native).toBe(true);
     expect(desktop.observerBound).toBe(true);
+    expect(desktop.orbAssetsLoaded).toBe(true);
+    expect(desktop.healthOrb).toMatchObject({ hp: 40, maxHp: 70, percent: 57 });
+    expect(desktop.healthOrb.width).toBeGreaterThan(0);
+    expect(desktop.healthOrb.height).toBeGreaterThan(0);
+    expect(desktop.portrait.src).toMatch(/class-ranger\\.webp/);
+    expect(desktop.portrait.borderRadius).toBe('50%');
     expect(desktop.textCount).toBeGreaterThan(22);
     expect(desktop.text).toEqual(expect.arrayContaining([
       'YOUR STANCE', 'GUARD BREAK', 'YOUR TURN', 'FIGHT', 'ACT', 'Healing potion'
@@ -490,6 +502,20 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(afterPotion.potion).toBe(0);
     expect(afterPotion.hp).toBeGreaterThan(40);
     expect(afterPotion.hp).toBeLessThan(70);
+    await expect.poll(() => page.evaluate(() => {
+      const orb = window.LegendPhaserWorldV1.snapshot()?.nativeCombatUiHealthOrb;
+      const player = window.LegendRuntimeV120.loadPlayer();
+      return orb && orb.hp === player.hp && orb.maxHp === player.maxHp && orb.percent ===
+        Number(document.querySelector('.rpg-hero-portrait')?.dataset.healthPct);
+    })).toBe(true);
+    const afterPotionOrb = await page.evaluate(() => ({
+      orb: window.LegendPhaserWorldV1.snapshot()?.nativeCombatUiHealthOrb,
+      player: window.LegendRuntimeV120.loadPlayer()
+    }));
+    expect(afterPotionOrb.orb.hp).toBe(afterPotionOrb.player.hp);
+    expect(afterPotionOrb.orb.maxHp).toBe(afterPotionOrb.player.maxHp);
+    expect(afterPotionOrb.orb.percent).toBeGreaterThan(57);
+
 
     await page.setViewportSize({ width: 390, height: 844 });
     await expect.poll(() => page.evaluate(() => {
