@@ -14,8 +14,8 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await expect(page.locator('.v120-title-hero .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
 }
 
-async function enterAshmere(page, name = 'UIProofQA') {
-  await openTitle(page);
+async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, height: 900 }) {
+  await openTitle(page, viewport);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
   await page.getByRole('button', { name: /^Continue$/ }).click();
   await page.getByRole('button', { name: /^Continue$/ }).click();
@@ -87,6 +87,20 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('.v120-title-hero .v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
     await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /News & Roadmap/i })).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
+    const freshMenu = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      return {
+        assetsLoaded: snapshot.nativeTitleUiAssetsLoaded,
+        ids: snapshot.nativeTitleUiControlIds,
+        labels: snapshot.nativeTitleUiLabels || []
+      };
+    });
+    expect(freshMenu.assetsLoaded).toBe(true);
+    expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','credits']);
+    expect(freshMenu.labels.map(item => item.title)).toEqual([
+      'Begin Your Journey','Profile','Settings','News & Roadmap','Credits'
+    ]);
     await expect(page.locator('.v140-realm-overview.v151-realm-art')).toBeVisible();
     await expect(page.locator('.v151-realm-feature img')).toHaveAttribute('src', 'assets/generated/locations/ashmere-town.webp');
 
@@ -98,6 +112,135 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(computed.radius).toBe('2px');
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-title-desktop.png');
+  });
+
+  test('returning-player save paints every existing title action in Phaser without changing the save', async ({ page }) => {
+    await enterAshmere(page, 'ReturnMenuParity');
+    const saveBefore = await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()));
+    await page.evaluate(() => window.LegendGameBootstrap.title());
+    await expect(page.locator('.v120-title')).toBeVisible();
+    await expect(page.locator('#continue')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
+
+    const menu = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const buttons = Array.from(document.querySelectorAll('.v120-title-hero .v136-menu-btn'));
+      return {
+        saveKey: window.LEGEND_DATA?.SAVE_KEY,
+        assetsLoaded: snapshot.nativeTitleUiAssetsLoaded,
+        ids: snapshot.nativeTitleUiControlIds,
+        labels: snapshot.nativeTitleUiLabels || [],
+        textQuality: snapshot.nativeTitleUiTextQuality || [],
+        buttons: buttons.map(button => ({
+          id: button.id,
+          tag: button.tagName,
+          type: button.type,
+          accessibleName: button.getAttribute('aria-label'),
+          handler: typeof button.onclick
+        }))
+      };
+    });
+    expect(menu.saveKey).toBe('legend-roads-of-ashmere-v09');
+    expect(menu.assetsLoaded).toBe(true);
+    expect(menu.ids).toEqual(['continue','new','account','settings','dispatches','credits']);
+    expect(menu.labels.map(item => item.title)).toEqual([
+      'Continue Journey','New Traveler','Profile','Settings','News & Roadmap','Credits'
+    ]);
+    expect(menu.labels.every(item => item.title && item.subtitle)).toBe(true);
+    expect(menu.buttons).toHaveLength(6);
+    expect(menu.buttons.every(button => button.tag === 'BUTTON' && button.type === 'button' &&
+      button.accessibleName && button.handler === 'function')).toBe(true);
+    expect(menu.textQuality.every(item => item.titleFontSize >= 13 && item.titleResolution === 2 &&
+      item.subtitleFontSize >= 10 && item.subtitleResolution === 2)).toBe(true);
+    const saveAfterPaint = await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()));
+    expect(saveAfterPaint).toBe(saveBefore);
+
+    await page.locator('#settings').focus();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot().nativeTitleUiControlBounds.find(item => item.id === 'settings')?.focused
+    )).toBe(true);
+    await expectNoHorizontalOverflow(page);
+    await attachProof(page, 'phase1-returning-title-desktop.png');
+
+    // Exercise the original production callbacks behind every remaining menu
+    // option. Re-rendering via the production bootstrap does not seed or alter
+    // a save; it simply returns to the same title menu between view checks.
+    await page.locator('#account').click();
+    await expect(page.locator('.account09x')).toBeVisible();
+    await page.locator('#backTitle').click();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTitleUi)).toBe(true);
+
+    await page.locator('#settings').click();
+    await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
+    await page.locator('#backTitle').click();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTitleUi)).toBe(true);
+
+    await page.locator('#dispatches').click();
+    await expect(page.getByRole('heading', { name: 'News & Roadmap', exact: true })).toBeVisible();
+    await page.locator('#dispatchesBack').click();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTitleUi)).toBe(true);
+
+    await page.locator('#credits').click();
+    await expect(page.getByRole('dialog', { name: 'LEGEND' })).toBeVisible();
+    await page.locator('[data-credits-close]').click();
+    await expect(page.locator('.v120-title')).toBeVisible();
+
+    await page.locator('#new').click();
+    await expect(page.locator('.opening-lore-v220')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
+
+    // Return to the existing title without touching the saved traveler, then
+    // exercise Continue through its real production handler.
+    await page.evaluate(() => window.LegendGameBootstrap.title());
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTitleUi)).toBe(true);
+    await page.locator('#continue').click();
+    await expect(page.locator('.ash100-town')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => window.LegendRuntimeV120.loadPlayer()?.username)).toBe('ReturnMenuParity');
+  });
+
+  test('returning-player Phaser title stays readable and tappable at 390px mobile width', async ({ browser }) => {
+    const context = await browser.newContext({
+      viewport: { width: 390, height: 844 },
+      deviceScaleFactor: 1,
+      isMobile: true,
+      hasTouch: true,
+      reducedMotion: 'reduce'
+    });
+    const mobilePage = await context.newPage();
+    try {
+      await enterAshmere(mobilePage, 'MobileReturnParity', { width: 390, height: 844 });
+      await mobilePage.evaluate(() => window.LegendGameBootstrap.title());
+      await expect(mobilePage.locator('#continue')).toBeVisible();
+      await expect.poll(() => mobilePage.evaluate(() =>
+        window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi
+      )).toBe(true);
+      const layout = await mobilePage.evaluate(() => {
+        const snapshot = window.LegendPhaserWorldV1.snapshot();
+        const size = snapshot.nativeTitleUiSceneSize;
+        return {
+          size,
+          ids: snapshot.nativeTitleUiControlIds,
+          labels: snapshot.nativeTitleUiLabels || [],
+          bounds: snapshot.nativeTitleUiControlBounds || []
+        };
+      });
+      expect(layout.ids).toEqual(['continue','new','account','settings','dispatches','credits']);
+      expect(layout.labels.every(item => item.title && item.subtitle)).toBe(true);
+      expect(layout.bounds).toHaveLength(6);
+      expect(layout.bounds.every(item => item.x >= 0 && item.width > 0 && item.x + item.width <= layout.size.width + 1)).toBe(true);
+      await expectNoHorizontalOverflow(mobilePage);
+      await attachProof(mobilePage, 'phase1-returning-title-mobile-390.png');
+
+      await mobilePage.locator('#settings').tap();
+      await expect(mobilePage.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
+      await mobilePage.locator('#backTitle').tap();
+      await expect(mobilePage.locator('#continue')).toBeVisible();
+      await expect.poll(() => mobilePage.evaluate(() =>
+        window.LegendPhaserWorldV1.snapshot().nativeTitleUi
+      )).toBe(true);
+    } finally {
+      await context.close();
+    }
   });
 
   test('Ashmere hub and Work Board service share the new frame while retaining current destinations/actions', async ({ page }) => {
