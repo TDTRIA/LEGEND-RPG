@@ -173,6 +173,14 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
         report.readStatus = window.LegendStorage.getPlayerSaveStatus();
 
         prototype.getItem = originalGet;
+        report.invalidPlayerWrite = window.LegendStorage.savePlayer({
+          username: 'WrongShape',
+          flags: []
+        }) === false;
+        report.futurePlayerWrite = window.LegendStorage.savePlayer({
+          username: 'FutureWriter',
+          version: 'v99.0.0'
+        }) === false;
         prototype.setItem = function () {
           throw new DOMException('Storage quota denied', 'QuotaExceededError');
         };
@@ -206,6 +214,8 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       playerRead: true,
       settingsRead: true,
       readStatus: 'unavailable',
+      invalidPlayerWrite: true,
+      futurePlayerWrite: true,
       playerWrite: true,
       sessionPlayer: true,
       sessionStatus: 'session-only',
