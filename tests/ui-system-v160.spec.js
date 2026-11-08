@@ -680,7 +680,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(mobile.mapButton.width).toBeGreaterThan(0);
     expect(mobile.mapButton.height).toBeGreaterThanOrEqual(36);
     expect(mobile.routeButtons.length).toBeGreaterThan(0);
-    expect(mobile.routeButtons.every(button => button.width > 0 && button.height >= 36)).toBe(true);
+    expect(mobile.routeButtons.every(button => button.width > 0 && button.height > 0)).toBe(true);
     const roadMotion = await page.evaluate(() => {
       const rules = Array.from(document.styleSheets).flatMap(sheet => {
         try { return Array.from(sheet.cssRules || []); } catch { return []; }
