@@ -92,11 +92,15 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       return {
         assetsLoaded: snapshot.nativeTitleUiAssetsLoaded,
+        dividerPainted: snapshot.nativeTitleUiDividerPainted,
+        dividerLabel: snapshot.nativeTitleUiDividerLabel,
         ids: snapshot.nativeTitleUiControlIds,
         labels: snapshot.nativeTitleUiLabels || []
       };
     });
     expect(freshMenu.assetsLoaded).toBe(true);
+    expect(freshMenu.dividerPainted).toBe(true);
+    expect(freshMenu.dividerLabel).toBe('THE OLD ROAD IS LISTENING');
     expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','credits']);
     expect(freshMenu.labels.map(item => item.title)).toEqual([
       'Begin Your Journey','Profile','Settings','News & Roadmap','Credits'
@@ -112,6 +116,33 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(computed.radius).toBe('2px');
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-title-desktop.png');
+  });
+
+  test('title restores its styled DOM menu when a required Phaser title texture is missing', async ({ page }) => {
+    await openTitle(page);
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi
+    )).toBe(true);
+    const fallback = await page.evaluate(() => {
+      window.LegendPhaserWorldV1.engine.textures.remove('menuDivider');
+      window.LegendPhaserWorldV1.refresh();
+      const button = document.querySelector('.v136-menu-btn');
+      return {
+        active: window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi,
+        bodyClass: document.body.classList.contains('legend-phaser-title-ui-active'),
+        titleColor: getComputedStyle(button.querySelector('.v136-menu-copy strong')).color,
+        titleText: button.querySelector('.v136-menu-copy strong').textContent.trim()
+      };
+    });
+    expect(fallback.active).toBe(false);
+    expect(fallback.bodyClass).toBe(false);
+    expect(fallback.titleColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(fallback.titleText).toBe('Begin Your Journey');
+    await page.reload();
+    await expect(page.locator('.v120-title')).toBeVisible();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi
+    )).toBe(true);
   });
 
   test('returning-player save paints every existing title action in Phaser without changing the save', async ({ page }) => {
@@ -160,6 +191,11 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot().nativeTitleUiControlBounds.find(item => item.id === 'settings')?.focused
     )).toBe(true);
+    const titleFocusStyle = await page.locator('#settings').evaluate(node => ({
+      outlineColor: getComputedStyle(node).outlineColor,
+      outlineStyle: getComputedStyle(node).outlineStyle
+    }));
+    expect(titleFocusStyle).toEqual({ outlineColor: 'rgb(255, 231, 166)', outlineStyle: 'solid' });
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-returning-title-desktop.png');
 
