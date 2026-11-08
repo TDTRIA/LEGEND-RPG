@@ -2646,6 +2646,69 @@ test('native Phaser title menu replaces the floating HTML button paint and keeps
 });
 
 
+
+test('persistent HUD is painted by Phaser while DOM controls keep their real actions', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await startFreshCharacter(page, 'PhaserHudQA');
+  await expect(page.locator('#legend-world-shell-root .lws-hud')).toBeVisible();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeHudUi)).toBe(true);
+
+  const desktop = await page.evaluate(() => {
+    const snapshot = window.LegendPhaserWorldV1.snapshot();
+    const text = snapshot.nativeHudUiTextValues || [];
+    const location = document.querySelector('#lws-current-location');
+    const gold = document.querySelector('#lws-hud-gold');
+    const save = document.querySelector('.lws-hud-save');
+    return {
+      active: document.body.classList.contains('legend-phaser-hud-ui-active'),
+      objectCount: snapshot.nativeHudUiObjectCount,
+      textCount: snapshot.nativeHudUiTextCount,
+      values: text,
+      locationColor: location ? getComputedStyle(location).color : '',
+      goldColor: gold ? getComputedStyle(gold).color : '',
+      saveLabel: save?.getAttribute('aria-label') || '',
+      saveAction: save?.dataset.worldAction || '',
+      buttons: snapshot.nativeHudUiControlIds || []
+    };
+  });
+  expect(desktop.active).toBe(true);
+  expect(desktop.objectCount).toBeGreaterThan(8);
+  expect(desktop.textCount).toBeGreaterThanOrEqual(10);
+  expect(desktop.values).toEqual(expect.arrayContaining([
+    'LEGEND', 'BEYOND THE LANTERN LINE', 'Ashmere', 'Your next lead',
+    'Health', 'Gold', 'Save'
+  ]));
+  expect(desktop.locationColor).toBe('rgba(0, 0, 0, 0)');
+  expect(desktop.goldColor).toBe('rgba(0, 0, 0, 0)');
+  expect(desktop.saveLabel).toBe('Save traveler');
+  expect(desktop.saveAction).toBe('save');
+  expect(desktop.buttons).toEqual(expect.arrayContaining(['toggle-left', 'toggle-right', 'save']));
+
+  await page.evaluate(() => {
+    const player = window.LegendStorage.loadPlayer();
+    player.hp = 37;
+    player.maxHp = 61;
+    player.gold = 123;
+    window.LegendStorage.savePlayer(player);
+    window.LegendWorldShellV170.refresh();
+  });
+  await expect(page.locator('#lws-hud-health')).toHaveText('37 / 61');
+  await expect(page.locator('#lws-hud-gold')).toHaveText('123g');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeHudUiTextValues || []))
+    .toEqual(expect.arrayContaining(['37 / 61', '123g']));
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeHudUiSceneSize?.width)).toBeGreaterThan(0);
+  await expect(page.locator('#legend-world-shell-root .lws-mobile-toggle').first()).toBeVisible();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+  await page.locator('#legend-world-shell-root [data-world-action="toggle-left"]').click();
+  await expect(page.locator('body')).toHaveClass(/legend-shell-left-open/);
+  await expect(page.locator('#legend-world-shell-root [data-world-action="toggle-left"]')).toHaveAttribute('aria-expanded', 'true');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeHudUi)).toBe(true);
+  await page.locator('#legend-world-shell-root [data-world-action="toggle-left"]').click();
+  await expect(page.locator('body')).not.toHaveClass(/legend-shell-left-open/);
+});
+
 test('saved-player Continue menu keeps readable DOM labels and the real continue action', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await startFreshCharacter(page, 'ContinueMenuQA');

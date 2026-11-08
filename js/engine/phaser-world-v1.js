@@ -492,6 +492,15 @@
       this.nativeOpeningUiSignature = '';
       this.nativeOpeningUiLayoutEvent = null;
       this.nativeOpeningUiScrollTarget = null;
+      this.nativeHudUiActive = false;
+      this.nativeHudUiObjects = [];
+      this.nativeHudUiTaggedNodes = [];
+      this.nativeHudUiTextNodes = [];
+      this.nativeHudUiControls = [];
+      this.nativeHudUiSignature = '';
+      this.nativeHudUiLayoutEvent = null;
+      this.nativeHudUiBoundElement = null;
+      this.nativeHudUiInteractionHandler = null;
       this.nativeGameplayUiActive = false;
       this.nativeGameplayUiObjects = [];
       this.nativeGameplayUiTextures = [];
@@ -529,6 +538,7 @@
         this.syncNativeCreationUi(this.surface);
         this.syncNativeOpeningUi(this.surface);
         this.syncNativeGameplayUi(this.surface);
+        this.syncNativeHudUi();
       });
       this.input.keyboard?.on('keydown', event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
@@ -603,6 +613,13 @@
           nativeOpeningUiControlBounds: this.nativeOpeningUiControls.map(item => ({ id: item.id, label: item.label, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible) })),
           nativeOpeningUiSceneSize: this.dimensions(),
           nativeOpeningUiScrollTargetBound: Boolean(this.nativeOpeningUiScrollTarget),
+          nativeHudUi: this.nativeHudUiActive,
+          nativeHudUiObjectCount: this.nativeHudUiObjects.filter(item => item?.active).length,
+          nativeHudUiTextCount: this.nativeHudUiTextNodes.filter(node => node?.isConnected).length,
+          nativeHudUiTextValues: this.nativeHudUiTextNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeHudUiControlIds: this.nativeHudUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || node.getAttribute('aria-label') || node.textContent?.trim() || ''),
+          nativeHudUiFocusedControlIds: this.nativeHudUiControls.filter(node => node?.isConnected && (node === document.activeElement || node.matches(':focus-visible'))).map(node => node.dataset.worldAction || node.getAttribute('aria-label') || node.textContent?.trim() || ''),
+          nativeHudUiSceneSize: this.dimensions(),
           nativeGameplayUi: this.nativeGameplayUiActive,
           nativeGameplayUiSurface: this.surface,
           nativeGameplayUiObjectCount: this.nativeGameplayUiObjects.filter(item => item?.active).length,
@@ -846,6 +863,7 @@
         this.syncNativeCreationUi(next);
         this.syncNativeOpeningUi(next);
         this.syncNativeGameplayUi(next);
+        this.syncNativeHudUi();
         return;
       }
       const previous = this.surface;
@@ -856,6 +874,7 @@
       this.syncNativeCreationUi(next);
       this.syncNativeOpeningUi(next);
       this.syncNativeGameplayUi(next);
+      this.syncNativeHudUi();
       if (!previous || !this.engineAwakened || this.awakeningActive) return;
       this.playSurfaceTransition(next);
     }
@@ -2268,6 +2287,210 @@
       }));
     }
 
+
+    clearNativeHudUi(removeClass = true) {
+      this.nativeHudUiLayoutEvent?.remove?.(false);
+      this.nativeHudUiLayoutEvent = null;
+      this.nativeHudUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeHudUiObjects = [];
+      this.nativeHudUiTaggedNodes.forEach(node => {
+        if (node?.dataset) {
+          delete node.dataset.legendPhaserHudText;
+          delete node.dataset.legendPhaserHudControl;
+        }
+      });
+      this.nativeHudUiTaggedNodes = [];
+      this.nativeHudUiTextNodes = [];
+      this.nativeHudUiControls = [];
+      this.nativeHudUiSignature = '';
+      this.nativeHudUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-hud-ui-active');
+    }
+
+    syncNativeHudUi() {
+      const shell = document.getElementById('legend-world-shell-root');
+      const hud = shell?.querySelector('.lws-hud');
+      if (!hud || shell.hidden || hud.hidden) {
+        if (this.nativeHudUiActive || document.body?.classList.contains('legend-phaser-hud-ui-active')) {
+          this.clearNativeHudUi();
+        }
+        return;
+      }
+
+      if (this.nativeHudUiBoundElement !== hud) {
+        if (this.nativeHudUiBoundElement && this.nativeHudUiInteractionHandler) {
+          ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+            this.nativeHudUiBoundElement.removeEventListener(type, this.nativeHudUiInteractionHandler)
+          );
+        }
+        this.nativeHudUiBoundElement = hud;
+        this.nativeHudUiInteractionHandler = () => {
+          this.nativeHudUiLayoutEvent?.remove?.(false);
+          this.nativeHudUiLayoutEvent = this.time.delayedCall(24, () => {
+            this.nativeHudUiLayoutEvent = null;
+            this.syncNativeHudUi();
+          });
+        };
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          hud.addEventListener(type, this.nativeHudUiInteractionHandler)
+        );
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const readRect = node => {
+        if (!node || !node.isConnected) return null;
+        const rect = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
+        return {
+          x: rect.left * sx, y: rect.top * sy,
+          width: rect.width * sx, height: rect.height * sy
+        };
+      };
+      const hudRect = readRect(hud);
+      if (!hudRect) {
+        this.clearNativeHudUi();
+        return;
+      }
+
+      const textSelector = [
+        '.lws-brand-mark',
+        '.lws-brand-copy strong',
+        '.lws-brand-copy span',
+        '.lws-location > span',
+        '#lws-current-location',
+        '.lws-objective-label',
+        '#lws-current-objective',
+        '.lws-vital > span',
+        '.lws-vital > strong',
+        '.lws-hud-save .lws-btn-copy strong',
+        '.lws-mobile-toggle'
+      ].join(',');
+      const content = node => node.textContent?.replace(/\s+/g, ' ').trim() || '';
+      const textNodes = Array.from(hud.querySelectorAll(textSelector)).filter(node =>
+        Boolean(content(node)) && readRect(node)
+      );
+      const controls = Array.from(hud.querySelectorAll('button')).filter(node => readRect(node));
+      const boxes = [
+        ...Array.from(hud.querySelectorAll('.lws-brand-mark,.lws-vital')),
+        ...controls
+      ].map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
+      const signature = JSON.stringify([
+        Math.round(hudRect.width), Math.round(hudRect.height), Math.round(window.innerWidth), Math.round(window.innerHeight),
+        ...textNodes.map(node => {
+          const rect = readRect(node);
+          return [content(node), Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height)];
+        }),
+        ...controls.map(node => {
+          const rect = readRect(node);
+          return [
+            node.dataset.worldAction || node.getAttribute('aria-label') || content(node),
+            Math.round(rect.x), Math.round(rect.y), Math.round(rect.width), Math.round(rect.height),
+            Boolean(node.disabled), node === document.activeElement || node.matches(':focus-visible'), node.matches(':hover')
+          ];
+        })
+      ]);
+      if (this.nativeHudUiActive && signature === this.nativeHudUiSignature) return;
+
+      this.clearNativeHudUi(false);
+      this.nativeHudUiActive = true;
+      this.nativeHudUiSignature = signature;
+      this.nativeHudUiTextNodes = textNodes;
+      this.nativeHudUiControls = controls;
+      document.body?.classList.add('legend-phaser-hud-ui-active');
+
+      const graphics = this.add.graphics().setDepth(48);
+      graphics.fillStyle(0x050906, 0.97);
+      graphics.fillRect(hudRect.x, hudRect.y, hudRect.width, hudRect.height);
+      graphics.fillStyle(0x172016, 0.30);
+      graphics.fillRect(hudRect.x, hudRect.y, hudRect.width, hudRect.height * 0.48);
+      graphics.fillStyle(0x0c130c, 0.22);
+      graphics.fillRect(hudRect.x, hudRect.y + hudRect.height * 0.48, hudRect.width, hudRect.height * 0.52);
+      graphics.lineStyle(Math.max(1, sy), 0xbfa064, 0.58);
+      graphics.lineBetween(hudRect.x, hudRect.y + hudRect.height - sy, hudRect.x + hudRect.width, hudRect.y + hudRect.height - sy);
+      graphics.fillStyle(0xe7c982, 0.56);
+      graphics.fillRect(hudRect.x, hudRect.y, Math.max(2 * sx, 2), Math.max(2 * sy, 2));
+
+      const location = readRect(hud.querySelector('.lws-location'));
+      if (location) {
+        graphics.lineStyle(Math.max(1, sx), 0xbfa064, 0.42);
+        graphics.lineBetween(location.x - 7 * sx, location.y + 3 * sy, location.x - 7 * sx, location.y + location.height - 3 * sy);
+      }
+      const objective = readRect(hud.querySelector('.lws-objective'));
+      if (objective) {
+        graphics.fillStyle(0xbfa064, 0.84);
+        graphics.fillRect(objective.x, objective.y + 4 * sy, Math.max(2 * sx, 2), Math.max(10 * sy, objective.height - 8 * sy));
+        graphics.fillStyle(0xbfa064, 0.13);
+        graphics.fillRect(objective.x + 2 * sx, objective.y + 4 * sy, Math.max(1, objective.width * 0.42), Math.max(10 * sy, objective.height - 8 * sy));
+      }
+
+      boxes.forEach(({ node, rect }) => {
+        const isButton = node.tagName === 'BUTTON';
+        const isBrand = node.classList.contains('lws-brand-mark');
+        const isVital = node.classList.contains('lws-vital');
+        const focused = isButton && (node === document.activeElement || node.matches(':focus-visible'));
+        const hovered = isButton && node.matches(':hover');
+        const disabled = isButton && node.disabled;
+        const fill = isBrand ? 0x182116 : isVital ? 0x111a11 : (hovered || focused) ? 0x39412a : 0x172116;
+        const stroke = focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xbfa064;
+        graphics.fillStyle(fill, disabled ? 0.42 : isBrand ? 0.92 : 0.96);
+        graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
+        graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx), stroke, disabled ? 0.34 : focused ? 0.98 : 0.54);
+        graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
+        graphics.fillStyle(0xe7c982, isBrand ? 0.76 : 0.52);
+        graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
+      });
+      this.nativeHudUiObjects.push(graphics);
+
+      const fallbackColors = node => {
+        if (node.classList.contains('lws-brand-mark') || node.id === 'lws-current-location') return '#e7c982';
+        if (node.matches('.lws-brand-copy strong')) return '#efe7d4';
+        if (node.matches('.lws-brand-copy span,.lws-location > span,.lws-objective-label,.lws-vital > span')) return '#b1b8aa';
+        if (node.id === 'lws-current-objective') return '#f4edda';
+        if (node.closest('.lws-vital.health')) return '#e9b5a3';
+        if (node.closest('.lws-vital.gold')) return '#e7c982';
+        return '#e9e4d5';
+      };
+      textNodes.forEach(node => {
+        const rect = readRect(node);
+        if (!rect) return;
+        const css = window.getComputedStyle(node);
+        const fontSize = Math.max(9, Math.round((parseFloat(css.fontSize) || 12) * sy));
+        const letterSpacing = Number.parseFloat(css.letterSpacing) || 0;
+        const text = this.add.text(
+          node.classList.contains('lws-brand-mark') ? rect.x + rect.width / 2 : rect.x,
+          node.classList.contains('lws-brand-mark') ? rect.y + rect.height / 2 : rect.y,
+          content(node),
+          {
+            fontFamily: css.fontFamily || 'Arial, sans-serif',
+            fontSize: fontSize + 'px',
+            fontStyle: css.fontWeight === 'bold' || Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
+            color: fallbackColors(node),
+            letterSpacing: letterSpacing * sx,
+            align: node.classList.contains('lws-brand-mark') ? 'center' : 'left'
+          }
+        ).setDepth(54);
+        if (node.classList.contains('lws-brand-mark')) text.setOrigin(0.5);
+        else text.setOrigin(0, 0);
+        text.setResolution?.(2);
+        text.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        this.nativeHudUiObjects.push(text);
+        node.dataset.legendPhaserHudText = 'true';
+        this.nativeHudUiTaggedNodes.push(node);
+      });
+
+      controls.forEach(node => {
+        node.dataset.legendPhaserHudControl = 'true';
+        this.nativeHudUiTaggedNodes.push(node);
+      });
+    }
+
     syncNativeGameplayUi(surface = this.surface) {
       // The shared DOM-to-Phaser mirror is intentionally held behind a safe
       // production fallback. It reconstructs CSS panels/text approximately and
@@ -3488,6 +3711,7 @@
     setEnvironment: (name, immediate = false) => setEnvironment(name, immediate),
     pulse: kind => realmScene?.pulse?.(kind),
     setSurface: surface => realmScene?.setSurface?.(surface),
+    refreshHud: () => realmScene?.syncNativeHudUi?.(),
     refresh: () => inferEnvironment(),
     selectAshmereLandmark: id => realmScene?.selectAshmereLandmark?.(id) || false,
     get saveKey() { return SAVE_KEY; }

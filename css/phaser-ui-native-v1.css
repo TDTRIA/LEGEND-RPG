@@ -422,3 +422,41 @@ body.legend-phaser-world-active #legend-world-shell-modal-root * {
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
+
+
+/* Persistent status HUD: Phaser paints the visible frame and typography, while
+   the original DOM buttons retain their real pointer, keyboard and screen-reader
+   behavior. The class is added only after the native HUD painter is ready. */
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-brand-mark,
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-vital,
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-btn,
+body.legend-phaser-world-active.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-location,
+body.legend-phaser-world-active.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud .lws-objective {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud [data-legend-phaser-hud-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud [data-legend-phaser-hud-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  cursor: pointer !important;
+  touch-action: manipulation;
+}
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud [data-legend-phaser-hud-control="true"]:focus-visible {
+  outline: 2px solid #ffe6a0 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 4px rgba(231, 201, 130, .18) !important;
+}
