@@ -481,7 +481,7 @@ body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world
   text-shadow: none !important;
 }
 body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar [data-legend-phaser-bottom-icon="true"] {
-  visibility: hidden !important;
+  opacity: 0 !important;
   background: transparent !important;
   background-image: none !important;
 }

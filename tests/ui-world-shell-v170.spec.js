@@ -188,12 +188,16 @@ test.describe('LEGEND persistent world shell v170', () => {
         values: snapshot.nativeBottomBarUiTextValues || [],
         actions: snapshot.nativeBottomBarUiControlIds || [],
         labelColors: labels.map(node => getComputedStyle(node).color),
+        iconOpacities: Array.from(bar?.querySelectorAll('.lws-btn-icon') || []).map(node => getComputedStyle(node).opacity),
         buttonCount: bar?.querySelectorAll('button[data-world-action]').length || 0
       };
     });
     expect(desktop.active).toBe(true);
     expect(desktop.objectCount).toBeGreaterThan(2);
     expect(desktop.iconCount).toBeGreaterThanOrEqual(5);
+    expect(desktop.iconOpacities.every(opacity => opacity === '0')).toBe(true);
+    await page.locator('.lws-bottom-bar [data-world-action="journal"]').hover();
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeBottomBarUiIconCount || 0)).toBeGreaterThanOrEqual(5);
     expect(desktop.values).toEqual(expect.arrayContaining(['World', 'Inventory', 'Journal', 'Map', 'Combat', 'Settings']));
     expect(desktop.actions).toEqual(expect.arrayContaining(['world', 'inventory', 'journal', 'map', 'combat', 'settings']));
     expect(desktop.buttonCount).toBe(6);
