@@ -23,6 +23,7 @@ async function startFreshTraveler(page, name = 'RoadGraphQA') {
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
+  await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
   await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
