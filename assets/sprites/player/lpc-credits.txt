@@ -1,0 +1,19 @@
+Player character spritesheet — attribution
+============================================
+
+Source: Universal LPC Spritesheet Character Generator
+https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/
+
+The base character art in lpc-base-sheet.png is from the Liberated Pixel Cup (LPC)
+community art pool, licensed under CC-BY-SA 3.0 and/or GPL 3.0.
+
+Per the license, you MUST credit the authors when shipping the game. Add a line
+like this to the game's Credits screen:
+
+  Character sprites: Liberated Pixel Cup contributors
+  (https://liberatedpixelcup.github.io/Universal-LPC-Spritesheet-Character-Generator/)
+  CC-BY-SA 3.0 / GPL 3.0
+
+When you regenerate a dressed character at the generator, use its
+"Credits (TXT)" button and replace this file with the generated credits list —
+it names the exact authors of every layer you selected.
