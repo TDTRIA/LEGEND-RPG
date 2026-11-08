@@ -251,6 +251,8 @@
     if (shell) shell.hidden = true;
     document.body.classList.remove('legend-world-shell-active', 'legend-shell-left-open', 'legend-shell-right-open');
     syncSceneAtmosphere(null, null);
+    window.LegendPhaserWorldV1?.refreshHud?.();
+    window.LegendPhaserWorldV1?.refreshNavigation?.();
     window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
     window.LegendPhaserWorldV1?.refreshRightDrawer?.();
     lastContext = null;
