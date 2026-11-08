@@ -12,9 +12,9 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 
 **Status: In progress**
 
-- **Native in RealmScene:** persistent world environments and atmosphere; Ashmere landmarks; new-player title/menu; mandatory annals; traveler creation; Oric opening-road prologue/response/ambush presentation; persistent HUD; bottom action navigation; traveler journal/quest drawer; contextual action/POI drawer; Old Road connected map and field-journal modal. Migrated surfaces have dedicated Phaser panel/text/icon rendering, with original DOM controls retained as accessible action targets.
+- **Native in RealmScene:** persistent world environments and atmosphere; Ashmere landmarks; new-player title/menu; mandatory annals; traveler creation; Oric opening-road prologue/response/ambush presentation; persistent HUD; bottom action navigation; traveler journal/quest drawer; contextual action/POI drawer; Old Road connected map and field-journal modal; Old Road journey header, time/conditions strip, health/pressure vitals, six-leg tracker and next-stop/supplies side rail. Migrated surfaces have dedicated Phaser panel/text/icon rendering, with original DOM controls retained as accessible action targets.
 - **DOM safety fallback:** returning-player title with Continue. Its labels and interaction remain in the original styled DOM until Phaser text parity is verified.
-- **Still DOM-rendered over Phaser world:** shell map drawer; town terminal; services, jobs, market, blacksmith/crafting; main Old Road expedition scene, route/POI/camp interactions and expedition results; combat commands/status; combat results; level-up/stat allocation; Bell Cellar; Greyfen/Storehouse; settings, dispatches, credits and shell modals.
+- **Still DOM-rendered over Phaser world:** shell map drawer; town terminal; services, jobs, market, blacksmith/crafting; main Old Road scene and route/POI/camp decision controls, expedition results; combat commands/status; combat results; level-up/stat allocation; Bell Cellar; Greyfen/Storehouse; settings, dispatches, credits and shell modals.
 - **Safety note:** the previous shared DOM-to-Phaser gameplay mirror is disabled. It made DOM text transparent and recreated CSS panels incompletely, which caused missing copy and weak/blurred panel presentation. Do not turn it back on globally.
 
 ## Migration order
@@ -45,7 +45,8 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 4. **Old Road and expedition**
    - [ ] Departure, route choice, exploration scene, points of interest and discoveries.
    - [x] Connected Old Road map and field-journal modal (live route state, discoveries, visit/route choice targets).
-   - [ ] Main expedition scene, camp, route-event presentation and expedition result screen.
+   - [x] Road journey HUD: location/title, time and conditions, health/pressure meters, six-leg progress and supplies/next-stop/field-notes rail.
+   - [ ] Main road scene, route/POI interactions, camp decisions and expedition result presentation.
    - [ ] Keep route state, pressure, rewards, evidence and Road Token settlement in existing modules.
 
 5. **Combat and progression**
