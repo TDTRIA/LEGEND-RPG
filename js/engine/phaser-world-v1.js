@@ -6414,6 +6414,7 @@
     refreshExpedition: () => realmScene?.syncNativeExpeditionHudUi?.(),
     refreshExpeditionActions: () => realmScene?.syncNativeExpeditionActionsUi?.(),
     refreshCombat: () => realmScene?.syncNativeCombatUi?.(realmScene?.surface),
+    refreshTownBoard: () => realmScene?.syncNativeTownBoardUi?.(realmScene?.surface),
     refresh: () => inferEnvironment(),
     selectAshmereLandmark: id => realmScene?.selectAshmereLandmark?.(id) || false,
     get saveKey() { return SAVE_KEY; }
