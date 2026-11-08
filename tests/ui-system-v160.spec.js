@@ -407,6 +407,31 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       window.LegendPhaserWorldV1?.snapshot?.()?.nativeCombatUi
     )).toBe(true);
 
+    // Deliberately remove one required action and force a repaint. Phaser must
+    // reveal the real battle UI rather than leave its duplicate labels hidden.
+    const fallbackProof = await page.evaluate(() => {
+      const heavy = document.getElementById('heavy');
+      const parent = heavy?.parentNode;
+      const next = heavy?.nextSibling;
+      if (!heavy || !parent) throw new Error('Heavy Strike action missing before fallback proof');
+      heavy.remove();
+      window.LegendPhaserWorldV1.refreshCombat();
+      const fallback = {
+        native: window.LegendPhaserWorldV1.snapshot().nativeCombatUi,
+        commandColor: getComputedStyle(document.querySelector('#strike')).color,
+        dialogueColor: getComputedStyle(document.querySelector('.rpg-dialogue p')).color
+      };
+      parent.insertBefore(heavy, next);
+      window.LegendPhaserWorldV1.refreshCombat();
+      return fallback;
+    });
+    expect(fallbackProof.native).toBe(false);
+    expect(fallbackProof.commandColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(fallbackProof.dialogueColor).not.toBe('rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeCombatUi
+    )).toBe(true);
+
     const desktop = await page.evaluate(() => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       const controls = ['battleSound','strike','skill','item','guard','heavy','poultice','flee'];
