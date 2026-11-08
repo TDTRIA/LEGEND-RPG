@@ -408,8 +408,9 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
         memories: []
       };
       const messages = [];
+      let activePlayer = unlockPlayer;
       const regionService = window.LegendRegionServiceV100.create({
-        getPlayer: () => unlockPlayer,
+        getPlayer: () => activePlayer,
         savePlayer: () => false,
         getRegions: () => ({
           Ashmere: { id: 'Ashmere', name: 'Ashmere', travelCost: 0 },
@@ -419,6 +420,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
         formatGold: amount => String(amount) + 'g'
       });
       regionService.unlock('Greyfen');
+      activePlayer = travelPlayer;
       regionService.travel('Greyfen');
       return {
         cloudOk: cloudResult.ok,
