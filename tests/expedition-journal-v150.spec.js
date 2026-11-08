@@ -248,6 +248,7 @@ test('road map keyboard focus reaches and activates route choices', async ({ pag
   await expect(close).toBeFocused();
 
   await page.keyboard.press('Tab');
+  await expect(routeButtons.nth(0)).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(dialog).toBeHidden();
   await expect.poll(() => page.evaluate(() =>
