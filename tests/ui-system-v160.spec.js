@@ -93,11 +93,22 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       return {
         assetsLoaded: snapshot.nativeTitleUiAssetsLoaded,
+        logoPainted: snapshot.nativeTitleUiLogoPainted,
+        dividerPainted: snapshot.nativeTitleUiDividerPainted,
+        decorationLabels: snapshot.nativeTitleUiDecorationLabels || [],
+        decorationTextCount: snapshot.nativeTitleUiDecorationTextCount || 0,
         ids: snapshot.nativeTitleUiControlIds,
         labels: snapshot.nativeTitleUiLabels || []
       };
     });
     expect(freshMenu.assetsLoaded).toBe(true);
+    expect(freshMenu.logoPainted).toBe(true);
+    expect(freshMenu.dividerPainted).toBe(true);
+    expect(freshMenu.decorationTextCount).toBe(7);
+    expect(freshMenu.decorationLabels.map(item => item.id)).toEqual([
+      'kicker','intro','traveler-label','traveler-name','traveler-detail','menu-heading','divider-caption'
+    ]);
+    expect(freshMenu.decorationLabels.every(item => item.text)).toBe(true);
     expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','credits']);
     expect(freshMenu.labels.map(item => item.title)).toEqual([
       'Begin Your Journey','Profile','Settings','News & Roadmap','Credits'
@@ -132,6 +143,10 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         ids: snapshot.nativeTitleUiControlIds,
         labels: snapshot.nativeTitleUiLabels || [],
         textQuality: snapshot.nativeTitleUiTextQuality || [],
+        logoPainted: snapshot.nativeTitleUiLogoPainted,
+        dividerPainted: snapshot.nativeTitleUiDividerPainted,
+        decorationLabels: snapshot.nativeTitleUiDecorationLabels || [],
+        decorationTextCount: snapshot.nativeTitleUiDecorationTextCount || 0,
         buttons: buttons.map(button => ({
           id: button.id,
           tag: button.tagName,
@@ -143,6 +158,13 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     });
     expect(menu.saveKey).toBe('legend-roads-of-ashmere-v09');
     expect(menu.assetsLoaded).toBe(true);
+    expect(menu.logoPainted).toBe(true);
+    expect(menu.dividerPainted).toBe(true);
+    expect(menu.decorationTextCount).toBe(7);
+    expect(menu.decorationLabels.map(item => item.id)).toEqual([
+      'kicker','intro','traveler-label','traveler-name','traveler-detail','menu-heading','divider-caption'
+    ]);
+    expect(menu.decorationLabels.find(item => item.id === 'traveler-name')?.text).toBe('ReturnMenuParity');
     expect(menu.ids).toEqual(['continue','new','account','settings','dispatches','credits']);
     expect(menu.labels.map(item => item.title)).toEqual([
       'Continue Journey','New Traveler','Profile','Settings','News & Roadmap','Credits'
@@ -223,11 +245,17 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
           size,
           ids: snapshot.nativeTitleUiControlIds,
           labels: snapshot.nativeTitleUiLabels || [],
+          logoPainted: snapshot.nativeTitleUiLogoPainted,
+          dividerPainted: snapshot.nativeTitleUiDividerPainted,
+          decorationTextCount: snapshot.nativeTitleUiDecorationTextCount || 0,
           bounds: snapshot.nativeTitleUiControlBounds || []
         };
       });
       expect(layout.ids).toEqual(['continue','new','account','settings','dispatches','credits']);
       expect(layout.labels.every(item => item.title && item.subtitle)).toBe(true);
+      expect(layout.logoPainted).toBe(true);
+      expect(layout.dividerPainted).toBe(true);
+      expect(layout.decorationTextCount).toBe(7);
       expect(layout.bounds).toHaveLength(6);
       expect(layout.bounds.every(item => item.x >= 0 && item.width > 0 && item.x + item.width <= layout.size.width + 1)).toBe(true);
       await expectNoHorizontalOverflow(mobilePage);
