@@ -874,6 +874,18 @@
       return { width: this.scale.width || 1600, height: this.scale.height || 900 };
     }
 
+    hasFiniteEntranceAnimation(node) {
+      if (typeof node?.getAnimations !== 'function') return false;
+      return node.getAnimations({ subtree: true }).some(animation => {
+        if (!['running', 'pending'].includes(animation.playState)) return false;
+        const timing = animation.effect?.getComputedTiming?.();
+        // Ambient haze, drifting backdrops and rune loops intentionally run
+        // forever. They must never block the native UI painter. Wait only for
+        // finite entrance/transition animations whose final layout is pending.
+        return Boolean(timing && timing.iterations !== Infinity && Number.isFinite(timing.endTime));
+      });
+    }
+
     clearNativeTitleUi(removeClass = true) {
       this.nativeTitleUiLayoutEvent?.remove?.(false);
       this.nativeTitleUiLayoutEvent = null;
@@ -916,10 +928,10 @@
         return;
       }
 
-      const animations = typeof hero.getAnimations === 'function'
-        ? hero.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' || animation.playState === 'pending')
-        : [];
-      if (animations.length) {
+      if (this.hasFiniteEntranceAnimation(hero)) {
+        // Reveal the semantic DOM during a finite entrance pose; otherwise the
+        // previous Phaser frame can sit over the new screen while it animates.
+        this.clearNativeTitleUi();
         // Measure the final painted bounds, not the intermediate CSS entrance pose.
         this.nativeTitleUiLayoutEvent?.remove?.(false);
         this.nativeTitleUiLayoutEvent = this.time.delayedCall(820, () => {
@@ -1102,10 +1114,8 @@
         return;
       }
 
-      const animations = typeof screen.getAnimations === 'function'
-        ? screen.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' || animation.playState === 'pending')
-        : [];
-      if (animations.length) {
+      if (this.hasFiniteEntranceAnimation(screen)) {
+        this.clearNativeAnnalsUi();
         this.nativeAnnalsUiLayoutEvent?.remove?.(false);
         this.nativeAnnalsUiLayoutEvent = this.time.delayedCall(680, () => {
           this.nativeAnnalsUiLayoutEvent = null;
@@ -1399,10 +1409,10 @@
         return;
       }
 
-      const animations = typeof screen.getAnimations === 'function'
-        ? screen.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' || animation.playState === 'pending')
-        : [];
-      if (animations.length) {
+      if (this.hasFiniteEntranceAnimation(screen)) {
+        // A new creation step can have a different layout. Never leave the
+        // previous step's Phaser cards over the incoming DOM while it animates.
+        this.clearNativeCreationUi();
         this.nativeCreationUiLayoutEvent?.remove?.(false);
         this.nativeCreationUiLayoutEvent = this.time.delayedCall(720, () => {
           this.nativeCreationUiLayoutEvent = null;
@@ -1824,10 +1834,10 @@
         return;
       }
 
-      const animations = typeof screen.getAnimations === 'function'
-        ? screen.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' || animation.playState === 'pending')
-        : [];
-      if (animations.length) {
+      if (this.hasFiniteEntranceAnimation(screen)) {
+        // Prologue backgrounds and lantern sweeps loop forever; only wait for
+        // finite panel entrances, and reveal DOM paint until the new frame is ready.
+        this.clearNativeOpeningUi();
         this.nativeOpeningUiLayoutEvent?.remove?.(false);
         this.nativeOpeningUiLayoutEvent = this.time.delayedCall(700, () => {
           this.nativeOpeningUiLayoutEvent = null;
