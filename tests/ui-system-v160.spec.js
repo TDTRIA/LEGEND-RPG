@@ -605,7 +605,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
           fallbackOpacity: style?.opacity || '',
           fallbackVisibility: style?.visibility || '',
           sceneImageFilter: style?.filter || '',
-          canvasFilter: getComputedStyle(document.querySelector('#game-container canvas')).filter,
+          canvasFilter: getComputedStyle(document.querySelector('#game-container canvas') || document.body).filter,
           sceneSource: image?.getAttribute('src') || '',
           sceneLabel: document.querySelector('.exp100-scene-label')?.textContent || ''
         };
@@ -664,17 +664,32 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       sceneArt: window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt,
       canvas: document.querySelector('#game-container canvas')?.getBoundingClientRect().toJSON(),
       scene: document.querySelector('.exp100-scene-live')?.getBoundingClientRect().toJSON(),
-      routeButtons: Array.from(document.querySelectorAll('.exp150-interactions button')).map(button => ({
-        id: button.id,
-        width: button.getBoundingClientRect().width,
-        height: button.getBoundingClientRect().height
-      }))
+      mapButton: document.querySelector('#exp150OpenMap')?.getBoundingClientRect().toJSON() || null,
+      routeButtons: Array.from(document.querySelectorAll('.exp150-world-page button:enabled'))
+        .filter(button => button.getClientRects().length)
+        .map(button => ({
+          id: button.id,
+          width: button.getBoundingClientRect().width,
+          height: button.getBoundingClientRect().height
+        }))
     }));
     expect(mobile.environment).toBe('ridge');
     expect(mobile.sceneArt.active).toBe(true);
     expect(mobile.canvas.width).toBeGreaterThanOrEqual(390);
     expect(mobile.scene.width).toBeGreaterThan(0);
-    expect(mobile.routeButtons.every(button => button.width >= 0 && button.height >= 0)).toBe(true);
+    expect(mobile.mapButton.width).toBeGreaterThan(0);
+    expect(mobile.mapButton.height).toBeGreaterThanOrEqual(36);
+    expect(mobile.routeButtons.length).toBeGreaterThan(0);
+    expect(mobile.routeButtons.every(button => button.width > 0 && button.height >= 36)).toBe(true);
+    const roadMotion = await page.evaluate(() => {
+      const rules = Array.from(document.styleSheets).flatMap(sheet => {
+        try { return Array.from(sheet.cssRules || []); } catch { return []; }
+      });
+      return ['exp100-road-arrive', 'exp100-discovery-arrive'].map(name =>
+        rules.filter(rule => rule.name === name).map(rule => rule.cssText).join(' ')
+      );
+    });
+    expect(roadMotion.every(rule => rule.length > 0 && !rule.includes('blur('))).toBe(true);
     await expectNoHorizontalOverflow(page);
   });
 
