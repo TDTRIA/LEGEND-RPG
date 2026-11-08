@@ -40,6 +40,7 @@
         <a class="btn" href="blog.html">Read the Devlog</a>
         <a class="btn" href="CHANGELOG.md">Changelog</a>
         <a class="btn" href="docs/ROADMAP.md">Roadmap</a>
+        <a class="btn" href="docs/DARKEST_DUNGEON_DIRECTION.md">Creative Direction</a>
         <a class="btn" href="feedback.html">Playtest Feedback</a>
         <a class="btn" href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
       </div>
@@ -88,7 +89,13 @@
       <section class="card">
         <h2>Audio & Engine Status</h2>
         <p>The 48-asset original sound library and the roughly 10½-minute replacement main-theme MP3 are now merged into production and included in the successful GitHub Pages deployment. The shared audio director keeps one continuous theme loop, switches location ambience with Phaser scene/surface changes, preserves the existing sound toggle, and supplies the new title/menu and battle effects. The remaining audio work is human listening for playback, levels, loop seam, and long-session comfort, plus wiring the remaining one-shot cues to their matching game actions.</p>
-        <p class="muted">The Phaser migration is approved and underway, but it is not yet a complete rewrite: the world renderer is active while most existing UI and gameplay systems remain in place.</p>
+        <p class="muted">The production Phaser migration is still underway. The goal is to move every existing game screen and interactive surface into Phaser—not to rewrite the underlying game systems. Existing controllers, combat and expedition rules, progression, rewards, and saves remain authoritative while each presentation surface is migrated and tested.</p>
+      </section>
+      <section class="card">
+        <h2>Creative Direction</h2>
+        <p><strong>LEGEND's primary creative reference is now Darkest Dungeon.</strong> The direction is expedition-led dark fantasy: illustrated scenes, strong character silhouettes, expressive dialogue, tactical encounters whose intent is readable, and field reports that record what happened. We are using these qualities as inspiration only; LEGEND keeps its own world, characters, canon, mechanics, art, and identity.</p>
+        <p class="muted">This is a presentation and art-direction decision, not a pause or replacement for the production Phaser migration. The goal remains to move every existing game screen and interactive surface into Phaser while keeping the existing gameplay controllers, rules, progression, and saves authoritative.</p>
+        <div class="actions"><a class="btn" href="docs/DARKEST_DUNGEON_DIRECTION.md">Read the Creative Direction</a><a class="btn" href="docs/PHASER_MIGRATION.md">Follow the Phaser Migration</a></div>
       </section>
       <section class="card">
         <h2>Project Status</h2>
@@ -101,7 +108,7 @@
       </section>
       <section class="card">
         <h2>What Comes Next</h2>
-        <p>The next priorities are listening to the new soundtrack in the deployed game and finishing the remaining event-specific sound hooks, moving the HUD and contextual world shell into Phaser one complete playable surface at a time, and completing Greyfen as a coherent town-and-expedition loop. Balance, accessibility, and desktop/mobile regression checks remain release requirements.</p>
+        <p>The top technical priority is finishing the full production Phaser migration: persistent HUD/navigation/drawers, Ashmere and services, Old Road and its supporting screens, combat, results and level-up, dungeons/regions, inventory, settings/account, and remaining overlays. Every screen must use the existing production controllers and preserve current saves, rules, rewards, and account behavior. Then complete the deployed soundtrack listening pass and remaining event hooks, and finish Greyfen as a coherent town-and-expedition loop. Balance, accessibility, and desktop/mobile regression checks remain release requirements.</p>
         <p class="muted">Follow the <a class="archive-link" href="blog.html">development chronicle</a> for the recent catch-up and the <a class="archive-link" href="docs/ROADMAP.md">roadmap</a> for active release gates.</p>
       </section>
     </main>
