@@ -155,6 +155,10 @@
     panelFrame: 'assets/ui/panels/legend-panel-frame-v1.svg',
     healthOrbBezel: 'assets/ui/panels/legend-health-orb-bezel-v1.svg',
     healthOrbFill: 'assets/ui/panels/legend-health-orb-fill-v1.svg',
+    combatFightIcon: 'assets/generated/skills/icons/weapon-mastery.webp',
+    combatActIcon: 'assets/generated/skills/icons/veil.webp',
+    combatItemIcon: 'assets/generated/items/healing-potion.webp',
+    combatGuardIcon: 'assets/generated/items/round-shield.webp',
     oric: 'assets/generated/npcs/captain-oric.webp',
     wolf: 'assets/generated/enemies/blackroot-wolf.webp',
     goblin: 'assets/generated/enemies/road-goblin.webp',
@@ -622,6 +626,10 @@
       this.nativeCombatUiScrollHandler = null;
       this.nativeCombatUiObserver = null;
       this.nativeCombatUiLayoutEvent = null;
+      this.nativeCombatUiIconIds = [];
+      this.nativeCombatUiHealthRatio = null;
+      this.nativeCombatUiHealthLabel = '';
+      this.nativeCombatUiCornerCount = 0;
       this.nativeTownBoardUiActive = false;
       this.nativeTownBoardUiObjects = [];
       this.nativeTownBoardUiTextNodes = [];
