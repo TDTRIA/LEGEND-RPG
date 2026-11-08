@@ -13,7 +13,7 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 **Status: In progress**
 
 - **Native in RealmScene:** persistent world environments and atmosphere; Ashmere landmarks; new-player title/menu; mandatory annals; traveler creation; Oric opening-road prologue/response/ambush presentation; persistent HUD; bottom action navigation; traveler journal/quest drawer; contextual action/POI drawer; Old Road connected map and field-journal modal; Old Road journey header, time/conditions strip, health/pressure vitals, six-leg tracker, next-stop/supplies side rail and road route/POI/optional-detour/camp/next-move decision cards. Migrated surfaces have dedicated Phaser panel/text/icon rendering, with original DOM controls retained as accessible action targets.
-- **DOM safety fallback:** returning-player title with Continue. Its labels and interaction remain in the original styled DOM until Phaser text parity is verified.
+- **DOM safety fallback:** the original semantic returning-player title remains visible only when the Phaser title preflight fails. When the required assets, all production actions and live Phaser labels pass, Phaser is the normal visual presentation and the DOM buttons remain the real accessible action targets.
 - **Still DOM-rendered over Phaser world:** shell map drawer; town terminal; services, jobs, market, blacksmith/crafting; main Old Road scene and expedition results; combat commands/status; combat results; level-up/stat allocation; Bell Cellar; Greyfen/Storehouse; settings, dispatches, credits and shell modals.
 - **Safety note:** the previous shared DOM-to-Phaser gameplay mirror is disabled. It made DOM text transparent and recreated CSS panels incompletely, which caused missing copy and weak/blurred panel presentation. Do not turn it back on globally.
 
@@ -22,8 +22,8 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 1. **Title and first-session shell**
    - [x] New-player title/menu and world backdrop in Phaser.
    - [x] Annals, traveler creation and Oric opening-road presentation in Phaser.
-   - [x] Keep the returning-player Continue state readable with a DOM fallback.
-   - [ ] Complete and verify Continue text, focus, hover, selected/disabled states and responsive geometry in Phaser before removing that fallback.
+   - [x] Keep the original returning-player menu as a safe DOM fallback when Phaser preflight fails.
+   - [ ] Complete and verify Phaser Continue text, focus, hover, selected/disabled states and responsive geometry through the desktop/mobile Playwright run; retain the DOM fallback permanently for any failed preflight.
 
 2. **Persistent shell**
    - [x] HUD and traveler vitals.
