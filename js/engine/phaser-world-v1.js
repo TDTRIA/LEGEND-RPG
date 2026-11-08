@@ -503,6 +503,7 @@
       this.nativeExpeditionActionsUiInteractionHandler = null;
       this.nativeExpeditionActionsUiScrollHandler = null;
       this.nativeExpeditionActionsUiLayoutEvent = null;
+      this.nativeExpeditionActionsUiMutationObserver = null;
       this.nativeExpeditionHudUiActive = false;
       this.nativeExpeditionHudUiObjects = [];
       this.nativeExpeditionHudUiTaggedNodes = [];
@@ -2826,6 +2827,8 @@
     clearNativeExpeditionActionsUi(removeClass = true, removeListeners = true) {
       this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
       this.nativeExpeditionActionsUiLayoutEvent = null;
+      this.nativeExpeditionActionsUiMutationObserver?.disconnect?.();
+      this.nativeExpeditionActionsUiMutationObserver = null;
       if (removeListeners) {
         if (this.nativeExpeditionActionsUiBoundHost && this.nativeExpeditionActionsUiInteractionHandler) {
           ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
@@ -2896,6 +2899,12 @@
         );
         document.addEventListener('scroll', this.nativeExpeditionActionsUiScrollHandler, true);
         window.addEventListener('scroll', this.nativeExpeditionActionsUiScrollHandler, { passive: true });
+        if (typeof window.MutationObserver === 'function') {
+          this.nativeExpeditionActionsUiMutationObserver = new window.MutationObserver(() =>
+            this.nativeExpeditionActionsUiInteractionHandler?.()
+          );
+          this.nativeExpeditionActionsUiMutationObserver.observe(host, { childList: true, subtree: true });
+        }
       }
 
       if (this.hasFiniteEntranceAnimation(page)) {
@@ -2923,6 +2932,7 @@
         '.exp100-kicker','.exp150-kicker',
         '.exp100-poi-copy > span','.exp100-poi-copy > strong','.exp100-poi-copy > p',
         '.exp100-poi-copy > button','.exp100-poi-icon','.exp150-action > b','.exp150-abandon',
+        '.exp100-choice > span',
         '.exp100-camp-heading > span','.exp100-camp-heading > strong','.exp100-camp-heading > small',
         '.exp150-camp-atmosphere > span','.exp150-camp-atmosphere > p','.exp150-camp-atmosphere > small',
         '.exp150-section-heading > span','.exp150-current-mark',
