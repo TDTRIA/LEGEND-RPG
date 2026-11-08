@@ -471,7 +471,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(desktop.healthOrb).toMatchObject({ hp: 40, maxHp: 70, percent: 57 });
     expect(desktop.healthOrb.width).toBeGreaterThan(0);
     expect(desktop.healthOrb.height).toBeGreaterThan(0);
-    expect(desktop.portrait.src).toMatch(/class-ranger\\.webp/);
+    expect(desktop.portrait.src).toMatch(/class-ranger\.webp/);
     expect(desktop.portrait.borderRadius).toBe('50%');
     expect(desktop.textCount).toBeGreaterThan(22);
     expect(desktop.text).toEqual(expect.arrayContaining([
