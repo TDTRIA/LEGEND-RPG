@@ -622,6 +622,10 @@
       this.nativeCombatUiObserver = null;
       this.nativeCombatUiLayoutEvent = null;
       this.nativeCombatUiHealthOrbState = null;
+      this.nativeCombatUiHealthOrbContainer = null;
+      this.nativeCombatUiHealthOrbMaskGraphics = null;
+      this.nativeCombatUiHealthOrbMask = null;
+      this.nativeCombatUiHealthOrbMaskFilter = null;
       this.nativeTownBoardUiActive = false;
       this.nativeTownBoardUiObjects = [];
       this.nativeTownBoardUiTextNodes = [];
@@ -4729,6 +4733,14 @@
     clearNativeCombatUi(removeClass = true, removeListeners = true) {
       this.nativeCombatUiLayoutEvent?.remove?.(false);
       this.nativeCombatUiLayoutEvent = null;
+      if (this.nativeCombatUiHealthOrbContainer && this.nativeCombatUiHealthOrbMaskFilter) {
+        this.nativeCombatUiHealthOrbContainer.filters?.internal?.remove?.(this.nativeCombatUiHealthOrbMaskFilter, true);
+      }
+      this.nativeCombatUiHealthOrbMaskFilter = null;
+      if (this.nativeCombatUiHealthOrbContainer && this.nativeCombatUiHealthOrbMask) {
+        this.nativeCombatUiHealthOrbContainer.clearMask?.(true);
+      }
+      this.nativeCombatUiHealthOrbMask = null;
       if (this.nativeCombatUiObserver) {
         this.nativeCombatUiObserver.disconnect();
         this.nativeCombatUiObserver = null;
@@ -4757,6 +4769,8 @@
       this.nativeCombatUiControls = [];
       this.nativeCombatUiSignature = '';
       this.nativeCombatUiHealthOrbState = null;
+      this.nativeCombatUiHealthOrbContainer = null;
+      this.nativeCombatUiHealthOrbMaskGraphics = null;
       this.nativeCombatUiActive = false;
       if (removeClass) document.body?.classList.remove('legend-phaser-combat-ui-active');
     }
@@ -4942,23 +4956,49 @@
 
 
       // A separate fill and bronze bezel reproduce the concept's health orb.
-      // The mask reveals only the live lower fraction; the DOM still owns HP.
+      // Use the same Phaser 4.1 Canvas/WebGL masking path as the production
+      // drawers; if WebGL clipping is unavailable the battle safely falls back.
       const orbSize = Math.max(48, Math.min(portraitRect.width, portraitRect.height));
       const orbX = portraitRect.x + portraitRect.width / 2;
       const orbY = portraitRect.y + portraitRect.height / 2;
-      const fillMask = this.add.graphics();
       const visibleFillHeight = orbSize * healthOrbState.percent / 100;
-      fillMask.fillStyle(0xffffff, 1);
+      const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false });
+      maskGraphics.fillStyle(0xffffff, 1);
       if (visibleFillHeight > 0) {
-        fillMask.fillRect(orbX - orbSize / 2, orbY + orbSize / 2 - visibleFillHeight, orbSize, visibleFillHeight);
+        maskGraphics.fillRect(orbX - orbSize / 2, orbY + orbSize / 2 - visibleFillHeight, orbSize, visibleFillHeight);
       }
-      fillMask.setVisible(false);
-      this.nativeCombatUiObjects.push(fillMask);
+      const healthContainer = this.add.container(0, 0).setDepth(61);
+      const rendererType = this.sys.game.renderer?.type;
+      let healthMask = null;
+      let healthMaskFilter = null;
+      if (rendererType === Phaser.WEBGL) {
+        try {
+          healthContainer.enableFilters?.();
+          healthContainer.setFiltersFocusContext?.(true);
+          healthMaskFilter = healthContainer.filters?.internal?.addMask?.(
+            maskGraphics, false, this.cameras.main, 'world'
+          ) || null;
+        } catch (error) {
+          console.warn('[LEGEND Phaser] Combat health-orb WebGL mask could not be created; keeping the DOM battle visible.', error);
+          healthMaskFilter = null;
+        }
+        if (!healthMaskFilter) {
+          healthContainer.destroy(true);
+          maskGraphics.destroy(true);
+          throw new Error('Combat health-orb mask unavailable in WebGL.');
+        }
+      } else {
+        healthMask = maskGraphics.createGeometryMask();
+        healthContainer.setMask(healthMask);
+      }
+      this.nativeCombatUiHealthOrbContainer = healthContainer;
+      this.nativeCombatUiHealthOrbMaskGraphics = maskGraphics;
+      this.nativeCombatUiHealthOrbMask = healthMask;
+      this.nativeCombatUiHealthOrbMaskFilter = healthMaskFilter;
+      this.nativeCombatUiObjects.push(healthContainer, maskGraphics);
       const healthFill = this.add.image(orbX, orbY, 'combatHealthOrbFill')
-        .setDisplaySize(orbSize, orbSize)
-        .setDepth(61)
-        .setMask(fillMask.createGeometryMask());
-      this.nativeCombatUiObjects.push(healthFill);
+        .setDisplaySize(orbSize, orbSize);
+      healthContainer.add(healthFill);
       const healthBezel = this.add.image(orbX, orbY, 'combatHealthOrbBezel')
         .setDisplaySize(orbSize, orbSize)
         .setDepth(63);
