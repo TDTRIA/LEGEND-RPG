@@ -11,6 +11,11 @@ on:
       - '**/*.md'
   workflow_dispatch:
     inputs:
+      full_regression:
+        description: 'Run the complete production regression suite instead of the quick PR gate'
+        required: false
+        type: boolean
+        default: false
       full_browser_matrix:
         description: 'Run every regression test on Chrome, Firefox, Mobile Safari, and Mobile Chrome'
         required: false
@@ -85,8 +90,16 @@ jobs:
           NODE
       - name: Run Playwright tests
         env:
-          FULL_BROWSER_MATRIX: ${{ inputs.full_browser_matrix && '1' || '0' }}
-        run: npm run test:e2e
+          RUN_FULL_REGRESSION: ${{ github.event_name == 'push' || inputs.full_regression || inputs.full_browser_matrix }}
+        run: |
+          if [[ "$RUN_FULL_REGRESSION" == "true" ]]; then
+            npm run test:e2e
+          else
+            # Keep routine PR feedback fast: cover the opening, scene-art fallback,
+            # and title handoff on desktop, plus touch-critical flows on both mobiles.
+            npm run test:e2e:pr
+            npm run test:e2e:pr:mobile
+          fi
 
       - name: Smoke-test the deployed GitHub Pages build
         # The live URL must not be compared to an unmerged PR's asset URLs.
