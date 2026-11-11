@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>LEGEND: The Awakening — Development Dispatch</title>
+    <link>https://tdtria.github.io/LEGEND-RPG/dispatch/</link>
+    <description>Field notes from the making of LEGEND: The Awakening, an independent dark-fantasy browser RPG.</description>
+    <language>en-us</language>
+    <item>
+      <title>Welcome to the Recovered Build</title>
+      <link>https://tdtria.github.io/LEGEND-RPG/dispatch/issues/001-welcome-to-the-recovered-build.html</link>
+      <guid isPermaLink="true">https://tdtria.github.io/LEGEND-RPG/dispatch/issues/001-welcome-to-the-recovered-build.html</guid>
+      <pubDate>Wed, 20 May 2026 23:28:16 GMT</pubDate>
+      <description>The original first dispatch, preserved as a historical record of the recovered game and its first browser remake.</description>
+    </item>
+  </channel>
+</rss>
