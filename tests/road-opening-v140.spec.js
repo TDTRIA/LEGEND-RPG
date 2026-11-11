@@ -56,6 +56,14 @@ async function expectNoHorizontalOverflow(page) {
   expect(width.body, JSON.stringify(width)).toBeLessThanOrEqual(width.viewport);
 }
 
+async function clickCreationNext(page) {
+  const next = page.locator('#v094Next');
+  await expect(next).toBeVisible();
+  await expect(next).toBeEnabled();
+  await next.evaluate(element => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
+  await next.click();
+}
+
 async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) {
   await openTitle(page);
   if (options.previousRoadExperience) {
@@ -81,20 +89,20 @@ async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) 
   await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
   await page.locator('#v094Name').fill(name);
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-gender="unspoken"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-personality="kind"]').click();
   await expect(page.locator('.v094-scene-note span')).toContainText('MEMORY ECHO');
   await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-origin]').first().click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
   await page.locator('[data-class="Ranger"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-keepsake="Old Map"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
   await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
@@ -144,18 +152,18 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
 
     await expect(page.locator('#v094Name')).toBeVisible();
     await page.locator('#v094Name').fill('AnnalsOpeningQA');
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-gender="unspoken"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-personality="kind"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-origin]').first().click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
     await page.locator('[data-class="Ranger"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-keepsake="Old Map"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await expect(page.getByRole('heading', { name: 'AnnalsOpeningQA', exact: true })).toBeVisible();
     await page.getByRole('button', { name: /Let Me Wake/i }).click();
     await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
