@@ -6744,13 +6744,25 @@
       // Do not leave an empty or late-starting canvas in normal document flow.
       container?.classList.add('legend-phaser-startup-fallback');
       container?.setAttribute('aria-hidden', 'true');
-      if (game?.canvas) {
-        game.canvas.style.setProperty('display', 'none', 'important');
-        game.canvas.setAttribute('aria-hidden', 'true');
+      const failedGame = game;
+      const failedScene = realmScene;
+      if (failedGame?.canvas) {
+        failedGame.canvas.style.setProperty('display', 'none', 'important');
+        failedGame.canvas.setAttribute('aria-hidden', 'true');
       }
-      try { game?.destroy?.(true, true); } catch (error) {
+      // Remove every reference before restoring DOM interaction. Screen
+      // renderers may synchronously call the public refresh facade while they
+      // attach the fallback's route, travel, map and combat handlers.
+      realmScene = null;
+      game = null;
+      if (window.__legendRebootBridge) window.__legendRebootBridge = null;
+      try { failedGame?.destroy?.(true, true); } catch (error) {
         console.warn('[LEGEND Phaser] Could not dispose the failed startup renderer.', error);
       }
+      // The destroyed scene is deliberately no longer reachable from either
+      // the facade or global bridge; late readiness callbacks are guarded by
+      // startupFinalized and cannot reactivate the canvas.
+      void failedScene;
       observeRoot();
       if (IS_PROTOTYPE) window.__legendRebootReady = false;
       else window.__legendPhaserWorldReady = false;
