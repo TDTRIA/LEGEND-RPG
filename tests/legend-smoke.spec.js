@@ -32,6 +32,12 @@ async function clickCreationNext(page) {
 }
 
 async function openTitle(page, options = {}) {
+  // Normalize only desktop runs so the tall creation cards and primary action
+  // do not rely on animated page scrolling at the Playwright default 720px height.
+  const viewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
+  if (viewport.width >= 900 && viewport.height < 900) {
+    await page.setViewportSize({ width: 1440, height: 900 });
+  }
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
