@@ -309,7 +309,9 @@
     document.getElementById('exp150ModalClose')?.focus();
     window.LegendPhaserWorldV1?.refreshRoadMap?.();
     const close=()=>{
+      if (overlay.hidden) return;
       overlay.hidden=true;
+      overlay.setAttribute('hidden','');
       overlay.classList.remove('is-open');
       document.body.classList.remove('exp150-modal-open');
       window.LegendPhaserWorldV1?.clearRoadMap?.();
@@ -321,8 +323,16 @@
     content.querySelectorAll('[data-exp160-map-visit]').forEach(button=>button.addEventListener('click',()=>{
       const nodeId=button.dataset.exp160MapVisit;close();beginOptionalSite(nodeId);
     }));
-    document.getElementById('exp150ModalClose')?.addEventListener('click',close,{once:true});
-    overlay.onclick=event=>{if(event.target===overlay)close();};
+    // Handle the close control and backdrop through one modal-level path so
+    // the action still fires when the dialog is rendered above the road scene.
+    overlay.onclick=event=>{
+      if(event.target.closest?.('#exp150ModalClose')){
+        event.preventDefault();
+        close();
+        return;
+      }
+      if(event.target===overlay)close();
+    };
     overlay.onkeydown=event=>{
       if(event.key==='Escape'){event.preventDefault();close();return;}
       if(event.key==='Tab'){
