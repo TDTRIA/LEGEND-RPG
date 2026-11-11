@@ -22,7 +22,7 @@ const version = versionMatch[1];
 
 // Each Playwright test runs in an isolated browser context, so clearing localStorage
 // here only resets that test's synthetic traveler—not a player's live browser save.
-async function openTitle(page) {
+async function openTitle(page, options = {}) {
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
@@ -33,11 +33,13 @@ async function openTitle(page) {
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
-  await page.waitForFunction(() =>
-    window.__legendPhaserWorldReady === true,
-    null,
-    { timeout: 20000 }
-  );
+  if (options.waitForPhaser !== false) {
+    await page.waitForFunction(() =>
+      window.__legendPhaserWorldReady === true,
+      null,
+      { timeout: 20000 }
+    );
+  }
 
   // The game's ember/fog/CTA animations are decorative; disable them in test contexts
   // so WebKit touch targets do not remain perpetually "unstable" during clicks.
@@ -2506,7 +2508,7 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
 
 test('the production root falls back to its original artwork when the Phaser CDN is unavailable', async ({ page }) => {
   await page.route('https://cdn.jsdelivr.net/npm/phaser@4.1.0/dist/phaser.min.js', route => route.abort());
-  await openTitle(page);
+  await openTitle(page, { waitForPhaser: false });
   await expect(page.locator('.v120-title-backdrop')).toBeVisible();
   const fallback = await page.evaluate(() => ({
     engineMode: window.LegendPhaserWorldV1?.mode,
