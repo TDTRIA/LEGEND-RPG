@@ -136,13 +136,9 @@ window.LegendStorage = (() => {
 
   function savePlayer(player) {
     if (!player) return false;
-    if (!isCompatiblePlayerShape(player) ||
-        (player.version != null && player.version !== '' &&
-          (!parseVersion(player.version) || isFutureSaveVersion(player.version)))) {
-      lastPlayerLoadStatus = player.version != null && player.version !== '' &&
-        (!parseVersion(player.version) || isFutureSaveVersion(player.version))
-        ? 'incompatible'
-        : 'malformed';
+    const versionRejected = player.version != null && player.version !== '' &&
+      (!parseVersion(player.version) || isFutureSaveVersion(player.version));
+    if (!isCompatiblePlayerShape(player) || versionRejected) {
       reportStorageFailure(
         'save the traveler because its record is incompatible',
         new TypeError('Expected a compatible traveler record for ' + D.VERSION + '.'),
@@ -197,6 +193,9 @@ window.LegendStorage = (() => {
       return null;
     }
 
+    // Reset stale status from a previous read before parsing this stored value.
+    // A prior future-version result must not mask a later malformed JSON record.
+    lastPlayerLoadStatus = 'malformed';
     try {
       const parsed = JSON.parse(raw);
       if (!isCompatiblePlayerShape(parsed)) {
