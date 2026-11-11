@@ -189,6 +189,19 @@ window.LegendStorage = (() => {
 
   function loadPlayer() {
     if (sessionPlayer) {
+      const cachedVersionRejected = sessionPlayer.version != null && sessionPlayer.version !== '' &&
+        (!parseVersion(sessionPlayer.version) || isFutureSaveVersion(sessionPlayer.version));
+      if (!isCompatiblePlayerShape(sessionPlayer) || cachedVersionRejected) {
+        lastPlayerLoadStatus = cachedVersionRejected ? 'incompatible' : 'malformed';
+        reportStorageFailure(
+          'load the session-only traveler',
+          new TypeError(cachedVersionRejected
+            ? 'The session-only traveler is from an incompatible game version.'
+            : 'The session-only traveler has an unsupported record shape.'),
+          'The traveler cached in this tab is malformed or from a newer game version. Its data was left untouched; export a recovery copy before replacing it.'
+        );
+        return null;
+      }
       lastPlayerLoadStatus = 'session-only';
       return normalize(sessionPlayer);
     }
