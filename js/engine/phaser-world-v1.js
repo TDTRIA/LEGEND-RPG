@@ -930,6 +930,9 @@
       };
       this.setEnvironment('title', true);
       currentEnvironment = 'title';
+      // Signal only after RealmScene has initialized its systems, canvas,
+      // texture manager, background, and production bridge.
+      window.dispatchEvent(new CustomEvent('legend:phaser-realm-scene-ready'));
     }
 
     runEngineAwakening(onComplete) {
@@ -6678,41 +6681,7 @@
       toast('The world renderer could not load. The game remains available; refresh to retry the scene.');
       return;
     }
-    try {
-      game = new Phaser.Game({
-      type: Phaser.AUTO,
-      parent: 'game-container',
-      backgroundColor: '#090e0d',
-      width: 1600,
-      height: 900,
-      scale: {
-        mode: Phaser.Scale.RESIZE,
-        width: 1600,
-        height: 900,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-      },
-      render: { antialias: true, pixelArt: false, transparent: false },
-      scene: [RealmScene],
-      input: { keyboard: true, mouse: true, touch: true },
-      audio: { noAudio: false }
-      });
-    } catch (error) {
-      console.error('Phaser could not start.', error);
-      document.documentElement.classList.remove('engine-intro-active');
-      if (!IS_PROTOTYPE) document.body.classList.remove('legend-phaser-world-active');
-      byId('engine-skip') && (byId('engine-skip').hidden = true);
-      if (IS_PROTOTYPE) showTitle();
-      observeRoot();
-      if (IS_PROTOTYPE) window.__legendRebootReady = true;
-      else {
-        const bootScreen = byId('legend-boot-screen');
-        if (bootScreen) bootScreen.hidden = true;
-        document.body.classList.remove('legend-booting');
-        window.__legendPhaserWorldReady = false;
-      }
-      toast('The world renderer could not start. The game interface remains available.');
-      return;
-    }
+
     let needsAwakening = true;
     try {
       needsAwakening = !window.sessionStorage.getItem(ENGINE_SESSION_KEY);
@@ -6724,13 +6693,22 @@
 
     let startupFinalized = false;
     let startupWatchdog = null;
+    const container = byId('game-container');
+
     const finishStartup = () => {
       if (startupFinalized) return;
       startupFinalized = true;
       if (startupWatchdog) window.clearTimeout(startupWatchdog);
       startupWatchdog = null;
+      window.removeEventListener('legend:phaser-realm-scene-ready', onRealmSceneReady);
       try { window.sessionStorage.setItem(ENGINE_SESSION_KEY, 'ready'); } catch (_) {}
       if (realmScene) realmScene.engineAwakened = true;
+      container?.classList.remove('legend-phaser-startup-fallback');
+      container?.removeAttribute('aria-hidden');
+      if (game?.canvas) {
+        game.canvas.style.removeProperty('display');
+        game.canvas.removeAttribute('aria-hidden');
+      }
       document.documentElement.classList.remove('engine-intro-active');
       const skip = byId('engine-skip');
       if (skip) skip.hidden = true;
@@ -6752,33 +6730,80 @@
     const keepDomFallback = () => {
       if (startupFinalized) return;
       startupFinalized = true;
+      if (startupWatchdog) window.clearTimeout(startupWatchdog);
       startupWatchdog = null;
+      window.removeEventListener('legend:phaser-realm-scene-ready', onRealmSceneReady);
       engineReady = false;
-      console.warn('[LEGEND Phaser] World startup did not reach READY; keeping the original HTML game interface visible.');
+      console.warn('[LEGEND Phaser] RealmScene did not finish creation; keeping the original HTML game interface visible.');
       document.documentElement.classList.remove('engine-intro-active');
       document.body?.classList.remove('legend-phaser-world-active', 'legend-booting');
       const skip = byId('engine-skip');
       if (skip) skip.hidden = true;
       const bootScreen = byId('legend-boot-screen');
       if (bootScreen) bootScreen.hidden = true;
+      // Do not leave an empty or late-starting canvas in normal document flow.
+      container?.classList.add('legend-phaser-startup-fallback');
+      container?.setAttribute('aria-hidden', 'true');
+      if (game?.canvas) {
+        game.canvas.style.setProperty('display', 'none', 'important');
+        game.canvas.setAttribute('aria-hidden', 'true');
+      }
+      try { game?.destroy?.(true, true); } catch (error) {
+        console.warn('[LEGEND Phaser] Could not dispose the failed startup renderer.', error);
+      }
       observeRoot();
       if (IS_PROTOTYPE) window.__legendRebootReady = false;
       else window.__legendPhaserWorldReady = false;
       toast('The world renderer could not finish starting. The original game interface is available; refresh to retry the scene.');
     };
 
-    // A READY watchdog prevents a silent blank page if Phaser never completes
-    // its boot pipeline. The existing HTML game remains the recovery surface.
-    startupWatchdog = window.setTimeout(keepDomFallback, 20000);
-    game.events.once('ready', () => {
-      realmScene = game.scene.getScene('RealmScene');
-      realmScene?.setEnvironment('title', true);
-      if (needsAwakening && realmScene?.runEngineAwakening) {
-        realmScene.runEngineAwakening(finishStartup);
-      } else {
-        finishStartup();
+    const onRealmSceneReady = () => {
+      if (startupFinalized) return;
+      try {
+        // RealmScene emits this after create() has installed its bridge and
+        // initialized its own background. This avoids depending on a game-level
+        // READY event that can fire before a listener is attached.
+        if (!realmScene) realmScene = game?.scene?.getScene?.('RealmScene') || null;
+        if (!realmScene) throw new Error('RealmScene did not register before its ready signal.');
+        if (needsAwakening && typeof realmScene.runEngineAwakening === 'function') {
+          realmScene.runEngineAwakening(finishStartup);
+        } else {
+          finishStartup();
+        }
+      } catch (error) {
+        console.error('[LEGEND Phaser] RealmScene startup failed.', error);
+        keepDomFallback();
       }
-    });
+    };
+
+    // Register before constructing Phaser so even a very fast scene boot
+    // cannot race and drop the production-ready notification.
+    window.addEventListener('legend:phaser-realm-scene-ready', onRealmSceneReady, { once: true });
+    startupWatchdog = window.setTimeout(keepDomFallback, 30000);
+
+    try {
+      game = new Phaser.Game({
+        type: Phaser.AUTO,
+        parent: 'game-container',
+        backgroundColor: '#090e0d',
+        width: 1600,
+        height: 900,
+        scale: {
+          mode: Phaser.Scale.RESIZE,
+          width: 1600,
+          height: 900,
+          autoCenter: Phaser.Scale.CENTER_BOTH
+        },
+        render: { antialias: true, pixelArt: false, transparent: false },
+        scene: [RealmScene],
+        input: { keyboard: true, mouse: true, touch: true },
+        audio: { noAudio: false }
+      });
+    } catch (error) {
+      console.error('Phaser could not start.', error);
+      keepDomFallback();
+      return;
+    }
   }
 
   function bindHostActions() {
