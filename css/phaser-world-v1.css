@@ -1,4 +1,9 @@
 /* LEGEND production Phaser world layer — static-host safe, no server dependency. */
+/* Startup failure must leave the legacy DOM game at the top of the page. */
+body.legend-phaser-startup-fallback #game-container {
+  display: none !important;
+}
+
 body.legend-phaser-world-active {
   position: relative;
   min-height: 100vh;
