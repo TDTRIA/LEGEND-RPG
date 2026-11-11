@@ -675,7 +675,7 @@
         if (file && Object.prototype.hasOwnProperty.call(ASSETS, file.key)) {
           this.worldArtLoadErrors.push({
             key: String(file.key),
-            source: String(file.src || '')
+            source: String(ASSETS[file.key] || file.url || '')
           });
         }
       });
@@ -6457,7 +6457,6 @@
         '.opening-lore-v220-backdrop',
         '.ash100-hero > img',
         '.gfm160-scene-art',
-        '.gfm160-results-art img',
         '.gss170-scene-art'
       ];
       const nodes = host ? Array.from(host.querySelectorAll(selectors.join(','))) : [];
