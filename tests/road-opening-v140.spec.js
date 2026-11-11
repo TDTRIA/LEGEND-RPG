@@ -8,6 +8,9 @@ if (!versionMatch) throw new Error('Could not read LEGEND_DATA.VERSION from js/d
 const version = versionMatch[1];
 
 async function openTitle(page) {
+  // Keep the desktop creation journey above the fold. The mobile viewport is
+  // exercised explicitly in separate touch scenarios at 390px.
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
