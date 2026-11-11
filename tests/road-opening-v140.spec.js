@@ -155,6 +155,26 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
     await page.getByRole('button', { name: 'Lift your head' }).click();
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi
+    )).toBe(false);
+    const openingFallback = await page.evaluate(() => {
+      const screen = document.querySelector('.opening-road-v140');
+      const heading = screen?.querySelector('h1');
+      const response = screen?.querySelector('[data-oric-response="honest"]');
+      return {
+        bodyClass: document.body.classList.contains('legend-phaser-opening-ui-active'),
+        backgroundMarker: screen?.querySelector('.opening-road-v140-bg')?.dataset.legendPhaserSceneArtActive || '',
+        headingColor: heading ? getComputedStyle(heading).color : '',
+        responseColor: response ? getComputedStyle(response).color : '',
+        responseChildVisibility: response?.querySelector('strong') ? getComputedStyle(response.querySelector('strong')).visibility : ''
+      };
+    });
+    expect(openingFallback.bodyClass).toBe(false);
+    expect(openingFallback.backgroundMarker).toBe('');
+    expect(openingFallback.headingColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(openingFallback.responseColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(openingFallback.responseChildVisibility).toBe('visible');
     await expect(page.locator('.opening-road-v140-card')).toContainText('I was taking your boots off');
     await expect(page.locator('.opening-road-v140-card')).toContainText('Thought the road had given me another body');
     await expect(page.locator('.opening-road-v140-card')).not.toContainText('Friend or foe?');
