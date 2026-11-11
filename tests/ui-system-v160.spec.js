@@ -571,30 +571,91 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('a missing Phaser road texture keeps the authored DOM scene image visible', async ({ page }) => {
+    let blockedInitialTextureRequest = false;
+    await page.route('**/assets/generated/locations/old-road-south-fork.webp', async route => {
+      if (!blockedInitialTextureRequest) {
+        blockedInitialTextureRequest = true;
+        await route.abort('failed');
+        return;
+      }
+      await route.continue();
+    });
+
+    await enterAshmere(page, 'RoadTextureFallbackQA');
+    expect(blockedInitialTextureRequest).toBe(true);
+    await seedRoad(page, 0, null);
+    await expect.poll(() => page.evaluate(() => {
+      const image = document.querySelector('.exp100-scene-live > img');
+      return Boolean(image?.complete && image.naturalWidth > 0);
+    })).toBe(true);
+
+    const fallback = await page.evaluate(() => {
+      const image = document.querySelector('.exp100-scene-live > img');
+      const style = getComputedStyle(image);
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      return {
+        textureLoaded: Boolean(snapshot.worldArtTextureStatus.find(item => item.key === 'road')?.loaded),
+        expectedSource: snapshot.nativeRoadSceneArt?.expectedSource,
+        actualSource: image?.getAttribute('src') || '',
+        opacity: style.opacity,
+        visibility: style.visibility,
+        activeClass: document.body.classList.contains('legend-phaser-road-scene-art-active')
+      };
+    });
+    expect(fallback.textureLoaded).toBe(false);
+    expect(fallback.expectedSource).toBe('assets/generated/locations/old-road-south-fork.webp');
+    expect(fallback.actualSource).toBe(fallback.expectedSource);
+    expect(fallback.opacity).toBe('1');
+    expect(fallback.visibility).toBe('visible');
+    expect(fallback.activeClass).toBe(false);
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('Phaser road background follows the live route and stage, with a DOM image fallback', async ({ page }) => {
     test.setTimeout(90_000);
     await enterAshmere(page, 'RoadSceneArtQA');
     await page.emulateMedia({ reducedMotion: 'no-preference' });
 
-    // Keep the DOM image during the first 720ms while the new Phaser
-    // background fades in; hide it only after the tween completes.
-    await seedRoad(page, 0, null);
-    const duringFade = await page.evaluate(() => {
-      const snapshot = window.LegendPhaserWorldV1.snapshot();
-      const image = document.querySelector('.exp100-scene-live > img');
-      return {
-        alpha: snapshot.nativeRoadSceneArt?.backgroundAlpha,
-        nativeActive: snapshot.nativeRoadSceneArt?.active,
-        handoffClass: document.body.classList.contains('legend-phaser-road-scene-art-active'),
-        domOpacity: getComputedStyle(image).opacity,
-        domVisibility: getComputedStyle(image).visibility
+    // Freeze the RealmScene tween manager before changing the road stage so
+    // this test samples a deterministic in-progress transition rather than
+    // racing the real 720ms animation against Playwright scheduling.
+    await page.evaluate(() => {
+      const scene = window.LegendPhaserWorldV1?.engine?.scene?.getScene('RealmScene');
+      if (!scene?.tweens) throw new Error('RealmScene tween manager is unavailable.');
+      window.__legendRoadTweenTest = {
+        manager: scene.tweens,
+        previousTimeScale: scene.tweens.timeScale
       };
+      scene.tweens.timeScale = 0;
     });
-    expect(duringFade.alpha).toBeLessThan(0.99);
-    expect(duringFade.nativeActive).toBe(false);
-    expect(duringFade.handoffClass).toBe(false);
-    expect(duringFade.domOpacity).toBe('1');
-    expect(duringFade.domVisibility).toBe('visible');
+    let duringFade;
+    try {
+      await seedRoad(page, 0, null);
+      duringFade = await page.evaluate(() => {
+        const snapshot = window.LegendPhaserWorldV1.snapshot();
+        const image = document.querySelector('.exp100-scene-live > img');
+        return {
+          alpha: snapshot.nativeRoadSceneArt?.backgroundAlpha,
+          nativeActive: snapshot.nativeRoadSceneArt?.active,
+          handoffClass: document.body.classList.contains('legend-phaser-road-scene-art-active'),
+          domOpacity: getComputedStyle(image).opacity,
+          domVisibility: getComputedStyle(image).visibility
+        };
+      });
+      expect(duringFade.alpha).toBeLessThan(0.99);
+      expect(duringFade.nativeActive).toBe(false);
+      expect(duringFade.handoffClass).toBe(false);
+      expect(duringFade.domOpacity).toBe('1');
+      expect(duringFade.domVisibility).toBe('visible');
+    } finally {
+      await page.evaluate(() => {
+        const state = window.__legendRoadTweenTest;
+        if (!state) return;
+        state.manager.timeScale = state.previousTimeScale;
+        delete window.__legendRoadTweenTest;
+      });
+    }
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
     )).toBe(true);
