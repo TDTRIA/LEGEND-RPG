@@ -22,6 +22,14 @@ const version = versionMatch[1];
 
 // Each Playwright test runs in an isolated browser context, so clearing localStorage
 // here only resets that test's synthetic traveler—not a player's live browser save.
+async function clickCreationNext(page) {
+  const next = page.locator('#v094Next');
+  await expect(next).toBeVisible();
+  await expect(next).toBeEnabled();
+  await next.evaluate(element => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
+  await next.click();
+}
+
 async function openTitle(page, options = {}) {
   await page.goto('/');
   await page.evaluate(() => {
@@ -82,17 +90,17 @@ async function startFreshCharacter(page, name = 'QATraveler', options = {}) {
   await page.getByRole('button', { name: /^Continue$/ }).click();
   await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Name').fill(name);
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-gender="unspoken"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-personality="kind"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-origin]').first().click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-class="Ranger"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-keepsake="Old Map"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
   await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
@@ -900,7 +908,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   await page.getByRole('button', { name: /^Continue$/ }).click();
   await page.getByRole('button', { name: /^Continue$/ }).click();
   await page.getByRole('button', { name: /Shape the traveler/i }).click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await expect(page.locator('#v094NameError')).toHaveText('Please enter a traveler name.');
     await expect(page.getByRole('heading', { name: 'What name shall you carry?' })).toBeVisible();
     await expect(page.locator('#v094Name')).toHaveAttribute('aria-invalid', 'true');
@@ -1140,22 +1148,22 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   await page.getByRole('button', { name: /^Continue$/ }).click();
   await page.getByRole('button', { name: /Shape the traveler/i }).click();
     await page.locator('#v094Name').fill('ChoiceQA');
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await expect(page.locator('.v094-stepper')).toContainText('STEP 2 OF 7');
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await expect(page.locator('#v094ChoiceError')).toBeVisible();
     const identity = page.locator('[data-gender="unspoken"]');
     await identity.click();
     await expect(page.locator('[data-gender="unspoken"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('.v094-choice.is-selected')).toContainText('Keep It Unspoken');
     await expect(pageErrors).toEqual([]);
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     const personality = page.locator('[data-personality="kind"]');
     await personality.click();
     await expect(page.locator('[data-personality="kind"]')).toHaveAttribute('aria-pressed', 'true');
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('#v094Back').click();
     await expect(page.locator('[data-personality="kind"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(pageErrors).toEqual([]);
@@ -2055,7 +2063,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.v140-presence-glyph')).toHaveText('???');
     await expect(page.locator('.v140-dialogue-box')).toContainText(/memory|name|soul/i);
     await page.locator('#v094Name').fill('SoulMemoryQA');
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
     await expect(page.locator('.v140-dialogue-box')).toContainText(/outline|shape/i);
     await expect(page.locator('.v094-choice-grid')).toBeVisible();
@@ -2063,15 +2071,15 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.v140-guide-portrait')).toHaveCount(0);
 
     await page.locator('[data-gender="unspoken"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-personality="kind"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-origin]').first().click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-class="Ranger"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-keepsake="Old Map"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
 
     await expect(page.getByRole('heading', { name: 'SoulMemoryQA', exact: true })).toBeVisible();
     await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
@@ -2887,13 +2895,13 @@ test('traveler creation draws choice cards and dialogue in Phaser while preservi
   expect(nameStep.sceneNextLabel).toMatch(/Choose Identity/i);
 
   // The live name field remains a real editable input and validation remains readable.
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await expect(page.locator('#v094NameError')).toBeVisible();
   const validationColor = await page.locator('#v094NameError').evaluate(node => getComputedStyle(node).color);
   expect(validationColor).not.toBe('rgba(0, 0, 0, 0)');
   await page.locator('#v094Name').fill('NativePhaserQA');
   await expect(page.locator('#v094NameError')).toBeHidden();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await expect(page.locator('[data-gender="woman"]')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCreationUiStep)).toBe(2);
 
@@ -3033,20 +3041,20 @@ test('looping intro and creation atmosphere does not block the Phaser screen pai
   await page.evaluate(() => window.LegendBeginningV094.startCreation());
   await expect(page.locator('.v140-creation')).toBeVisible();
   await page.locator('#v094Name').fill('OverlayProof');
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await expect(page.locator('[data-gender="unspoken"]')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCreationUi)).toBe(true);
 
   await page.locator('[data-gender="unspoken"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-personality="kind"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-origin]').first().click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-class="Ranger"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-keepsake="Old Map"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await expect(page.getByRole('heading', { name: 'OverlayProof', exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
 
