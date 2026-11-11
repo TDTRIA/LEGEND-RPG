@@ -414,7 +414,20 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('#exp150OpenJournal')).toBeEnabled();
     await expectNoHorizontalOverflow(page);
 
+    const mapReady = await page.evaluate(() => ({
+      modalCount: document.querySelectorAll('#exp150Modal').length,
+      contentCount: document.querySelectorAll('#exp150ModalContent').length,
+      playerName: window.LegendRuntimeV120?.loadPlayer?.()?.username || '',
+      saveStatus: window.LegendStorage?.getPlayerSaveStatus?.()
+    }));
+    expect(mapReady.modalCount, JSON.stringify(mapReady)).toBe(1);
+    expect(mapReady.contentCount, JSON.stringify(mapReady)).toBe(1);
+    expect(mapReady.playerName).toBe('RoadUIPreview');
     await page.locator('#exp150OpenMap').click();
+    await expect.poll(() => page.evaluate(() => {
+      const modal = document.getElementById('exp150Modal');
+      return Boolean(modal && !modal.hidden && document.body.classList.contains('exp150-modal-open'));
+    })).toBe(true);
     await expect(page.locator('#exp150Modal')).toBeVisible();
     await expect(page.locator('#exp150Modal').getByRole('dialog')).toBeVisible();
     await expect(page.locator('#exp150Modal')).toContainText(/map|road/i);
