@@ -413,7 +413,6 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('#exp150OpenMap')).toBeEnabled();
     await expect(page.locator('#exp150OpenJournal')).toBeEnabled();
     await expectNoHorizontalOverflow(page);
-    await attachProof(page, 'phase1-old-road-desktop.png');
 
     await page.locator('#exp150OpenMap').click();
     await expect(page.locator('#exp150Modal')).toBeVisible();
@@ -422,7 +421,6 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.surface)).toBe('modal');
     await expect(page.locator('#exp150Modal')).toContainText('The road you know');
     await expect(page.locator('#exp150Modal .exp150-map-intro h2')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');
-    await attachProof(page, 'phase1-old-road-map.png');
     await page.locator('#exp150ModalClose').click();
     await expect(page.locator('#exp150Modal')).toHaveAttribute('hidden','');
     await expect(page.locator('#exp150Modal')).toHaveCSS('display','none');
