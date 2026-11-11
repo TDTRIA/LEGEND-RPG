@@ -29,7 +29,8 @@ async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, 
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();
@@ -45,8 +46,8 @@ async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, 
   await expect(page.locator('.ash100-town')).toBeVisible();
 }
 
-async function seedRoad(page, stage = 0, route = null) {
-  await page.evaluate(({ stage, route }) => {
+async function seedRoad(page, stage = 0, route = null, sideTrip = null) {
+  await page.evaluate(({ stage, route, sideTrip }) => {
     const player = window.LegendRuntimeV120.loadPlayer();
     player.inventory = player.inventory || {};
     player.inventory.food = Math.max(2, Number(player.inventory.food || 0));
@@ -55,12 +56,13 @@ async function seedRoad(page, stage = 0, route = null) {
       ...(player.flags.roadExpeditionV100 || {}),
       stage, pressure: 12, trips: 1, events: 0, finds: 0, battles: 0,
       routeChoice: route,
+      activeSideTripV160: sideTrip,
       poiUsed: {}, searchUsed: {}, readUsed: {}, campWatchUsed: {}, roadClockHour: 15
     };
     player.flags.roadFieldJournalV150 = { visitedPlaces: [], discoveries: [], routes: [], campReports: [] };
     window.LegendRuntimeV120.savePlayer(player);
     window.LegendRoadControllerV100.renderExpedition();
-  }, { stage, route });
+  }, { stage, route, sideTrip });
   await expect(page.locator('.exp150-world-page')).toBeVisible();
 }
 
@@ -566,6 +568,199 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await page.locator('#guard').click();
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-heavy/);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCombatUi)).toBe(true);
+    await expectNoHorizontalOverflow(page);
+  });
+
+  test('Phaser road background follows the live route and stage, with a DOM image fallback', async ({ page }) => {
+    test.setTimeout(90_000);
+    await enterAshmere(page, 'RoadSceneArtQA');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+
+    // Keep the DOM image during the first 720ms while the new Phaser
+    // background fades in; hide it only after the tween completes.
+    await seedRoad(page, 0, null);
+    const duringFade = await page.evaluate(() => {
+      const snapshot = window.LegendPhaserWorldV1.snapshot();
+      const image = document.querySelector('.exp100-scene-live > img');
+      return {
+        alpha: snapshot.nativeRoadSceneArt?.backgroundAlpha,
+        nativeActive: snapshot.nativeRoadSceneArt?.active,
+        handoffClass: document.body.classList.contains('legend-phaser-road-scene-art-active'),
+        domOpacity: getComputedStyle(image).opacity,
+        domVisibility: getComputedStyle(image).visibility
+      };
+    });
+    expect(duringFade.alpha).toBeLessThan(0.99);
+    expect(duringFade.nativeActive).toBe(false);
+    expect(duringFade.handoffClass).toBe(false);
+    expect(duringFade.domOpacity).toBe('1');
+    expect(duringFade.domVisibility).toBe('visible');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
+    )).toBe(true);
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.backgroundAlpha || 0
+    )).toBeGreaterThanOrEqual(0.99);
+
+    const cases = [
+      { stage: 0, route: null, environment: 'road' },
+      { stage: 1, route: 'ridge', environment: 'ridge' },
+      { stage: 1, route: 'reeds', environment: 'reeds' },
+      { stage: 2, route: 'ridge', environment: 'camp' },
+      { stage: 3, route: 'ridge', environment: 'blackroot' },
+      { stage: 4, route: 'reeds', environment: 'marsh' },
+      { stage: 5, route: 'reeds', environment: 'greyfen' },
+      { stage: 1, route: 'ridge', sideTrip: 'windbreak', environment: 'ridge' },
+      { stage: 1, route: 'reeds', sideTrip: 'sunken-cart', environment: 'reeds' }
+    ];
+
+    for (const item of cases) {
+      await seedRoad(page, item.stage, item.route, item.sideTrip || null);
+      await expect.poll(() => page.evaluate(() =>
+        window.LegendPhaserWorldV1?.snapshot?.()?.environment
+      )).toBe(item.environment);
+      await expect.poll(() => page.evaluate(() =>
+        window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadSceneArt?.active
+      )).toBe(true);
+
+      const proof = await page.evaluate(() => {
+        const snapshot = window.LegendPhaserWorldV1.snapshot();
+        const image = document.querySelector('.exp100-scene-live > img');
+        const style = image ? getComputedStyle(image) : null;
+        return {
+          environment: snapshot.environment,
+          sceneArt: snapshot.nativeRoadSceneArt,
+          activeClass: document.body.classList.contains('legend-phaser-road-scene-art-active'),
+          fallbackOpacity: style?.opacity || '',
+          fallbackVisibility: style?.visibility || '',
+          sceneImageFilter: style?.filter || '',
+          canvasFilter: getComputedStyle(document.querySelector('#game-container canvas') || document.body).filter,
+          sceneSource: image?.getAttribute('src') || '',
+          sceneLabel: document.querySelector('.exp100-scene-label')?.textContent || ''
+        };
+      });
+      expect(proof.environment).toBe(item.environment);
+      expect(proof.sceneArt.textureKey).toBe(item.environment);
+      expect(proof.sceneArt.sourceWidth).toBeGreaterThan(0);
+      expect(proof.sceneArt.sourceHeight).toBeGreaterThan(0);
+      expect(proof.sceneArt.actualSource).toBe(proof.sceneArt.expectedSource);
+      expect(proof.sceneSource).toBe(proof.sceneArt.actualSource);
+      expect(proof.sceneImageFilter).not.toContain('blur(');
+      expect(proof.canvasFilter).not.toContain('blur(');
+      expect(proof.activeClass).toBe(true);
+      expect(proof.fallbackOpacity).toBe('0');
+      expect(proof.fallbackVisibility).toBe('hidden');
+      expect(proof.sceneLabel).toContain('THE OLD ROAD');
+    }
+
+    // Simulate a failed Phaser texture request independently of the DOM image.
+    // The DOM source remains correct, but a missing Phaser texture must restore it.
+    await seedRoad(page, 1, 'ridge');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
+    )).toBe(true);
+    const missingTextureFallback = await page.evaluate(() => {
+      const scene = document.querySelector('.exp100-scene-live');
+      const image = scene?.querySelector(':scope > img');
+      const originalExists = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').textures.exists;
+      const textureManager = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').textures;
+      let proof;
+      try {
+        textureManager.exists = function(key) {
+          if (key === 'ridge') return false;
+          return originalExists.call(this, key);
+        };
+        const active = window.LegendPhaserWorldV1.refreshRoadScene();
+        const style = getComputedStyle(image);
+        proof = {
+          active,
+          classActive: document.body.classList.contains('legend-phaser-road-scene-art-active'),
+          expectedSource: window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.expectedSource,
+          actualSource: image?.getAttribute('src') || '',
+          opacity: style.opacity,
+          visibility: style.visibility
+        };
+      } finally {
+        textureManager.exists = originalExists;
+        window.LegendPhaserWorldV1.refreshRoadScene();
+      }
+      return proof;
+    });
+    expect(missingTextureFallback.active).toBe(false);
+    expect(missingTextureFallback.classActive).toBe(false);
+    expect(missingTextureFallback.actualSource).toBe(missingTextureFallback.expectedSource);
+    expect(missingTextureFallback.opacity).toBe('1');
+    expect(missingTextureFallback.visibility).toBe('visible');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
+    )).toBe(true);
+
+    // Simulate an image/texture mismatch without changing any expedition state.
+    // Phaser must stop hiding the authored DOM image when its source no longer
+    // matches the environment that is currently loaded.
+    const fallback = await page.evaluate(() => {
+      const image = document.querySelector('.exp100-scene-live > img');
+      const original = image.getAttribute('src');
+      image.setAttribute('src', 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
+      const active = window.LegendPhaserWorldV1.refreshRoadScene();
+      const style = getComputedStyle(image);
+      const result = {
+        active,
+        classActive: document.body.classList.contains('legend-phaser-road-scene-art-active'),
+        opacity: style.opacity,
+        visibility: style.visibility,
+        original
+      };
+      image.setAttribute('src', original);
+      window.LegendPhaserWorldV1.refreshRoadScene();
+      return result;
+    });
+    expect(fallback.active).toBe(false);
+    expect(fallback.classActive).toBe(false);
+    expect(fallback.opacity).toBe('1');
+    expect(fallback.visibility).toBe('visible');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
+    )).toBe(true);
+
+    // Repeat on a narrow viewport; the real journey UI remains DOM controls
+    // while the stage-specific world image is rendered by Phaser.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await seedRoad(page, 1, 'ridge');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
+    )).toBe(true);
+    const mobile = await page.evaluate(() => ({
+      environment: window.LegendPhaserWorldV1.snapshot()?.environment,
+      sceneArt: window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt,
+      canvas: document.querySelector('#game-container canvas')?.getBoundingClientRect().toJSON(),
+      scene: document.querySelector('.exp100-scene-live')?.getBoundingClientRect().toJSON(),
+      mapButton: document.querySelector('#exp150OpenMap')?.getBoundingClientRect().toJSON() || null,
+      routeButtons: Array.from(document.querySelectorAll('.exp150-world-page button:enabled'))
+        .filter(button => button.getClientRects().length)
+        .map(button => ({
+          id: button.id,
+          width: button.getBoundingClientRect().width,
+          height: button.getBoundingClientRect().height
+        }))
+    }));
+    expect(mobile.environment).toBe('ridge');
+    expect(mobile.sceneArt.active).toBe(true);
+    expect(mobile.canvas.width).toBeGreaterThanOrEqual(390);
+    expect(mobile.scene.width).toBeGreaterThan(0);
+    expect(mobile.mapButton.width).toBeGreaterThan(0);
+    expect(mobile.mapButton.height).toBeGreaterThanOrEqual(36);
+    expect(mobile.routeButtons.length).toBeGreaterThan(0);
+    expect(mobile.routeButtons.every(button => button.width > 0 && button.height > 0)).toBe(true);
+    const roadMotion = await page.evaluate(() => {
+      const rules = Array.from(document.styleSheets).flatMap(sheet => {
+        try { return Array.from(sheet.cssRules || []); } catch { return []; }
+      });
+      return ['exp100-road-arrive', 'exp100-discovery-arrive'].map(name =>
+        rules.filter(rule => rule.name === name).map(rule => rule.cssText).join(' ')
+      );
+    });
+    expect(roadMotion.every(rule => rule.length > 0 && !rule.includes('blur('))).toBe(true);
     await expectNoHorizontalOverflow(page);
   });
 
