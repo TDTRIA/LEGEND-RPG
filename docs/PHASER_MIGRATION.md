@@ -95,3 +95,26 @@ The migration is complete only when:
 - GitHub Pages deployment for the tested main commit succeeds.
 
 **Do not start new gameplay feature development on top of the migration until this gate is met.** Afterward, use Phaser's scene/entity/animation/input systems for new combat and world features while continuing to invoke the authoritative production systems.
+
+## Legacy CSS and engine-layer retirement — Phase 2 only
+
+The migration and the cleanup are deliberately separate releases. The current hybrid build still depends on DOM markup and its CSS for accessible actions, readable fallback screens, service interiors and un-migrated gameplay. **Do not delete, unlink, consolidate or globally rewrite those styles while any production screen still depends on them.** Smaller files are not worth a broken screen, hidden labels, unreadable controls or a lost rollback path.
+
+### Before parity: contain clashes without deleting dependencies
+
+- Keep the legacy stylesheets linked while their screens still render DOM presentation.
+- Keep new Phaser presentation rules in the Phaser-owned stylesheets and scope them under the corresponding `body.legend-phaser-…-ui-active` state and screen root. Avoid adding unscoped `body`, `button`, `input`, `.panel`, `.shell` or `.btn` overrides to Phaser-specific files.
+- Do not use broad descendant rules to make DOM text transparent or hide whole screen subtrees unless the matching Phaser painter has passed its own preflight and the DOM fallback is guaranteed to restore on any missing asset, label, control or draw error.
+- When a clash is verified, fix the narrow selector or painter state that owns that surface. Add a desktop and mobile regression assertion for the visual/control state. Do not solve a one-screen clash by deleting a shared stylesheet.
+- Preserve the shared accessibility layer (focus-visible, reduced motion, contrast, large/bold text and readable-font preferences) even after individual screen styles are retired.
+
+### After the global acceptance gate: retire in small, reversible batches
+
+1. Build a stylesheet ownership inventory from the active `index.html` links and the screens that still consume each selector. Mark each rule as shared foundation, legacy-only surface, Phaser surface, or verified duplicate.
+2. Start with a completely migrated surface that has its own stylesheet. Confirm no live DOM view, fallback, Save Vault/support page or alternate entry point still consumes its selectors.
+3. Remove only that surface's obsolete link/rules in one small commit. Keep the Phaser replacement and its DOM/accessibility action contract intact.
+4. Run the focused surface journey, the full Playwright suite, desktop and 390px mobile checks, and a deployed Pages smoke check before removing the next surface's old styles.
+5. Treat `css/style.css` and `css/game-ui-v090.css` as shared-foundation candidates, not disposable legacy files. Their global body/form/button/panel rules and accessibility classes must first be split into a small, explicit shared base layer and screen-scoped legacy styles; only then can the remaining unused rules be retired safely.
+6. Remove legacy JavaScript modules only after the same call-site audit: no active script tag, global API caller, fallback path, save flow or test may still depend on them. Keep the authoritative gameplay/domain modules even when Phaser owns their screen presentation.
+
+**CSS cleanup is complete only when** the active production entry point no longer links obsolete stylesheets, each remaining stylesheet has a documented owner, no duplicate/global rule changes Phaser screens unexpectedly, all shared accessibility behavior survives, and the full desktop/mobile production journey passes on the exact commit deployed to GitHub Pages. Until then, the legacy CSS is compatibility support—not dead weight.
