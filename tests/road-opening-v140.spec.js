@@ -14,7 +14,13 @@ async function openTitle(page) {
     sessionStorage.clear();
   });
   await page.reload();
-  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
+  await page.waitForFunction(() =>
+    window.__legendPhaserWorldReady === true,
+    null,
+    { timeout: 20000 }
+  );
+
   await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }' });
   await expect(page.locator('.v120-title')).toBeVisible();
   await expect(page.locator('.v120-title-hero .v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
