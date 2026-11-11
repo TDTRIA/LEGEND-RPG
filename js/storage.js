@@ -134,7 +134,7 @@ window.LegendStorage = (() => {
     }));
   }
 
-  function savePlayer(player) {
+  function persistPlayer(player, preserveSessionOnFailure = false) {
     if (!player) return false;
     const versionRejected = player.version != null && player.version !== '' &&
       (!parseVersion(player.version) || isFutureSaveVersion(player.version));
@@ -157,17 +157,34 @@ window.LegendStorage = (() => {
       lastPlayerLoadStatus = 'loaded';
       return true;
     } catch (error) {
-      // Preserve the latest in-memory traveler for the current tab. A later
-      // successful save replaces this fallback with durable browser storage.
-      sessionPlayer = player;
-      lastPlayerLoadStatus = 'session-only';
-      reportStorageFailure(
-        'save the traveler',
-        error,
-        'Your traveler could not be saved permanently. Your current journey remains available in this tab; check browser storage before leaving.'
-      );
+      if (!preserveSessionOnFailure) {
+        // Mid-journey saves keep a tab-local recovery copy when durable storage fails.
+        sessionPlayer = player;
+        lastPlayerLoadStatus = 'session-only';
+        reportStorageFailure(
+          'save the traveler',
+          error,
+          'Your traveler could not be saved permanently. Your current journey remains available in this tab; check browser storage before leaving.'
+        );
+      } else {
+        // First-time creation is atomic: never put an uncommitted new traveler
+        // into the active session or replace a previously loaded traveler.
+        reportStorageFailure(
+          'save the new traveler',
+          error,
+          'Your new traveler could not be saved. Your previous traveler and save were left unchanged; check browser storage and try again.'
+        );
+      }
       return false;
     }
+  }
+
+  function savePlayer(player) {
+    return persistPlayer(player, false);
+  }
+
+  function saveNewPlayer(player) {
+    return persistPlayer(player, true);
   }
 
   function loadPlayer() {
@@ -294,6 +311,7 @@ window.LegendStorage = (() => {
     baseSkills,
     normalize,
     savePlayer,
+    saveNewPlayer,
     loadPlayer,
     getPlayerSaveStatus,
     deleteSaves,
