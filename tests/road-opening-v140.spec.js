@@ -57,10 +57,14 @@ async function expectNoHorizontalOverflow(page) {
 }
 
 async function clickCreationNext(page) {
-  const next = page.locator('#v094Next');
+  // The creation card can extend beyond the viewport on desktop and mobile.
+  // Scroll the real primary action into view before asserting visibility; the
+  // visible action is kept as a DOM hit target while Phaser paints its skin.
+  const next = page.locator('#root .v140-creation .v094-actions > button.v094-btn.primary');
+  await expect(next).toHaveCount(1);
+  await next.scrollIntoViewIfNeeded();
   await expect(next).toBeVisible();
   await expect(next).toBeEnabled();
-  await next.evaluate(element => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
   await next.click();
 }
 
