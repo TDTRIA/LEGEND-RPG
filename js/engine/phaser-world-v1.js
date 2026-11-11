@@ -1603,6 +1603,7 @@
       this.nativeAnnalsUiLayoutEvent?.remove?.(false);
       this.nativeAnnalsUiLayoutEvent = null;
 
+      try {
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -1643,9 +1644,9 @@
       // of chapter order and the hand-off into traveler creation.
       this.clearNativeAnnalsUi();
       const paintedTextNodes = new Set();
-      try {
 
-        this.nativeAnnalsUiScrollTarget = screen;
+        if (!this.nativeAnnalsUiScrollTarget) {
+          this.nativeAnnalsUiScrollTarget = screen;
         const handler = () => {
           this.nativeAnnalsUiLayoutEvent?.remove?.(false);
           this.nativeAnnalsUiLayoutEvent = this.time.delayedCall(48, () => {
@@ -1965,6 +1966,7 @@
       });
       const pendingImages = screenImages.some(img => !img.complete);
       if (pendingImages) {
+        this.clearNativeCreationUi();
         this.nativeCreationUiLayoutEvent?.remove?.(false);
         this.nativeCreationUiLayoutEvent = this.time.delayedCall(240, () => {
           this.nativeCreationUiLayoutEvent = null;
@@ -1973,6 +1975,7 @@
         return;
       }
 
+      try {
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -2021,9 +2024,9 @@
       this.clearNativeCreationUi();
       const paintedTextNodes = new Set();
       const paintedImageIndexes = new Set();
-      try {
 
-        this.nativeCreationUiScrollTarget = screen;
+        if (!this.nativeCreationUiScrollTarget) {
+          this.nativeCreationUiScrollTarget = screen;
         const handler = () => {
           this.nativeCreationUiLayoutEvent?.remove?.(false);
           this.nativeCreationUiLayoutEvent = this.time.delayedCall(48, () => {
@@ -2400,6 +2403,7 @@
       this.nativeOpeningUiLayoutEvent?.remove?.(false);
       this.nativeOpeningUiLayoutEvent = null;
 
+      try {
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -2428,9 +2432,9 @@
 
       this.clearNativeOpeningUi();
       const paintedTextNodes = new Set();
-      try {
 
-        this.nativeOpeningUiScrollTarget = screen;
+        if (!this.nativeOpeningUiScrollTarget) {
+          this.nativeOpeningUiScrollTarget = screen;
         const handler = () => {
           this.nativeOpeningUiLayoutEvent?.remove?.(false);
           this.nativeOpeningUiLayoutEvent = this.time.delayedCall(48, () => {
