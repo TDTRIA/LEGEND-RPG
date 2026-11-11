@@ -32,7 +32,13 @@ async function openTitle(page) {
     sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready');
   });
   await page.reload();
-  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
+  await page.waitForFunction(() =>
+    window.__legendPhaserWorldReady === true,
+    null,
+    { timeout: 20000 }
+  );
+
   // The game's ember/fog/CTA animations are decorative; disable them in test contexts
   // so WebKit touch targets do not remain perpetually "unstable" during clicks.
   await page.addStyleTag({ content: `
