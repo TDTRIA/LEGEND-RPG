@@ -6471,7 +6471,7 @@
       const states = nodes.map(node => {
         const isImage = node instanceof HTMLImageElement;
         const rawSources = isImage
-          ? [node.currentSrc || node.getAttribute('src') || node.src]
+          ? [node.getAttribute('src') || node.currentSrc || node.src]
           : Array.from(String(window.getComputedStyle(node).backgroundImage || '')
             .matchAll(/url\((?:['"])?([^'")]+)(?:['"])?\)/g), match => match[1]);
         const sourcePaths = rawSources.map(normalizePath).filter(Boolean);
