@@ -1,160 +1,163 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#070b08">
-  <meta name="description" content="The official LEGEND: The Awakening realm hub — play the game, read updates, find player resources, and join the community.">
-  <title>Realm Hub — LEGEND: The Awakening</title>
+  <meta name="theme-color" content="#090b09">
+  <meta name="description" content="Enter LEGEND: The Awakening, an expedition-led dark-fantasy browser RPG. Explore Ashmere, prepare for the Old Road, and follow the game's development.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="LEGEND: The Awakening — Official Realm Portal">
+  <meta property="og:description" content="A dark-fantasy browser RPG. The road remembers. Your story begins at the edge of Ashmere.">
+  <meta property="og:image" content="https://tdtria.github.io/LEGEND-RPG/assets/generated/title/title-ashmere-road.webp">
+  <meta property="og:url" content="https://tdtria.github.io/LEGEND-RPG/portal.html">
+  <title>LEGEND: The Awakening — Official Realm Portal</title>
   <link rel="icon" type="image/webp" href="assets/generated/ui/icons/service-milestone.webp">
-  <link rel="preload" as="image" href="assets/generated/locations/ashmere-town.webp">
-  <link rel="stylesheet" href="css/chronicle-v140.css?v=20261103-chronicle-v140">
+  <link rel="preload" as="image" href="assets/generated/title/title-ashmere-road.webp">
+  <link rel="stylesheet" href="css/realm-portal-v200.css?v=20261111-realm-portal">
 </head>
-<body class="chronicle-page chronicle-article realm-hub-page">
-  <nav class="chronicle-nav" aria-label="Realm navigation">
-    <div class="chronicle-nav-inner">
-      <a class="chronicle-brand" href="portal.html" aria-label="LEGEND: The Awakening Realm Hub">
-        <img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening" decoding="async">
-        <span class="chronicle-brand-copy"><strong>Realm Hub</strong><span>LEGEND: The Awakening</span></span>
+<body class="legend-portal-page">
+  <a class="rp-skip-link" href="#main-content">Skip to content</a>
+  <header class="rp-header">
+    <nav class="rp-nav" aria-label="Main navigation">
+      <a class="rp-brand" href="portal.html" aria-label="LEGEND: The Awakening home">
+        <img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening">
+        <span class="rp-brand-divider" aria-hidden="true"></span>
+        <span class="rp-brand-label">Official Realm Portal</span>
       </a>
-      <div class="chronicle-nav-links">
-        <a href="portal.html" aria-current="page">Realm Hub</a>
-        <a href="index.html" class="chronicle-play">Enter the World</a>
+      <div class="rp-nav-links">
+        <a href="#world">The World</a>
+        <a href="#journey">The Journey</a>
         <a href="blog.html">Chronicle</a>
         <a href="updates.html">Dispatch</a>
         <a href="guide.html">Field Guide</a>
-        <a href="feedback.html">Feedback</a>
       </div>
-    </div>
-  </nav>
+      <a class="rp-nav-play" href="index.html">Play the Game <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
 
-  <main class="realm-hub-shell">
-    <section class="realm-hub-hero" aria-labelledby="realm-hub-title">
-      <img class="realm-hub-hero-art" src="assets/generated/locations/ashmere-town.webp" alt="" fetchpriority="high">
-      <div class="realm-hub-hero-shade" aria-hidden="true"></div>
-      <div class="realm-hub-hero-copy">
-        <p class="realm-hub-kicker">The roads remember · The realm is waking</p>
-        <h1 id="realm-hub-title">One realm.<br><em>Every path.</em></h1>
-        <p class="realm-hub-lede">Your central way into <strong>LEGEND: The Awakening</strong> — the game, the field records, player resources, development news, and the community around the frontier.</p>
-        <div class="realm-hub-actions">
-          <a class="realm-hub-button primary" href="index.html">Enter the World <span aria-hidden="true">↗</span></a>
-          <a class="realm-hub-button" href="guide.html">Read the Field Guide</a>
+  <main id="main-content">
+    <section class="rp-hero" aria-labelledby="rp-hero-title">
+      <img class="rp-hero-art" src="assets/generated/title/title-ashmere-road.webp" alt="" fetchpriority="high" decoding="async">
+      <div class="rp-hero-scrim" aria-hidden="true"></div>
+      <div class="rp-hero-vignette" aria-hidden="true"></div>
+      <div class="rp-hero-content">
+        <p class="rp-eyebrow"><span></span> An expedition-led dark-fantasy RPG <span></span></p>
+        <h1 id="rp-hero-title">THE ROAD<br><em>REMEMBERS.</em></h1>
+        <p class="rp-hero-copy">Beyond Ashmere, the old road winds into a world that has not forgotten its wounds. Prepare your traveler, choose your path, and discover what waits beyond the lantern light.</p>
+        <div class="rp-hero-actions">
+          <a class="rp-button rp-button-primary" href="index.html">Enter the World <span aria-hidden="true">↗</span></a>
+          <a class="rp-button rp-button-ghost" href="guide.html">Read the Field Guide</a>
         </div>
+        <p class="rp-hero-footnote">A browser-playable role-playing game · In active development</p>
       </div>
-      <aside class="realm-hub-status" aria-label="Current production status">
-        <span class="realm-hub-status-label">Current production build</span>
-        <strong>v0.30.5</strong>
-        <span class="realm-hub-status-state"><i aria-hidden="true"></i> Active development</span>
-        <p>The first road journey and Ashmere form the playable foundation. Greyfen is still being completed.</p>
+      <aside class="rp-hero-seal" aria-label="Game details">
+        <span class="rp-seal-overline">The frontier awaits</span>
+        <strong>ASHMERE</strong>
+        <span class="rp-seal-rule"></span>
+        <span class="rp-seal-detail">A town at the edge of the Old Road</span>
       </aside>
+      <a class="rp-scroll-cue" href="#world"><span aria-hidden="true">↓</span> Discover the realm</a>
     </section>
 
-    <section class="realm-hub-section realm-hub-start" aria-labelledby="start-heading">
-      <div class="realm-hub-section-head">
-        <div>
-          <p class="realm-hub-eyebrow">First steps</p>
-          <h2 id="start-heading">Choose your way in</h2>
+    <div class="rp-world-strip" aria-label="Game features">
+      <span>Single-player RPG</span><i></i><span>Dark fantasy</span><i></i><span>Turn-based encounters</span><i></i><span>Browser playable</span><i></i><span>In development</span>
+    </div>
+
+    <section class="rp-section rp-world-section" id="world" aria-labelledby="rp-world-title">
+      <div class="rp-section-heading">
+        <p class="rp-kicker">The places that shape the journey</p>
+        <h2 id="rp-world-title">A world beyond <em>the lantern.</em></h2>
+        <p class="rp-section-intro">Begin in a town that survives by preparation. Follow the road into uncertain country. Bring back what you find—and learn what the frontier is becoming.</p>
+      </div>
+      <div class="rp-location-grid">
+        <article class="rp-location-card rp-location-ashmere">
+          <div class="rp-location-image"><img src="assets/generated/locations/ashmere-town.webp" alt="The rooftops and streets of Ashmere" loading="lazy" decoding="async"><span class="rp-location-number">I</span></div>
+          <div class="rp-location-copy"><p class="rp-card-kicker">The first refuge</p><h3>Ashmere</h3><p>Meet the people who keep the town standing. Trade, craft, recover, take on work, and prepare before you leave its walls.</p><a href="guide.html">Explore the field guide <b aria-hidden="true">↗</b></a></div>
+        </article>
+        <article class="rp-location-card rp-location-road">
+          <div class="rp-location-image"><img src="assets/generated/locations/old-road-south-fork.webp" alt="The Old Road splitting toward the frontier" loading="lazy" decoding="async"><span class="rp-location-number">II</span></div>
+          <div class="rp-location-copy"><p class="rp-card-kicker">The proving ground</p><h3>The Old Road</h3><p>Choose between routes, face encounters, manage pressure, make camp, and record the discoveries that survive the journey.</p><a href="index.html">Begin the journey <b aria-hidden="true">↗</b></a></div>
+        </article>
+        <article class="rp-location-card rp-location-greyfen">
+          <div class="rp-location-image"><img src="assets/generated/locations/greyfen-marsh-walkway.webp" alt="A raised walkway crossing the Greyfen marsh" loading="lazy" decoding="async"><span class="rp-location-number">III</span></div>
+          <div class="rp-location-copy"><p class="rp-card-kicker">The frontier taking shape</p><h3>Greyfen</h3><p>Discover the marsh routes, local work, salvage, and regional story threads as the next part of the world takes shape.</p><a href="blog.html">Follow its development <b aria-hidden="true">↗</b></a></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="rp-journey-section" id="journey" aria-labelledby="rp-journey-title">
+      <div class="rp-journey-art"><img src="assets/locations/roads/location_old_road_main_v1.jpg" alt="The weathered Old Road leading away from Ashmere" loading="lazy" decoding="async"><span class="rp-image-caption">THE OLD ROAD · OUTSIDE ASHMERE</span></div>
+      <div class="rp-journey-copy">
+        <p class="rp-kicker">Every journey asks something of you</p>
+        <h2 id="rp-journey-title">Prepare. <em>Depart.</em> Endure.</h2>
+        <p>LEGEND is built around the rhythm of a dangerous journey: prepare in town, make decisions beyond its gates, survive what the road sends, and return with a story worth recording.</p>
+        <ol class="rp-journey-steps">
+          <li><span>01</span><div><strong>Make a traveler</strong><p>Shape your character and discover the choices that define a first journey.</p></div></li>
+          <li><span>02</span><div><strong>Prepare in Ashmere</strong><p>Use the town's people and services to get ready for the road ahead.</p></div></li>
+          <li><span>03</span><div><strong>Face the frontier</strong><p>Choose routes, manage supplies and pressure, and fight when the road turns hostile.</p></div></li>
+          <li><span>04</span><div><strong>Bring the record home</strong><p>Keep your rewards, progress, and discoveries—and decide what to do next.</p></div></li>
+        </ol>
+        <a class="rp-text-link" href="guide.html">Read the Field Guide <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <section class="rp-section rp-pillars-section" aria-labelledby="rp-pillars-title">
+      <div class="rp-section-heading rp-section-heading-centered">
+        <p class="rp-kicker">A journey shaped by consequence</p>
+        <h2 id="rp-pillars-title">What awaits <em>beyond the gate.</em></h2>
+      </div>
+      <div class="rp-pillar-grid">
+        <article class="rp-pillar"><span class="rp-pillar-index">01 / EXPLORE</span><span class="rp-pillar-mark">⌁</span><h3>Routes & discoveries</h3><p>Read the road, choose your route, and decide which risks are worth taking.</p></article>
+        <article class="rp-pillar"><span class="rp-pillar-index">02 / SURVIVE</span><span class="rp-pillar-mark">⚔</span><h3>Tactical encounters</h3><p>Face turn-based fights where preparation, health, equipment, and decisions matter.</p></article>
+        <article class="rp-pillar"><span class="rp-pillar-index">03 / GROW</span><span class="rp-pillar-mark">✦</span><h3>Traveler progression</h3><p>Earn experience, improve your attributes, find gear, and build a more capable traveler.</p></article>
+        <article class="rp-pillar"><span class="rp-pillar-index">04 / RETURN</span><span class="rp-pillar-mark">◈</span><h3>A world that remembers</h3><p>Keep a field journal of places, evidence, and the things learned along the way.</p></article>
+      </div>
+    </section>
+
+    <section class="rp-development-section" aria-labelledby="rp-development-title">
+      <div class="rp-development-backdrop" aria-hidden="true"></div>
+      <div class="rp-development-inner">
+        <div class="rp-development-heading">
+          <p class="rp-kicker">The work behind the world</p>
+          <h2 id="rp-development-title">Built one <em>field record</em> at a time.</h2>
+          <p>LEGEND is an independent game in active development. The Chronicle follows the craft behind the world; the Dispatch carries selected milestones, design notes, and announcements.</p>
         </div>
-        <p>Start playing, or get your bearings before the road calls.</p>
-      </div>
-      <div class="realm-hub-feature-grid">
-        <a class="realm-hub-feature realm-hub-play-card" href="index.html">
-          <span class="realm-hub-card-index">01 / PLAY</span>
-          <span class="realm-hub-feature-title">Enter Ashmere</span>
-          <span class="realm-hub-feature-copy">Wake beneath the dead lantern, shape your traveler, and face the first road.</span>
-          <span class="realm-hub-card-link">Launch the browser RPG <b aria-hidden="true">↗</b></span>
-        </a>
-        <a class="realm-hub-feature realm-hub-guide-card" href="guide.html">
-          <span class="realm-hub-card-index">02 / LEARN</span>
-          <span class="realm-hub-feature-title">The Field Guide</span>
-          <span class="realm-hub-feature-copy">Understand the opening, Ashmere services, the Old Road, combat, and progression.</span>
-          <span class="realm-hub-card-link">Read how to begin <b aria-hidden="true">↗</b></span>
-        </a>
-      </div>
-    </section>
-
-    <section class="realm-hub-section" aria-labelledby="player-tools-heading">
-      <div class="realm-hub-section-head">
-        <div>
-          <p class="realm-hub-eyebrow">For travelers</p>
-          <h2 id="player-tools-heading">Player resources</h2>
+        <div class="rp-dev-feature">
+          <img src="assets/generated/locations/old-road-south-fork.webp" alt="" loading="lazy" decoding="async">
+          <div><p class="rp-card-kicker">Latest development record</p><h3>The Sound of the Realm</h3><p>Behind the new musical identity, location ambience, and gameplay sound library—and the listening and integration work that follows.</p><a href="posts/014-the-sound-of-the-realm.html">Read the Chronicle entry <b aria-hidden="true">↗</b></a></div>
         </div>
-        <p>Keep your journey safe, get help, and help shape what comes next.</p>
-      </div>
-      <div class="realm-hub-card-grid">
-        <a class="realm-hub-card" href="save.html">
-          <span class="realm-hub-card-index">01</span>
-          <span class="realm-hub-card-title">Save Vault</span>
-          <span class="realm-hub-card-copy">Export or restore a portable save file or code. This is local save portability, not cloud sync.</span>
-          <span class="realm-hub-card-link">Manage a save <b aria-hidden="true">↗</b></span>
-        </a>
-        <a class="realm-hub-card" href="playtest.html">
-          <span class="realm-hub-card-index">02</span>
-          <span class="realm-hub-card-title">Playtest Runner</span>
-          <span class="realm-hub-card-copy">Run the lightweight support-page and asset checks, and follow the manual test route.</span>
-          <span class="realm-hub-card-link">Open the runner <b aria-hidden="true">↗</b></span>
-        </a>
-        <a class="realm-hub-card" href="feedback.html">
-          <span class="realm-hub-card-index">03</span>
-          <span class="realm-hub-card-title">Send Feedback</span>
-          <span class="realm-hub-card-copy">Report a bug, confusing moment, balance problem, or idea from your journey.</span>
-          <span class="realm-hub-card-link">Contact the project <b aria-hidden="true">↗</b></span>
-        </a>
-      </div>
-    </section>
-
-    <section class="realm-hub-section" aria-labelledby="development-heading">
-      <div class="realm-hub-section-head">
-        <div>
-          <p class="realm-hub-eyebrow">Behind the frontier</p>
-          <h2 id="development-heading">Development &amp; news</h2>
+        <div class="rp-dev-links">
+          <a href="blog.html"><span>01</span><strong>Development Chronicle</strong><small>Long-form field records and making-of notes</small><b aria-hidden="true">↗</b></a>
+          <a href="updates.html"><span>02</span><strong>Development Dispatch</strong><small>Newsletter, selected milestones, and archive</small><b aria-hidden="true">↗</b></a>
+          <a href="docs/ROADMAP.md"><span>03</span><strong>The Road Ahead</strong><small>Current priorities and release gates</small><b aria-hidden="true">↗</b></a>
         </div>
-        <p>Follow the work as the world, its systems, and its story grow.</p>
-      </div>
-      <div class="realm-hub-card-grid">
-        <a class="realm-hub-card realm-hub-card-image realm-hub-chronicle-card" href="blog.html">
-          <span class="realm-hub-card-index">FIELD RECORDS</span>
-          <span class="realm-hub-card-title">Development Chronicle</span>
-          <span class="realm-hub-card-copy">Longer entries on world-building, systems, art, sound, and the road ahead.</span>
-          <span class="realm-hub-card-link">Read the chronicle <b aria-hidden="true">↗</b></span>
-        </a>
-        <a class="realm-hub-card" href="updates.html">
-          <span class="realm-hub-card-index">DISPATCHES</span>
-          <span class="realm-hub-card-title">Latest Updates</span>
-          <span class="realm-hub-card-copy">A quick view of what changed, what is being worked on, and what is coming next.</span>
-          <span class="realm-hub-card-link">Read the dispatches <b aria-hidden="true">↗</b></span>
-        </a>
-        <a class="realm-hub-card" href="docs/ROADMAP.md">
-          <span class="realm-hub-card-index">THE ROAD AHEAD</span>
-          <span class="realm-hub-card-title">Development Roadmap</span>
-          <span class="realm-hub-card-copy">Current priorities, work in progress, and the acceptance criteria for future work.</span>
-          <span class="realm-hub-card-link">View the roadmap <b aria-hidden="true">↗</b></span>
-        </a>
-      </div>
-      <div class="realm-hub-inline-links">
-        <a href="CHANGELOG.md">Full changelog <b aria-hidden="true">↗</b></a>
-        <a href="docs/STORE_PAGE_COPY_2026-11.md">Store page information <b aria-hidden="true">↗</b></a>
       </div>
     </section>
 
-    <section class="realm-hub-community" aria-labelledby="community-heading">
-      <div>
-        <p class="realm-hub-eyebrow">Beyond the road</p>
-        <h2 id="community-heading">Find the company behind the realm.</h2>
-        <p>Join the community to talk about the game, or visit the project repository to follow development and technical changes.</p>
-      </div>
-      <div class="realm-hub-community-actions">
-        <a class="realm-hub-button primary" href="https://discord.gg/htbBvvY9N" target="_blank" rel="noopener">Join the Discord <span aria-hidden="true">↗</span></a>
-        <a class="realm-hub-button" href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener">Project Repository <span aria-hidden="true">↗</span></a>
-        <a class="realm-hub-button" href="https://github.com/TDTRIA/LEGEND-RPG/actions" target="_blank" rel="noopener">Build &amp; Test Runs <span aria-hidden="true">↗</span></a>
+    <section class="rp-community-section" aria-labelledby="rp-community-title">
+      <div class="rp-community-copy"><p class="rp-kicker">Keep a place by the fire</p><h2 id="rp-community-title">Follow the making of <em>LEGEND.</em></h2><p>Join the community, read the development record, or subscribe to the Development Dispatch for selected news from the frontier.</p></div>
+      <div class="rp-community-actions">
+        <a class="rp-button rp-button-primary" href="updates.html">Join the Dispatch <span aria-hidden="true">↗</span></a>
+        <a class="rp-button rp-button-ghost" href="https://discord.gg/htbBvvY9N" target="_blank" rel="noopener">Join the Discord</a>
+        <a class="rp-button rp-button-ghost" href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener">Follow on GitHub</a>
       </div>
     </section>
 
-    <footer class="realm-hub-footer">
-      <a href="portal.html">LEGEND: The Awakening</a>
-      <span>Dark-fantasy browser RPG · Active development · v0.30.5</span>
-      <a href="index.html">Return to the game ↑</a>
-    </footer>
+    <section class="rp-resource-section" aria-labelledby="rp-resource-title">
+      <div class="rp-resource-heading"><p class="rp-kicker">Useful places</p><h2 id="rp-resource-title">Your next step.</h2></div>
+      <div class="rp-resource-links">
+        <a href="guide.html"><span>PLAYER RESOURCE</span><strong>Field Guide</strong><small>Learn the basics before setting out.</small><b aria-hidden="true">↗</b></a>
+        <a href="save.html"><span>PLAYER RESOURCE</span><strong>Save Vault</strong><small>Export or restore a portable save.</small><b aria-hidden="true">↗</b></a>
+        <a href="feedback.html"><span>PLAYER RESOURCE</span><strong>Feedback & support</strong><small>Report a problem or share an idea.</small><b aria-hidden="true">↗</b></a>
+        <a href="playtest.html"><span>DEVELOPER RESOURCE</span><strong>Playtest Runner</strong><small>Run support-page and asset checks.</small><b aria-hidden="true">↗</b></a>
+      </div>
+    </section>
   </main>
+
+  <footer class="rp-footer">
+    <a class="rp-footer-brand" href="portal.html"><img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening"></a>
+    <div class="rp-footer-links"><a href="index.html">Play</a><a href="blog.html">Chronicle</a><a href="updates.html">Dispatch</a><a href="guide.html">Field Guide</a><a href="feedback.html">Feedback</a><a href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a></div>
+    <p>LEGEND: The Awakening · An independent dark-fantasy browser RPG in active development.</p>
+  </footer>
 </body>
 </html>
