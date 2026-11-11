@@ -90,9 +90,10 @@ jobs:
           NODE
       - name: Run Playwright tests
         env:
+          FULL_BROWSER_MATRIX: ${{ inputs.full_browser_matrix && '1' || '0' }}
           RUN_FULL_REGRESSION: ${{ github.event_name == 'push' || inputs.full_regression || inputs.full_browser_matrix }}
         run: |
-          if [[ "$RUN_FULL_REGRESSION" == "true" ]]; then
+          if [ "$RUN_FULL_REGRESSION" = "true" ]; then
             npm run test:e2e
           else
             # Keep routine PR feedback fast: cover the opening, scene-art fallback,
