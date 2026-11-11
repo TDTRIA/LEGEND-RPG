@@ -187,9 +187,23 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
           version: 'v99.0.0'
         }) === false;
         report.writeStatusUnchanged = window.LegendStorage.getPlayerSaveStatus() === 'unavailable';
+
+        prototype.setItem = originalSet;
+        localStorage.setItem(key, JSON.stringify({
+          username: 'ExistingTraveler',
+          flags: {},
+          inventory: {}
+        }));
+        report.existingTravelerLoaded = window.LegendStorage.loadPlayer()?.username === 'ExistingTraveler';
         prototype.setItem = function () {
           throw new DOMException('Storage quota denied', 'QuotaExceededError');
         };
+        report.failedNewPlayerWrite = window.LegendStorage.saveNewPlayer({
+          username: 'UncommittedNewTraveler'
+        }) === false;
+        report.previousTravelerRetained = window.LegendStorage.loadPlayer()?.username === 'ExistingTraveler';
+        report.newPlayerFailureStatusUnchanged = window.LegendStorage.getPlayerSaveStatus() === 'loaded';
+
         report.playerWrite = window.LegendStorage.savePlayer({ username: 'CannotPersist' }) === false;
         const sessionPlayer = window.LegendStorage.loadPlayer();
         report.sessionPlayer = sessionPlayer?.username === 'CannotPersist';
@@ -223,6 +237,10 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       invalidPlayerWrite: true,
       futurePlayerWrite: true,
       writeStatusUnchanged: true,
+      existingTravelerLoaded: true,
+      failedNewPlayerWrite: true,
+      previousTravelerRetained: true,
+      newPlayerFailureStatusUnchanged: true,
       playerWrite: true,
       sessionPlayer: true,
       sessionStatus: 'session-only',
