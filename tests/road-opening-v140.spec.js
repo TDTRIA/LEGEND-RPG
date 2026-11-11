@@ -18,12 +18,14 @@ async function openTitle(page) {
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
+    // The first-visit awakening has its own dedicated end-to-end test. Keep
+    // creation, annals and Oric flow fixtures out of that cinematic sequence.
+    sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready');
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
-  const skip = page.locator('#engine-skip');
-  if (await skip.isVisible().catch(() => false)) await skip.click();
-  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 20000 });
+  await page.waitForFunction(() => window.__legendPhaserWorldReady === true, null, { timeout: 20000 });
+  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 10000 });
 
   await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }' });
   await expect(page.locator('.v120-title')).toBeVisible();
