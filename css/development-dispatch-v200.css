@@ -202,7 +202,7 @@ body.legend-dispatch-page{
 .dd-brevo-form .checkbox.checkbox_tick_positive{display:grid;place-items:center;width:17px;height:17px;margin:1px 0 0;border:1px solid rgba(219,190,130,.8)!important;border-radius:2px!important;background:#0c100c!important}
 .dd-brevo-form #OPT_IN:checked+.checkbox.checkbox_tick_positive::after{content:"✓";color:#f0d59b;font-size:.77rem;font-weight:900;line-height:1}
 .dd-brevo-form #OPT_IN:focus-visible+.checkbox.checkbox_tick_positive{outline:2px solid #e4c27c;outline-offset:3px}
-.dd-brevo-form .dd-brevo-consent-copy p{margin:0;color:#c9c1af!important;font-size:.72rem;line-height:1.55}
+.dd-brevo-form .dd-brevo-consent-copy{margin:0;color:#c9c1af!important;font-size:.72rem;line-height:1.55}
 .dd-brevo-form .entry__specification{display:block;margin:8px 0 0;color:#9e9b8c!important;font-size:.65rem!important;line-height:1.5}
 .dd-brevo-form .sib-form__declaration{margin:14px 0 3px;padding:13px 14px;border-left:2px solid rgba(181,138,74,.72);background:rgba(7,10,7,.36);direction:ltr}
 .dd-brevo-form .dd-brevo-declaration p{margin:0;color:#aaa797!important;font-size:.65rem;line-height:1.6}
