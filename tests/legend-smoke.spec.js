@@ -23,10 +23,11 @@ const version = versionMatch[1];
 // Each Playwright test runs in an isolated browser context, so clearing localStorage
 // here only resets that test's synthetic traveler—not a player's live browser save.
 async function clickCreationNext(page) {
-  const next = page.locator('#v094Next');
+  const next = page.locator('#root .v140-creation .v094-actions > button.v094-btn.primary');
+  await expect(next).toHaveCount(1);
+  await next.scrollIntoViewIfNeeded();
   await expect(next).toBeVisible();
   await expect(next).toBeEnabled();
-  await next.evaluate(element => element.scrollIntoView({ block: 'center', inline: 'nearest' }));
   await next.click();
 }
 
