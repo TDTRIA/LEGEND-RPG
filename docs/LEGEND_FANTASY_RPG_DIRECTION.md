@@ -3,7 +3,7 @@
 > **Authority note (added 2026-11-08):** [`CANON.md`](CANON.md) is the authority for decisions the project owner has locked. Where this document differs from `CANON.md`, `CANON.md` wins. This is an earlier direction pass (2026-10-15); the owner has answered several of its open questions since, and those answers are recorded in `CANON.md` and its change log, not here. In particular, check `CANON.md` before relying on:
 >
 > - **§3 and §11,** which treat the Last Mercy, the Hollow Saint, and the weakened boundary as open proposals;
-> - **§5,** which says not every monster is corrupted or connected to the awakening and that mundane predators should stay. `CANON.md` L5 governs how the hostile monsters of the monster conflict are explained, and what it still leaves open about ordinary animals.
+> - **§5,** which treats ordinary predators as the default. `CANON.md` L5 governs the hostile creatures of the monster conflict: those attackers are echoes of the sealed peoples, not the peoples themselves. It does not settle whether ordinary animals or untouched creatures can also be hostile for ordinary reasons.
 >
 > Visual and presentation direction now lives in [`DARKEST_DUNGEON_DIRECTION.md`](DARKEST_DUNGEON_DIRECTION.md), which does not change canon either. This note is documentation only; no section below was edited.
 
