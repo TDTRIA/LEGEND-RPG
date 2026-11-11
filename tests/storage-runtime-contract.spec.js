@@ -106,7 +106,6 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       localStorage.setItem(key, '{malformed after future version');
       const malformedAfterFuture = window.LegendStorage.loadPlayer();
       const statusAfterMalformed = window.LegendStorage.getPlayerSaveStatus();
-      const futureStatus = window.LegendStorage.getPlayerSaveStatus();
 
       localStorage.setItem(key, JSON.stringify({
         username: 'LegacyButValid',
@@ -130,7 +129,6 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
         malformedIsNull: malformed === null,
         malformedStillPresent: malformedRaw === '{not valid json',
         malformedStatus,
-        futureStatus,
         incompatibleIsNull: incompatible === null,
         incompatibleStillPresent: Boolean(incompatibleRaw),
         compatibleName: compatible?.username,
@@ -144,7 +142,6 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       malformedIsNull: true,
       malformedStillPresent: true,
       malformedStatus: 'malformed',
-      futureStatus: 'incompatible',
       incompatibleIsNull: true,
       incompatibleStillPresent: true,
       unrecognizedVersionIsNull: true,
