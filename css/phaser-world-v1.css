@@ -164,7 +164,6 @@ body.legend-phaser-world-active #root .gss170-scene {
   background: transparent !important;
 }
 body.legend-phaser-world-active #root .gfm160-scene-art[data-legend-phaser-scene-art-active="true"],
-body.legend-phaser-world-active #root .gfm160-results-art img[data-legend-phaser-scene-art-active="true"],
 body.legend-phaser-world-active #root .gss170-scene-art[data-legend-phaser-scene-art-active="true"] {
   opacity: 0 !important;
   visibility: hidden !important;
