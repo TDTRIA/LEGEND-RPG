@@ -204,7 +204,12 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
         report.previousTravelerRetained = window.LegendStorage.loadPlayer()?.username === 'ExistingTraveler';
         report.newPlayerFailureStatusUnchanged = window.LegendStorage.getPlayerSaveStatus() === 'loaded';
 
-        report.playerWrite = window.LegendStorage.savePlayer({ username: 'CannotPersist' }) === false;
+        const sessionCandidate = { username: 'CannotPersist' };
+        report.playerWrite = window.LegendStorage.savePlayer(sessionCandidate) === false;
+        sessionCandidate.version = 'v99.0.0';
+        report.futureSessionRead = window.LegendStorage.loadPlayer() === null;
+        report.futureSessionStatus = window.LegendStorage.getPlayerSaveStatus();
+        sessionCandidate.version = window.LEGEND_DATA.VERSION;
         const sessionPlayer = window.LegendStorage.loadPlayer();
         report.sessionPlayer = sessionPlayer?.username === 'CannotPersist';
         report.sessionStatus = window.LegendStorage.getPlayerSaveStatus();
@@ -242,6 +247,8 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       previousTravelerRetained: true,
       newPlayerFailureStatusUnchanged: true,
       playerWrite: true,
+      futureSessionRead: true,
+      futureSessionStatus: 'incompatible',
       sessionPlayer: true,
       sessionStatus: 'session-only',
       settingsWrite: true,
