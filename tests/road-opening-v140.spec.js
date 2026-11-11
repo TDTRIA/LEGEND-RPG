@@ -8,9 +8,12 @@ if (!versionMatch) throw new Error('Could not read LEGEND_DATA.VERSION from js/d
 const version = versionMatch[1];
 
 async function openTitle(page) {
-  // Keep the desktop creation journey above the fold. The mobile viewport is
-  // exercised explicitly in separate touch scenarios at 390px.
-  await page.setViewportSize({ width: 1440, height: 900 });
+  // Keep tall creation cards above the fold on desktop without changing the
+  // configured phone viewport in the full mobile browser matrix.
+  const viewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
+  if (viewport.width >= 900 && viewport.height < 900) {
+    await page.setViewportSize({ width: 1440, height: 900 });
+  }
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
@@ -18,11 +21,9 @@ async function openTitle(page) {
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
-  await page.waitForFunction(() =>
-    window.__legendPhaserWorldReady === true,
-    null,
-    { timeout: 20000 }
-  );
+  const skip = page.locator('#engine-skip');
+  if (await skip.isVisible().catch(() => false)) await skip.click();
+  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 20000 });
 
   await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }' });
   await expect(page.locator('.v120-title')).toBeVisible();
