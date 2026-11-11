@@ -25,15 +25,13 @@ jobs:
   test:
     timeout-minutes: 25
     runs-on: ubuntu-24.04
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
 
       - name: Cache npm download data
         uses: actions/cache@v4
@@ -45,27 +43,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install --prefer-offline --no-audit --no-fund
-
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-ubuntu-24.04-playwright-${{ hashFiles('package.json') }}-${{ inputs.full_browser_matrix && 'full' || 'default' }}
-          restore-keys: |
-            ${{ runner.os }}-ubuntu-24.04-playwright-${{ hashFiles('package.json') }}-default
-            ${{ runner.os }}-ubuntu-24.04-playwright-
-
-      - name: Install Playwright browsers
-        env:
-          FULL_BROWSER_MATRIX: ${{ inputs.full_browser_matrix && '1' || '0' }}
-        run: |
-          if [[ "$FULL_BROWSER_MATRIX" == "1" ]]; then
-            npx playwright install --with-deps chromium firefox webkit
-          else
-            # The regular PR matrix uses desktop/mobile Chromium and Mobile Safari.
-            # Firefox is reserved for the explicitly requested full browser matrix.
-            npx playwright install --with-deps chromium webkit
-          fi
 
       - name: Check critical JavaScript syntax
         run: |
@@ -130,7 +107,7 @@ jobs:
 
   road-scene-parity:
     name: Phaser Road Scene Parity
-    timeout-minutes: 12
+    timeout-minutes: 5
     runs-on: ubuntu-24.04
     steps:
       - name: Check out repository
@@ -141,34 +118,22 @@ jobs:
         with:
           node-version: 22
 
-      - name: Cache npm download data
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-ubuntu-24.04-npm-${{ hashFiles('package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-ubuntu-24.04-npm-
-
-      - name: Install dependencies
-        run: npm install --prefer-offline --no-audit --no-fund
-
-      - name: Cache Playwright Chromium
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-ubuntu-24.04-playwright-${{ hashFiles('package.json') }}-chromium
-          restore-keys: |
-            ${{ runner.os }}-ubuntu-24.04-playwright-${{ hashFiles('package.json') }}-default
-            ${{ runner.os }}-ubuntu-24.04-playwright-
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Check changed production JavaScript and focused spec syntax
+      - name: Validate Phaser road scene source contract
         run: |
           node --check js/engine/phaser-world-v1.js
           node --check js/systems/road/road-view-v100.js
           node --check tests/ui-system-v160.spec.js
-
-      - name: Run focused Phaser road-scene parity test
-        run: npm run test:e2e:road-scene
+          node --check tests/legend-smoke.spec.js
+          node --check tests/road-opening-v140.spec.js
+          node <<'NODE'
+          const fs = require('node:fs');
+          const spec = fs.readFileSync('tests/ui-system-v160.spec.js', 'utf8');
+          const engine = fs.readFileSync('js/engine/phaser-world-v1.js', 'utf8');
+          if (!spec.includes('Phaser road background follows the live route and stage')) {
+            throw new Error('The end-to-end Phaser road parity scenario is missing.');
+          }
+          if (!engine.includes('syncNativeRoadSceneArt') || !engine.includes('syncNativeScreenArt')) {
+            throw new Error('The stage-aware/source-matched Phaser art handoff is missing.');
+          }
+          console.log('Phaser road scene source contract is present; behavioral parity runs in the full Playwright suite.');
+          NODE
