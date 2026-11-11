@@ -6745,7 +6745,6 @@
       container?.classList.add('legend-phaser-startup-fallback');
       container?.setAttribute('aria-hidden', 'true');
       const failedGame = game;
-      const failedScene = realmScene;
       if (failedGame?.canvas) {
         failedGame.canvas.style.setProperty('display', 'none', 'important');
         failedGame.canvas.setAttribute('aria-hidden', 'true');
@@ -6762,7 +6761,6 @@
       // The destroyed scene is deliberately no longer reachable from either
       // the facade or global bridge; late readiness callbacks are guarded by
       // startupFinalized and cannot reactivate the canvas.
-      void failedScene;
       observeRoot();
       if (IS_PROTOTYPE) window.__legendRebootReady = false;
       else window.__legendPhaserWorldReady = false;
