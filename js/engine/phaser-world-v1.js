@@ -6722,29 +6722,57 @@
     }
     if (!needsAwakening) document.documentElement.classList.remove('engine-intro-active');
 
+    let startupFinalized = false;
+    let startupWatchdog = null;
+    const finishStartup = () => {
+      if (startupFinalized) return;
+      startupFinalized = true;
+      if (startupWatchdog) window.clearTimeout(startupWatchdog);
+      startupWatchdog = null;
+      try { window.sessionStorage.setItem(ENGINE_SESSION_KEY, 'ready'); } catch (_) {}
+      if (realmScene) realmScene.engineAwakened = true;
+      document.documentElement.classList.remove('engine-intro-active');
+      const skip = byId('engine-skip');
+      if (skip) skip.hidden = true;
+      engineReady = true;
+      if (IS_PROTOTYPE) {
+        showTitle();
+        observeRoot();
+        window.__legendRebootReady = true;
+      } else {
+        const bootScreen = byId('legend-boot-screen');
+        if (bootScreen) bootScreen.hidden = true;
+        document.body.classList.remove('legend-booting');
+        observeRoot();
+        window.__legendPhaserWorldReady = true;
+        window.dispatchEvent(new CustomEvent('legend:phaser-world-ready'));
+      }
+    };
+
+    const keepDomFallback = () => {
+      if (startupFinalized) return;
+      startupFinalized = true;
+      startupWatchdog = null;
+      engineReady = false;
+      console.warn('[LEGEND Phaser] World startup did not reach READY; keeping the original HTML game interface visible.');
+      document.documentElement.classList.remove('engine-intro-active');
+      document.body?.classList.remove('legend-phaser-world-active', 'legend-booting');
+      const skip = byId('engine-skip');
+      if (skip) skip.hidden = true;
+      const bootScreen = byId('legend-boot-screen');
+      if (bootScreen) bootScreen.hidden = true;
+      observeRoot();
+      if (IS_PROTOTYPE) window.__legendRebootReady = false;
+      else window.__legendPhaserWorldReady = false;
+      toast('The world renderer could not finish starting. The original game interface is available; refresh to retry the scene.');
+    };
+
+    // A READY watchdog prevents a silent blank page if Phaser never completes
+    // its boot pipeline. The existing HTML game remains the recovery surface.
+    startupWatchdog = window.setTimeout(keepDomFallback, 20000);
     game.events.once('ready', () => {
       realmScene = game.scene.getScene('RealmScene');
       realmScene?.setEnvironment('title', true);
-      const finishStartup = () => {
-        try { window.sessionStorage.setItem(ENGINE_SESSION_KEY, 'ready'); } catch (_) {}
-        if (realmScene) realmScene.engineAwakened = true;
-        document.documentElement.classList.remove('engine-intro-active');
-        const skip = byId('engine-skip');
-        if (skip) skip.hidden = true;
-        engineReady = true;
-        if (IS_PROTOTYPE) {
-          showTitle();
-          observeRoot();
-          window.__legendRebootReady = true;
-        } else {
-          const bootScreen = byId('legend-boot-screen');
-          if (bootScreen) bootScreen.hidden = true;
-          document.body.classList.remove('legend-booting');
-          observeRoot();
-          window.__legendPhaserWorldReady = true;
-          window.dispatchEvent(new CustomEvent('legend:phaser-world-ready'));
-        }
-      };
       if (needsAwakening && realmScene?.runEngineAwakening) {
         realmScene.runEngineAwakening(finishStartup);
       } else {
@@ -6829,6 +6857,8 @@
   document.addEventListener('DOMContentLoaded', () => {
     settingsStorage?.applySettings?.(settingsStorage.loadSettings());
     bindHostActions();
-    startPhaser();
+    // Finish the DOMContentLoaded dispatch before Phaser enters its boot pipeline.
+    // This guarantees the READY subscription is attached before the event can fire.
+    window.setTimeout(startPhaser, 0);
   }, { once: true });
 })();
