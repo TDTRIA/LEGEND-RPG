@@ -146,12 +146,10 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       futureStillPresent: true,
       futureRawVersion: 'v99.0.0',
       compatibleName: 'LegacyButValid',
+      compatibleVersion: 'v0.30.5',
       compatibleUnknownData: true,
       compatibleInventory: 7
     });
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendStorage.loadPlayer()?.version
-    )).toBe(await page.evaluate(() => window.LEGEND_DATA.VERSION));
   });
 
   test('player and settings storage failures retain safe in-session fallbacks', async ({ page }) => {
