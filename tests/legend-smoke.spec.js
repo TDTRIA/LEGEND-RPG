@@ -2072,64 +2072,52 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.v140-creation')).not.toContainText(/Captain Oric|the Veil/i);
   });
 
-  test('Oric finds the traveler beneath the dead lantern and the voice teaches ACT inside Phaser', async ({ page }) => {
+  test('Oric opening keeps its readable DOM dialogue and teaches ACT safely', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await startFreshCharacter(page, 'OricOpeningQA', { stopAtIntro: true });
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
     await expect(page.getByRole('group', { name: 'Your answer to Captain Oric' })).toBeVisible();
     await expect(page.locator('.ash100-town')).toHaveCount(0);
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeOpeningUi)).toBe(true);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeOpeningUi)).toBe(false);
 
     const oricScene = await page.evaluate(() => {
       const card = document.querySelector('.opening-road-v140-card');
       const heading = document.querySelector('#openingRoadTitle');
       const choice = document.querySelector('[data-oric-response="honest"]');
-      const snapshot = window.LegendPhaserWorldV1.snapshot();
       return {
         active: document.body.classList.contains('legend-phaser-opening-ui-active'),
-        surface: snapshot.surface,
-        objects: snapshot.nativeOpeningUiObjectCount,
+        surface: window.LegendPhaserWorldV1.snapshot().surface,
         cardBackground: card ? getComputedStyle(card).backgroundColor : '',
         headingColor: heading ? getComputedStyle(heading).color : '',
-        choiceBackground: choice ? getComputedStyle(choice).backgroundImage : '',
-        choiceLabel: choice?.getAttribute('aria-label') || '',
-        control: snapshot.nativeOpeningUiControlBounds.find(item => item.id === 'oric-honest'),
-        scene: snapshot.nativeOpeningUiSceneSize
+        choiceColor: choice ? getComputedStyle(choice).color : '',
+        choiceChildVisibility: choice?.querySelector('strong')
+          ? getComputedStyle(choice.querySelector('strong')).visibility : '',
+        backgroundVisibility: getComputedStyle(document.querySelector('.opening-road-v140-bg')).visibility
       };
     });
-    expect(oricScene.active).toBe(true);
+    expect(oricScene.active).toBe(false);
     expect(oricScene.surface).toBe('awakening');
-    expect(oricScene.objects).toBeGreaterThan(12);
-    expect(oricScene.cardBackground).toBe('rgba(0, 0, 0, 0)');
-    expect(oricScene.headingColor).toBe('rgba(0, 0, 0, 0)');
-    expect(oricScene.choiceLabel).toMatch(/I remember a bell/i);
-    expect(oricScene.control).toBeTruthy();
+    expect(oricScene.headingColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(oricScene.choiceColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(oricScene.choiceChildVisibility).toBe('visible');
+    expect(oricScene.backgroundVisibility).toBe('visible');
 
     const firstChoice = page.locator('[data-oric-response="honest"]');
     await firstChoice.focus();
-    await expect.poll(() => page.evaluate(() =>
-      Boolean(window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUiControlBounds?.find(item => item.id === 'oric-honest')?.focused)
-    )).toBe(true);
-
+    await expect(firstChoice).toBeFocused();
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect.poll(() => page.evaluate(() => {
-      const rect = document.querySelector('[data-oric-response="honest"]')?.getBoundingClientRect();
-      const snapshot = window.LegendPhaserWorldV1.snapshot();
-      const native = snapshot?.nativeOpeningUiControlBounds?.find(item => item.id === 'oric-honest');
-      const scene = snapshot?.nativeOpeningUiSceneSize;
-      if (!rect || !native || !scene) return false;
-      return Math.max(
-        Math.abs(native.x - rect.left * scene.width / window.innerWidth),
-        Math.abs(native.y - rect.top * scene.height / window.innerHeight),
-        Math.abs(native.width - rect.width * scene.width / window.innerWidth),
-        Math.abs(native.height - rect.height * scene.height / window.innerHeight)
-      ) < 2;
-    })).toBe(true);
+    const mobileChoice = await firstChoice.evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      return rect.width > 0 && rect.height >= 36 &&
+        rect.left >= 0 && rect.right <= window.innerWidth;
+    });
+    expect(mobileChoice).toBe(true);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
 
     await firstChoice.click();
     await expect(page.locator('.opening-road-v140-ambush')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(true);
+    await expect(page.locator('.opening-road-v140-ambush')).toContainText('Oric is hit');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(false);
     await expect(page.locator('.rpg-battle')).toHaveCount(0);
     await page.getByRole('button', { name: 'Help Oric' }).click();
     await expect(page.locator('.rpg-battle')).toBeVisible();
@@ -2139,7 +2127,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('#strike')).toBeDisabled();
     await page.locator('#skill').click();
     await expect(page.getByRole('heading', { name: 'Oric saw what you did.' })).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(true);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(false);
     await expect(page.locator('#openingRoadSkip')).toHaveCount(0);
   });
 
@@ -3054,22 +3042,32 @@ test('looping intro and creation atmosphere does not block the Phaser screen pai
   await expect(page.getByRole('heading', { name: 'OverlayProof', exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
 
-  // The Old Road prologue has infinite drifting-background and lantern-sweep
-  // animations. Those loops must not block its Phaser-native panels either.
+  // The prologue photograph and Phaser's generic road texture are different
+  // assets. Keep the original DOM story copy and Continue control visible until
+  // RealmScene can prove a source-matched backdrop for native opening paint.
   await expect(page.locator('.opening-road-v140-prologue')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(true);
-  const layers = await page.evaluate(() => ({
-    creation: document.body.classList.contains('legend-phaser-creation-ui-active'),
-    opening: document.body.classList.contains('legend-phaser-opening-ui-active'),
-    creationScreenCount: document.querySelectorAll('#root .v140-creation:not(.v140-arrival)').length,
-    openingScreenCount: document.querySelectorAll('#root .opening-road-v140').length,
-    creationObjects: window.LegendPhaserWorldV1.snapshot()?.nativeCreationUiObjectCount || 0,
-    openingObjects: window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUiObjectCount || 0
-  }));
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(false);
+  const layers = await page.evaluate(() => {
+    const heading = document.querySelector('.opening-road-v140-prologue h1');
+    const button = document.querySelector('#openingPrologueContinue, .opening-road-v140-primary');
+    return {
+      creation: document.body.classList.contains('legend-phaser-creation-ui-active'),
+      opening: document.body.classList.contains('legend-phaser-opening-ui-active'),
+      creationScreenCount: document.querySelectorAll('#root .v140-creation:not(.v140-arrival)').length,
+      openingScreenCount: document.querySelectorAll('#root .opening-road-v140').length,
+      openingObjects: window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUiObjectCount || 0,
+      headingColor: heading ? getComputedStyle(heading).color : '',
+      buttonVisibility: button ? getComputedStyle(button).visibility : '',
+      backdropVisibility: getComputedStyle(document.querySelector('.opening-road-v140-bg')).visibility
+    };
+  });
   expect(layers.creation).toBe(false);
-  expect(layers.opening).toBe(true);
+  expect(layers.opening).toBe(false);
   expect(layers.creationScreenCount).toBe(0);
   expect(layers.openingScreenCount).toBe(1);
-  expect(layers.creationObjects).toBe(0);
-  expect(layers.openingObjects).toBeGreaterThan(10);
+  expect(layers.openingObjects).toBe(0);
+  expect(layers.headingColor).not.toBe('rgba(0, 0, 0, 0)');
+  expect(layers.buttonVisibility).toBe('visible');
+  expect(layers.backdropVisibility).toBe('visible');
+
 });
