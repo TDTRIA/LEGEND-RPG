@@ -1641,12 +1641,10 @@
       // Each lore page is rebuilt by the existing prologue controller. Phaser
       // mirrors the resulting text and controls; the controller remains in charge
       // of chapter order and the hand-off into traveler creation.
-      this.clearNativeAnnalsUi(false);
-      this.nativeAnnalsUiActive = true;
-      this.nativeAnnalsUiSignature = signature;
-      document.body?.classList.add('legend-phaser-annals-ui-active');
+      this.clearNativeAnnalsUi();
+      const paintedTextNodes = new Set();
+      try {
 
-      if (!this.nativeAnnalsUiScrollTarget) {
         this.nativeAnnalsUiScrollTarget = screen;
         const handler = () => {
           this.nativeAnnalsUiLayoutEvent?.remove?.(false);
@@ -1693,6 +1691,7 @@
         const textY = centered ? rect.y + rect.height / 2 : rect.y;
         const label = addObject(this.add.text(textX, textY, text, config)
           .setOrigin(centered ? 0.5 : 0, centered ? 0.5 : 0));
+        if (label?.active && label.text?.trim()) paintedTextNodes.add(node);
         if (centered && node.classList?.contains('opening-lore-v220-continue')) {
           this.nativeAnnalsUiButtonLabel = label;
         }
@@ -1793,6 +1792,26 @@
           this.nativeAnnalsUiButtonFocus = focus;
         }
       }
+      const requiredCopy = [brand, edition, numeral, sideStep, kicker, heading, ...paragraphs, quote, button]
+        .filter(node => node && String(node.textContent || '').trim() && readRect(node));
+      const complete = Boolean(heading?.textContent?.trim() && button?.isConnected &&
+        button.textContent?.trim() && this.nativeAnnalsUiButtonBackground?.active &&
+        this.nativeAnnalsUiButtonLabel?.active && this.nativeAnnalsUiButtonFocus?.active) &&
+        requiredCopy.length > 0 &&
+        requiredCopy.every(node => paintedTextNodes.has(node));
+      if (!complete) {
+        this.clearNativeAnnalsUi();
+        console.warn('Phaser annals paint was incomplete; restoring the accessible DOM chapter.');
+        return;
+      }
+      this.nativeAnnalsUiActive = true;
+      this.nativeAnnalsUiSignature = signature;
+      document.body?.classList.add('legend-phaser-annals-ui-active');
+      } catch (error) {
+        this.clearNativeAnnalsUi();
+        console.warn('Phaser annals UI paint failed; leaving the accessible DOM chapter visible.', error);
+      }
+
     }
 
     setNativeAnnalsButtonFocus(active) {
@@ -1999,12 +2018,11 @@
         }
       });
 
-      this.clearNativeCreationUi(false);
-      this.nativeCreationUiActive = true;
-      this.nativeCreationUiSignature = signature;
-      document.body?.classList.add('legend-phaser-creation-ui-active');
+      this.clearNativeCreationUi();
+      const paintedTextNodes = new Set();
+      const paintedImageIndexes = new Set();
+      try {
 
-      if (!this.nativeCreationUiScrollTarget) {
         this.nativeCreationUiScrollTarget = screen;
         const handler = () => {
           this.nativeCreationUiLayoutEvent?.remove?.(false);
@@ -2051,7 +2069,8 @@
         const image = this.add.image(rect.x + rect.width / 2, rect.y + rect.height / 2, key)
           .setDisplaySize(rect.width, rect.height)
           .setAlpha(Number.isFinite(opacity) ? Math.max(0, Math.min(1, opacity)) : 1);
-        addObject(image, 13);
+        const paintedImage = addObject(image, 13);
+        if (paintedImage?.active) paintedImageIndexes.add(item.index);
       });
       imageSpecs.forEach(item => {
         const rect = item.rect;
@@ -2201,7 +2220,9 @@
           padding: { left: 1, right: 2, top: 1, bottom: 2 },
           align: style.textAlign || 'left'
         }).setOrigin(0, 0);
-        return addObject(textObject, 14);
+        const paintedText = addObject(textObject, 14);
+        if (paintedText?.active && paintedText.text?.trim()) paintedTextNodes.add(node);
+        return paintedText;
       };
       textNodes.forEach(node => {
         let color = null;
@@ -2296,6 +2317,29 @@
           button.addEventListener('pointerleave', () => this.setNativeCreationControlFocus(id, document.activeElement === button));
         }
       });
+      const requiredTextNodes = textNodes.filter(node => String(node.textContent || '').trim());
+      const controlsReady = mainButtons.length > 0 &&
+        this.nativeCreationUiControls.length === mainButtons.length &&
+        this.nativeCreationUiControls.every(control =>
+          control.container?.active && control.button?.isConnected && control.label
+        );
+      const imagesReady = imageSpecs.every(item => paintedImageIndexes.has(item.index));
+      const complete = requiredTextNodes.length > 0 &&
+        requiredTextNodes.every(node => paintedTextNodes.has(node)) &&
+        controlsReady && imagesReady;
+      if (!complete) {
+        this.clearNativeCreationUi();
+        console.warn('Phaser traveler-creation paint was incomplete; restoring the accessible DOM form.');
+        return;
+      }
+      this.nativeCreationUiActive = true;
+      this.nativeCreationUiSignature = signature;
+      document.body?.classList.add('legend-phaser-creation-ui-active');
+      } catch (error) {
+        this.clearNativeCreationUi();
+        console.warn('Phaser traveler-creation UI paint failed; leaving the accessible DOM form visible.', error);
+      }
+
     }
 
     clearNativeOpeningUi(removeClass = true) {
@@ -2382,12 +2426,10 @@
       ]);
       if (this.nativeOpeningUiActive && signature === this.nativeOpeningUiSignature) return;
 
-      this.clearNativeOpeningUi(false);
-      this.nativeOpeningUiActive = true;
-      this.nativeOpeningUiSignature = signature;
-      document.body?.classList.add('legend-phaser-opening-ui-active');
+      this.clearNativeOpeningUi();
+      const paintedTextNodes = new Set();
+      try {
 
-      if (!this.nativeOpeningUiScrollTarget) {
         this.nativeOpeningUiScrollTarget = screen;
         const handler = () => {
           this.nativeOpeningUiLayoutEvent?.remove?.(false);
@@ -2451,7 +2493,7 @@
         else if (node.matches('.opening-road-v140-footnote')) color = '#a7b5a8';
         const fontSize = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
         const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.45;
-        add(this.add.text(rect.x, rect.y, text, {
+        const paintedText = add(this.add.text(rect.x, rect.y, text, {
           fontFamily: style.fontFamily || 'Georgia, Times New Roman, serif',
           fontSize: fontSize + 'px',
           fontStyle: Number(style.fontWeight) >= 650 || style.fontWeight === 'bold' ? 'bold' : (style.fontStyle || 'normal'),
@@ -2462,6 +2504,7 @@
           padding: { left: 1, right: 2, top: 1, bottom: 2 },
           align: style.textAlign || 'left'
         }).setOrigin(0, 0), 14);
+        if (paintedText?.active && paintedText.text?.trim()) paintedTextNodes.add(node);
       });
 
       buttons.forEach((button, index) => {
@@ -2514,6 +2557,29 @@
           button.addEventListener('pointerleave', () => this.setNativeOpeningControlFocus(id, document.activeElement === button));
         }
       });
+      const requiredTextNodes = textNodes.filter(node => String(node.textContent || '').trim());
+      const visibleButtons = buttons.filter(button => rectFor(button) && !button.closest('[hidden]'));
+      const controlsReady = visibleButtons.length > 0 &&
+        this.nativeOpeningUiControls.length === visibleButtons.length &&
+        this.nativeOpeningUiControls.every(control =>
+          control.container?.active && control.button?.isConnected && control.label
+        );
+      const complete = requiredTextNodes.length > 0 &&
+        requiredTextNodes.every(node => paintedTextNodes.has(node)) &&
+        controlsReady;
+      if (!complete) {
+        this.clearNativeOpeningUi();
+        console.warn('Phaser Oric-opening paint was incomplete; restoring the accessible DOM story.');
+        return;
+      }
+      this.nativeOpeningUiActive = true;
+      this.nativeOpeningUiSignature = signature;
+      document.body?.classList.add('legend-phaser-opening-ui-active');
+      } catch (error) {
+        this.clearNativeOpeningUi();
+        console.warn('Phaser Oric-opening UI paint failed; leaving the accessible DOM story visible.', error);
+      }
+
     }
 
     clearNativeGameplayUi(removeClass = true) {
