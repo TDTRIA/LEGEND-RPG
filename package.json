@@ -11,7 +11,7 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
     "test:e2e:phaser-preview": "playwright test --config=playwright.phaser.config.js",
-    "test:e2e:pr": "playwright test tests/legend-smoke.spec.js tests/road-opening-v140.spec.js tests/ui-system-v160.spec.js --grep \"annals establish the old war, the underground seal and the Last Mercy before creation|the Oric ambush teaches ACT then guides a full road expedition and secured return|Phaser screen art handoff keeps the DOM image visible when its source does not match|title and realm entrance load the shared styles, keep the raster wordmark/actions, and show realm art|a missing Phaser road texture keeps the authored DOM scene image visible|Phaser road background follows the live route and stage\" --project=\"Desktop Chrome\"",
+    "test:e2e:pr": "playwright test tests/legend-smoke.spec.js tests/road-opening-v140.spec.js tests/ui-system-v160.spec.js --grep \"annals establish the old war, the underground seal and the Last Mercy before creation|the Oric ambush teaches ACT then guides a full road expedition and secured return|Phaser screen art handoff keeps the DOM image visible when its source does not match|title and realm entrance keep a complete native painter or readable DOM fallback, and show realm art|a missing Phaser road texture keeps the authored DOM scene image visible|Phaser road background follows the live route and stage\" --project=\"Desktop Chrome\"",
     "test:e2e:pr:mobile": "playwright test tests/mobile-smoke.spec.js --project=\"Mobile Safari\" --project=\"Mobile Chrome\""
   },
   "devDependencies": {
