@@ -473,6 +473,7 @@
       this.nativeRoadSceneArtState = null;
       this.nativeScreenArtNodes = [];
       this.nativeScreenArtState = [];
+      this.worldArtLoadErrors = [];
       this.ambienceObjects = [];
       this.environment = '';
       this.lookTarget = { x: 0, y: 0 };
@@ -670,6 +671,14 @@
       // part of the same production asset contract and must be available for
       // encounter, dialogue, creation and result scenes when those screens move
       // fully into RealmScene.
+      this.load.on('loaderror', file => {
+        if (file && Object.prototype.hasOwnProperty.call(ASSETS, file.key)) {
+          this.worldArtLoadErrors.push({
+            key: String(file.key),
+            source: String(file.src || '')
+          });
+        }
+      });
       Object.entries(ASSETS).forEach(([key, path]) => {
         if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(path)) {
           this.load.image(key, path);
@@ -714,6 +723,7 @@
           nativeRoadSceneArtActive: this.nativeRoadSceneArtActive,
           nativeRoadSceneArt: this.nativeRoadSceneArtState,
           nativeScreenArt: this.nativeScreenArtState,
+          worldArtLoadErrors: this.worldArtLoadErrors.slice(),
           worldArtTextureStatus: Object.keys(ASSETS).map(key => ({
             key,
             loaded: this.textures.exists(key)
@@ -2353,6 +2363,16 @@
         if (this.nativeOpeningUiActive || document.body?.classList.contains('legend-phaser-opening-ui-active')) {
           this.clearNativeOpeningUi();
         }
+        return;
+      }
+
+      // The opening scene's authored JPEG differs from the expedition road
+      // texture. Do not hide DOM dialogue/controls unless the exact opening
+      // backdrop has transferred to an opaque Phaser environment texture.
+      this.syncNativeScreenArt();
+      const openingBackdrop = screen.querySelector('.opening-road-v140-bg');
+      if (openingBackdrop?.dataset.legendPhaserSceneArtActive !== 'true') {
+        this.clearNativeOpeningUi();
         return;
       }
 
