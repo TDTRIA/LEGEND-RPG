@@ -341,13 +341,13 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
     await page.locator('#v094Next').click();
     await page.locator('[data-keepsake="Old Map"]').click();
     await page.locator('#v094Next').click();
-    await expect(page.locator('.v094-soul-confirmation')).toBeVisible();
+    await expect(page.locator('.v140-soul-confirmation')).toBeVisible();
 
     const key = await page.evaluate(() => window.LEGEND_DATA.SAVE_KEY);
-    await page.evaluate(key => localStorage.setItem(key, '{unreadable existing traveler'));
+    await page.evaluate(key => localStorage.setItem(key, '{unreadable existing traveler'), key);
     await page.getByRole('button', { name: /Let Me Wake/i }).click();
     await expect(page.locator('#v094CreationError')).toContainText(/existing traveler save could not be read safely/i);
-    await expect(page.locator('.v094-soul-confirmation')).toBeVisible();
+    await expect(page.locator('.v140-soul-confirmation')).toBeVisible();
     expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe('{unreadable existing traveler');
     await expect(page.locator('.opening-road-v140')).toHaveCount(0);
 
@@ -371,7 +371,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
     }, key);
     await page.locator('#v094Next').click();
     await expect(page.locator('#v094CreationError')).toContainText(/could not be saved permanently/i);
-    await expect(page.locator('.v094-soul-confirmation')).toBeVisible();
+    await expect(page.locator('.v140-soul-confirmation')).toBeVisible();
     await page.evaluate(() => {
       Storage.prototype.setItem = window.__legendOriginalSetItem;
       delete window.__legendOriginalSetItem;
