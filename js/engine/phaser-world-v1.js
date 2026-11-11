@@ -6711,6 +6711,7 @@
     mode: IS_PROTOTYPE ? 'preview' : 'production',
     get ready() { return engineReady; },
     get engine() { return game; },
+    get surface() { return currentSurface; },
     snapshot: () => realmScene ? window.__legendRebootBridge?.snapshot?.() || null : null,
     setEnvironment: (name, immediate = false) => setEnvironment(name, immediate),
     pulse: kind => realmScene?.pulse?.(kind),
