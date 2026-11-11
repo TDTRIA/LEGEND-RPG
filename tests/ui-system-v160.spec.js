@@ -618,10 +618,17 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       await route.continue();
     });
 
-    // The engine preloads all world textures on the title screen. Block its
-    // road texture requests through both title boot and reload, then let the
-    // later production DOM scene image fetch succeed unchanged.
+    // The world-art loader error proves that Phaser requested and failed the
+    // exact road texture. Only after that failure do we release the URL so the
+    // later DOM scene image can load from its unchanged source.
     await enterAshmere(page, 'RoadTextureFallbackQA', undefined, async () => {
+      await page.waitForFunction(() =>
+        window.LegendPhaserWorldV1?.snapshot?.()?.worldArtLoadErrors
+          ?.some(error => error.key === 'road' &&
+            error.source.includes('old-road-south-fork.webp')),
+        null,
+        { timeout: 15000 }
+      );
       allowDomImageRequest = true;
     });
     expect(blockedPhaserTextureRequests).toBeGreaterThan(0);
@@ -637,6 +644,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       return {
         textureLoaded: Boolean(snapshot.worldArtTextureStatus.find(item => item.key === 'road')?.loaded),
+        textureError: snapshot.worldArtLoadErrors.find(item => item.key === 'road') || null,
         expectedSource: snapshot.nativeRoadSceneArt?.expectedSource,
         actualSource: image?.getAttribute('src') || '',
         opacity: style.opacity,
@@ -645,6 +653,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       };
     });
     expect(fallback.textureLoaded).toBe(false);
+    expect(fallback.textureError?.source).toContain('old-road-south-fork.webp');
     expect(fallback.expectedSource).toBe('assets/generated/locations/old-road-south-fork.webp');
     expect(fallback.actualSource).toBe(fallback.expectedSource);
     expect(fallback.opacity).toBe('1');
