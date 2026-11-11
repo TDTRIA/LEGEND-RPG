@@ -158,7 +158,7 @@
     }
     pl.flags = pl.flags || {};
     if (roadExperienced) pl.flags.veteranRoadSkipUnlocked = true;
-    const saveResult = S().savePlayer?.(pl);
+    const saveResult = typeof S().savePlayer === 'function' ? S().savePlayer(pl) : false;
     if (saveResult === false) {
       showCreationError('Your traveler could not be saved permanently. Your choices are still here; check browser storage and press Let Me Wake again to retry.');
       return;
