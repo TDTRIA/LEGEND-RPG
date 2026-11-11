@@ -48,14 +48,9 @@ The individual issue URL is the confirmed link supplied for the existing publica
 
 ## Integration requirements
 
-The companion GitHub Pages newsletter page (updates.html) uses Buttondown's standard HTML embed endpoint and preserves the required fields:
+Buttondown is retained as the legacy publication and existing subscriber archive while the new Brevo subscription path is prepared. The current `updates.html` page contains a LEGEND-styled Brevo form that posts directly to the Brevo form endpoint and uses Brevo's hosted form handler. Its consent and double-opt-in workflow must remain intact.
 
-- action: https://buttondown.com/api/emails/embed-subscribe/Legend-RPG
-- method: post
-- field name: email
-- hidden field name: embed with value 1
-
-Do not replace this standard form with a JavaScript fetch request. Buttondown may need to show its own CAPTCHA or validation response. The website must never collect or store subscribers itself.
+Do not add a custom JavaScript fetch request or proxy that stores subscriber data on GitHub Pages. The website must never collect or store subscribers itself. Do not disable the Buttondown legacy link or migrate subscriber records until the Brevo signup flow has been published and successfully tested end to end.
 
 ## Dashboard changes still requiring authenticated account access
 
