@@ -103,6 +103,10 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       const futureRaw = localStorage.getItem(key);
       const futureStillPresent = futureRaw === localStorage.getItem(key);
       const futureStatus = window.LegendStorage.getPlayerSaveStatus();
+      localStorage.setItem(key, '{malformed after future version');
+      const malformedAfterFuture = window.LegendStorage.loadPlayer();
+      const statusAfterMalformed = window.LegendStorage.getPlayerSaveStatus();
+      const futureStatus = window.LegendStorage.getPlayerSaveStatus();
 
       localStorage.setItem(key, JSON.stringify({
         username: 'LegacyButValid',
@@ -119,6 +123,9 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
         unrecognizedVersionStillPresent: Boolean(unrecognizedVersionRaw),
         futureIsNull: future === null,
         futureStillPresent,
+        futureStatus,
+        malformedAfterFutureIsNull: malformedAfterFuture === null,
+        statusAfterMalformed,
         futureRawVersion: JSON.parse(futureRaw).version,
         malformedIsNull: malformed === null,
         malformedStillPresent: malformedRaw === '{not valid json',
@@ -144,6 +151,9 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       unrecognizedVersionStillPresent: true,
       futureIsNull: true,
       futureStillPresent: true,
+      futureStatus: 'incompatible',
+      malformedAfterFutureIsNull: true,
+      statusAfterMalformed: 'malformed',
       futureRawVersion: 'v99.0.0',
       compatibleName: 'LegacyButValid',
       compatibleVersion: 'v0.30.5',
@@ -179,6 +189,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
           username: 'FutureWriter',
           version: 'v99.0.0'
         }) === false;
+        report.writeStatusUnchanged = window.LegendStorage.getPlayerSaveStatus() === 'unavailable';
         prototype.setItem = function () {
           throw new DOMException('Storage quota denied', 'QuotaExceededError');
         };
@@ -214,6 +225,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
       readStatus: 'unavailable',
       invalidPlayerWrite: true,
       futurePlayerWrite: true,
+      writeStatusUnchanged: true,
       playerWrite: true,
       sessionPlayer: true,
       sessionStatus: 'session-only',
