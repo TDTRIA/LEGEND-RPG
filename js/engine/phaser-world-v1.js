@@ -248,12 +248,19 @@
     const host = root();
     if (!host) return;
     const modal = byId('legend-world-shell-modal-root');
+    const roadMap = byId('exp150Modal');
     const growthOverlay = byId('legendLevelUpOverlay');
+    const shellModalVisible = Boolean(modal && !modal.hidden &&
+      window.getComputedStyle(modal).display !== 'none' &&
+      window.getComputedStyle(modal).visibility !== 'hidden');
+    const roadMapVisible = Boolean(roadMap && !roadMap.hidden &&
+      window.getComputedStyle(roadMap).display !== 'none' &&
+      window.getComputedStyle(roadMap).visibility !== 'hidden');
     const growthOverlayVisible = Boolean(growthOverlay && !growthOverlay.hidden &&
       window.getComputedStyle(growthOverlay).display !== 'none' &&
       window.getComputedStyle(growthOverlay).visibility !== 'hidden');
     let surface = 'title';
-    if (modal && !modal.hidden) surface = 'modal';
+    if (shellModalVisible || roadMapVisible) surface = 'modal';
     else if (growthOverlayVisible) surface = 'modal';
     else if (host.querySelector('.dispatches-v140')) surface = 'dispatches';
     else if (host.querySelector('.settings09x')) surface = 'settings';
