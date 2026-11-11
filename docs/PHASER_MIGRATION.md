@@ -34,11 +34,11 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
    - [x] Journal/quest drawer.
    - [ ] Persistent shell map drawer.
    - [x] Contextual action/POI drawer.
-   - [x] Old Road map / field-journal modal.
+   - [ ] Old Road map / field-journal modal (currently a readable DOM fallback; the Phaser painter is intentionally disabled).
    - [x] Bottom navigation.
    - [ ] Shell toast, inventory and character-sheet modals.
    - [x] Mobile journal/context side-panel states and scrolling.
-   - [x] Old Road map/journal modal scroll clipping at mobile width.
+   - [ ] Verify Old Road map/journal modal scroll clipping at mobile width.
    - [ ] Remaining shell map drawer/modal scrolling.
 
 3. **Ashmere and services**
@@ -50,9 +50,9 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 
 4. **Old Road and expedition**
    - [ ] Departure, route choice, exploration scene, points of interest and discoveries.
-   - [x] Connected Old Road map and field-journal modal (live route state, discoveries, visit/route choice targets).
-   - [x] Road journey HUD: location/title, time and conditions, health/pressure meters, six-leg progress and supplies/next-stop/field-notes rail.
-   - [x] Road decision deck: route fork, discoveries/POI inspection, optional detours, Blackroot survey, camp choices and next-move actions (existing handlers retained).
+   - [ ] Connected Old Road map and field-journal modal (currently DOM fallback; migrate the scene, graph and labels to Phaser before marking complete).
+   - [ ] Road journey HUD: location/title, time and conditions, health/pressure meters, six-leg progress and supplies/next-stop/field-notes rail (DOM fallback remains active).
+   - [ ] Road decision deck: route fork, discoveries/POI inspection, optional detours, Blackroot survey, camp choices and next-move actions (DOM fallback remains active).
    - [ ] Main road scene and expedition result presentation.
    - [ ] Keep route state, pressure, rewards, evidence and Road Token settlement in existing modules.
 
