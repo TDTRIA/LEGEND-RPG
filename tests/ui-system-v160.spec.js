@@ -131,6 +131,26 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /News & Roadmap/i })).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
+    const rendererStartup = await page.evaluate(() => {
+      const container = document.getElementById('game-container');
+      const canvas = container?.querySelector('canvas');
+      const wasFallback = container?.classList.contains('legend-phaser-startup-fallback');
+      container?.classList.add('legend-phaser-startup-fallback');
+      const fallbackDisplay = container ? getComputedStyle(container).display : '';
+      container?.classList.toggle('legend-phaser-startup-fallback', Boolean(wasFallback));
+      return {
+        ready: window.__legendPhaserWorldReady === true,
+        canvasPresent: Boolean(canvas),
+        canvasVisible: Boolean(canvas && getComputedStyle(canvas).display !== 'none'),
+        fallbackClassWasSet: Boolean(wasFallback),
+        fallbackDisplay
+      };
+    });
+    expect(rendererStartup.ready).toBe(true);
+    expect(rendererStartup.canvasPresent).toBe(true);
+    expect(rendererStartup.canvasVisible).toBe(true);
+    expect(rendererStartup.fallbackClassWasSet).toBe(false);
+    expect(rendererStartup.fallbackDisplay).toBe('none');
     const freshMenu = await page.evaluate(() => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       return {
