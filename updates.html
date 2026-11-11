@@ -1,118 +1,124 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LEGEND Development Updates</title>
-  <style>
-    :root{--bg:#060807;--bg-soft:#0d1813;--panel:rgba(10,18,15,.94);--panel-2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border-soft:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--bg-soft),var(--bg));padding:24px}.shell{width:min(1040px,100%);margin:0 auto}header,.card{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px rgba(0,0,0,.42);border-radius:18px;padding:clamp(20px,4vw,38px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0;color:var(--accent);font-size:clamp(2.2rem,8vw,5.4rem);letter-spacing:.08em;line-height:.94;text-shadow:0 0 22px rgba(125,255,173,.24)}h2{margin:0 0 12px;color:var(--accent);font-size:1.5rem}h3{margin:0 0 8px;color:var(--gold);font-size:1.12rem}p{color:var(--text);line-height:1.65;margin:0 0 12px}.muted{color:var(--muted)}nav,.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.signup-box,.status-card,.update-card{border:1px solid var(--border-soft);background:var(--panel-2);border-radius:16px;padding:18px;margin-top:14px}.update-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.update-card strong{color:var(--gold);display:block;margin-bottom:6px}.signup-form{display:grid;grid-template-columns:minmax(220px,1fr) auto;gap:10px;margin-top:18px}.signup-form input{min-height:46px;border:1px solid rgba(132,255,178,.28);border-radius:12px;background:rgba(0,0,0,.42);color:var(--text);padding:0 14px;font:inherit;outline:none}.signup-form button{border:1px solid rgba(255,211,105,.46);border-radius:12px;background:linear-gradient(180deg,#ffe29a,#d69f32);color:#241803;font-weight:900;min-height:46px;padding:0 16px;cursor:pointer}.archive-link{color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(255,211,105,.35)}.feature-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;padding:0;list-style:none}.feature-list li{border:1px solid var(--border-soft);background:var(--panel-2);border-radius:12px;padding:12px 14px;line-height:1.5}.status-tag{display:inline-block;border:1px solid rgba(255,211,105,.35);border-radius:999px;padding:4px 9px;color:#ffe6a0;font-size:.7rem;text-transform:uppercase;letter-spacing:.09em;font-weight:800;margin-bottom:8px}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:820px){.update-grid{grid-template-columns:1fr}}@media(max-width:720px){body{padding:12px}nav,.actions{flex-direction:column}.btn{width:100%}.signup-form{grid-template-columns:1fr}.signup-form button{width:100%}}
-  </style>
-  <link rel="stylesheet" href="css/chronicle-v140.css?v=20261103-chronicle-v140">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b09">
+  <meta name="description" content="The LEGEND Development Dispatch — occasional field notes on game development, new builds, world design, art, sound, and the road ahead.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The Development Dispatch — LEGEND: The Awakening">
+  <meta property="og:description" content="Field notes from the making of LEGEND: The Awakening. Follow new builds, art, systems, sound, and milestones from the frontier.">
+  <meta property="og:image" content="https://tdtria.github.io/LEGEND-RPG/assets/generated/title/title-ashmere-road.webp">
+  <meta property="og:url" content="https://tdtria.github.io/LEGEND-RPG/updates.html">
+  <title>The Development Dispatch — LEGEND: The Awakening</title>
+  <link rel="icon" type="image/webp" href="assets/generated/ui/icons/service-milestone.webp">
+  <link rel="preload" as="image" href="assets/generated/title/title-ashmere-road.webp">
+  <link rel="stylesheet" href="css/development-dispatch-v200.css?v=20261111-dispatch">
 </head>
-<body class="chronicle-page chronicle-article">
-  <nav class="chronicle-nav" aria-label="Site navigation">
-    <div class="chronicle-nav-inner">
-      <a class="chronicle-brand" href="index.html" aria-label="LEGEND: The Awakening — return to the game">
-        <img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening" decoding="async">
-        <span class="chronicle-brand-copy"><strong>Realm Records</strong><span>LEGEND: The Awakening</span></span>
+<body class="legend-dispatch-page">
+  <a class="dd-skip-link" href="#dispatch-main">Skip to content</a>
+  <header class="dd-header">
+    <nav class="dd-nav" aria-label="Main navigation">
+      <a class="dd-brand" href="portal.html" aria-label="LEGEND: The Awakening Realm Portal">
+        <img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening">
+        <span class="dd-brand-divider" aria-hidden="true"></span>
+        <span class="dd-brand-label">Development Dispatch</span>
       </a>
-      <div class="chronicle-nav-links">
-        <a class="chronicle-hub-link" href="portal.html">Realm Hub</a>
-        
-        <a href="index.html" class="chronicle-play">Enter the World</a>
+      <div class="dd-nav-links">
+        <a href="portal.html">Realm Portal</a>
         <a href="blog.html">Chronicle</a>
-        <a href="updates.html">Dispatch</a>
         <a href="guide.html">Field Guide</a>
-        <a href="save.html">Save Vault</a>
-        <a href="feedback.html">Feedback</a>
       </div>
-    </div>
-  </nav>
+      <a class="dd-nav-play" href="index.html">Play LEGEND <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
 
-  <div class="shell">
-    <header>
-      <p class="kicker">LEGEND Development Dispatch · v0.30.5</p>
-      <h1>FOLLOW THE ROAD</h1>
-      <p>Follow <strong>LEGEND: The Awakening</strong> as the browser RPG grows from its road-born opening into a connected fantasy world of towns, expeditions, encounters, discoveries, gear, and progression.</p>
-      <div class="actions">
-        <a class="btn primary" href="index.html">Play the Current Build</a>
-        <a class="btn" href="blog.html">Read the Devlog</a>
-        <a class="btn" href="CHANGELOG.md">Changelog</a>
-        <a class="btn" href="docs/ROADMAP.md">Roadmap</a>
-        <a class="btn" href="docs/DARKEST_DUNGEON_DIRECTION.md">Creative Direction</a>
-        <a class="btn" href="feedback.html">Playtest Feedback</a>
-        <a class="btn" href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+  <main id="dispatch-main">
+    <section class="dd-hero" aria-labelledby="dd-title">
+      <img class="dd-hero-art" src="assets/generated/title/title-ashmere-road.webp" alt="" fetchpriority="high" decoding="async">
+      <div class="dd-hero-shade" aria-hidden="true"></div>
+      <div class="dd-hero-inner">
+        <p class="dd-kicker"><span></span> Letters from the making of a realm <span></span></p>
+        <p class="dd-publication-label">THE LEGEND DEVELOPMENT DISPATCH</p>
+        <h1 id="dd-title">FIELD NOTES<br><em>FROM THE FRONTIER.</em></h1>
+        <p class="dd-hero-copy">The world is built one journey at a time. Follow the making of LEGEND: The Awakening through development milestones, new artwork, gameplay systems, sound, design notes, and announcements from the road.</p>
+        <div class="dd-hero-actions">
+          <a class="dd-button dd-button-primary" href="#subscribe">Join the Dispatch <span aria-hidden="true">↓</span></a>
+          <a class="dd-button dd-button-ghost" href="https://buttondown.com/Legend-RPG" target="_blank" rel="noopener">Browse the Archive <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="dd-hero-note">Occasional updates. No promised schedule. Just the work worth sharing.</p>
       </div>
-    </header>
-    <main>
-      <section class="card">
-        <h2>Newsletter Signup</h2>
-        <p>The Development Dispatch is for major build updates, devlogs, design notes, screenshots, playable announcements, and release milestones.</p>
-        <div class="signup-box">
-          <h3>Join the LEGEND Development Dispatch</h3>
-          <p class="muted">Enter your email to follow development through Buttondown.</p>
-          <form class="signup-form" action="https://buttondown.com/api/emails/embed-subscribe/Legend-RPG" method="post" target="popupwindow" onsubmit="window.open('https://buttondown.com/Legend-RPG', 'popupwindow')">
-            <label for="bd-email" style="position:absolute;left:-9999px">Email address</label>
-            <input id="bd-email" type="email" name="email" placeholder="you@example.com" required>
-            <button type="submit">Join the Newsletter</button>
-          </form>
-          <p class="muted" style="margin-top:12px">Or visit <a class="archive-link" href="https://buttondown.com/Legend-RPG" target="_blank" rel="noopener">buttondown.com/Legend-RPG</a>.</p>
-        </div>
-      </section>
-      <section class="card">
-        <h2>Current Production Build</h2>
-        <div class="status-card">
-          <span class="status-tag">Live on GitHub Pages</span>
-          <h3>LEGEND: The Awakening · v0.30.5</h3>
-          <p>The v0.30.5 build contains the mandatory three-part opening annals, dead-lantern road opening, Captain Oric and the Blackroot Wolf tutorial, meaningful traveler choices, turn-based road encounters, and the five-stage Old Road expedition. Phaser 4.1 is now active in production for the persistent world scene, environment atmosphere, transitions, and Ashmere landmarks; most gameplay screens and systems still use the existing browser modules while migration continues.</p>
-          <p>The road tracks route choices, discoveries, camp reports, time, and Road Pressure. Two travel stretches bring an encounter even on a careful route. Completed five-stage trips have a 65% Road Token roll; early returns do not receive the completion token. The illustrated return ledger shows gold, XP, rare-token outcome, and the field report.</p>
-          <div class="actions">
-            <a class="btn primary" href="index.html">Play LEGEND</a>
-            <a class="btn" href="posts/014-the-sound-of-the-realm.html">Latest: Audio & Engine Work</a>
-            <a class="btn" href="posts/013-from-road-rework-to-rpg.html">Read the Development Catch-Up</a>
-            <a class="btn" href="docs/STORE_PAGE_COPY_2026-11.md">Store Page Copy</a>
-          </div>
-        </div>
-      </section>
-      <section class="card">
-        <h2>What Is Playable Now</h2>
-        <ul class="feature-list">
-          <li><strong>A road-born opening</strong><br>Three mandatory annals, an unnamed voice, Oric, and the first wolf encounter.</li>
-          <li><strong>Ashmere hub</strong><br>Town services, work board, trading, crafting, equipment, people, records, and preparation.</li>
-          <li><strong>Old Road expeditions</strong><br>Five stages, two route branches, landmarks, camps, danger, tactical encounters, and a saved journal.</li>
-          <li><strong>Traveler progression</strong><br>XP, earned levels, saved attribute allocation, gear, inventory, and expedition rewards.</li>
-          <li><strong>Greyfen frontier content</strong><br>Marsh Path activity, Ferry Nets contract, local progression pieces, and the optional Silted Storehouse detour.</li>
-          <li><strong>Desktop-first browser play</strong><br>The live HTML5 game is developed for desktop and includes responsive mobile compatibility.</li>
+      <aside class="dd-hero-stamp" aria-label="Publication details"><span>OFFICIAL</span><strong>FIELD<br>DISPATCH</strong><i></i><small>LEGEND<br>THE AWAKENING</small></aside>
+    </section>
+
+    <section class="dd-subscribe-section" id="subscribe" aria-labelledby="dd-subscribe-title">
+      <div class="dd-subscribe-copy">
+        <p class="dd-kicker">Keep the lantern lit</p>
+        <h2 id="dd-subscribe-title">A note from the frontier, <em>when there is news.</em></h2>
+        <p>Get selected updates from the development of LEGEND: new playable milestones, behind-the-scenes work, design discoveries, original art and audio, and important announcements.</p>
+        <ul class="dd-subscribe-promises">
+          <li>Major development milestones</li>
+          <li>Art, atmosphere, and soundtrack notes</li>
+          <li>Gameplay changes and playable announcements</li>
         </ul>
-      </section>
-      <section class="card">
-        <h2>Audio & Engine Status</h2>
-        <p>The 48-asset original sound library and the roughly 10½-minute replacement main-theme MP3 are now merged into production and included in the successful GitHub Pages deployment. The shared audio director keeps one continuous theme loop, switches location ambience with Phaser scene/surface changes, preserves the existing sound toggle, and supplies the new title/menu and battle effects. The remaining audio work is human listening for playback, levels, loop seam, and long-session comfort, plus wiring the remaining one-shot cues to their matching game actions.</p>
-        <p class="muted">The production Phaser migration is still underway. The goal is to move every existing game screen and interactive surface into Phaser—not to rewrite the underlying game systems. Existing controllers, combat and expedition rules, progression, rewards, and saves remain authoritative while each presentation surface is migrated and tested.</p>
-      </section>
-      <section class="card">
-        <h2>Creative Direction</h2>
-        <p><strong>LEGEND's primary creative reference is now Darkest Dungeon.</strong> The direction is expedition-led dark fantasy: illustrated scenes, strong character silhouettes, expressive dialogue, tactical encounters whose intent is readable, and field reports that record what happened. We are using these qualities as inspiration only; LEGEND keeps its own world, characters, canon, mechanics, art, and identity.</p>
-        <p class="muted">This is a presentation and art-direction decision, not a pause or replacement for the production Phaser migration. The goal remains to move every existing game screen and interactive surface into Phaser while keeping the existing gameplay controllers, rules, progression, and saves authoritative.</p>
-        <div class="actions"><a class="btn" href="docs/DARKEST_DUNGEON_DIRECTION.md">Read the Creative Direction</a><a class="btn" href="docs/PHASER_MIGRATION.md">Follow the Phaser Migration</a></div>
-      </section>
-      <section class="card">
-        <h2>Project Status</h2>
-        <div class="update-grid">
-          <div class="update-card"><strong>Ashmere & the Old Road</strong><p class="muted">The opening-to-first-expedition loop is in the production build. More balance and real-player feedback are still needed.</p></div>
-          <div class="update-card"><strong>Greyfen</strong><p class="muted">Several local systems are playable, but the complete story, services, and economy acceptance pass remains in progress.</p></div>
-          <div class="update-card"><strong>Ironpass</strong><p class="muted">Future region. It is not represented as a complete playable town yet.</p></div>
-        </div>
-        <p class="muted" style="margin-top:16px">The first three towns remain a development target. LEGEND is actively in development; this page does not claim a finished 1.0 release.</p>
-      </section>
-      <section class="card">
-        <h2>What Comes Next</h2>
-        <p>The top technical priority is finishing the full production Phaser migration: persistent HUD/navigation/drawers, Ashmere and services, Old Road and its supporting screens, combat, results and level-up, dungeons/regions, inventory, settings/account, and remaining overlays. Every screen must use the existing production controllers and preserve current saves, rules, rewards, and account behavior. Then complete the deployed soundtrack listening pass and remaining event hooks, and finish Greyfen as a coherent town-and-expedition loop. Balance, accessibility, and desktop/mobile regression checks remain release requirements.</p>
-        <p class="muted">Follow the <a class="archive-link" href="blog.html">development chronicle</a> for the recent catch-up and the <a class="archive-link" href="docs/ROADMAP.md">roadmap</a> for active release gates.</p>
-      </section>
-    </main>
-    <footer>LEGEND: The Awakening / Development Dispatch</footer>
-  </div>
+      </div>
+      <div class="dd-form-panel">
+        <div class="dd-form-heading"><span class="dd-form-mark" aria-hidden="true">✉</span><div><span>THE DEVELOPMENT DISPATCH</span><strong>Join the readers</strong></div></div>
+        <form class="dd-subscribe-form" action="https://buttondown.com/api/emails/embed-subscribe/Legend-RPG" method="post">
+          <label for="dd-email">Email address</label>
+          <input id="dd-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+          <input type="hidden" name="embed" value="1">
+          <button type="submit">Subscribe to the Dispatch <span aria-hidden="true">↗</span></button>
+        </form>
+        <p class="dd-form-privacy">Your address is used for the LEGEND Development Dispatch. You can unsubscribe at any time. Subscription and confirmation are handled securely by Buttondown.</p>
+        <a class="dd-archive-link" href="https://buttondown.com/Legend-RPG" target="_blank" rel="noopener">Already subscribed? Read the archive <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section class="dd-latest-section" aria-labelledby="dd-latest-title">
+      <div class="dd-section-heading">
+        <div><p class="dd-kicker">Start at the beginning</p><h2 id="dd-latest-title">The dispatch archive.</h2></div>
+        <a class="dd-text-link" href="https://buttondown.com/Legend-RPG" target="_blank" rel="noopener">View all published issues <span aria-hidden="true">↗</span></a>
+      </div>
+      <article class="dd-issue-feature">
+        <div class="dd-issue-art"><img src="assets/generated/locations/ashmere-town.webp" alt="Ashmere, the first town in LEGEND: The Awakening" loading="lazy" decoding="async"><span>ISSUE 001 · THE BEGINNING</span></div>
+        <div class="dd-issue-copy"><p class="dd-kicker">From the archive</p><h3>Welcome to the Recovered Build</h3><p>The first dispatch introduces the recovered game and the beginning of its return as LEGEND: The Awakening.</p><a class="dd-button dd-button-primary" href="https://buttondown.com/Legend-RPG/archive/welcome-to-the-recovered-build/" target="_blank" rel="noopener">Read the first dispatch <span aria-hidden="true">↗</span></a></div>
+      </article>
+      <p class="dd-archive-caption">Published email issues live on Buttondown. The Development Chronicle contains longer-form project articles and making-of entries.</p>
+    </section>
+
+    <section class="dd-content-section" aria-labelledby="dd-content-title">
+      <div class="dd-section-heading dd-section-heading-centered"><div><p class="dd-kicker">What arrives in your inbox</p><h2 id="dd-content-title">More than a patch note.</h2><p class="dd-section-lede">A look at the craft, decisions, experiments, and milestones behind an independent RPG.</p></div></div>
+      <div class="dd-content-grid">
+        <article class="dd-content-card"><span>01 / SYSTEMS</span><h3>Game & engine work</h3><p>Progress on exploration, combat, progression, the world interface, and the technology that brings the journey together.</p></article>
+        <article class="dd-content-card"><span>02 / WORLD</span><h3>Places & storytelling</h3><p>New locations, character moments, expedition design, field records, and the world-building behind the frontier.</p></article>
+        <article class="dd-content-card"><span>03 / ART</span><h3>Art & atmosphere</h3><p>Original environments, portraits, interface work, visual experiments, and the look and feel of LEGEND.</p></article>
+        <article class="dd-content-card"><span>04 / SOUND</span><h3>Music & sound</h3><p>Soundtrack progress, environmental ambience, effects, and the audio details that give places their identity.</p></article>
+        <article class="dd-content-card"><span>05 / RELEASES</span><h3>Builds & milestones</h3><p>Meaningful changes to the playable build, testing notes, announcements, and what is ready for players to try.</p></article>
+        <article class="dd-content-card"><span>06 / NOTES</span><h3>Decisions & discoveries</h3><p>Occasional notes on what worked, what changed direction, and what the development process is teaching us.</p></article>
+      </div>
+    </section>
+
+    <section class="dd-workbench-section" aria-labelledby="dd-workbench-title">
+      <div class="dd-workbench-art"><img src="assets/generated/locations/old-road-south-fork.webp" alt="A fork in the Old Road beyond Ashmere" loading="lazy" decoding="async"></div>
+      <div class="dd-workbench-copy"><p class="dd-kicker">On the workbench</p><h2 id="dd-workbench-title">The world is still <em>being made.</em></h2><p>LEGEND is an independent browser RPG in active development. Ashmere and the first Old Road journey establish the current playable foundation. Greyfen's regional activities are growing, while the broader world and its systems continue to be built and tested.</p><p>The Dispatch shares meaningful progress without presenting unfinished regions or planned features as complete.</p><a class="dd-text-link" href="blog.html">Read the Development Chronicle <span aria-hidden="true">→</span></a></div>
+    </section>
+
+    <section class="dd-more-section" aria-labelledby="dd-more-title">
+      <div><p class="dd-kicker">Follow the whole journey</p><h2 id="dd-more-title">Choose another trail.</h2></div>
+      <div class="dd-more-links">
+        <a href="portal.html"><strong>Realm Portal</strong><span>The official home of LEGEND</span><b aria-hidden="true">↗</b></a>
+        <a href="blog.html"><strong>Development Chronicle</strong><span>Long-form devlogs and field records</span><b aria-hidden="true">↗</b></a>
+        <a href="guide.html"><strong>Field Guide</strong><span>Help for players and new travelers</span><b aria-hidden="true">↗</b></a>
+        <a href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener"><strong>Project Repository</strong><span>Source, issues, and development history</span><b aria-hidden="true">↗</b></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="dd-footer">
+    <a href="portal.html"><img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening"></a>
+    <div><a href="index.html">Play</a><a href="portal.html">Realm Portal</a><a href="blog.html">Chronicle</a><a href="guide.html">Field Guide</a><a href="feedback.html">Feedback</a><a href="https://buttondown.com/Legend-RPG" target="_blank" rel="noopener">Buttondown Archive</a></div>
+    <p>LEGEND: The Awakening · The Development Dispatch · An independent RPG in active development.</p>
+  </footer>
 </body>
 </html>
