@@ -379,19 +379,16 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await enterAshmere(page, 'RoadUIPreview');
     await seedRoad(page, 0, null);
     await expect(page.locator('.exp100-scene-live')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUiSurface)).toBe('expedition');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.surface)).toBe('expedition');
     const roadDom = await page.evaluate(() => {
-      const snapshot = window.LegendPhaserWorldV1.snapshot();
       const mapButton = document.querySelector('#exp150OpenMap');
       const style = mapButton ? getComputedStyle(mapButton) : null;
       return {
-        painterActive: snapshot.nativeGameplayUi,
-        painterClass: document.body.classList.contains('legend-phaser-gameplay-ui-active'),
-        nativeHudActive: snapshot.nativeExpeditionHudUi,
-        nativeHudText: snapshot.nativeExpeditionHudUiTextValues || [],
-        nativeHudControlIds: snapshot.nativeExpeditionHudUiControlIds || [],
-        expeditionHudClass: document.body.classList.contains('legend-phaser-expedition-hud-ui-active'),
-        mapPainter: snapshot.nativeRoadMapUi,
+        painterActive: document.body.classList.contains('legend-phaser-gameplay-ui-active'),
+        nativeHudActive: document.body.classList.contains('legend-phaser-expedition-hud-ui-active'),
+        nativeHudTextCount: document.querySelectorAll('[data-legend-phaser-expedition-text="true"]').length,
+        nativeHudControlCount: document.querySelectorAll('[data-legend-phaser-expedition-control="true"]').length,
+        mapPainter: document.body.classList.contains('legend-phaser-road-map-ui-active'),
         mapControl: Boolean(mapButton && !mapButton.disabled),
         mapText: mapButton?.textContent?.trim() || '',
         mapColor: style?.color || '',
@@ -400,11 +397,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       };
     });
     expect(roadDom.painterActive).toBe(false);
-    expect(roadDom.painterClass).toBe(false);
     expect(roadDom.nativeHudActive).toBe(false);
-    expect(roadDom.nativeHudText).toEqual([]);
-    expect(roadDom.nativeHudControlIds).toEqual([]);
-    expect(roadDom.expeditionHudClass).toBe(false);
+    expect(roadDom.nativeHudTextCount).toBe(0);
+    expect(roadDom.nativeHudControlCount).toBe(0);
     expect(roadDom.mapPainter).toBe(false);
     expect(roadDom.mapControl).toBe(true);
     expect(roadDom.mapText.length).toBeGreaterThan(0);
@@ -412,7 +407,6 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(roadDom.mapIconColor).not.toBe('rgba(0, 0, 0, 0)');
     expect(roadDom.mapVisibility).toBe('visible');
     await expect(page.locator('.exp150-expedition-head')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionHudUi)).toBe(false);
     await expect(page.locator('.exp150-title-group h1')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');
     await expect(page.locator('.exp150-vitals')).toBeVisible();
     await expect(page.locator('#exp150OpenMap')).toBeEnabled();
@@ -424,13 +418,13 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('#exp150Modal')).toBeVisible();
     await expect(page.locator('#exp150Modal').getByRole('dialog')).toBeVisible();
     await expect(page.locator('#exp150Modal')).toContainText(/map|road/i);
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.surface)).toBe('modal');
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRoadMapUi)).toBe(false);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.surface)).toBe('modal');
+    await expect(page.locator('#exp150Modal')).toContainText('The road you know');
     await expect(page.locator('#exp150Modal .exp150-map-intro h2')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');
     await attachProof(page, 'phase1-old-road-map.png');
     await page.locator('#exp150ModalClose').click();
     await expect(page.locator('#exp150Modal')).toBeHidden();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.surface)).toBe('expedition');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.surface)).toBe('expedition');
   });
   test('combat HUD and eight live controls are painted in Phaser without replacing combat rules', async ({ page }) => {
     await enterAshmere(page, 'PhaserCombatQA');
