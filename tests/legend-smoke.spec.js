@@ -49,11 +49,13 @@ async function openTitle(page, options = {}) {
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
   if (options.waitForPhaser !== false) {
-    await page.waitForFunction(() =>
-      window.__legendPhaserWorldReady === true,
-      null,
-      { timeout: 20000 }
-    );
+    // A fresh browser session plays the production awakening. Use its real
+    // accessible Skip control instead of waiting on a flag while the curtain
+    // is intentionally covering the title. A visible title is also a valid
+    // ready state for fallback-focused checks.
+    const skip = page.locator('#engine-skip');
+    if (await skip.isVisible().catch(() => false)) await skip.click();
+    await expect(page.locator('.v120-title')).toBeVisible({ timeout: 20000 });
   }
 
   // The game's ember/fog/CTA animations are decorative; disable them in test contexts
