@@ -6443,7 +6443,7 @@
       const nodes = host ? Array.from(host.querySelectorAll(selectors.join(','))) : [];
       const currentNodes = new Set(nodes);
       this.nativeScreenArtNodes.forEach(node => {
-        if (node?.isConnected && !currentNodes.has(node)) {
+        if (node && !currentNodes.has(node)) {
           node.removeAttribute('data-legend-phaser-scene-art-active');
         }
       });
