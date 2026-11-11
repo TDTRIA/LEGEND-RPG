@@ -404,6 +404,11 @@
       '<section class="exp150-aside-card exp150-journal-callout"><span class="exp150-kicker">FIELD NOTES</span><h2>'+discoveryCount+' recorded '+(discoveryCount===1?'discovery':'discoveries')+'</h2><p>Important clues travel with you. Open your journal to revisit what you have learned.</p><button type="button" class="exp150-text-action" id="exp150OpenJournalAside">Review field journal →</button></section></aside></div>'+
       '<div class="exp150-modal-layer" id="exp150Modal" hidden tabindex="-1"><section class="exp150-modal-dialog" role="dialog" aria-modal="true" aria-label="Road map or field journal"><div id="exp150ModalContent"></div></section></div></div>';
     shell(markup);
+    // Bind the core map/journal actions before optional HUD/discovery setup.
+    // Secondary systems may fail independently; road navigation must remain usable.
+    document.getElementById('exp150OpenMap')?.addEventListener('click',()=>openPanel('map'));
+    document.getElementById('exp150OpenJournal')?.addEventListener('click',()=>openPanel('journal'));
+    document.getElementById('exp150OpenJournalAside')?.addEventListener('click',()=>openPanel('journal'));
     bindHotspotDelegation();
     window.LegendPhaserWorldV1?.refreshExpedition?.();
     window.LegendPhaserWorldV1?.refreshExpeditionActions?.();
@@ -421,10 +426,6 @@
     document.getElementById('search')?.addEventListener('click',()=>resolveChoice('search'));
     document.getElementById('push')?.addEventListener('click',()=>resolveChoice('push'));
     document.getElementById('finish')?.addEventListener('click',finish);
-    document.getElementById('exp150OpenMap')?.addEventListener('click',()=>openPanel('map'));
-    document.getElementById('exp150OpenJournal')?.addEventListener('click',()=>openPanel('journal'));
-    document.getElementById('exp150OpenJournalAside')?.addEventListener('click',()=>openPanel('journal'));
-
     document.getElementById('town')?.addEventListener('click',()=>{const player=p();if(player?.flags?.openingRoadV140?.phase==='road'&&!player.flags.openingRoadV140.completed)window.LegendRoadOpeningV140?.complete?.(player,'abandoned');ret();});
     document.getElementById('campRest')?.addEventListener('click',()=>{
       const player=p();if(!player)return;const state=ensure(player);
