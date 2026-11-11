@@ -15,9 +15,9 @@ Last updated: 2026-11-08.
 
 ### L1 — The deepest threat is the Hollow Saint and the Last Mercy (locked 2026-10-16)
 
-Long ago a healer's ritual, the **Last Mercy**, tried to save the dead. It failed: instead of restoring people it left echoes that imitate them. The figure behind it, the **Hollow Saint**, offers to bring people's lost loved ones back.
+Long ago a healer's ritual, the **Last Mercy**, tried to save the dead. It failed: instead of restoring people it left echoes that imitate them. The **Hollow Saint is the healer's echo**, the first echo the ritual made. The world treats the healer and the Saint as one figure, and the Saint sincerely offers to bring people's lost loved ones back.
 
-- **Locked:** the Hollow Saint and the Last Mercy are the deepest threat behind the awakening.
+- **Locked:** the healer performed the Last Mercy; the Hollow Saint is the first echo it made and is the deepest threat behind the awakening.
 - **Still open:** the Hollow Saint's personality and agency; how much of the monster invasion it causes versus merely accelerates (not every monster is its servant); when and how the player learns of it; whether the ritual can be ended or repaired; any link to the player's traveler.
 - **Working detail (PROPOSED, not locked):** `docs/LEGEND_GAME_REBOOT_PLAN.md` section 4, including the Afterwake and Strain.
 - **Updated by L6 (2026-10-19):** the echoes now come from the wound the Last Mercy made in the Veil.

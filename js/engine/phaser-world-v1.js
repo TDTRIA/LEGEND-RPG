@@ -185,9 +185,14 @@
   function setEnvironment(name, immediate = false) {
     const environment = String(name || 'title');
     window.LegendRoadAudioV100?.setEnvironment?.(environment);
-    if (environment === currentEnvironment) return;
+    if (environment === currentEnvironment) {
+      realmScene?.syncNativeRoadSceneArt?.();
+      realmScene?.syncNativeScreenArt?.();
+      return;
+    }
     currentEnvironment = environment;
     if (realmScene && realmScene.setEnvironment) realmScene.setEnvironment(environment, immediate);
+    realmScene?.syncNativeScreenArt?.();
   }
 
   function inferEnvironment() {
@@ -464,6 +469,11 @@
       this.background = null;
       this.backgroundBaseScale = 1;
       this.backgroundIsImage = false;
+      this.nativeRoadSceneArtActive = false;
+      this.nativeRoadSceneArtState = null;
+      this.nativeScreenArtNodes = [];
+      this.nativeScreenArtState = [];
+      this.worldArtLoadErrors = [];
       this.ambienceObjects = [];
       this.environment = '';
       this.lookTarget = { x: 0, y: 0 };
@@ -661,6 +671,14 @@
       // part of the same production asset contract and must be available for
       // encounter, dialogue, creation and result scenes when those screens move
       // fully into RealmScene.
+      this.load.on('loaderror', file => {
+        if (file && Object.prototype.hasOwnProperty.call(ASSETS, file.key)) {
+          this.worldArtLoadErrors.push({
+            key: String(file.key),
+            source: String(ASSETS[file.key] || file.url || '')
+          });
+        }
+      });
       Object.entries(ASSETS).forEach(([key, path]) => {
         if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(path)) {
           this.load.image(key, path);
@@ -673,6 +691,8 @@
       this.motionReduced = reducedMotion();
       this.scale.on('resize', () => {
         this.layoutBackground();
+        this.syncNativeRoadSceneArt();
+        this.syncNativeScreenArt();
         this.layoutAshmereLandmarks();
         this.syncNativeTitleUi(this.surface);
         this.syncNativeAnnalsUi(this.surface);
@@ -700,6 +720,10 @@
         lookAt: (x, y) => this.setLookTarget(x, y),
         snapshot: () => ({
           environment: this.environment,
+          nativeRoadSceneArtActive: this.nativeRoadSceneArtActive,
+          nativeRoadSceneArt: this.nativeRoadSceneArtState,
+          nativeScreenArt: this.nativeScreenArtState,
+          worldArtLoadErrors: this.worldArtLoadErrors.slice(),
           worldArtTextureStatus: Object.keys(ASSETS).map(key => ({
             key,
             loaded: this.textures.exists(key)
@@ -2339,6 +2363,16 @@
         if (this.nativeOpeningUiActive || document.body?.classList.contains('legend-phaser-opening-ui-active')) {
           this.clearNativeOpeningUi();
         }
+        return;
+      }
+
+      // The opening scene's authored JPEG differs from the expedition road
+      // texture. Do not hide DOM dialogue/controls unless the exact opening
+      // backdrop has transferred to an opaque Phaser environment texture.
+      this.syncNativeScreenArt();
+      const openingBackdrop = screen.querySelector('.opening-road-v140-bg');
+      if (openingBackdrop?.dataset.legendPhaserSceneArtActive !== 'true') {
+        this.clearNativeOpeningUi();
         return;
       }
 
@@ -6297,9 +6331,17 @@
       this.layoutServiceDressing();
     }
 
+    /**
+     * Changes the persistent world art and keeps HTML scene art visible until
+     * the incoming Phaser image is fully opaque and safe to take over.
+     */
     setEnvironment(name, immediate = false) {
       const key = ASSETS[name] ? name : 'title';
-      if (key === this.environment && !immediate) return;
+      if (key === this.environment && !immediate) {
+        this.syncNativeRoadSceneArt();
+        this.syncNativeScreenArt();
+        return;
+      }
       this.environment = key;
       const size = this.dimensions();
       const texture = this.textures.exists(key) ? this.textures.get(key) : null;
@@ -6334,6 +6376,8 @@
       this.createServiceDressing(key);
       this.layoutBackground();
       this.syncAshmereLandmarks();
+      this.syncNativeRoadSceneArt();
+      this.syncNativeScreenArt();
       if (!immediate && !reducedMotion()) {
         const camera = this.cameras.main;
         camera.setZoom(1.018);
@@ -6347,9 +6391,130 @@
           targets: next,
           alpha: 1,
           duration: 720,
-          ease: 'Sine.easeOut'
+          ease: 'Sine.easeOut',
+          onComplete: () => {
+            this.syncNativeRoadSceneArt();
+            this.syncNativeScreenArt();
+          }
         });
       }
+    }
+
+    /**
+     * Hands an expedition image to Phaser only when the matching texture exists,
+     * its source matches the live route artwork, and the Phaser background is
+     * actually visible. Any failed check restores the authored DOM image.
+     */
+    syncNativeRoadSceneArt() {
+      const scene = document.querySelector('#root .exp100-scene-live');
+      const image = scene?.querySelector(':scope > img');
+      const textureKey = String(this.environment || '');
+      const expectedSource = ASSETS[textureKey] || '';
+      const actualSource = image?.getAttribute('src') || '';
+      const cleanSource = value => String(value || '')
+        .split(/[?#]/, 1)[0]
+        .replace(/^(?:\.\/|\/)+/, '')
+        .replace(/\\/g, '/');
+      const texture = expectedSource && this.textures.exists(textureKey)
+        ? this.textures.get(textureKey)
+        : null;
+      const source = texture?.getSourceImage?.();
+      const sourceMatches = Boolean(expectedSource && actualSource &&
+        cleanSource(actualSource) === cleanSource(expectedSource));
+      const active = Boolean(
+        scene && image && sourceMatches &&
+        source?.width > 0 && source?.height > 0 &&
+        this.backgroundIsImage && this.background?.active &&
+        Number(this.background.alpha) >= 0.99
+      );
+
+      this.nativeRoadSceneArtActive = active;
+      this.nativeRoadSceneArtState = scene ? {
+        active,
+        textureKey,
+        expectedSource,
+        actualSource,
+        sourceWidth: Number(source?.width || 0),
+        sourceHeight: Number(source?.height || 0),
+        backgroundAlpha: Number(this.background?.alpha || 0)
+      } : null;
+      document.body?.classList.toggle('legend-phaser-road-scene-art-active', active);
+      return active;
+    }
+
+    /**
+     * Keeps each screen's authored background visible until the active Phaser
+     * environment owns the exact same loaded image and its canvas handoff is opaque.
+     * A missing texture, mismatched source, or partially faded canvas leaves the DOM
+     * art in place as a readable visual fallback.
+     */
+    syncNativeScreenArt() {
+      const host = document.getElementById('root');
+      const selectors = [
+        '.v120-title-backdrop',
+        '.v140-creation .v094-beginning-bg',
+        '.opening-road-v140-bg',
+        '.opening-lore-v220-backdrop',
+        '.ash100-hero > img',
+        '.gfm160-scene-art',
+        '.gss170-scene-art'
+      ];
+      const nodes = host ? Array.from(host.querySelectorAll(selectors.join(','))) : [];
+      const currentNodes = new Set(nodes);
+      this.nativeScreenArtNodes.forEach(node => {
+        if (node && !currentNodes.has(node)) {
+          node.removeAttribute('data-legend-phaser-scene-art-active');
+        }
+      });
+
+      const textureKey = String(this.environment || '');
+      const expectedSource = ASSETS[textureKey] || '';
+      const normalizePath = value => {
+        const raw = String(value || '').split(/[?#]/, 1)[0];
+        let path = raw;
+        try { path = new URL(raw, document.baseURI).pathname; } catch (_) {}
+        try { path = decodeURIComponent(path); } catch (_) {}
+        return path.replace(/\\/g, '/').replace(/^\/+/, '');
+      };
+      const expectedPath = normalizePath(expectedSource);
+      const texture = expectedSource && this.textures.exists(textureKey)
+        ? this.textures.get(textureKey)
+        : null;
+      const textureSource = texture?.getSourceImage?.();
+      const backgroundReady = Boolean(
+        textureSource?.width > 0 && textureSource?.height > 0 &&
+        this.backgroundIsImage && this.background?.active &&
+        Number(this.background.alpha) >= 0.99
+      );
+
+      const states = nodes.map(node => {
+        const isImage = node instanceof HTMLImageElement;
+        const rawSources = isImage
+          ? [node.getAttribute('src') || node.currentSrc || node.src]
+          : Array.from(String(window.getComputedStyle(node).backgroundImage || '')
+            .matchAll(/url\((?:['"])?([^'")]+)(?:['"])?\)/g), match => match[1]);
+        const sourcePaths = rawSources.map(normalizePath).filter(Boolean);
+        const sourceMatches = Boolean(expectedPath && sourcePaths.includes(expectedPath));
+        const active = Boolean(backgroundReady && sourceMatches && node.isConnected);
+        if (active) node.setAttribute('data-legend-phaser-scene-art-active', 'true');
+        else node.removeAttribute('data-legend-phaser-scene-art-active');
+        return {
+          selector: selectors.find(selector => {
+            try { return node.matches(selector); } catch (_) { return false; }
+          }) || '',
+          active,
+          textureKey,
+          expectedSource,
+          sourcePaths,
+          sourceMatches,
+          textureLoaded: Boolean(textureSource?.width > 0 && textureSource?.height > 0),
+          backgroundAlpha: Number(this.background?.alpha || 0)
+        };
+      });
+
+      this.nativeScreenArtNodes = nodes;
+      this.nativeScreenArtState = states;
+      return states;
     }
 
     backgroundOverscan(size) {
@@ -6646,6 +6811,14 @@
     clearRoadMap: () => realmScene?.clearNativeRoadMapUi?.(),
     refreshExpedition: () => realmScene?.syncNativeExpeditionHudUi?.(),
     refreshExpeditionActions: () => realmScene?.syncNativeExpeditionActionsUi?.(),
+    refreshRoadScene: () => {
+      inferEnvironment();
+      return realmScene?.syncNativeRoadSceneArt?.() || false;
+    },
+    refreshScreenArt: () => {
+      inferEnvironment();
+      return realmScene?.syncNativeScreenArt?.() || [];
+    },
     refreshCombat: () => realmScene?.syncNativeCombatUi?.(realmScene?.surface),
     refreshTownBoard: () => realmScene?.syncNativeTownBoardUi?.(realmScene?.surface),
     refresh: () => inferEnvironment(),

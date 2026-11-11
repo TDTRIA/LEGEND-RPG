@@ -35,14 +35,14 @@ body.legend-phaser-world-active #root .v120-title,
 body.legend-phaser-world-active #root .title-v136-rpg {
   background: transparent !important;
 }
-body.legend-phaser-world-active #root .v120-title-backdrop {
+body.legend-phaser-world-active #root .v120-title-backdrop[data-legend-phaser-scene-art-active="true"] {
   opacity: 0 !important;
   visibility: hidden !important;
 }
 body.legend-phaser-world-active #root .v094-beginning {
   background: transparent !important;
 }
-body.legend-phaser-world-active #root .v094-beginning-bg {
+body.legend-phaser-world-active #root .v094-beginning-bg[data-legend-phaser-scene-art-active="true"] {
   opacity: 0 !important;
   visibility: hidden !important;
 }
@@ -117,7 +117,7 @@ body.legend-phaser-world-active.legend-world-shell-active::after {
 body.legend-phaser-world-active #root .opening-road-v140 {
   background: transparent !important;
 }
-body.legend-phaser-world-active #root .opening-road-v140-bg {
+body.legend-phaser-world-active #root .opening-road-v140-bg[data-legend-phaser-scene-art-active="true"] {
   opacity: 0 !important;
   visibility: hidden !important;
   animation: none !important;
@@ -125,7 +125,7 @@ body.legend-phaser-world-active #root .opening-road-v140-bg {
 body.legend-phaser-world-active #root .opening-lore-v220 {
   background: transparent !important;
 }
-body.legend-phaser-world-active #root .opening-lore-v220-backdrop {
+body.legend-phaser-world-active #root .opening-lore-v220-backdrop[data-legend-phaser-scene-art-active="true"] {
   opacity: 0 !important;
   visibility: hidden !important;
   animation: none !important;
@@ -137,7 +137,9 @@ body.legend-phaser-world-active #root .exp100 {
 body.legend-phaser-world-active #root .exp100-scene-live {
   background: transparent !important;
 }
-body.legend-phaser-world-active #root .exp100-scene-live > img {
+/* Hide the DOM scene image only after RealmScene confirms the matching stage
+   texture is loaded and active. Otherwise the authored image stays as fallback. */
+body.legend-phaser-world-active.legend-phaser-road-scene-art-active #root .exp100-scene-live > img {
   opacity: 0 !important;
   visibility: hidden !important;
   animation: none !important;
@@ -152,7 +154,7 @@ body.legend-phaser-world-active #root .ash100-town {
 body.legend-phaser-world-active #root .ash100-hero {
   background: transparent !important;
 }
-body.legend-phaser-world-active #root .ash100-hero > img {
+body.legend-phaser-world-active #root .ash100-hero > img[data-legend-phaser-scene-art-active="true"] {
   opacity: 0 !important;
   visibility: hidden !important;
 }
@@ -161,9 +163,8 @@ body.legend-phaser-world-active #root .gfm160-scene,
 body.legend-phaser-world-active #root .gss170-scene {
   background: transparent !important;
 }
-body.legend-phaser-world-active #root .gfm160-scene-art,
-body.legend-phaser-world-active #root .gfm160-results-art img,
-body.legend-phaser-world-active #root .gss170-scene-art {
+body.legend-phaser-world-active #root .gfm160-scene-art[data-legend-phaser-scene-art-active="true"],
+body.legend-phaser-world-active #root .gss170-scene-art[data-legend-phaser-scene-art-active="true"] {
   opacity: 0 !important;
   visibility: hidden !important;
 }
