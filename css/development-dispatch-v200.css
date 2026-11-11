@@ -174,3 +174,56 @@ body.legend-dispatch-page{
   html{scroll-behavior:auto}
   .legend-dispatch-page *, .legend-dispatch-page *::before,.legend-dispatch-page *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+/* Brevo signup: custom LEGEND treatment over Brevo's own form/DOI handler. */
+.dd-brevo-panel{position:relative}
+.dd-brevo-form.sib-form{margin:22px 0 0;padding:0!important;background:transparent!important;text-align:left!important;color:var(--dd-paper)!important}
+.dd-brevo-form #sib-form-container{width:100%;margin:0;padding:0;background:transparent!important}
+.dd-brevo-form #sib-container{width:100%;max-width:none!important;margin:0;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;color:var(--dd-paper)!important;text-align:left!important}
+.dd-brevo-form #sib-form{width:100%;margin:0;padding:0;background:transparent!important;text-align:left!important}
+.dd-brevo-form .sib-form-block{padding:7px 0!important;background:transparent!important}
+.dd-brevo-form .dd-brevo-title{padding:0 0 8px!important}
+.dd-brevo-form .dd-brevo-title p{margin:0;color:#f1e6cc;font:500 1.48rem/1.15 Georgia,"Times New Roman",serif;letter-spacing:.055em}
+.dd-brevo-form .dd-brevo-description{padding:0 0 18px!important}
+.dd-brevo-form .dd-brevo-description p{max-width:490px;margin:0;color:#bcb7a8;font-size:.79rem;line-height:1.65}
+.dd-brevo-form .sib-input{margin-top:2px}
+.dd-brevo-form .form__entry{width:100%}
+.dd-brevo-form .form__label-row{display:grid;gap:8px}
+.dd-brevo-form .entry__label{display:block;margin:0;color:#d9cfb8!important;font:800 .66rem/1.4 system-ui,sans-serif!important;letter-spacing:.1em;text-transform:uppercase}
+.dd-brevo-form .entry__field{width:100%;min-height:52px;border:1px solid rgba(207,177,117,.48)!important;border-radius:0!important;background:#090d09!important;box-shadow:inset 0 1px 4px rgba(0,0,0,.28)}
+.dd-brevo-form #EMAIL{display:block;width:100%;min-height:50px;padding:0 15px!important;border:0!important;border-radius:0!important;outline:0;background:transparent!important;color:#f1e7d4!important;font:500 .9rem/1.2 system-ui,sans-serif!important;box-shadow:none!important}
+.dd-brevo-form #EMAIL::placeholder{color:#888a7d!important;opacity:1}
+.dd-brevo-form #EMAIL:focus-visible{outline:2px solid #e4c27c!important;outline-offset:2px}
+.dd-brevo-form .entry__error{display:block;margin-top:6px;color:#ffb4a8!important;font-size:.72rem!important}
+.dd-brevo-form .dd-brevo-optin{padding:17px 0 8px!important}
+.dd-brevo-form .dd-brevo-optin .form__label-row{display:block}
+.dd-brevo-form .entry__choice>label{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:start;gap:10px;cursor:pointer}
+.dd-brevo-form #OPT_IN{position:absolute;width:1px;height:1px;opacity:0}
+.dd-brevo-form .checkbox.checkbox_tick_positive{display:grid;place-items:center;width:17px;height:17px;margin:1px 0 0;border:1px solid rgba(219,190,130,.8)!important;border-radius:2px!important;background:#0c100c!important}
+.dd-brevo-form #OPT_IN:checked+.checkbox.checkbox_tick_positive::after{content:"✓";color:#f0d59b;font-size:.77rem;font-weight:900;line-height:1}
+.dd-brevo-form #OPT_IN:focus-visible+.checkbox.checkbox_tick_positive{outline:2px solid #e4c27c;outline-offset:3px}
+.dd-brevo-form .dd-brevo-consent-copy p{margin:0;color:#c9c1af!important;font-size:.72rem;line-height:1.55}
+.dd-brevo-form .entry__specification{display:block;margin:8px 0 0;color:#9e9b8c!important;font-size:.65rem!important;line-height:1.5}
+.dd-brevo-form .sib-form__declaration{margin:14px 0 3px;padding:13px 14px;border-left:2px solid rgba(181,138,74,.72);background:rgba(7,10,7,.36);direction:ltr}
+.dd-brevo-form .dd-brevo-declaration p{margin:0;color:#aaa797!important;font-size:.65rem;line-height:1.6}
+.dd-brevo-form .dd-brevo-declaration a{color:#e4c27c!important;text-decoration:underline;text-underline-offset:3px}
+.dd-brevo-form .dd-brevo-submit{padding:13px 0 0!important}
+.dd-brevo-form .dd-brevo-submit button{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important;width:100%!important;min-height:51px!important;padding:0 18px!important;border:1px solid #e2c17b!important;border-radius:0!important;background:linear-gradient(180deg,#e9d19a,#a77e40)!important;color:#1e170c!important;font:950 .66rem/1 system-ui,sans-serif!important;letter-spacing:.13em!important;text-align:left!important;cursor:pointer;box-shadow:0 8px 23px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.32)!important}
+.dd-brevo-form .dd-brevo-submit button:hover{filter:brightness(1.08)}
+.dd-brevo-form .dd-brevo-submit button:focus-visible{outline:2px solid #f0d79d;outline-offset:3px}
+.dd-brevo-form .dd-brevo-submit button svg{width:18px;height:18px;fill:#3a2a13}
+.dd-brevo-form .sib-hide-loader-icon{display:none}
+.dd-brevo-form .sib-form-message-panel{display:none;width:100%;max-width:none!important;margin:0 0 13px;padding:13px 15px;border:1px solid rgba(207,177,117,.3);border-radius:0!important;background:#161c14!important;color:#eee5d2!important}
+.dd-brevo-form .sib-form-message-panel__text{display:flex;align-items:flex-start;gap:10px;color:inherit!important;font:500 .78rem/1.55 system-ui,sans-serif}
+.dd-brevo-form .dd-message-mark{display:grid;place-items:center;flex:none;width:20px;height:20px;border:1px solid currentColor;border-radius:50%;font-size:.72rem;font-weight:900}
+.dd-brevo-form #error-message{border-color:rgba(180,92,72,.55);color:#f2c3b8!important}
+.dd-brevo-form #success-message{border-color:rgba(127,157,112,.55);color:#d7e7c8!important}
+.dd-form-privacy a{color:#e4c27c;text-decoration:underline;text-underline-offset:3px}
+.dd-form-secondary-links{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;margin-top:13px}
+.dd-form-secondary-links .dd-archive-link{margin-top:0}
+.dd-legacy-link{color:#aaa797;text-decoration:none;font-size:.63rem;font-weight:750}
+.dd-legacy-link:hover{color:#e4c27c}
+@media(max-width:650px){
+  .dd-brevo-form .dd-brevo-title p{font-size:1.3rem}
+  .dd-form-secondary-links{display:grid;gap:10px}
+}
