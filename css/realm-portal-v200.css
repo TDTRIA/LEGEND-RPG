@@ -287,3 +287,54 @@ body.legend-portal-page{
   html{scroll-behavior:auto}
   .legend-portal-page *, .legend-portal-page *::before,.legend-portal-page *::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}
 }
+
+/* Official game-site finish: make the product identity unmistakable while
+   keeping the existing page-scoped palette and responsive layout intact. */
+.rp-hero-content{width:min(760px,74%)}
+.rp-hero h1{
+  display:grid;
+  gap:.12em;
+  font-size:clamp(5.1rem,9.2vw,8.9rem);
+  line-height:.86;
+  letter-spacing:0;
+}
+.rp-hero-title-name{
+  display:block;
+  color:#f3e8ca;
+  font-size:1em;
+  letter-spacing:-.075em;
+}
+.rp-hero h1 em{
+  display:block;
+  color:#d8b976;
+  font-size:.5em;
+  font-style:normal;
+  font-weight:500;
+  letter-spacing:.105em;
+  line-height:1.12;
+}
+.rp-hero-copy{max-width:635px}
+.rp-hero-seal strong{font-size:1.34rem;line-height:1.12;letter-spacing:.075em}
+.rp-world-strip{background:linear-gradient(90deg,#0b100c,#151b13 48%,#0b100c)}
+.rp-location-card,.rp-pillar,.rp-dev-feature,.rp-dev-links a,.rp-resource-links a{
+  box-shadow:0 16px 38px rgba(0,0,0,.22),inset 0 1px rgba(255,255,255,.025);
+}
+.rp-location-card{transition:border-color .2s ease,transform .2s ease}
+.rp-location-card:hover{transform:translateY(-3px);border-color:rgba(227,194,125,.55)}
+.rp-community-section{border-top:1px solid rgba(207,177,117,.16)}
+.rp-footer{background:linear-gradient(180deg,#090d09,#050705)}
+@media(max-width:1050px){
+  .rp-hero-content{width:min(720px,76%)}
+  .rp-hero h1{font-size:clamp(4.8rem,10.2vw,7.5rem)}
+}
+@media(max-width:760px){
+  .rp-hero-content{width:100%}
+  .rp-hero h1{font-size:clamp(3.35rem,13.5vw,6.1rem)}
+  .rp-hero h1 em{font-size:.5em;letter-spacing:.075em}
+  .rp-hero-seal strong{font-size:1.16rem}
+}
+@media(max-width:440px){
+  .rp-hero h1{font-size:clamp(2.9rem,13.8vw,4.7rem)}
+  .rp-hero h1 em{font-size:.48em;letter-spacing:.06em}
+  .rp-hero-footnote{max-width:210px;font-size:.61rem;line-height:1.5}
+}
