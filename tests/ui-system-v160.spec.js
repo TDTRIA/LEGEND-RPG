@@ -85,6 +85,39 @@ async function expectNoHorizontalOverflow(page) {
 }
 
 test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
+  test('Phaser screen art handoff keeps the DOM image visible when its source does not match', async ({ page }) => {
+    await openTitle(page);
+    await expect.poll(() => page.evaluate(() => {
+      const image = document.querySelector('.v120-title-backdrop');
+      return image?.dataset.legendPhaserSceneArtActive === 'true';
+    })).toBe(true);
+
+    const fallback = await page.evaluate(() => {
+      const image = document.querySelector('.v120-title-backdrop');
+      const original = image.getAttribute('src');
+      image.setAttribute('src', 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=');
+      const states = window.LegendPhaserWorldV1.refreshScreenArt();
+      const style = getComputedStyle(image);
+      const result = {
+        state: states.find(item => item.selector === '.v120-title-backdrop'),
+        marker: image.dataset.legendPhaserSceneArtActive || '',
+        opacity: style.opacity,
+        visibility: style.visibility
+      };
+      image.setAttribute('src', original);
+      window.LegendPhaserWorldV1.refreshScreenArt();
+      return result;
+    });
+    expect(fallback.state.sourceMatches).toBe(false);
+    expect(fallback.state.active).toBe(false);
+    expect(fallback.marker).toBe('');
+    expect(fallback.opacity).toBe('1');
+    expect(fallback.visibility).toBe('visible');
+    await expect.poll(() => page.locator('.v120-title-backdrop').evaluate(image =>
+      image.dataset.legendPhaserSceneArtActive === 'true'
+    )).toBe(true);
+  });
+
   test('title and realm entrance load the shared styles, keep the raster wordmark/actions, and show realm art', async ({ page }) => {
     await openTitle(page);
     await expect(page.locator('link[href*="legend-ui-system-v160.css"]')).toHaveCount(1);
