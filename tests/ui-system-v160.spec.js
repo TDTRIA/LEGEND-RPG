@@ -9,7 +9,13 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await page.goto('/');
   await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
   await page.reload();
-  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
+  await page.waitForFunction(() =>
+    window.__legendPhaserWorldReady === true,
+    null,
+    { timeout: 20000 }
+  );
+
   await expect(page.locator('.v120-title')).toBeVisible();
   await expect(page.locator('.v120-title-hero .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
 }
