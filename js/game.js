@@ -35,7 +35,7 @@
     return true;
   }
   function loadPlayer(){ return S().loadPlayer ? S().loadPlayer() : null; }
-  function saveSettings(settings){ if(S().saveSettings) S().saveSettings(settings); }
+  function saveSettings(settings){ return S().saveSettings ? S().saveSettings(settings) : false; }
   function loadSettings(){ return S().loadSettings ? S().loadSettings() : { largeText:false, boldText:false, highContrast:false, reducedMotion:false, simpleAscii:false, spacious:false, readableFont:false }; }
   function applySettings(){ if(S().applySettings) S().applySettings(); }
   function buildVersion(){ return String(window.LEGEND_DATA?.VERSION || 'v0.20.40'); }
