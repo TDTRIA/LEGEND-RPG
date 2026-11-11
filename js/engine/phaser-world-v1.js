@@ -185,9 +185,14 @@
   function setEnvironment(name, immediate = false) {
     const environment = String(name || 'title');
     window.LegendRoadAudioV100?.setEnvironment?.(environment);
-    if (environment === currentEnvironment) return;
+    if (environment === currentEnvironment) {
+      realmScene?.syncNativeRoadSceneArt?.();
+      realmScene?.syncNativeScreenArt?.();
+      return;
+    }
     currentEnvironment = environment;
     if (realmScene && realmScene.setEnvironment) realmScene.setEnvironment(environment, immediate);
+    realmScene?.syncNativeScreenArt?.();
   }
 
   function inferEnvironment() {
@@ -466,6 +471,8 @@
       this.backgroundIsImage = false;
       this.nativeRoadSceneArtActive = false;
       this.nativeRoadSceneArtState = null;
+      this.nativeScreenArtNodes = [];
+      this.nativeScreenArtState = [];
       this.ambienceObjects = [];
       this.environment = '';
       this.lookTarget = { x: 0, y: 0 };
@@ -676,6 +683,7 @@
       this.scale.on('resize', () => {
         this.layoutBackground();
         this.syncNativeRoadSceneArt();
+        this.syncNativeScreenArt();
         this.layoutAshmereLandmarks();
         this.syncNativeTitleUi(this.surface);
         this.syncNativeAnnalsUi(this.surface);
@@ -705,6 +713,7 @@
           environment: this.environment,
           nativeRoadSceneArtActive: this.nativeRoadSceneArtActive,
           nativeRoadSceneArt: this.nativeRoadSceneArtState,
+          nativeScreenArt: this.nativeScreenArtState,
           worldArtTextureStatus: Object.keys(ASSETS).map(key => ({
             key,
             loaded: this.textures.exists(key)
@@ -6310,6 +6319,7 @@
       const key = ASSETS[name] ? name : 'title';
       if (key === this.environment && !immediate) {
         this.syncNativeRoadSceneArt();
+        this.syncNativeScreenArt();
         return;
       }
       this.environment = key;
@@ -6347,6 +6357,7 @@
       this.layoutBackground();
       this.syncAshmereLandmarks();
       this.syncNativeRoadSceneArt();
+      this.syncNativeScreenArt();
       if (!immediate && !reducedMotion()) {
         const camera = this.cameras.main;
         camera.setZoom(1.018);
@@ -6361,7 +6372,10 @@
           alpha: 1,
           duration: 720,
           ease: 'Sine.easeOut',
-          onComplete: () => this.syncNativeRoadSceneArt()
+          onComplete: () => {
+            this.syncNativeRoadSceneArt();
+            this.syncNativeScreenArt();
+          }
         });
       }
     }
@@ -6406,6 +6420,82 @@
       } : null;
       document.body?.classList.toggle('legend-phaser-road-scene-art-active', active);
       return active;
+    }
+
+    /**
+     * Keeps each screen's authored background visible until the active Phaser
+     * environment owns the exact same loaded image and its canvas handoff is opaque.
+     * A missing texture, mismatched source, or partially faded canvas leaves the DOM
+     * art in place as a readable visual fallback.
+     */
+    syncNativeScreenArt() {
+      const host = document.getElementById('root');
+      const selectors = [
+        '.v120-title-backdrop',
+        '.v140-creation .v094-beginning-bg',
+        '.opening-road-v140-bg',
+        '.opening-lore-v220-backdrop',
+        '.ash100-hero > img',
+        '.gfm160-scene-art',
+        '.gfm160-results-art img',
+        '.gss170-scene-art'
+      ];
+      const nodes = host ? Array.from(host.querySelectorAll(selectors.join(','))) : [];
+      const currentNodes = new Set(nodes);
+      this.nativeScreenArtNodes.forEach(node => {
+        if (node?.isConnected && !currentNodes.has(node)) {
+          node.removeAttribute('data-legend-phaser-scene-art-active');
+        }
+      });
+
+      const textureKey = String(this.environment || '');
+      const expectedSource = ASSETS[textureKey] || '';
+      const normalizePath = value => {
+        const raw = String(value || '').split(/[?#]/, 1)[0];
+        let path = raw;
+        try { path = new URL(raw, document.baseURI).pathname; } catch (_) {}
+        try { path = decodeURIComponent(path); } catch (_) {}
+        return path.replace(/\\/g, '/').replace(/^\/+/, '');
+      };
+      const expectedPath = normalizePath(expectedSource);
+      const texture = expectedSource && this.textures.exists(textureKey)
+        ? this.textures.get(textureKey)
+        : null;
+      const textureSource = texture?.getSourceImage?.();
+      const backgroundReady = Boolean(
+        textureSource?.width > 0 && textureSource?.height > 0 &&
+        this.backgroundIsImage && this.background?.active &&
+        Number(this.background.alpha) >= 0.99
+      );
+
+      const states = nodes.map(node => {
+        const isImage = node instanceof HTMLImageElement;
+        const rawSources = isImage
+          ? [node.currentSrc || node.getAttribute('src') || node.src]
+          : Array.from(String(window.getComputedStyle(node).backgroundImage || '')
+            .matchAll(/url\((?:['"])?([^'")]+)(?:['"])?\)/g), match => match[1]);
+        const sourcePaths = rawSources.map(normalizePath).filter(Boolean);
+        const sourceMatches = Boolean(expectedPath && sourcePaths.includes(expectedPath));
+        const active = Boolean(backgroundReady && sourceMatches && node.isConnected);
+        if (active) node.setAttribute('data-legend-phaser-scene-art-active', 'true');
+        else node.removeAttribute('data-legend-phaser-scene-art-active');
+        return {
+          selector: selectors.find(selector => {
+            try { return node.matches(selector); } catch (_) { return false; }
+          }) || '',
+          active,
+          textureKey,
+          expectedSource,
+          sourcePaths,
+          sourceMatches,
+          textureLoaded: Boolean(textureSource?.width > 0 && textureSource?.height > 0),
+          backgroundAlpha: Number(this.background?.alpha || 0)
+        };
+      });
+
+      this.nativeScreenArtNodes = nodes;
+      this.nativeScreenArtState = states;
+      return states;
     }
 
     backgroundOverscan(size) {
@@ -6705,6 +6795,10 @@
     refreshRoadScene: () => {
       inferEnvironment();
       return realmScene?.syncNativeRoadSceneArt?.() || false;
+    },
+    refreshScreenArt: () => {
+      inferEnvironment();
+      return realmScene?.syncNativeScreenArt?.() || [];
     },
     refreshCombat: () => realmScene?.syncNativeCombatUi?.(realmScene?.surface),
     refreshTownBoard: () => realmScene?.syncNativeTownBoardUi?.(realmScene?.surface),
