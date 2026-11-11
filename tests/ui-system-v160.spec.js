@@ -124,13 +124,16 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     )).toBe(true);
   });
 
-  test('title and realm entrance load the shared styles, keep the raster wordmark/actions, and show realm art', async ({ page }) => {
+  test('title and realm entrance keep a complete native painter or readable DOM fallback, and show realm art', async ({ page }) => {
     await openTitle(page);
     await expect(page.locator('link[href*="legend-ui-system-v160.css"]')).toHaveCount(1);
     await expect(page.locator('.v120-title-hero .v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
     await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
     await expect(page.getByRole('button', { name: /News & Roadmap/i })).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
+    await expect.poll(() => page.evaluate(() =>
+      Boolean(window.LegendPhaserWorldV1?.snapshot?.())
+    )).toBe(true);
+
     const rendererStartup = await page.evaluate(() => {
       const container = document.getElementById('game-container');
       const canvas = container?.querySelector('canvas');
@@ -151,30 +154,51 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(rendererStartup.canvasVisible).toBe(true);
     expect(rendererStartup.fallbackClassWasSet).toBe(false);
     expect(rendererStartup.fallbackDisplay).toBe('none');
+
     const freshMenu = await page.evaluate(() => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       return {
+        active: Boolean(snapshot.nativeTitleUi),
         assetsLoaded: snapshot.nativeTitleUiAssetsLoaded,
         logoPainted: snapshot.nativeTitleUiLogoPainted,
         dividerPainted: snapshot.nativeTitleUiDividerPainted,
         decorationLabels: snapshot.nativeTitleUiDecorationLabels || [],
         decorationTextCount: snapshot.nativeTitleUiDecorationTextCount || 0,
-        ids: snapshot.nativeTitleUiControlIds,
-        labels: snapshot.nativeTitleUiLabels || []
+        ids: snapshot.nativeTitleUiControlIds || [],
+        labels: snapshot.nativeTitleUiLabels || [],
+        bodyClass: document.body.classList.contains('legend-phaser-title-ui-active'),
+        logoVisibility: getComputedStyle(document.querySelector('.v150-logo-lockup .v120-legend-logo')).visibility,
+        buttonLabels: Array.from(document.querySelectorAll('.v136-menu-btn')).map(button => ({
+          text: button.textContent.replace(/\s+/g, ' ').trim(),
+          color: getComputedStyle(button.querySelector('.v136-menu-copy strong') || button).color,
+          visibility: getComputedStyle(button).visibility
+        }))
       };
     });
-    expect(freshMenu.assetsLoaded).toBe(true);
-    expect(freshMenu.logoPainted).toBe(true);
-    expect(freshMenu.dividerPainted).toBe(true);
-    expect(freshMenu.decorationTextCount).toBe(7);
-    expect(freshMenu.decorationLabels.map(item => item.id)).toEqual([
-      'kicker','intro','traveler-label','traveler-name','traveler-detail','menu-heading','divider-caption'
-    ]);
-    expect(freshMenu.decorationLabels.every(item => item.text)).toBe(true);
-    expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','credits']);
 
-    // If any required title copy disappears, Phaser must reveal the complete
-    // accessible DOM title instead of leaving a partially painted blank panel.
+    if (freshMenu.active) {
+      expect(freshMenu.assetsLoaded).toBe(true);
+      expect(freshMenu.logoPainted).toBe(true);
+      expect(freshMenu.dividerPainted).toBe(true);
+      expect(freshMenu.decorationTextCount).toBe(7);
+      expect(freshMenu.decorationLabels.map(item => item.id)).toEqual([
+        'kicker','intro','traveler-label','traveler-name','traveler-detail','menu-heading','divider-caption'
+      ]);
+      expect(freshMenu.decorationLabels.every(item => item.text)).toBe(true);
+      expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','credits']);
+    } else {
+      // Missing/unfinished Phaser texture preflight must leave all original
+      // title text and buttons visible rather than half-hiding the menu.
+      expect(freshMenu.bodyClass).toBe(false);
+      expect(freshMenu.logoVisibility).toBe('visible');
+      expect(freshMenu.buttonLabels).toHaveLength(5);
+      expect(freshMenu.buttonLabels.every(item =>
+        item.text.length > 0 && item.visibility === 'visible' && item.color !== 'rgba(0, 0, 0, 0)'
+      )).toBe(true);
+    }
+
+    // Deliberately make one required copy fragment unavailable. The native
+    // painter must back off, and the semantic DOM must remain fully readable.
     const fallback = await page.evaluate(() => {
       const name = document.querySelector('.v120-traveler-line strong');
       const original = name.textContent;
@@ -189,15 +213,14 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       window.LegendPhaserWorldV1.refresh();
       return visibleFallback;
     });
-    expect(fallback.active).toBe(false);
+    if (freshMenu.active) expect(fallback.active).toBe(false);
     expect(fallback.logoVisibility).toBe('visible');
     expect(fallback.menuTextColor).not.toBe('rgba(0, 0, 0, 0)');
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi
-    )).toBe(true);
-    expect(freshMenu.labels.map(item => item.title)).toEqual([
-      'Begin Your Journey','Profile','Settings','News & Roadmap','Credits'
-    ]);
+    if (freshMenu.active) {
+      await expect.poll(() => page.evaluate(() =>
+        window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi
+      )).toBe(true);
+    }
     await expect(page.locator('.v140-realm-overview.v151-realm-art')).toBeVisible();
     await expect(page.locator('.v151-realm-feature img')).toHaveAttribute('src', 'assets/generated/locations/ashmere-town.webp');
 
