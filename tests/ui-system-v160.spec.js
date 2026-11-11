@@ -15,8 +15,9 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
 }
 
 /** Creates a fresh traveler through the live title/opening flow at the requested desktop or mobile viewport. */
-async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, height: 900 }) {
+async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, height: 900 }, afterTitleReady = null) {
   await openTitle(page, viewport);
+  if (typeof afterTitleReady === 'function') await afterTitleReady(page);
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
   await page.getByRole('button', { name: /^Continue$/ }).click();
   await page.getByRole('button', { name: /^Continue$/ }).click();
@@ -572,18 +573,25 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('a missing Phaser road texture keeps the authored DOM scene image visible', async ({ page }) => {
-    let blockedInitialTextureRequest = false;
+    test.setTimeout(60_000);
+    let blockedPhaserTextureRequests = 0;
+    let allowDomImageRequest = false;
     await page.route('**/assets/generated/locations/old-road-south-fork.webp', async route => {
-      if (!blockedInitialTextureRequest) {
-        blockedInitialTextureRequest = true;
+      if (!allowDomImageRequest) {
+        blockedPhaserTextureRequests += 1;
         await route.abort('failed');
         return;
       }
       await route.continue();
     });
 
-    await enterAshmere(page, 'RoadTextureFallbackQA');
-    expect(blockedInitialTextureRequest).toBe(true);
+    // The engine preloads all world textures on the title screen. Block its
+    // road texture requests through both title boot and reload, then let the
+    // later production DOM scene image fetch succeed unchanged.
+    await enterAshmere(page, 'RoadTextureFallbackQA', undefined, async () => {
+      allowDomImageRequest = true;
+    });
+    expect(blockedPhaserTextureRequests).toBeGreaterThan(0);
     await seedRoad(page, 0, null);
     await expect.poll(() => page.evaluate(() => {
       const image = document.querySelector('.exp100-scene-live > img');
