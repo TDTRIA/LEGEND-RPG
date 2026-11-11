@@ -1,5 +1,12 @@
 # LEGEND — Fantasy RPG Direction: Monster Wars & the Awakening
 
+> **Authority note (added 2026-11-08):** [`CANON.md`](CANON.md) is the authority for decisions the project owner has locked. Where this document differs from `CANON.md`, `CANON.md` wins. This is an earlier direction pass (2026-10-15); the owner has answered several of its open questions since, and those answers are recorded in `CANON.md` and its change log, not here. In particular, check `CANON.md` before relying on:
+>
+> - **§3 and §11,** which treat the Last Mercy, the Hollow Saint, and the weakened boundary as open proposals;
+> - **§5,** which treats ordinary predators as the default. `CANON.md` L5 governs the hostile creatures of the monster conflict: those attackers are echoes of the sealed peoples, not the peoples themselves. It does not settle whether ordinary animals or untouched creatures can also be hostile for ordinary reasons.
+>
+> Visual and presentation direction now lives in [`DARKEST_DUNGEON_DIRECTION.md`](DARKEST_DUNGEON_DIRECTION.md), which does not change canon either. This note is documentation only; no section below was edited.
+
 **Status:** Current preferred creative direction, approved by the project owner on 2026-10-15 as the guiding direction for the next lore reconciliation pass. Specific cosmology, antagonist identity, ancient history, and unimplemented regional details remain proposals until individually approved.  
 **Purpose:** Establish the high-level fantasy RPG identity that now guides the world bible, story arcs, region plans, monster design, magic systems, and future expansions.  
 **Supersedes as the primary direction:** The earlier map/road-centered mythology in the Pale Surveyor, Hollow Mile, and route-network proposals. Those concepts are not deleted, but are demoted to optional/secondary lore unless deliberately reapproved.
