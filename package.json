@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "http-server . -p 4173 -c-1",
     "test:e2e": "playwright test",
-    "test:e2e:road-scene": "playwright test tests/ui-system-v160.spec.js --grep \"Phaser road background follows\" --project=\"Desktop Chrome\"",
+    "test:e2e:road-scene": "playwright test tests/ui-system-v160.spec.js --grep \"Phaser road background follows the live route and stage, with a DOM image fallback\" --project=\"Desktop Chrome\"",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
