@@ -350,6 +350,13 @@
     const host = root();
     if (!host || !window.MutationObserver) return;
     observer = new MutationObserver(mutations => {
+      if (mutations.every(mutation => {
+        const target = mutation.target?.nodeType === Node.ELEMENT_NODE ? mutation.target : mutation.target?.parentElement;
+        return Boolean(target?.closest?.('.v120-title-hero'));
+      })) {
+        realmScene?.syncNativeTitleUi?.(currentSurface);
+        return;
+      }
       // Text, prompt, selection and focus updates inside traveler creation are
       // local to that surface. Repaint only its Phaser copy instead of running
       // global environment/surface inference for every memory echo mutation.
@@ -369,7 +376,7 @@
       inferEnvironment();
       observeModalRoot();
     });
-    observer.observe(host, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    observer.observe(host, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'disabled', 'aria-disabled'] });
     inferEnvironment();
     observeModalRoot();
   }
@@ -728,8 +735,13 @@
         }
       });
       Object.entries(ASSETS).forEach(([key, path]) => {
-        if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(path)) {
-          this.load.image(key, path);
+        if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(path.split(/[?#]/, 1)[0])) {
+          if (/\.svg$/i.test(path.split(/[?#]/, 1)[0])) {
+            // Give vector UI assets explicit raster dimensions before WebGL upload.
+            this.load.svg(key, path, { scale: 2 });
+          } else {
+            this.load.image(key, path);
+          }
         }
       });
     }
@@ -811,7 +823,8 @@
             y: item.y,
             width: item.width,
             height: item.height,
-            focused: Boolean(item.focusFrame?.visible)
+            focused: Boolean(item.focusFrame?.visible),
+            texture: item.buttonSurface?.texture?.key || ''
           })),
           nativeTitleUiTextQuality: this.nativeTitleUiControls.map(item => ({
             id: item.id,
@@ -1287,7 +1300,12 @@
     setNativeTitleControlFocus(id, active) {
       const control = this.nativeTitleUiControls.find(item => item.id === id);
       if (!control?.container?.active) return;
-      control.focusFrame?.setVisible?.(Boolean(active));
+      const disabled = Boolean(control.button.disabled || control.button.getAttribute('aria-disabled') === 'true');
+      active = Boolean(active && !disabled);
+      control.buttonSurface.setTexture(disabled ? 'menuButtonDisabled'
+        : active || control.button.classList.contains('v136-menu-primary') ? 'menuButtonSelected' : 'menuButtonNormal');
+      control.focusFrame?.setVisible?.(active);
+      this.tweens.killTweensOf(control.container);
       const targetX = control.x + (active && !reducedMotion() ? 2 : 0);
       if (reducedMotion()) {
         control.container.x = targetX;
@@ -1372,6 +1390,7 @@
         titleDecorationNodes.every(item => item.node?.isConnected && item.rect && item.text)
       );
       const signature = JSON.stringify([
+        size.width, size.height, window.innerWidth, window.innerHeight,
         Math.round(panelRect.left), Math.round(panelRect.top), Math.round(panelRect.width), Math.round(panelRect.height),
         logoRect && [Math.round(logoRect.left), Math.round(logoRect.top), Math.round(logoRect.width), Math.round(logoRect.height)],
         dividerRect && [Math.round(dividerRect.left), Math.round(dividerRect.top), Math.round(dividerRect.width), Math.round(dividerRect.height)],
@@ -1384,7 +1403,8 @@
           const rect = button.getBoundingClientRect();
           return [button.id, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
             button.querySelector('.v136-menu-copy strong')?.textContent?.trim() || '',
-            button.querySelector('.v136-menu-copy small')?.textContent?.trim() || ''];
+            button.querySelector('.v136-menu-copy small')?.textContent?.trim() || '',
+            button.disabled, button.getAttribute('aria-disabled'), button.classList.contains('v136-menu-primary')];
         })
       ]);
       if (this.nativeTitleUiActive && signature === this.nativeTitleUiSignature) return;
@@ -1486,7 +1506,10 @@
         ).setOrigin(centered ? 0.5 : 0, 0).setDepth(16);
         object.setResolution?.(2);
         object.autoRound = true;
-        object.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        if (['kicker', 'menu-heading', 'divider-caption'].includes(item.id)) {
+          object.setWordWrapWidth(0);
+          if (object.width > rect.width) object.setFontSize(fontSize * rect.width / object.width);
+        }
         this.nativeTitleUiDecorations.push({ id: item.id, node: item.node, object });
         this.nativeTitleUiObjects.push(object);
       });
@@ -1583,7 +1606,7 @@
         const focusFrame = this.add.graphics();
         focusFrame.lineStyle(2.4, 0xffe6a5, 1);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
-        focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
+        focusFrame.setVisible(!disabled && (focused || hovered));
         group.add([buttonSurface, art, icon, title, subtitle, arrow, focusFrame]);
         group.setSize(rect.width, rect.height);
         this.nativeTitleUiObjects.push(group);
@@ -1596,6 +1619,7 @@
           height: rect.height,
           container: group,
           focusFrame,
+          buttonSurface,
           titleText: title,
           subtitleText: subtitle,
           button
@@ -6962,6 +6986,14 @@
     root()?.addEventListener('pointerleave', () => {
       window.__legendRebootBridge?.lookAt?.(window.innerWidth / 2, window.innerHeight / 2);
     }, { passive: true });
+    let titleScrollFrame = null;
+    document.addEventListener('scroll', () => {
+      if (currentSurface !== 'title' || titleScrollFrame !== null) return;
+      titleScrollFrame = window.requestAnimationFrame(() => {
+        titleScrollFrame = null;
+        realmScene?.syncNativeTitleUi?.(currentSurface);
+      });
+    }, { capture: true, passive: true });
     window.addEventListener('resize', inferEnvironment, { passive: true });
   }
 

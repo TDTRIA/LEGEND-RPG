@@ -43,6 +43,8 @@ body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-
   opacity: 0 !important;
   background: transparent !important;
 }
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg button#continue.v136-menu-primary,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg button#newPrimary.v136-menu-primary,
 body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn {
   color: transparent !important;
   background: transparent !important;

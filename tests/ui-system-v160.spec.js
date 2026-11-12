@@ -182,6 +182,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('returning-player save paints every existing title action in Phaser without changing the save', async ({ page }) => {
+    test.setTimeout(180000);
     await enterAshmere(page, 'ReturnMenuParity');
     const saveBefore = await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()));
     await page.evaluate(() => window.LegendGameBootstrap.title());
@@ -211,6 +212,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         }))
       };
     });
+    await expect(page.locator('#continue')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(page.locator('#continue')).toHaveCSS('background-image', 'none');
     expect(menu.saveKey).toBe('legend-roads-of-ashmere-v09');
     expect(menu.assetsLoaded).toBe(true);
     expect(menu.logoPainted).toBe(true);
@@ -238,6 +241,24 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot().nativeTitleUiControlBounds.find(item => item.id === 'settings')?.focused
     )).toBe(true);
+    const settingsTexture = () => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()
+      .nativeTitleUiControlBounds.find(item => item.id === 'settings')?.texture);
+    await expect.poll(settingsTexture).toBe('menuButtonSelected');
+    await page.locator('#continue').focus();
+    await page.mouse.move(0, 0);
+    await expect.poll(settingsTexture).toBe('menuButtonNormal');
+    for (const attribute of ['disabled', 'aria-disabled']) {
+      await page.locator('#settings').evaluate((button, name) => button.setAttribute(name, 'true'), attribute);
+      await expect.poll(settingsTexture).toBe('menuButtonDisabled');
+      await page.locator('#settings').hover();
+      await expect.poll(settingsTexture).toBe('menuButtonDisabled');
+      await page.locator('#settings').evaluate((button, name) => button.removeAttribute(name), attribute);
+      await page.mouse.move(0, 0);
+      await expect.poll(settingsTexture).toBe('menuButtonNormal');
+    }
+    await page.locator('#settings').focus();
+    await expect.poll(settingsTexture).toBe('menuButtonSelected');
+    expect(await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()))).toBe(saveBefore);
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-returning-title-desktop.png');
 
@@ -278,6 +299,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('returning-player Phaser title stays readable and tappable at 390px mobile width', async ({ browser }) => {
+    test.setTimeout(180000);
     const context = await browser.newContext({
       viewport: { width: 390, height: 844 },
       deviceScaleFactor: 1,

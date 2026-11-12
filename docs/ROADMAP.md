@@ -26,7 +26,27 @@ The story and the systems should reinforce that loop. Town is a place the player
 - **Active sequence:** finish the Phaser production migration using the acceptance gates in PHASER_MIGRATION.md. Verify returning-player title parity and the separate shell map drawer, then verify the anchored Ashmere destination board before continuing with Ashmere service screens, the main Old Road expedition/camp/results presentation, combat/results, level-up, dungeon/Greyfen, and remaining overlays. Migrate each presentation surface without replacing the underlying feature controller or save contract. Do not hide a DOM label or asset until the Phaser version is visibly present at desktop and mobile sizes, all controls remain keyboard/touch accessible, live text/state updates correctly, and the focused Playwright journey passes. Only after every listed surface is native Phaser and the full production journey is stable should new Phaser gameplay features begin: multi-skill combat kits, enemy intent/animation, randomized affix loot, enemy families/elites and skill trees.
 
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:c0b1d7afab7d3df799ef2c62bbb17ba2cfa33faccac78d98b06912e26ea16d13 -->
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:5f771f8dc5008c60cbed7558ed9d8e70eaa68b749f050f737794c53303ed8d13 -->
+
+## Title stability checkpoint — 2026-11-12 (local)
+
+The title asset loader accepts cache query strings and rasterizes existing SVG UI assets at explicit dimensions before WebGL upload. This restores the required raster wordmark and fixes distorted button frames. Native primary buttons no longer have their labels covered by an opaque gold DOM background. Focus/hover and disabled textures follow semantic controls; title geometry refreshes on resize and scrolling, and decorative labels remain complete. DOM controls and missing-art fallback remain intact. Save keys, callbacks, gameplay and story are unchanged.
+
+Local desktop/mobile screenshots were inspected in shared Preview. The new scroll/resize/missing-art fallback regression and the final mobile returning-title test pass; final desktop and restored expedition checks are still underway. Full title acceptance and release publishing remain open.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+Publishing is blocked in this task by Manual permissions and the assigned-branch push restriction. No PR, merge, or GitHub deployment is claimed.
+
 ## The player experience we are aiming for
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 1. **The title draws the player into the world.** The correct title is **LEGEND: The Awakening**. The old “Roads of Ashmere” wordmark must not return. The menu should look like a fantasy RPG menu over a living scene, not a generic landing page.
 2. **The opening makes the player curious.** A traveler wakes beneath a dead lantern on the Old Road. An unnamed voice (**???**) awakens them; its identity is not revealed yet. Captain Oric is tired, wary, and practical. A bell, the road, and a wolf attack establish the danger. Character choices should affect the traveler or dialogue rather than being cosmetic-only.
