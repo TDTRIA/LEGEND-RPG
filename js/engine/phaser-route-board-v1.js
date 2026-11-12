@@ -164,6 +164,7 @@
     const events = ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout', 'load'];
     events.forEach(name => document.addEventListener(name, schedule, true));
     window.addEventListener('resize', schedule);
+    scene.scale.on('resize', schedule);
     const observer = new MutationObserver(schedule);
     const root = document.getElementById('root');
     if (root) observer.observe(root, { subtree: true, childList: true, characterData: true, attributes: true,
@@ -173,6 +174,7 @@
       observer.disconnect();
       events.forEach(name => document.removeEventListener(name, schedule, true));
       window.removeEventListener('resize', schedule);
+      scene.scale.off('resize', schedule);
       clear();
     };
     scene.events.once('shutdown', destroy);

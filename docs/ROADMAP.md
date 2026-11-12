@@ -116,7 +116,15 @@ Scope:
 ### Phase 2 — Make the world shell consistent and alive
 **Status: shared shell and visibility pass shipped in v0.30.0; the Phaser production world renderer is now active, while full gameplay-surface migration remains in progress.**
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:91ff584e52789f0519b61ed0ed020734b441be103beb9f50fc80e54405dcdee9 -->
+
 **Goal:** one cohesive presentation across Ashmere, the Old Road, and regional scenes.
+
+Local migration progress (2026-11-12): inventory now has guarded Phaser frame, labels, quantities, equipment and focus presentation. The original modal retains keyboard/touch controls, scrolling and sheet navigation; save contents remain unchanged in focused desktop/mobile tests. Desktop, portrait and landscape screenshots were inspected. Toasts and the traveler sheet remain next; publication to main is still pending task permissions.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 Scope:
 - Keep the current scene visible while journal, inventory, character sheet, services, dialogue, and settings open as consistent overlays or contextual panels.

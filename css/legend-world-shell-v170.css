@@ -264,7 +264,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   background: linear-gradient(150deg, rgba(17, 24, 17, .44), rgba(7, 12, 8, .34) 70%);
   box-shadow: 0 20px 55px rgba(0, 0, 0, .42), inset 0 0 0 3px rgba(0, 0, 0, .24), inset 0 0 32px rgba(191, 160, 100, .025);
   pointer-events: auto;
-  backdrop-filter: blur(2px);
+  backdrop-filter: none;
 }
 .lws-panel-left { left: 12px; }
 .lws-panel-right { right: 12px; }
@@ -378,7 +378,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   padding: clamp(12px, 3vw, 32px);
   color: var(--lws-paper);
   background: rgba(3, 6, 4, .30);
-  backdrop-filter: blur(2px);
+  backdrop-filter: none;
 }
 #legend-world-shell-modal-root[hidden] { display: none; }
 .lws-modal {

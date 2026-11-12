@@ -88,7 +88,20 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
    - [x] Contextual action/POI drawer.
    - [x] Old Road map / field-journal modal (guarded Phaser painter enabled; styled DOM modal remains the fallback when preflight fails; desktop/mobile parity verification remains open).
    - [x] Bottom navigation.
-   - [ ] Shell toast, inventory and character-sheet modals.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:260e3dbc1ae2ed91f2f065710e386e7c109c4551731b19f2eea962cd3641dbce -->
+
+   - [ ] Shell toast and character-sheet presentation.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:e38be163529d950d69f37c6a0d631f897580e271352bd9fffd2fc4b95ad30546 -->
+
+   - [x] Inventory overlay: dedicated guarded painter for frame, item quantities, equipment, empty/unavailable states and focus. Original DOM owns keyboard trap, touch, inner scrolling, close and traveler-sheet routing; item artwork remains DOM-backed. Focused desktop/mobile regressions passed locally, including exact save preservation and malformed-layout fallback. Desktop1440×900, portrait390×844 and landscape844×390 screenshots inspected. The character sheet remains the production town screen, not a separate modal. Publishing remains pending task permissions.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
    - [x] Mobile journal/context side-panel states and scrolling.
    - [x] DOM fallback map/journal scrolling stays within mobile width; native Phaser modal is enabled with guarded fallback; full visual parity verification remains open.
    - [ ] Remaining shell map drawer/modal scrolling.

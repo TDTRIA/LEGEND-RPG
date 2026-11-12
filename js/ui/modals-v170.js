@@ -88,8 +88,9 @@
     if (status) status.textContent = message;
   }
 
-  function openModal({ eyebrow = 'The Borderlands', title, description = '', content = '', footer = '', icon = 'journal' } = {}) {
+  function openModal({ kind = '', eyebrow = 'The Borderlands', title, description = '', content = '', footer = '', icon = 'journal' } = {}) {
     const root = ensureRoot();
+    root.dataset.shellModalKind = kind;
     previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const iconName = MODAL_ICON_CLASSES.includes(icon) ? icon : 'journal';
     root.innerHTML = '<section class="lws-modal" role="dialog" aria-modal="true" aria-labelledby="lws-modal-title" aria-describedby="lws-modal-description" tabindex="-1">' +
@@ -171,6 +172,7 @@
     if (!player) {
       return openModal({
         eyebrow: 'Traveler archive',
+        kind: 'inventory',
         title: 'Inventory unavailable',
         icon: 'traveler',
         description: 'No saved traveler record could be read.',
@@ -209,6 +211,7 @@
     const footer = '<button type="button" class="lws-btn quiet" data-shell-modal-close>Return to the world</button><button type="button" class="lws-btn primary" data-world-action="traveler-sheet"><span class="lws-btn-copy"><strong>Open traveler sheet</strong><small>View your attributes and equipment</small></span></button>';
     return openModal({
       eyebrow: 'Traveler archive',
+      kind: 'inventory',
       title: 'Inventory',
       icon: 'traveler',
       description: 'Everything carried for the road: provisions, finds, keepsakes, and gear.',

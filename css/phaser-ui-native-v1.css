@@ -1018,3 +1018,30 @@ body.legend-phaser-world-active #root .legend-phaser-region-ledger :is(.reg100-k
   -webkit-text-fill-color: transparent !important;
   text-shadow: none !important;
 }
+
+/* Promote the existing scene only while a complete inventory frame is ready.
+   The semantic modal remains above it for input, artwork and accessibility. */
+body.legend-phaser-world-active.legend-phaser-inventory-active #game-container { z-index: 801; }
+body.legend-phaser-world-active.legend-phaser-inventory-active #legend-world-shell-modal-root {
+  z-index: 802;
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-inventory-active #legend-world-shell-modal-root :is(.lws-modal,.lws-modal-content,.lws-modal-header,.lws-modal-footer,.lws-inventory-card,.lws-btn,.lws-close-btn) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-inventory-active #legend-world-shell-modal-root .lws-modal::before { display: none !important; }
+body.legend-phaser-inventory-active #legend-world-shell-modal-root :is(.lws-modal-heading > span,h2,p,strong,small,.lws-empty-state,.lws-section-title,.lws-equipped-item > span:first-child,button) {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+
+body.legend-phaser-world-active.legend-phaser-inventory-active #legend-world-shell-modal-root button:focus-visible,
+body.legend-phaser-world-active.legend-phaser-inventory-active #legend-world-shell-modal-root button {
+  outline: none !important;
+  transform: none !important;
+}
