@@ -120,6 +120,8 @@ async function openAndVerifyPainter(page, kind) {
       clientHeight: dialog?.clientHeight || 0,
       introColor: text ? getComputedStyle(text).color : '',
       closeColor: close ? getComputedStyle(close).color : '',
+      overlayBackdropFilter: overlay ? getComputedStyle(overlay).backdropFilter : '',
+      dialogBackdropFilter: dialog ? getComputedStyle(dialog).backdropFilter : '',
       closeEnabled: Boolean(close && !close.disabled),
       dialogOverflowY: dialog ? getComputedStyle(dialog).overflowY : ''
     };
@@ -133,6 +135,8 @@ async function openAndVerifyPainter(page, kind) {
   expect(proof.maskBounds.height).toBeGreaterThan(0);
   expect(proof.introColor).toBe('rgba(0, 0, 0, 0)');
   expect(proof.closeColor).toBe('rgba(0, 0, 0, 0)');
+  expect(proof.overlayBackdropFilter).toBe('none');
+  expect(proof.dialogBackdropFilter).toBe('none');
   expect(proof.closeEnabled).toBe(true);
   return proof;
 }
