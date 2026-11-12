@@ -1,8 +1,13 @@
 /**
- * Delete a branch only when its current tip exactly matches the head SHA of a
- * pull request merged into this same repository. Closed-but-unmerged PRs,
- * changed branch tips, protected branches, and main are never deleted.
+ * Remove a branch ref only when its current tip is already represented in main:
+ * - exact current head SHA of a PR merged into this repository, OR
+ * - a commit that is an ancestor of origin/main.
+ *
+ * Branches with open PRs, protected refs, unmerged unique commits, and main
+ * are always preserved.
  */
+import { execFileSync } from "node:child_process";
+
 const token = process.env.GITHUB_TOKEN;
 const repository = process.env.GITHUB_REPOSITORY;
 const dryRun = process.env.DRY_RUN === "true";
@@ -27,7 +32,7 @@ async function request(path, options = {}) {
     });
 
     if (method === "DELETE" && (response.status === 204 || response.status === 404)) {
-      return null; // 404 also means the desired state already exists.
+      return null;
     }
 
     if ([429, 500, 502, 503, 504].includes(response.status) && attempt < 4) {
@@ -62,19 +67,32 @@ async function allPages(resource) {
   throw new Error(`Pagination safety limit reached for ${resource}.`);
 }
 
+function isAncestorOfMain(sha) {
+  try {
+    execFileSync("git", ["merge-base", "--is-ancestor", sha, "origin/main"], {
+      stdio: "ignore",
+    });
+    return true;
+  } catch (error) {
+    if (error.status === 1) return false;
+    throw new Error(`Unable to verify ancestry for ${sha}: ${error.message || error}`);
+  }
+}
+
 const repo = await request("");
 const defaultBranch = repo.default_branch;
 if (defaultBranch !== "main") {
   throw new Error(`Safety stop: expected default branch main, found ${defaultBranch}.`);
 }
 
-const [branches, pullRequests] = await Promise.all([
+const [branches, closedPullRequests, openPullRequests] = await Promise.all([
   allPages("/branches"),
   allPages("/pulls?state=closed"),
+  allPages("/pulls?state=open"),
 ]);
 
 const mergedHeads = new Map();
-for (const pr of pullRequests) {
+for (const pr of closedPullRequests) {
   if (!pr.merged_at || pr.head?.repo?.full_name !== repository || !pr.head.ref || !pr.head.sha) {
     continue;
   }
@@ -83,33 +101,50 @@ for (const pr of pullRequests) {
   mergedHeads.get(key).set(pr.head.sha, pr.number);
 }
 
-const candidates = branches.filter((branch) => {
-  if (branch.name === "main" || branch.name === defaultBranch || branch.protected) return false;
-  return mergedHeads.get(branch.name)?.has(branch.commit?.sha) === true;
-});
+const openHeadRefs = new Set(
+  openPullRequests
+    .filter((pr) => pr.head?.repo?.full_name === repository && pr.head?.ref)
+    .map((pr) => pr.head.ref),
+);
+
+const candidates = [];
+for (const branch of branches) {
+  if (branch.name === "main" || branch.name === defaultBranch || branch.protected) continue;
+  if (openHeadRefs.has(branch.name)) continue;
+
+  const mergedPrNumber = mergedHeads.get(branch.name)?.get(branch.commit?.sha);
+  if (mergedPrNumber) {
+    candidates.push({ ...branch, reason: `exact head of merged PR #${mergedPrNumber}` });
+    continue;
+  }
+
+  if (isAncestorOfMain(branch.commit.sha)) {
+    candidates.push({ ...branch, reason: "branch tip is already an ancestor of main" });
+  }
+}
 
 console.log(`Repository: ${repository}`);
-console.log(`Default branch: ${defaultBranch} (protected from deletion)`);
+console.log(`Default branch: ${defaultBranch} (never deleted)`);
 console.log(`Branches scanned: ${branches.length}`);
-console.log(`Closed PRs scanned: ${pullRequests.length}`);
-console.log(`Exact merged-head candidates: ${candidates.length}`);
-console.log(dryRun ? "DRY RUN: no branch refs will be deleted." : "LIVE RUN: deleting exact merged branch refs.");
+console.log(`Closed PRs scanned: ${closedPullRequests.length}`);
+console.log(`Open PRs scanned: ${openPullRequests.length}`);
+console.log(`Fully integrated candidates: ${candidates.length}`);
+console.log(dryRun ? "DRY RUN: no branch refs will be deleted." : "LIVE RUN: deleting only fully integrated refs.");
 
 const deleted = [];
 const skipped = [];
 for (const branch of candidates) {
-  const prNumber = mergedHeads.get(branch.name).get(branch.commit.sha);
   const refPath = `/git/refs/heads/${branch.name.split("/").map(encodeURIComponent).join("/")}`;
 
   if (dryRun) {
-    console.log(`WOULD DELETE ${branch.name} (merged PR #${prNumber}, ${branch.commit.sha})`);
+    console.log(`WOULD DELETE ${branch.name} (${branch.reason}; ${branch.commit.sha})`);
     continue;
   }
 
   try {
     await request(refPath, { method: "DELETE" });
     deleted.push(branch.name);
-    console.log(`DELETED ${branch.name} (merged PR #${prNumber})`);
+    console.log(`DELETED ${branch.name} (${branch.reason})`);
   } catch (error) {
     skipped.push({ branch: branch.name, reason: String(error) });
     console.error(`FAILED ${branch.name}: ${error.message || error}`);
@@ -124,13 +159,16 @@ console.log(dryRun
 if (process.env.GITHUB_STEP_SUMMARY) {
   const fs = await import("node:fs/promises");
   const lines = [
-    "## Merged branch cleanup",
+    "## Merged and fully integrated branch cleanup",
     `- Default branch: ${defaultBranch} (never deleted)`,
     `- Branches scanned: ${branches.length}`,
-    `- Closed PRs scanned: ${pullRequests.length}`,
-    `- Exact merged-head candidates: ${candidates.length}`,
+    `- Closed PRs scanned: ${closedPullRequests.length}`,
+    `- Open PRs scanned: ${openPullRequests.length}`,
+    `- Fully integrated candidates: ${candidates.length}`,
     `- Mode: ${dryRun ? "dry run" : "live cleanup"}`,
-    ...(dryRun ? candidates.map((b) => `- Would delete: \`${b.name}\``) : deleted.map((name) => `- Deleted: \`${name}\``)),
+    ...(dryRun
+      ? candidates.map((b) => `- Would delete: \`${b.name}\` — ${b.reason}`)
+      : deleted.map((name) => `- Deleted: \`${name}\``)),
     ...skipped.map((item) => `- Failed: \`${item.branch}\` — ${item.reason}`),
   ];
   await fs.appendFile(process.env.GITHUB_STEP_SUMMARY, `${lines.join("\n")}\n`);
