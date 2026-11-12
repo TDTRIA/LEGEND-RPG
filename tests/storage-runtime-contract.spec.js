@@ -6,6 +6,15 @@ const indexSource = fs.readFileSync(path.join(__dirname, '../index.html'), 'utf8
 const storageSource = fs.readFileSync(path.join(__dirname, '../js/storage.js'), 'utf8');
 const gameSource = fs.readFileSync(path.join(__dirname, '../js/game.js'), 'utf8');
 
+async function clickCreationDom(page, selector, first = false) {
+  const candidates = page.locator(selector);
+  const target = first ? candidates.first() : candidates;
+  await expect(target).toBeVisible();
+  // These tests validate save/expedition behavior. Use the actual DOM click
+  // handler directly; pointer hit-testing is covered by the Phaser UI tests.
+  await target.evaluate(element => element.click());
+}
+
 async function openGame(page) {
   await page.goto('/');
   await page.evaluate(() => {
@@ -377,22 +386,22 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
     await page.getByRole('button', { name: /^Continue$/ }).click();
     await page.getByRole('button', { name: /Shape the traveler/i }).click();
     await page.locator('#v094Name').fill('SaveProtectionQA');
-    await page.locator('#v094Next').click();
-    await page.locator('[data-gender="unspoken"]').click();
-    await page.locator('#v094Next').click();
-    await page.locator('[data-personality="kind"]').click();
-    await page.locator('#v094Next').click();
-    await page.locator('[data-origin]').first().click();
-    await page.locator('#v094Next').click();
-    await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
-    await page.locator('#v094Next').click();
-    await page.locator('[data-keepsake="Old Map"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationDom(page, '#v094Next');
+    await clickCreationDom(page, '[data-gender="unspoken"]');
+    await clickCreationDom(page, '#v094Next');
+    await clickCreationDom(page, '[data-personality="kind"]');
+    await clickCreationDom(page, '#v094Next');
+    await clickCreationDom(page, '[data-origin]', true);
+    await clickCreationDom(page, '#v094Next');
+    await clickCreationDom(page, '[data-class="Ranger"]');
+    await clickCreationDom(page, '#v094Next');
+    await clickCreationDom(page, '[data-keepsake="Old Map"]');
+    await clickCreationDom(page, '#v094Next');
     await expect(page.locator('.v140-soul-confirmation')).toBeVisible();
 
     const key = await page.evaluate(() => window.LEGEND_DATA.SAVE_KEY);
     await page.evaluate(key => localStorage.setItem(key, '{unreadable existing traveler'), key);
-    await page.getByRole('button', { name: /Let Me Wake/i }).click();
+    await clickCreationDom(page, '#v094Next');
     await expect(page.locator('#v094CreationError')).toContainText(/existing traveler save could not be read safely/i);
     await expect(page.locator('.v140-soul-confirmation')).toBeVisible();
     expect(await page.evaluate(key => localStorage.getItem(key), key)).toBe('{unreadable existing traveler');
@@ -416,7 +425,7 @@ test.describe('LEGEND storage and fallback runtime contracts', () => {
         throw new DOMException('Storage quota denied', 'QuotaExceededError');
       };
     }, key);
-    await page.locator('#v094Next').click();
+    await clickCreationDom(page, '#v094Next');
     await expect(page.locator('#v094CreationError')).toContainText(/could not be saved permanently/i);
     await expect(page.locator('.v140-soul-confirmation')).toBeVisible();
     await page.evaluate(() => {

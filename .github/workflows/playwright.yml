@@ -84,9 +84,25 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:website
 
-      - name: Run focused save-safety and expedition regression tests
+      - name: Run focused save-safety and runtime regression tests
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:storage
+
+      - name: Run focused Phaser Old Road scene-art parity
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:road-scene
+
+      - name: Run focused Phaser traveler-creation interaction regression
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:creation
+
+      - name: Run focused Phaser Old Road map and journal modal regression
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:road-map
+
+      - name: Run shared Old Road UI contract with native modal painter enabled
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:road-map-ui-contract
 
       - name: Run full production regression suite
         if: github.event_name != 'pull_request'
