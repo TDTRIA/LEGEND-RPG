@@ -10,7 +10,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
-    "test:e2e:phaser-preview": "playwright test --config=playwright.phaser.config.js"
+    "test:e2e:phaser-preview": "playwright test --config=playwright.phaser.config.js",
+    "test:e2e:website": "playwright test tests/website-dispatch-v200.spec.js"
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",
