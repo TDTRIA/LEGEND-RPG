@@ -105,6 +105,7 @@ async function openAndVerifyPainter(page, kind) {
   }), { timeout: 10000 }).toBe(kind);
   const proof = await page.evaluate(() => {
     const snapshot = window.LegendPhaserWorldV1.snapshot();
+    const overlay = document.getElementById('exp150Modal');
     const dialog = document.querySelector('#exp150Modal .exp150-modal-dialog');
     const text = document.querySelector('#exp150Modal .exp150-map-intro h2');
     const close = document.getElementById('exp150ModalClose');
