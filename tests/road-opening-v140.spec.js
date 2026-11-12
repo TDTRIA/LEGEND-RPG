@@ -68,6 +68,37 @@ async function clickCreationNext(page) {
   // visible action is kept as a DOM hit target while Phaser paints its skin.
   const next = page.locator('#root .v140-creation .v094-actions > button.v094-btn.primary');
   await expect(next).toHaveCount(1);
+  const scrollDebug = await next.evaluate(el => {
+    const ancestors = [];
+    for (let node = el; node; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      const rect = node.getBoundingClientRect();
+      ancestors.push({
+        node: node.tagName.toLowerCase(),
+        id: node.id || '',
+        className: String(node.className || '').toString().slice(0, 100),
+        top: Math.round(rect.top),
+        bottom: Math.round(rect.bottom),
+        height: Math.round(rect.height),
+        clientHeight: node.clientHeight,
+        scrollHeight: node.scrollHeight,
+        scrollTop: node.scrollTop,
+        overflowX: style.overflowX,
+        overflowY: style.overflowY,
+        position: style.position,
+        display: style.display,
+        visibility: style.visibility
+      });
+    }
+    return {
+      viewport: { width: innerWidth, height: innerHeight, scrollY },
+      bodyClass: document.body.className,
+      html: { overflowY: getComputedStyle(document.documentElement).overflowY, clientHeight: document.documentElement.clientHeight, scrollHeight: document.documentElement.scrollHeight, scrollTop: document.documentElement.scrollTop },
+      body: { overflowY: getComputedStyle(document.body).overflowY, clientHeight: document.body.clientHeight, scrollHeight: document.body.scrollHeight, scrollTop: document.body.scrollTop },
+      ancestors
+    };
+  });
+  console.log('[LEGEND creation scroll debug]', JSON.stringify(scrollDebug));
   await next.scrollIntoViewIfNeeded();
   await expect(next).toBeVisible();
   await expect(next).toBeEnabled();
