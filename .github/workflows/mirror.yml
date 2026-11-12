@@ -3,6 +3,7 @@ on:
   push:
     branches: ['*']
     tags: ['*']
+  workflow_dispatch:
 
 jobs:
   mirror:
@@ -20,3 +21,34 @@ jobs:
           spacename: legend-ta
           repository: Legend-RPG
           password: ${{ secrets.BITBUCKET_TOKEN }}
+      - name: Set Bitbucket default branch to main
+        if: github.ref == 'refs/heads/main'
+        env:
+          BITBUCKET_TOKEN: ${{ secrets.BITBUCKET_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          response_file="$RUNNER_TEMP/bitbucket-repository-update.json"
+          set +e
+          status="$(curl --silent --show-error --output "$response_file" --write-out '%{http_code}' \
+            --request PUT \
+            --url 'https://api.bitbucket.org/2.0/repositories/legend-ta/legend-rpg' \
+            --header "Authorization: Bearer $BITBUCKET_TOKEN" \
+            --header 'Accept: application/json' \
+            --header 'Content-Type: application/json' \
+            --data '{"mainbranch":{"name":"main","type":"branch"}}')"
+          curl_status=$?
+          set -e
+
+          if [[ "$curl_status" -ne 0 ]]; then
+            echo "::warning::The Bitbucket mirror push completed, but the default-branch update request could not reach the Bitbucket API."
+            exit 0
+          fi
+
+          if [[ "$status" == "200" || "$status" == "201" ]]; then
+            echo "Bitbucket default branch is now main."
+            exit 0
+          fi
+
+          detail="$(jq -r '.error.message // .error.detail // empty' "$response_file" 2>/dev/null || true)"
+          echo "::warning::Bitbucket mirror push completed, but the default branch was not changed (HTTP $status). The BITBUCKET_TOKEN needs the admin:repository:bitbucket scope. ${detail}"
