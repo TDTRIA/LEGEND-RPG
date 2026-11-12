@@ -34,6 +34,10 @@
   let ambientAudio = null;
   let observer = null;
   let modalObserver = null;
+  let observedModalRoot = null;
+  let modalContentObserver = null;
+  let observedLevelUpOverlay = null;
+  let levelUpOverlayObserver = null;
   let currentSurface = '';
   let skipAwakeningRequested = false;
   const settingsStorage = window.LegendSettingsStorageV120?.create();
@@ -290,18 +294,55 @@
     }
   }
 
+  function bindModalSurfaceObservers() {
+    const modalRoot = byId('legend-world-shell-modal-root');
+    if (modalRoot && modalRoot !== observedModalRoot) {
+      modalContentObserver?.disconnect?.();
+      observedModalRoot = modalRoot;
+      modalContentObserver = new MutationObserver(() => inferSurface());
+      modalContentObserver.observe(modalRoot, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['hidden']
+      });
+    }
+
+    const levelUpOverlay = byId('legendLevelUpOverlay');
+    if (levelUpOverlay !== observedLevelUpOverlay) {
+      levelUpOverlayObserver?.disconnect?.();
+      observedLevelUpOverlay = levelUpOverlay;
+      levelUpOverlayObserver = null;
+      if (levelUpOverlay) {
+        levelUpOverlayObserver = new MutationObserver(() => inferSurface());
+        levelUpOverlayObserver.observe(levelUpOverlay, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['hidden', 'class', 'style']
+        });
+      }
+    }
+  }
+
   function observeModalRoot() {
-    if (modalObserver || !window.MutationObserver || !document.body) return;
-    // The persistent shell modal lives beside #root, not inside it. Watch the
-    // body for its arrival and hidden-state changes so Phaser can transition
-    // between in-world screens and shell overlays as one presentation engine.
-    modalObserver = new MutationObserver(() => inferSurface());
-    modalObserver.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['hidden']
+    if (!window.MutationObserver || !document.body) return;
+    bindModalSurfaceObservers();
+    if (modalObserver) return;
+
+    // Only watch direct body children for the shell modal / progression overlay
+    // containers. The previous subtree-wide body observer also saw every text
+    // update under #root (including traveler memory choices) and re-ran global
+    // Phaser surface inference for ordinary in-screen interactions.
+    modalObserver = new MutationObserver(() => {
+      const previousModalRoot = observedModalRoot;
+      const previousLevelUpOverlay = observedLevelUpOverlay;
+      bindModalSurfaceObservers();
+      if (previousModalRoot !== observedModalRoot || previousLevelUpOverlay !== observedLevelUpOverlay) {
+        inferSurface();
+      }
     });
+    modalObserver.observe(document.body, { childList: true });
   }
 
   function observeRoot() {
@@ -309,13 +350,20 @@
     const host = root();
     if (!host || !window.MutationObserver) return;
     observer = new MutationObserver(mutations => {
-      const affectsWorldSurface = mutations.some(mutation => !(
-        mutation.type === 'attributes' && mutation.target.closest?.('.v094-choice-grid')
-      ));
+      // Text, prompt, selection and focus updates inside traveler creation are
+      // local to that surface. Repaint only its Phaser copy instead of running
+      // global environment/surface inference for every memory echo mutation.
+      // Replacing #root or mutating any other world surface still takes the
+      // full inference path below.
+      const isLocalCreationMutation = mutation => {
+        const target = mutation.target?.nodeType === Node.ELEMENT_NODE
+          ? mutation.target
+          : mutation.target?.parentElement;
+        return Boolean(target?.closest?.('.v140-creation'));
+      };
+      const affectsWorldSurface = mutations.some(mutation => !isLocalCreationMutation(mutation));
       if (!affectsWorldSurface) {
         realmScene?.syncNativeCreationUi?.(currentSurface);
-        realmScene?.syncNativeOpeningUi?.(currentSurface);
-        realmScene?.syncNativeGameplayUi?.(currentSurface);
         return;
       }
       inferEnvironment();
