@@ -644,6 +644,15 @@ body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-
   cursor: pointer !important;
   touch-action: manipulation;
 }
+/* Outrank the later world visibility-contract rule that restores a backdrop
+   blur on the Old Road modal. Phaser paints this modal behind the semantic DOM
+   layer, so a blurred backdrop would blur the Phaser copy itself. */
+body.legend-phaser-world-active.legend-phaser-road-map-ui-active #root .exp100:has(.exp150-world-page) #exp150Modal,
+body.legend-phaser-world-active.legend-phaser-road-map-ui-active #root .exp100:has(.exp150-world-page) #exp150Modal .exp150-modal-dialog {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
 body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-control="true"]:focus-visible {
   outline: 2px solid #ffe6a0 !important;
   outline-offset: 3px !important;
