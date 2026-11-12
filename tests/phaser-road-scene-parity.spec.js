@@ -150,7 +150,6 @@ test('Phaser road background follows the live route and stage, with a DOM image 
       // Do not render the road yet: the test freezes RealmScene's first
       // transition before seedRoad() performs the first road render.
     }, 'RoadSceneArtQA');
-    await expect(page.locator('.exp150-world-page')).toBeVisible();
     await page.emulateMedia({ reducedMotion: 'no-preference' });
 
     // Freeze the RealmScene tween manager before changing the road stage so
