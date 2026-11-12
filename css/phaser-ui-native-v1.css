@@ -930,3 +930,27 @@ body.legend-phaser-road-actions-ui-active #root .exp100-camp [data-legend-phaser
   background: transparent !important;
   border-color: transparent !important;
 }
+
+/* The route-choice and interaction panels are mounted beside the legacy
+   root shell on the live Old Road screen. Use the world-page ancestry (not
+   #root) and include the original panel selectors so these rules outrank
+   legacy parchment text colors only after the Phaser painter has tagged it. */
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-interactions [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-action-dock [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp100-camp [data-legend-phaser-road-action-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-interactions [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-action-dock [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp100-camp [data-legend-phaser-road-action-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-interactions [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-action-dock [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp100-camp [data-legend-phaser-road-action-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
