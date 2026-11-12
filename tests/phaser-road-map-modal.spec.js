@@ -207,7 +207,6 @@ test('Phaser Old Road map and field journal paint complete content while preserv
   // keyboard modality before asserting the visible focus treatment.
   await page.keyboard.press('Tab');
   await expect(page.locator('#exp150ModalClose')).toBeFocused();
-  await expect(page.locator('#exp150ModalClose')).toBeFocused();
   const focusStyle = await page.locator('#exp150ModalClose').evaluate(node => ({
     outlineColor: getComputedStyle(node).outlineColor,
     outlineStyle: getComputedStyle(node).outlineStyle
