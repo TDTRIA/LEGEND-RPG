@@ -281,11 +281,18 @@
 @media(max-width:560px){.v094-choice-scene .v094-gender-emblem{width:60px;height:60px;flex-basis:60px;margin-bottom:10px}}
 
 
-/* v0.30.6 — keep the long memory-choice steps in the document scroll flow.
-   The creation card can be taller than the viewport on desktop; clipping its
-   sticky action row inside the card made the real DOM controls unreachable. */
+/* v0.30.7 — keep the creation screen as the scroll owner.
+   RealmScene mirrors screen.scrollTop to keep its canvas-painted labels and
+   focus targets aligned with the accessible DOM controls while long choice
+   steps scroll on desktop and mobile. */
 .v140-creation {
-  overflow: visible !important;
+  height: 100svh !important;
+  min-height: 100svh !important;
+  max-height: 100svh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 .v140-creation .v094-beginning-card {
   overflow: visible !important;
