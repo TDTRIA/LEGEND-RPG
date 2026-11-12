@@ -17,9 +17,19 @@ pipelines:
                 exit 1
               fi
 
+              git config user.name "Bitbucket Sync"
+              git config user.email "bitbucket-sync@users.noreply.github.com"
+
+              # Remove the one-time bootstrap workflow from both remotes on first publish.
+              if git ls-tree -r --name-only HEAD | grep -Fxq ".github/workflows/one-time-bitbucket-sync.yml"; then
+                git rm -f .github/workflows/one-time-bitbucket-sync.yml
+                git commit -m "[skip ci] Remove temporary Bitbucket bootstrap workflow"
+                git push origin HEAD:main
+              fi
+
               AUTH_HEADER="$(printf 'x-access-token:%s' "$GITHUB_PUSH_TOKEN" | base64 | tr -d '\n')"
 
-              # Refuse to overwrite GitHub if Bitbucket and GitHub main histories diverged.
+              # Never force-push. Only publish when GitHub main is an ancestor of Bitbucket main.
               git -c http.extraheader="AUTHORIZATION: basic $AUTH_HEADER" \
                 fetch https://github.com/TDTRIA/LEGEND-RPG.git main
               GITHUB_MAIN="$(git rev-parse FETCH_HEAD)"
