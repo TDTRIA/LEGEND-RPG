@@ -1,0 +1,3 @@
+- name: Mirror to BitBucket GitHub Action
+
+  uses: heussd/mirror-to-bitbucket-github-action@v3
