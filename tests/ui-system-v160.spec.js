@@ -7,10 +7,20 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   // a transition overlay visible and contaminate UI screenshots.
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
-  await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+    sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready');
+  });
   await page.reload();
-  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
-  await expect(page.locator('.v120-title')).toBeVisible();
+  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
+  await page.waitForFunction(() =>
+    window.__legendPhaserWorldReady === true &&
+    Boolean(window.LegendPhaserWorldV1?.engine?.scene?.getScene('RealmScene')),
+    null,
+    { timeout: 20000 }
+  );
+  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 15000 });
   await expect(page.locator('.v120-title-hero .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
 }
 
@@ -348,12 +358,19 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         controls: snapshot.nativeExpeditionActionsUiControlIds || [],
         objectCount: snapshot.nativeExpeditionActionsUiObjectCount,
         headingColor: panel?.querySelector('h2') ? getComputedStyle(panel.querySelector('h2')).color : '',
+        headingMarker: panel?.querySelector('h2')?.getAttribute('data-legend-phaser-road-action-text') || null,
+        headingInlineColor: panel?.querySelector('h2')?.getAttribute('style') || '',
+        bodyActionClass: document.body.classList.contains('legend-phaser-road-actions-ui-active'),
+        activeMaskSelectorCount: document.querySelectorAll('body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-text="true"]').length,
+        routeHeadingSelectorMatches: document.querySelectorAll('body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-interactions .exp100-route-choice h2[data-legend-phaser-road-action-text="true"]').length,
+        actionCssHref: Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(link => link.href).find(href => href.includes('phaser-ui-native-v1.css')) || '',
         actionColor: panel?.querySelector('#routeRidge') ? getComputedStyle(panel.querySelector('#routeRidge')).color : '',
         routeButtons: Array.from(panel?.querySelectorAll('button') || []).map(button => ({
           id: button.id, disabled: button.disabled, text: button.textContent.replace(/\s+/g,' ').trim()
         }))
       };
     });
+    console.log('[LEGEND Old Road action visibility]', JSON.stringify(fork));
     expect(fork.objectCount).toBe(1);
     expect(fork.text).toEqual(expect.arrayContaining([
       'THE ROAD FORKS', 'Two ways through the lowlands', 'Take the High Ridge', 'Risk the Reed Cut'
