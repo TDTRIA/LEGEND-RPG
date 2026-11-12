@@ -391,8 +391,34 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await seedRoad(page, 1, 'ridge');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionActionsUi)).toBe(true);
     await expect(page.locator('.exp150-interactions .exp160-optional-detour')).toBeVisible();
-    await expect(page.locator('#exp160VisitOptional')).toHaveCSS('color','rgba(0, 0, 0, 0)');
-    await page.locator('#exp160VisitOptional').click();
+    const optionalVisit = page.locator('#exp160VisitOptional');
+    await expect(optionalVisit).toHaveCSS('color','rgba(0, 0, 0, 0)');
+    // The legacy theme requests smooth document scrolling. Scroll instantly,
+    // then wait for the element's measured bounds to settle before a normal
+    // Playwright click; do not bypass actionability with force:true.
+    await optionalVisit.evaluate(async node => {
+      document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
+      document.body.style.setProperty('scroll-behavior', 'auto', 'important');
+      node.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+      const bounds = () => {
+        const rect = node.getBoundingClientRect();
+        return [rect.x, rect.y, rect.width, rect.height];
+      };
+      let previous = bounds();
+      let stableFrames = 0;
+      for (let frame = 0; frame < 60 && stableFrames < 3; frame += 1) {
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        const current = bounds();
+        if (previous.every((value, index) => Math.abs(value - current[index]) < 0.25)) {
+          stableFrames += 1;
+        } else {
+          stableFrames = 0;
+        }
+        previous = current;
+      }
+      if (stableFrames < 3) throw new Error('Optional detour action did not settle after instant scrolling.');
+    });
+    await optionalVisit.click();
     await expect(page.locator('.exp160-optional-site')).toBeVisible();
     await expect(page.locator('.exp160-optional-site h2')).toHaveCSS('color','rgba(0, 0, 0, 0)');
     await expect.poll(() => page.evaluate(() =>
@@ -432,6 +458,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         nativeHudText: snapshot.nativeExpeditionHudUiTextValues || [],
         nativeHudControlIds: snapshot.nativeExpeditionHudUiControlIds || [],
         expeditionHudClass: document.body.classList.contains('legend-phaser-expedition-hud-ui-active'),
+        asideHeadingColor: getComputedStyle(document.querySelector('.exp150-journey-aside .exp150-next-stop h2')).color,
+        asideParagraphColor: getComputedStyle(document.querySelector('.exp150-journey-aside .exp150-next-stop p')).color,
         mapPainter: snapshot.nativeRoadMapUi,
         mapControl: Boolean(mapButton && !mapButton.disabled),
         mapText: mapButton?.textContent?.trim() || '',
@@ -448,6 +476,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     ]));
     expect(roadDom.nativeHudControlIds).toEqual(expect.arrayContaining(['exp150OpenMap','exp150OpenJournal','exp150OpenJournalAside']));
     expect(roadDom.expeditionHudClass).toBe(true);
+    expect(roadDom.asideHeadingColor).toBe('rgba(0, 0, 0, 0)');
+    expect(roadDom.asideParagraphColor).toBe('rgba(0, 0, 0, 0)');
     expect(roadDom.mapPainter).toBe(false);
     expect(roadDom.mapControl).toBe(true);
     expect(roadDom.mapText.length).toBeGreaterThan(0);
