@@ -122,7 +122,34 @@ async function expectNoHorizontalOverflow(page) {
 
 test('Phaser road background follows the live route and stage, with a DOM image fallback', async ({ page }) => {
     test.setTimeout(90_000);
-    await enterAshmere(page, 'RoadSceneArtQA');
+    await openTitle(page);
+    await page.waitForFunction(() => Boolean(
+      window.LegendPlayerRecordV094 &&
+      typeof window.LegendRoadControllerV100?.renderExpedition === 'function'
+    ), null, { timeout: 15000 });
+    await page.evaluate(name => {
+      const choices = window.LegendPlayerCreationOptionsV094;
+      const player = window.LegendPlayerRecordV094.create({
+        data: window.LEGEND_DATA,
+        name,
+        gender: choices.gender('unspoken'),
+        personality: choices.personality('kind'),
+        originId: 'Lost Squire',
+        classId: 'Ranger',
+        keepsakeId: 'Old Map',
+        baseSkills: window.LegendStorage.baseSkills,
+        normalize: window.LegendStorage.normalize
+      });
+      if (!player) throw new Error('Could not seed a valid traveler for the road-scene parity test.');
+      player.flags = player.flags || {};
+      player.flags.introV094Complete = true;
+      player.flags.openingRoadV140 = { phase: 'complete', completed: true, awakened: true };
+      if (!window.LegendStorage.saveNewPlayer(player)) {
+        throw new Error('Could not persist the road-scene parity test traveler.');
+      }
+      window.LegendRoadControllerV100.renderExpedition();
+    }, 'RoadSceneArtQA');
+    await expect(page.locator('.exp150-world-page')).toBeVisible();
     await page.emulateMedia({ reducedMotion: 'no-preference' });
 
     // Freeze the RealmScene tween manager before changing the road stage so
