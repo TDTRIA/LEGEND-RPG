@@ -1,0 +1,24 @@
+name: One-time initial Bitbucket mirror sync
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - bitbucket-pipelines.yml
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout complete repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Sync the initial Bitbucket-primary configuration
+        uses: heussd/mirror-to-bitbucket-github-action@v3
+        with:
+          username: legend-rpg-admin
+          spacename: legend-ta
+          repository: Legend-RPG
+          password: ${{ secrets.BITBUCKET_TOKEN }}
