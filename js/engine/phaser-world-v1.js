@@ -3178,6 +3178,10 @@
     clearNativeExpeditionActionsUi(removeClass = true, removeListeners = true) {
       this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
       this.nativeExpeditionActionsUiLayoutEvent = null;
+      if (this.nativeExpeditionActionsUiFrame != null) {
+        window.cancelAnimationFrame(this.nativeExpeditionActionsUiFrame);
+        this.nativeExpeditionActionsUiFrame = null;
+      }
       this.nativeExpeditionActionsUiMutationObserver?.disconnect?.();
       this.nativeExpeditionActionsUiMutationObserver = null;
       if (removeListeners) {
@@ -3216,12 +3220,6 @@
     }
 
     syncNativeExpeditionActionsUi() {
-      // Safe production fallback: the DOM decision deck owns the real road
-      // actions and stays fully readable until Phaser copy/card parity is proven.
-      // Clear any stale canvas paint and never hide the source labels/buttons.
-      this.clearNativeExpeditionActionsUi();
-      return;
-
       const host = document.querySelector('.exp100:has(.exp150-world-page)');
       const page = host?.querySelector('.exp150-world-page');
       const regions = [
@@ -3244,9 +3242,10 @@
         this.clearNativeExpeditionActionsUi();
         this.nativeExpeditionActionsUiBoundHost = host;
         this.nativeExpeditionActionsUiInteractionHandler = () => {
-          this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
-          this.nativeExpeditionActionsUiLayoutEvent = this.time.delayedCall(24, () => {
-            this.nativeExpeditionActionsUiLayoutEvent = null;
+          // Keep the painted decision deck aligned during continuous scroll.
+          if (this.nativeExpeditionActionsUiFrame != null) return;
+          this.nativeExpeditionActionsUiFrame = window.requestAnimationFrame(() => {
+            this.nativeExpeditionActionsUiFrame = null;
             this.syncNativeExpeditionActionsUi();
           });
         };
@@ -3427,6 +3426,7 @@
           fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
           color,
           letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+          wordWrap: { width: Math.max(10, rect.width) },
           align: style.textAlign || 'left'
         }).setDepth(58).setOrigin(0,0);
         object.setResolution?.(2);
@@ -3455,6 +3455,10 @@
     clearNativeExpeditionHudUi(removeClass = true, removeListeners = true) {
       this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
       this.nativeExpeditionHudUiLayoutEvent = null;
+      if (this.nativeExpeditionHudUiFrame != null) {
+        window.cancelAnimationFrame(this.nativeExpeditionHudUiFrame);
+        this.nativeExpeditionHudUiFrame = null;
+      }
       if (removeListeners) {
         if (this.nativeExpeditionHudUiBoundHost && this.nativeExpeditionHudUiInteractionHandler) {
           ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
@@ -3491,11 +3495,6 @@
     }
 
     syncNativeExpeditionHudUi() {
-      // Keep the production route tracker, clock, supplies and journey rail
-      // in crisp DOM while the Phaser HUD painter remains under verification.
-      this.clearNativeExpeditionHudUi();
-      return;
-
       const host = document.querySelector('.exp100:has(.exp150-world-page)');
       const page = host?.querySelector('.exp150-world-page');
       const regions = [
@@ -3519,9 +3518,11 @@
         this.clearNativeExpeditionHudUi();
         this.nativeExpeditionHudUiBoundHost = host;
         this.nativeExpeditionHudUiInteractionHandler = () => {
-          this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
-          this.nativeExpeditionHudUiLayoutEvent = this.time.delayedCall(24, () => {
-            this.nativeExpeditionHudUiLayoutEvent = null;
+          // Repaint at most once per animation frame so continuous scrolling
+          // keeps the Phaser copy aligned with the semantic DOM action layer.
+          if (this.nativeExpeditionHudUiFrame != null) return;
+          this.nativeExpeditionHudUiFrame = window.requestAnimationFrame(() => {
+            this.nativeExpeditionHudUiFrame = null;
             this.syncNativeExpeditionHudUi();
           });
         };
@@ -3726,6 +3727,7 @@
             fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
             color,
             letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+            wordWrap: { width: Math.max(10, rect.width) },
             align: style.textAlign || 'left'
           }).setDepth(54).setOrigin(0,0);
         textObject.setResolution?.(2);
