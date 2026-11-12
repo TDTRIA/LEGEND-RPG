@@ -3178,6 +3178,10 @@
     clearNativeExpeditionActionsUi(removeClass = true, removeListeners = true) {
       this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
       this.nativeExpeditionActionsUiLayoutEvent = null;
+      if (this.nativeExpeditionActionsUiFrame != null) {
+        window.cancelAnimationFrame(this.nativeExpeditionActionsUiFrame);
+        this.nativeExpeditionActionsUiFrame = null;
+      }
       this.nativeExpeditionActionsUiMutationObserver?.disconnect?.();
       this.nativeExpeditionActionsUiMutationObserver = null;
       if (removeListeners) {
@@ -3202,6 +3206,17 @@
       this.nativeExpeditionActionsUiObjects = [];
       this.nativeExpeditionActionsUiTaggedNodes.forEach(node => {
         if (!node?.dataset) return;
+        const restoreInlineStyle = (property, valueKey, priorityKey) => {
+          const value = node.dataset[valueKey];
+          if (value == null) return;
+          if (value === '__legend_none__') node.style.removeProperty(property);
+          else node.style.setProperty(property, value, node.dataset[priorityKey] || '');
+          delete node.dataset[valueKey];
+          delete node.dataset[priorityKey];
+        };
+        restoreInlineStyle('color', 'legendPhaserRoadOriginalColor', 'legendPhaserRoadOriginalColorPriority');
+        restoreInlineStyle('text-shadow', 'legendPhaserRoadOriginalTextShadow', 'legendPhaserRoadOriginalTextShadowPriority');
+        restoreInlineStyle('-webkit-text-fill-color', 'legendPhaserRoadOriginalTextFill', 'legendPhaserRoadOriginalTextFillPriority');
         delete node.dataset.legendPhaserRoadActionText;
         delete node.dataset.legendPhaserRoadActionControl;
         delete node.dataset.legendPhaserRoadActionIcon;
@@ -3216,12 +3231,6 @@
     }
 
     syncNativeExpeditionActionsUi() {
-      // Safe production fallback: the DOM decision deck owns the real road
-      // actions and stays fully readable until Phaser copy/card parity is proven.
-      // Clear any stale canvas paint and never hide the source labels/buttons.
-      this.clearNativeExpeditionActionsUi();
-      return;
-
       const host = document.querySelector('.exp100:has(.exp150-world-page)');
       const page = host?.querySelector('.exp150-world-page');
       const regions = [
@@ -3244,9 +3253,10 @@
         this.clearNativeExpeditionActionsUi();
         this.nativeExpeditionActionsUiBoundHost = host;
         this.nativeExpeditionActionsUiInteractionHandler = () => {
-          this.nativeExpeditionActionsUiLayoutEvent?.remove?.(false);
-          this.nativeExpeditionActionsUiLayoutEvent = this.time.delayedCall(24, () => {
-            this.nativeExpeditionActionsUiLayoutEvent = null;
+          // Keep the painted decision deck aligned during continuous scroll.
+          if (this.nativeExpeditionActionsUiFrame != null) return;
+          this.nativeExpeditionActionsUiFrame = window.requestAnimationFrame(() => {
+            this.nativeExpeditionActionsUiFrame = null;
             this.syncNativeExpeditionActionsUi();
           });
         };
@@ -3427,11 +3437,26 @@
           fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
           color,
           letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+          wordWrap: { width: Math.max(10, rect.width) },
           align: style.textAlign || 'left'
         }).setDepth(58).setOrigin(0,0);
         object.setResolution?.(2);
         object.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
         container.add(object);
+        // Save and mask the DOM copy inline. This avoids legacy CSS cascade
+        // conflicts while preserving exact restoration if Phaser preflight
+        // fails or the expedition surface is removed.
+        const rememberInlineStyle = (property, valueKey, priorityKey) => {
+          if (node.dataset[valueKey] !== undefined) return;
+          node.dataset[valueKey] = node.style.getPropertyValue(property) || '__legend_none__';
+          node.dataset[priorityKey] = node.style.getPropertyPriority(property) || '';
+        };
+        rememberInlineStyle('color', 'legendPhaserRoadOriginalColor', 'legendPhaserRoadOriginalColorPriority');
+        rememberInlineStyle('text-shadow', 'legendPhaserRoadOriginalTextShadow', 'legendPhaserRoadOriginalTextShadowPriority');
+        rememberInlineStyle('-webkit-text-fill-color', 'legendPhaserRoadOriginalTextFill', 'legendPhaserRoadOriginalTextFillPriority');
+        node.style.setProperty('color', 'transparent', 'important');
+        node.style.setProperty('text-shadow', 'none', 'important');
+        node.style.setProperty('-webkit-text-fill-color', 'transparent', 'important');
         node.dataset.legendPhaserRoadActionText = 'true';
         this.nativeExpeditionActionsUiTaggedNodes.push(node);
       });
@@ -3455,6 +3480,10 @@
     clearNativeExpeditionHudUi(removeClass = true, removeListeners = true) {
       this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
       this.nativeExpeditionHudUiLayoutEvent = null;
+      if (this.nativeExpeditionHudUiFrame != null) {
+        window.cancelAnimationFrame(this.nativeExpeditionHudUiFrame);
+        this.nativeExpeditionHudUiFrame = null;
+      }
       if (removeListeners) {
         if (this.nativeExpeditionHudUiBoundHost && this.nativeExpeditionHudUiInteractionHandler) {
           ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
@@ -3477,6 +3506,17 @@
       this.nativeExpeditionHudUiObjects = [];
       this.nativeExpeditionHudUiTaggedNodes.forEach(node => {
         if (!node?.dataset) return;
+        const restoreInlineStyle = (property, valueKey, priorityKey) => {
+          const value = node.dataset[valueKey];
+          if (value == null) return;
+          if (value === '__legend_none__') node.style.removeProperty(property);
+          else node.style.setProperty(property, value, node.dataset[priorityKey] || '');
+          delete node.dataset[valueKey];
+          delete node.dataset[priorityKey];
+        };
+        restoreInlineStyle('color', 'legendPhaserExpeditionOriginalColor', 'legendPhaserExpeditionOriginalColorPriority');
+        restoreInlineStyle('text-shadow', 'legendPhaserExpeditionOriginalTextShadow', 'legendPhaserExpeditionOriginalTextShadowPriority');
+        restoreInlineStyle('-webkit-text-fill-color', 'legendPhaserExpeditionOriginalTextFill', 'legendPhaserExpeditionOriginalTextFillPriority');
         delete node.dataset.legendPhaserExpeditionText;
         delete node.dataset.legendPhaserExpeditionControl;
         delete node.dataset.legendPhaserExpeditionIcon;
@@ -3491,11 +3531,6 @@
     }
 
     syncNativeExpeditionHudUi() {
-      // Keep the production route tracker, clock, supplies and journey rail
-      // in crisp DOM while the Phaser HUD painter remains under verification.
-      this.clearNativeExpeditionHudUi();
-      return;
-
       const host = document.querySelector('.exp100:has(.exp150-world-page)');
       const page = host?.querySelector('.exp150-world-page');
       const regions = [
@@ -3519,9 +3554,11 @@
         this.clearNativeExpeditionHudUi();
         this.nativeExpeditionHudUiBoundHost = host;
         this.nativeExpeditionHudUiInteractionHandler = () => {
-          this.nativeExpeditionHudUiLayoutEvent?.remove?.(false);
-          this.nativeExpeditionHudUiLayoutEvent = this.time.delayedCall(24, () => {
-            this.nativeExpeditionHudUiLayoutEvent = null;
+          // Repaint at most once per animation frame so continuous scrolling
+          // keeps the Phaser copy aligned with the semantic DOM action layer.
+          if (this.nativeExpeditionHudUiFrame != null) return;
+          this.nativeExpeditionHudUiFrame = window.requestAnimationFrame(() => {
+            this.nativeExpeditionHudUiFrame = null;
             this.syncNativeExpeditionHudUi();
           });
         };
@@ -3726,11 +3763,26 @@
             fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
             color,
             letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+            wordWrap: { width: Math.max(10, rect.width) },
             align: style.textAlign || 'left'
           }).setDepth(54).setOrigin(0,0);
         textObject.setResolution?.(2);
         textObject.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
         container.add(textObject);
+        // Mask the DOM copy inline only after its Phaser replacement exists.
+        // Save the exact prior inline declarations so any preflight failure,
+        // screen transition or cleanup restores the original accessible UI.
+        const rememberInlineStyle = (property, valueKey, priorityKey) => {
+          if (node.dataset[valueKey] !== undefined) return;
+          node.dataset[valueKey] = node.style.getPropertyValue(property) || '__legend_none__';
+          node.dataset[priorityKey] = node.style.getPropertyPriority(property) || '';
+        };
+        rememberInlineStyle('color', 'legendPhaserExpeditionOriginalColor', 'legendPhaserExpeditionOriginalColorPriority');
+        rememberInlineStyle('text-shadow', 'legendPhaserExpeditionOriginalTextShadow', 'legendPhaserExpeditionOriginalTextShadowPriority');
+        rememberInlineStyle('-webkit-text-fill-color', 'legendPhaserExpeditionOriginalTextFill', 'legendPhaserExpeditionOriginalTextFillPriority');
+        node.style.setProperty('color', 'transparent', 'important');
+        node.style.setProperty('text-shadow', 'none', 'important');
+        node.style.setProperty('-webkit-text-fill-color', 'transparent', 'important');
         node.dataset.legendPhaserExpeditionText = 'true';
         this.nativeExpeditionHudUiTaggedNodes.push(node);
       });

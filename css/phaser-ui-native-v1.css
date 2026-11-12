@@ -881,3 +881,99 @@ body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100
     transition: none !important;
   }
 }
+
+/* High-specificity visibility contract for nested legacy selectors.
+   Some legacy Old Road rules target #root descendants with !important; these
+   selectors intentionally outrank them while the corresponding Phaser layer
+   is active. DOM controls remain in place and retain focus outlines. */
+body.legend-phaser-expedition-hud-ui-active #root .exp150-expedition-head [data-legend-phaser-expedition-text="true"],
+body.legend-phaser-expedition-hud-ui-active #root .exp150-road-clock [data-legend-phaser-expedition-text="true"],
+body.legend-phaser-expedition-hud-ui-active #root .exp150-route-tracker [data-legend-phaser-expedition-text="true"],
+body.legend-phaser-expedition-hud-ui-active #root .exp150-journey-aside [data-legend-phaser-expedition-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-expedition-hud-ui-active #root .exp150-expedition-head [data-legend-phaser-expedition-icon="true"],
+body.legend-phaser-expedition-hud-ui-active #root .exp150-road-clock [data-legend-phaser-expedition-icon="true"],
+body.legend-phaser-expedition-hud-ui-active #root .exp150-route-tracker [data-legend-phaser-expedition-icon="true"],
+body.legend-phaser-expedition-hud-ui-active #root .exp150-journey-aside [data-legend-phaser-expedition-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-expedition-hud-ui-active #root .exp150-expedition-head [data-legend-phaser-expedition-control="true"],
+body.legend-phaser-expedition-hud-ui-active #root .exp150-road-clock [data-legend-phaser-expedition-control="true"],
+body.legend-phaser-expedition-hud-ui-active #root .exp150-route-tracker [data-legend-phaser-expedition-control="true"],
+body.legend-phaser-expedition-hud-ui-active #root .exp150-journey-aside [data-legend-phaser-expedition-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+body.legend-phaser-road-actions-ui-active #root .exp150-guide [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active #root .exp150-interactions [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active #root .exp150-action-dock [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active #root .exp100-camp [data-legend-phaser-road-action-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-road-actions-ui-active #root .exp150-guide [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active #root .exp150-interactions [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active #root .exp150-action-dock [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active #root .exp100-camp [data-legend-phaser-road-action-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-road-actions-ui-active #root .exp150-guide [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active #root .exp150-interactions [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active #root .exp150-action-dock [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active #root .exp100-camp [data-legend-phaser-road-action-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+/* The route-choice and interaction panels are mounted beside the legacy
+   root shell on the live Old Road screen. Use the world-page ancestry (not
+   #root) and include the original panel selectors so these rules outrank
+   legacy parchment text colors only after the Phaser painter has tagged it. */
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-interactions [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-action-dock [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp100-camp [data-legend-phaser-road-action-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-interactions [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-action-dock [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp100-camp [data-legend-phaser-road-action-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-interactions [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp150-action-dock [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active .exp150-world-page .exp100-camp [data-legend-phaser-road-action-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
+
+/* The legacy interaction deck is a sibling of .exp150-world-page inside the
+   .exp100 expedition host. Match that shared host, exactly as the Phaser
+   painter does, so the tagged DOM copy is hidden without hiding the buttons. */
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-interactions [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-action-dock [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp100-camp [data-legend-phaser-road-action-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-interactions [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-action-dock [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp100-camp [data-legend-phaser-road-action-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-interactions [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-action-dock [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp100-camp [data-legend-phaser-road-action-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
