@@ -370,8 +370,10 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         }))
       };
     });
-    console.log('[LEGEND Old Road action visibility]', JSON.stringify(fork));
     expect(fork.objectCount).toBe(1);
+    expect(fork.headingMarker).toBe('true');
+    expect(fork.bodyActionClass).toBe(true);
+    expect(fork.activeMaskSelectorCount).toBeGreaterThan(0);
     expect(fork.text).toEqual(expect.arrayContaining([
       'THE ROAD FORKS', 'Two ways through the lowlands', 'Take the High Ridge', 'Risk the Reed Cut'
     ]));
