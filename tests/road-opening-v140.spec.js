@@ -63,42 +63,11 @@ async function expectNoHorizontalOverflow(page) {
 }
 
 async function clickCreationNext(page) {
-  // The creation card can extend beyond the viewport on desktop and mobile.
-  // Scroll the real primary action into view before asserting visibility; the
-  // visible action is kept as a DOM hit target while Phaser paints its skin.
+  // Keep the Phaser painter and the accessible DOM controls on the same
+  // scroll viewport; the scene mirrors this screen's scrollTop while moving
+  // through the taller traveler-creation choice steps.
   const next = page.locator('#root .v140-creation .v094-actions > button.v094-btn.primary');
   await expect(next).toHaveCount(1);
-  const scrollDebug = await next.evaluate(el => {
-    const ancestors = [];
-    for (let node = el; node; node = node.parentElement) {
-      const style = getComputedStyle(node);
-      const rect = node.getBoundingClientRect();
-      ancestors.push({
-        node: node.tagName.toLowerCase(),
-        id: node.id || '',
-        className: String(node.className || '').toString().slice(0, 100),
-        top: Math.round(rect.top),
-        bottom: Math.round(rect.bottom),
-        height: Math.round(rect.height),
-        clientHeight: node.clientHeight,
-        scrollHeight: node.scrollHeight,
-        scrollTop: node.scrollTop,
-        overflowX: style.overflowX,
-        overflowY: style.overflowY,
-        position: style.position,
-        display: style.display,
-        visibility: style.visibility
-      });
-    }
-    return {
-      viewport: { width: innerWidth, height: innerHeight, scrollY },
-      bodyClass: document.body.className,
-      html: { overflowY: getComputedStyle(document.documentElement).overflowY, clientHeight: document.documentElement.clientHeight, scrollHeight: document.documentElement.scrollHeight, scrollTop: document.documentElement.scrollTop },
-      body: { overflowY: getComputedStyle(document.body).overflowY, clientHeight: document.body.clientHeight, scrollHeight: document.body.scrollHeight, scrollTop: document.body.scrollTop },
-      ancestors
-    };
-  });
-  console.log('[LEGEND creation scroll debug]', JSON.stringify(scrollDebug));
   await next.scrollIntoViewIfNeeded();
   await expect(next).toBeVisible();
   await expect(next).toBeEnabled();
