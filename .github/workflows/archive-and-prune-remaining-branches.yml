@@ -1,0 +1,38 @@
+name: Archive and remove remaining branches
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/archive-and-prune-remaining-branches.yml"
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: archive-and-prune-remaining-branches
+  cancel-in-progress: false
+
+jobs:
+  archive-and-prune:
+    name: Preserve every branch tip, then leave only main
+    if: github.repository == 'TDTRIA/LEGEND-RPG'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      DRY_RUN: "false"
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Archive branch tips and delete branch refs
+        run: node scripts/maintenance/archive-prune-remaining-branches.mjs
