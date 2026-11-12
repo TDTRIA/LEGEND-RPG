@@ -334,18 +334,19 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
 
-  test('Old Road route, detour and camp actions stay readable and functional in DOM fallback', async ({ page }) => {
+  test('Phaser paints Old Road decision cards while retaining real route, detour and camp actions', async ({ page }) => {
+    test.setTimeout(90000);
     await enterAshmere(page, 'RoadActionsQA');
     await seedRoad(page, 0, null);
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionActionsUi)).toBe(false);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionActionsUi)).toBe(true);
 
     const fork = await page.evaluate(() => {
       const panel = document.querySelector('.exp150-interactions .exp100-route-choice');
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       return {
-        active: snapshot.nativeExpeditionActionsUi,
+        text: snapshot.nativeExpeditionActionsUiTextValues || [],
+        controls: snapshot.nativeExpeditionActionsUiControlIds || [],
         objectCount: snapshot.nativeExpeditionActionsUiObjectCount,
-        actionLayerClass: document.body.classList.contains('legend-phaser-road-actions-ui-active'),
         headingColor: panel?.querySelector('h2') ? getComputedStyle(panel.querySelector('h2')).color : '',
         actionColor: panel?.querySelector('#routeRidge') ? getComputedStyle(panel.querySelector('#routeRidge')).color : '',
         routeButtons: Array.from(panel?.querySelectorAll('button') || []).map(button => ({
@@ -353,12 +354,15 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         }))
       };
     });
-    expect(fork.active).toBe(false);
-    expect(fork.objectCount).toBe(0);
-    expect(fork.actionLayerClass).toBe(false);
-    expect(fork.headingColor).not.toBe('rgba(0, 0, 0, 0)');
-    expect(fork.actionColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(fork.objectCount).toBe(1);
+    expect(fork.text).toEqual(expect.arrayContaining([
+      'THE ROAD FORKS', 'Two ways through the lowlands', 'Take the High Ridge', 'Risk the Reed Cut'
+    ]));
+    expect(fork.controls).toEqual(expect.arrayContaining(['routeRidge','routeReeds']));
+    expect(fork.headingColor).toBe('rgba(0, 0, 0, 0)');
+    expect(fork.actionColor).toBe('rgba(0, 0, 0, 0)');
     expect(fork.routeButtons.every(button => !button.disabled)).toBe(true);
+    await attachProof(page, 'phase1-old-road-actions-fork.png');
 
     await page.locator('#routeRidge').click();
     await expect.poll(() => page.evaluate(() =>
@@ -366,28 +370,27 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     )).toBe('ridge');
 
     await seedRoad(page, 1, 'ridge');
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionActionsUi)).toBe(false);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionActionsUi)).toBe(true);
     await expect(page.locator('.exp150-interactions .exp160-optional-detour')).toBeVisible();
-    await expect(page.locator('#exp160VisitOptional')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');
+    await expect(page.locator('#exp160VisitOptional')).toHaveCSS('color','rgba(0, 0, 0, 0)');
     await page.locator('#exp160VisitOptional').click();
     await expect(page.locator('.exp160-optional-site')).toBeVisible();
-    await expect(page.locator('.exp160-optional-site h2')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');
+    await expect(page.locator('.exp160-optional-site h2')).toHaveCSS('color','rgba(0, 0, 0, 0)');
     await expect.poll(() => page.evaluate(() =>
       window.LegendRuntimeV120.loadPlayer().flags.roadExpeditionV100.activeSideTripV160
     )).toBe('windbreak');
+    await attachProof(page, 'phase1-old-road-actions-detour.png');
 
     await seedRoad(page, 2, 'ridge');
     await expect(page.locator('.exp100-camp')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionActionsUi)).toBe(false);
-    await expect(page.locator('.exp100-camp')).toContainText(/WAYSTATION · NIGHT WATCH/);
-    await expect(page.locator('.exp100-camp')).toContainText(/Rest by the Fire/);
-    await expect(page.locator('.exp100-camp')).toContainText(/Craft a Road Poultice/);
-    await expect(page.locator('.exp100-camp')).toContainText(/Keep Watch/);
-    await expect(page.locator('#campRest')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionActionsUiTextValues || []))
+      .toEqual(expect.arrayContaining(['WAYSTATION · NIGHT WATCH','Make this stop count','Rest by the Fire','Craft a Road Poultice','Keep Watch']));
+    await expect(page.locator('#campRest')).toHaveCSS('color','rgba(0, 0, 0, 0)');
     const beforeDay = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer().day);
     await page.locator('#campRest').click();
     await expect.poll(() => page.evaluate(() => window.LegendRuntimeV120.loadPlayer().day)).toBe(beforeDay + 1);
     await expect(page.locator('#campRest')).toBeDisabled();
+    await attachProof(page, 'phase1-old-road-actions-camp.png');
     await expectNoHorizontalOverflow(page);
   });
 
@@ -420,19 +423,21 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     });
     expect(roadDom.painterActive).toBe(false);
     expect(roadDom.painterClass).toBe(false);
-    expect(roadDom.nativeHudActive).toBe(false);
-    expect(roadDom.nativeHudText).toEqual([]);
-    expect(roadDom.nativeHudControlIds).toEqual([]);
-    expect(roadDom.expeditionHudClass).toBe(false);
+    expect(roadDom.nativeHudActive).toBe(true);
+    expect(roadDom.nativeHudText).toEqual(expect.arrayContaining([
+      'OLD ROAD · EXPEDITION', 'South Fork', 'YOUR JOURNEY', 'ROAD PRESSURE', 'FIELD SUPPLIES'
+    ]));
+    expect(roadDom.nativeHudControlIds).toEqual(expect.arrayContaining(['exp150OpenMap','exp150OpenJournal','exp150OpenJournalAside']));
+    expect(roadDom.expeditionHudClass).toBe(true);
     expect(roadDom.mapPainter).toBe(false);
     expect(roadDom.mapControl).toBe(true);
     expect(roadDom.mapText.length).toBeGreaterThan(0);
-    expect(roadDom.mapColor).not.toBe('rgba(0, 0, 0, 0)');
-    expect(roadDom.mapIconColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(roadDom.mapColor).toBe('rgba(0, 0, 0, 0)');
+    expect(roadDom.mapIconColor).toBe('rgba(0, 0, 0, 0)');
     expect(roadDom.mapVisibility).toBe('visible');
     await expect(page.locator('.exp150-expedition-head')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionHudUi)).toBe(false);
-    await expect(page.locator('.exp150-title-group h1')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionHudUi)).toBe(true);
+    await expect(page.locator('.exp150-title-group h1')).toHaveCSS('color','rgba(0, 0, 0, 0)');
     await expect(page.locator('.exp150-vitals')).toBeVisible();
     await expect(page.locator('#exp150OpenMap')).toBeEnabled();
     await expect(page.locator('#exp150OpenJournal')).toBeEnabled();
