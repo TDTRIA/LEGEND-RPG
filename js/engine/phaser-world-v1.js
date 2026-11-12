@@ -4111,6 +4111,7 @@
           fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
           color: selectorColor,
           letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+          wordWrap: { width: Math.max(10, rect.width) },
           align: style.textAlign || 'left'
         }).setOrigin(0, 0).setDepth(82);
         textObject.setResolution?.(2);
