@@ -120,8 +120,8 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
-  road-scene-parity:
-    name: Phaser Road Scene Parity
+  storage-runtime-contract:
+    name: Storage Runtime Contract
     timeout-minutes: 5
     runs-on: ubuntu-24.04
     steps:
@@ -133,22 +133,27 @@ jobs:
         with:
           node-version: 22
 
-      - name: Validate Phaser road scene source contract
+      - name: Validate storage and fallback source contract
         run: |
-          node --check js/engine/phaser-world-v1.js
-          node --check js/systems/road/road-view-v100.js
-          node --check tests/ui-system-v160.spec.js
-          node --check tests/legend-smoke.spec.js
-          node --check tests/road-opening-v140.spec.js
+          node --check js/storage.js
+          node --check js/storage/settings-storage-v120.js
+          node --check js/storage/player-normalizer-v120.js
+          node --check js/core/game-runtime-v120.js
+          node --check js/game.js
+          node --check tests/storage-runtime-contract.spec.js
           node <<'NODE'
           const fs = require('node:fs');
-          const spec = fs.readFileSync('tests/ui-system-v160.spec.js', 'utf8');
-          const engine = fs.readFileSync('js/engine/phaser-world-v1.js', 'utf8');
-          if (!spec.includes('Phaser road background follows the live route and stage')) {
-            throw new Error('The end-to-end Phaser road parity scenario is missing.');
+          const spec = fs.readFileSync('tests/storage-runtime-contract.spec.js', 'utf8');
+          const storage = fs.readFileSync('js/storage.js', 'utf8');
+          for (const marker of [
+            'malformed and incompatible saves are rejected',
+            'player and settings storage failures retain safe in-session fallbacks',
+            'traveler creation does not overwrite an unreadable save'
+          ]) {
+            if (!spec.includes(marker)) throw new Error('Missing storage contract: ' + marker);
           }
-          if (!engine.includes('syncNativeRoadSceneArt') || !engine.includes('syncNativeScreenArt')) {
-            throw new Error('The stage-aware/source-matched Phaser art handoff is missing.');
+          if (!storage.includes('saveNewPlayer') || !storage.includes('isFutureSaveVersion')) {
+            throw new Error('Atomic first-save and future-version protection are missing.');
           }
-          console.log('Phaser road scene source contract is present; behavioral parity runs in the full Playwright suite.');
+          console.log('Save safety source contract is present; behavioral checks run in the main PR job.');
           NODE
