@@ -954,3 +954,26 @@ body.legend-phaser-road-actions-ui-active .exp150-world-page .exp100-camp [data-
   background: transparent !important;
   border-color: transparent !important;
 }
+
+/* The legacy interaction deck is a sibling of .exp150-world-page inside the
+   .exp100 expedition host. Match that shared host, exactly as the Phaser
+   painter does, so the tagged DOM copy is hidden without hiding the buttons. */
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-interactions [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-action-dock [data-legend-phaser-road-action-text="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp100-camp [data-legend-phaser-road-action-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-interactions [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-action-dock [data-legend-phaser-road-action-icon="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp100-camp [data-legend-phaser-road-action-icon="true"] {
+  color: transparent !important;
+  opacity: 0 !important;
+}
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-interactions [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp150-action-dock [data-legend-phaser-road-action-control="true"],
+body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp100-camp [data-legend-phaser-road-action-control="true"] {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+}
