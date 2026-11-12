@@ -122,7 +122,13 @@ Scope:
 
 **Goal:** one cohesive presentation across Ashmere, the Old Road, and regional scenes.
 
-Local migration progress (2026-11-12): inventory now has guarded Phaser frame, labels, quantities, equipment and focus presentation. The original modal retains keyboard/touch controls, scrolling and sheet navigation; save contents remain unchanged in focused desktop/mobile tests. Desktop, portrait and landscape screenshots were inspected. Toasts and the traveler sheet remain next; publication to main is still pending task permissions.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:55b17f1b46fd9084a486bfcce13468ce4e3af7907c6aa888f521d5475792805b -->
+
+Local migration progress (2026-11-12): inventory, traveler sheet and shell notifications have dedicated guarded Phaser presentation. Original controls, semantic text, artwork, storage and navigation remain authoritative. Focused desktop/mobile tests cover complete records, scrolling, focus, regional return, unchanged saves, notification timing and fallback; desktop, portrait and landscape screenshots were inspected. Sheet artwork/native text now stay clear of the fixed HUD and dock. Existing HUD/drawer captures still show cropped text/values and a duplicate token count; resolve that parity gate before further service migration. Publication to main remains pending task permissions.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

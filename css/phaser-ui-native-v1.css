@@ -1045,3 +1045,31 @@ body.legend-phaser-world-active.legend-phaser-inventory-active #legend-world-she
   outline: none !important;
   transform: none !important;
 }
+
+/* A complete traveler-sheet preflight is required before hiding source paint. */
+body.legend-phaser-world-active #root .legend-phaser-traveler-sheet,
+body.legend-phaser-world-active #root .legend-phaser-traveler-sheet :is(.ash099-head,.ash099-traveler-profile-top,.ash099-traveler-vitals > div,.ash099-profile-equipment,.ash099-traveler-detail-grid > div,.ash099-inventory-item,i,i b,#ashBack) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-traveler-sheet .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-traveler-sheet .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root [data-phaser-sheet-copy="true"],
+body.legend-phaser-world-active #root [data-phaser-sheet-copy="true"] small {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active #legend-world-shell-root .legend-phaser-shell-toast {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+body.legend-phaser-world-active #root:has(.ash099-traveler-profile) {
+  clip-path: inset(var(--legend-sheet-clip-top, 0px) 0 var(--legend-sheet-clip-bottom, 0px));
+}

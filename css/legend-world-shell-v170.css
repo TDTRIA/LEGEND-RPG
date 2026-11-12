@@ -640,3 +640,9 @@ body.legend-world-shell-active #root .reg100-screen {
 body.legend-world-shell-active #root .reg100 {
   padding-top: calc(72px + env(safe-area-inset-top, 0px));
 }
+
+/* Keep the complete records screen clear of the persistent HUD and action dock. */
+body.legend-world-shell-active #root .ash099-terminal:has(.ash099-traveler-profile) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}

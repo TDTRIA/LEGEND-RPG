@@ -76,8 +76,14 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
    - [ ] Complete and verify Phaser Continue text, focus, hover, selected/disabled states and responsive geometry through the desktop/mobile Playwright run; retain the DOM fallback permanently for any failed preflight.
 
 2. **Persistent shell**
-   - [x] HUD and traveler vitals.
-   - [x] Journal/quest drawer.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:f5ea5160fd33be867fd1c57e387d7cf333e0b486adf7a45938e77146d706b16e -->
+
+   - [ ] HUD and traveler vitals parity: native painters exist. Local 2026-11-12 captures show cropped mobile location text and a duplicate token count in the traveler panel; repair and verify before closing this gate.
+   - [ ] Journal/quest drawer parity: native painter exists, but local captures show clipped side-panel copy and values. Recheck against every production field at desktop/mobile sizes.
+
+<!-- /coderabbit-ai-generated:v1 -->
 <!-- coderabbit-ai-generated:v1 -->
 
 <!-- coderabbit-ai-generated-section:v1:d964605221ddf91c45271262d8905b3139cb7a265a79f866b698aeecfb6fda7c -->
@@ -92,7 +98,19 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
 
 <!-- coderabbit-ai-generated-section:v1:260e3dbc1ae2ed91f2f065710e386e7c109c4551731b19f2eea962cd3641dbce -->
 
-   - [ ] Shell toast and character-sheet presentation.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:ac87a2e33dc18f34866e1bae0b834b9f9055f55edabac247ac012cc786c6c24c -->
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:0a5c959b30b5c2c1f9ae13b61044b00c93dc542b52ce67698ac157f693ed00ab -->
+
+   - [x] Traveler sheet and shell notifications: dedicated Phaser painters implemented; focused desktop/mobile tests passed locally for all record fields, keyboard/touch Back actions, empty packs, exact save preservation, late shell creation, notification expiry and malformed-source fallback. Desktop/portrait/landscape screenshots inspected; publication remains pending task permissions. The sheet uses production identity, progression, vitals, equipment, town progress and pack fields with the original regional Back control. Portraits/item art and semantic text remain in the DOM. Both artwork and native paint are clipped clear of the fixed shell. Notifications use Phaser Graphics/Text in the existing live notification layer so DOM fallback screens cannot cover the message; production copy and dismissal timing remain authoritative.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
 <!-- coderabbit-ai-generated:v1 -->
 
 <!-- coderabbit-ai-generated-section:v1:e38be163529d950d69f37c6a0d631f897580e271352bd9fffd2fc4b95ad30546 -->
