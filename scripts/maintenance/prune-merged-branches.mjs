@@ -19,18 +19,33 @@ const headers = {
 };
 
 async function request(path, options = {}) {
-  const response = await fetch(`${apiRoot}${path}`, {
-    ...options,
-    headers: { ...headers, ...(options.headers || {}) },
-  });
+  const method = options.method || "GET";
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const response = await fetch(`${apiRoot}${path}`, {
+      ...options,
+      headers: { ...headers, ...(options.headers || {}) },
+    });
 
-  if (options.method === "DELETE" && response.status === 204) return null;
+    if (method === "DELETE" && (response.status === 204 || response.status === 404)) {
+      return null; // 404 also means the desired state already exists.
+    }
 
-  const body = await response.text();
-  if (!response.ok) {
-    throw new Error(`${options.method || "GET"} ${path} failed (${response.status}): ${body}`);
+    if ([429, 500, 502, 503, 504].includes(response.status) && attempt < 4) {
+      const retryAfter = Number(response.headers.get("retry-after"));
+      const delayMs = Number.isFinite(retryAfter) && retryAfter > 0
+        ? Math.min(retryAfter * 1000, 15000)
+        : Math.min(1000 * (2 ** attempt), 8000);
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      continue;
+    }
+
+    const body = await response.text();
+    if (!response.ok) {
+      throw new Error(`${method} ${path} failed (${response.status}): ${body}`);
+    }
+    return body ? JSON.parse(body) : null;
   }
-  return body ? JSON.parse(body) : null;
+  throw new Error(`${method} ${path} failed after transient-error retries.`);
 }
 
 async function allPages(resource) {
