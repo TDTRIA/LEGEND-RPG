@@ -96,6 +96,10 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:creation
 
+      - name: Run focused Phaser Old Road map and journal modal regression
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:road-map
+
       - name: Run full production regression suite
         if: github.event_name != 'pull_request'
         env:
