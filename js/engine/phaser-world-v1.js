@@ -3754,6 +3754,10 @@
     clearNativeRoadMapUi(removeClass = true, removeListeners = true) {
       this.nativeRoadMapUiLayoutEvent?.remove?.(false);
       this.nativeRoadMapUiLayoutEvent = null;
+      if (this.nativeRoadMapUiFrame != null) {
+        window.cancelAnimationFrame(this.nativeRoadMapUiFrame);
+        this.nativeRoadMapUiFrame = null;
+      }
       if (removeListeners) {
         if (this.nativeRoadMapUiBoundDialog && this.nativeRoadMapUiInteractionHandler) {
           ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
