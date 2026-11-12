@@ -309,13 +309,20 @@
     const host = root();
     if (!host || !window.MutationObserver) return;
     observer = new MutationObserver(mutations => {
-      const affectsWorldSurface = mutations.some(mutation => !(
-        mutation.type === 'attributes' && mutation.target.closest?.('.v094-choice-grid')
-      ));
+      // Text, prompt, selection and focus updates inside traveler creation are
+      // local to that surface. Repaint only its Phaser copy instead of running
+      // global environment/surface inference for every memory echo mutation.
+      // Replacing #root or mutating any other world surface still takes the
+      // full inference path below.
+      const isLocalCreationMutation = mutation => {
+        const target = mutation.target?.nodeType === Node.ELEMENT_NODE
+          ? mutation.target
+          : mutation.target?.parentElement;
+        return Boolean(target?.closest?.('.v140-creation'));
+      };
+      const affectsWorldSurface = mutations.some(mutation => !isLocalCreationMutation(mutation));
       if (!affectsWorldSurface) {
         realmScene?.syncNativeCreationUi?.(currentSurface);
-        realmScene?.syncNativeOpeningUi?.(currentSurface);
-        realmScene?.syncNativeGameplayUi?.(currentSurface);
         return;
       }
       inferEnvironment();
