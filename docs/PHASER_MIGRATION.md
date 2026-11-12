@@ -1,6 +1,6 @@
 # LEGEND — Phaser production migration
 
-Updated: 2026-11-08
+Updated: 2026-11-12
 
 ## Objective
 
@@ -50,7 +50,7 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 
 4. **Old Road and expedition**
    - [ ] Departure and route-choice controls, points of interest and discoveries.
-   - [ ] Stage- and route-specific expedition background art uses the active Phaser environment texture, with a source-matched DOM image fallback (implementation and focused test under review).
+   - [x] Stage- and route-specific expedition background art uses the active Phaser environment texture, with a source-matched DOM image fallback (focused desktop/mobile parity test passed in PR #124).
    - [ ] Connected Old Road map and field-journal modal (currently DOM recovery fallback; live route state and controls remain functional).
    - [ ] Road journey HUD (currently DOM recovery fallback; Phaser painter requires desktop/mobile content parity).
    - [ ] Road decision deck (currently DOM recovery fallback; original route, discovery, detour and camp handlers remain authoritative).
