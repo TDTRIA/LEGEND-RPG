@@ -14,7 +14,8 @@
     "test:e2e:website": "playwright test tests/website-dispatch-v200.spec.js",
     "test:e2e:storage": "playwright test tests/storage-runtime-contract.spec.js --project=\"Desktop Chrome\"",
     "test:e2e:creation": "playwright test tests/phaser-creation-interactions.spec.js --project=\"Desktop Chrome\"",
-    "test:e2e:road-map": "playwright test tests/phaser-road-map-modal.spec.js --project=\"Desktop Chrome\""
+    "test:e2e:road-map": "playwright test tests/phaser-road-map-modal.spec.js --project=\"Desktop Chrome\"",
+    "test:e2e:road-map-ui-contract": "playwright test tests/ui-system-v160.spec.js --grep \"Old Road scene, HUD and field map keep sharp DOM copy and real controls\" --project=\"Desktop Chrome\""
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",
