@@ -185,9 +185,14 @@
   function setEnvironment(name, immediate = false) {
     const environment = String(name || 'title');
     window.LegendRoadAudioV100?.setEnvironment?.(environment);
-    if (environment === currentEnvironment) return;
+    if (environment === currentEnvironment) {
+      realmScene?.syncNativeRoadSceneArt?.();
+      realmScene?.syncNativeScreenArt?.();
+      return;
+    }
     currentEnvironment = environment;
     if (realmScene && realmScene.setEnvironment) realmScene.setEnvironment(environment, immediate);
+    realmScene?.syncNativeScreenArt?.();
   }
 
   function inferEnvironment() {
@@ -464,6 +469,11 @@
       this.background = null;
       this.backgroundBaseScale = 1;
       this.backgroundIsImage = false;
+      this.nativeRoadSceneArtActive = false;
+      this.nativeRoadSceneArtState = null;
+      this.nativeScreenArtNodes = [];
+      this.nativeScreenArtState = [];
+      this.worldArtLoadErrors = [];
       this.ambienceObjects = [];
       this.environment = '';
       this.lookTarget = { x: 0, y: 0 };
@@ -661,6 +671,14 @@
       // part of the same production asset contract and must be available for
       // encounter, dialogue, creation and result scenes when those screens move
       // fully into RealmScene.
+      this.load.on('loaderror', file => {
+        if (file && Object.prototype.hasOwnProperty.call(ASSETS, file.key)) {
+          this.worldArtLoadErrors.push({
+            key: String(file.key),
+            source: String(ASSETS[file.key] || file.url || '')
+          });
+        }
+      });
       Object.entries(ASSETS).forEach(([key, path]) => {
         if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(path)) {
           this.load.image(key, path);
@@ -673,6 +691,8 @@
       this.motionReduced = reducedMotion();
       this.scale.on('resize', () => {
         this.layoutBackground();
+        this.syncNativeRoadSceneArt();
+        this.syncNativeScreenArt();
         this.layoutAshmereLandmarks();
         this.syncNativeTitleUi(this.surface);
         this.syncNativeAnnalsUi(this.surface);
@@ -700,6 +720,10 @@
         lookAt: (x, y) => this.setLookTarget(x, y),
         snapshot: () => ({
           environment: this.environment,
+          nativeRoadSceneArtActive: this.nativeRoadSceneArtActive,
+          nativeRoadSceneArt: this.nativeRoadSceneArtState,
+          nativeScreenArt: this.nativeScreenArtState,
+          worldArtLoadErrors: this.worldArtLoadErrors.slice(),
           worldArtTextureStatus: Object.keys(ASSETS).map(key => ({
             key,
             loaded: this.textures.exists(key)
@@ -906,6 +930,9 @@
       };
       this.setEnvironment('title', true);
       currentEnvironment = 'title';
+      // Signal only after RealmScene has initialized its systems, canvas,
+      // texture manager, background, and production bridge.
+      window.dispatchEvent(new CustomEvent('legend:phaser-realm-scene-ready'));
     }
 
     runEngineAwakening(onComplete) {
@@ -1980,6 +2007,7 @@
         screen.dataset.creationStep || '',
         screen.classList.contains('v140-arrival'),
         Math.round(window.innerWidth), Math.round(window.innerHeight),
+        Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
         screen.scrollTop,
         ...panels.map(node => {
           const rect = node.getBoundingClientRect();
@@ -2005,16 +2033,19 @@
       document.body?.classList.add('legend-phaser-creation-ui-active');
 
       if (!this.nativeCreationUiScrollTarget) {
-        this.nativeCreationUiScrollTarget = screen;
+        // The production Phaser layout keeps the document as the vertical
+        // scroll root. Mirror window scroll changes so the canvas-painted
+        // labels/cards stay aligned with their accessible DOM hit targets.
+        this.nativeCreationUiScrollTarget = window;
         const handler = () => {
-          this.nativeCreationUiLayoutEvent?.remove?.(false);
-          this.nativeCreationUiLayoutEvent = this.time.delayedCall(48, () => {
+          if (this.nativeCreationUiLayoutEvent) return;
+          this.nativeCreationUiLayoutEvent = this.time.delayedCall(24, () => {
             this.nativeCreationUiLayoutEvent = null;
             this.syncNativeCreationUi(surface);
           });
         };
-        screen.__legendCreationScrollHandler = handler;
-        screen.addEventListener('scroll', handler, { passive: true });
+        window.__legendCreationScrollHandler = handler;
+        window.addEventListener('scroll', handler, { passive: true });
       }
 
       const addObject = (object, depth = 13) => {
@@ -2339,6 +2370,16 @@
         if (this.nativeOpeningUiActive || document.body?.classList.contains('legend-phaser-opening-ui-active')) {
           this.clearNativeOpeningUi();
         }
+        return;
+      }
+
+      // The opening scene's authored JPEG differs from the expedition road
+      // texture. Do not hide DOM dialogue/controls unless the exact opening
+      // backdrop has transferred to an opaque Phaser environment texture.
+      this.syncNativeScreenArt();
+      const openingBackdrop = screen.querySelector('.opening-road-v140-bg');
+      if (openingBackdrop?.dataset.legendPhaserSceneArtActive !== 'true') {
+        this.clearNativeOpeningUi();
         return;
       }
 
@@ -6297,9 +6338,17 @@
       this.layoutServiceDressing();
     }
 
+    /**
+     * Changes the persistent world art and keeps HTML scene art visible until
+     * the incoming Phaser image is fully opaque and safe to take over.
+     */
     setEnvironment(name, immediate = false) {
       const key = ASSETS[name] ? name : 'title';
-      if (key === this.environment && !immediate) return;
+      if (key === this.environment && !immediate) {
+        this.syncNativeRoadSceneArt();
+        this.syncNativeScreenArt();
+        return;
+      }
       this.environment = key;
       const size = this.dimensions();
       const texture = this.textures.exists(key) ? this.textures.get(key) : null;
@@ -6334,6 +6383,8 @@
       this.createServiceDressing(key);
       this.layoutBackground();
       this.syncAshmereLandmarks();
+      this.syncNativeRoadSceneArt();
+      this.syncNativeScreenArt();
       if (!immediate && !reducedMotion()) {
         const camera = this.cameras.main;
         camera.setZoom(1.018);
@@ -6347,9 +6398,130 @@
           targets: next,
           alpha: 1,
           duration: 720,
-          ease: 'Sine.easeOut'
+          ease: 'Sine.easeOut',
+          onComplete: () => {
+            this.syncNativeRoadSceneArt();
+            this.syncNativeScreenArt();
+          }
         });
       }
+    }
+
+    /**
+     * Hands an expedition image to Phaser only when the matching texture exists,
+     * its source matches the live route artwork, and the Phaser background is
+     * actually visible. Any failed check restores the authored DOM image.
+     */
+    syncNativeRoadSceneArt() {
+      const scene = document.querySelector('#root .exp100-scene-live');
+      const image = scene?.querySelector(':scope > img');
+      const textureKey = String(this.environment || '');
+      const expectedSource = ASSETS[textureKey] || '';
+      const actualSource = image?.getAttribute('src') || '';
+      const cleanSource = value => String(value || '')
+        .split(/[?#]/, 1)[0]
+        .replace(/^(?:\.\/|\/)+/, '')
+        .replace(/\\/g, '/');
+      const texture = expectedSource && this.textures.exists(textureKey)
+        ? this.textures.get(textureKey)
+        : null;
+      const source = texture?.getSourceImage?.();
+      const sourceMatches = Boolean(expectedSource && actualSource &&
+        cleanSource(actualSource) === cleanSource(expectedSource));
+      const active = Boolean(
+        scene && image && sourceMatches &&
+        source?.width > 0 && source?.height > 0 &&
+        this.backgroundIsImage && this.background?.active &&
+        Number(this.background.alpha) >= 0.99
+      );
+
+      this.nativeRoadSceneArtActive = active;
+      this.nativeRoadSceneArtState = scene ? {
+        active,
+        textureKey,
+        expectedSource,
+        actualSource,
+        sourceWidth: Number(source?.width || 0),
+        sourceHeight: Number(source?.height || 0),
+        backgroundAlpha: Number(this.background?.alpha || 0)
+      } : null;
+      document.body?.classList.toggle('legend-phaser-road-scene-art-active', active);
+      return active;
+    }
+
+    /**
+     * Keeps each screen's authored background visible until the active Phaser
+     * environment owns the exact same loaded image and its canvas handoff is opaque.
+     * A missing texture, mismatched source, or partially faded canvas leaves the DOM
+     * art in place as a readable visual fallback.
+     */
+    syncNativeScreenArt() {
+      const host = document.getElementById('root');
+      const selectors = [
+        '.v120-title-backdrop',
+        '.v140-creation .v094-beginning-bg',
+        '.opening-road-v140-bg',
+        '.opening-lore-v220-backdrop',
+        '.ash100-hero > img',
+        '.gfm160-scene-art',
+        '.gss170-scene-art'
+      ];
+      const nodes = host ? Array.from(host.querySelectorAll(selectors.join(','))) : [];
+      const currentNodes = new Set(nodes);
+      this.nativeScreenArtNodes.forEach(node => {
+        if (node && !currentNodes.has(node)) {
+          node.removeAttribute('data-legend-phaser-scene-art-active');
+        }
+      });
+
+      const textureKey = String(this.environment || '');
+      const expectedSource = ASSETS[textureKey] || '';
+      const normalizePath = value => {
+        const raw = String(value || '').split(/[?#]/, 1)[0];
+        let path = raw;
+        try { path = new URL(raw, document.baseURI).pathname; } catch (_) {}
+        try { path = decodeURIComponent(path); } catch (_) {}
+        return path.replace(/\\/g, '/').replace(/^\/+/, '');
+      };
+      const expectedPath = normalizePath(expectedSource);
+      const texture = expectedSource && this.textures.exists(textureKey)
+        ? this.textures.get(textureKey)
+        : null;
+      const textureSource = texture?.getSourceImage?.();
+      const backgroundReady = Boolean(
+        textureSource?.width > 0 && textureSource?.height > 0 &&
+        this.backgroundIsImage && this.background?.active &&
+        Number(this.background.alpha) >= 0.99
+      );
+
+      const states = nodes.map(node => {
+        const isImage = node instanceof HTMLImageElement;
+        const rawSources = isImage
+          ? [node.getAttribute('src') || node.currentSrc || node.src]
+          : Array.from(String(window.getComputedStyle(node).backgroundImage || '')
+            .matchAll(/url\((?:['"])?([^'")]+)(?:['"])?\)/g), match => match[1]);
+        const sourcePaths = rawSources.map(normalizePath).filter(Boolean);
+        const sourceMatches = Boolean(expectedPath && sourcePaths.includes(expectedPath));
+        const active = Boolean(backgroundReady && sourceMatches && node.isConnected);
+        if (active) node.setAttribute('data-legend-phaser-scene-art-active', 'true');
+        else node.removeAttribute('data-legend-phaser-scene-art-active');
+        return {
+          selector: selectors.find(selector => {
+            try { return node.matches(selector); } catch (_) { return false; }
+          }) || '',
+          active,
+          textureKey,
+          expectedSource,
+          sourcePaths,
+          sourceMatches,
+          textureLoaded: Boolean(textureSource?.width > 0 && textureSource?.height > 0),
+          backgroundAlpha: Number(this.background?.alpha || 0)
+        };
+      });
+
+      this.nativeScreenArtNodes = nodes;
+      this.nativeScreenArtState = states;
+      return states;
     }
 
     backgroundOverscan(size) {
@@ -6513,41 +6685,7 @@
       toast('The world renderer could not load. The game remains available; refresh to retry the scene.');
       return;
     }
-    try {
-      game = new Phaser.Game({
-      type: Phaser.AUTO,
-      parent: 'game-container',
-      backgroundColor: '#090e0d',
-      width: 1600,
-      height: 900,
-      scale: {
-        mode: Phaser.Scale.RESIZE,
-        width: 1600,
-        height: 900,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-      },
-      render: { antialias: true, pixelArt: false, transparent: false },
-      scene: [RealmScene],
-      input: { keyboard: true, mouse: true, touch: true },
-      audio: { noAudio: false }
-      });
-    } catch (error) {
-      console.error('Phaser could not start.', error);
-      document.documentElement.classList.remove('engine-intro-active');
-      if (!IS_PROTOTYPE) document.body.classList.remove('legend-phaser-world-active');
-      byId('engine-skip') && (byId('engine-skip').hidden = true);
-      if (IS_PROTOTYPE) showTitle();
-      observeRoot();
-      if (IS_PROTOTYPE) window.__legendRebootReady = true;
-      else {
-        const bootScreen = byId('legend-boot-screen');
-        if (bootScreen) bootScreen.hidden = true;
-        document.body.classList.remove('legend-booting');
-        window.__legendPhaserWorldReady = false;
-      }
-      toast('The world renderer could not start. The game interface remains available.');
-      return;
-    }
+
     let needsAwakening = true;
     try {
       needsAwakening = !window.sessionStorage.getItem(ENGINE_SESSION_KEY);
@@ -6557,35 +6695,129 @@
     }
     if (!needsAwakening) document.documentElement.classList.remove('engine-intro-active');
 
-    game.events.once('ready', () => {
-      realmScene = game.scene.getScene('RealmScene');
-      realmScene?.setEnvironment('title', true);
-      const finishStartup = () => {
-        try { window.sessionStorage.setItem(ENGINE_SESSION_KEY, 'ready'); } catch (_) {}
-        if (realmScene) realmScene.engineAwakened = true;
-        document.documentElement.classList.remove('engine-intro-active');
-        const skip = byId('engine-skip');
-        if (skip) skip.hidden = true;
-        engineReady = true;
-        if (IS_PROTOTYPE) {
-          showTitle();
-          observeRoot();
-          window.__legendRebootReady = true;
-        } else {
-          const bootScreen = byId('legend-boot-screen');
-          if (bootScreen) bootScreen.hidden = true;
-          document.body.classList.remove('legend-booting');
-          observeRoot();
-          window.__legendPhaserWorldReady = true;
-          window.dispatchEvent(new CustomEvent('legend:phaser-world-ready'));
-        }
-      };
-      if (needsAwakening && realmScene?.runEngineAwakening) {
-        realmScene.runEngineAwakening(finishStartup);
-      } else {
-        finishStartup();
+    let startupFinalized = false;
+    let startupWatchdog = null;
+    const container = byId('game-container');
+
+    const finishStartup = () => {
+      if (startupFinalized) return;
+      startupFinalized = true;
+      if (startupWatchdog) window.clearTimeout(startupWatchdog);
+      startupWatchdog = null;
+      window.removeEventListener('legend:phaser-realm-scene-ready', onRealmSceneReady);
+      try { window.sessionStorage.setItem(ENGINE_SESSION_KEY, 'ready'); } catch (_) {}
+      if (realmScene) realmScene.engineAwakened = true;
+      container?.classList.remove('legend-phaser-startup-fallback');
+      container?.removeAttribute('aria-hidden');
+      if (game?.canvas) {
+        game.canvas.style.removeProperty('display');
+        game.canvas.removeAttribute('aria-hidden');
       }
-    });
+      document.documentElement.classList.remove('engine-intro-active');
+      const skip = byId('engine-skip');
+      if (skip) skip.hidden = true;
+      engineReady = true;
+      if (IS_PROTOTYPE) {
+        showTitle();
+        observeRoot();
+        window.__legendRebootReady = true;
+      } else {
+        const bootScreen = byId('legend-boot-screen');
+        if (bootScreen) bootScreen.hidden = true;
+        document.body.classList.remove('legend-booting');
+        observeRoot();
+        window.__legendPhaserWorldReady = true;
+        window.dispatchEvent(new CustomEvent('legend:phaser-world-ready'));
+      }
+    };
+
+    const keepDomFallback = () => {
+      if (startupFinalized) return;
+      startupFinalized = true;
+      if (startupWatchdog) window.clearTimeout(startupWatchdog);
+      startupWatchdog = null;
+      window.removeEventListener('legend:phaser-realm-scene-ready', onRealmSceneReady);
+      engineReady = false;
+      console.warn('[LEGEND Phaser] RealmScene did not finish creation; keeping the original HTML game interface visible.');
+      document.documentElement.classList.remove('engine-intro-active');
+      document.body?.classList.remove('legend-phaser-world-active', 'legend-booting');
+      const skip = byId('engine-skip');
+      if (skip) skip.hidden = true;
+      const bootScreen = byId('legend-boot-screen');
+      if (bootScreen) bootScreen.hidden = true;
+      // Do not leave an empty or late-starting canvas in normal document flow.
+      container?.classList.add('legend-phaser-startup-fallback');
+      container?.setAttribute('aria-hidden', 'true');
+      const failedGame = game;
+      if (failedGame?.canvas) {
+        failedGame.canvas.style.setProperty('display', 'none', 'important');
+        failedGame.canvas.setAttribute('aria-hidden', 'true');
+      }
+      // Remove every reference before restoring DOM interaction. Screen
+      // renderers may synchronously call the public refresh facade while they
+      // attach the fallback's route, travel, map and combat handlers.
+      realmScene = null;
+      game = null;
+      if (window.__legendRebootBridge) window.__legendRebootBridge = null;
+      try { failedGame?.destroy?.(true, true); } catch (error) {
+        console.warn('[LEGEND Phaser] Could not dispose the failed startup renderer.', error);
+      }
+      // The destroyed scene is deliberately no longer reachable from either
+      // the facade or global bridge; late readiness callbacks are guarded by
+      // startupFinalized and cannot reactivate the canvas.
+      observeRoot();
+      if (IS_PROTOTYPE) window.__legendRebootReady = false;
+      else window.__legendPhaserWorldReady = false;
+      toast('The world renderer could not finish starting. The original game interface is available; refresh to retry the scene.');
+    };
+
+    const onRealmSceneReady = () => {
+      if (startupFinalized) return;
+      try {
+        // RealmScene emits this after create() has installed its bridge and
+        // initialized its own background. This avoids depending on a game-level
+        // READY event that can fire before a listener is attached.
+        if (!realmScene) realmScene = game?.scene?.getScene?.('RealmScene') || null;
+        if (!realmScene) throw new Error('RealmScene did not register before its ready signal.');
+        if (needsAwakening && typeof realmScene.runEngineAwakening === 'function') {
+          realmScene.runEngineAwakening(finishStartup);
+        } else {
+          finishStartup();
+        }
+      } catch (error) {
+        console.error('[LEGEND Phaser] RealmScene startup failed.', error);
+        keepDomFallback();
+      }
+    };
+
+    // Register before constructing Phaser so even a very fast scene boot
+    // cannot race and drop the production-ready notification.
+    window.addEventListener('legend:phaser-realm-scene-ready', onRealmSceneReady, { once: true });
+    startupWatchdog = window.setTimeout(keepDomFallback, 30000);
+
+    try {
+      game = new Phaser.Game({
+        type: Phaser.AUTO,
+        parent: 'game-container',
+        backgroundColor: '#090e0d',
+        width: 1600,
+        height: 900,
+        scale: {
+          mode: Phaser.Scale.RESIZE,
+          width: 1600,
+          height: 900,
+          autoCenter: Phaser.Scale.CENTER_BOTH
+        },
+        render: { antialias: true, pixelArt: false, transparent: false },
+        scene: [RealmScene],
+        input: { keyboard: true, mouse: true, touch: true },
+        audio: { noAudio: false }
+      });
+    } catch (error) {
+      console.error('Phaser could not start.', error);
+      keepDomFallback();
+      return;
+    }
   }
 
   function bindHostActions() {
@@ -6646,6 +6878,14 @@
     clearRoadMap: () => realmScene?.clearNativeRoadMapUi?.(),
     refreshExpedition: () => realmScene?.syncNativeExpeditionHudUi?.(),
     refreshExpeditionActions: () => realmScene?.syncNativeExpeditionActionsUi?.(),
+    refreshRoadScene: () => {
+      inferEnvironment();
+      return realmScene?.syncNativeRoadSceneArt?.() || false;
+    },
+    refreshScreenArt: () => {
+      inferEnvironment();
+      return realmScene?.syncNativeScreenArt?.() || [];
+    },
     refreshCombat: () => realmScene?.syncNativeCombatUi?.(realmScene?.surface),
     refreshTownBoard: () => realmScene?.syncNativeTownBoardUi?.(realmScene?.surface),
     refresh: () => inferEnvironment(),
@@ -6656,6 +6896,8 @@
   document.addEventListener('DOMContentLoaded', () => {
     settingsStorage?.applySettings?.(settingsStorage.loadSettings());
     bindHostActions();
-    startPhaser();
+    // Finish the DOMContentLoaded dispatch before Phaser enters its boot pipeline.
+    // This guarantees the READY subscription is attached before the event can fire.
+    window.setTimeout(startPhaser, 0);
   }, { once: true });
 })();
