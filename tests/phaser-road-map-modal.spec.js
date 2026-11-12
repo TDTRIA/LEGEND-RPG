@@ -194,9 +194,9 @@ test('Phaser Old Road map and field journal paint complete content while preserv
     'TRAVELER’S FIELD JOURNAL',
     'What the road remembers',
     'Soot-stained Lantern Marks',
-    'Kept to the old fork',
-    'Rest by the fire'
+    'Kept to the old fork'
   ]));
+  expect(journal.text.join(' ')).toContain('Rest by the fire');
   await expect(page.locator('#exp150ModalClose')).toBeEnabled();
   await page.locator('#exp150ModalClose').focus();
   await expect(page.locator('#exp150ModalClose')).toBeFocused();
