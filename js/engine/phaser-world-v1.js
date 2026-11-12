@@ -2007,6 +2007,7 @@
         screen.dataset.creationStep || '',
         screen.classList.contains('v140-arrival'),
         Math.round(window.innerWidth), Math.round(window.innerHeight),
+        Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
         screen.scrollTop,
         ...panels.map(node => {
           const rect = node.getBoundingClientRect();
@@ -2032,16 +2033,19 @@
       document.body?.classList.add('legend-phaser-creation-ui-active');
 
       if (!this.nativeCreationUiScrollTarget) {
-        this.nativeCreationUiScrollTarget = screen;
+        // The production Phaser layout keeps the document as the vertical
+        // scroll root. Mirror window scroll changes so the canvas-painted
+        // labels/cards stay aligned with their accessible DOM hit targets.
+        this.nativeCreationUiScrollTarget = window;
         const handler = () => {
-          this.nativeCreationUiLayoutEvent?.remove?.(false);
-          this.nativeCreationUiLayoutEvent = this.time.delayedCall(48, () => {
+          if (this.nativeCreationUiLayoutEvent) return;
+          this.nativeCreationUiLayoutEvent = this.time.delayedCall(24, () => {
             this.nativeCreationUiLayoutEvent = null;
             this.syncNativeCreationUi(surface);
           });
         };
-        screen.__legendCreationScrollHandler = handler;
-        screen.addEventListener('scroll', handler, { passive: true });
+        window.__legendCreationScrollHandler = handler;
+        window.addEventListener('scroll', handler, { passive: true });
       }
 
       const addObject = (object, depth = 13) => {
