@@ -19,4 +19,4 @@ jobs:
           username: backwoodmamba
           spacename: legend-ta
           repository: Legend-RPG
-          password: ${{ secrets.BITBUCKET_TOKEN }
+          password: ${{ secrets.BITBUCKET_TOKEN }}
