@@ -3827,9 +3827,11 @@
         this.nativeRoadMapUiBoundOverlay = overlay;
         this.nativeRoadMapUiBoundDialog = dialog;
         this.nativeRoadMapUiInteractionHandler = () => {
-          this.nativeRoadMapUiLayoutEvent?.remove?.(false);
-          this.nativeRoadMapUiLayoutEvent = this.time.delayedCall(28, () => {
-            this.nativeRoadMapUiLayoutEvent = null;
+          // Coalesce events into one repaint per animation frame. A trailing
+          // debounce leaves the Phaser copy stationary during continuous scroll.
+          if (this.nativeRoadMapUiFrame != null) return;
+          this.nativeRoadMapUiFrame = window.requestAnimationFrame(() => {
+            this.nativeRoadMapUiFrame = null;
             this.syncNativeRoadMapUi();
           });
         };
