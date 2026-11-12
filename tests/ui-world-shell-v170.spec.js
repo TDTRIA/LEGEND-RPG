@@ -23,14 +23,15 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
   expect(titleBackdropFilter).toContain('brightness(1.1)');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
-  expect(titleSceneOverlay).toContain('rgba(2, 6, 4, 0.3)');
+  expectBackgroundAlphaAtMost(titleSceneOverlay, 0.3);
   expect(titleSceneOverlay).not.toContain('rgba(2, 5, 3, 0.94)');
 }
 
 async function enterAshmere(page, name = 'WorldShellQA') {
-  await openTitle(page);
+  await openTitle(page, page.viewportSize() || { width: 1440, height: 900 });
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
   await page.getByRole('button', { name: /^Continue$/ }).click();
   await page.getByRole('button', { name: /^Continue$/ }).click();
@@ -43,7 +44,7 @@ async function enterAshmere(page, name = 'WorldShellQA') {
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();

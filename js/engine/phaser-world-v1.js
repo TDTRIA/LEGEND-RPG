@@ -866,6 +866,9 @@
           nativeOpeningUiControlBounds: this.nativeOpeningUiControls.map(item => ({ id: item.id, label: item.label, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible) })),
           nativeOpeningUiSceneSize: this.dimensions(),
           nativeOpeningUiScrollTargetBound: Boolean(this.nativeOpeningUiScrollTarget),
+          nativeHudLabels: this.shellLabelSnapshot(this.nativeHudUiObjects),
+          nativeLeftDrawerLabels: this.shellLabelSnapshot(this.nativeLeftDrawerUiObjects),
+          nativeRightDrawerLabels: this.shellLabelSnapshot(this.nativeRightDrawerUiObjects),
           nativeHudUi: this.nativeHudUiActive,
           nativeHudUiObjectCount: this.nativeHudUiObjects.filter(item => item?.active).length,
           nativeHudUiTextCount: this.nativeHudUiTextNodes.filter(node => node?.isConnected).length,
@@ -4275,7 +4278,98 @@
       if (removeClass) document.body?.classList.remove('legend-phaser-right-drawer-ui-active');
     }
 
+    /** Keep retained town/service DOM artwork below the shell's native paint. */
+    syncShellContentClip() {
+      const root = document.getElementById('root');
+      if (!root) return;
+      const shell = document.getElementById('legend-world-shell-root');
+      const enabled = shell && !shell.hidden && root.querySelector('.ash100-town,.ash099-terminal,.reg100');
+      if (!enabled) { root.removeAttribute('data-legend-shell-clip'); return; }
+      const box = root.getBoundingClientRect();
+      const hud = shell.querySelector('.lws-hud')?.getBoundingClientRect();
+      const dock = shell.querySelector('.lws-bottom-bar')?.getBoundingClientRect();
+      const leftPanel = shell.querySelector('#lws-panel-left');
+      const rightPanel = shell.querySelector('#lws-panel-right');
+      const left = leftPanel?.getBoundingClientRect();
+      const right = rightPanel?.getBoundingClientRect();
+      // Closed drawers release their painter listeners before CSS motion ends.
+      // Re-read the final transform so closing cannot leave the world clipped.
+      if (!this.shellClipLayoutEvent && [leftPanel, rightPanel].some(panel =>
+        panel?.getAnimations?.().some(animation => animation.playState === 'running'))) {
+        this.shellClipLayoutEvent = this.time.delayedCall(220, () => {
+          this.shellClipLayoutEvent = null;
+          this.syncShellContentClip();
+        });
+      }
+      const insets = {
+        top: Math.max(0, (hud?.bottom || box.top) - box.top),
+        bottom: Math.max(0, box.bottom - (dock?.top || box.bottom)),
+        left: Math.max(0, (left?.right || box.left) - box.left),
+        right: Math.max(0, box.right - (right?.left || box.right))
+      };
+      Object.entries(insets).forEach(([side, value]) => {
+        const key = '--legend-shell-clip-' + side, next = value + 'px';
+        if (root.style.getPropertyValue(key) !== next) root.style.setProperty(key, next);
+      });
+      if (root.dataset.legendShellClip !== 'true') root.dataset.legendShellClip = 'true';
+    }
+
+    /** Paint a shell label inside its measured content box, never crop its glyph texture. */
+    createShellLabel(node, rect, color, sx, sy, depth) {
+      const css = window.getComputedStyle(node);
+      const insetX = (parseFloat(css.paddingLeft) + parseFloat(css.borderLeftWidth) || 0) * sx;
+      const insetY = (parseFloat(css.paddingTop) + parseFloat(css.borderTopWidth) || 0) * sy;
+      const width = Math.max(1, rect.width - insetX - (parseFloat(css.paddingRight) + parseFloat(css.borderRightWidth) || 0) * sx);
+      const height = Math.max(1, rect.height - insetY - (parseFloat(css.paddingBottom) + parseFloat(css.borderBottomWidth) || 0) * sy);
+      const fontSize = (parseFloat(css.fontSize) || 10) * sy;
+      const sourceText = node.textContent?.replace(/\s+/g, ' ').trim() || '';
+      const copy = css.textTransform === 'uppercase' ? sourceText.toUpperCase() : sourceText;
+      let text;
+      try {
+        text = this.add.text(rect.x + insetX, rect.y + insetY, copy, {
+          fontFamily: css.fontFamily || 'Arial, sans-serif', fontSize: fontSize + 'px',
+          fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : css.fontStyle === 'italic' ? 'italic' : 'normal',
+          color, letterSpacing: (parseFloat(css.letterSpacing) || 0) * sx,
+          align: css.textAlign || 'left'
+        }).setDepth(depth).setOrigin(0, 0).setResolution(2);
+        if (!css.whiteSpace.includes('nowrap') && height > fontSize * 1.65 && width > fontSize) {
+          text.setWordWrapWidth(width, true);
+        }
+        // Browser and canvas glyph metrics differ by fractions of a pixel.
+        // Bounded horizontal fitting preserves complete digits at the mask edge.
+        if (text.width > width) {
+          const ratio = width / text.width;
+          if (ratio < 0.85) throw new Error('Shell label exceeds source width');
+          text.setScale(ratio, 1);
+        }
+        if (text.height > height + Math.max(3 * sy, fontSize * 0.25)) throw new Error('Shell label exceeds source height');
+        if (css.textAlign === 'right' || css.textAlign === 'end') text.x += width - text.displayWidth;
+        if (css.textAlign === 'center' || node.tagName === 'BUTTON' || node.classList.contains('lws-brand-mark')) {
+          text.x = rect.x + insetX + (width - text.displayWidth) / 2;
+        }
+        if (node.tagName === 'BUTTON' || node.classList.contains('lws-brand-mark') || node.classList.contains('lws-tag')) {
+          text.y += (height - text.height) / 2;
+        }
+        text.setData('shellLabel', { sourceText, sourceBounds: rect });
+        return text;
+      } catch {
+        text?.destroy();
+        // Leave this semantic label visible when its replacement cannot fit.
+        return null;
+      }
+    }
+
+    shellLabelSnapshot(objects) {
+      return objects.flatMap(object => object?.type === 'Container' ? this.shellLabelSnapshot(object.list) :
+        object?.active && object.getData?.('shellLabel') ? [{
+          ...object.getData('shellLabel'), text: object.text, x: object.x, y: object.y,
+          width: object.displayWidth, height: object.displayHeight,
+          wrappedLines: object.getWrappedText().length
+        }] : []);
+    }
+
     syncNativeRightDrawerUi() {
+      this.syncShellContentClip();
       const shell = document.getElementById('legend-world-shell-root');
       const panel = shell?.querySelector('#lws-panel-right');
       const scroll = panel?.querySelector('.lws-panel-scroll');
@@ -4322,16 +4416,17 @@
       }
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvas = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvas.width);
+      const sy = size.height / Math.max(1, canvas.height);
       const readRect = node => {
         if (!node || !node.isConnected) return null;
         const rect = node.getBoundingClientRect();
         const style = window.getComputedStyle(node);
         if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
         return {
-          x: rect.left * sx,
-          y: rect.top * sy,
+          x: (rect.left - canvas.left) * sx,
+          y: (rect.top - canvas.top) * sy,
           width: rect.width * sx,
           height: rect.height * sy
         };
@@ -4429,18 +4524,8 @@
         const rect = readRect(node);
         if (!rect) return;
         const style = window.getComputedStyle(node);
-        const text = this.add.text(rect.x, rect.y, content(node), {
-          fontFamily: style.fontFamily || 'Arial, sans-serif',
-          fontSize: Math.max(9, Math.round((parseFloat(style.fontSize) || 11) * sy)) + 'px',
-          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-          color: node.matches('.lws-panel-eyebrow') ? '#c9a96e'
-            : node.matches('.lws-panel-header h2') ? '#efe7d4'
-            : '#b1b8aa',
-          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
-          align: style.textAlign || 'left'
-        }).setDepth(39).setOrigin(0, 0);
-        text.setResolution?.(2);
-        text.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        const text = this.createShellLabel(node, rect, node.matches('.lws-panel-eyebrow') ? '#c9a96e' : node.matches('.lws-panel-header h2') ? '#efe7d4' : '#d8cba9', sx, sy, 41);
+        if (!text) return;
         this.nativeRightDrawerUiObjects.push(text);
         node.dataset.legendPhaserRightText = 'true';
         this.nativeRightDrawerUiTaggedNodes.push(node);
@@ -4561,16 +4646,9 @@
           : node.matches('.lws-place-option-copy > strong,.lws-selected-place h3,.lws-quest-item > strong,.lws-poi-hint > strong') ? '#eee7d6'
           : node.matches('.lws-context-copy,.lws-quest-item > p,.lws-place-option-copy > small,.lws-selected-place p,.lws-poi-hint > p,.lws-btn-copy > small') ? '#b1b8aa'
           : '#f0ead9';
-        const text = addContent(this.add.text(rect.x, rect.y, content(node), {
-          fontFamily: style.fontFamily || 'Arial, sans-serif',
-          fontSize: Math.max(8, Math.round((parseFloat(style.fontSize) || 10) * sy)) + 'px',
-          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-          color,
-          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
-          align: style.textAlign || 'left'
-        }).setOrigin(0, 0).setDepth(42));
-        text.setResolution?.(2);
-        text.setFixedSize?.(Math.max(12, rect.width), Math.max(9, rect.height));
+        const text = this.createShellLabel(node, rect, color, sx, sy, 42);
+        if (!text) return;
+        addContent(text);
         node.dataset.legendPhaserRightText = 'true';
         this.nativeRightDrawerUiTaggedNodes.push(node);
       });
@@ -4585,6 +4663,7 @@
     }
 
     syncNativeLeftDrawerUi() {
+      this.syncShellContentClip();
       const shell = document.getElementById('legend-world-shell-root');
       const panel = shell?.querySelector('#lws-panel-left');
       const scroll = panel?.querySelector('.lws-panel-scroll');
@@ -4632,16 +4711,17 @@
       }
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvas = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvas.width);
+      const sy = size.height / Math.max(1, canvas.height);
       const readRect = node => {
         if (!node || !node.isConnected) return null;
         const rect = node.getBoundingClientRect();
         const style = window.getComputedStyle(node);
         if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
         return {
-          x: rect.left * sx,
-          y: rect.top * sy,
+          x: (rect.left - canvas.left) * sx,
+          y: (rect.top - canvas.top) * sy,
           width: rect.width * sx,
           height: rect.height * sy
         };
@@ -4736,19 +4816,8 @@
         const rect = readRect(node);
         if (!rect) return;
         const css = window.getComputedStyle(node);
-        const text = this.add.text(rect.x, rect.y, content(node), {
-          fontFamily: css.fontFamily || 'Arial, sans-serif',
-          fontSize: Math.max(9, Math.round((parseFloat(css.fontSize) || 11) * sy)) + 'px',
-          fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-          color: node.matches('.lws-panel-eyebrow') ? '#c9a96e'
-            : node.matches('.lws-panel-header h2') ? '#efe7d4'
-            : node.matches('.lws-panel-header .lws-tag') ? '#d8cba9'
-            : '#b1b8aa',
-          letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
-          align: css.textAlign || 'left'
-        }).setDepth(41).setOrigin(0, 0);
-        text.setResolution?.(2);
-        text.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        const text = this.createShellLabel(node, rect, node.matches('.lws-panel-eyebrow') ? '#c9a96e' : node.matches('.lws-panel-header h2') ? '#efe7d4' : '#d8cba9', sx, sy, 41);
+        if (!text) return;
         this.nativeLeftDrawerUiObjects.push(text);
         node.dataset.legendPhaserLeftText = 'true';
         this.nativeLeftDrawerUiTaggedNodes.push(node);
@@ -4847,16 +4916,9 @@
           : node.matches('.lws-btn-copy > strong') ? '#f0ead9'
           : node.matches('.lws-note,.lws-quest-item > p,.lws-small-list li > span,.lws-health-line > span,.lws-btn-copy > small') ? '#b1b8aa'
           : '#eee7d6';
-        const text = addContent(this.add.text(rect.x, rect.y, content(node), {
-          fontFamily: css.fontFamily || 'Arial, sans-serif',
-          fontSize: Math.max(8, Math.round((parseFloat(css.fontSize) || 10) * sy)) + 'px',
-          fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-          color,
-          letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
-          align: css.textAlign || 'left'
-        }).setOrigin(0, 0).setDepth(42));
-        text.setResolution?.(2);
-        text.setFixedSize?.(Math.max(10, rect.width), Math.max(9, rect.height));
+        const text = this.createShellLabel(node, rect, color, sx, sy, 42);
+        if (!text) return;
+        addContent(text);
         node.dataset.legendPhaserLeftText = 'true';
         this.nativeLeftDrawerUiTaggedNodes.push(node);
       });
@@ -4892,6 +4954,7 @@
     }
 
     syncNativeHudUi() {
+      this.syncShellContentClip();
       const shell = document.getElementById('legend-world-shell-root');
       const hud = shell?.querySelector('.lws-hud');
       if (!hud || shell.hidden || hud.hidden) {
@@ -4921,15 +4984,16 @@
       }
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvas = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvas.width);
+      const sy = size.height / Math.max(1, canvas.height);
       const readRect = node => {
         if (!node || !node.isConnected) return null;
         const rect = node.getBoundingClientRect();
         const style = window.getComputedStyle(node);
         if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
         return {
-          x: rect.left * sx, y: rect.top * sy,
+          x: (rect.left - canvas.left) * sx, y: (rect.top - canvas.top) * sy,
           width: rect.width * sx, height: rect.height * sy
         };
       };
@@ -5040,26 +5104,8 @@
       textNodes.forEach(node => {
         const rect = readRect(node);
         if (!rect) return;
-        const css = window.getComputedStyle(node);
-        const fontSize = Math.max(9, Math.round((parseFloat(css.fontSize) || 12) * sy));
-        const letterSpacing = Number.parseFloat(css.letterSpacing) || 0;
-        const text = this.add.text(
-          node.classList.contains('lws-brand-mark') ? rect.x + rect.width / 2 : rect.x,
-          node.classList.contains('lws-brand-mark') ? rect.y + rect.height / 2 : rect.y,
-          content(node),
-          {
-            fontFamily: css.fontFamily || 'Arial, sans-serif',
-            fontSize: fontSize + 'px',
-            fontStyle: css.fontWeight === 'bold' || Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-            color: fallbackColors(node),
-            letterSpacing: letterSpacing * sx,
-            align: node.classList.contains('lws-brand-mark') ? 'center' : 'left'
-          }
-        ).setDepth(54);
-        if (node.classList.contains('lws-brand-mark')) text.setOrigin(0.5);
-        else text.setOrigin(0, 0);
-        text.setResolution?.(2);
-        text.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        const text = this.createShellLabel(node, rect, fallbackColors(node), sx, sy, 54);
+        if (!text) return;
         this.nativeHudUiObjects.push(text);
         node.dataset.legendPhaserHudText = 'true';
         this.nativeHudUiTaggedNodes.push(node);

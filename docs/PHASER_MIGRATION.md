@@ -80,8 +80,26 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
 
 <!-- coderabbit-ai-generated-section:v1:f5ea5160fd33be867fd1c57e387d7cf333e0b486adf7a45938e77146d706b16e -->
 
-   - [ ] HUD and traveler vitals parity: native painters exist. Local 2026-11-12 captures show cropped mobile location text and a duplicate token count in the traveler panel; repair and verify before closing this gate.
-   - [ ] Journal/quest drawer parity: native painter exists, but local captures show clipped side-panel copy and values. Recheck against every production field at desktop/mobile sizes.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:5630dd4f4f9d0a9c1c346e71c9b31b055cb6960a679b5f6b89bf8df8c0781184 -->
+
+   - [ ] HUD and traveler vitals parity: corrected glyph cropping, mobile location wrapping and compact LEGEND branding; town/service DOM artwork now stays beneath the HUD and open drawers. Local desktop/mobile readability checks pass with source callbacks and saves preserved. Combat/results and accessibility-state visual gates remain open.
+
+<!-- /coderabbit-ai-generated:v1 -->
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:2d76f567eac93ab7c56ba02b1dde4c1e82eb4592d45354c354530229fe360092 -->
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:e140c226240d81cbe74d6ac878422bf41f6ff72976f674410363bb0f4e75634c -->
+
+   - [ ] Journal/quest drawer parity: corrected wrapped descriptions, masked numeric glyphs and duplicate token badge. Desktop/mobile checks cover visible counts, scrolling, keyboard journal action, real town return and per-label DOM fallback. Existing first-session/Old Road and mobile open/close regressions now pass; full accessibility-state coverage remains open.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 <!-- coderabbit-ai-generated:v1 -->

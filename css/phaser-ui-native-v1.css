@@ -1073,3 +1073,16 @@ body.legend-phaser-world-active #legend-world-shell-root .legend-phaser-shell-to
 body.legend-phaser-world-active #root:has(.ash099-traveler-profile) {
   clip-path: inset(var(--legend-sheet-clip-top, 0px) 0 var(--legend-sheet-clip-bottom, 0px));
 }
+
+/* Nested badge text must follow its guarded native replacement. */
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-text="true"] strong {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-world-shell-active #root[data-legend-shell-clip="true"] {
+  clip-path: inset(var(--legend-shell-clip-top, 0px) var(--legend-shell-clip-right, 0px) var(--legend-shell-clip-bottom, 0px) var(--legend-shell-clip-left, 0px));
+}
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud [data-legend-phaser-hud-control="true"]:not([data-legend-phaser-hud-text="true"]) {
+  color: #e9e4d5 !important;
+}

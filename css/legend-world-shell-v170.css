@@ -646,3 +646,20 @@ body.legend-world-shell-active #root .ash099-terminal:has(.ash099-traveler-profi
   padding-top: calc(72px + env(safe-area-inset-top, 0px));
   padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
 }
+
+.lws-panel-header > div { min-width: 0; flex: 1; }
+.lws-panel-header h2 { overflow-wrap: anywhere; }
+.lws-panel-header .lws-tag { flex-shrink: 0; }
+@media (max-width: 760px) {
+  #legend-world-shell-root .lws-hud .lws-mobile-toggle { font-size: 10px !important; }
+  #legend-world-shell-root .lws-hud .lws-location strong {
+    white-space: normal; overflow-wrap: anywhere; text-overflow: clip;
+  }
+}
+@media (max-width: 760px) {
+  #legend-world-shell-root .lws-hud .lws-brand-mark { display: none; }
+  #legend-world-shell-root .lws-hud .lws-brand-copy { display: flex; flex-shrink: 0; }
+  #legend-world-shell-root .lws-hud .lws-brand-copy strong { font-size: 9px; letter-spacing: .04em; }
+  #legend-world-shell-root .lws-hud .lws-hud-brand { gap: 0; flex-shrink: 0; }
+  #legend-world-shell-root .lws-hud .lws-location > span { font-size: 7px; letter-spacing: .03em; white-space: normal; }
+}
