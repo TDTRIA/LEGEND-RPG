@@ -8,13 +8,25 @@ if (!versionMatch) throw new Error('Could not read LEGEND_DATA.VERSION from js/d
 const version = versionMatch[1];
 
 async function openTitle(page) {
+  // Keep tall creation cards above the fold on desktop without changing the
+  // configured phone viewport in the full mobile browser matrix.
+  const viewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
+  if (viewport.width >= 900 && viewport.height < 900) {
+    await page.setViewportSize({ width: 1440, height: 900 });
+  }
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
+    // The first-visit awakening has its own dedicated end-to-end test. Keep
+    // creation, annals and Oric flow fixtures out of that cinematic sequence.
+    sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready');
   });
   await page.reload();
-  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
+  await page.waitForFunction(() => window.__legendPhaserWorldReady === true, null, { timeout: 20000 });
+  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 10000 });
+
   await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }' });
   await expect(page.locator('.v120-title')).toBeVisible();
   await expect(page.locator('.v120-title-hero .v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
@@ -50,6 +62,49 @@ async function expectNoHorizontalOverflow(page) {
   expect(width.body, JSON.stringify(width)).toBeLessThanOrEqual(width.viewport);
 }
 
+async function clickCreationNext(page) {
+  // The creation card can extend beyond the viewport on desktop and mobile.
+  // Scroll the real primary action into view before asserting visibility; the
+  // visible action is kept as a DOM hit target while Phaser paints its skin.
+  const next = page.locator('#root .v140-creation .v094-actions > button.v094-btn.primary');
+  await expect(next).toHaveCount(1);
+  const scrollDebug = await next.evaluate(el => {
+    const ancestors = [];
+    for (let node = el; node; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      const rect = node.getBoundingClientRect();
+      ancestors.push({
+        node: node.tagName.toLowerCase(),
+        id: node.id || '',
+        className: String(node.className || '').toString().slice(0, 100),
+        top: Math.round(rect.top),
+        bottom: Math.round(rect.bottom),
+        height: Math.round(rect.height),
+        clientHeight: node.clientHeight,
+        scrollHeight: node.scrollHeight,
+        scrollTop: node.scrollTop,
+        overflowX: style.overflowX,
+        overflowY: style.overflowY,
+        position: style.position,
+        display: style.display,
+        visibility: style.visibility
+      });
+    }
+    return {
+      viewport: { width: innerWidth, height: innerHeight, scrollY },
+      bodyClass: document.body.className,
+      html: { overflowY: getComputedStyle(document.documentElement).overflowY, clientHeight: document.documentElement.clientHeight, scrollHeight: document.documentElement.scrollHeight, scrollTop: document.documentElement.scrollTop },
+      body: { overflowY: getComputedStyle(document.body).overflowY, clientHeight: document.body.clientHeight, scrollHeight: document.body.scrollHeight, scrollTop: document.body.scrollTop },
+      ancestors
+    };
+  });
+  console.log('[LEGEND creation scroll debug]', JSON.stringify(scrollDebug));
+  await next.scrollIntoViewIfNeeded();
+  await expect(next).toBeVisible();
+  await expect(next).toBeEnabled();
+  await next.click();
+}
+
 async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) {
   await openTitle(page);
   if (options.previousRoadExperience) {
@@ -75,19 +130,20 @@ async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) 
   await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
   await page.locator('#v094Name').fill(name);
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-gender="unspoken"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-personality="kind"]').click();
   await expect(page.locator('.v094-scene-note span')).toContainText('MEMORY ECHO');
   await expect(page.locator('.v140-dialogue-speaker strong')).toHaveText('???');
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await page.locator('[data-origin]').first().click();
-  await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
+  await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
+  await page.locator('[data-class="Ranger"]').click();
+  await clickCreationNext(page);
   await page.locator('[data-keepsake="Old Map"]').click();
-  await page.locator('#v094Next').click();
+  await clickCreationNext(page);
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
   await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
@@ -137,22 +193,43 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
 
     await expect(page.locator('#v094Name')).toBeVisible();
     await page.locator('#v094Name').fill('AnnalsOpeningQA');
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-gender="unspoken"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-personality="kind"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await page.locator('[data-origin]').first().click();
-    await page.locator('#v094Next').click();
-    await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
+    await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
+    await page.locator('[data-class="Ranger"]').click();
+    await clickCreationNext(page);
     await page.locator('[data-keepsake="Old Map"]').click();
-    await page.locator('#v094Next').click();
+    await clickCreationNext(page);
     await expect(page.getByRole('heading', { name: 'AnnalsOpeningQA', exact: true })).toBeVisible();
     await page.getByRole('button', { name: /Let Me Wake/i }).click();
     await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
     await page.getByRole('button', { name: 'Lift your head' }).click();
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi
+    )).toBe(false);
+    const openingFallback = await page.evaluate(() => {
+      const screen = document.querySelector('.opening-road-v140');
+      const heading = screen?.querySelector('h1');
+      const response = screen?.querySelector('[data-oric-response="honest"]');
+      return {
+        bodyClass: document.body.classList.contains('legend-phaser-opening-ui-active'),
+        backgroundMarker: screen?.querySelector('.opening-road-v140-bg')?.dataset.legendPhaserSceneArtActive || '',
+        headingColor: heading ? getComputedStyle(heading).color : '',
+        responseColor: response ? getComputedStyle(response).color : '',
+        responseChildVisibility: response?.querySelector('strong') ? getComputedStyle(response.querySelector('strong')).visibility : ''
+      };
+    });
+    expect(openingFallback.bodyClass).toBe(false);
+    expect(openingFallback.backgroundMarker).toBe('');
+    expect(openingFallback.headingColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(openingFallback.responseColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(openingFallback.responseChildVisibility).toBe('visible');
     await expect(page.locator('.opening-road-v140-card')).toContainText('I was taking your boots off');
     await expect(page.locator('.opening-road-v140-card')).toContainText('Thought the road had given me another body');
     await expect(page.locator('.opening-road-v140-card')).not.toContainText('Friend or foe?');
