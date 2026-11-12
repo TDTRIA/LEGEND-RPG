@@ -19,8 +19,9 @@ async function openTitle(page) {
   await expect(page.locator('.v120-title')).toBeVisible({ timeout: 10000 });
 }
 
-async function clickVisible(page, selector) {
-  const locator = page.locator(selector);
+async function clickVisible(page, selector, first = false) {
+  const candidates = page.locator(selector);
+  const locator = first ? candidates.first() : candidates;
   await expect(locator).toBeVisible({ timeout: 10000 });
   await expect(locator).toBeEnabled();
   await locator.click({ timeout: 10000 });
@@ -79,7 +80,7 @@ test('traveler memory updates stay local to the Phaser creation painter and ever
 
   await clickVisible(page, '#v094Next');
   await expect(page.locator('[data-origin]').first()).toBeVisible();
-  await clickVisible(page, '[data-origin]');
+  await clickVisible(page, '[data-origin]', true);
   await clickVisible(page, '#v094Next');
   await expect(page.locator('[data-class="Ranger"]')).toBeVisible();
   await clickVisible(page, '[data-class="Ranger"]');
