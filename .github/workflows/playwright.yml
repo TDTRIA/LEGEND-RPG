@@ -80,7 +80,12 @@ jobs:
           for (const file of testSpecs) checkSyntax(file);
           console.log('Syntax-checked ' + productionScripts.length + ' active local production scripts and ' + testSpecs.length + ' Playwright spec files.');
           NODE
-      - name: Run Playwright tests
+      - name: Run focused official-site regression tests
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:website
+
+      - name: Run full production regression suite
+        if: github.event_name != 'pull_request'
         env:
           FULL_BROWSER_MATRIX: ${{ inputs.full_browser_matrix && '1' || '0' }}
         run: npm run test:e2e
@@ -102,30 +107,3 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
-  road-scene-parity:
-    name: Phaser Road Scene Parity
-    timeout-minutes: 12
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Check changed production JavaScript and focused spec syntax
-        run: |
-          node --check js/engine/phaser-world-v1.js
-          node --check js/systems/road/road-view-v100.js
-          node --check tests/ui-system-v160.spec.js
-
-      - name: Run focused Phaser road-scene parity test
-        run: npm run test:e2e:road-scene

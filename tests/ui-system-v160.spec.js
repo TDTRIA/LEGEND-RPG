@@ -29,10 +29,26 @@ async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, 
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
-  await page.locator('#v094Next').click();
+  const creationHitTest = await page.locator('#v094Next').evaluate(el => {
+    const rect = el.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const hit = document.elementFromPoint(x, y);
+    const shell = document.getElementById('legend-world-shell-root');
+    const curtain = document.getElementById('legend-scene-curtain');
+    return {
+      button: { x, y, display: getComputedStyle(el).display, visibility: getComputedStyle(el).visibility, pointerEvents: getComputedStyle(el).pointerEvents, zIndex: getComputedStyle(el).zIndex },
+      hit: hit ? { tag: hit.tagName, id: hit.id, className: String(hit.className || '').slice(0, 160), pointerEvents: getComputedStyle(hit).pointerEvents, zIndex: getComputedStyle(hit).zIndex } : null,
+      shell: shell ? { hidden: shell.hidden, display: getComputedStyle(shell).display, visibility: getComputedStyle(shell).visibility } : null,
+      curtain: curtain ? { className: curtain.className, pointerEvents: getComputedStyle(curtain).pointerEvents, visibility: getComputedStyle(curtain).visibility } : null
+    };
+  });
+  console.log('[LEGEND creation hit test]', JSON.stringify(creationHitTest));
+  await page.locator('#v094Next').click({ timeout: 8000 });
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
   await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
