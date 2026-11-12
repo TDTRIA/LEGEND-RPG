@@ -203,7 +203,10 @@ test('Phaser Old Road map and field journal paint complete content while preserv
   ]));
   expect(journal.text.join(' ')).toContain('Rest by the fire');
   await expect(page.locator('#exp150ModalClose')).toBeEnabled();
-  await page.locator('#exp150ModalClose').focus();
+  // The modal opens with a programmatic focus restore; press Tab to enter
+  // keyboard modality before asserting the visible focus treatment.
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#exp150ModalClose')).toBeFocused();
   await expect(page.locator('#exp150ModalClose')).toBeFocused();
   const focusStyle = await page.locator('#exp150ModalClose').evaluate(node => ({
     outlineColor: getComputedStyle(node).outlineColor,
