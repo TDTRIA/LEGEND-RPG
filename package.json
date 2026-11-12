@@ -11,7 +11,8 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
     "test:e2e:phaser-preview": "playwright test --config=playwright.phaser.config.js",
-    "test:e2e:website": "playwright test tests/website-dispatch-v200.spec.js"
+    "test:e2e:website": "playwright test tests/website-dispatch-v200.spec.js",
+    "test:e2e:storage": "playwright test tests/storage-runtime-contract.spec.js tests/expedition-journal-v150.spec.js --project=\"Desktop Chrome\""
   },
   "devDependencies": {
     "@playwright/test": "1.64.1",
