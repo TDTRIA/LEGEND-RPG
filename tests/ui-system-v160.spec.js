@@ -20,6 +20,36 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await expect(page.locator('.v120-title-hero .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
 }
 
+async function clickCreationTarget(page, selector, first = false) {
+  const candidates = page.locator(selector);
+  const target = first ? candidates.first() : candidates;
+  await expect(target).toBeVisible();
+  await target.evaluate(el => el.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }));
+  await page.waitForTimeout(180);
+  await page.mouse.move(2, 2);
+  await page.waitForTimeout(180);
+  const point = await target.evaluate(el => {
+    const rect = el.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top + rect.height / 2;
+    const hit = document.elementFromPoint(x, y);
+    const style = getComputedStyle(el);
+    return {
+      x, y, width: rect.width, height: rect.height,
+      top: rect.top, bottom: rect.bottom,
+      transform: style.transform, transition: style.transition,
+      animation: style.animationName,
+      hit: hit ? { tag: hit.tagName, id: hit.id, className: String(hit.className || '').slice(0, 80) } : null,
+      matches: Boolean(hit && (hit === el || el.contains(hit))),
+      scrollY: window.scrollY
+    };
+  });
+  console.log('[LEGEND UI creation pointer check]', selector, JSON.stringify(point));
+  expect(point.matches, selector + ' must be the real pointer target').toBe(true);
+  await page.mouse.click(point.x, point.y);
+  await page.waitForTimeout(80);
+}
+
 /** Creates a fresh traveler through the live title/opening flow at the requested desktop or mobile viewport. */
 async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, height: 900 }, afterTitleReady = null) {
   await openTitle(page, viewport);
@@ -30,16 +60,16 @@ async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, 
   await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Name').fill(name);
   await page.locator('#v094Next').click();
-  await page.locator('[data-gender="unspoken"]').click();
+  await clickCreationTarget(page, '[data-gender="unspoken"]');
   await page.locator('#v094Next').click();
-  await page.locator('[data-personality="kind"]').click();
+  await clickCreationTarget(page, '[data-personality="kind"]');
   await page.locator('#v094Next').click();
-  await page.locator('[data-origin]').first().click();
+  await clickCreationTarget(page, '[data-origin]', true);
   await page.locator('#v094Next').click();
   await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
-  await page.locator('[data-class="Ranger"]').click();
+  await clickCreationTarget(page, '[data-class="Ranger"]');
   await page.locator('#v094Next').click();
-  await page.locator('[data-keepsake="Old Map"]').click();
+  await clickCreationTarget(page, '[data-keepsake="Old Map"]');
   await page.locator('#v094Next').click();
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: /Let Me Wake/i }).click();
