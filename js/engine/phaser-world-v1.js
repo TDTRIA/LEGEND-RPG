@@ -3802,12 +3802,9 @@
     }
 
     syncNativeRoadMapUi() {
-      // The connected map and field journal contain live route/discovery
-      // controls. Keep their complete semantic DOM visible until the Phaser
-      // modal painter has full content, focus and mobile parity.
-      this.clearNativeRoadMapUi();
-      return;
-
+      // The DOM remains the semantic action layer. Phaser paints a duplicate
+      // presentation only after all visible text, surfaces and controls are
+      // measured; failed mask creation leaves the fully styled DOM modal up.
       const overlay = document.getElementById('exp150Modal');
       const dialog = overlay?.querySelector('.exp150-modal-dialog,[role="dialog"]');
       const content = document.getElementById('exp150ModalContent');
