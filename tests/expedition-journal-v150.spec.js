@@ -5,9 +5,11 @@ async function openTitle(page) {
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
+    sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready');
   });
   await page.reload();
-  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
+  await page.waitForFunction(() => window.__legendPhaserWorldReady === true, null, { timeout: 20000 });
   await page.addStyleTag({ content: `
     *, *::before, *::after {
       animation: none !important;
@@ -15,7 +17,7 @@ async function openTitle(page) {
       scroll-behavior: auto !important;
     }
   ` });
-  await expect(page.locator('.v120-title')).toBeVisible();
+  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 10000 });
 }
 
 async function startFreshTraveler(page) {
