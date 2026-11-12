@@ -92,6 +92,10 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:road-scene
 
+      - name: Run focused Phaser traveler-creation interaction regression
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:creation
+
       - name: Run full production regression suite
         if: github.event_name != 'pull_request'
         env:
