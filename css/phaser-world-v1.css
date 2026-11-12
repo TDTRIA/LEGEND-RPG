@@ -1,4 +1,11 @@
 /* LEGEND production Phaser world layer — static-host safe, no server dependency. */
+/* The world shell can make a creation page taller than one viewport.
+   Keep the document element as the vertical scroll container; body overflow-x
+   safety otherwise computes body overflow-y to auto while html remains visible. */
+html.legend-phaser-world-active {
+  overflow-y: auto !important;
+}
+
 /* Startup failure must leave the legacy DOM game at the top of the page. */
 #game-container.legend-phaser-startup-fallback {
   display: none !important;
