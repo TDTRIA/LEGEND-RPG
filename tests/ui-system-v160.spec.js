@@ -59,20 +59,20 @@ async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, 
   await page.getByRole('button', { name: /^Continue$/ }).click();
   await page.getByRole('button', { name: /Shape the traveler/i }).click();
   await page.locator('#v094Name').fill(name);
-  await page.locator('#v094Next').click();
+  await clickCreationTarget(page, '#v094Next');
   await clickCreationTarget(page, '[data-gender="unspoken"]');
-  await page.locator('#v094Next').click();
+  await clickCreationTarget(page, '#v094Next');
   await clickCreationTarget(page, '[data-personality="kind"]');
-  await page.locator('#v094Next').click();
+  await clickCreationTarget(page, '#v094Next');
   await clickCreationTarget(page, '[data-origin]', true);
-  await page.locator('#v094Next').click();
+  await clickCreationTarget(page, '#v094Next');
   await expect(page.getByRole('button', { name: /Ranger/i })).toBeVisible();
   await clickCreationTarget(page, '[data-class="Ranger"]');
-  await page.locator('#v094Next').click();
+  await clickCreationTarget(page, '#v094Next');
   await clickCreationTarget(page, '[data-keepsake="Old Map"]');
-  await page.locator('#v094Next').click();
+  await clickCreationTarget(page, '#v094Next');
   await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
-  await page.getByRole('button', { name: /Let Me Wake/i }).click();
+  await clickCreationTarget(page, '#v094Next');
   await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
   await page.getByRole('button', { name: 'Lift your head' }).click();
   await page.evaluate(() => {
