@@ -392,6 +392,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('Old Road scene, HUD and field map keep sharp DOM copy and real controls', async ({ page }) => {
+    // This fixture performs the complete first-time creation and opening flow
+    // before it reaches Ashmere; give that end-to-end journey its full budget.
+    test.setTimeout(90000);
     await enterAshmere(page, 'RoadUIPreview');
     await seedRoad(page, 0, null);
     await expect(page.locator('.exp100-scene-live')).toBeVisible();
@@ -440,8 +443,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('#exp150Modal')).toBeVisible();
     await expect(page.locator('#exp150Modal').getByRole('dialog')).toBeVisible();
     await expect(page.locator('#exp150Modal')).toContainText(/map|road/i);
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRoadMapUi)).toBe(false);
-    await expect(page.locator('#exp150Modal .exp150-map-intro h2')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRoadMapUi)).toBe(true);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRoadMapUiKind)).toBe('map');
+    await expect(page.locator('#exp150Modal .exp150-map-intro h2')).toHaveCSS('color','rgba(0, 0, 0, 0)');
     await attachProof(page, 'phase1-old-road-map.png');
   });
   test('combat HUD and eight live controls are painted in Phaser without replacing combat rules', async ({ page }) => {

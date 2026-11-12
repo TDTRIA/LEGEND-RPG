@@ -3754,6 +3754,10 @@
     clearNativeRoadMapUi(removeClass = true, removeListeners = true) {
       this.nativeRoadMapUiLayoutEvent?.remove?.(false);
       this.nativeRoadMapUiLayoutEvent = null;
+      if (this.nativeRoadMapUiFrame != null) {
+        window.cancelAnimationFrame(this.nativeRoadMapUiFrame);
+        this.nativeRoadMapUiFrame = null;
+      }
       if (removeListeners) {
         if (this.nativeRoadMapUiBoundDialog && this.nativeRoadMapUiInteractionHandler) {
           ['scroll', 'focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
@@ -3802,12 +3806,9 @@
     }
 
     syncNativeRoadMapUi() {
-      // The connected map and field journal contain live route/discovery
-      // controls. Keep their complete semantic DOM visible until the Phaser
-      // modal painter has full content, focus and mobile parity.
-      this.clearNativeRoadMapUi();
-      return;
-
+      // The DOM remains the semantic action layer. Phaser paints a duplicate
+      // presentation only after all visible text, surfaces and controls are
+      // measured; failed mask creation leaves the fully styled DOM modal up.
       const overlay = document.getElementById('exp150Modal');
       const dialog = overlay?.querySelector('.exp150-modal-dialog,[role="dialog"]');
       const content = document.getElementById('exp150ModalContent');
@@ -3826,9 +3827,11 @@
         this.nativeRoadMapUiBoundOverlay = overlay;
         this.nativeRoadMapUiBoundDialog = dialog;
         this.nativeRoadMapUiInteractionHandler = () => {
-          this.nativeRoadMapUiLayoutEvent?.remove?.(false);
-          this.nativeRoadMapUiLayoutEvent = this.time.delayedCall(28, () => {
-            this.nativeRoadMapUiLayoutEvent = null;
+          // Coalesce events into one repaint per animation frame. A trailing
+          // debounce leaves the Phaser copy stationary during continuous scroll.
+          if (this.nativeRoadMapUiFrame != null) return;
+          this.nativeRoadMapUiFrame = window.requestAnimationFrame(() => {
+            this.nativeRoadMapUiFrame = null;
             this.syncNativeRoadMapUi();
           });
         };
@@ -4108,6 +4111,7 @@
           fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
           color: selectorColor,
           letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
+          wordWrap: { width: Math.max(10, rect.width) },
           align: style.textAlign || 'left'
         }).setOrigin(0, 0).setDepth(82);
         textObject.setResolution?.(2);
