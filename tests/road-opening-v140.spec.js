@@ -63,12 +63,9 @@ async function expectNoHorizontalOverflow(page) {
 }
 
 async function clickCreationNext(page) {
-  // Keep the Phaser painter and the accessible DOM controls on the same
-  // scroll viewport; the scene mirrors this screen's scrollTop while moving
-  // through the taller traveler-creation choice steps.
+  // The creation action rail stays pinned while long choice cards scroll.
   const next = page.locator('#root .v140-creation .v094-actions > button.v094-btn.primary');
   await expect(next).toHaveCount(1);
-  await next.scrollIntoViewIfNeeded();
   await expect(next).toBeVisible();
   await expect(next).toBeEnabled();
   await next.click();
