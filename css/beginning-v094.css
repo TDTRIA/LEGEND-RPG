@@ -281,9 +281,9 @@
 @media(max-width:560px){.v094-choice-scene .v094-gender-emblem{width:60px;height:60px;flex-basis:60px;margin-bottom:10px}}
 
 
-/* v0.30.8 — allow the document to scroll through long memory choices.
-   RealmScene mirrors window scroll changes so the canvas-painted controls
-   remain registered with their accessible DOM hit targets. */
+/* v0.30.9 — keep the Continue row in reach on tall memory steps.
+   The card no longer clips overflow, so the native sticky action rail can
+   remain at the viewport edge while the document scrolls. */
 .v140-creation {
   height: auto !important;
   min-height: 100svh !important;
@@ -294,9 +294,11 @@
   overflow: visible !important;
 }
 .v140-creation .v094-actions {
-  position: static !important;
-  bottom: auto !important;
-  z-index: auto !important;
-  background: transparent !important;
-  padding: 10px 0 2px !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  z-index: 20 !important;
+  padding: 12px 0 4px !important;
+  margin-top: 18px !important;
+  background: linear-gradient(180deg, rgba(3,8,5,0), rgba(3,8,5,.96) 30%) !important;
+  backdrop-filter: blur(4px);
 }
