@@ -3206,6 +3206,17 @@
       this.nativeExpeditionActionsUiObjects = [];
       this.nativeExpeditionActionsUiTaggedNodes.forEach(node => {
         if (!node?.dataset) return;
+        const restoreInlineStyle = (property, valueKey, priorityKey) => {
+          const value = node.dataset[valueKey];
+          if (value == null) return;
+          if (value === '__legend_none__') node.style.removeProperty(property);
+          else node.style.setProperty(property, value, node.dataset[priorityKey] || '');
+          delete node.dataset[valueKey];
+          delete node.dataset[priorityKey];
+        };
+        restoreInlineStyle('color', 'legendPhaserRoadOriginalColor', 'legendPhaserRoadOriginalColorPriority');
+        restoreInlineStyle('text-shadow', 'legendPhaserRoadOriginalTextShadow', 'legendPhaserRoadOriginalTextShadowPriority');
+        restoreInlineStyle('-webkit-text-fill-color', 'legendPhaserRoadOriginalTextFill', 'legendPhaserRoadOriginalTextFillPriority');
         delete node.dataset.legendPhaserRoadActionText;
         delete node.dataset.legendPhaserRoadActionControl;
         delete node.dataset.legendPhaserRoadActionIcon;
@@ -3432,6 +3443,20 @@
         object.setResolution?.(2);
         object.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
         container.add(object);
+        // Save and mask the DOM copy inline. This avoids legacy CSS cascade
+        // conflicts while preserving exact restoration if Phaser preflight
+        // fails or the expedition surface is removed.
+        const rememberInlineStyle = (property, valueKey, priorityKey) => {
+          if (node.dataset[valueKey] !== undefined) return;
+          node.dataset[valueKey] = node.style.getPropertyValue(property) || '__legend_none__';
+          node.dataset[priorityKey] = node.style.getPropertyPriority(property) || '';
+        };
+        rememberInlineStyle('color', 'legendPhaserRoadOriginalColor', 'legendPhaserRoadOriginalColorPriority');
+        rememberInlineStyle('text-shadow', 'legendPhaserRoadOriginalTextShadow', 'legendPhaserRoadOriginalTextShadowPriority');
+        rememberInlineStyle('-webkit-text-fill-color', 'legendPhaserRoadOriginalTextFill', 'legendPhaserRoadOriginalTextFillPriority');
+        node.style.setProperty('color', 'transparent', 'important');
+        node.style.setProperty('text-shadow', 'none', 'important');
+        node.style.setProperty('-webkit-text-fill-color', 'transparent', 'important');
         node.dataset.legendPhaserRoadActionText = 'true';
         this.nativeExpeditionActionsUiTaggedNodes.push(node);
       });
