@@ -43,7 +43,9 @@
       player.stats.regionsUnlocked = Number(player.stats.regionsUnlocked || 0) + 1;
       player.memories = player.memories || [];
       player.memories.push('You opened the road to ' + region.name + '.');
-      savePlayer(player);
+      if (savePlayer(player) === false) {
+        return renderMessage(region.name + ' is available for this session, but browser storage could not save the unlock. Check storage and retry before leaving this tab.');
+      }
       return renderMessage(region.name + ' is now part of your road network. The first crossing is yours; future crossings cost gold.');
     }
 
@@ -67,7 +69,9 @@
       player.currentRegion = id;
       player.memories = player.memories || [];
       player.memories.push('You traveled to ' + region.name + ' for ' + formatGold(fare) + '.');
-      savePlayer(player);
+      if (savePlayer(player) === false) {
+        return renderMessage('You reached ' + region.name + ' for this session, but browser storage could not save the crossing. Check storage and retry before leaving this tab.');
+      }
       return renderMessage('You arrive in ' + region.name + '. The road network is open in both directions.');
     }
 

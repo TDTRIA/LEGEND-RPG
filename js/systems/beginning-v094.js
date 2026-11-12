@@ -121,6 +121,14 @@
     // demonstrably reached the road loop. A first-time player always gets Oric's
     // guided expedition, even if they have opened the title screen before.
     const previousPlayer = S().loadPlayer?.();
+    const saveStatus = S().getPlayerSaveStatus?.() || 'not-read';
+    if (!previousPlayer && saveStatus !== 'empty' && saveStatus !== 'not-read') {
+      const message = saveStatus === 'unavailable'
+        ? 'Browser storage could not read your existing traveler data. Your save has not been replaced. Enable browser storage and retry.'
+        : 'An existing traveler save could not be read safely. It has not been replaced. Export a recovery copy or clear the damaged save in Save Vault before creating a new traveler.';
+      showCreationError(message);
+      return;
+    }
     const previousStats = previousPlayer?.stats || {};
     const previousFlags = previousPlayer?.flags || {};
     const previousRoad = previousFlags.roadExpeditionV100 || {};
@@ -150,7 +158,11 @@
     }
     pl.flags = pl.flags || {};
     if (roadExperienced) pl.flags.veteranRoadSkipUnlocked = true;
-    S().savePlayer?.(pl);
+    const saveResult = typeof S().saveNewPlayer === 'function' ? S().saveNewPlayer(pl) : false;
+    if (saveResult === false) {
+      showCreationError('Your traveler could not be saved permanently. Your choices are still here; check browser storage and press Let Me Wake again to retry.');
+      return;
+    }
     if (typeof window.LegendRoadOpeningV140?.start === 'function') return window.LegendRoadOpeningV140.start(pl);
     renderIntro(pl);
   }
