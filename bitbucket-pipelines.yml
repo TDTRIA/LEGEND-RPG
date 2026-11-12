@@ -17,20 +17,9 @@ pipelines:
                 exit 1
               fi
 
-              git config user.name "Bitbucket Sync"
-              git config user.email "bitbucket-sync@users.noreply.github.com"
-
-              # Retire the old GitHub-to-Bitbucket workflow from Bitbucket's copy
-              # before the first publish, so a later sync cannot re-enable it.
-              if git ls-tree -r --name-only HEAD | grep -Fxq ".github/workflows/mirror.yml"; then
-                git rm -f .github/workflows/mirror.yml
-                git commit -m "[skip ci] Retire legacy GitHub-to-Bitbucket mirror"
-                git push origin HEAD:main
-              fi
-
               AUTH_HEADER="$(printf 'x-access-token:%s' "$GITHUB_PUSH_TOKEN" | base64 | tr -d '\n')"
 
-              # Never force-push. Refuse to publish if the two main histories diverged.
+              # Refuse to overwrite GitHub if Bitbucket and GitHub main histories diverged.
               git -c http.extraheader="AUTHORIZATION: basic $AUTH_HEADER" \
                 fetch https://github.com/TDTRIA/LEGEND-RPG.git main
               GITHUB_MAIN="$(git rev-parse FETCH_HEAD)"
