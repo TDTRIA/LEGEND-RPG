@@ -392,6 +392,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('Old Road scene, HUD and field map keep sharp DOM copy and real controls', async ({ page }) => {
+    // This fixture performs the complete first-time creation and opening flow
+    // before it reaches Ashmere; give that end-to-end journey its full budget.
+    test.setTimeout(90000);
     await enterAshmere(page, 'RoadUIPreview');
     await seedRoad(page, 0, null);
     await expect(page.locator('.exp100-scene-live')).toBeVisible();
