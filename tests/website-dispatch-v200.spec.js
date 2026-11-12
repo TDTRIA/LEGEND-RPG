@@ -22,7 +22,7 @@ test.describe('LEGEND official site v2.0', () => {
     await expect(form.locator('input[name="EMAIL"]')).toHaveAttribute('type', 'email');
     await expect(form.locator('input[name="EMAIL"]')).toHaveAttribute('required', '');
     await expect(form.locator('input[name="OPT_IN"]')).toHaveAttribute('required', '');
-    await expect(page.locator('a[href="privacy.html"]')).toBeVisible();
+    await expect(page.locator('a[href="privacy.html"]').first()).toBeVisible();
   });
 
   test('privacy notice starts below the responsive dispatch navigation and returns to signup', async ({ page }) => {
