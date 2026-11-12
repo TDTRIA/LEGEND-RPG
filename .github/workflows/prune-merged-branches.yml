@@ -1,4 +1,4 @@
-name: Prune branches from merged pull requests
+name: Prune branches from merged pull requests and main history
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Preview matching merged branches without deleting them"
+        description: "Preview matching branches without deleting them"
         required: false
         type: boolean
         default: true
@@ -24,22 +24,23 @@ concurrency:
 
 jobs:
   prune:
-    name: Remove exact merged PR branch refs
+    name: Remove branches already represented in main
     if: github.repository == 'TDTRIA/LEGEND-RPG'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       GITHUB_REPOSITORY: ${{ github.repository }}
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
     steps:
-      - name: Check out main
+      - name: Check out complete repository history
         uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Prune merged branches
+      - name: Prune merged or fully integrated branch refs
         run: node scripts/maintenance/prune-merged-branches.mjs
