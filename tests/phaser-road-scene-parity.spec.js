@@ -147,7 +147,8 @@ test('Phaser road background follows the live route and stage, with a DOM image 
       if (!window.LegendStorage.saveNewPlayer(player)) {
         throw new Error('Could not persist the road-scene parity test traveler.');
       }
-      window.LegendRoadControllerV100.renderExpedition();
+      // Do not render the road yet: the test freezes RealmScene's first
+      // transition before seedRoad() performs the first road render.
     }, 'RoadSceneArtQA');
     await expect(page.locator('.exp150-world-page')).toBeVisible();
     await page.emulateMedia({ reducedMotion: 'no-preference' });
