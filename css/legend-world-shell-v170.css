@@ -630,3 +630,8 @@ body.a11y-reduced-motion #legend-world-shell-modal-root *::after {
   background:linear-gradient(180deg,#293327,#141c14);
   color:#fff0c6!important;
 }
+
+/* Keep the regional ledger's final return control above the fixed action dock. */
+body.legend-world-shell-active #root .reg100-screen {
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}

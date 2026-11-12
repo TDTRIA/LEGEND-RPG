@@ -38,7 +38,21 @@ The story and the systems should reinforce that loop. Town is a place the player
 
 The title asset loader accepts cache query strings and rasterizes existing SVG UI assets at explicit dimensions before WebGL upload. This restores the required raster wordmark and fixes distorted button frames. Native primary buttons no longer have their labels covered by an opaque gold DOM background. Focus/hover and disabled textures follow semantic controls; title geometry refreshes on resize and scrolling, and decorative labels remain complete. DOM controls and missing-art fallback remain intact. Save keys, callbacks, gameplay and story are unchanged.
 
-Local desktop/mobile screenshots were inspected in shared Preview. The new scroll/resize/missing-art fallback regression and the final mobile returning-title test pass; final desktop and restored expedition checks are still underway. Full title acceptance and release publishing remain open.
+Local desktop/mobile screenshots were inspected in shared Preview. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:d9e1cbba03a96621042d51b195884cf7723946b9c49cca5c9cfbf09fb1121f50 -->
+
+The scroll/resize/missing-art fallback regression and final desktop/mobile returning-title tests pass. All seven restored expedition checks passed across focused runs after repairing stale setup and painter expectations; eleven storage checks also passed. Title fixes are committed in `5fb68759`; expedition test repairs are in `6651f922`. The assigned feature branch is pushed; no PR, merge or production publishing is claimed. Long-name/zoom title acceptance remains open.
+
+A dedicated Ashmere/Greyfen Route Board painter is now in local verification. It paints existing headings, card surfaces, descriptions, focus states and Back control, retaining original artwork and semantic callbacks. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:728b2f010ae20f560eddebcd88b4648354e69ec3fd79f5a25bd380ab017e8490 -->
+
+Desktop and mobile keyboard/touch navigation, saved-state preservation and fallback checks pass. A confirmed mobile return-button obstruction in the regional ledger is repaired with scoped clearance above the fixed action dock. Ashmere desktop/mobile and Greyfen mobile screenshots were inspected. All-destination and long-content acceptance remains open; the Road Network region ledger remains unmigrated.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

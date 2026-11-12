@@ -979,3 +979,26 @@ body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp10
   background: transparent !important;
   border-color: transparent !important;
 }
+
+/* Only this complete, preflighted route-board painter conceals its source copy.
+   Semantic actions and raster art remain in the production DOM. */
+body.legend-phaser-world-active #root .ash099-screen.legend-phaser-route-board,
+body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-head,
+body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-card,
+body.legend-phaser-world-active #root .legend-phaser-route-board #ashBack {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-head::after {
+  display: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-route-board :is(.ash099-kicker,h1,p,strong,small,em),
+body.legend-phaser-world-active #root .legend-phaser-route-board #ashBack {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}

@@ -748,6 +748,7 @@
 
     create() {
       this.cameras.main.setBackgroundColor('#090e0d');
+      this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
       this.motionReduced = reducedMotion();
       this.scale.on('resize', () => {
         this.layoutBackground();
@@ -806,6 +807,7 @@
           landmarkIconsLoaded: this.ashmereLandmarks.every(item => this.textures.exists(item.iconKey)),
           serviceDressingCount: this.serviceDressing.filter(item => item.object?.active).length,
           serviceDressingKey: this.serviceDressingKey,
+          nativeRouteBoard: this.routeBoard?.snapshot(),
           nativeTitleUi: this.nativeTitleUiActive,
           nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
           nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo'].every(key => this.textures.exists(key)),
