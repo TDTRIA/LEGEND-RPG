@@ -1,4 +1,12 @@
 /* LEGEND production Phaser world layer — static-host safe, no server dependency. */
+/* The world shell can make a creation page taller than one viewport.
+   Use the document element as the vertical scroll container so long steps can
+   reach their real DOM actions even while the world canvas stays fixed. */
+html.legend-phaser-world-active {
+  overflow-y: auto !important;
+}
+
+
 body.legend-phaser-world-active {
   position: relative;
   min-height: 100vh;
