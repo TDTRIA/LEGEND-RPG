@@ -3506,6 +3506,17 @@
       this.nativeExpeditionHudUiObjects = [];
       this.nativeExpeditionHudUiTaggedNodes.forEach(node => {
         if (!node?.dataset) return;
+        const restoreInlineStyle = (property, valueKey, priorityKey) => {
+          const value = node.dataset[valueKey];
+          if (value == null) return;
+          if (value === '__legend_none__') node.style.removeProperty(property);
+          else node.style.setProperty(property, value, node.dataset[priorityKey] || '');
+          delete node.dataset[valueKey];
+          delete node.dataset[priorityKey];
+        };
+        restoreInlineStyle('color', 'legendPhaserExpeditionOriginalColor', 'legendPhaserExpeditionOriginalColorPriority');
+        restoreInlineStyle('text-shadow', 'legendPhaserExpeditionOriginalTextShadow', 'legendPhaserExpeditionOriginalTextShadowPriority');
+        restoreInlineStyle('-webkit-text-fill-color', 'legendPhaserExpeditionOriginalTextFill', 'legendPhaserExpeditionOriginalTextFillPriority');
         delete node.dataset.legendPhaserExpeditionText;
         delete node.dataset.legendPhaserExpeditionControl;
         delete node.dataset.legendPhaserExpeditionIcon;
@@ -3758,6 +3769,20 @@
         textObject.setResolution?.(2);
         textObject.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
         container.add(textObject);
+        // Mask the DOM copy inline only after its Phaser replacement exists.
+        // Save the exact prior inline declarations so any preflight failure,
+        // screen transition or cleanup restores the original accessible UI.
+        const rememberInlineStyle = (property, valueKey, priorityKey) => {
+          if (node.dataset[valueKey] !== undefined) return;
+          node.dataset[valueKey] = node.style.getPropertyValue(property) || '__legend_none__';
+          node.dataset[priorityKey] = node.style.getPropertyPriority(property) || '';
+        };
+        rememberInlineStyle('color', 'legendPhaserExpeditionOriginalColor', 'legendPhaserExpeditionOriginalColorPriority');
+        rememberInlineStyle('text-shadow', 'legendPhaserExpeditionOriginalTextShadow', 'legendPhaserExpeditionOriginalTextShadowPriority');
+        rememberInlineStyle('-webkit-text-fill-color', 'legendPhaserExpeditionOriginalTextFill', 'legendPhaserExpeditionOriginalTextFillPriority');
+        node.style.setProperty('color', 'transparent', 'important');
+        node.style.setProperty('text-shadow', 'none', 'important');
+        node.style.setProperty('-webkit-text-fill-color', 'transparent', 'important');
         node.dataset.legendPhaserExpeditionText = 'true';
         this.nativeExpeditionHudUiTaggedNodes.push(node);
       });
