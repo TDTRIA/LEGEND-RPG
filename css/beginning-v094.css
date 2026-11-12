@@ -281,18 +281,14 @@
 @media(max-width:560px){.v094-choice-scene .v094-gender-emblem{width:60px;height:60px;flex-basis:60px;margin-bottom:10px}}
 
 
-/* v0.30.7 — keep the creation screen as the scroll owner.
-   RealmScene mirrors screen.scrollTop to keep its canvas-painted labels and
-   focus targets aligned with the accessible DOM controls while long choice
-   steps scroll on desktop and mobile. */
+/* v0.30.8 — allow the document to scroll through long memory choices.
+   RealmScene mirrors window scroll changes so the canvas-painted controls
+   remain registered with their accessible DOM hit targets. */
 .v140-creation {
-  height: 100svh !important;
+  height: auto !important;
   min-height: 100svh !important;
-  max-height: 100svh !important;
-  overflow-x: hidden !important;
-  overflow-y: auto !important;
-  overscroll-behavior-y: contain;
-  -webkit-overflow-scrolling: touch;
+  max-height: none !important;
+  overflow: visible !important;
 }
 .v140-creation .v094-beginning-card {
   overflow: visible !important;
