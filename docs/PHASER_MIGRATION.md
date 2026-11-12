@@ -146,7 +146,14 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
    - [ ] Verify the Phaser-painted Ashmere destination-card board on desktop/mobile, including focus/hover, dynamic unlocked destinations and DOM fallback.
    - [ ] Ashmere/Greyfen service interiors, service markers and destination selection parity.
    - [ ] Redesign Ashmere hub service selection so visible buttons are anchored to town locations or a clear terminal board; do not simply float Phaser labels over the current town background.
-   - [ ] Inn, market, blacksmith, crafting, workboard/daily board and NPC/dialogue screens.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:b6c544f908fbd32caee2cdca6dcece6dd8bdc33ca033c1ba38777be0aaf68af3 -->
+
+   - [x] Inn presentation verified locally for Ashmere and Greyfen: dedicated guarded Phaser artwork, panels, complete copy, health meter, prices, focus and feedback. Original semantic buttons retain rest, supplies, rumors and return callbacks. The production inn now refreshes its purse/health after purchases without replacing focused controls. Desktop1440×900 and mobile390×844 tests passed for exact 35g rest/90g supply costs, full-save equality (including unknown properties), insufficient funds, regional rumors/return, artwork failure and malformed-source fallback. Shared Chromium screenshots inspected, including mobile scrolling/feedback and both regional interiors; heading and Back stay clear of the fixed shell. Costs, rewards, storage ownership and canon are unchanged. Publication remains pending task permissions.
+   - [ ] Market, blacksmith, crafting, workboard/daily board and NPC/dialogue screens.
+
+<!-- /coderabbit-ai-generated:v1 -->
    - [ ] Preserve the existing purchase, craft, job, quest and save callbacks.
 
 4. **Old Road and expedition**

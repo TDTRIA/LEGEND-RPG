@@ -130,7 +130,13 @@ Scope:
 
 <!-- coderabbit-ai-generated-section:v1:ff21d6bb5ffbb2547b931d30488901b194bef188317a0e69fcf1bfe2cd8bd59f -->
 
-Local migration progress (2026-11-12): inventory, traveler sheet and shell notifications have dedicated guarded Phaser presentation. Original controls, semantic text, artwork, storage and navigation remain authoritative. Focused desktop/mobile tests cover complete records, scrolling, focus, regional return, unchanged saves, notification timing and fallback; desktop, portrait and landscape screenshots were inspected. Sheet artwork/native text now stay clear of the fixed HUD and dock. HUD/drawer text now wraps, numeric glyphs remain inside masks, and the duplicate token count is removed. The mobile HUD preserves LEGEND and readable location/vitals; town/service DOM art is clipped beneath the fixed shell and open drawers. Focused readability and first-session/Old Road drawer tests pass. Remaining combat/results/accessibility shell gates stay open while Ashmere service migration continues. Publication to main remains pending task permissions.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:031f3d460078575006e9037e27192e2c99620d23bf0095916195c2b4c20a8f0e -->
+
+Local migration progress (2026-11-12): inventory, traveler sheet and shell notifications have dedicated guarded Phaser presentation. Original controls, semantic text, artwork, storage and navigation remain authoritative. Focused desktop/mobile tests cover complete records, scrolling, focus, regional return, unchanged saves, notification timing and fallback; desktop, portrait and landscape screenshots were inspected. Sheet artwork/native text now stay clear of the fixed HUD and dock. HUD/drawer text now wraps, numeric glyphs remain inside masks, and the duplicate token count is removed. The mobile HUD preserves LEGEND and readable location/vitals; town/service DOM art is clipped beneath the fixed shell and open drawers. Focused readability and first-session/Old Road drawer tests pass. Remaining combat/results/accessibility shell gates stay open while Ashmere service migration continues. Publication to main remains pending task permissions. Ashmere Inn and Greyfen’s Reedlight Inn now have complete guarded native presentation with production actions retained. Purchase feedback refreshes the visible purse and health immediately. Focused desktop/mobile tests verify exact costs, saves, rumors, keyboard/touch, regional return and fallback; both interiors were visually inspected. Market buy/sell presentation is next.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

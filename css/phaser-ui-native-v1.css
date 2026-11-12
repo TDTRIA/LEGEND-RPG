@@ -1086,3 +1086,26 @@ body.legend-phaser-world-active.legend-world-shell-active #root[data-legend-shel
 body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud [data-legend-phaser-hud-control="true"]:not([data-legend-phaser-hud-text="true"]) {
   color: #e9e4d5 !important;
 }
+
+/* Inn copy, artwork and panels switch together only after native preflight. */
+body.legend-phaser-world-active #root .ash099-terminal:has(.ash099-head[data-ash-service="inn"]) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-inn,
+body.legend-phaser-world-active #root .legend-phaser-inn :is(.ash099-head,.ash099-head > div,.ash099-service-overview,.ash099-service-wallet,.ash099-service-wallet i,.ash099-service-wallet i b,.ash099-service-card,#ashNote,#ashBack) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-inn .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-inn .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-inn .ash099-head > img { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-phaser-inn-copy="true"] {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
