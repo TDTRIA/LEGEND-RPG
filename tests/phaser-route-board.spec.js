@@ -24,7 +24,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
     await page.locator('[data-ash-view="regions"]').focus();
     await page.keyboard.press('Enter');
     await expect(page.locator('.reg100')).toBeVisible();
-    await expect.poll(active).toBe(false);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeRouteBoard.kind)).toBe('regions');
     await page.locator('#regBack').tap();
     await expect(page.locator('.ash100-town')).toBeVisible();
     await page.evaluate(() => {

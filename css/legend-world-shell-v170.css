@@ -635,3 +635,8 @@ body.a11y-reduced-motion #legend-world-shell-modal-root *::after {
 body.legend-world-shell-active #root .reg100-screen {
   padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
 }
+
+/* The region ledger is an inner scrolling screen; reserve the persistent HUD. */
+body.legend-world-shell-active #root .reg100 {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px));
+}

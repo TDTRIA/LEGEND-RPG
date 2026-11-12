@@ -48,7 +48,13 @@ A dedicated Ashmere/Greyfen Route Board painter is now in local verification. It
 
 <!-- coderabbit-ai-generated-section:v1:728b2f010ae20f560eddebcd88b4648354e69ec3fd79f5a25bd380ab017e8490 -->
 
-Desktop and mobile keyboard/touch navigation, saved-state preservation and fallback checks pass. A confirmed mobile return-button obstruction in the regional ledger is repaired with scoped clearance above the fixed action dock. Ashmere desktop/mobile and Greyfen mobile screenshots were inspected. All-destination and long-content acceptance remains open; the Road Network region ledger remains unmigrated.
+Desktop and mobile keyboard/touch navigation, saved-state preservation and fallback checks pass. A confirmed mobile return-button obstruction in the regional ledger is repaired with scoped clearance above the fixed action dock. Ashmere desktop/mobile and Greyfen mobile screenshots were inspected. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:304b77dd4007953856cc7d0660911e9476794e8cf08a909f1ba5f92ae76c2c6c -->
+
+All-destination and long-content Route Board acceptance remains open. The Road Network regional ledger now has guarded Phaser panels, wallet values, region names/descriptions/statuses, feedback notes and real unlock/travel/return controls. Its existing DOM artwork and semantic controls are retained. Desktop/mobile keyboard and touch checks verify exact Greyfen costs, failed transactions, unavailable Ironpass, unknown save properties, fallback restoration and return navigation. Content is clipped to the production scroll viewport, with space reserved for the HUD and bottom actions. No economy, progression, region availability or save rules changed.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

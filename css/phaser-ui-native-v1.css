@@ -1002,3 +1002,19 @@ body.legend-phaser-world-active #root .legend-phaser-route-board #ashBack {
   -webkit-text-fill-color: transparent !important;
   text-shadow: none !important;
 }
+
+/* Explicit regional-ledger presentation; unavailable regions retain their real
+   state labels and never receive synthetic unlock/travel targets. */
+body.legend-phaser-world-active #root .reg100:has(.legend-phaser-region-ledger),
+body.legend-phaser-world-active #root .legend-phaser-region-ledger :is(.reg100-head,.reg100-panel,.reg100-card,.reg100-wallet > div,.reg100-note,.reg100-btn,.reg100-state) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-region-ledger :is(.reg100-kicker,h1,h2,p,.reg100-wallet strong,.reg100-wallet span,.reg100-title > span,.reg100-meta,.reg100-state,.reg100-btn,.reg100-note) {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
