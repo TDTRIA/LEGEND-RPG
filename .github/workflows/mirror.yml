@@ -16,7 +16,7 @@ jobs:
       - name: Push to Bitbucket
         uses: heussd/mirror-to-bitbucket-github-action@v3
         with:
-          username: backwoodmamba
+          username: x-bitbucket-api-token-auth
           spacename: legend-ta
           repository: Legend-RPG
           password: ${{ secrets.BITBUCKET_TOKEN }}
