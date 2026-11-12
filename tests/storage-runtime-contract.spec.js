@@ -8,12 +8,25 @@ const gameSource = fs.readFileSync(path.join(__dirname, '../js/game.js'), 'utf8'
 
 async function openGame(page) {
   await page.goto('/');
-  await page.waitForFunction(() => Boolean(
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+    // These contract tests start after the first-visit cinematic. Verify that
+    // boot/scene readiness completes before asserting on the interactive title.
+    sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready');
+  });
+  await page.reload();
+  await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
+  await page.waitForFunction(() =>
+    window.__legendPhaserWorldReady === true &&
     window.LegendStorage &&
     window.LegendGameBootstrap &&
     window.LegendSettingsStorageV120 &&
-    window.LegendRuntimeV120
-  ));
+    window.LegendRuntimeV120,
+    null,
+    { timeout: 20000 }
+  );
+  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 10000 });
 }
 
 test.describe('LEGEND storage and fallback runtime contracts', () => {
