@@ -440,8 +440,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('#exp150Modal')).toBeVisible();
     await expect(page.locator('#exp150Modal').getByRole('dialog')).toBeVisible();
     await expect(page.locator('#exp150Modal')).toContainText(/map|road/i);
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRoadMapUi)).toBe(false);
-    await expect(page.locator('#exp150Modal .exp150-map-intro h2')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRoadMapUi)).toBe(true);
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRoadMapUiKind)).toBe('map');
+    await expect(page.locator('#exp150Modal .exp150-map-intro h2')).toHaveCSS('color','rgba(0, 0, 0, 0)');
     await attachProof(page, 'phase1-old-road-map.png');
   });
   test('combat HUD and eight live controls are painted in Phaser without replacing combat rules', async ({ page }) => {
