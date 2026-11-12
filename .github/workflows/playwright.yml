@@ -84,9 +84,13 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:website
 
-      - name: Run focused save-safety and expedition regression tests
+      - name: Run focused save-safety and runtime regression tests
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:storage
+
+      - name: Run focused Phaser Old Road scene-art parity
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:road-scene
 
       - name: Run full production regression suite
         if: github.event_name != 'pull_request'
