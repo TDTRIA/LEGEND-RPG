@@ -1,9 +1,7 @@
 /**
- * Remove stale branch refs only when the branch tip is the exact head SHA of
- * a pull request that was merged into this same repository.
- *
- * This deliberately does NOT delete branches merely because they are behind
- * main, share some commits with main, or have a closed (unmerged) PR.
+ * Delete a branch only when its current tip exactly matches the head SHA of a
+ * pull request merged into this same repository. Closed-but-unmerged PRs,
+ * changed branch tips, protected branches, and main are never deleted.
  */
 const token = process.env.GITHUB_TOKEN;
 const repository = process.env.GITHUB_REPOSITORY;
@@ -38,7 +36,8 @@ async function request(path, options = {}) {
 async function allPages(resource) {
   const records = [];
   for (let page = 1; page <= 100; page += 1) {
-    const batch = await request(`${resource}?per_page=100&page=${page}`);
+    const separator = resource.includes("?") ? "&" : "?";
+    const batch = await request(`${resource}${separator}per_page=100&page=${page}`);
     if (!Array.isArray(batch)) {
       throw new Error(`Expected an array from ${resource}, page ${page}.`);
     }
@@ -56,7 +55,7 @@ if (defaultBranch !== "main") {
 
 const [branches, pullRequests] = await Promise.all([
   allPages("/branches"),
-  allPages("/pulls?state=closed".replace("?state=closed", "?state=closed")),
+  allPages("/pulls?state=closed"),
 ]);
 
 const mergedHeads = new Map();
@@ -103,11 +102,9 @@ for (const branch of candidates) {
   await new Promise((resolve) => setTimeout(resolve, 200));
 }
 
-if (dryRun) {
-  console.log(`Dry run complete: ${candidates.length} branch refs would be removed.`);
-} else {
-  console.log(`Cleanup complete: ${deleted.length} deleted, ${skipped.length} failed.`);
-}
+console.log(dryRun
+  ? `Dry run complete: ${candidates.length} branch refs would be removed.`
+  : `Cleanup complete: ${deleted.length} deleted, ${skipped.length} failed.`);
 
 if (process.env.GITHUB_STEP_SUMMARY) {
   const fs = await import("node:fs/promises");
@@ -115,7 +112,7 @@ if (process.env.GITHUB_STEP_SUMMARY) {
     "## Merged branch cleanup",
     `- Default branch: ${defaultBranch} (never deleted)`,
     `- Branches scanned: ${branches.length}`,
-    `- Merged PR heads scanned: ${pullRequests.length}`,
+    `- Closed PRs scanned: ${pullRequests.length}`,
     `- Exact merged-head candidates: ${candidates.length}`,
     `- Mode: ${dryRun ? "dry run" : "live cleanup"}`,
     ...(dryRun ? candidates.map((b) => `- Would delete: \`${b.name}\``) : deleted.map((name) => `- Deleted: \`${name}\``)),
