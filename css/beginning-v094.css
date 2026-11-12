@@ -279,3 +279,21 @@
 .v094-choice-scene .v094-gender-emblem>span{display:grid;place-items:center;width:100%;height:100%;color:#f1dca6;font:700 2rem/1 Georgia,serif}
 .v094-choice-scene .v094-choice[data-gender="unspoken"] .v094-gender-emblem{border-color:rgba(165,184,159,.82)}
 @media(max-width:560px){.v094-choice-scene .v094-gender-emblem{width:60px;height:60px;flex-basis:60px;margin-bottom:10px}}
+
+
+/* v0.30.6 — keep the long memory-choice steps in the document scroll flow.
+   The creation card can be taller than the viewport on desktop; clipping its
+   sticky action row inside the card made the real DOM controls unreachable. */
+.v140-creation {
+  overflow: visible !important;
+}
+.v140-creation .v094-beginning-card {
+  overflow: visible !important;
+}
+.v140-creation .v094-actions {
+  position: static !important;
+  bottom: auto !important;
+  z-index: auto !important;
+  background: transparent !important;
+  padding: 10px 0 2px !important;
+}
