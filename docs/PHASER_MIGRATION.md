@@ -34,11 +34,11 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
    - [x] Journal/quest drawer.
    - [ ] Persistent shell map drawer.
    - [x] Contextual action/POI drawer.
-   - [ ] Old Road map / field-journal modal (DOM recovery fallback; Phaser painter held until parity is proven).
+   - [x] Old Road map / field-journal modal (guarded Phaser painter enabled; styled DOM modal remains the fallback when preflight fails; desktop/mobile parity verification remains open).
    - [x] Bottom navigation.
    - [ ] Shell toast, inventory and character-sheet modals.
    - [x] Mobile journal/context side-panel states and scrolling.
-   - [x] DOM fallback map/journal scrolling stays within mobile width; native Phaser modal parity remains pending.
+   - [x] DOM fallback map/journal scrolling stays within mobile width; native Phaser modal is enabled with guarded fallback; full visual parity verification remains open.
    - [ ] Remaining shell map drawer/modal scrolling.
 
 3. **Ashmere and services**
@@ -51,7 +51,7 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 4. **Old Road and expedition**
    - [ ] Departure and route-choice controls, points of interest and discoveries.
    - [x] Stage- and route-specific expedition background art uses the active Phaser environment texture, with a source-matched DOM image fallback (focused desktop/mobile parity test passed in PR #124).
-   - [ ] Connected Old Road map and field-journal modal (currently DOM recovery fallback; live route state and controls remain functional).
+   - [x] Connected Old Road map and field-journal modal (guarded Phaser painter enabled; styled DOM fallback remains available when preflight fails; full desktop/mobile parity verification remains open).
    - [ ] Road journey HUD (currently DOM recovery fallback; Phaser painter requires desktop/mobile content parity).
    - [ ] Road decision deck (currently DOM recovery fallback; original route, discovery, detour and camp handlers remain authoritative).
    - [ ] Main road scene and expedition result presentation.
