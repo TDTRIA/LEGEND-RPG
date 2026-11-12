@@ -71,7 +71,7 @@ test('traveler memory updates stay local to the Phaser creation painter and ever
 
   await clickVisible(page, '[data-personality="kind"]');
   await expect(page.locator('.v094-scene-note span')).toContainText('MEMORY ECHO');
-  await expect(page.locator('.v094-scene-note')).toContainText('Kind-Hearted');
+  await expect(page.locator('.v094-scene-note span')).toContainText(/KIND-HEARTED/i);
   const unrelatedPainterCalls = await page.evaluate(() => window.__legendCreationObserverProbe.count);
   expect(unrelatedPainterCalls, 'creation-only mutations must not repaint the town board').toBe(0);
   await expect.poll(() => page.evaluate(() =>
