@@ -81,7 +81,13 @@ async function seedRoad(page, stage = 0, route = null) {
       ...(player.flags.roadExpeditionV100 || {}),
       stage, pressure: 12, trips: 1, events: 0, finds: 0, battles: 0,
       routeChoice: route,
-      poiUsed: {}, searchUsed: {}, readUsed: {}, campWatchUsed: {}, roadClockHour: 15
+      // Every seeded checkpoint starts on the main route unless the test
+      // explicitly enters a side trip. Clear the Windbreak state before
+      // asserting the later waystation/camp presentation.
+      activeSideTripV160: null,
+      sideTripReturnNodeIdV160: null,
+      currentNodeIdV160: null,
+      poiUsed: {}, searchUsed: {}, readUsed: {}, campWatchUsed: {}, campRestUsed: {}, roadClockHour: 15
     };
     player.flags.roadFieldJournalV150 = { visitedPlaces: [], discoveries: [], routes: [], campReports: [] };
     window.LegendRuntimeV120.savePlayer(player);
