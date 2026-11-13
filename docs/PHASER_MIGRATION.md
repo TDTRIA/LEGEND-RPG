@@ -166,7 +166,14 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
 <!-- coderabbit-ai-generated-section:v1:8a4d1bdb2718ce8fa04af302be1490b6260d8c9b4f516f38026e13fd56001afb -->
 
    - [x] Work Board and job presentation verified locally in Ashmere/Greyfen: guarded native regional banners, listings, field posting, prompts, timing marker, sequence reveal/actions, focus and results. Catalog preflight checks regional job/action completeness; original semantic controls, grading, pay, XP, bonus odds and save callbacks remain authoritative. Fixed abandoned timing/sequence jobs retaining handlers after leaving, and keyboard navigation accidentally submitting work. Focused desktop/mobile checks cover exact full-save outcomes, no duplicate/abandoned pay, stale sequence isolation, fallback, Greyfen reload and level-up allocation; shared desktop/portrait/landscape screenshots inspected. Results stay clear of the fixed dock. Publication remains pending task permissions.
-   - [ ] Daily Field Board and NPC/dialogue screens. The wider release requirement to integrate daily contracts into the Work Board remains open.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:782d8109730a98bfd7a0e7eb4ecc5d788ad2d73bb990e48f5c6efef6c53f0329 -->
+
+   - [x] Daily Field Board, Road Cache and road-contract presentation verified locally: guarded native copy, panels, progress, state, controls, odds disclosure and feedback; existing daily/side-contract handlers and semantic controls retained. Desktop1440×900 and mobile390×844 checks cover exact daily claims, duplicate protection, calendar rollover, all five cache outcomes, earned-key consumption, post-acceptance report/fallback, full-save compatibility, regional return/reload and level-up focus. Expanded odds survive transactions, feedback stays clear of the dock, and native controls override the older gold-button theme. Shared desktop/mobile visuals inspected. Publication remains pending task permissions.
+   - [ ] NPC/dialogue screens. The wider release requirement to integrate daily contracts into the Work Board remains open.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

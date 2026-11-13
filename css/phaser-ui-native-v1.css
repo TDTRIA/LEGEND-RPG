@@ -1184,3 +1184,27 @@ body.legend-phaser-world-active #root [data-phaser-workboard-copy="true"] {
 }
 /* Leave room for complete introductory copy at narrow canvas font metrics. */
 #root .ash099-job-board-intro > small { line-height: 1.75; }
+
+/* Daily and story contracts keep their source controls, art and disclosure. */
+body.legend-phaser-world-active #root .ash099-terminal:has(.ash099-daily-board) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+#root .ash099-cache-odds summary { list-style: none; position: relative; padding-left: 24px; }
+#root .ash099-cache-odds summary::-webkit-details-marker { display: none; }
+#root .ash099-cache-odds summary::before { content: '▸'; position: absolute; left: 2px; }
+#root .ash099-cache-odds[open] summary::before { content: '▾'; }
+body.legend-phaser-world-active #root .legend-phaser-contracts,
+body.legend-phaser-world-active #root .legend-phaser-contracts :is(.ash099-head,.ash099-head > div,.ash099-daily-intro,.ash099-contract-intro,.ash099-daily-card,.ash099-road-cache,.ash099-cache-odds,.ash099-contract-card,.ash099-contract-objective,.ash099-daily-notice,button,summary,#dailyCacheOpen,#ashBack) {
+  background: transparent !important; border-color: transparent !important;
+  box-shadow: none !important; backdrop-filter: none !important;
+  transform: none !important; outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-contracts .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-contracts .ash099-head::after,
+body.legend-phaser-world-active #root .legend-phaser-contracts summary::before { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-contracts :is(.ash099-head > img,.ash099-daily-progress) { opacity: 0 !important; }
+body.legend-phaser-world-active #root .ash099-screen.legend-phaser-contracts [data-phaser-contracts-copy="true"],
+body.legend-phaser-world-active #root .ash099-screen.legend-phaser-contracts [data-phaser-contracts-copy="true"] > strong {
+  color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important;
+}
