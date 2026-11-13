@@ -135,7 +135,7 @@ The invasion also separated Oric from the young soldier he had mentored. They ha
 
 ### Tavin Calder — Veteran and future Second-in-Command of Ashmere
 
-**Background:** Tavin comes from an ordinary family with no military tradition. His childhood was difficult, but the details are deliberately open. As a young soldier, he was inexperienced and unsure of himself, yet determined to prove that he belonged. That determination sometimes made him reckless. Oric took him under his wing because he recognized a stubborn courage in Tavin: he kept going even when he was frightened.
+**Background:** Tavin comes from an ordinary family with no military tradition. His family struggled financially to make ends meet while he was growing up. The cause and specific circumstances of the hardship, along with the details of his family, remain open. As a young soldier, he was inexperienced and unsure of himself, yet determined to prove that he belonged. That determination sometimes made him reckless. Oric took him under his wing because he recognized a stubborn courage in Tavin: he kept going even when he was frightened.
 
 **The scar and the guilt:** During one reckless incident, Oric protected Tavin from a blow and received the prominent scar across his face. Oric scolded him afterward. Tavin carried guilt over the injury for years. After their reunion, Oric eventually tells him that he never regretted saving him; Tavin is able to let go of the guilt.
 
@@ -149,7 +149,7 @@ The invasion also separated Oric from the young soldier he had mentored. They ha
 
 **Relationship with the traveler:** Tavin can become a friendly mentor who shares practical advice and stories, offers a different kind of guidance from Oric, and helps the traveler feel welcome. His role must remain his own; he is not defined only by his history with Oric.
 
-**Open details:** Tavin's childhood and family specifics; why he first enlisted; the names and histories of his former friends; the names of Oric's former kingdom and its invader; the identity of the Ashmere resident who first trusted Oric; the timing of Tavin's eventual decision to make Ashmere home; and the exact scenes through which the traveler discovers Oric's past.
+**Open details:** the cause and exact circumstances of Tavin's family's financial hardship, his family composition and dynamics, and his childhood beyond the established economic struggle; why he first enlisted; the names and histories of his former friends; the names of Oric's former kingdom and its invader; the identity of the Ashmere resident who first trusted Oric; the timing of Tavin's eventual decision to make Ashmere home; and the exact scenes through which the traveler discovers Oric's past.
 
 ## 3. Proposed new characters in Ashmere
 
