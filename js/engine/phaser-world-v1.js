@@ -748,6 +748,7 @@
 
     create() {
       this.cameras.main.setBackgroundColor('#090e0d');
+      this.workshop = window.LegendPhaserWorkshopV1?.create(this);
       this.market = window.LegendPhaserMarketV1?.create(this);
       this.inn = window.LegendPhaserInnV1?.create(this);
       this.travelerSheet = window.LegendPhaserTravelerSheetV1?.create(this);
@@ -812,6 +813,7 @@
           landmarkIconsLoaded: this.ashmereLandmarks.every(item => this.textures.exists(item.iconKey)),
           serviceDressingCount: this.serviceDressing.filter(item => item.object?.active).length,
           serviceDressingKey: this.serviceDressingKey,
+          nativeWorkshop: this.workshop?.snapshot(),
           nativeMarket: this.market?.snapshot(),
           nativeInn: this.inn?.snapshot(),
           nativeTravelerSheet: this.travelerSheet?.snapshot(),

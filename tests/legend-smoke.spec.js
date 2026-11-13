@@ -2164,7 +2164,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('[data-ash-view="smith"]').click();
     await expect(page.locator('.ash099-forge-tabs [data-forge-tab="craft"]')).toBeVisible();
     await page.locator('.ash099-forge-tabs [data-forge-tab="craft"]').click();
-    await expect(page.getByRole('heading', { name: 'Crafting Bench' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Crafting Bench', level: 1 })).toBeVisible();
     await expect(page.locator('[data-craft="wispLanternWick"]')).toBeVisible();
   });
 

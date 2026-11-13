@@ -1135,3 +1135,32 @@ body.legend-phaser-world-active #root [data-phaser-market-copy="true"] > span {
 }
 /* Tab labels occupy one line; prevent canvas glyph rounding from wrapping them. */
 #root .ash099-market-tabs button { white-space: nowrap; }
+
+/* Equipment and ingredient state stays in the production workshop controls. */
+#root .ash099-forge-tabs button { white-space: nowrap; }
+#root .ash099-forge-gold-label { display: block; font-size: inherit; }
+body.legend-phaser-world-active #root .ash099-terminal:has(.ash099-head:is([data-ash-service="smith"],[data-ash-service="craft"])) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-workshop,
+body.legend-phaser-world-active #root .legend-phaser-workshop :is(.ash099-head,.ash099-head > div,.ash099-forge-loadout,.ash099-loadout-slot,.ash099-forge-tabs,.ash099-forge-tabs button,.ash099-gear-item,.ash099-market-summary,.ash099-craft-card,.ash099-craft-feedback,#openTrader,#ashNote,#ashBack) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-workshop .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-workshop .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-workshop .ash099-head > img { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-phaser-workshop-copy="true"],
+body.legend-phaser-world-active #root [data-phaser-workshop-copy="true"] > small {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+/* Keep ingredient names and owned counts together within their available row. */
+#root .ash099-craft-ingredient > span { flex: 1; }
+#root .ash099-craft-ingredient small { display: inline; margin: 0; font-size: inherit; }

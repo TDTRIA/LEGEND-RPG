@@ -156,7 +156,14 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
 <!-- coderabbit-ai-generated-section:v1:7af5f819f0bf262f2bb6495d87a3bdfaecc8af76cef1c300010b097e511559af -->
 
    - [x] Market presentation verified locally for Trading Post and Marsh Market: guarded Phaser banner, wallet, Buy/Sell tabs, item copy/prices/quantities, disabled/empty states and focus. Production buy, sell-one and sell-all callbacks retain exact prices, per-item Bent Coin rounding and save semantics. The source controller restores focus after rendering; malformed source restores a functioning DOM purchase flow. Current desktop1440×900 and mobile390×844 tests passed; shared desktop/portrait screenshots inspected. Removed empty geometric market pennants and replaced the branded Greyfen runtime image with a crop of its approved artwork. Publication remains pending task permissions.
-   - [ ] Blacksmith, crafting, workboard/daily board and NPC/dialogue screens.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:e6192209dfb89ad7448cd24c592806f7098d0dc781ba14fffd2a028ca85466c8 -->
+
+   - [x] Blacksmith and crafting presentation verified locally for Ashmere and Greyfen: guarded Phaser banner, current kit, category tabs, equipment comparisons, purchase/equip states, recipes, ingredient counts and feedback. Original buttons, gear art and recipe icons remain; production controllers still own exact prices, ownership/region/level rules, ingredient consumption and saves. Keyboard focus survives purchases, tab changes and crafts. Desktop1440×900 and mobile390×844 transaction tests cover full-save equality, below-purchase-level owned gear, regional equipment, rare ingredient use, fallback crafting and the 34g Greyfen parcel trade. Shared desktop/mobile screenshots inspected. Publication remains pending task permissions; this does not complete the wider crafting-effects/release gate.
+   - [ ] Workboard/daily board and NPC/dialogue screens.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 
