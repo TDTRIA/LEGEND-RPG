@@ -3026,12 +3026,20 @@ test('looping intro and creation atmosphere does not block the Phaser screen pai
 
   // The identity scene includes an intentionally infinite presence-haze loop.
   // That decorative loop must not keep the creation painter waiting forever.
+  // CSS entrances run on browser time; a stalled renderer clock must not delay
+  // the follow-up layout after those entrances finish.
+  await page.evaluate(() => {
+    window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').time.timeScale = 0;
+  });
   await page.evaluate(() => window.LegendBeginningV094.startCreation());
   await expect(page.locator('.v140-creation')).toBeVisible();
   await page.locator('#v094Name').fill('OverlayProof');
   await page.locator('#v094Next').click();
   await expect(page.locator('[data-gender="unspoken"]')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCreationUi)).toBe(true);
+  await page.evaluate(() => {
+    window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').time.timeScale = 1;
+  });
 
   await page.locator('[data-gender="unspoken"]').click();
   await page.locator('#v094Next').click();
@@ -3049,8 +3057,21 @@ test('looping intro and creation atmosphere does not block the Phaser screen pai
   // The Old Road prologue has infinite drifting-background and lantern-sweep
   // animations. Those loops must not block its Phaser-native panels either.
   await expect(page.locator('.opening-road-v140-prologue')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(true);
+  try {
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(true);
+  } catch (error) {
+    await test.info().attach('opening-handoff-state', {
+      body: JSON.stringify(await page.evaluate(() => {
+        const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+        return { art: scene.nativeScreenArtState, surface: scene.surface,
+          finiteEntrance: scene.hasFiniteEntranceAnimation(document.querySelector('.opening-road-v140')),
+          retryPending: scene.nativeOpeningUiLayoutEvent != null };
+      })), contentType: 'application/json'
+    });
+    throw error;
+  }
   const layers = await page.evaluate(() => ({
+    openingArt: window.LegendPhaserWorldV1.snapshot()?.nativeScreenArt?.find(item => item.selector === '.opening-road-v140-bg'),
     creation: document.body.classList.contains('legend-phaser-creation-ui-active'),
     opening: document.body.classList.contains('legend-phaser-opening-ui-active'),
     creationScreenCount: document.querySelectorAll('#root .v140-creation:not(.v140-arrival)').length,
@@ -3059,6 +3080,8 @@ test('looping intro and creation atmosphere does not block the Phaser screen pai
     openingObjects: window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUiObjectCount || 0
   }));
   expect(layers.creation).toBe(false);
+  expect(layers.openingArt).toMatchObject({ active: true, sourceMatches: true, textureLoaded: true,
+    expectedSource: 'assets/locations/roads/location_old_road_main_v1.jpg' });
   expect(layers.opening).toBe(true);
   expect(layers.creationScreenCount).toBe(0);
   expect(layers.openingScreenCount).toBe(1);

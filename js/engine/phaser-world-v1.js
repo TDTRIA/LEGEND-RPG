@@ -204,7 +204,7 @@
     if (!host) return;
     const player = loadPlayer();
     let environment = 'title';
-    if (host.querySelector('.opening-road-v140')) environment = 'road';
+    if (host.querySelector('.opening-road-v140')) environment = 'blackroot';
     else if (host.querySelector('.opening-lore-v220')) environment = 'title';
     else if (host.querySelector('.v140-creation')) environment = 'title';
     else if (host.querySelector('.rpg-battle')) {
@@ -538,6 +538,7 @@
       this.awakeningActive = false;
       this.bootObjects = [];
       this.bootEvents = [];
+      this.bootDeadline = null;
       this.bootCompleteCallback = null;
       this.surface = '';
       this.surfaceTransitionCount = 0;
@@ -759,6 +760,12 @@
       this.inventoryOverlay = window.LegendPhaserInventoryOverlayV1?.create(this);
       this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
       this.motionReduced = reducedMotion();
+      this.events.once('shutdown', () => {
+        window.clearTimeout(this.nativeCreationUiLayoutEvent);
+        this.nativeCreationUiLayoutEvent = null;
+        window.clearTimeout(this.nativeOpeningUiLayoutEvent);
+        this.nativeOpeningUiLayoutEvent = null;
+      });
       this.scale.on('resize', () => {
         this.layoutBackground();
         this.syncNativeRoadSceneArt();
@@ -877,6 +884,8 @@
           nativeCreationUiSceneSize: this.dimensions(),
           nativeCreationUiScrollTargetBound: Boolean(this.nativeCreationUiScrollTarget),
           nativeOpeningUi: this.nativeOpeningUiActive,
+          nativeOpeningUiLabels: this.shellLabelSnapshot(this.nativeOpeningUiObjects),
+          nativeOpeningUiFailure: this.nativeOpeningUiFailure || '',
           nativeOpeningUiObjectCount: this.nativeOpeningUiObjects.filter(item => item?.active).length,
           nativeOpeningUiControlBounds: this.nativeOpeningUiControls.map(item => ({ id: item.id, label: item.label, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible) })),
           nativeOpeningUiSceneSize: this.dimensions(),
@@ -1033,6 +1042,11 @@
       }
       this.awakeningActive = true;
       this.bootCompleteCallback = onComplete;
+      this.events.once('shutdown', () => {
+        window.clearTimeout(this.bootDeadline);
+        this.bootDeadline = null;
+        this.bootCompleteCallback = null;
+      });
       const size = this.dimensions();
       const cx = size.width / 2;
       const cy = size.height / 2;
@@ -1179,7 +1193,9 @@
         });
         this.bootEvents.push(event);
       });
-      this.bootEvents.push(this.time.delayedCall(duration, () => this.finishEngineAwakening(false)));
+      // Navigation must not wait for the renderer's smoothed game clock: low
+      // frame rates can stretch a short opening into the startup watchdog.
+      this.bootDeadline = window.setTimeout(() => this.finishEngineAwakening(false), duration);
       const skip = byId('engine-skip');
       if (skip) skip.hidden = false;
       this.input.keyboard?.once('keydown', () => this.finishEngineAwakening(true));
@@ -1192,6 +1208,8 @@
     finishEngineAwakening(skipped = false) {
       if (!this.awakeningActive) return;
       this.awakeningActive = false;
+      window.clearTimeout(this.bootDeadline);
+      this.bootDeadline = null;
       this.bootEvents.forEach(event => event?.remove?.(false));
       this.bootEvents = [];
       this.bootObjects.forEach(object => {
@@ -1201,7 +1219,15 @@
       this.bootObjects = [];
       this.engineAwakened = true;
       this.cameras.main.setZoom(1);
+      let finished = false;
       const finish = () => {
+        if (finished) return;
+        finished = true;
+        window.clearTimeout(this.bootDeadline);
+        this.bootDeadline = null;
+        objects.forEach(object => {
+          if (object?.active) this.tweens.killTweensOf(object);
+        });
         objects.forEach(object => object?.active && object.destroy());
         this.cameras.main.flash(reducedMotion() ? 0 : skipped ? 100 : 220, 202, 178, 116, true);
         const callback = this.bootCompleteCallback;
@@ -1221,6 +1247,7 @@
         ease: 'Sine.easeInOut',
         onComplete: finish
       });
+      this.bootDeadline = window.setTimeout(finish, 620);
       const veil = objects[0];
       if (veil?.active) this.tweens.add({ targets: veil, alpha: 0, duration: 660, ease: 'Sine.easeInOut' });
     }
@@ -1939,7 +1966,7 @@
     }
 
     clearNativeCreationUi(removeClass = true) {
-      this.nativeCreationUiLayoutEvent?.remove?.(false);
+      window.clearTimeout(this.nativeCreationUiLayoutEvent);
       this.nativeCreationUiLayoutEvent = null;
       if (this.nativeCreationUiScrollTarget) {
         this.nativeCreationUiScrollTarget.removeEventListener('scroll', this.nativeCreationUiScrollTarget.__legendCreationScrollHandler);
@@ -2043,14 +2070,14 @@
         // A new creation step can have a different layout. Never leave the
         // previous step's Phaser cards over the incoming DOM while it animates.
         this.clearNativeCreationUi();
-        this.nativeCreationUiLayoutEvent?.remove?.(false);
-        this.nativeCreationUiLayoutEvent = this.time.delayedCall(720, () => {
+        window.clearTimeout(this.nativeCreationUiLayoutEvent);
+        this.nativeCreationUiLayoutEvent = window.setTimeout(() => {
           this.nativeCreationUiLayoutEvent = null;
           this.syncNativeCreationUi(surface);
-        });
+        }, 720);
         return;
       }
-      this.nativeCreationUiLayoutEvent?.remove?.(false);
+      window.clearTimeout(this.nativeCreationUiLayoutEvent);
       this.nativeCreationUiLayoutEvent = null;
 
       const screenImages = Array.from(screen.querySelectorAll('img')).filter(img =>
@@ -2068,11 +2095,11 @@
       });
       const pendingImages = screenImages.some(img => !img.complete);
       if (pendingImages) {
-        this.nativeCreationUiLayoutEvent?.remove?.(false);
-        this.nativeCreationUiLayoutEvent = this.time.delayedCall(240, () => {
+        window.clearTimeout(this.nativeCreationUiLayoutEvent);
+        this.nativeCreationUiLayoutEvent = window.setTimeout(() => {
           this.nativeCreationUiLayoutEvent = null;
           this.syncNativeCreationUi(surface);
-        });
+        }, 240);
         return;
       }
 
@@ -2134,10 +2161,10 @@
         this.nativeCreationUiScrollTarget = window;
         const handler = () => {
           if (this.nativeCreationUiLayoutEvent) return;
-          this.nativeCreationUiLayoutEvent = this.time.delayedCall(24, () => {
+          this.nativeCreationUiLayoutEvent = window.setTimeout(() => {
             this.nativeCreationUiLayoutEvent = null;
             this.syncNativeCreationUi(surface);
-          });
+          }, 24);
         };
         window.__legendCreationScrollHandler = handler;
         window.addEventListener('scroll', handler, { passive: true });
@@ -2425,7 +2452,7 @@
     }
 
     clearNativeOpeningUi(removeClass = true) {
-      this.nativeOpeningUiLayoutEvent?.remove?.(false);
+      window.clearTimeout(this.nativeOpeningUiLayoutEvent);
       this.nativeOpeningUiLayoutEvent = null;
       if (this.nativeOpeningUiScrollTarget) {
         this.nativeOpeningUiScrollTarget.removeEventListener('scroll', this.nativeOpeningUiScrollTarget.__legendOpeningScrollHandler);
@@ -2482,14 +2509,14 @@
         // Prologue backgrounds and lantern sweeps loop forever; only wait for
         // finite panel entrances, and reveal DOM paint until the new frame is ready.
         this.clearNativeOpeningUi();
-        this.nativeOpeningUiLayoutEvent?.remove?.(false);
-        this.nativeOpeningUiLayoutEvent = this.time.delayedCall(700, () => {
+        window.clearTimeout(this.nativeOpeningUiLayoutEvent);
+        this.nativeOpeningUiLayoutEvent = window.setTimeout(() => {
           this.nativeOpeningUiLayoutEvent = null;
           this.syncNativeOpeningUi(surface);
-        });
+        }, 700);
         return;
       }
-      this.nativeOpeningUiLayoutEvent?.remove?.(false);
+      window.clearTimeout(this.nativeOpeningUiLayoutEvent);
       this.nativeOpeningUiLayoutEvent = null;
 
       const size = this.dimensions();
@@ -2504,8 +2531,8 @@
       const sceneNotes = Array.from(screen.querySelectorAll('.opening-road-v140-scene-note'));
       const quotes = Array.from(screen.querySelectorAll('blockquote'));
       const buttons = Array.from(screen.querySelectorAll('.opening-road-v140-choice,.opening-road-v140-primary,.opening-road-v140-secondary'));
-      const textNodes = Array.from(screen.querySelectorAll('.opening-road-v140-kicker,h1,h2,p,blockquote strong,blockquote p,.opening-road-v140-choice strong,.opening-road-v140-choice span'))
-        .filter(node => !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
+      const textNodes = Array.from(screen.querySelectorAll('.opening-road-v140-kicker,.opening-road-v140-prologue-rule > span,.opening-road-v140-scene-note > span,h1,h2,p,blockquote strong'))
+        .filter(node => !node.closest('[hidden],button') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
       const panels = [...cards, ...sceneNotes, ...quotes, ...buttons];
       const signature = JSON.stringify([
         screen.className, Math.round(window.innerWidth), Math.round(window.innerHeight), screen.scrollTop,
@@ -2524,16 +2551,16 @@
       document.body?.classList.add('legend-phaser-opening-ui-active');
 
       if (!this.nativeOpeningUiScrollTarget) {
-        this.nativeOpeningUiScrollTarget = screen;
+        this.nativeOpeningUiScrollTarget = window;
         const handler = () => {
-          this.nativeOpeningUiLayoutEvent?.remove?.(false);
-          this.nativeOpeningUiLayoutEvent = this.time.delayedCall(48, () => {
+          window.clearTimeout(this.nativeOpeningUiLayoutEvent);
+          this.nativeOpeningUiLayoutEvent = window.setTimeout(() => {
             this.nativeOpeningUiLayoutEvent = null;
             this.syncNativeOpeningUi(surface);
-          });
+          }, 48);
         };
-        screen.__legendOpeningScrollHandler = handler;
-        screen.addEventListener('scroll', handler, { passive: true });
+        window.__legendOpeningScrollHandler = handler;
+        window.addEventListener('scroll', handler, { passive: true });
       }
 
       const add = (object, depth = 13) => {
@@ -2563,7 +2590,7 @@
         const choice = node.classList.contains('opening-road-v140-choice');
         const primary = node.classList.contains('opening-road-v140-primary');
         drawPanel(node, {
-          fill: primary ? 0x674b20 : choice ? 0x152319 : 0x111a13,
+          fill: primary ? 0x233226 : choice ? 0x152319 : 0x111a13,
           alpha: 0.98,
           stroke: primary ? 0xe8c878 : 0xc6a666,
           strokeAlpha: primary ? 0.94 : 0.68,
@@ -2572,32 +2599,33 @@
         });
       });
 
-      textNodes.forEach(node => {
+      let copyFits = true;
+      this.nativeOpeningUiFailure = '';
+      const makeText = (node, color = '#e5e0d1') => {
         const rect = rectFor(node);
-        if (!rect) return;
-        const style = window.getComputedStyle(node);
-        let text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
-        if (style.textTransform === 'uppercase') text = text.toLocaleUpperCase();
-        if (!text) return;
-        let color = style.color || '#e5e0d1';
-        if (node.matches('.opening-road-v140-kicker,.opening-road-v140-scene-note > span,blockquote strong')) color = '#e2c47f';
-        else if (node.matches('h1,h2')) color = '#f4e8c6';
-        else if (node.matches('.opening-road-v140-choice strong')) color = '#fff0ca';
-        else if (node.matches('.opening-road-v140-choice span')) color = '#c4d0c4';
-        else if (node.matches('.opening-road-v140-footnote')) color = '#a7b5a8';
-        const fontSize = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
-        const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.45;
-        add(this.add.text(rect.x, rect.y, text, {
-          fontFamily: style.fontFamily || 'Georgia, Times New Roman, serif',
-          fontSize: fontSize + 'px',
-          fontStyle: Number(style.fontWeight) >= 650 || style.fontWeight === 'bold' ? 'bold' : (style.fontStyle || 'normal'),
-          color,
-          lineSpacing: Math.max(0, (lineHeight - (parseFloat(style.fontSize) || 14)) * sy),
-          letterSpacing: Number.isFinite(parseFloat(style.letterSpacing)) ? Math.max(0, parseFloat(style.letterSpacing) * sx) : 0,
-          wordWrap: { width: Math.max(36, rect.width), useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 1, bottom: 2 },
-          align: style.textAlign || 'left'
-        }).setOrigin(0, 0), 14);
+        if (!rect || !node.textContent.trim()) return;
+        const allowance = node.matches('h1,h2') ? 8 * sx : 0;
+        const label = this.createShellLabel(node, { ...rect, width: rect.width + allowance }, color, sx, sy, 14);
+        if (!label) {
+          copyFits = false;
+          this.nativeOpeningUiFailure = 'Opening copy does not fit: ' + node.tagName + ' ' + node.textContent.trim();
+          return;
+        }
+        if (label.displayWidth > rect.width) label.setScale(label.scaleX * rect.width / label.displayWidth, 1);
+        const css = getComputedStyle(node);
+        const lines = label.getWrappedText().length;
+        const available = rect.height - (parseFloat(css.paddingTop) + parseFloat(css.paddingBottom) +
+          parseFloat(css.borderTopWidth) + parseFloat(css.borderBottomWidth) || 0) * sy;
+        if (lines > 1 && available > label.height) label.setLineSpacing((available - label.height) / (lines - 1));
+        if (label.displayHeight > available) label.setScale(label.scaleX, available / label.height);
+        label.setData('shellLabel', { sourceText: node.textContent.trim(), sourceBounds: rect });
+        add(label, 14);
+      };
+      textNodes.forEach(node => {
+        const color = node.matches('.opening-road-v140-kicker,.opening-road-v140-scene-note > span,.opening-road-v140-prologue-rule > span,blockquote strong') ? '#e2c47f'
+          : node.matches('h1,h2') ? '#f4e8c6'
+          : node.matches('.opening-road-v140-footnote') ? '#c4d0c4' : '#e5e0d1';
+        makeText(node, color);
       });
 
       buttons.forEach((button, index) => {
@@ -2613,31 +2641,8 @@
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         const objects = [focusFrame];
         if (button.classList.contains('opening-road-v140-choice')) {
-          const title = button.querySelector('strong')?.textContent?.trim() || label;
-          const description = button.querySelector('span')?.textContent?.trim() || '';
-          objects.push(this.add.text(12 * sx, rect.height * 0.30, title, {
-            fontFamily: 'Georgia, Times New Roman, serif',
-            fontSize: Math.max(10, 15 * sy) + 'px',
-            fontStyle: 'bold',
-            color: '#fff0ca',
-            wordWrap: { width: Math.max(32, rect.width - 24 * sx), useAdvancedWrap: true }
-          }).setOrigin(0, 0.5));
-          objects.push(this.add.text(12 * sx, rect.height * 0.72, description, {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: Math.max(9, 12 * sy) + 'px',
-            color: '#c4d0c4',
-            wordWrap: { width: Math.max(32, rect.width - 24 * sx), useAdvancedWrap: true }
-          }).setOrigin(0, 0.5));
-        } else {
-          objects.push(this.add.text(rect.width / 2, rect.height / 2, label, {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: Math.max(10, 14 * sy) + 'px',
-            fontStyle: 'bold',
-            color: button.classList.contains('opening-road-v140-primary') ? '#261c08' : '#f4efdd',
-            align: 'center',
-            wordWrap: { width: Math.max(36, rect.width - 22 * sx), useAdvancedWrap: true }
-          }).setOrigin(0.5));
-        }
+          for (const node of button.querySelectorAll('strong,span')) makeText(node, node.tagName === 'STRONG' ? '#fff0ca' : '#c4d0c4');
+        } else makeText(button, '#fff0ca');
         container.add(objects);
         add(container, 15);
         const control = { id, x: rect.x, y: rect.y, width: rect.width, height: rect.height, container, focusFrame, button, label };
@@ -2650,6 +2655,7 @@
           button.addEventListener('pointerleave', () => this.setNativeOpeningControlFocus(id, document.activeElement === button));
         }
       });
+      if (!copyFits) this.clearNativeOpeningUi();
     }
 
     clearNativeGameplayUi(removeClass = true) {
@@ -6608,6 +6614,9 @@
           onComplete: () => {
             this.syncNativeRoadSceneArt();
             this.syncNativeScreenArt();
+            // The prologue may have deferred its panels until this exact
+            // background became opaque. Resume that painter after handoff.
+            this.syncNativeOpeningUi(this.surface);
           }
         });
       }

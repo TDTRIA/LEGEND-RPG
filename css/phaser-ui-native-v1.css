@@ -270,6 +270,12 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
 /* Oric's prologue, response, ambush and aftermath now use native scene panels.
    The original semantic content and button targets remain available to assistive
    technology and continue to invoke the existing production tutorial controller. */
+/* Give browser and canvas glyphs the same readable heading line boxes. */
+#root .opening-road-v140 h1,
+#root .opening-road-v140 h2 {
+  line-height: 1.15 !important;
+  letter-spacing: 0 !important;
+}
 body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 {
   color: transparent !important;
   background: transparent !important;
@@ -289,6 +295,7 @@ body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-r
   display: none !important;
   content: none !important;
 }
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-kicker,
 body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 h1,
 body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 h2,
 body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 p,

@@ -191,9 +191,12 @@ test('Phaser road background follows the live route and stage, with a DOM image 
         delete window.__legendRoadTweenTest;
       });
     }
+    // The renderer's smoothed animation clock can advance slower than wall
+    // time in software Chromium. Keep the strict partial-fade assertions above
+    // and wait for the real completion rather than forcing its opacity.
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
-    )).toBe(true);
+    ), { timeout: 15000 }).toBe(true);
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.backgroundAlpha || 0
     )).toBeGreaterThanOrEqual(0.99);
@@ -217,7 +220,7 @@ test('Phaser road background follows the live route and stage, with a DOM image 
       )).toBe(item.environment);
       await expect.poll(() => page.evaluate(() =>
         window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadSceneArt?.active
-      )).toBe(true);
+      ), { timeout: 15000 }).toBe(true);
 
       const proof = await page.evaluate(() => {
         const snapshot = window.LegendPhaserWorldV1.snapshot();

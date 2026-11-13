@@ -42,7 +42,41 @@ The story and the systems should reinforce that loop. Town is a place the player
 
 <!-- coderabbit-ai-generated-section:v1:62b2254da402f9f1a5af33cc3ec3636a14af74ff5c1b9da71d600d2a61027609 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:19bb67543391114c1b5b86ace4c4d1b97e414a9337c9697559a0e47c51ecdfbf -->
+
+## Opening handoff stability — 2026-11-13 (local)
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:1ee792c215bf9d855968fcae758710b706e8f122ad6a71fb52d560967218307f -->
+
+The native awakening could keep the title hidden when slow rendering stretched Phaser's animation clock. Its existing opening and fade durations now have browser-timer deadlines, with cancellation on skip/shutdown and one completion callback. The three mandatory annals, player saves and gameplay remain unchanged. Desktop/mobile stalled-clock regressions cover title recovery, cleared opening objects, a single ready event and entry into the mandatory annals. The original DOM loading screen is explicitly tested with the Phaser bridge download unavailable. This is a bounded startup repair; remaining migration and publishing gates stay open. Creation layout retries also follow browser time so completed CSS entrances, image loading and scrolling do not wait on a slow renderer clock. The animation regression now holds that clock still while checking native creation activation. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:383f6a78e5e91e802ef1e1bf4b87b96c088b8da0107f5853055639509424a7df -->
+
+Screenshot inspection still shows creation step-counter/caption wrapping and mobile text-spacing issues; those presentation gates remain open. The Oric prologue was also permanently falling back because its authored Old Road JPEG was compared with the South Fork texture. It now selects the existing matching texture and resumes its native painter after the background becomes opaque. Exact-art validation remains mandatory, and the creation-to-Oric regression verifies this handoff. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:54fa390e59f8cec23585625f1fa8f8b6f41007aaa0b686094322900cc909ca66 -->
+
+Oric layout retries use the same cancellable browser scheduling. Visual verification then exposed transparent body colors, missing rule text and a dark action label in the previously inactive painter. The painter now uses explicit readable colors and guarded complete-text labels, gives headings matching browser/canvas line boxes, restores the full DOM view on failed fit, and follows document scrolling. Dedicated desktop/mobile checks cover actual painted copy, controls, fallback and preserved saved responses. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:6adff0763d5e00edf89a6d5b049f09131a7505da0eff3808b7e86db3e8dc450d -->
+
+Visual acceptance for the remaining creation typography is still open. Final validation combines seven fresh affected-journey checks with five equivalent boot/title passes: native copy and fallback at desktop/mobile sizes, creation lifecycle and controls, depleted departure, complete road-art parity, and Oric’s ACT tutorial through a secured expedition and return. Syntax checks pass for 98 production scripts and 59 specs; desktop/mobile prologue screenshots were inspected. The broader regression checkpoint and Bitbucket-to-GitHub publication remain outstanding.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 ## Old Road readability repair — 2026-11-13 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 Production inspection reproduced legacy opaque/blurred panels above Phaser text, cropped health and journey labels, and road content crossing the fixed HUD and action dock. Active road painters now clear those duplicate DOM backgrounds, fit complete labels with readable DOM recovery, and clip their content to the measured shell viewport. The map/journal foreground hides underlying road controls and keeps its close button outside that clip. Mobile header text no longer overlaps scene artwork.
 
