@@ -1477,3 +1477,19 @@ body.legend-phaser-world-active #root [data-phaser-storehouse="true"] .ash099-he
 body.legend-phaser-world-active #root [data-phaser-storehouse="true"] .ash099-head::after { display:none !important; }
 
 body.legend-phaser-world-active #root [data-phaser-storehouse="true"] button:focus-visible { outline:none !important; }
+
+/* Regional encounters rendered directly in root need the same shell clearance. */
+body.legend-world-shell-active #root > .rpg-battle {
+  padding-top:calc(var(--legend-combat-hud-height,72px) + 12px) !important;
+  padding-bottom:90px !important;
+}
+#root .rpg-battle:focus { outline:none; }
+
+/* Keep regional status words readable in compact encounter reports. */
+#root .v152-results-metrics > div strong { overflow-wrap:anywhere; line-height:1.2; }
+@media(max-width:480px) {
+  #root .v152-results-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  #root .v152-results-metrics > div:last-child { grid-column:1/-1; }
+}
+#root .v152-combat-results:not([data-legend-phaser-combat-results="true"]) :is(.v152-results-heading,.v152-results-duel,.v152-results-rewards) { background:rgba(16,26,18,.97) !important; }
+#root .v152-combat-results:not([data-legend-phaser-combat-results="true"]) .v152-results-heading :is(h1,p) { text-shadow:none !important; }

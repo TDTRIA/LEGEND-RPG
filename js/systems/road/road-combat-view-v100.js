@@ -36,14 +36,16 @@
     };
 function render(pl, enemy, note = '', w, a, technique) {
  if (!pl) return;
+ const entering=!document.querySelector('#root .rpg-battle');
+ const focusedControl=document.activeElement?.closest('.rpg-battle button')?.id;
  const intentText=enemy.staggered?'Staggered · its guard is open. Strike now for bonus damage.':enemy.snared?'Snared · its next blow is weakened':enemy.intent==='heavy'?'Heavy wind-up · GUARD or disrupt it':enemy.intent==='guardbreak'?'Guard-break · strike first or use ACT':'Quick strike · GUARD softens the hit';
  const foeIntentClass=enemy.staggered?'staggered':enemy.snared?'snared':enemy.intent==='heavy'?'heavy':enemy.intent==='guardbreak'?'guardbreak':'attack';
  const foeIntentLabel=foeIntentClass==='staggered'?'STAGGERED':foeIntentClass==='heavy'?'HEAVY WIND-UP':foeIntentClass==='guardbreak'?'GUARD BREAK':foeIntentClass==='snared'?'SNARED':'OPPONENT';
  const stableEnemies=A().enemies||{},legacyArt=A().byName?.(enemy.name)||'',enemyName=String(enemy.name||'').toLowerCase();
  const location=String(encounterLocation(pl,enemy)||'').toLowerCase();
- const arenaKey=enemy.greyfenMarshV160||location.includes('greyfen')?'greyfen':enemy.dungeonV100||location.includes('cellar')?'cellar':'road';
+ const arenaKey=enemy.greyfenStorehouseV170||enemy.greyfenMarshV160||location.includes('greyfen')?'greyfen':enemy.dungeonV100||location.includes('cellar')?'cellar':'road';
  const arenaArt={road:'assets/generated/locations/old-road-south-fork.webp',greyfen:'assets/generated/locations/greyfen-marsh-walkway.webp',cellar:'assets/generated/locations/bell-cellar-undercroft.webp'}[arenaKey];
- const art=enemy.art||(enemyName.includes('wolf')?stableEnemies.blackrootWolf:enemyName.includes('goblin')?stableEnemies.roadGoblin:enemyName.includes('wisp')?stableEnemies.lanternWisp:enemyName.includes('sentinel')?stableEnemies.mireboundSentinel:enemyName.includes('bandit')?A().classes?.Thief:enemyName.includes('raider')?A().classes?.Ranger:'')||legacyArt;
+ const art=enemy.art||(enemyName.includes('wolf')?stableEnemies.blackrootWolf:enemyName.includes('goblin')?stableEnemies.roadGoblin:enemyName.includes('wisp')?stableEnemies.lanternWisp:(enemyName.includes('mirebound')||enemyName.includes('sentinel'))?stableEnemies.mireboundSentinel:enemyName.includes('bandit')?A().classes?.Thief:enemyName.includes('raider')?A().classes?.Ranger:'')||legacyArt;
  const battleLog=(Array.isArray(enemy.combatLog)?enemy.combatLog:[]).slice(-4);
  const heroArt=A().travelerPortrait?.(pl)||A().classes?.[pl.className]||'',health=hpPct(pl);
  const playerHit=/hits you for|blow|damage taken/i.test(note),foeHit=/lands for|attack lands|Heavy Strike lands|Rune Bolt lands|Cleave lands|Trap Shot lands|Swipe lands/i.test(note);
@@ -84,6 +86,14 @@ function render(pl, enemy, note = '', w, a, technique) {
  button('poultice',()=>onCommand?.(enemy,'poultice'));
  button('flee',()=>onRetreat?.(enemy));
  button('battleSound',()=>{ onToggleSound?.(); const control=document.getElementById('battleSound'); if(control)control.textContent=soundOn()?'♫ SOUND ON':'♫ SOUND OFF'; });
+ if(entering){
+  const root=document.getElementById('root'),battle=root?.querySelector('.rpg-battle');
+  if(root)root.scrollTop=0;window.scrollTo(0,0);
+  if(battle){battle.tabIndex=-1;battle.focus({preventScroll:true});}
+ }else if(focusedControl){
+  const control=document.getElementById(focusedControl);
+  (control&&!control.disabled?control:document.getElementById(openingEncounter?'skill':'strike'))?.focus();
+ }
 }
     return Object.freeze({ render });
   }

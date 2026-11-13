@@ -136,7 +136,23 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:267d085d5dcd14c1fc083d64f97c2b87ca47e1d8b9c0b3a5aec89a480de8635d -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:67830791360a1577eb9a7e1de3e2de7c384ab64bdece742fd7541fb6206a06e4 -->
+
+## Greyfen combat and encounter reports — 2026-11-13 (verified locally)
+
+Storehouse Keeper encounters now use the approved Greyfen environment and Mirebound enemy artwork. Baseline regressions reproduced the incorrect Bell Cellar arena and innkeeper portrait. Direct-root Marsh battles now reserve the measured shell HUD height and clip retained controls to the same viewport as Phaser. Entering combat resets stale room scrolling; live keyboard commands retain focus, moving to Strike when ACT enters cooldown. Existing production handlers and complete DOM fallback remain authoritative.
+
+The nine regional cases cover desktop keyboard/mobile touch, Storehouse victory/defeat/report settlement, Reed Wisp victory/defeat and both return paths, Ferry Raider and Sentinel victory/retreat/defeat, live supply costs, cooldown focus, rotation and missing-art fallback. A first regional run found a mobile Ferry report fit failure: WITHDRAWN overflowed its narrow metric card. Two-column mobile metrics now keep the complete status readable; the DOM fallback also has opaque readable panels. Both affected cases passed after the correction; seven equivalent regional passes remain valid. Twenty fresh shared-consumer checks pass: fifteen combat-rule contracts, common combat presentation, Bell Cellar touch/retreat, and three Old Road victory/growth/defeat report cases. Syntax checks pass for 106 production scripts and 71 test specs.
+
+Shared Chromium screenshots were inspected at desktop1440×900, portrait390×844 and landscape844×390, including focused retreat, regional reports, return actions and DOM fallback. Preview used memory-only synthetic save wrappers; the original stored player record was verified unchanged and the normal title restored. New isolated tests verify exact regional rewards, pressure and supply effects, Old Road isolation and unknown fields. Gameplay calculations, reward amounts, storage keys and canon are unchanged; prior storage-owner checks remain valid. This is focused acceptance, not a full release regression run.
+
+Next: Storehouse shell actions and regional journal context during encounters/results. Dedicated Storehouse interior artwork and broader Greyfen/first-three-towns acceptance remain open. The current approved regional artwork is retained. PR creation, merging and publishing remain unavailable under this task's Manual permissions. Reverting this presentation slice restores the prior combat view; no save migration is required.
+
 ## Silted Storehouse rooms and save compatibility — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The existing Storehouse now has guarded Phaser presentation for its locked entry, preparation, loading walk, records bay, restored encounter entrance, won room, failed attempt and completed report. Approved regional artwork, headings, status values, authored evidence, optional salvage, action details and live feedback are painted from the production view. Semantic controls retain their original callbacks. Missing actions, artwork, required fields or unhandled copy restore the complete DOM. Heading focus and scroll reset follow room changes; focused controls and Back remain usable above the fixed dock.
 
@@ -574,7 +590,14 @@ The third production annal now uses the exact approved “The Peace, Written Dow
 <!-- coderabbit-ai-generated-section:v1:bf1875bc9bd730b14793243d81c8681a308732f38c8f9f5b6b3ff15d2af827bb -->
 
    - [x] Storehouse room/report presentation and save-extension preservation verified locally with original route, discovery, retreat and reward callbacks, desktop/mobile visuals and complete DOM fallback.
-   - [ ] Regional shell/journal context and combat presentation acceptance; dedicated Storehouse interior artwork remains a release requirement.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:392ef7315c51adf80712df810de758f03bbd75e6ae64a5815210536668fa0e3a -->
+
+   - [x] Regional combat and encounter-result presentation verified locally with production commands, exact outcomes, desktop/mobile controls and DOM fallback.
+   - [ ] Storehouse shell and regional journal context during encounters/results; dedicated Storehouse interior artwork remains a release requirement.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

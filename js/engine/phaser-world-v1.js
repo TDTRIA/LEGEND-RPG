@@ -4345,7 +4345,7 @@
       const root = document.getElementById('root');
       if (!root) return;
       const shell = document.getElementById('legend-world-shell-root');
-      const enabled = shell && !shell.hidden && root.querySelector('.gss170-page,.gfm160-page,.v152-combat-results,.ash100-town,.ash099-terminal,.reg100,.exp100:has(.exp150-world-page,.exp100-outcome,.rpg-battle)');
+      const enabled = shell && !shell.hidden && root.querySelector('.rpg-battle,.gss170-page,.gfm160-page,.v152-combat-results,.ash100-town,.ash099-terminal,.reg100,.exp100:has(.exp150-world-page,.exp100-outcome,.rpg-battle)');
       if (!enabled) { root.removeAttribute('data-legend-shell-clip'); return; }
       const box = root.getBoundingClientRect();
       const hud = shell.querySelector('.lws-hud')?.getBoundingClientRect();
@@ -5279,7 +5279,7 @@
         }
       }
 
-      const wrapper = battle.closest('.exp100');
+      const wrapper = battle.closest('.exp100') || battle;
       const hud = document.querySelector('#legend-world-shell-root:not([hidden]) .lws-hud');
       if (wrapper && hud) {
         const height = Math.ceil(hud.getBoundingClientRect().height) + 'px';
