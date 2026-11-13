@@ -153,12 +153,21 @@
     if (!s.active) beginNewTrip(pl);
     return render();
   }
+  function focusHeading(host) {
+    const heading = host?.querySelector('h1');
+    if (!heading || document.getElementById('legendLevelUpOverlay')) return;
+    host.scrollTop = 0;
+    window.scrollTo(0, 0);
+    heading.tabIndex = -1;
+    heading.focus({ preventScroll: true });
+  }
   function renderNotice(message) {
     const host = root();
     if (!host) return;
     host.innerHTML =
       '<main class="gfm160-page" aria-label="Greyfen Marsh Path notice"><section class="gfm160-panel"><span class="gfm160-kicker">GREYFEN · FIELD NOTICE</span><h1>Marsh Path</h1><p>' + esc(message) + '</p><button class="gfm160-action is-primary" id="gfm160NoticeReturn" type="button">Return to Greyfen</button></section></main>';
     document.getElementById('gfm160NoticeReturn')?.addEventListener('click', returnToGreyfen);
+    focusHeading(host);
   }
   function routeChoiceMarkup(pl, s) {
     if (s.routeChoice) {
@@ -388,7 +397,7 @@
       ? '<ul>' + report.discoveries.map(name => '<li>' + esc(name) + '</li>').join('') + '</ul>'
       : '<p>No landmark was recorded on this outing.</p>';
     host.innerHTML =
-      '<main class="gfm160-page gfm160-results" aria-label="Marsh expedition results">' +
+      '<main class="gfm160-page gfm160-results" data-marsh-state="report" aria-label="Marsh expedition results">' +
         '<div class="gfm160-results-art">' + (art ? '<img src="' + esc(art) + '" alt="" aria-hidden="true">' : '') + '<div></div></div>' +
         '<section class="gfm160-results-panel">' +
           '<span class="gfm160-kicker">GREYFEN · FIELD REPORT · TRIP ' + Number(report.trip || 1) + '</span>' +
@@ -407,6 +416,7 @@
         '</section></main>';
     document.getElementById('gfm160ResultReturn')?.addEventListener('click', returnToGreyfen);
     document.getElementById('gfm160ResultAgain')?.addEventListener('click', () => { sNotAvailable(); });
+    focusHeading(host);
   }
   function sNotAvailable() {
     // Keep repeated outings routed through the town so players can rest, trade or report first.
@@ -716,10 +726,16 @@
                 : s.gaugeInspected
                   ? 'The latest notch records a height. It does not tell you who cut it or what they intended.'
                   : stop.description;
+    const state = activeFerry ? (s.ferryRaiderDefeated || s.ferryRaiderAvoided ? 'ferry-cleared' : 'ferry')
+      : activeStorehouse ? 'storehouse' : Number(s.stage) === 0 ? 'landing'
+      : Number(s.stage) === 1 ? (!s.routeChoice ? 'fork' : s.routeChoice === 'raised' ? 'raised' : has(s.visitedNodeIds, 'fallen-ferry') ? 'reeds-return' : 'reeds')
+      : Number(s.stage) === 2 ? (s.sluiceCleared || s.encounterAvoided ? 'sluice-crossed' : 'sluice')
+      : Number(s.stage) === 3 ? (has(s.visitedNodeIds, 'silted-storehouse') ? 'shelter-return' : 'shelter')
+      : s.gaugeInspected ? 'gauge-recorded' : 'gauge';
     const map = mapMarkup(pl, s);
     const host = root(); if (!host) return;
     host.innerHTML =
-      '<main class="gfm160-page" aria-label="Greyfen Marsh Path expedition">' +
+      '<main class="gfm160-page" data-marsh-state="' + state + '" aria-label="Greyfen Marsh Path expedition">' +
         '<section class="gfm160-scene">' +
           '<img class="gfm160-scene-art" src="' + esc(art) + '" alt="" aria-hidden="true" onerror="this.style.display=\'none\'">' +
           '<div class="gfm160-scene-shade"></div>' +
@@ -732,11 +748,13 @@
           '<div><span>ROAD PRESSURE</span><strong>' + Number(s.pressure || 0) + '</strong><i><b style="width:' + clamp(Number(s.pressure || 0), 0, 100) + '%"></b></i></div>' +
           '<div><span>FIELD TIME</span><strong>' + Number(s.hoursElapsed || 0) + ' hours · Day ' + Number(pl.day || 1) + '</strong></div>' +
         '</section>' +
+        (note ? '<p class="gfm160-feedback" role="status">' + esc(note) + '</p>' : '') +
         '<section class="gfm160-content">' + actions +
           '<aside class="gfm160-field-note"><span class="gfm160-kicker">FIELD JOURNAL</span><strong>' + (s.routeChoice ? esc(s.routeChoice === 'raised' ? 'Raised Posts' : 'Reed Bed') : 'No route chosen yet') + '</strong><p>' + (s.gaugeInspected ? 'Waterline Gauge reading saved.' : s.sluiceCleared ? 'The sluice encounter is recorded.' : s.encounterAvoided ? 'The encounter was avoided at a disclosed pressure cost.' : 'Route evidence and optional salvage are saved independently of the mandatory survey.') + '</p></aside>' +
         '</section>' + map +
       '</main>';
     bindActions();
+    focusHeading(host);
     return true;
   }
   function mapMarkup(pl, s) {
@@ -787,8 +805,21 @@
       if (panel) panel.hidden = false;
       document.getElementById('gfm160CloseMap')?.focus({ preventScroll: true });
     });
-    document.getElementById('gfm160CloseMap')?.addEventListener('click', () => { const panel = document.getElementById('gfm160MapOverlay'); if (panel) panel.hidden = true; });
-    document.getElementById('gfm160CloseMapFooter')?.addEventListener('click', () => { const panel = document.getElementById('gfm160MapOverlay'); if (panel) panel.hidden = true; });
+    const closeMap = () => {
+      const panel = document.getElementById('gfm160MapOverlay');
+      if (panel) panel.hidden = true;
+      document.getElementById('gfm160OpenMap')?.focus({ preventScroll: true });
+    };
+    document.getElementById('gfm160CloseMap')?.addEventListener('click', closeMap);
+    document.getElementById('gfm160CloseMapFooter')?.addEventListener('click', closeMap);
+    document.getElementById('gfm160MapOverlay')?.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeMap(); }
+      if (event.key === 'Tab') {
+        const first = document.getElementById('gfm160CloseMap'), last = document.getElementById('gfm160CloseMapFooter');
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
+    });
   }
   window.LegendGreyfenMarshV160 = Object.freeze({ start, render, settle });
 })();

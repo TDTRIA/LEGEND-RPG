@@ -1445,3 +1445,10 @@ body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] :is(.ash09
 
 /* Tactical guidance stays readable over bright regional environments. */
 #root .rpg-battle-footnote { padding:12px; background:rgba(16,26,18,.97); color:#e4dfc9; }
+
+/* Guarded Marsh Path presentation: DOM retains every callback and fallback. */
+body.legend-phaser-world-active #root [data-phaser-marsh="true"] :is(.gfm160-results-art,.gfm160-scene,.gfm160-scene-copy,.gfm160-scene-toolbar,.gfm160-status > div,.gfm160-status i,.gfm160-status b,.gfm160-panel,.gfm160-route-choices,.gfm160-route-selected,.gfm160-optional,.gfm160-field-note,.gfm160-feedback,.gfm160-note,.gfm160-results-panel,.gfm160-report-metrics > div,.gfm160-report-findings,button,.gfm160-route-number) { background:transparent !important; border-color:transparent !important; box-shadow:none !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-marsh="true"] [data-marsh-copy],
+body.legend-phaser-world-active #root [data-phaser-marsh="true"] [data-marsh-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-marsh="true"] :is(img,.gfm160-scene-shade,.gfm160-results-art > div) { opacity:0 !important; }
+body.legend-phaser-world-active #root [data-phaser-marsh="true"] .gfm160-report-findings ul { list-style:none; }

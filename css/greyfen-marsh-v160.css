@@ -195,8 +195,8 @@
   display: grid;
   place-items: center;
   padding: 16px;
-  background: rgba(1, 10, 10, .84);
-  backdrop-filter: blur(8px);
+  background: rgba(1, 10, 10, .35);
+  backdrop-filter: none;
 }
 .gfm160-map-overlay[hidden] { display: none !important; }
 .gfm160-map-dialog {
@@ -266,3 +266,13 @@
 @media (prefers-reduced-motion: reduce) {
   .gfm160-page *, .gfm160-page *::before, .gfm160-page *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Keep expedition content clear of the persistent shell in both renderers. */
+#root .gfm160-page { padding-top:calc(var(--marsh-hud-height,72px) + 12px); padding-bottom:95px; }
+#root .gfm160-page :is(button,h1) { scroll-margin-block:120px 100px; }
+#root .gfm160-page h1:focus { outline:none; }
+#root .gfm160-scene-copy h1, #root .gfm160-results-panel h1 { line-height:1.15; }
+#root .gfm160-scene-copy { background:rgba(7,22,22,.85); }
+#root .gfm160-feedback { padding:14px 18px; color:#eee8d7; background:#17332d; border:1px solid #8b9972; line-height:1.6; }
+#root .gfm160-map-dialog button { min-height:44px; min-width:44px; }
+#root .gfm160-map-dialog h2 { text-shadow:none; }

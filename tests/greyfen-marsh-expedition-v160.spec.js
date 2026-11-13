@@ -1,9 +1,11 @@
 const { test, expect } = require('@playwright/test');
+// Full production journeys include Phaser art readiness and several navigation transitions.
+test.setTimeout(120000);
 
 async function seedGreyfen(page, options = {}) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
-  await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }' });
   await page.evaluate(options => {
     window.LegendStorage.deleteSaves();
     const player = {
