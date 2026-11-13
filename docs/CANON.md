@@ -175,6 +175,41 @@ The mandatory opening annals should cover **the old war and the seal only**. The
 - The annals text is the human account of the war and the seal. It must not contradict L7's truth in a way the later game cannot correct.
 - This does not approve revealing L4. The annals must not mention the traveler's nature.
 
+## Approved character direction — Captain Oric and Tavin Calder (owner-approved 2026-11-13; not yet implemented)
+
+This is owner-approved story direction, not a new LOCKED entry and not a claim about content already playable. Use the character compendium for the fuller profile. Keep names, revelations, and scenes that remain open below unresolved until the owner decides them.
+
+### Oric's former life and Ashmere
+
+- After the ancient monster-sealing war, Oric fought in a separate war between human kingdoms. Another human kingdom invaded and conquered his homeland.
+- During the fall, Oric escaped after playing dead among villagers killed in the invasion. He believes he is the last survivor of his kingdom. That belief is mistaken: Tavin survived, and the possibility of other survivors remains open.
+- Oric wandered for years before reaching Ashmere while monsters were attacking the town. He fought to defend it and stayed to help after the attack. The townspeople were initially wary of an armed stranger who had appeared from nowhere.
+- An ordinary resident Oric saved became the first person in Ashmere to trust him. Their bond helped him begin to belong; that person later followed a different path while retaining a special connection to Oric.
+- When Ashmere's residents eventually asked Oric to lead because they had come to rely on him, he hesitated. That first trusted resident helped persuade him to accept. He earned the captaincy through his actions; he did not arrive seeking authority.
+- Oric keeps his former kingdom and wartime history almost entirely private. People in Ashmere may know he is a veteran, but they do not know the full story. When questioned, he deflects with vague or deliberately incomplete answers.
+- The traveler learns about his past gradually through clues and records, and eventually through someone from his former life. Oric begins telling the traveler himself in quiet moments after difficult journeys, in several conversations rather than one exposition scene. He struggles to express affection, but over time comes to regard the traveler as family.
+
+### Tavin Calder
+
+- Tavin Calder is the name of Oric's former young soldier and eventual Ashmere second-in-command. Tavin came from an ordinary family with no military tradition; his childhood was difficult, but its details remain open.
+- As a young soldier, Tavin was inexperienced and unsure of himself, but determined to prove himself. That determination sometimes made him reckless. Oric took him under his wing after recognizing a stubborn courage: Tavin kept going even when afraid.
+- During one reckless incident, Oric protected Tavin from a blow and received the prominent scar across his face. Oric scolded Tavin at the time. Tavin carried guilt over the injury for years; after their reunion, Oric tells him he never regretted saving him, and Tavin is finally able to let that guilt go.
+- During the invasion, Oric and Tavin were separated in the chaos without a chance to speak. Oric never saw Tavin die and believed he was lost. Returning to the conquered homeland was too dangerous. Tavin survived.
+- Tavin spent years wandering, taking guard, escort, and settlement-protection work. He made friends along the way and remains in touch with some, but eventually stopped searching for his old home and learned to live without one.
+- Tavin and Oric encounter one another by chance in Ashmere; Tavin is not initially seeking Oric. Tavin recognizes Oric by the facial scar and cautiously asks, “Commander?” Oric recognizes Tavin's voice immediately and embraces him.
+- Tavin initially stays while passing through. Over time, he comes to love Ashmere and its people in their own right, not merely because Oric is there. He eventually earns the town's trust and becomes Oric's second-in-command, helping oversee its defenses when Oric is away.
+- As an adult, Tavin is a hardened veteran, but warmer, more approachable, humorous, and more patient with younger guards than Oric. He mentors the traveler and occasionally teases Oric about how protective he has become. He retains his own friendships and sometimes leaves Ashmere to visit them.
+- Oric and Tavin may disagree about how best to protect Ashmere, but they handle disagreements privately, seek a compromise, and present a united front to the town. Oric is quietly glad to have Tavin back, even if he rarely says so.
+
+### Still open
+
+- The names and histories of Oric's former kingdom and the invading kingdom.
+- The name and fuller life of the first Ashmere resident who trusted Oric.
+- The details of Tavin's difficult childhood, his family, and what first led him to enlist.
+- Tavin's former friends, the specifics of his wandering years, and the timing of his eventual decision to settle in Ashmere.
+- The identities and stories of any other survivors from Oric's former kingdom.
+- The exact order, locations, and player-facing presentation of the clues and conversations through which the traveler learns Oric's history.
+
 ## Established in the shipped game (v0.20.35)
 
 These are facts players can already see. Changing one means updating the game, its save flags and its tests.
@@ -217,3 +252,4 @@ These are facts players can already see. Changing one means updating the game, i
 - 2026-10-19: Owner approved the traveler-creation voice as the Veil at the author/story-design level, shown to the player only as "???". Creation is framed as shaping a soul and recovering ambiguous memories; this does not reveal or imply the traveler's L4 nature, and Oric appears only after the sequence.
 - 2026-11-03: Owner approved, in conversation with Claude: (1) L6 reworded so the healer's ritual caused the wound and the Hollow Saint is the healer's echo; (2) the L4 origin reading (creation memories are the apprentice's, scrambled by the Veil's interruption, and they disperse at the end); (3) the opening annals should cover only the old war and the seal, with the Last Mercy moved out to Mara's Chronicle leaves (recorded as approved direction; not yet implemented). The owner asked to proceed with the L5 and L7 rewording alongside these; merging the pull request that carries this change is the owner's lock of that wording. The Veil, deep-realm, legend, traveler (Veil-born), ending, magic, human-enemy and Saint-in-story entries are held back until the owner reviews them.
 - 2026-11-08: Owner locked, in conversation with Claude, entries L8 (the Veil is not evil), L9 (the deep realm, the seal and why now, including envoys), L10 (the legend; leaf wording stays unapproved), L11 (the traveler is the first Veil-born; extends L4), L12 (the ending), L13 (magic is anchored in the first game; intent only, not implemented), L14 (human enemies are ordinary people, met in stages) and L15 (the Hollow Saint in the story), each as written in the lock sheet. The reveal plan, names and the details listed under each entry's "Still open" remain undecided. Open questions 1, 3, 7 and 9 were annotated as partly answered.
+- 2026-11-13: Owner-approved the Oric and Tavin Calder character direction in conversation. Their former-kingdom history, Ashmere roles, reunion, and relationship are recorded as approved direction, not locked or implemented; unresolved details remain listed in the section above and in the character compendium.
