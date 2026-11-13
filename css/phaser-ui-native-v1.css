@@ -1550,3 +1550,18 @@ body.legend-phaser-world-active #root [data-phaser-dispatches="true"] .dispatche
 body.legend-phaser-world-active #root [data-phaser-dispatches="true"] [data-dispatch-copy], body.legend-phaser-world-active #root [data-phaser-dispatches="true"] [data-dispatch-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
 body.legend-phaser-world-active #root [data-phaser-dispatches="true"] .dispatches-v140-feature-mark img { opacity:0; }
 body.legend-phaser-world-active #root [data-phaser-dispatches="true"] :is(button,a):focus-visible { outline:none!important; }
+
+/* Account fields stay browser-native for editing, autofill and password masking. */
+#root .account09x-clean :is(h1,h2,h3) { line-height:1.4; overflow-wrap:anywhere; }
+#root .account09x-clean :is(p,small) { line-height:1.65; overflow-wrap:anywhere; }
+#root .account09x-clean :is(.account09x-profile-main,.account09x-section-head > div) { min-width:0; }
+#root .account09x-clean .account09x-cloud-state { white-space:normal; }
+#root .account09x-clean .account09x-auth-switch-copy { display:block; margin-bottom:8px; }
+#root .account09x-clean #authSwitchBtn { min-height:44px; padding:8px 12px; }
+#root .account09x-clean :is(h1,.account09x-success):focus { outline:none; }
+body.legend-phaser-world-active #root [data-phaser-account="true"], body.legend-phaser-world-active #root [data-phaser-account="true"] :is(.account09x-header,.account09x-panel,.account09x-traveler-summary,.account09x-cloud-slot,.account09x-actions,.account09x-auth-tabs,.account09x-note,.account09x-success,.account09x-avatar,button,input) { background:transparent!important; border-color:transparent!important; box-shadow:none!important; filter:none!important; transform:none!important; transition:none!important; }
+body.legend-phaser-world-active #root [data-phaser-account="true"] .account09x-panel::before { display:none; }
+body.legend-phaser-world-active #root [data-phaser-account="true"] [data-account-copy], body.legend-phaser-world-active #root [data-phaser-account="true"] [data-account-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-world-active #root [data-phaser-account="true"] :is(button,input):focus-visible { outline:none!important; }
+body.legend-phaser-world-active #root [data-phaser-account="true"] input { color:#f2ead5!important; -webkit-text-fill-color:#f2ead5!important; caret-color:#ffe6a0; }
+body.legend-phaser-world-active #root [data-phaser-account="true"] input::placeholder { color:#bfc6b8!important; opacity:1; }

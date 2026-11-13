@@ -156,7 +156,27 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:69d286c291b0c4bcfa99bdda8e6b8ed3260e8f6abaa6e75c5dcc4e73c9778a8d -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:a7f560e5be8cc891ebddc6dc7b59be460015b322af142acae850a0c758b6eb93 -->
+
+## Profile and account presentation — 2026-11-13 (verified locally)
+
+The production profile/auth views now have dedicated Phaser panels, complete text, selected tabs, focused controls, disabled cloud actions and input frames. Browser-native inputs retain editing, validation, autofill, caret behavior and password masking; their values are excluded from canvas snapshots. Sign-in, signup, confirmation/failure feedback, profile editing, local Continue/New Traveler, two cloud slots and sign-out still invoke the existing account/auth/cloud services. Missing or unknown visible content restores the full DOM. Native browser confirmation for clearing a cloud slot is retained.
+
+Entry now focuses the heading; completed actions focus and announce their feedback. Auth tabs expose selected state and Arrow/Home/End navigation, switching modes preserves focus on the replaced switch button, and password autocomplete matches sign-in versus signup. A cloud action-row background discovered during visual inspection was obscuring native labels; its scoped transparency and regression assertion now keep enabled and disabled actions readable. The original initial-letter avatars remain centered in their frames.
+
+Eight focused checks pass: six new desktop/mobile authentication, profile, cloud-slot, offline, fallback and combined-accessibility cases; plus existing local persistence failure and full returning-title regressions. Tests use the real controllers with isolated synthetic provider fixtures. They cover confirmation-only signup, busy/failed/successful sign-in, profile metadata extensions, exact cloud payloads, cancelled and accepted clearing, failed saves, rejected local persistence during restore, retry, saved extensions and sign-out preservation. Unknown player/profile properties and unrelated settings/audio/return state remain preserved. Syntax checks pass for 110 production scripts and 77 test specs.
+
+Shared Chromium desktop1440×900, portrait390×844 and landscape844×390 screenshots were inspected for sign-in/signup, signed-in profile, focused cloud controls, combined accessibility preferences and DOM fallback. No horizontal overflow was observed. Preview used a synthetic provider only for presentation, submitted no account/cloud mutations, and restored its original provider, preferences and title; raw player/settings/audio values were unchanged.
+
+Live authenticated Supabase integration was not tested. The checksum-verified CodeRabbit emulate v0.0.1 source catalog has no Supabase auth/PostgREST service (its packaged CLI reports 0.10.0). The synthetic fixtures prove callback and UI behavior, not remote provider policies or email delivery. Auth/cloud/storage owner modules and their production configuration are unchanged. Removing the dedicated painter restores semantic DOM presentation with no save migration.
+
+Next: remaining loading, error and confirmation overlays; reconcile existing defeat/result evidence and audio controls; then complete first-session/returning-save migration acceptance. First-three-towns and production publishing gates remain open. Manual task permissions still prevent PR creation and merging; this is a local branch checkpoint.
+
 ## News & Roadmap — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The production dispatch page now uses dedicated Phaser presentation for its header, build information, eight news/roadmap cards, all 49 text fields, three links, Return control and approved milestone artwork. The existing title-dispatches-v140 controller still owns all authored copy and navigation. Original anchors retain their destinations, separate-tab behavior and noopener protection. Entry focuses the heading and resets stale scrolling; native focus and viewport clipping follow keyboard input, scroll and rotation. The source's compact mobile artwork layout is preserved.
 

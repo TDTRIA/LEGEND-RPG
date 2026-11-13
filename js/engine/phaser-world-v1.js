@@ -766,6 +766,7 @@
       this.settingsUi = window.LegendPhaserSettingsV1?.create(this);
       this.creditsUi = window.LegendPhaserCreditsV1?.create(this);
       this.dispatchesUi = window.LegendPhaserDispatchesV1?.create(this);
+      this.accountUi = window.LegendPhaserAccountV1?.create(this);
       this.inventoryOverlay = window.LegendPhaserInventoryOverlayV1?.create(this);
       this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
       this.roadScene = window.LegendPhaserRoadSceneV1?.create(this);
@@ -853,6 +854,7 @@
           nativeSettings: this.settingsUi?.snapshot(),
           nativeCredits: this.creditsUi?.snapshot(),
           nativeDispatches: this.dispatchesUi?.snapshot(),
+          nativeAccount: this.accountUi?.snapshot(),
           nativeInventory: this.inventoryOverlay?.snapshot(),
           nativeRouteBoard: this.routeBoard?.snapshot(),
           nativeRoadSceneUi: this.roadScene?.snapshot(),

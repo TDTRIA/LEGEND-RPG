@@ -19,15 +19,15 @@
       return `<section class="account09x-panel account09x-auth-box">
         <div class="account09x-auth-head"><div class="account09x-kicker">Ashmere Account</div><h2 id="authTitle">Sign In</h2><p id="authIntro">Sign in to continue your journey.</p></div>
         <div class="account09x-auth-tabs" role="tablist" aria-label="Account access">
-          <button class="account09x-auth-tab active" id="authSignInTab" type="button">Sign In</button>
-          <button class="account09x-auth-tab" id="authSignUpTab" type="button">Sign Up</button>
+          <button class="account09x-auth-tab active" id="authSignInTab" type="button" role="tab" aria-selected="true" aria-controls="authForm">Sign In</button>
+          <button class="account09x-auth-tab" id="authSignUpTab" type="button" role="tab" aria-selected="false" aria-controls="authForm">Sign Up</button>
         </div>
-        <form class="account09x-form account09x-auth-form" id="authForm">
+        <form class="account09x-form account09x-auth-form" id="authForm" role="tabpanel" aria-labelledby="authSignInTab">
           <div class="account09x-field"><label for="authEmail">Email</label><input id="authEmail" type="email" maxlength="72" value="${esc(profile?.email || '')}" placeholder="you@example.com" autocomplete="email" required></div>
           <div class="account09x-field account09x-signup-only" hidden><label for="authDisplayName">Traveler Name</label><input id="authDisplayName" type="text" maxlength="28" placeholder="Ashmere Traveler" autocomplete="nickname"></div>
           <div class="account09x-field"><label for="authPassword">Password</label><input id="authPassword" type="password" minlength="6" placeholder="Minimum 6 characters" autocomplete="current-password" required></div>
           <button class="account09x-btn primary account09x-auth-submit" id="authSubmitBtn" type="submit">Sign In</button>
-          <p class="account09x-auth-switch" id="authSwitchText">New to Ashmere? <button id="authSwitchBtn" type="button">Create an account</button></p>
+          <p class="account09x-auth-switch" id="authSwitchText"><span class="account09x-auth-switch-copy">New to Ashmere?</span> <button id="authSwitchBtn" type="button">Create an account</button></p>
         </form>
         ${debug}
       </section>`;
@@ -39,6 +39,7 @@
       let authMode = 'signin';
 
       const setAuthMode = mode => {
+        const restoreSwitchFocus=document.activeElement?.id==='authSwitchBtn';
         authMode = mode === 'signup' ? 'signup' : 'signin';
         const signup = authMode === 'signup';
         const title = document.getElementById('authTitle');
@@ -52,16 +53,24 @@
         if (intro) intro.textContent = signup ? 'Create your Ashmere account.' : 'Sign in to continue your journey.';
         if (submit) submit.textContent = signup ? 'Create Account' : 'Sign In';
         if (switchText) switchText.innerHTML = signup
-          ? 'Already have an account? <button id="authSwitchBtn" type="button">Sign in</button>'
-          : 'New to Ashmere? <button id="authSwitchBtn" type="button">Create an account</button>';
+          ? '<span class="account09x-auth-switch-copy">Already have an account?</span> <button id="authSwitchBtn" type="button">Sign in</button>'
+          : '<span class="account09x-auth-switch-copy">New to Ashmere?</span> <button id="authSwitchBtn" type="button">Create an account</button>';
         if (display) display.hidden = !signup;
-        if (signInTab) signInTab.classList.toggle('active', !signup);
-        if (signUpTab) signUpTab.classList.toggle('active', signup);
+        if (signInTab) {signInTab.classList.toggle('active', !signup);signInTab.setAttribute('aria-selected',String(!signup));}
+        if (signUpTab) {signUpTab.classList.toggle('active', signup);signUpTab.setAttribute('aria-selected',String(signup));}
+        authForm.setAttribute('aria-labelledby',signup?'authSignUpTab':'authSignInTab');
+        document.getElementById('authPassword')?.setAttribute('autocomplete',signup?'new-password':'current-password');
         document.getElementById('authSwitchBtn')?.addEventListener('click', () => setAuthMode(signup ? 'signin' : 'signup'));
+        if(restoreSwitchFocus)document.getElementById('authSwitchBtn')?.focus();
       };
 
       document.getElementById('authSignInTab')?.addEventListener('click', () => setAuthMode('signin'));
       document.getElementById('authSignUpTab')?.addEventListener('click', () => setAuthMode('signup'));
+      document.querySelector('.account09x-auth-tabs')?.addEventListener('keydown',event=>{
+        if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+        event.preventDefault();const signup=event.key==='End'||(event.key!=='Home'&&authMode==='signin');
+        setAuthMode(signup?'signup':'signin');document.getElementById(signup?'authSignUpTab':'authSignInTab')?.focus();
+      });
       setAuthMode('signin');
 
       authForm.onsubmit = async event => {
