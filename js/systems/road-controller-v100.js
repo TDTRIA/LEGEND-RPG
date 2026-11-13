@@ -164,6 +164,7 @@ function reportToMaraFromRoad(){
   }
 }
 const combatResultsView=window.LegendRoadCombatResultsViewV152?.create({
+  getPlayer:p,
   renderShell:html=>{const host=root();if(host)host.innerHTML=html;},
   getAssets:A,
   escapeHtml:esc,

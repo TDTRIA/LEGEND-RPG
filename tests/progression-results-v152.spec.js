@@ -2,8 +2,11 @@ const { test, expect } = require('@playwright/test');
 
 test.describe('LEGEND level-up and road results v0.23.0', () => {
   test.beforeEach(async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
     await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+    await page.waitForFunction(() => window.__legendPhaserWorldReady);
+    await expect(page.locator('.v120-title')).toBeVisible({ timeout: 15000 });
   });
 
   test('a level grants spendable points that persist after choosing attributes', async ({ page }) => {
@@ -157,6 +160,8 @@ test.describe('LEGEND level-up and road results v0.23.0', () => {
 
 
   test('Bell Cellar fights use the same results frame with cellar-specific progress and choices', async ({ page }) => {
+    // This case also covers the real curtain lifecycle; reduced motion omits it.
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.evaluate(() => {
       const callbacks = { continued: 0, returned: 0, reviewed: 0 };
       window.__cellarResultCallbacks = callbacks;

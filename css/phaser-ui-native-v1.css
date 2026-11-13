@@ -1378,3 +1378,25 @@ body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battlefield::before,
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battlefield::after { opacity: 0 !important; }
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle :is(.rpg-dialogue-star,.rpg-tell-mark) { color: transparent !important; -webkit-text-fill-color: transparent !important; }
+
+/* Combat reports keep their full semantic source and restore it on failure. */
+body.legend-world-shell-active #root .v152-combat-results {
+  padding-top: calc(var(--legend-combat-result-hud-height,72px) + 12px) !important;
+  padding-bottom: 90px !important;
+}
+#root .v152-combat-results :is(button,h1) { scroll-margin-block: 120px 90px; }
+#root .v152-results-backdrop img { transform: none; }
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] :is(.v152-results-heading,.v152-results-duel,.v152-results-rewards,.v152-results-metrics > div,.v152-result-reward,.v152-result-card-symbol,.v152-result-small-reward,.v152-result-level-note,.v152-result-action) {
+  background: transparent !important; border-color: transparent !important; box-shadow: none !important; text-shadow: none !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] [data-phaser-combat-result-copy],
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] [data-phaser-combat-result-copy] * {
+  color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] img,
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] .v152-results-backdrop > div,
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] .v152-results-divider::before,
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] .v152-results-divider::after { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] .v152-results-backdrop { background: transparent !important; }
+/* Match the full glyph height so result titles cannot collide with subtitles. */
+#root .v152-results-heading h1 { line-height: 1.2; }

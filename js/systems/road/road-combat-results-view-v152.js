@@ -10,6 +10,11 @@
     const shell = renderShell;
     const A = () => getAssets() || {};
     const esc = escapeHtml;
+    let growthHandler = null;
+    function clearGrowthHandler() {
+      if (growthHandler) document.removeEventListener('legend:level-growth-applied', growthHandler);
+      growthHandler = null;
+    }
 
     function enemyArt(enemy, assets) {
       const name = String(enemy?.name || '').toLowerCase();
@@ -31,6 +36,7 @@
         secondaryTitle = '', secondaryHint = '', secondaryTransition = '',
         onContinue: continueAction, onReturn: returnAction, onSecondary: secondaryAction } = payload;
       if (!player) return false;
+      clearGrowthHandler();
       const victory = result !== 'defeat';
       const assets = A();
       const location = locationName || (dungeon ? 'THE BELL CELLAR' : 'THE OLD ROAD');
@@ -49,7 +55,7 @@
       const secondaryDetail = secondaryHint || (victory ? 'Bring your progress back to town' : '');
       const secondaryLocation = secondaryTransition || 'Returning to Ashmere';
       const foeArt = enemyArt(enemy, assets);
-      const heroArt = assets.classes?.[player.className] || '';
+      const heroArt = assets.travelerPortrait?.(player) || assets.classes?.[player.className] || '';
       const xpGained = Math.max(0, Number(progress.gained || 0));
       const levelsGained = Math.max(0, Number(progress.levels || 0));
       const levelNow = Math.max(1, Number(player.level || 1));
@@ -57,10 +63,10 @@
       const levelBefore = Math.max(1, Number(enemy.combatStartLevel ?? fallbackLevelBefore) || fallbackLevelBefore);
       const gold = Math.max(0, Number(goldGained || 0));
       const levelMarkup = levelsGained
-        ? '<div class="v152-result-level-note"><span aria-hidden="true">✦</span><div><strong>NEW LEVEL REACHED</strong><p>Level ' + levelBefore + ' → level ' + levelNow + '. Your growth choices are ready.</p></div></div>'
+        ? '<div class="v152-result-level-note"><span aria-hidden="true">✦</span><div><strong>NEW LEVEL REACHED</strong><p>Level ' + levelBefore + ' → level ' + levelNow + '. ' + (player.pendingStatPointsV152 === 0 ? 'Your growth choices are recorded.' : 'Your growth choices are ready.') + '</p></div></div>'
         : '';
       const rewardMarkup = victory
-        ? '<div class="v152-result-reward"><span class="v152-result-card-symbol" aria-hidden="true">✦</span><div><span>RECOVERED</span><strong>' + esc(rewardName || 'Field salvage') + '</strong><small>Added to your pack</small></div><b>+1</b></div>'
+        ? '<div class="v152-result-reward"><span class="v152-result-card-symbol" aria-hidden="true">✦</span><div><span>RECOVERED</span><strong>' + esc(rewardName || 'Field salvage') + '</strong><small>Added to your pack</small></div></div>'
         : '<div class="v152-result-reward v152-result-reward-muted"><span class="v152-result-card-symbol" aria-hidden="true">◌</span><div><span>FIELD RECOVERY</span><strong>Nothing recovered</strong><small>You were forced back before you could secure the drop</small></div></div>';
       const goldMarkup = gold > 0
         ? '<div class="v152-result-small-reward"><span>Coin found in the fight</span><strong>+' + gold + 'g</strong></div>'
@@ -73,7 +79,7 @@
         : '';
 
       shell(
-        '<main class="v152-combat-results ' + (victory ? 'is-victory' : 'is-defeat') + '" aria-label="' + (dungeon ? 'Cellar ' : 'Battle ') + (victory ? 'victory results' : 'defeat results') + '">' +
+        '<main data-result-secondary="' + Boolean(secondaryLabel) + '" class="v152-combat-results ' + (victory ? 'is-victory' : 'is-defeat') + '" aria-label="' + (dungeon ? 'Cellar ' : 'Battle ') + (victory ? 'victory results' : 'defeat results') + '">' +
           '<div class="v152-results-backdrop">' + (sceneArt ? '<img src="' + esc(sceneArt) + '" alt="" aria-hidden="true">' : '') + '<div></div></div>' +
           '<section class="v152-results-frame">' +
             '<header class="v152-results-heading"><span class="v152-results-kicker">' + (victory ? 'ENCOUNTER RESOLVED · ' : 'ENCOUNTER INTERRUPTED · ') + esc(location) + '</span>' +
@@ -105,11 +111,23 @@
         '</main>'
       );
 
+      const root = document.getElementById('root'), heading = root?.querySelector('.v152-results-heading h1');
+      if (root) root.scrollTop = 0;
+      window.scrollTo(0,0);
+      if (heading && !document.querySelector('.v152-levelup-overlay')) { heading.tabIndex = -1; heading.focus({preventScroll:true}); }
+      if (Number(player.pendingStatPointsV152 || 0) > 0) {
+        const report = root?.querySelector('.v152-combat-results');
+        growthHandler = () => {
+          clearGrowthHandler();
+          if (report?.isConnected) render({...payload, player: typeof context.getPlayer === 'function' ? context.getPlayer() : player});
+        };
+        document.addEventListener('legend:level-growth-applied',growthHandler,{once:true});
+      }
       const continueFn = typeof continueAction === 'function' ? continueAction : onContinue;
       const returnFn = typeof returnAction === 'function' ? returnAction : onReturnToTown;
-      document.getElementById('v152CombatContinue')?.addEventListener('click', () => continueFn?.());
-      document.getElementById('v152CombatReturn')?.addEventListener('click', () => returnFn?.());
-      document.getElementById('v152CombatSecondary')?.addEventListener('click', () => secondaryAction?.());
+      document.getElementById('v152CombatContinue')?.addEventListener('click', () => { clearGrowthHandler(); continueFn?.(); });
+      document.getElementById('v152CombatReturn')?.addEventListener('click', () => { clearGrowthHandler(); returnFn?.(); });
+      document.getElementById('v152CombatSecondary')?.addEventListener('click', () => { clearGrowthHandler(); secondaryAction?.(); });
       return true;
     }
 

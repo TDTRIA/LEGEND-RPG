@@ -108,7 +108,25 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:c45336fc81e4a7df2968d59307df277265a94801738fbe9ed425f04b27d0eab5 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:1db43bbd08ab2ec7614f182f44c78d44266fbb737d23e66f3905c7995649f69d -->
+
+## Combat result presentation — 2026-11-13 (local)
+
+A dedicated production painter now reads the existing victory/defeat report and draws approved scene/actor artwork, complete reward and progression copy, and the original continue/return controls. It uses measured shell clipping and restores the complete DOM report when artwork, required actions or fields are missing. Results reset stale scroll and focus their heading while preserving an open growth dialog. Title line height accommodates complete glyphs; the authoritative multi-drop reward list replaces the misleading fixed “+1” badge.
+
+Growth completion refreshes the displayed report without replaying settlement. The level-up dialog now initially focuses its first usable attribute control; its confirmation starts disabled. Damage, XP, loot, pressure, progression formulas and storage normalization remain in their existing owners. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:219f74d8f1b974fb9c68270843a06196775efa0c630c4f6597b7d5cd7e6d90de -->
+
+Eight focused cases pass across final checks and equivalent retained results: real desktop/mobile victories with exact multi-drop rewards and Endurance growth, defeat/return, existing result and Bell Cellar callbacks, progression/default compatibility, and combat clipping. Desktop, portrait, landscape and DOM fallback screenshots were inspected. The native level-up/attribute-allocation surface is still outstanding, as are full regional combat-result acceptance and release/publication gates.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 ## Old Road combat presentation checkpoint — 2026-11-13 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The dedicated combat painter now renders the approved arena, traveler, enemy and portrait artwork below native nameplates and health meters. Complete labels use measured content boxes without fixed-height glyph cropping; equipment, HP and utility labels have separate semantic spans. Battle content shares the measured HUD, dock and drawer clip. The existing four-entry log uses the page scroll so its complete copy remains readable.
 

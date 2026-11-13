@@ -142,7 +142,8 @@
     });
 
     refresh();
-    overlay.querySelector('#v152-growth-confirm')?.focus({ preventScroll: true });
+    // Confirmation starts disabled; focus a usable choice inside the dialog.
+    overlay.querySelector('[data-attr-add]:not(:disabled)')?.focus({ preventScroll: true });
     return true;
   }
 

@@ -135,7 +135,13 @@ The active production entry point loads Phaser 4.1 and the world renderer, follo
 
 <!-- coderabbit-ai-generated-section:v1:c6af0e146ef4b537ca927548a93c79a6f83de11c5751b338eb16811742282896 -->
 
-- Combat behavior is isolated in `js/systems/road/road-combat-v100.js`; battle markup/command binding is in `js/systems/road/road-combat-view-v100.js`; sound preference and effects are isolated in `js/systems/road/road-audio-v100.js`. RealmScene paints approved source arena/actor images, meters, panels and measured labels in one shell-clipped container. It keeps semantic controls, guards all required source fields and restores DOM presentation on failure. The view supplies arena images and separate mixed-copy spans; neither layer owns damage, rewards or save writes. Combat results remain a separate migration surface.
+- Combat behavior is isolated in `js/systems/road/road-combat-v100.js`; battle markup/command binding is in `js/systems/road/road-combat-view-v100.js`; sound preference and effects are isolated in `js/systems/road/road-audio-v100.js`. RealmScene paints approved source arena/actor images, meters, panels and measured labels in one shell-clipped container. It keeps semantic controls, guards all required source fields and restores DOM presentation on failure. The view supplies arena images and separate mixed-copy spans; neither layer owns damage, rewards or save writes. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:1d466221364a5491abf2866d7cc0c2bd777d0cd8236e87312db9949a6ac9d0ed -->
+
+`phaser-combat-results-v1.js` paints the separate production combat debrief with complete-source preflight, approved images, measured labels and a shell clip. The source view retains continue/return/secondary callbacks, heading focus and growth-notice refresh; it does not settle rewards. Native level-up allocation remains a separate migration surface.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 
