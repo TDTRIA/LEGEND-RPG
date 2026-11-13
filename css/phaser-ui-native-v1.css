@@ -1538,3 +1538,15 @@ body.legend-phaser-credits-active [data-credits-copy], body.legend-phaser-credit
 body.legend-phaser-credits-active .legend-credits-close:focus-visible { outline:none; }
 body.legend-phaser-credits-active .legend-credits-overlay .legend-credits-panel[data-phaser-credits] .legend-credits-close { background:transparent!important; border-color:transparent!important; box-shadow:none!important; transform:none!important; }
 body.legend-phaser-credits-active .legend-credits-overlay .legend-credits-panel[data-phaser-credits] [data-credits-copy], body.legend-phaser-credits-active .legend-credits-overlay .legend-credits-panel[data-phaser-credits] [data-credits-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+
+/* Native dispatches keep actual anchors, complete authored copy and fallback. */
+#root .dispatches-v140 :is(p,h1,h2,h3) { line-height:1.6; }
+#root .dispatches-v140 h1 { line-height:1.15; }
+#root .dispatches-v140 :is(h2,h3) { line-height:1.4; }
+#root .dispatches-v140 a { min-height:44px; display:inline-flex; align-items:center; }
+#root .dispatches-v140 h1:focus { outline:none; }
+body.legend-phaser-world-active #root [data-phaser-dispatches="true"], body.legend-phaser-world-active #root [data-phaser-dispatches="true"] :is(.dispatches-v140-header,.dispatches-v140-feature,.dispatches-v140-feature-mark,.dispatches-v140-card,.dispatches-v140-section-heading,.dispatches-v140-footer,button,a) { background:transparent!important; border-color:transparent!important; box-shadow:none!important; filter:none!important; transform:none!important; }
+body.legend-phaser-world-active #root [data-phaser-dispatches="true"] .dispatches-v140-backdrop { display:none!important; }
+body.legend-phaser-world-active #root [data-phaser-dispatches="true"] [data-dispatch-copy], body.legend-phaser-world-active #root [data-phaser-dispatches="true"] [data-dispatch-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-world-active #root [data-phaser-dispatches="true"] .dispatches-v140-feature-mark img { opacity:0; }
+body.legend-phaser-world-active #root [data-phaser-dispatches="true"] :is(button,a):focus-visible { outline:none!important; }

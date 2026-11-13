@@ -143,6 +143,7 @@
     serviceInnIcon: 'assets/generated/ui/icons/service-inn.webp',
     serviceMarketIcon: 'assets/generated/ui/icons/service-market.webp',
     serviceForgeIcon: 'assets/generated/ui/icons/service-blacksmith.webp',
+    serviceMilestoneIcon: 'assets/generated/ui/icons/service-milestone.webp',
     serviceRoadIcon: 'assets/generated/ui/icons/service-map.webp',
     menuCompass: 'assets/generated/ui/icons/legend-icon-compass.webp',
     menuTraveler: 'assets/generated/ui/icons/legend-icon-traveler.webp',
@@ -764,6 +765,7 @@
       this.shellToast = window.LegendPhaserShellToastV1?.create(this);
       this.settingsUi = window.LegendPhaserSettingsV1?.create(this);
       this.creditsUi = window.LegendPhaserCreditsV1?.create(this);
+      this.dispatchesUi = window.LegendPhaserDispatchesV1?.create(this);
       this.inventoryOverlay = window.LegendPhaserInventoryOverlayV1?.create(this);
       this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
       this.roadScene = window.LegendPhaserRoadSceneV1?.create(this);
@@ -850,6 +852,7 @@
           nativeShellToast: this.shellToast?.snapshot(),
           nativeSettings: this.settingsUi?.snapshot(),
           nativeCredits: this.creditsUi?.snapshot(),
+          nativeDispatches: this.dispatchesUi?.snapshot(),
           nativeInventory: this.inventoryOverlay?.snapshot(),
           nativeRouteBoard: this.routeBoard?.snapshot(),
           nativeRoadSceneUi: this.roadScene?.snapshot(),

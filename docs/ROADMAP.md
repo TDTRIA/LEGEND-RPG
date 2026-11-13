@@ -152,7 +152,31 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:fcf70e933555aaf62d1571020227bbe850b77f60755304989f4ae4bd2e10991e -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:69d286c291b0c4bcfa99bdda8e6b8ed3260e8f6abaa6e75c5dcc4e73c9778a8d -->
+
+## News & Roadmap — 2026-11-13 (verified locally)
+
+The production dispatch page now uses dedicated Phaser presentation for its header, build information, eight news/roadmap cards, all 49 text fields, three links, Return control and approved milestone artwork. The existing title-dispatches-v140 controller still owns all authored copy and navigation. Original anchors retain their destinations, separate-tab behavior and noopener protection. Entry focuses the heading and resets stale scrolling; native focus and viewport clipping follow keyboard input, scroll and rotation. The source's compact mobile artwork layout is preserved.
+
+Missing source fields, unexpected copy or missing artwork restore the complete DOM. Texture lifecycle verification exposed two gaps: first, a removed texture did not trigger repaint; then deferred cleanup allowed a browser rendering error before fallback. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:bf6f47d4bf324e11fd9baee09f97c3bde0970d8e36abeb78eb7c39a87ab67888 -->
+
+Normal-motion Preview also exposed repeated teardown when the painter reacted to its own text textures. The painter now filters texture notifications to its milestone artwork, synchronously clears its objects on removal and repaints on restoration. The final normal-motion regression verifies stable presentation after recovery and zero browser errors; a fresh shared Preview probe independently confirms both.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+Five focused cases pass across fresh runs and equivalent retained results: desktop keyboard/mobile touch and all three real anchor activations; complete copy/artwork; landscape and combined accessibility preferences; unknown/replaced content and missing-texture fallback/recovery; and the existing normal-motion News/title roundtrip. Link destinations were fulfilled with isolated synthetic documents to verify navigation without relying on external service availability. The prior full returning-player title action check remains valid for unchanged title owners/callbacks; the fresh roundtrip covers this changed surface. Syntax checks pass for 109 production scripts and 76 test specs. Raw player, settings, audio and pending-return state remain unchanged.
+
+Shared Chromium desktop1440×900, portrait390×844 and landscape844×390 screenshots were inspected, including combined accessibility preferences, the full roadmap, focused controls and DOM fallback. Text and links are readable and no horizontal overflow was observed. Temporary Preview preferences and textures were restored. Disabling the dedicated renderer restores the semantic page, with no save migration. Storage, account, gameplay, lore and reward owners are unchanged.
+
+Next: profile/account presentation, remaining loading/confirmation overlays, audio-control acceptance and full first-session/returning-save migration gates. First-three-towns release requirements and production publishing remain outstanding. Manual task permissions still prevent PR creation and merging; this is a local branch checkpoint.
+
 ## Credits dialog — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The production Credits dialog now has guarded Phaser copy, panel, separators and focused Return presentation over the existing world art. All credits and original return/outside-click/Escape actions remain available. Missing or unexpected copy restores the complete DOM presentation; scrolling and resize keep text within the dialog. No save, account, audio, lore or gameplay owner changed.
 
