@@ -164,7 +164,25 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:6d3c0b99a40c6453e96988d31e22973a9a5e748522f8a41fde71208e50c2a94c -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:f6e3c506a1c1b293e5584cb9f52d6d8a0782727e40d1a944a11cda78d9f8e3fd -->
+
+## Title sound and audio-control acceptance — 2026-11-13 (verified locally)
+
+New and returning travelers can now mute or enable music and effects directly from the production title. The dedicated Phaser menu paints the Sound: On/Off text, selected state, disabled state and focus frame; the original button retains keyboard/touch activation and a stable Game sound accessible name with aria-pressed. The title audio facade calls the existing shared director and uses legend-road-sound, so title, road and combat stay on the same preference. Missing Phaser retains the usable DOM button; a missing audio module leaves an explicit disabled Sound unavailable control. No navigation, progression, economy or player-save owner changed.
+
+Two startup/re-entry defects were found and fixed during verification: the title can render before the later deferred audio script, and a rebuilt logo can initially have zero height before its cached image loads. The control now synchronizes after deferred scripts finish, and the title painter retries on its source logo load/error. Missing text/art still restores the full DOM fallback. The new control has a 44px minimum target in landscape as well as portrait.
+
+Ten selected tests pass on final inputs: desktop/mobile title sound, saved preferences and returning Greyfen saves; combined accessibility preferences and rejected writes; missing-renderer/audio fallback; existing title resize/art fallback; two real title-road-combat journeys; and original fresh-title/returning desktop/mobile navigation regressions. Existing audio-owner compatibility cases remain equivalent because the owner and persistence inputs are unchanged. Early new-test helper, fixture, touch-hover and stale-count failures were investigated and corrected while retaining the assertions; the re-entry test exposed the real missing logo-load retry described above.
+
+Shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390, including focused On/Off controls, fresh/returning titles, accessibility preferences and DOM fallback. The final landscape target measures 44px and has no page overflow. Memory-only Preview fixtures were removed; raw player/settings/audio/pending-return values were unchanged. Browser playback state is verified; subjective listening quality is not claimed.
+
+This closes the local title/road/combat audio-control gate. Remaining loading/error/confirmation overlays, full first-session/returning-save migration acceptance, dedicated Storehouse art and first-three-towns release gates remain open. Manual task permissions still block PR creation, merging and production publishing.
+
 ## Audio controls and storage failure — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The shared audio director now keeps a mute choice for the current page when browser storage rejects the preference write. Previously, toggling off returned false while the next title/road transition read the unchanged stored value and restarted both loops. A failed read retains the last known preference. Successful reads and writes retain the existing legend-road-sound contract; only off disables persisted audio, and unknown/missing values still mean on. A rejected write cannot survive reload; no new storage key is introduced.
 

@@ -53,7 +53,9 @@
       tokens,
       buildVersion: buildVersion(),
       backgroundImage: window.LegendAssetsV090?.title?.background,
-      logoImage: window.LegendAssetsV090?.logo?.main
+      logoImage: window.LegendAssetsV090?.logo?.main,
+      soundEnabled: titleAudio.soundOn?.() ?? true,
+      soundAvailable: titleAudio.canToggleSound?.() ?? false
     })) {
       const host = root();
       if (host) host.innerHTML = '<main class="settings09x"><div class="settings09x-wrap"><h1>Title screen unavailable</h1><p>The title menu view could not be loaded. Refresh before continuing.</p></div></main>';

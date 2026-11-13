@@ -1,3 +1,5 @@
+/* The title mute control stays touch-sized in short landscape viewports too. */
+#root .title-v136-rpg #titleSound { min-height: 44px !important; }
 /* Native Phaser presentation for the title menu.
    The semantic HTML controls remain in place as transparent, accessible hit targets.
    If Phaser fails to load, this class is never applied and the classic title remains visible. */

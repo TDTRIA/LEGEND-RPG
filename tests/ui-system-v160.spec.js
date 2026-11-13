@@ -158,7 +158,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       'kicker','intro','traveler-label','traveler-name','traveler-detail','menu-heading','divider-caption'
     ]);
     expect(freshMenu.decorationLabels.every(item => item.text)).toBe(true);
-    expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','credits']);
+    expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','titleSound','credits']);
 
     // If any required title copy disappears, Phaser must reveal the complete
     // accessible DOM title instead of leaving a partially painted blank panel.
@@ -183,7 +183,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi
     )).toBe(true);
     expect(freshMenu.labels.map(item => item.title)).toEqual([
-      'Begin Your Journey','Profile','Settings','News & Roadmap','Credits'
+      'Begin Your Journey','Profile','Settings','News & Roadmap','Sound: On','Credits'
     ]);
     await expect(page.locator('.v140-realm-overview.v151-realm-art')).toBeVisible();
     await expect(page.locator('.v151-realm-feature img')).toHaveAttribute('src', 'assets/generated/locations/ashmere-town.webp');
@@ -240,15 +240,15 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       'kicker','intro','traveler-label','traveler-name','traveler-detail','menu-heading','divider-caption'
     ]);
     expect(menu.decorationLabels.find(item => item.id === 'traveler-name')?.text).toBe('ReturnMenuParity');
-    expect(menu.ids).toEqual(['continue','new','account','settings','dispatches','credits']);
+    expect(menu.ids).toEqual(['continue','new','account','settings','dispatches','titleSound','credits']);
     expect(menu.labels.map(item => item.title)).toEqual([
-      'Continue Journey','New Traveler','Profile','Settings','News & Roadmap','Credits'
+      'Continue Journey','New Traveler','Profile','Settings','News & Roadmap','Sound: On','Credits'
     ]);
     expect(menu.labels.every(item => item.title && item.subtitle)).toBe(true);
-    expect(menu.buttons).toHaveLength(6);
+    expect(menu.buttons).toHaveLength(7);
     expect(menu.buttons.every(button => button.tag === 'BUTTON' && button.type === 'button' &&
       button.accessibleName && button.handler === 'function')).toBe(true);
-    expect(menu.textQuality).toHaveLength(6);
+    expect(menu.textQuality).toHaveLength(7);
     expect(menu.textQuality.every(item => item.titleFontSize >= 13 && item.titleResolution === 2 &&
       item.subtitleFontSize >= 10 && item.subtitleResolution === 2)).toBe(true);
     const saveAfterPaint = await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()));
@@ -346,12 +346,12 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
           bounds: snapshot.nativeTitleUiControlBounds || []
         };
       });
-      expect(layout.ids).toEqual(['continue','new','account','settings','dispatches','credits']);
+      expect(layout.ids).toEqual(['continue','new','account','settings','dispatches','titleSound','credits']);
       expect(layout.labels.every(item => item.title && item.subtitle)).toBe(true);
       expect(layout.logoPainted).toBe(true);
       expect(layout.dividerPainted).toBe(true);
       expect(layout.decorationTextCount).toBe(7);
-      expect(layout.bounds).toHaveLength(6);
+      expect(layout.bounds).toHaveLength(7);
       expect(layout.bounds.every(item => item.x >= 0 && item.width > 0 && item.x + item.width <= layout.size.width + 1)).toBe(true);
       await expectNoHorizontalOverflow(mobilePage);
       await expectTravelerDetailFits(mobilePage);

@@ -381,7 +381,7 @@
       inferEnvironment();
       observeModalRoot();
     });
-    observer.observe(host, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'disabled', 'aria-disabled'] });
+    observer.observe(host, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'disabled', 'aria-disabled', 'aria-pressed'] });
     inferEnvironment();
     observeModalRoot();
   }
@@ -883,6 +883,7 @@
             width: item.width,
             height: item.height,
             focused: Boolean(item.focusFrame?.visible),
+            pressed: item.button.getAttribute('aria-pressed'),
             texture: item.buttonSurface?.texture?.key || ''
           })),
           nativeTitleUiTextQuality: this.nativeTitleUiControls.map(item => ({
@@ -1398,7 +1399,7 @@
       const disabled = Boolean(control.button.disabled || control.button.getAttribute('aria-disabled') === 'true');
       active = Boolean(active && !disabled);
       control.buttonSurface.setTexture(disabled ? 'menuButtonDisabled'
-        : active || control.button.classList.contains('v136-menu-primary') ? 'menuButtonSelected' : 'menuButtonNormal');
+        : active || control.button.getAttribute('aria-pressed') === 'true' || control.button.classList.contains('v136-menu-primary') ? 'menuButtonSelected' : 'menuButtonNormal');
       control.focusFrame?.setVisible?.(active);
       this.tweens.killTweensOf(control.container);
       const targetX = control.x + (active && !reducedMotion() ? 2 : 0);
@@ -1460,6 +1461,16 @@
         height: rect.height * sy
       });
       const logoNode = hero.querySelector('.v150-logo-lockup .v120-legend-logo');
+      if (logoNode && !logoNode.__legendNativeTitleLayoutBound) {
+        logoNode.__legendNativeTitleLayoutBound = true;
+        const retryTitleLayout = () => {
+          if (logoNode.isConnected && realmScene === this) this.syncNativeTitleUi(this.surface);
+        };
+        // A rebuilt title may be measured before its cached image is decoded.
+        // Retry when geometry arrives; failed artwork still keeps DOM visible.
+        logoNode.addEventListener('load', retryTitleLayout, { once: true });
+        logoNode.addEventListener('error', retryTitleLayout, { once: true });
+      }
       const dividerNode = hero.querySelector('.v120-divider');
       const titleDecorationNodes = [
         { id: 'kicker', node: hero.querySelector('.portal100-kicker'), color: '#efcf83' },
@@ -1499,16 +1510,20 @@
           return [button.id, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
             button.querySelector('.v136-menu-copy strong')?.textContent?.trim() || '',
             button.querySelector('.v136-menu-copy small')?.textContent?.trim() || '',
-            button.disabled, button.getAttribute('aria-disabled'), button.classList.contains('v136-menu-primary')];
+            button.disabled, button.getAttribute('aria-disabled'), button.getAttribute('aria-pressed'), button.classList.contains('v136-menu-primary')];
         })
       ]);
       if (this.nativeTitleUiActive && signature === this.nativeTitleUiSignature) return;
 
       const expectedIds = hero.querySelector('#continue')
-        ? ['continue','new','account','settings','dispatches','credits']
-        : ['newPrimary','account','settings','dispatches','credits'];
+        ? ['continue','new','account','settings','dispatches','titleSound','credits']
+        : ['newPrimary','account','settings','dispatches','titleSound','credits'];
       const presentIds = buttons.map(button => button.id);
-      const hasAllActions = expectedIds.every(id => presentIds.includes(id));
+      const soundControl = hero.querySelector('#titleSound');
+      const soundReady = ['true','false'].includes(soundControl?.getAttribute('aria-pressed')) &&
+        soundControl.querySelector('.v136-menu-copy strong')?.textContent?.trim() &&
+        soundControl.querySelector('.v136-menu-copy small')?.textContent?.trim();
+      const hasAllActions = soundReady && expectedIds.every(id => presentIds.includes(id));
       const requiredTextures = [
         'menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo',
         'menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'
@@ -1625,6 +1640,7 @@
         new: 'menuInn',
         account: 'menuJournal',
         settings: 'menuSettings',
+        titleSound: 'menuSettings',
         dispatches: 'menuRoad',
         credits: 'menuMilestone'
       };
@@ -1633,7 +1649,7 @@
         const primary = button.classList.contains('v136-menu-primary');
         const main = button.querySelector('.v136-menu-copy strong')?.textContent?.trim() || button.textContent.trim();
         const detail = button.querySelector('.v136-menu-copy small')?.textContent?.trim() || '';
-        button.setAttribute('aria-label', [main, detail].filter(Boolean).join('. '));
+        if(button.id !== 'titleSound') button.setAttribute('aria-label', [main, detail].filter(Boolean).join('. '));
         const mainCss = window.getComputedStyle(button.querySelector('.v136-menu-copy strong') || button);
         const detailCss = window.getComputedStyle(button.querySelector('.v136-menu-copy small') || button);
         const mainSize = Math.max(10, Math.round((parseFloat(mainCss.fontSize) || 13) * sy));
@@ -1643,7 +1659,7 @@
         const focused = button === document.activeElement || button.matches(':focus-visible');
         const hovered = button.matches(':hover');
         const stateTexture = disabled ? 'menuButtonDisabled'
-          : primary || focused || hovered ? 'menuButtonSelected' : 'menuButtonNormal';
+          : primary || focused || hovered || button.getAttribute('aria-pressed') === 'true' ? 'menuButtonSelected' : 'menuButtonNormal';
         const buttonSurface = this.add.image(rect.width / 2, rect.height / 2, stateTexture)
           .setDisplaySize(rect.width, rect.height)
           .setAlpha(0.99);
@@ -1701,7 +1717,7 @@
           padding: { left: 1, right: 2, top: 1, bottom: 1 }
         })).setOrigin(0, 0.5);
         subtitle.setFixedSize?.(labelWidth, Math.max(15, rect.height * 0.34));
-        const arrow = crispText(this.add.text(rect.width - 17 * sx, Math.round(rect.height / 2), '›', {
+        const arrow = crispText(this.add.text(rect.width - 17 * sx, Math.round(rect.height / 2), button.hasAttribute('aria-pressed') ? '' : '›', {
           fontFamily: 'Georgia, serif',
           fontSize: `${Math.max(22, Math.round(24 * sy))}px`,
           fontStyle: 'bold',
