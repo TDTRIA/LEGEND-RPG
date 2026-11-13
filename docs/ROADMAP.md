@@ -188,7 +188,23 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:e5ec165abc7bcafc6321611cf2d72b784dc0ee92b54735b89c807fe71c1c6a90 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:2f27691a4bb64cca132adf310b240cffeebdda62ba0aaa06cec2df380f1cf607 -->
+
+## Title navigation notice — 2026-11-13 (verified locally)
+
+The brief production title handoff notice now uses a dedicated guarded Phaser Graphics/Text canvas in its original semantic DOM layer. Its real message, title callback, focus behavior and 340ms deadline remain owned by the title controller. Complete source copy remains visible if the painter is absent or cannot fit all text; unexpected source children restore the whole DOM notice. Large text, readable font and high contrast are supported.
+
+Visual inspection found that the old exit transform positioned a fixed notice below the mobile viewport. The title wrapper no longer scales/dims during this short handoff, preserving its timing and pointer lock while keeping the notice on screen. A fractional-width wrapping rejection and a high-contrast specificity conflict were also repaired. These are presentation changes; no save or gameplay owner changed.
+
+Seven selected checks pass across fresh and equivalent retained results: desktop keyboard/mobile touch handoff into the mandatory annals; saved preferences, unknown save properties and malformed-source fallback; missing painter with the actual deadline; and the existing title scroll/resize/art fallback and returning-player desktop/mobile journeys. The early native fit failure was fixed; subsequent deadline-test races were repaired by observing the brief source insertion without extending its duration. Syntax checks cover 118 production scripts and 85 specs. Shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390, including combined readability preferences and DOM fallback. Preview returned to the original title with all four stored values unchanged.
+
+The old Ashmere gate remains an exported compatibility facade with no active production caller, and legacy tutorial/playtest files are absent from the production entry point; none were reactivated. This completes the live title notice slice. Broader title/accessibility, shell and whole-game acceptance remain open, including short-landscape menu fallback with combined preferences. Manual permissions still prevent PR creation, main merges and production publishing. Omitting the new painter retains the readable DOM notice and original handoff.
+
 ## Destination transitions — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The production scene curtain now has a dedicated guarded Phaser painter for its approved regional landscape, raster wordmark, live destination label, divider, indeterminate activity indicator and caption. Ashmere/title, Old Road, Greyfen and Bell Cellar retain their source artwork identities. The layered darkness and blurred panel are replaced with visible scenery and a readable local panel, including in the DOM fallback. The source label and navigation controller remain authoritative; the activity indicator does not claim asset-load or save progress.
 

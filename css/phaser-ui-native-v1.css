@@ -1707,3 +1707,11 @@ body.legend-phaser-transition-active #legend-scene-curtain :is(.legend-transitio
 body.legend-phaser-transition-active #legend-scene-curtain :is(.legend-transition-location,.legend-transition-caption) { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
 @media(max-height:500px) { #legend-scene-curtain .legend-transition-scene { padding:16px; gap:10px; } #legend-scene-curtain .legend-transition-wordmark { height:64px; } }
 html:has(#legend-scene-curtain:is(.is-covering,.is-revealing)) { overflow:hidden!important; }
+
+/* Short title handoff: keep the live notice readable in native and DOM modes. */
+#root .title-transition-notice { box-sizing:border-box; border-radius:2px; background:#101a12; border-color:#b49d69; color:#f2ead5; font:700 1rem/1.5 system-ui,sans-serif; text-transform:none; letter-spacing:normal; text-align:center; text-shadow:none; box-shadow:none; }
+body.a11y-large-text #root .title-transition-notice { font-size:1.2rem; }
+body.a11y-readable-font #root .title-transition-notice { font-family:Verdana,Arial,sans-serif; }
+body.a11y-high-contrast #root .title-transition-notice { background:#000; color:#fff; }
+body #root .title-transition-notice[data-phaser-title-notice] { background:transparent!important; border-color:transparent!important; color:transparent!important; -webkit-text-fill-color:transparent!important; }
+#root .title-wrap.title-is-opening { animation:none!important; transform:none!important; filter:none!important; }
