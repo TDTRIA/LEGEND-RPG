@@ -1208,3 +1208,44 @@ body.legend-phaser-world-active #root .ash099-screen.legend-phaser-contracts [da
 body.legend-phaser-world-active #root .ash099-screen.legend-phaser-contracts [data-phaser-contracts-copy="true"] > strong {
   color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important;
 }
+
+/* People and dialogue retain their source cards, portraits and story callbacks. */
+body.legend-world-shell-active #root .ash099-terminal:has(.ash099-head:is([data-ash-service="people"],[data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"])) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) {
+  display: grid !important; grid-template-columns: 180px minmax(0, 1fr) !important; gap: 20px !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) > img {
+  width: 180px !important; height: 220px !important; max-width: 100% !important;
+  object-fit: cover !important; object-position: 50% 18% !important;
+}
+@media (max-width: 760px) {
+  body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) > img { justify-self: center; }
+}
+body.legend-phaser-world-active #root .legend-phaser-people,
+body.legend-phaser-world-active #root .legend-phaser-people :is(.ash099-head,.ash099-head > div,.ash099-lines,.ash099-lines > p,#turnTokens,#ashBack),
+body.legend-phaser-world-active #root .legend-phaser-people .ash099-npc-grid .ash099-npc-card {
+  background: transparent !important; border-color: transparent !important;
+  box-shadow: none !important; backdrop-filter: none !important;
+  transform: none !important; outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-people .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-people .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-people :is(.ash099-head > img,.ash099-npc-card > img) { opacity: 0 !important; }
+body.legend-phaser-world-active #root .ash099-screen.legend-phaser-people [data-phaser-people-copy="true"],
+body.legend-phaser-world-active #root .ash099-screen.legend-phaser-people .ash099-npc-grid .ash099-npc-card [data-phaser-people-copy="true"] {
+  color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important;
+}
+
+/* Conversation headings receive reading focus; actionable controls retain their focus frames. */
+body.legend-world-shell-active #root .ash099-terminal:has(.ash099-head:is([data-ash-service="people"],[data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"])) h1[tabindex="-1"] { outline: none; }
+/* Keyboard focus scrolling must account for the fixed shell above and below the reader. */
+body.legend-world-shell-active #root:has(.ash099-head:is([data-ash-service="people"],[data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"])) {
+  scroll-padding-top: 112px;
+  scroll-padding-bottom: 88px;
+}
