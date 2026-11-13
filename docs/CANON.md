@@ -162,7 +162,13 @@ The presence speaking during traveler creation is **the Veil at the author/story
 
 The mandatory opening annals should cover **the old war and the seal only**. The Last Mercy, the wound in the Veil and echoes are **not** told in the opening; the player learns of them through Mara's Chronicle quest and the legend's leaves, scattered across the first two regions. The annals still end by handing into traveler creation.
 
-- **Not yet implemented.** The shipped opening (`js/systems/opening-prologue-v220.js`, v0.30.1) still carries "III · The Last Mercy." Changing it is a code change with test updates (two tests assert the Last Mercy screen: `tests/road-opening-v140.spec.js` and `tests/reboot-prototype.spec.js`). The screen count stays at three.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:8dc40d4128f48e0e5c43f38df67a2beca37d84b26c6e336dfc3b2499e60e247b -->
+
+- **Implemented on the production feature branch (2026-11-13); publication pending.** `js/systems/opening-prologue-v220.js` now uses the exact approved replacement below. All three annals remain mandatory and the closing quote is unchanged. `tests/opening-annals-contract.spec.js` checks complete text, keyboard/touch chapter order, anonymous creation, fit and DOM recovery at desktop/mobile sizes. Production opening consumers and the isolated prototype’s shared-copy assertions use the replacement; prototype execution remains outside the production checkpoint.
+
+<!-- /coderabbit-ai-generated:v1 -->
 - **Approved replacement for screen III (owner-approved 2026-11-03).** Use this text exactly; do not rewrite it. Keep the existing closing quote.
   - Chapter label: `III · THE PEACE KEPT`
   - Title: `The Peace, Written Down`

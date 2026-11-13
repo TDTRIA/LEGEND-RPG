@@ -34,7 +34,17 @@ The story and the systems should reinforce that loop. Town is a place the player
 
 <!-- coderabbit-ai-generated-section:v1:5f771f8dc5008c60cbed7558ed9d8e70eaa68b749f050f737794c53303ed8d13 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:adb53ab7bf7b3ac4d78af200baf679bc67e57faa6d18fb141a0be06c956d067d -->
+
+## Opening annals correction — 2026-11-13 (local)
+
+The third production annal now uses the exact approved “The Peace, Written Down” text from CANON, with the original closing quote and all three mandatory chapters preserved. Phaser text respects the quote’s content box and heading wrap boundaries; incomplete rendering restores the DOM surface. Continue labels stay on one line, decorative gold frames are removed, and keyboard focus retains a visible pale outline. Four focused production checks pass, including exact desktop/mobile copy, touch/keyboard handoff, fallback recovery and the full Oric opening. Desktop, portrait and landscape screenshots were inspected. Save keys, gameplay rules and progression owners are unchanged. Broader production regression and publication remain pending; this does not complete the migration.
+
 ## Title stability checkpoint — 2026-11-12 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The title asset loader accepts cache query strings and rasterizes existing SVG UI assets at explicit dimensions before WebGL upload. This restores the required raster wordmark and fixes distorted button frames. Native primary buttons no longer have their labels covered by an opaque gold DOM background. Focus/hover and disabled textures follow semantic controls; title geometry refreshes on resize and scrolling, and decorative labels remain complete. DOM controls and missing-art fallback remain intact. Save keys, callbacks, gameplay and story are unchanged.
 

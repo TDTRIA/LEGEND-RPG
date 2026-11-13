@@ -2050,7 +2050,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('#v094Next').click();
     await page.locator('[data-origin]').first().click();
     await page.locator('#v094Next').click();
-    await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+    await page.locator('[data-class="Ranger"]').click();
     await page.locator('#v094Next').click();
     await page.locator('[data-keepsake="Old Map"]').click();
     await page.locator('#v094Next').click();
@@ -2827,11 +2827,12 @@ test('opening annals are painted by Phaser while the existing chapter controls r
   await page.locator('#openingLoreContinue').click();
   await expect(page.getByRole('heading', { name: 'The Pact Beneath the Stone' })).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiStep)).toBe(1);
-  await page.locator('#openingLoreContinue').focus();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#openingLoreContinue')).toBeFocused();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiButtonFocused)).toBe(true);
 
   await page.locator('#openingLoreContinue').click();
-  await expect(page.getByRole('heading', { name: 'The Kindness That Failed' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'The Peace, Written Down' })).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiStep)).toBe(2);
   await expect(page.locator('#openingLoreContinue')).toContainText('Shape the traveler');
   await page.locator('#openingLoreContinue').click();
@@ -3038,7 +3039,7 @@ test('looping intro and creation atmosphere does not block the Phaser screen pai
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();

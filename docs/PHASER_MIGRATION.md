@@ -46,7 +46,17 @@ All-destination and long-content Route Board acceptance remains open. The Road N
 
 Publishing is blocked in this task by Manual permissions and the assigned-branch push restriction. No PR, merge, or GitHub deployment is claimed.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:6ceee2ab509c5bc9c4b5dbd1b8f85565097dc1fd129559f5b96458eed36656ab -->
+
+## Opening annals correction — 2026-11-13 (local)
+
+The third production annal now uses the exact approved “The Peace, Written Down” text from CANON, with the original closing quote and all three mandatory chapters preserved. Phaser text respects the quote’s content box and heading wrap boundaries; incomplete rendering restores the DOM surface. Continue labels stay on one line, decorative gold frames are removed, and keyboard focus retains a visible pale outline. Four focused production checks pass, including exact desktop/mobile copy, touch/keyboard handoff, fallback recovery and the full Oric opening. Desktop, portrait and landscape screenshots were inspected. Save keys, gameplay rules and progression owners are unchanged. Broader production regression and publication remain pending; this does not complete the migration.
+
 ## Current state
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 
@@ -200,8 +210,14 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
    - [ ] Departure and route-choice controls, points of interest and discoveries.
    - [x] Stage- and route-specific expedition background art uses the active Phaser environment texture, with a source-matched DOM image fallback (focused desktop/mobile parity test passed in PR #124).
    - [x] Connected Old Road map and field-journal modal (guarded Phaser painter enabled; styled DOM fallback remains available when preflight fails; full desktop/mobile parity verification remains open).
-   - [ ] Road journey HUD (currently DOM recovery fallback; Phaser painter requires desktop/mobile content parity).
-   - [ ] Road decision deck (currently DOM recovery fallback; original route, discovery, detour and camp handlers remain authoritative).
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:3e3633e00db8c460ad8ec9e5df0091917d080e2959045b648cf92d40b2f1eb7a -->
+
+   - [ ] Road journey HUD (dedicated Phaser painter is enabled when its production regions are present; complete desktop/mobile text, focus and scrolling acceptance remains open).
+   - [ ] Road decision deck (dedicated Phaser painter is enabled for the real expedition regions; original route, discovery, detour and camp handlers remain authoritative, and complete responsive interaction acceptance remains open).
+
+<!-- /coderabbit-ai-generated:v1 -->
    - [ ] Main road scene and expedition result presentation.
    - [ ] Keep route state, pressure, rewards, evidence and Road Token settlement in existing modules.
 

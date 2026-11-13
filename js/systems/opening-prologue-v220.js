@@ -13,10 +13,9 @@
       'The last human wardens and the monster leaders still able to command their hosts made a terrible bargain. Together they raised a seal over the deep ways, binding the old gates and driving the remaining war-hosts beneath the earth.',
       'The agreement promised that the armies below would stay below, while the kingdoms above would keep the wards and passage-stones intact. Generations grew up calling it the end of the monster war. The seal became part treaty, part warning—and part history people preferred not to remember.'
     ],quote:'A promise can outlast the people who made it. That does not make it unbreakable.'},
-    {chapter:'III · THE LAST MERCY',title:'The Kindness That Failed',paragraphs:[
-      'Long after the seal was raised, plague and another war left a healer surrounded by the dead. Unable to accept that those they loved were gone, the healer attempted a ritual meant to bring them back. The forbidden accounts call it the Last Mercy.',
-      'No whole soul returned. Instead came echoes—fragments of memory, habit, and longing that could imitate the absent. The ritual wounded the Veil, the boundary between life and death, and left places where the world no longer behaved as it should.',
-      'The old seal and the Last Mercy belong to different chapters of history. Whether one has anything to do with the other is not written here. What is known is simpler: old protections can fail, and the world has begun to change again.'
+    {chapter:'III · THE PEACE KEPT',title:'The Peace, Written Down',paragraphs:[
+      'The kingdoms did not trust the silence. They set wardens over the passage-stones and ordered the deep ground left alone. Chroniclers wrote the year down as the end of the monster war, and the writing was neat, and it became the version everyone told.',
+      'Generations passed. Roads were cut across the old war-ground, and towns grew where armies had camped. The wardens’ stones were kept, and the law against digging became a custom, then an inconvenience. Few remembered why it had been made. Fewer asked.'
     ],quote:'Before the road, before the waking, there is a question no chronicle can answer for you: what will you choose to carry?'}
   ];
   let step=0, onContinue=null;

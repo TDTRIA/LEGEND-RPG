@@ -8,6 +8,7 @@ if (!versionMatch) throw new Error('Could not read LEGEND_DATA.VERSION from js/d
 const version = versionMatch[1];
 
 async function openTitle(page) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
@@ -15,7 +16,6 @@ async function openTitle(page) {
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
-  await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }' });
   await expect(page.locator('.v120-title')).toBeVisible();
   await expect(page.locator('.v120-title-hero .v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
   await expect(page.locator('.v120-title-hero .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
@@ -84,7 +84,7 @@ async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) 
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();
@@ -97,7 +97,7 @@ async function createTravelerToLantern(page, name = 'VeilRoadQA', options = {}) 
 }
 
 test.describe('LEGEND v' + version + ' road-born opening', () => {
-  test('annals establish the old war, the underground seal and the Last Mercy before creation; Oric thought the traveler was dead', async ({ page }) => {
+  test('annals establish the old war, the underground seal and the recorded peace before creation; Oric thought the traveler was dead', async ({ page }) => {
     await openTitle(page);
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
     await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
@@ -110,19 +110,19 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     const normalButton = await page.evaluate(() => {
       const snapshot = window.LegendPhaserWorldV1.snapshot();
       return {
-        texture: snapshot.nativeAnnalsUiButtonTexture,
+        color: snapshot.nativeAnnalsUiButtonColor,
         bounds: snapshot.nativeAnnalsUiButtonBounds,
         label: snapshot.nativeAnnalsUiButtonLabelPosition
       };
     });
-    expect(normalButton.texture).toBe('menuButtonNormal');
+    expect(normalButton.color).toBe(0x17251d);
     expect(Math.abs(normalButton.label.x - (normalButton.bounds.x + normalButton.bounds.width / 2))).toBeLessThan(1);
     expect(Math.abs(normalButton.label.y - (normalButton.bounds.y + normalButton.bounds.height / 2))).toBeLessThan(1);
     await page.keyboard.press('Tab');
     await expect(annalsButton).toBeFocused();
     await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiButtonTexture
-    )).toBe('menuButtonSelected');
+      window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiButtonColor
+    )).toBe(0x304638);
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiButtonFocused
     )).toBe(true);
@@ -130,9 +130,9 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(page.getByRole('heading', { name: 'The Pact Beneath the Stone' })).toBeVisible();
     await expect(page.locator('.opening-lore-v220')).toContainText('seal over the deep ways');
     await page.getByRole('button', { name: /^Continue$/ }).click();
-    await expect(page.getByRole('heading', { name: 'The Kindness That Failed' })).toBeVisible();
-    await expect(page.locator('.opening-lore-v220')).toContainText('Last Mercy');
-    await expect(page.locator('.opening-lore-v220')).toContainText('the Veil');
+    await expect(page.getByRole('heading', { name: 'The Peace, Written Down' })).toBeVisible();
+    await expect(page.locator('.opening-lore-v220')).toContainText('III · THE PEACE KEPT');
+    await expect(page.locator('.opening-lore-v220')).not.toContainText(/Last Mercy|Veil|echo|wound|healer|Saint/i);
     await page.getByRole('button', { name: /Shape the traveler/i }).click();
 
     await expect(page.locator('#v094Name')).toBeVisible();
@@ -144,7 +144,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await page.locator('#v094Next').click();
     await page.locator('[data-origin]').first().click();
     await page.locator('#v094Next').click();
-    await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+    await page.locator('[data-class="Ranger"]').click();
     await page.locator('#v094Next').click();
     await page.locator('[data-keepsake="Old Map"]').click();
     await page.locator('#v094Next').click();
@@ -169,6 +169,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(prologue).toContainText('Blackroot ditch');
     await expect(prologue).toContainText('No second toll');
     await expect(page.locator('.opening-road-v140-bg')).toBeVisible();
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
     const openingCinematic = await page.locator('.opening-road-v140-prologue-card h1').evaluate(el => getComputedStyle(el).animationName);
     expect(openingCinematic).toBe('legendOpeningTitle201');
     await expect(page.getByRole('button', { name: 'Lift your head' })).toBeVisible();
@@ -192,6 +193,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
   test('the title News & Roadmap opens a real screen and returns to the title', async ({ page }) => {
     await openTitle(page);
     await expect(page.getByRole('button', { name: /News & Roadmap/i })).toBeVisible();
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
     await page.getByRole('button', { name: /News & Roadmap/i }).click();
     await expect(page.locator('#legend-scene-curtain')).toContainText('PREPARING THE NEXT SCENE');
     await expect(page.getByRole('heading', { name: 'News & Roadmap' })).toBeVisible();

@@ -862,6 +862,9 @@
           nativeAnnalsUiButtonFocused: Boolean(this.nativeAnnalsUiButtonFocus?.visible),
           nativeAnnalsUiButtonHovered: Boolean(this.nativeAnnalsUiButtonHovered),
           nativeAnnalsUiButtonTexture: this.nativeAnnalsUiButtonBackground?.texture?.key || '',
+          nativeAnnalsUiButtonColor: this.nativeAnnalsUiButtonBackground?.fillColor ?? null,
+          nativeAnnalsUiLabels: this.shellLabelSnapshot(this.nativeAnnalsUiObjects),
+          nativeAnnalsUiFailure: this.nativeAnnalsUiFailure || '',
           nativeAnnalsUiButtonLabelPosition: this.nativeAnnalsUiButtonLabel
             ? { x: this.nativeAnnalsUiButtonLabel.x, y: this.nativeAnnalsUiButtonLabel.y }
             : null,
@@ -1787,38 +1790,33 @@
         this.nativeAnnalsUiObjects.push(object);
         return object;
       };
-      const styleOf = node => window.getComputedStyle(node);
+      let copyFits = true;
+      this.nativeAnnalsUiFailure = '';
       const makeText = (node, rect, overrides = {}) => {
-        if (!node || !rect) return null;
-        const style = styleOf(node);
-        let text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
-        if (style.textTransform === 'uppercase') text = text.toLocaleUpperCase();
-        else if (style.textTransform === 'lowercase') text = text.toLocaleLowerCase();
-        if (!text) return null;
-        const fontSize = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
-        const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.4;
-        const config = {
-          fontFamily: style.fontFamily || 'Georgia, Times New Roman, serif',
-          fontSize: fontSize + 'px',
-          fontStyle: style.fontWeight === 'bold' || Number(style.fontWeight) >= 650 ? 'bold' : (style.fontStyle || 'normal'),
-          color: overrides.color || style.color || '#f0e8d4',
-          lineSpacing: Math.max(0, (lineHeight - (parseFloat(style.fontSize) || 14)) * sy),
-          letterSpacing: Number.isFinite(parseFloat(style.letterSpacing)) ? Math.max(0, parseFloat(style.letterSpacing) * sx) : 0,
-          wordWrap: { width: Math.max(36, rect.width), useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 1, bottom: 2 },
-          align: overrides.align || style.textAlign || 'left'
-        };
-        const centered = overrides.center === true;
-        const textX = centered
-          ? rect.x + rect.width / 2
-          : rect.x + Math.max(0, Number(overrides.insetLeft) || 0) * sx;
-        const textY = centered ? rect.y + rect.height / 2 : rect.y;
-        const label = addObject(this.add.text(textX, textY, text, config)
-          .setOrigin(centered ? 0.5 : 0, centered ? 0.5 : 0));
-        if (centered && node.classList?.contains('opening-lore-v220-continue')) {
-          this.nativeAnnalsUiButtonLabel = label;
+        if (!node || !rect) { copyFits = false; return null; }
+        // Respect the source content box (including the quote's border/padding).
+        // The shared label guard preserves full copy or restores the DOM surface.
+        // Canvas word wrapping includes trailing-space metrics. A small heading
+        // allowance avoids an extra line at browser wrap boundaries; fit the
+        // resulting glyphs back into the original box without reducing height.
+        const headingAllowance = node.tagName === 'H1' ? 8 * sx : 0;
+        const label = this.createShellLabel(node, { ...rect, width: rect.width + headingAllowance }, overrides.color || '#f0e8d4', sx, sy, 12);
+        if (!label) { copyFits = false; this.nativeAnnalsUiFailure = 'Annals copy does not fit: ' + node.tagName + ' ' + node.textContent.trim(); return null; }
+        if (headingAllowance) {
+          if (label.displayWidth > rect.width) label.setScale(label.scaleX * rect.width / label.displayWidth, 1);
+          label.setData('shellLabel', { sourceText: node.textContent.trim(), sourceBounds: rect });
         }
-        return label;
+        if (overrides.center) {
+          label.setOrigin(0.5).setPosition(rect.x + rect.width / 2, rect.y + rect.height / 2);
+          this.nativeAnnalsUiButtonLabel = label;
+        } else {
+          const css = getComputedStyle(node);
+          const lines = label.getWrappedText().length;
+          const available = rect.height - (parseFloat(css.paddingTop) + parseFloat(css.paddingBottom) +
+            parseFloat(css.borderTopWidth) + parseFloat(css.borderBottomWidth) || 0) * sy;
+          if (lines > 1 && available > label.height) label.setLineSpacing((available - label.height) / (lines - 1));
+        }
+        return addObject(label);
       };
 
       const screenRect = readRect(screen);
@@ -1866,7 +1864,7 @@
       makeText(kicker, readRect(kicker), { color: '#e0c780' });
       makeText(heading, readRect(heading), { color: '#fff0cf' });
       paragraphs.forEach(node => makeText(node, readRect(node), { color: '#f0f0e5' }));
-      makeText(quote, readRect(quote), { color: '#ffe6b2', insetLeft: 19 });
+      makeText(quote, readRect(quote), { color: '#ffe6b2' });
 
       if (progress) {
         const track = readRect(progress);
@@ -1886,12 +1884,9 @@
         if (rect) {
           button.setAttribute('aria-label', button.textContent.replace(/→/g, '').trim());
           this.nativeAnnalsUiButtonNode = button;
-          const initialTexture = button.disabled ? 'menuButtonDisabled'
-            : button.matches(':hover') || button.matches(':focus-visible')
-              ? 'menuButtonSelected' : 'menuButtonNormal';
-          const background = this.add.image(
-            rect.x + rect.width / 2, rect.y + rect.height / 2, initialTexture
-          ).setDisplaySize(rect.width, rect.height).setDepth(11);
+          const background = this.add.rectangle(
+            rect.x + rect.width / 2, rect.y + rect.height / 2, rect.width, rect.height, 0x17251d, 0.95
+          ).setDepth(11);
           addObject(background);
           this.nativeAnnalsUiButtonBackground = background;
           this.nativeAnnalsUiButtonHovered = button.matches(':hover');
@@ -1908,13 +1903,15 @@
             button.addEventListener('pointerleave', () => this.setNativeAnnalsButtonHover(false));
           }
           const focus = this.add.graphics();
-          focus.lineStyle(2, 0xffe7a6, 0.96);
+          focus.lineStyle(2, 0xd8e8df, 0.96);
           focus.strokeRoundedRect(rect.x - 2, rect.y - 2, rect.width + 4, rect.height + 4, 3);
           focus.setVisible(this.nativeAnnalsUiButtonKeyboardFocused);
           addObject(focus);
           this.nativeAnnalsUiButtonFocus = focus;
+          this.refreshNativeAnnalsButtonTexture();
         }
       }
+      if (!copyFits) this.clearNativeAnnalsUi();
     }
 
     setNativeAnnalsButtonFocus(active) {
@@ -1932,10 +1929,9 @@
       const button = this.nativeAnnalsUiButtonNode;
       const background = this.nativeAnnalsUiButtonBackground;
       if (!button?.isConnected || !background?.active) return;
-      const texture = button.disabled ? 'menuButtonDisabled'
-        : this.nativeAnnalsUiButtonKeyboardFocused || this.nativeAnnalsUiButtonHovered
-          ? 'menuButtonSelected' : 'menuButtonNormal';
-      if (background.texture?.key !== texture) background.setTexture(texture);
+      const active = this.nativeAnnalsUiButtonKeyboardFocused || this.nativeAnnalsUiButtonHovered;
+      background.setFillStyle(button.disabled ? 0x121812 : active ? 0x304638 : 0x17251d, 0.95);
+
     }
 
     clearNativeCreationUi(removeClass = true) {
