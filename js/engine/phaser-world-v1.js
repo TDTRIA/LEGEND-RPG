@@ -16,8 +16,9 @@
     // The Phaser canvas is a fixed, non-interactive world layer behind the HTML
     // game controls. The production CSS intentionally scopes that contract to
     // BODY, while the intro visibility gate is scoped to HTML.
-    document.documentElement.classList.add('legend-phaser-world-active', 'engine-intro-active');
+    document.documentElement.classList.add('legend-phaser-world-active', 'engine-intro-active', 'legend-phaser-preloading');
     document.body?.classList.add('legend-phaser-world-active');
+    if (window.__legendBootSequenceV100) window.__legendBootSequenceV100.rendererLoading = true;
   }
   const root = () => document.getElementById('root');
   const byId = id => document.getElementById(id);
@@ -524,7 +525,9 @@
     }
   }
 
-  class RealmScene extends Phaser.Scene {
+  // Let startPhaser reach its DOM fallback when the CDN library is unavailable.
+  const SceneBase = window.Phaser?.Scene || class {};
+  class RealmScene extends SceneBase {
     constructor() {
       super({ key: 'RealmScene' });
       this.background = null;
@@ -729,6 +732,7 @@
     }
 
     preload() {
+      if (!IS_PROTOTYPE) this.loadingUi = window.LegendPhaserLoadingV1?.create(this);
       // Preload the complete configured Phaser art set, not just the first
       // environment/background and service icons. NPC, enemy and class art are
       // part of the same production asset contract and must be available for
@@ -755,6 +759,8 @@
     }
 
     create() {
+      this.loadingUi?.destroy();
+      endPreload();
       this.cameras.main.setBackgroundColor('#090e0d');
       this.people = window.LegendPhaserPeopleV1?.create(this);
       this.contracts = window.LegendPhaserContractsV1?.create(this);
@@ -7011,9 +7017,17 @@
     }
   }
 
+  function endPreload() {
+    if (IS_PROTOTYPE) return;
+    document.documentElement.classList.remove('legend-phaser-preloading');
+    const state = window.__legendBootSequenceV100;
+    if (state) { state.rendererLoading = false; state.resumeReveal?.(); }
+  }
+
   function startPhaser() {
     if (game) return;
     if (!window.Phaser) {
+      endPreload();
       console.warn('Phaser could not be loaded; keeping the available HTML game interface active.');
       try { window.sessionStorage.removeItem(ENGINE_SESSION_KEY); } catch (_) {}
       document.documentElement.classList.remove('engine-intro-active');
@@ -7079,6 +7093,8 @@
 
     const keepDomFallback = () => {
       if (startupFinalized) return;
+      endPreload();
+      game?.scene?.getScene?.('RealmScene')?.loadingUi?.destroy();
       startupFinalized = true;
       if (startupWatchdog) window.clearTimeout(startupWatchdog);
       startupWatchdog = null;
@@ -7220,6 +7236,7 @@
     mode: IS_PROTOTYPE ? 'preview' : 'production',
     get ready() { return engineReady; },
     get engine() { return game; },
+    loadingSnapshot: () => game?.scene?.getScene?.('RealmScene')?.loadingUi?.snapshot?.() || null,
     snapshot: () => realmScene ? window.__legendRebootBridge?.snapshot?.() || null : null,
     setEnvironment: (name, immediate = false) => setEnvironment(name, immediate),
     pulse: kind => realmScene?.pulse?.(kind),

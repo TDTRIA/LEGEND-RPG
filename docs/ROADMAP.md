@@ -172,7 +172,25 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:ba9cf7e6507ac9ee637e5b287e53b41134787ed7afcb16bca8e57ae83c25b57d -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:5008c1ad9c1e3aa4e24af04abf8f327a56ebbf60d8ec1817555693d4ba1ccb24 -->
+
+## Artwork preload and startup fallback — 2026-11-13 (verified locally)
+
+The actual production RealmScene now presents its artwork-download stage in Phaser before create(): approved title artwork and raster wordmark, the existing boot checks and exact text, plus a separate live artwork count and progress bar. The original DOM loader remains visible until the complete native surface can paint. Missing required artwork, a missing loading module, or unhandled copy keeps the source presentation. Slow downloads no longer leave an empty canvas or lose their loader when the independent DOM boot timer finishes. The system-check message no longer declares the realm ready while artwork is pending.
+
+The existing 30-second startup watchdog, reduced-motion behavior, cinematic handoff, and mandatory annals remain authoritative. A confirmed pre-existing failure prevented that fallback when the Phaser CDN library was absent: the class declaration referenced Phaser.Scene before reaching the availability check. A safe declaration base now allows the existing DOM fallback to run. No player/settings/audio/return key, save normalization, gameplay callback or progression rule changed.
+
+Nine selected checks pass across fresh and equivalent retained results: desktop/mobile delayed-download matrices; missing loader/required artwork; the actual 30-second watchdog; missing Phaser library with no script error and working title/settings; original DOM boot fallback; two stalled-animation handoffs; and the full configured-art inventory. Tests cover exact native/source text, live progress, unknown-copy fallback, preferences, landscape scrolling, saved extensions and navigation after release. An initial mobile expectation raced changing asset counts; atomic polling now compares the same state. Inspection also repaired a hidden wordmark fallback occupying layout space, a one-file count lag, and duplicate document/panel scrollbars.
+
+Shared Chromium screenshots of the production painter were inspected at 1440×900, 390×844 and 844×390, including large text, readable font, high contrast and DOM fallback. These used a temporary in-memory presentation fixture to hold the stage open; delayed downloads and lifecycle were exercised by Playwright. Preview returned to the title with all four stored values unchanged. Static checks cover 113 production scripts and 81 specs, with changed-file syntax rechecked after repairs.
+
+This closes the local artwork-preload slice. Confirmation dialogs, remaining overlay/cinematic presentation audit, the complete first-session/returning-save gate, dedicated Storehouse art and first-three-towns release remain open. Manual permissions still block PR creation, merging and production publishing. Omitting the preload painter retains the DOM loading surface and startup recovery.
+
 ## Bootstrap recovery screens — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The production missing-module screens now have dedicated guarded Phaser panels, complete explanations, focused reload/return controls and responsive clipping. Coverage includes missing title controller/view, storage, profile controller/view, settings, News & Roadmap, town and traveler-creation modules. The source DOM and original callbacks remain authoritative. The title-view and profile-view failures previously had no recovery button; they now expose Reload Game and Return to Title respectively. Missing town/creation modules say unavailable rather than implying that waiting will finish loading.
 
