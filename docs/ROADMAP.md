@@ -180,7 +180,25 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:7317a7a9b1d6044bba3acba4dd79bd97ea6e165d328a078ee99ee36e04fca49c -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:373ee5f4bc049bdc58467c3ea49912eda78d092d0caa2dac4b6f93dadf5614fd -->
+
+## Production awakening readability — 2026-11-13 (verified locally)
+
+The optional production world awakening now keeps the approved Ashmere panorama visible and uses the approved raster wordmark, readable copy and the original real Skip intro button. A dedicated guarded Phaser painter replaces the production black veil, rotating geometric seal, zoom, flash and delayed tiny text. The old native title menu is suppressed during this stage, preventing duplicate floating controls behind it. This repairs the conflict with ART-DIRECTION.md: darkness must not hide scenery, labels or controls. The early mystery reference is removed from the production cinematic; no new lore is introduced. The isolated prototype keeps its previous routine.
+
+The existing browser-timer deadlines remain 4700ms plus a 620ms exit, or 450ms with reduced motion. Timing and navigation stay in RealmScene. The source panel and semantic skip control remain usable when native copy or artwork cannot paint; a missing presentation module proceeds safely to the title. The source wordmark has a text fallback. Tab and modifier keys no longer dismiss the screen accidentally; other existing key-to-skip behavior and touch/click remain available. Completion focuses Continue/Begin or restores the recovery heading. Document scroll stays locked during the intro, and the panel can scroll on small viewports.
+
+Nine selected checks pass across fresh and equivalent retained results: desktop/mobile approved-art/control checks through all three mandatory annals and anonymous creation; returning-save/preferences/DOM fallback and reload; missing art/module handoff; reduced-motion/no-flash behavior; two stalled-clock deadlines; the existing normal first-visit/root handoff; and actual missing-storage recovery with restored heading focus and reload. Save keys, unknown properties, settings/audio/pending-return data, annal text and order, creation, gameplay and progression owners remain unchanged.
+
+Shared Chromium screenshots were inspected at desktop 1440×900, portrait 390×844 and landscape 844×390, including large text, readable font, high contrast and DOM fallback. A temporary in-memory hold kept the actual production presentation open for screenshots; real natural/stalled/reduced-motion deadlines were tested separately. The initial screenshot documented the dark veil and duplicate menu; final screenshots show readable copy, no duplicate title, no backdrop blur and visible approved art. Preview returned to the normal title with the original preferences and all four stored values unchanged. Syntax checks cover 116 production scripts and 83 specs, with affected files rechecked after final focus/scroll repairs.
+
+This closes the optional production awakening slice. Remaining overlay inventory (including scene transitions), full first-session/returning-save acceptance, dedicated Storehouse art and first-three-towns release gates remain open. Manual permissions still block PR creation, merging and production publishing. Removing the native painter retains its source panel; omitting the presentation module skips only this optional world awakening. The mandatory annals cannot be skipped.
+
 ## Cloud-slot confirmation — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The production Clear Cloud Slot action now opens an accessible in-game confirmation with dedicated Phaser panels, exact copy, focus frames and real semantic buttons. Keep Slot receives initial focus. Tab/Shift+Tab stay in the dialog; Escape, Keep Slot and backdrop cancellation preserve the cloud slot. Background controls are inert and document scrolling is locked until close. Focus returns to the opener. Missing or incomplete native presentation retains the full DOM dialog; a missing dialog module retains the original browser confirmation and its exact message.
 

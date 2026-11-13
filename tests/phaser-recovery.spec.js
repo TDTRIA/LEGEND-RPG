@@ -40,7 +40,7 @@ test('missing profile view provides an accessible return and preserves the local
 });
 test('missing storage startup retains the recovery action and reloads when its module returns',async({page})=>{
  await page.emulateMedia({reducedMotion:'reduce'});await page.addInitScript(()=>{if(!localStorage.getItem('legend-roads-of-ashmere-v09'))localStorage.setItem('legend-roads-of-ashmere-v09',JSON.stringify({username:'Stored Recovery',futureRecovery:{keep:19}}));});
- await page.route('**/js/storage.js*',route=>route.abort());await page.goto('/');await expect(page.getByRole('heading',{name:'Traveler storage unavailable'})).toBeVisible();await page.waitForFunction(()=>window.__legendPhaserWorldReady);await native(page);const before=await raw(page);await expect(page.locator('#reloadGame')).toBeVisible();
+ await page.route('**/js/storage.js*',route=>route.abort());await page.goto('/');await expect(page.getByRole('heading',{name:'Traveler storage unavailable'})).toBeVisible();await page.waitForFunction(()=>window.__legendPhaserWorldReady);await native(page);await expect(page.getByRole('heading',{name:'Traveler storage unavailable'})).toBeFocused();const before=await raw(page);await expect(page.locator('#reloadGame')).toBeVisible();
  await page.unroute('**/js/storage.js*');await Promise.all([page.waitForEvent('load'),page.locator('#reloadGame').click()]);await expect(page.locator('.v120-title')).toBeVisible();expect(await raw(page)).toEqual(before);
 });
 test('recovery stays usable with combined preferences and missing Phaser',async({page})=>{

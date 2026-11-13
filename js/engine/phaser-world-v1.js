@@ -837,6 +837,7 @@
           atmosphereCount: this.ambienceObjects.filter(item => item && item.active).length,
           parallaxEnabled: !reducedMotion(),
           engineAwakened: this.engineAwakened,
+          nativeAwakening: this.productionAwakeningUi?.snapshot(),
           surface: this.surface,
           surfaceTransitionCount: this.surfaceTransitionCount,
           ashmereLandmarks: this.ashmereLandmarks.map(item => ({
@@ -1086,6 +1087,55 @@
     }
 
     runEngineAwakening(onComplete) {
+      if (IS_PROTOTYPE) return this.runPrototypeAwakening(onComplete);
+      if (this.awakeningActive || this.engineAwakened) { onComplete?.(); return; }
+      this.awakeningActive = true;
+      this.bootCompleteCallback = onComplete;
+      this.clearNativeTitleUi();
+      this.tweens.killTweensOf(this.cameras.main);
+      this.cameras.main.setZoom(1);
+      this.productionAwakeningUi = window.LegendPhaserAwakeningV1?.create(this);
+      this.bootObjects = this.productionAwakeningUi?.objects || [];
+      this.productionAwakeningKey = event => {
+        if (event.key === 'Tab') {
+          event.preventDefault(); event.stopImmediatePropagation();
+          byId('engine-skip')?.focus({preventScroll:true}); return;
+        }
+        if (['Shift','Control','Alt','Meta','CapsLock'].includes(event.key)) return;
+        event.preventDefault(); event.stopImmediatePropagation();
+        this.finishEngineAwakening(true);
+      };
+      document.addEventListener('keydown', this.productionAwakeningKey, true);
+      this.events.once('shutdown', () => {
+        window.clearTimeout(this.bootDeadline); this.bootDeadline = null;
+        document.removeEventListener('keydown', this.productionAwakeningKey, true);
+        this.productionAwakeningUi?.destroy(); this.bootCompleteCallback = null;
+      });
+      this.bootDeadline = window.setTimeout(() => this.finishEngineAwakening(false), reducedMotion() ? 450 : 4700);
+      if (!this.productionAwakeningUi || skipAwakeningRequested) {
+        skipAwakeningRequested = false; this.finishEngineAwakening(true);
+      }
+    }
+
+    finishProductionAwakening(skipped) {
+      if (!this.awakeningActive) return;
+      this.awakeningActive = false; this.engineAwakened = true;
+      window.clearTimeout(this.bootDeadline); this.bootDeadline = null;
+      document.removeEventListener('keydown', this.productionAwakeningKey, true);
+      this.cameras.main.setZoom(1);
+      const finish = () => {
+        window.clearTimeout(this.bootDeadline); this.bootDeadline = null;
+        this.productionAwakeningUi?.destroy(); this.bootObjects = [];
+        const callback = this.bootCompleteCallback; this.bootCompleteCallback = null;
+        callback?.();
+        root()?.querySelector('#continue,#newPrimary,[data-recovery-screen] h1,[data-recovery-screen] h2')?.focus({preventScroll:true});
+      };
+      if (reducedMotion() || skipped) { finish(); return; }
+      this.productionAwakeningUi?.fade();
+      this.bootDeadline = window.setTimeout(finish, 620);
+    }
+
+    runPrototypeAwakening(onComplete) {
       if (this.awakeningActive || this.engineAwakened) {
         onComplete?.();
         return;
@@ -1256,6 +1306,7 @@
     }
 
     finishEngineAwakening(skipped = false) {
+      if (!IS_PROTOTYPE) return this.finishProductionAwakening(skipped);
       if (!this.awakeningActive) return;
       this.awakeningActive = false;
       window.clearTimeout(this.bootDeadline);
@@ -1433,7 +1484,7 @@
       // The DOM remains visible until every required action has a real Phaser
       // label, state texture, and semantic button target. Any failed preflight
       // leaves the existing title menu untouched as a safe fallback.
-      if (String(surface || '') !== 'title' || !hero) {
+      if ((!IS_PROTOTYPE && document.documentElement.classList.contains('engine-intro-active')) || String(surface || '') !== 'title' || !hero) {
         if (this.nativeTitleUiActive || document.body?.classList.contains('legend-phaser-title-ui-active')) {
           this.clearNativeTitleUi();
         }
