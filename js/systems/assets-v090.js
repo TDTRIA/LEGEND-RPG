@@ -22,6 +22,7 @@
       ashmereMarket: 'assets/generated/locations/ashmere-market.webp',
       ashmereForge: 'assets/generated/locations/ashmere-forge.webp',
       ashmereArchive: 'assets/generated/locations/ashmere-archive.webp',
+      bellCellar: 'assets/generated/locations/bell-cellar-undercroft.webp',
       greyfenInn: 'assets/generated/locations/greyfen-inn.webp',
       greyfenMarket: 'assets/generated/locations/greyfen-market-scene.webp',
       greyfenForge: 'assets/generated/locations/greyfen-forge.webp',

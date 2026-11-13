@@ -795,7 +795,8 @@ body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-enemy-tell,
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-turn-heading,
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command-grid,
-body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-utilities {
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-utilities,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-footnote {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -1441,3 +1442,6 @@ body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] :is(.ash09
 body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] :is(.ash099-head,.bell-vault-banner)::after { display:none !important; }
 
 #root .bell-vault-banner h1:focus { outline:none; }
+
+/* Tactical guidance stays readable over bright regional environments. */
+#root .rpg-battle-footnote { padding:12px; background:rgba(16,26,18,.97); color:#e4dfc9; }

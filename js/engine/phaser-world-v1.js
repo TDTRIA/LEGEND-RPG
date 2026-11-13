@@ -5307,6 +5307,7 @@
         '.rpg-command-grid',
         '.rpg-command',
         '.rpg-battle-utilities',
+        '.rpg-battle-footnote',
         '.rpg-utility-command'
       ].join(',');
       const panels = Array.from(new Set([
@@ -5436,6 +5437,7 @@
         if (cls.contains('rpg-turn-heading')) return { fill: 0x1a2118, alpha: 0.92, line: 0x9f8a5d };
         if (cls.contains('rpg-command-grid')) return { fill: 0x070c08, alpha: 0.90, line: 0x9f8a5d };
         if (cls.contains('rpg-battle-utilities')) return { fill: 0x0a100b, alpha: 0.90, line: 0x88754e };
+        if (cls.contains('rpg-battle-footnote')) return { fill: 0x101a12, alpha: 0.97, line: 0x82734f };
         if (cls.contains('rpg-battle-topline')) return { fill: 0x0b120d, alpha: 0.92, line: 0x9f8a5d };
         return null;
       };

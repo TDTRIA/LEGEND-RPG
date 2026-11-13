@@ -175,14 +175,15 @@ function showDungeonCombatResults(payload = {}){
   const enemy=payload.enemy||{},victory=payload.result!=='defeat';
   const rewardId=enemy.reward||'fur';
   const rewardName=window.LEGEND_DATA?.itemNames?.[rewardId]||rewardId;
-  const room=Math.max(1,Number(payload.room||(victory?3:2)));
+  // Dungeon rooms are saved as 0..3; reports use the same 1..4 labels as the rooms.
+  const room=Math.max(0,Math.min(3,Math.floor(Number(payload.room ?? (victory?3:2))||0)));
   return combatResultsView?.render({
     ...payload,
     dungeon:true,
     locationName:'THE BELL CELLAR',
-    sceneArtKey:'ashmereArchive',
+    sceneArtKey:'bellCellar',
     progressLabel:'CELLAR DEPTH',
-    progressValue:room+' / 3',
+    progressValue:(room+1)+' / 4',
     progressHint:victory?'Bell chamber reached':'Last room reached before retreat',
     rewardName:victory?(payload.rewardName||rewardName):'',
     primaryTitle:victory?'Return to the chamber':'Return to Ashmere',

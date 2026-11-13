@@ -120,7 +120,21 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:77afe5d58608b2904835ee5945fddb9e8ba6f801d70e97dcfa057c839f979a62 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:c2866f89c16189bfe8742e33ce87a32b26c65db8fc605086bbe6724be753274f -->
+
+## Bell Cellar battle and debrief — 2026-11-13 (verified locally)
+
+The cellar debrief now uses the approved undercroft artwork through the production asset manifest. Its depth matches the four room screens: victory reaches 4/4 and defeat reports 3/4. Saved room indices remain 0–3; this is a display conversion in the cellar adapter. The generic result view continues to respect caller-supplied progress labels. A local panel also keeps tactical guidance below the combat commands readable over bright regional artwork, with the same treatment in DOM fallback.
+
+Five focused cases pass across final checks and equivalent retained passes: real desktop/mobile victory and defeat with all four result return paths, live touch commands and retreat through rotation, the existing generic cellar-result contract, and the shared eight-control keyboard/touch/clipping/fallback check. Exact XP, gold, items, dungeon flags, road state and unknown saved fields remain covered. Direct town return retains its existing town assignment. Combat, rewards and storage calculations are unchanged.
+
+Desktop, portrait, landscape and fallback battle/result screenshots were inspected in shared Chromium. Syntax checks pass for 103 production scripts and 67 test specs. Combined with the preceding room/reward checkpoint, Bell Cellar presentation is verified locally. Greyfen and the full first-three-towns/release journey remain open; publication is pending task permissions. Semantic DOM controls and complete fallback remain available.
+
 ## Bell Cellar rooms and rewards — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The existing entrance, locked stair, failed delve, four rooms, completed report and repeat-clear presentation now use a guarded dedicated Phaser painter. It paints the approved archive/undercroft/sentinel artwork, authored room text, equipment and health values, reward details and original choices. Every state's required controls and fields are checked before hiding duplicate DOM visuals; incomplete artwork or unknown copy restores the complete source view. The painter shares the shell clip and follows scrolling and rotation. Room transitions focus the heading and reset stale scroll while respecting an open growth dialog.
 
@@ -128,7 +142,13 @@ Verified repairs include the inherited town background covering native content, 
 
 Seven focused cases pass: desktop/mobile room and choice journeys with exact rewards, fallback/rotation/reload, locked/failed/repeat-clear states, treasure-to-growth refresh, and the three original unlock/retreat/boss-victory/defeat journeys. Existing full-journey cases needed a 180-second budget after the old 30-second limit expired; all assertions remain. Syntax checks pass for 103 production scripts and 66 test specs. Shared Chromium desktop, portrait, landscape and fallback screenshots were inspected with an unsaved clone; the original saved traveler was preserved.
 
-This verifies room and treasure presentation. Dedicated regional combat/result visual acceptance remains open, including the cellar debrief's current archive backdrop and depth label. Greyfen and full first-three-towns acceptance remain open. Publication is pending task permissions. Disabling the dedicated painter restores the original semantic DOM controls and presentation.
+This verifies room and treasure presentation. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:c0ff7611e607fcbc59c98b9c2d1194b97588499b20e92012966a608a1fa9476d -->
+
+Bell Cellar combat/result presentation is verified in the later checkpoint above; Greyfen regional acceptance remains open.
+
+<!-- /coderabbit-ai-generated:v1 --> Greyfen and full first-three-towns acceptance remain open. Publication is pending task permissions. Disabling the dedicated painter restores the original semantic DOM controls and presentation.
 
 ## Growth dialog — 2026-11-13 (verified locally)
 
@@ -459,7 +479,13 @@ The third production annal now uses the exact approved “The Peace, Written Dow
 <!-- coderabbit-ai-generated-section:v1:f3db96f531cdb7fc7ddf6c977250be6d19b82ad3a34e9bdcfd4c04b63ccd0dcf -->
 
    - [x] Bell Cellar entrance, rooms, choices and treasure/report screens verified locally with original callbacks, exact rewards, growth refresh, responsive visuals and DOM fallback.
-   - [ ] Bell Cellar regional combat/result visual acceptance; room and result depth labels/artwork must agree. Production publication remains pending.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:645ee30b74300df4eb5539cf1930acffc2aae71be948e0252048005de456d74f -->
+
+   - [x] Bell Cellar regional combat/result presentation verified locally: approved undercroft art, consistent four-room display, exact saved outcomes, all result return paths, live commands/retreat, desktop/mobile/landscape and DOM fallback. Production publication remains pending.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
    - [ ] Greyfen Marsh and Storehouse exploration, map, encounters and results.
