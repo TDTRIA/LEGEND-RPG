@@ -56,7 +56,7 @@ const roadView=window.LegendRoadViewV100?.create({
 function scene(stage=0,interactive=true){return roadView?.scene(stage,interactive)||'';}
 function shell(body){return roadView?.shell(body);}
 function bindHotspotDelegation(){return roadView?.bindHotspotDelegation();}
-function header(pl,s,kicker,title,text){return roadView?.header(pl,s,kicker,title,text)||'';}
+function header(pl,s,kicker,title,text,interactive=true){return roadView?.header(pl,s,kicker,title,text,interactive)||'';}
 function start(){
  stopBattleMusic();
  roadDiscovery.hide();
@@ -195,8 +195,10 @@ function showDungeonCombatResults(payload = {}){
     onSecondary:victory?returnToTownFromRoad:()=>window.LegendAshmereV099?.route?.('dungeon')
   })===true;
 }
+const resultHeader=(pl,s,kicker,title,text)=>header(pl,s,kicker,title,text,false);
 const roadResultsView=window.LegendRoadResultsViewV100?.create({
-  renderHeader:header,
+  getPlayer:p,
+  renderHeader:resultHeader,
   renderShell:shell,
   escapeHtml:esc,
   onReturn:returnToTownFromRoad,
@@ -205,7 +207,7 @@ const roadResultsView=window.LegendRoadResultsViewV100?.create({
 const roadResults=window.LegendRoadResultsV100?.create({
   getPlayer:p,savePlayer:save,ensureState:ensure,addInventory:inv,clamp,setBellQuestObjective,
   awardProgress:(player,amount)=>window.LegendProgressionV100?.award(player,amount),
-  stopMusic:stopBattleMusic,renderHeader:header,renderShell:shell,escapeHtml:esc,getRoot:root,
+  stopMusic:stopBattleMusic,renderHeader:resultHeader,renderShell:shell,escapeHtml:esc,getRoot:root,
   resultView:roadResultsView,
   returnToTown:returnToTownFromRoad,
   returnToAshmere:ret

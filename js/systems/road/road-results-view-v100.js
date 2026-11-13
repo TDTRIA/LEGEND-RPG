@@ -10,9 +10,15 @@
     const header = renderHeader;
     const shell = renderShell;
     const esc = escapeHtml;
+    let growthHandler = null;
+    function clearGrowthHandler() {
+      if (growthHandler) document.removeEventListener('legend:level-growth-applied', growthHandler);
+      growthHandler = null;
+    }
 
     function render({ player, state, kicker, title, text, details } = {}) {
       if (!player || !state) return;
+      clearGrowthHandler();
       const journal = player.flags?.roadFieldJournalV150 || {};
       const trip = Number(state.trips || 0);
       const routes = (Array.isArray(journal.routes) ? journal.routes : []).filter(entry => Number(entry.trip || 0) === trip);
@@ -60,7 +66,7 @@
             '<div class="v152-expedition-xp"><div><span>LEVEL ' + currentLevel + ' EXPERIENCE</span><strong>' + currentXp + ' / ' + nextLevelXp + ' XP</strong></div><div class="v152-expedition-xp-track"><i style="width:' + currentXpPercent + '%"></i></div></div>' +
             ((Number(details.levelsGained || 0) > 0 || Number(details.pressureBefore || 0) !== Number(details.pressureAfter || 0))
               ? '<div class="v152-expedition-growth">' +
-                  (Number(details.levelsGained || 0) > 0 ? '<span>✧ &nbsp;Level ' + Number(details.levelBefore || 1) + ' → ' + Number(details.levelAfter || 1) + '. Your attribute choices are ready.</span>' : '') +
+                  (Number(details.levelsGained || 0) > 0 ? '<span>✧ &nbsp;Level ' + Number(details.levelBefore || 1) + ' → ' + Number(details.levelAfter || 1) + (Number(player.pendingStatPointsV152 || 0) > 0 ? '. Your attribute choices are ready.' : '. Your attribute choices are recorded.') + '</span>' : '') +
                   (Number(details.pressureBefore || 0) !== Number(details.pressureAfter || 0) ? '<span>◌ &nbsp;Road Pressure: ' + Number(details.pressureBefore || 0) + ' → ' + Number(details.pressureAfter || 0) + '.</span>' : '') +
                 '</div>'
               : '') +
@@ -68,14 +74,31 @@
         : '';
       const report = '<section class="exp150-return-report" aria-label="Expedition field report"><div class="exp150-return-report-head"><span>FIELD REPORT · TRIP ' + trip + '</span><strong>Before you return</strong></div>' +
         '<div class="exp150-return-report-route"><small>ROUTE TAKEN</small><strong>' + esc(routeName) + '</strong><p>' + esc(routeNote?.note || (routeName === 'High Ridge' ? 'Firm ground led above the flooded lowland.' : routeName === 'Reed Cut' ? 'The low path brought you through waterlogged ground.' : 'The road report does not contain a chosen route.')) + '</p></div>' +
-        '<div class="exp150-return-report-columns"><section><h3>Evidence brought back <b>' + discoveries.length + '</b></h3><ul>' + discoveryMarkup + '</ul></section><section><h3>Camp reports <b>' + camps.length + '</b></h3><ul>' + campMarkup + '</ul></section></div>' +
+        '<div class="exp150-return-report-columns"><section><h3><span>Evidence brought back</span><b>' + discoveries.length + '</b></h3><ul>' + discoveryMarkup + '</ul></section><section><h3><span>Camp reports</span><b>' + camps.length + '</b></h3><ul>' + campMarkup + '</ul></section></div>' +
         '<div class="exp150-return-report-foot"><span>' + Number((journal.visitedPlaces || []).length) + ' places known to your map</span><span>' + discoveries.length + (discoveries.length === 1 ? ' discovery' : ' discoveries') + ' this trip</span></div></section>';
       shell(header(player, state, kicker || 'EXPEDITION COMPLETE', title, text) + expeditionSummary + report +
         '<section class="exp100-explore-dock exp100-outcome"><div class="exp100-route"><span>THE ROAD REMEMBERS</span><strong>' +
         esc(title) + '</strong><small>' + esc(text) +
         '</small></div><div class="exp100-dock-actions"><button class="exp100-dock-action primary" id="outcomeReturn" data-legend-scene-transition="Reporting back to Ashmere"><strong>Return to Ashmere</strong><span>Leave the road and return to town.</span></button>' + maraAction + '</div></section>');
-      document.getElementById('outcomeReturn')?.addEventListener('click', () => onReturn?.());
-       document.getElementById('outcomeReportToMara')?.addEventListener('click', () => onReportToMara?.());
+      const heading = document.querySelector('#root .exp100-head h1');
+      const root = document.getElementById('root');
+      if (root) root.scrollTop = 0;
+      window.scrollTo(0, 0);
+      if (heading && !document.querySelector('.v152-levelup-overlay')) {
+        heading.tabIndex = -1;
+        heading.focus({ preventScroll: true });
+      }
+      if (Number(player.pendingStatPointsV152 || 0) > 0 && typeof context.getPlayer === 'function') {
+        const reportNode = root?.querySelector('.exp150-return-report');
+        growthHandler = () => {
+          clearGrowthHandler();
+          // Refresh the settled view only. Rewards and the ended trip stay fixed.
+          if (reportNode?.isConnected) render({ player: context.getPlayer(), state, kicker, title, text, details });
+        };
+        document.addEventListener('legend:level-growth-applied', growthHandler, { once: true });
+      }
+      document.getElementById('outcomeReturn')?.addEventListener('click', () => { clearGrowthHandler(); onReturn?.(); });
+      document.getElementById('outcomeReportToMara')?.addEventListener('click', () => { clearGrowthHandler(); onReportToMara?.(); });
     }
 
     return Object.freeze({ render });

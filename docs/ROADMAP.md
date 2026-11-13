@@ -30,7 +30,13 @@ The story and the systems should reinforce that loop. Town is a place the player
 
 <!-- coderabbit-ai-generated-section:v1:88b3570472211e9bf13ee58b36d2a05b58b366cf453a280de3b203f0e9e1c7b5 -->
 
-The central Old Road scene now has verified local native framing, location, discovery and sound controls with DOM fallback. Expedition results, combat/results, level-up, dungeon/Greyfen and remaining modal UI continue screen by screen; the later checkpoints below record completed local service and navigation slices.
+The central Old Road scene now has verified local native framing, location, discovery and sound controls with DOM fallback. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:14d15742235a744795685f66d082882cbcef9229db8b98a76093aff268c163d0 -->
+
+Expedition results also have verified local native presentation with exact settlement and growth-report refresh coverage. Combat/results, level-up, dungeon/Greyfen and remaining modal UI continue screen by screen; the later checkpoints below record completed local service and navigation slices.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 --> The previous shared all-screen canvas mirror is disabled because it hid copy and produced incomplete panels. Existing production controllers, combat calculations, player saves, account/cloud behavior and rewards remain unchanged.
 - **Audio:** the 48-asset generated ambience/effect library and separate roughly 10½-minute main-theme MP3 are merged into main and deployed through [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98). The shared director supplies the persistent score, environment ambience, menu cues, and combat effects. Human listening for mix/loop quality and further event-specific world/town/reward SFX wiring remain.
@@ -70,13 +76,33 @@ The central Old Road scene now has verified local native framing, location, disc
 
 <!-- coderabbit-ai-generated-section:v1:e12de29366cf45214393b399e73e2a8edf5fa252e3ef1b3cd36048a9ea601911 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:2f97e4508ada66281f36ddb80ad663e1f6c8e332c7b787ed23d88d8a51356767 -->
+
+## Expedition results — 2026-11-13 (verified locally)
+
+The production Old Road result view now has dedicated guarded Phaser artwork, headings, health/pressure/progress meters, reward and experience panels, route/evidence/camp reports, sound and Return/Mara focus frames. Semantic DOM controls retain the production callbacks. Missing artwork, unsupported copy, incomplete meters or a failed label restore the complete styled DOM view. Scrolling and responsive masks keep the report beneath the fixed HUD, drawers and dock.
+
+Confirmed result defects repaired: stale expedition scroll carried into the report; a redundant discovery hotspot remained after settlement reset the trip; and health stayed at its pre-allocation value after Endurance growth. Results now enter at the heading without stealing the level-up overlay, omit the obsolete exploration action and refresh from the saved player after growth. Refreshing the report never settles rewards again.
+
+Eight focused cases pass across final checks and equivalent retained passes: complete reports at desktop/mobile (including a real touch handoff), early settlement with Endurance growth, non-settlement outcome/fallback, existing Mara and crafting-report journeys, shell return and all-stage road artwork parity. Exact gold, XP, token, pressure, health, unknown-property preservation and return behavior remain covered. Shared Chromium desktop, portrait and landscape screenshots were inspected using read-only production-view fixtures; transaction checks use isolated real controller/service contexts. The early-return service branch is covered, but this does not add or certify a new early-return navigation flow. Combat results and the wider first-three-towns/release gates remain open. Publication remains pending task permissions.
+
 ## Main road scene — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The Old Road scene now has dedicated Phaser framing, location text, discovery icon/caption, sound state and focus frames alongside its source-matched environment artwork. The existing road-view buttons retain keyboard, touch, audio and discovery callbacks. Native presentation requires complete text, matching loaded artwork and a usable viewport mask; failed painting, partial environment fades and foreground map/journal views restore or retain the original DOM presentation.
 
 Confirmed regressions repaired: the mobile sound control was underneath the fixed HUD, and resizing or closing animated drawers could leave journey text behind a zero-width native mask. Scene controls now start below the measured HUD, and all road masks refresh when shell bounds settle.
 
-Eight distinct focused cases pass: four final scene/control/artwork cases, plus four equivalent journey-readability and map/journal/keyboard consumer passes. Coverage includes all six stages, both routes, Windbreak and Sunken Cart, discovery persistence, sound preference, unknown save properties, failure fallback, scrolling, focus and live orientation/drawer changes. Final shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390. Gameplay, resource costs and reward settlement are unchanged. Expedition results are next; broader migration/release gates and Bitbucket-to-GitHub publication remain open.
+Eight distinct focused cases pass: four final scene/control/artwork cases, plus four equivalent journey-readability and map/journal/keyboard consumer passes. Coverage includes all six stages, both routes, Windbreak and Sunken Cart, discovery persistence, sound preference, unknown save properties, failure fallback, scrolling, focus and live orientation/drawer changes. Final shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390. Gameplay, resource costs and reward settlement are unchanged. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:27d156807d8555aeb7f1011d2c1724de4eb5c8728e98fa71d82aee29b7eefe54 -->
+
+Expedition result presentation is verified in the later checkpoint above; broader migration/release gates and Bitbucket-to-GitHub publication remain open.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 ## Expedition regression checkpoint — 2026-11-13 (local)
 
@@ -86,7 +112,13 @@ All seven existing expedition-journal cases pass on the creation/readability rep
 
 <!-- coderabbit-ai-generated-section:v1:9bd69ae69dc8991a0c2ed67c4116c13b38f2a53aaf2fae2cd67e77a43b516442 -->
 
-The following main-scene slice is verified in the checkpoint above; expedition result presentation remains outstanding.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:fa461ca0a5ca844e4fa999a18064132f9f9d2bc5a66aa595234495e79cde1c9b -->
+
+The following main-scene and expedition-result slices are verified in the checkpoints above; combat and broader release acceptance remain outstanding.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 --> Bitbucket-to-GitHub publication remains pending task permissions.
 

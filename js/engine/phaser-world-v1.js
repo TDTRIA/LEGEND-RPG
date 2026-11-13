@@ -761,6 +761,7 @@
       this.inventoryOverlay = window.LegendPhaserInventoryOverlayV1?.create(this);
       this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
       this.roadScene = window.LegendPhaserRoadSceneV1?.create(this);
+      this.roadResults = window.LegendPhaserRoadResultsV1?.create(this);
       this.motionReduced = reducedMotion();
       this.events.once('shutdown', () => {
         if (this.expeditionClipFrame !== null) window.cancelAnimationFrame(this.expeditionClipFrame);
@@ -838,6 +839,7 @@
           nativeInventory: this.inventoryOverlay?.snapshot(),
           nativeRouteBoard: this.routeBoard?.snapshot(),
           nativeRoadSceneUi: this.roadScene?.snapshot(),
+          nativeRoadResults: this.roadResults?.snapshot(),
           nativeTitleUi: this.nativeTitleUiActive,
           nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
           nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo'].every(key => this.textures.exists(key)),
@@ -4327,7 +4329,7 @@
       const root = document.getElementById('root');
       if (!root) return;
       const shell = document.getElementById('legend-world-shell-root');
-      const enabled = shell && !shell.hidden && root.querySelector('.ash100-town,.ash099-terminal,.reg100,.exp100:has(.exp150-world-page)');
+      const enabled = shell && !shell.hidden && root.querySelector('.ash100-town,.ash099-terminal,.reg100,.exp100:has(.exp150-world-page,.exp100-outcome)');
       if (!enabled) { root.removeAttribute('data-legend-shell-clip'); return; }
       const box = root.getBoundingClientRect();
       const hud = shell.querySelector('.lws-hud')?.getBoundingClientRect();
@@ -4362,12 +4364,13 @@
       if (root.dataset.legendShellClip !== 'true') root.dataset.legendShellClip = 'true';
       // Drawer motion can settle after the road painters have sampled their
       // masks. Update those masks with the same final bounds as the DOM clip.
-      if (changed && root.querySelector('.exp150-world-page') && this.expeditionClipFrame === null) {
+      if (changed && root.querySelector('.exp150-world-page,.exp100-outcome') && this.expeditionClipFrame === null) {
         this.expeditionClipFrame = window.requestAnimationFrame(() => {
           this.expeditionClipFrame = null;
           this.syncNativeExpeditionHudUi();
           this.syncNativeExpeditionActionsUi();
           this.roadScene?.sync();
+          this.roadResults?.sync();
         });
       }
     }

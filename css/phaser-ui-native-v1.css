@@ -1343,3 +1343,20 @@ body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] 
 body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] > .exp100-scene-shade {
   background: none !important;
 }
+
+/* Settled reports retain their semantic source and restore it on paint failure. */
+body.legend-world-shell-active #root .exp100:has(.exp100-outcome) > .exp100-wrap {
+  padding-top: calc(var(--legend-result-hud-height, 72px) + 12px) !important;
+  padding-bottom: 80px;
+}
+body.legend-world-shell-active #root .exp100:has(.exp100-outcome) :is(button,h1) { scroll-margin-block: 120px 90px; }
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] :is(.exp100-scene,.exp100-scene-shade,.exp100-head,.exp100-bars i,.exp100-bars b,.v152-expedition-summary,.v152-expedition-banner,.v152-expedition-metrics,.v152-expedition-metrics > div,.v152-expedition-reward-tile,.v152-expedition-xp,.v152-expedition-xp-track,.v152-expedition-xp-track i,.v152-expedition-growth,.exp150-return-report,.exp150-return-report-head,.exp150-return-report-route,.exp150-return-report-columns li,.exp150-return-report-columns h3 b,.exp150-return-report-foot,.exp100-outcome,.exp100-outcome button,.exp100-scene-label,.exp100-sound) {
+  background: transparent !important; border-color: transparent !important; box-shadow: none !important; backdrop-filter: none !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] [data-phaser-result-copy],
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] [data-phaser-result-copy] * {
+  color: transparent !important; text-shadow: none !important; -webkit-text-fill-color: transparent !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] img { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] .v152-expedition-banner::after { background: none !important; }
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] button { outline: none !important; }

@@ -633,6 +633,7 @@ test.describe('LEGEND persistent world shell v170', () => {
   });
 
   test('secured expedition report keeps its real return action without duplicate labels', async ({ page }) => {
+    test.setTimeout(120000);
     await enterAshmere(page, 'ReportShellTraveler');
     await page.evaluate(() => {
       const player = window.LegendStorage.loadPlayer();
@@ -648,29 +649,15 @@ test.describe('LEGEND persistent world shell v170', () => {
       player.flags.firstRoadReturnMaraBriefed = false;
       window.LegendStorage.savePlayer(player);
 
-      const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, character => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[character]));
-      const view = window.LegendRoadResultsViewV100.create({
-        renderHeader: (_player, _state, _kicker, title) => '<header class="exp100-head"><h1>' + escapeHtml(title) + '</h1></header>',
-        renderShell: html => { document.getElementById('root').innerHTML = html; },
-        escapeHtml,
-        onReturn: () => window.LegendAshmereV099.renderAshmere(),
-        onReportToMara: () => window.LegendAshmereV099.route('mara')
-      });
-      view.render({
-        player,
-        state: player.flags.roadExpeditionV100,
-        kicker: 'Return',
-        title: 'Expedition Secured',
-        text: 'Your route notes are saved.',
-        details: {
-          type: 'expedition', complete: true, stagesCompleted: 5, rewardGold: 130,
-          roadTokens: 1, xpGained: 20, levelsGained: 0, levelBefore: 1, levelAfter: 1,
-          routeName: 'High Ridge', discoveriesThisTrip: 0, campsThisTrip: 0,
-          pressureBefore: 16, pressureAfter: 5, trip: 1
-        }
-      });
+      // Use the production settlement/view/return wiring, including its shell.
+      window.LegendRoadControllerV100.renderExpedition();
+    });
+    await page.evaluate(() => {
+      const originalRandom = Math.random;
+      window.__legendSceneTransitionBypass = true;
+      Math.random = () => 0.1;
+      try { document.getElementById('finish').click(); }
+      finally { Math.random = originalRandom; window.__legendSceneTransitionBypass = false; }
     });
 
     await expect(page.locator('.exp150-return-report')).toBeVisible();

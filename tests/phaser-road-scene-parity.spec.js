@@ -266,9 +266,11 @@ test('Phaser road background follows the live route and stage, with a DOM image 
     // Simulate a failed Phaser texture request independently of the DOM image.
     // The DOM source remains correct, but a missing Phaser texture must restore it.
     await seedRoad(page, 1, 'ridge');
+    // Match the bounded handoff budget used for the other route changes above.
+    // Include texture/alpha details if software rendering cannot settle in time.
     await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
-    )).toBe(true);
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt
+    ), { timeout: 15000 }).toMatchObject({ active: true });
     const missingTextureFallback = await page.evaluate(() => {
       const scene = document.querySelector('.exp100-scene-live');
       const image = scene?.querySelector(':scope > img');
@@ -337,9 +339,11 @@ test('Phaser road background follows the live route and stage, with a DOM image 
     // while the stage-specific world image is rendered by Phaser.
     await page.setViewportSize({ width: 390, height: 844 });
     await seedRoad(page, 1, 'ridge');
+    // Match the bounded handoff budget used for the other route changes above.
+    // Include texture/alpha details if software rendering cannot settle in time.
     await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
-    )).toBe(true);
+      window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt
+    ), { timeout: 15000 }).toMatchObject({ active: true });
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot().nativeRoadSceneUi?.active
     )).toBe(true);

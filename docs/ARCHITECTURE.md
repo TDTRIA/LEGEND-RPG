@@ -5,7 +5,13 @@ This is a working map of the production browser game. It is not a map of prototy
 
 <!-- coderabbit-ai-generated-section:v1:f5cf0611200b6283388e0a71b5eb6609fb59d85861072a1d52e6f8e205a2caab -->
 
-The central road scene uses `js/engine/phaser-road-scene-v1.js` for guarded native framing, location, discovery and sound controls, synchronized with the existing source-matched environment artwork. `road-view-v100.js` retains the semantic controls and all discovery/audio callbacks; incomplete paint or artwork restores DOM presentation. Shared shell-bound changes refresh the road scene, journey HUD and decision masks after responsive drawer motion. Expedition results remain DOM-rendered over the Phaser world.
+The central road scene uses `js/engine/phaser-road-scene-v1.js` for guarded native framing, location, discovery and sound controls, synchronized with the existing source-matched environment artwork. `road-view-v100.js` retains the semantic controls and all discovery/audio callbacks; incomplete paint or artwork restores DOM presentation. Shared shell-bound changes refresh the road scene, journey HUD and decision masks after responsive drawer motion. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:f68161496354f4cb5e3cf4ef5b2fc0706eee78ce8e2c802f32772a774023b7e9 -->
+
+Expedition results use `js/engine/phaser-road-results-v1.js` for guarded native source artwork, complete report/reward copy, meters and focus frames. `road-results-view-v100.js` owns heading entry, semantic return/Mara controls and a read-only refresh after saved attribute growth. The controller disables obsolete exploration hotspots in settled headers. `road-results-v100.js` still owns every reward, progression and settlement mutation; repainting cannot award again. Missing content or artwork restores the DOM report.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 --> Ashmere's destination-card terminal board now has a dedicated Phaser painter under verification, with exact catalog-ID preflight, per-frame scroll synchronization and a DOM-restoring draw-error fallback; real DOM destination buttons/icons remain, and the service interiors and their gameplay callbacks stay in the existing feature modules. Combat's existing buttons, actor art and controller remain production DOM content while its dedicated Phaser tactical-panel painter is under verification; combat results, level-up, dungeon, Greyfen, settings and remaining modal content are still DOM-rendered. Ashmere destination cards are painted from their existing service-board geometry rather than being floated over town artwork as detached landmarks. The shared DOM-to-canvas gameplay painter is currently held behind a safe fallback after it hid text and weakened panel presentation; it must not be re-enabled wholesale. Existing browser controllers, save data and rule systems remain authoritative while each screen is migrated and tested separately.
 
