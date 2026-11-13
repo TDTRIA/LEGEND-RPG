@@ -931,6 +931,8 @@
           nativeRoadMapUiMaskFilterActive: Boolean(this.nativeRoadMapUiMaskFilter),
           nativeRoadMapUiSceneSize: this.dimensions(),
           nativeExpeditionHudUi: this.nativeExpeditionHudUiActive,
+          nativeExpeditionHudUiLabels: this.shellLabelSnapshot(this.nativeExpeditionHudUiObjects),
+          nativeExpeditionHudUiClip: this.nativeExpeditionHudUiObjects[0]?.getData?.('expeditionClip') || null,
           nativeExpeditionHudUiObjectCount: this.nativeExpeditionHudUiObjects.filter(item => item?.active).length,
           nativeExpeditionHudUiTextCount: this.nativeExpeditionHudUiTextNodes.filter(node => node?.isConnected).length,
           nativeExpeditionHudUiTextValues: this.nativeExpeditionHudUiTextNodes.filter(node => node?.isConnected)
@@ -939,6 +941,8 @@
             .map(node => node.id || node.getAttribute('aria-label') || ''),
           nativeExpeditionHudUiSceneSize: this.dimensions(),
           nativeExpeditionActionsUi: this.nativeExpeditionActionsUiActive,
+          nativeExpeditionActionsUiLabels: this.shellLabelSnapshot(this.nativeExpeditionActionsUiObjects),
+          nativeExpeditionActionsUiClip: this.nativeExpeditionActionsUiObjects[0]?.getData?.('expeditionClip') || null,
           nativeExpeditionActionsUiObjectCount: this.nativeExpeditionActionsUiObjects.filter(item => item?.active).length,
           nativeExpeditionActionsUiTextCount: this.nativeExpeditionActionsUiTextNodes.filter(node => node?.isConnected).length,
           nativeExpeditionActionsUiTextValues: this.nativeExpeditionActionsUiTextNodes.filter(node => node?.isConnected)
@@ -3327,6 +3331,7 @@
         return;
       }
 
+      const clip = this.expeditionUiClipBounds();
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -3369,7 +3374,7 @@
         ...Array.from(region.querySelectorAll(surfaceSelector))
       ]))).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
 
-      const signature = JSON.stringify([
+      const signature = JSON.stringify([clip,
         Math.round(window.innerWidth), Math.round(window.innerHeight),
         Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
         ...regions.map(node => {
@@ -3394,13 +3399,13 @@
       const tagsCurrent =
         textNodes.length === this.nativeExpeditionActionsUiTextNodes.length &&
         textNodes.every((node,index) => node === this.nativeExpeditionActionsUiTextNodes[index] &&
-          node.dataset.legendPhaserRoadActionText === 'true') &&
+          ['true','fallback'].includes(node.dataset.legendPhaserRoadActionText)) &&
         controls.length === this.nativeExpeditionActionsUiControls.length &&
         controls.every((node,index) => node === this.nativeExpeditionActionsUiControls[index] &&
-          node.dataset.legendPhaserRoadActionControl === 'true') &&
+          ['true','fallback'].includes(node.dataset.legendPhaserRoadActionControl)) &&
         iconNodes.length === this.nativeExpeditionActionsUiIconNodes.length &&
         iconNodes.every((node,index) => node === this.nativeExpeditionActionsUiIconNodes[index] &&
-          node.dataset.legendPhaserRoadActionIcon === 'true');
+          ['true','fallback'].includes(node.dataset.legendPhaserRoadActionIcon));
       if (this.nativeExpeditionActionsUiActive && tagsCurrent && signature === this.nativeExpeditionActionsUiSignature) return;
 
       this.clearNativeExpeditionActionsUi(false, false);
@@ -3410,6 +3415,10 @@
       const graphics = this.add.graphics();
       container.add(graphics);
       this.nativeExpeditionActionsUiObjects.push(container);
+      if (!this.clipExpeditionUi(container, clip)) {
+        this.clearNativeExpeditionActionsUi(true, false);
+        return;
+      }
 
       surfaces.forEach(({node,rect}) => {
         const classes = node.classList;
@@ -3473,19 +3482,8 @@
           : node.matches('small,em') ? '#d6c18b'
           : '#b6c0b2';
         const value = node.textContent?.replace(/\s+/g, ' ').trim() || '';
-        const object = this.add.text(rect.x, rect.y, value, {
-          fontFamily: style.fontFamily || 'Arial, sans-serif',
-          fontSize: Math.max(isIcon ? 10 : 8,
-            Math.round((parseFloat(style.fontSize) || (isIcon ? 15 : 10)) * sy)) + 'px',
-          fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
-          color,
-          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
-          wordWrap: { width: Math.max(10, rect.width) },
-          align: style.textAlign || 'left'
-        }).setDepth(58).setOrigin(0,0);
-        object.setResolution?.(2);
-        object.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
-        container.add(object);
+        const object = this.createShellLabel(node, rect, color, sx, sy, 58);
+        if (object) container.add(object);
         // Save and mask the DOM copy inline. This avoids legacy CSS cascade
         // conflicts while preserving exact restoration if Phaser preflight
         // fails or the expedition surface is removed.
@@ -3497,18 +3495,20 @@
         rememberInlineStyle('color', 'legendPhaserRoadOriginalColor', 'legendPhaserRoadOriginalColorPriority');
         rememberInlineStyle('text-shadow', 'legendPhaserRoadOriginalTextShadow', 'legendPhaserRoadOriginalTextShadowPriority');
         rememberInlineStyle('-webkit-text-fill-color', 'legendPhaserRoadOriginalTextFill', 'legendPhaserRoadOriginalTextFillPriority');
-        node.style.setProperty('color', 'transparent', 'important');
+        node.style.setProperty('color', object ? 'transparent' : color, 'important');
         node.style.setProperty('text-shadow', 'none', 'important');
-        node.style.setProperty('-webkit-text-fill-color', 'transparent', 'important');
-        node.dataset.legendPhaserRoadActionText = 'true';
+        node.style.setProperty('-webkit-text-fill-color', object ? 'transparent' : color, 'important');
+        node.dataset.legendPhaserRoadActionText = object ? 'true' : 'fallback';
         this.nativeExpeditionActionsUiTaggedNodes.push(node);
       });
       controls.forEach(node => {
-        node.dataset.legendPhaserRoadActionControl = 'true';
+        node.dataset.legendPhaserRoadActionControl = textNodes.some(text =>
+          text.dataset.legendPhaserRoadActionText === 'fallback' && (text === node || text.contains(node))) ? 'fallback' : 'true';
         this.nativeExpeditionActionsUiTaggedNodes.push(node);
       });
       iconNodes.forEach(node => {
-        node.dataset.legendPhaserRoadActionIcon = 'true';
+        node.dataset.legendPhaserRoadActionIcon = textNodes.some(text =>
+          text.dataset.legendPhaserRoadActionText === 'fallback' && (text === node || text.contains(node))) ? 'fallback' : 'true';
         this.nativeExpeditionActionsUiTaggedNodes.push(node);
       });
 
@@ -3623,6 +3623,7 @@
         return;
       }
 
+      const clip = this.expeditionUiClipBounds();
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -3688,7 +3689,7 @@
         node, markerRect: readRect(node.querySelector('.exp150-stop-marker'))
       })).filter(item => item.markerRect);
 
-      const signature = JSON.stringify([
+      const signature = JSON.stringify([clip,
         Math.round(window.innerWidth), Math.round(window.innerHeight),
         Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
         ...regions.map(node => {
@@ -3712,13 +3713,13 @@
       const tagsCurrent =
         textNodes.length === this.nativeExpeditionHudUiTextNodes.length &&
         textNodes.every((node,index) => node === this.nativeExpeditionHudUiTextNodes[index] &&
-          node.dataset.legendPhaserExpeditionText === 'true') &&
+          ['true','fallback'].includes(node.dataset.legendPhaserExpeditionText)) &&
         controls.length === this.nativeExpeditionHudUiControls.length &&
         controls.every((node,index) => node === this.nativeExpeditionHudUiControls[index] &&
-          node.dataset.legendPhaserExpeditionControl === 'true') &&
+          ['true','fallback'].includes(node.dataset.legendPhaserExpeditionControl)) &&
         iconNodes.length === this.nativeExpeditionHudUiIconNodes.length &&
         iconNodes.every((node,index) => node === this.nativeExpeditionHudUiIconNodes[index] &&
-          node.dataset.legendPhaserExpeditionIcon === 'true');
+          ['true','fallback'].includes(node.dataset.legendPhaserExpeditionIcon));
       if (this.nativeExpeditionHudUiActive && tagsCurrent && signature === this.nativeExpeditionHudUiSignature) return;
 
       this.clearNativeExpeditionHudUi(false, false);
@@ -3728,6 +3729,10 @@
       const graphics = this.add.graphics();
       container.add(graphics);
       this.nativeExpeditionHudUiObjects.push(container);
+      if (!this.clipExpeditionUi(container, clip)) {
+        this.clearNativeExpeditionHudUi(true, false);
+        return;
+      }
 
       surfaces.forEach(({node,rect}) => {
         const classes = node.classList;
@@ -3798,20 +3803,8 @@
           : node.matches('.exp150-title-group h1,.exp150-journey-aside h2') ? '#efe7d4'
           : node.matches('.exp150-kicker,.exp150-tracker-label > span') ? '#c9ad6e'
           : '#b6c0b2';
-        const textObject = this.add.text(rect.x, rect.y,
-          node.textContent?.replace(/\s+/g, ' ').trim() || '', {
-            fontFamily: style.fontFamily || 'Arial, sans-serif',
-            fontSize: Math.max(isIcon ? 10 : 8,
-              Math.round((parseFloat(style.fontSize) || (isIcon ? 14 : 10))*sy)) + 'px',
-            fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
-            color,
-            letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
-            wordWrap: { width: Math.max(10, rect.width) },
-            align: style.textAlign || 'left'
-          }).setDepth(54).setOrigin(0,0);
-        textObject.setResolution?.(2);
-        textObject.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
-        container.add(textObject);
+        const textObject = this.createShellLabel(node, rect, color, sx, sy, 54);
+        if (textObject) container.add(textObject);
         // Mask the DOM copy inline only after its Phaser replacement exists.
         // Save the exact prior inline declarations so any preflight failure,
         // screen transition or cleanup restores the original accessible UI.
@@ -3823,18 +3816,20 @@
         rememberInlineStyle('color', 'legendPhaserExpeditionOriginalColor', 'legendPhaserExpeditionOriginalColorPriority');
         rememberInlineStyle('text-shadow', 'legendPhaserExpeditionOriginalTextShadow', 'legendPhaserExpeditionOriginalTextShadowPriority');
         rememberInlineStyle('-webkit-text-fill-color', 'legendPhaserExpeditionOriginalTextFill', 'legendPhaserExpeditionOriginalTextFillPriority');
-        node.style.setProperty('color', 'transparent', 'important');
+        node.style.setProperty('color', textObject ? 'transparent' : color, 'important');
         node.style.setProperty('text-shadow', 'none', 'important');
-        node.style.setProperty('-webkit-text-fill-color', 'transparent', 'important');
-        node.dataset.legendPhaserExpeditionText = 'true';
+        node.style.setProperty('-webkit-text-fill-color', textObject ? 'transparent' : color, 'important');
+        node.dataset.legendPhaserExpeditionText = textObject ? 'true' : 'fallback';
         this.nativeExpeditionHudUiTaggedNodes.push(node);
       });
       controls.forEach(node => {
-        node.dataset.legendPhaserExpeditionControl = 'true';
+        node.dataset.legendPhaserExpeditionControl = textNodes.some(text =>
+          text.dataset.legendPhaserExpeditionText === 'fallback' && (text === node || text.contains(node))) ? 'fallback' : 'true';
         this.nativeExpeditionHudUiTaggedNodes.push(node);
       });
       iconNodes.forEach(node => {
-        node.dataset.legendPhaserExpeditionIcon = 'true';
+        node.dataset.legendPhaserExpeditionIcon = textNodes.some(text =>
+          text.dataset.legendPhaserExpeditionText === 'fallback' && (text === node || text.contains(node))) ? 'fallback' : 'true';
         this.nativeExpeditionHudUiTaggedNodes.push(node);
       });
 
@@ -4286,12 +4281,40 @@
       if (removeClass) document.body?.classList.remove('legend-phaser-right-drawer-ui-active');
     }
 
+    expeditionUiClipBounds() {
+      this.syncShellContentClip();
+      const node = root(), box = node.getBoundingClientRect(), css = getComputedStyle(node);
+      const canvas = this.game.canvas.getBoundingClientRect(), size = this.dimensions();
+      const sx = size.width / canvas.width, sy = size.height / canvas.height;
+      const inset = side => node.dataset.legendShellClip === 'true'
+        ? parseFloat(css.getPropertyValue('--legend-shell-clip-' + side)) || 0 : 0;
+      return { x: (box.left - canvas.left + inset('left')) * sx,
+        y: (box.top - canvas.top + inset('top')) * sy,
+        width: Math.max(0, box.width - inset('left') - inset('right')) * sx,
+        height: Math.max(0, box.height - inset('top') - inset('bottom')) * sy };
+    }
+
+    clipExpeditionUi(container, bounds) {
+      const art = this.make.graphics({ x: 0, y: 0, add: false });
+      let mask = null;
+      container.once('destroy', () => { mask?.destroy(); art.destroy(); });
+      art.fillStyle(0xffffff).fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+      try {
+        if (this.game.renderer.type === Phaser.WEBGL) {
+          container.enableFilters?.(); container.setFiltersFocusContext?.(true);
+          if (!container.filters?.internal?.addMask?.(art, false, this.cameras.main, 'world')) return false;
+        } else { mask = art.createGeometryMask(); container.setMask(mask); }
+        container.setData('expeditionClip', bounds);
+        return true;
+      } catch { return false; }
+    }
+
     /** Keep retained town/service DOM artwork below the shell's native paint. */
     syncShellContentClip() {
       const root = document.getElementById('root');
       if (!root) return;
       const shell = document.getElementById('legend-world-shell-root');
-      const enabled = shell && !shell.hidden && root.querySelector('.ash100-town,.ash099-terminal,.reg100');
+      const enabled = shell && !shell.hidden && root.querySelector('.ash100-town,.ash099-terminal,.reg100,.exp100:has(.exp150-world-page)');
       if (!enabled) { root.removeAttribute('data-legend-shell-clip'); return; }
       const box = root.getBoundingClientRect();
       const hud = shell.querySelector('.lws-hud')?.getBoundingClientRect();

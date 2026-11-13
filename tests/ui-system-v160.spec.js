@@ -677,7 +677,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-title-mobile-390.png');
 
-    await enterAshmere(page, 'MobileUIPreview');
+    await enterAshmere(page, 'MobileUIPreview', { width: 390, height: 844 });
+    expect(page.viewportSize()).toEqual({ width: 390, height: 844 });
     await expect(page.getByRole('navigation', { name: 'Ashmere terminal navigation' })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-ashmere-mobile-390.png');
@@ -686,6 +687,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('#exp150OpenMap')).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUiSurface)).toBe('expedition');
     await expectNoHorizontalOverflow(page);
+    expect(page.viewportSize()).toEqual({ width: 390, height: 844 });
     await attachProof(page, 'phase1-old-road-mobile-390.png');
   });
 

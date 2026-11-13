@@ -1249,3 +1249,32 @@ body.legend-world-shell-active #root:has(.ash099-head:is([data-ash-service="peop
   scroll-padding-top: 112px;
   scroll-padding-bottom: 88px;
 }
+
+/* Retained road panels must not obscure or blur the corresponding native copy.
+   Scope the stronger legacy override to each successful painter's surface. */
+body.legend-phaser-world-active.legend-world-shell-active.legend-phaser-expedition-hud-ui-active #root .exp100:has(.exp150-world-page) :is(.exp150-expedition-head,.exp150-meter,.exp150-meter > i,.exp150-meter > i > b,.exp150-road-clock,.exp150-route-tracker,.exp150-aside-card,.exp150-route-reminder,.exp150-supply-row,.exp150-pressure-track,.exp150-pressure-track > i),
+body.legend-phaser-world-active.legend-world-shell-active.legend-phaser-road-actions-ui-active #root .exp100:has(.exp150-world-page) :is(.exp150-guide,.exp100-panel,.exp100-poi,.exp100-camp,.exp150-camp-atmosphere,.exp100-camp-heading,.exp150-action-dock,.exp150-section-heading,.exp150-action,.exp100-choice,.exp160-optional-detour,.exp160-optional-site,.exp160-field-contract,.exp160-field-report-note,.exp160-site-complete) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-world-shell-active #root:has(.exp150-world-page) {
+  scroll-padding-top: calc(var(--lws-hud-height, 72px) + 16px);
+  scroll-padding-bottom: 88px;
+}
+/* The road dialog owns the foreground, including its retained DOM controls. */
+body.legend-phaser-world-active.legend-world-shell-active #root[data-legend-shell-clip="true"]:has(#exp150Modal:not([hidden])) {
+  clip-path: none;
+}
+body.legend-phaser-world-active #root .exp100:has(#exp150Modal:not([hidden])) { visibility: hidden; }
+body.legend-phaser-world-active #root #exp150Modal:not([hidden]) { visibility: visible; }
+body.legend-phaser-world-active.legend-phaser-road-map-ui-active #root .exp100:has(.exp150-world-page) #exp150Modal {
+  background: transparent !important;
+}
+@media (max-width: 720px) {
+  body.legend-phaser-world-active #root .exp100:has(.exp150-world-page) .exp150-expedition-head.exp100-head {
+    margin-top: 0 !important;
+  }
+}

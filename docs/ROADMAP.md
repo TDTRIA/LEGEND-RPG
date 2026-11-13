@@ -38,7 +38,19 @@ The story and the systems should reinforce that loop. Town is a place the player
 
 <!-- coderabbit-ai-generated-section:v1:adb53ab7bf7b3ac4d78af200baf679bc67e57faa6d18fb141a0be06c956d067d -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:62b2254da402f9f1a5af33cc3ec3636a14af74ff5c1b9da71d600d2a61027609 -->
+
+## Old Road readability repair — 2026-11-13 (local)
+
+Production inspection reproduced legacy opaque/blurred panels above Phaser text, cropped health and journey labels, and road content crossing the fixed HUD and action dock. Active road painters now clear those duplicate DOM backgrounds, fit complete labels with readable DOM recovery, and clip their content to the measured shell viewport. The map/journal foreground hides underlying road controls and keeps its close button outside that clip. Mobile header text no longer overlaps scene artwork.
+
+Seven focused journeys pass across the final checks and an equivalent retained decision/detour/camp result. Coverage includes desktop/mobile text bounds, keyboard/touch, renderer and label fallback, exact route cost, preserved saves, map/journal return, and a corrected test that keeps the full first-session journey at 390px. Desktop, portrait, landscape, map and camp screenshots were inspected. Gameplay, reward, route and storage owners are unchanged. Full journey/decision acceptance, central scene/results migration, the broader regression checkpoint and publication remain open.
+
 ## Opening annals correction — 2026-11-13 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The third production annal now uses the exact approved “The Peace, Written Down” text from CANON, with the original closing quote and all three mandatory chapters preserved. Phaser text respects the quote’s content box and heading wrap boundaries; incomplete rendering restores the DOM surface. Continue labels stay on one line, decorative gold frames are removed, and keyboard focus retains a visible pale outline. Four focused production checks pass, including exact desktop/mobile copy, touch/keyboard handoff, fallback recovery and the full Oric opening. Desktop, portrait and landscape screenshots were inspected. Save keys, gameplay rules and progression owners are unchanged. Broader production regression and publication remain pending; this does not complete the migration.
 
