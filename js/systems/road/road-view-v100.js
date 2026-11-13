@@ -36,7 +36,7 @@ function scene(stage=0,interactive=true){
  const hotspots=interactive&&!sideTrip&&!poiDone
   ? '<div class="exp100-hotspots" aria-label="Discover the road"><button class="exp100-hotspot exp100-hotspot-find" data-hotspot="poi" style="--hx:'+point.x+'%;--hy:'+point.y+'%"><i>'+esc(point.icon)+'</i><span>Look closer</span></button></div>'
   : '<div class="exp100-hotspots" aria-hidden="true"></div>';
- return '<div class="exp100-scene exp100-scene-live '+stageClass+(sideTrip?' exp160-side-trip-scene':'')+(poiDone?' exp160-scene-discovery-registered':'')+'" data-stage="'+stageNum+'" data-scene-location="'+esc(sideInfo?.label||areaForStage(stage).name)+'"><img src="'+esc(scenePath)+'" alt="'+esc(sideInfo?.alt||chosenScene.alt)+'" onerror="if(this.dataset.fallbackApplied){this.style.display=\'none\'}else{this.dataset.fallbackApplied=\'1\';this.src=\''+esc(fallback)+'\'}"><div class="exp100-scene-shade"></div>'+hotspots+'<span class="exp100-scene-label">THE OLD ROAD <i>•</i> '+esc((sideInfo?.label||areaForStage(stage).name).toUpperCase())+'</span><button class="exp100-sound" id="exp100-sound" type="button" aria-label="Toggle sound effects">Sound: '+(soundOn()?'On':'Off')+'</button></div>';
+ return '<div class="exp100-scene exp100-scene-live '+stageClass+(sideTrip?' exp160-side-trip-scene':'')+(poiDone?' exp160-scene-discovery-registered':'')+'" data-stage="'+stageNum+'" data-scene-location="'+esc(sideInfo?.label||areaForStage(stage).name)+'"><img src="'+esc(scenePath)+'" alt="'+esc(sideInfo?.alt||chosenScene.alt)+'" onerror="if(this.dataset.fallbackApplied){this.style.display=\'none\'}else{this.dataset.fallbackApplied=\'1\';this.src=\''+esc(fallback)+'\'}"><div class="exp100-scene-shade"></div>'+hotspots+'<span class="exp100-scene-label">THE OLD ROAD <i>•</i> '+esc((sideInfo?.label||areaForStage(stage).name).toUpperCase())+'</span><button class="exp100-sound" id="exp100-sound" type="button" aria-label="Game sound" aria-pressed="'+soundOn()+'">Sound: '+(soundOn()?'On':'Off')+'</button></div>';
 }
 /** Re-renders the expedition shell while preserving the live scene node and its handlers. */
 function shell(body){
@@ -66,12 +66,16 @@ function shell(body){
   btn.addEventListener('click',()=>tone(['strike','heavy','skill'].includes(btn.id)?'impact':'tap'));
  });
  const soundButton=document.getElementById('exp100-sound');
+ if(soundButton){
+  soundButton.textContent='Sound: '+(soundOn()?'On':'Off');
+  soundButton.setAttribute('aria-pressed',String(soundOn()));
+ }
  if(soundButton&&!soundButton.dataset.toggleBound){
   soundButton.dataset.toggleBound='1';
   soundButton.addEventListener('click',e=>{
    roadAudio().toggleSound?.()
    e.currentTarget.textContent='Sound: '+(soundOn()?'On':'Off');
-   e.currentTarget.setAttribute('aria-label','Toggle sound effects');
+   e.currentTarget.setAttribute('aria-pressed',String(soundOn()));
    if(soundOn())tone('success');
   });
  }

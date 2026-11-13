@@ -76,3 +76,60 @@ test.describe('LegendRoadAudioV100 compatibility contract', () => {
     });
   });
 });
+
+test('mute survives rejected storage writes and subsequent title and road transitions', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const audio = LegendRoadAudioV100;
+    audio.stopWorldAudio();
+    localStorage.setItem('legend-road-sound', 'on');
+    const original = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, value) {
+      if (key === 'legend-road-sound') throw new DOMException('Synthetic quota denial', 'QuotaExceededError');
+      return original.call(this, key, value);
+    };
+    try {
+      const returned = audio.toggleSound();
+      LegendTitleAudioV120.startAmbience();
+      audio.startWorldAudio();
+      audio.setEnvironment('road');
+      audio.setSurface('expedition');
+      const muted = audio.snapshot();
+      const effect = audio.playBattleFx('hit');
+      Storage.prototype.setItem = original;
+      const enabled = audio.toggleSound();
+      return { returned, muted, effect, enabled, persisted: localStorage.getItem('legend-road-sound') };
+    } finally { Storage.prototype.setItem = original; }
+  });
+  expect(result.returned).toBe(false);
+  expect(result.muted).toMatchObject({ enabled: false, musicPlaying: false, ambiencePlaying: false });
+  expect(result.effect).toBeNull();
+  expect(result.enabled).toBe(true);
+  expect(result.persisted).toBe('on');
+});
+
+test('audio retains the last known preference when reads fail and restores legacy key semantics after recovery', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(() => {
+    const audio = LegendRoadAudioV100;
+    localStorage.setItem('legend-road-sound', 'off');
+    const initial = audio.soundOn();
+    const read = Storage.prototype.getItem;
+    Storage.prototype.getItem = function (key) {
+      if (key === 'legend-road-sound') throw new DOMException('Synthetic read denial', 'SecurityError');
+      return read.call(this, key);
+    };
+    try {
+      const blocked = audio.soundOn();
+      const toggled = audio.toggleSound();
+      const afterToggle = audio.soundOn();
+      Storage.prototype.getItem = read;
+      localStorage.setItem('legend-road-sound', 'legacy-unknown');
+      const legacy = audio.soundOn();
+      localStorage.setItem('legend-road-sound', 'off');
+      const restored = audio.soundOn();
+      return { initial, blocked, toggled, afterToggle, legacy, restored };
+    } finally { Storage.prototype.getItem = read; }
+  });
+  expect(result).toEqual({ initial: false, blocked: false, toggled: true, afterToggle: true, legacy: true, restored: false });
+});

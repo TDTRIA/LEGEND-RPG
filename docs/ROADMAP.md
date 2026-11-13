@@ -160,7 +160,25 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:a7f560e5be8cc891ebddc6dc7b59be460015b322af142acae850a0c758b6eb93 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:6d3c0b99a40c6453e96988d31e22973a9a5e748522f8a41fde71208e50c2a94c -->
+
+## Audio controls and storage failure — 2026-11-13 (verified locally)
+
+The shared audio director now keeps a mute choice for the current page when browser storage rejects the preference write. Previously, toggling off returned false while the next title/road transition read the unchanged stored value and restarted both loops. A failed read retains the last known preference. Successful reads and writes retain the existing legend-road-sound contract; only off disables persisted audio, and unknown/missing values still mean on. A rejected write cannot survive reload; no new storage key is introduced.
+
+Road and combat sound controls expose a stable Game sound accessible name and aria-pressed state, including retained road scene nodes. Native labels, focus frames and original production callbacks remain intact. Sound changes do not consume combat turns, change rewards or rewrite player saves.
+
+Nine focused checks pass: four audio-owner contracts, two real desktop/mobile title-road-combat journeys, and three existing road presentation/discovery/fallback/responsive cases. The denied-write regression first failed against the original code, then passed after repair. A local validation recorder collision omitted the desktop event; its observed terminal pass was recovered with the same hashed inputs. The command exited1 for those two recorder errors despite all nine test cases passing; the local recorder matching now includes the describe path. No test assertion was removed or weakened.
+
+Shared Chromium screenshots were inspected for focused road and combat sound controls at 1440×900 and390×844. Native text remained readable; the combat page had no horizontal overflow. The memory-only Preview fixture was removed and raw player/settings/audio/return state remained unchanged. Playback state was verified in the browser; subjective audio quality was not assessed.
+
+The full audio acceptance gate remains open: the actual production title has no mute control, although it honors the existing preference. Next: expose the same audio owner through an accessible title control, then remaining overlays and complete first-session/returning-save gates. PR creation, merging and publication remain blocked by Manual task permissions.
+
 ## Profile and account presentation — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The production profile/auth views now have dedicated Phaser panels, complete text, selected tabs, focused controls, disabled cloud actions and input frames. Browser-native inputs retain editing, validation, autofill, caret behavior and password masking; their values are excluded from canvas snapshots. Sign-in, signup, confirmation/failure feedback, profile editing, local Continue/New Traveler, two cloud slots and sign-out still invoke the existing account/auth/cloud services. Missing or unknown visible content restores the full DOM. Native browser confirmation for clearing a cloud slot is retained.
 

@@ -55,7 +55,7 @@ function render(pl, enemy, note = '', w, a, technique) {
  const disabledForOpening=openingEncounter?' disabled aria-disabled="true"':'';
  
  shell('<section data-encounter-context="'+journalContext+'" class="exp100-panel exp100-combat rpg-battle rpg-intent-'+foeIntentClass+(openingEncounter?' rpg-opening-awakening':'')+' '+(playerHit?'rpg-player-hit ':'')+(foeHit?'rpg-foe-hit':'')+'" aria-label="Turn-based battle">'+
-  '<div class="rpg-battle-topline"><div><span class="rpg-overline">'+esc(encounterLocation(pl, enemy) || 'THE OLD ROAD')+'</span><strong><span>ENCOUNTER</span> <i> / </i> <span>TURN '+turnNumber+'</span></strong></div><button class="rpg-sound-toggle" id="battleSound" type="button" aria-label="Toggle battle music and sound">'+(soundOn()?'♫ SOUND ON':'♫ SOUND OFF')+'</button></div>'+
+  '<div class="rpg-battle-topline"><div><span class="rpg-overline">'+esc(encounterLocation(pl, enemy) || 'THE OLD ROAD')+'</span><strong><span>ENCOUNTER</span> <i> / </i> <span>TURN '+turnNumber+'</span></strong></div><button class="rpg-sound-toggle" id="battleSound" type="button" aria-label="Game sound" aria-pressed="'+soundOn()+'">'+(soundOn()?'♫ SOUND ON':'♫ SOUND OFF')+'</button></div>'+
   '<div class="rpg-battlefield" data-arena="'+arenaKey+'"><img class="rpg-arena-art" src="'+arenaArt+'" alt="" aria-hidden="true"><div class="rpg-battle-moon" aria-hidden="true"></div><div class="rpg-battle-orbit" aria-hidden="true"></div><div class="rpg-ground-haze" aria-hidden="true"></div>'+
    '<div class="rpg-hero-side" aria-label="Traveler on the battlefield"><div class="rpg-hero-stage-art" data-combatant="traveler">'+(heroArt?'<img src="'+esc(heroArt)+'" alt="" aria-hidden="true">':'<span aria-hidden="true">✧</span>')+'<i class="rpg-hero-stage-shadow" aria-hidden="true"></i></div><div class="rpg-hero-stage-plate" aria-label="Traveler combat stance"><span>YOUR STANCE</span><strong>'+esc(pl.username||'Traveler')+'</strong><small>'+Number(pl.hp||0)+' / '+Number(pl.maxHp||1)+' HP</small><div class="rpg-hero-stage-hp"><i style="width:'+health+'%"></i></div></div></div><div class="rpg-duel-ground" aria-hidden="true"></div><div class="rpg-foe-side"><div class="rpg-foe-nameplate rpg-foe-intent-'+foeIntentClass+'"><span>'+foeIntentLabel+'</span><strong>'+esc(enemy.name)+'</strong><small>'+Math.max(0,Number(enemy.hp))+' / '+Number(enemy.maxHp)+' HP</small><div class="rpg-foe-hp"><i style="width:'+clamp(Math.round(Number(enemy.hp)/Math.max(1,Number(enemy.maxHp))*100),0,100)+'%"></i></div></div>'+
    '<div class="rpg-foe-sprite">'+(art?'<img class="rpg-foe-art" src="'+esc(art)+'" alt="'+esc(enemy.name)+'">':'<span class="rpg-foe-unknown" aria-hidden="true">✦</span>')+'<i class="rpg-foe-shadow"></i></div></div>'+
@@ -86,7 +86,7 @@ function render(pl, enemy, note = '', w, a, technique) {
  button('item',()=>onCommand?.(enemy,'item'));
  button('poultice',()=>onCommand?.(enemy,'poultice'));
  button('flee',()=>onRetreat?.(enemy));
- button('battleSound',()=>{ onToggleSound?.(); const control=document.getElementById('battleSound'); if(control)control.textContent=soundOn()?'♫ SOUND ON':'♫ SOUND OFF'; });
+ button('battleSound',()=>{ onToggleSound?.(); const control=document.getElementById('battleSound'); if(control){control.textContent=soundOn()?'♫ SOUND ON':'♫ SOUND OFF';control.setAttribute('aria-pressed',String(soundOn()));} });
  if(entering){
   const root=document.getElementById('root'),battle=root?.querySelector('.rpg-battle');
   if(root)root.scrollTop=0;window.scrollTo(0,0);
