@@ -137,7 +137,7 @@
     archive: 'assets/generated/locations/ashmere-archive.webp',
     cellar: 'assets/generated/locations/bell-cellar-undercroft.webp',
     greyfenInn: 'assets/generated/locations/greyfen-inn.webp',
-    greyfenMarket: 'assets/generated/locations/greyfen-market.webp',
+    greyfenMarket: 'assets/generated/locations/greyfen-market-scene.webp',
     greyfenForge: 'assets/generated/locations/greyfen-forge.webp',
     greyfenArchive: 'assets/generated/locations/greyfen-archive.webp',
     serviceInnIcon: 'assets/generated/ui/icons/service-inn.webp',
@@ -748,6 +748,7 @@
 
     create() {
       this.cameras.main.setBackgroundColor('#090e0d');
+      this.market = window.LegendPhaserMarketV1?.create(this);
       this.inn = window.LegendPhaserInnV1?.create(this);
       this.travelerSheet = window.LegendPhaserTravelerSheetV1?.create(this);
       this.shellToast = window.LegendPhaserShellToastV1?.create(this);
@@ -811,6 +812,7 @@
           landmarkIconsLoaded: this.ashmereLandmarks.every(item => this.textures.exists(item.iconKey)),
           serviceDressingCount: this.serviceDressing.filter(item => item.object?.active).length,
           serviceDressingKey: this.serviceDressingKey,
+          nativeMarket: this.market?.snapshot(),
           nativeInn: this.inn?.snapshot(),
           nativeTravelerSheet: this.travelerSheet?.snapshot(),
           nativeShellToast: this.shellToast?.snapshot(),
@@ -6433,15 +6435,8 @@
       }
 
       if (isMarket) {
-        // Low-opacity cloth pennants frame the market stall without obscuring its art.
-        const cloth = greyfen ? [0x456c63, 0x9a7950, 0x526d72] : [0x71503b, 0x8a7140, 0x3f664c];
-        [0.29, 0.5, 0.71].forEach((u, i) => {
-          const canopy = this.add.rectangle(0, 0, size.width * 0.12, 19, cloth[i], 0.28);
-          canopy.setStrokeStyle(1, 0xc3a76b, 0.22);
-          this.addServiceDressingObject(canopy, u, 0.14, 4);
-          const tail = this.add.triangle(0, 0, -size.width * 0.035, -1, size.width * 0.035, -1, 0, 21, cloth[i], 0.23);
-          this.addServiceDressingObject(tail, u, 0.157, 4);
-        });
+        // Approved market artwork supplies the stalls and awnings. Geometric
+        // pennants looked like empty floating controls above the service screen.
         this.addServiceLantern(0.5, 0.22, warm);
       }
 

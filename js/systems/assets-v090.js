@@ -23,7 +23,7 @@
       ashmereForge: 'assets/generated/locations/ashmere-forge.webp',
       ashmereArchive: 'assets/generated/locations/ashmere-archive.webp',
       greyfenInn: 'assets/generated/locations/greyfen-inn.webp',
-      greyfenMarket: 'assets/generated/locations/greyfen-market.webp',
+      greyfenMarket: 'assets/generated/locations/greyfen-market-scene.webp',
       greyfenForge: 'assets/generated/locations/greyfen-forge.webp',
       greyfenArchive: 'assets/generated/locations/greyfen-archive.webp',
       greyfenMarshWalkway: 'assets/generated/locations/greyfen-marsh-walkway.webp',

@@ -151,7 +151,14 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
 <!-- coderabbit-ai-generated-section:v1:b6c544f908fbd32caee2cdca6dcece6dd8bdc33ca033c1ba38777be0aaf68af3 -->
 
    - [x] Inn presentation verified locally for Ashmere and Greyfen: dedicated guarded Phaser artwork, panels, complete copy, health meter, prices, focus and feedback. Original semantic buttons retain rest, supplies, rumors and return callbacks. The production inn now refreshes its purse/health after purchases without replacing focused controls. Desktop1440×900 and mobile390×844 tests passed for exact 35g rest/90g supply costs, full-save equality (including unknown properties), insufficient funds, regional rumors/return, artwork failure and malformed-source fallback. Shared Chromium screenshots inspected, including mobile scrolling/feedback and both regional interiors; heading and Back stay clear of the fixed shell. Costs, rewards, storage ownership and canon are unchanged. Publication remains pending task permissions.
-   - [ ] Market, blacksmith, crafting, workboard/daily board and NPC/dialogue screens.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:7af5f819f0bf262f2bb6495d87a3bdfaecc8af76cef1c300010b097e511559af -->
+
+   - [x] Market presentation verified locally for Trading Post and Marsh Market: guarded Phaser banner, wallet, Buy/Sell tabs, item copy/prices/quantities, disabled/empty states and focus. Production buy, sell-one and sell-all callbacks retain exact prices, per-item Bent Coin rounding and save semantics. The source controller restores focus after rendering; malformed source restores a functioning DOM purchase flow. Current desktop1440×900 and mobile390×844 tests passed; shared desktop/portrait screenshots inspected. Removed empty geometric market pennants and replaced the branded Greyfen runtime image with a crop of its approved artwork. Publication remains pending task permissions.
+   - [ ] Blacksmith, crafting, workboard/daily board and NPC/dialogue screens.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
    - [ ] Preserve the existing purchase, craft, job, quest and save callbacks.

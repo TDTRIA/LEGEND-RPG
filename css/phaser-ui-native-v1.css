@@ -1109,3 +1109,29 @@ body.legend-phaser-world-active #root [data-phaser-inn-copy="true"] {
   -webkit-text-fill-color: transparent !important;
   text-shadow: none !important;
 }
+
+/* Production market actions remain semantic DOM buttons beneath native copy. */
+body.legend-phaser-world-active #root .ash099-terminal:has(.ash099-head[data-ash-service="trader"]) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-market,
+body.legend-phaser-world-active #root .legend-phaser-market :is(.ash099-head,.ash099-head > div,.ash099-market-wallet,.ash099-market-tabs,.ash099-market-tabs button,.ash099-market-tabs button span,.ash099-market-item,.ash099-empty-state,#sellAllLoot,#ashNote,#ashBack) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-market .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-market .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-market .ash099-head > img { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-phaser-market-copy="true"],
+body.legend-phaser-world-active #root [data-phaser-market-copy="true"] > span {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+/* Tab labels occupy one line; prevent canvas glyph rounding from wrapping them. */
+#root .ash099-market-tabs button { white-space: nowrap; }

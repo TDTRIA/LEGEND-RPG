@@ -23,6 +23,7 @@ const version = versionMatch[1];
 // Each Playwright test runs in an isolated browser context, so clearing localStorage
 // here only resets that test's synthetic traveler—not a player's live browser save.
 async function openTitle(page) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
@@ -33,19 +34,8 @@ async function openTitle(page) {
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
-  // The game's ember/fog/CTA animations are decorative; disable them in test contexts
-  // so WebKit touch targets do not remain perpetually "unstable" during clicks.
-  await page.addStyleTag({ content: `
-    *, *::before, *::after {
-
-      animation: none !important;
-
-      transition: none !important;
-
-      scroll-behavior: auto !important;
-
-    }
-  ` });
+  // Use the production reduced-motion path; blanket animation removal can
+  // interrupt the opening's lifecycle and leave later controls hidden.
   await expect(page.locator('.v120-title')).toBeVisible();
   await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
 }
@@ -81,7 +71,7 @@ async function startFreshCharacter(page, name = 'QATraveler', options = {}) {
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();
@@ -2476,7 +2466,8 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
   const marketScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
   expect(marketScene.ashmereLandmarks).toHaveLength(0);
   expect(marketScene.serviceDressingKey).toBe('market');
-  expect(marketScene.serviceDressingCount).toBeGreaterThanOrEqual(4);
+  // Only the ambient lantern remains; the painted stall replaces geometric pennants.
+  expect(marketScene.serviceDressingCount).toBe(1);
 
   await page.locator('#ashBack').click();
   await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
