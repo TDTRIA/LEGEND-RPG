@@ -144,7 +144,25 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:1aa93bc4df185bda57e491f930b6e31070ef60fc5bebe49851d5efbb690a23ab -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:a4be121a4a02084060887cb2a8cbabd3a63c93217dd84fba9aff0f44580f9c13 -->
+
+## Settings and accessibility — 2026-11-13 (verified locally)
+
+Both production Settings surfaces now use guarded Phaser panels, complete labels, checked states and keyboard focus, retaining their semantic inputs and callbacks. The title page keeps its six draft preferences and explicit Save; the in-game dialog keeps seven immediately saved preferences, including simplified symbols. Approved icons remain visible. Missing artwork, incomplete fields, unknown copy or failed text fitting restores the DOM presentation. Scroll, resize and replacement content repaint safely.
+
+Confirmed repairs include fallback switches that did not show their checked position, oversized dialog checkboxes, lost focus after Save, inaccurate Back to Ashmere text for returning Greyfen players, and a misleading success message when storage rejected a write. Failure now states that preferences remain active for the session. Unknown settings fields, player data, road audio preference and pending return state are preserved. Storage ownership, gameplay and account behavior are unchanged.
+
+Nine focused cases pass: six Settings checks covering desktop keyboard/mobile touch, all accessibility preferences together, explicit/immediate saving, reload, failed persistence and retry, fallback/recovery and malformed/replaced content; plus three existing storage failure, shell settings persistence and Settings Escape regressions. Earlier runs exposed real fitting and theme-layer defects, repaired without reducing text-fit requirements or removing assertions. The existing shell consumer initially exhausted its 30-second budget during creation; it passed unchanged with a 120-second command budget. Syntax checks pass for 107 production scripts and 74 test specs.
+
+Shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390, including high-contrast combined preferences, scrolling and focused Save/Return controls. No horizontal overflow was observed. Memory-only Preview preferences were restored and raw player/settings/audio values remained unchanged. Removing the dedicated painter restores the complete semantic DOM; no save migration is required.
+
+This completes the local settings/accessibility slice. Audio controls remain owned by existing title/road/combat modules; their broader acceptance, auxiliary title/profile screens and loading/confirmation overlays remain open. Complete first-session and returning-save regression gates, dedicated Storehouse art, Greyfen/first-three-towns release and production publishing remain outstanding. Manual permissions still prevent PR creation and merging; this checkpoint is not a deployment claim.
+
 ## Regional shell and reliable navigation — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The Storehouse shell now identifies the current room, mirrors its actual available actions and shows saved dispatch/salvage records and the last report in the native journal drawer. Labels distinguish Back (an active attempt remains resumable) from the room's explicit return (the attempt ends); inactive/locked/failed/completed screens do not promise resumability. All operations call the existing production buttons. Greyfen encounters and reports retain their own journal context and current objective; encounter navigation remains locked while saved summaries stay readable.
 

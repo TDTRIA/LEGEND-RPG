@@ -1493,3 +1493,32 @@ body.legend-world-shell-active #root > .rpg-battle {
 }
 #root .v152-combat-results:not([data-legend-phaser-combat-results="true"]) :is(.v152-results-heading,.v152-results-duel,.v152-results-rewards) { background:rgba(16,26,18,.97) !important; }
 #root .v152-combat-results:not([data-legend-phaser-combat-results="true"]) .v152-results-heading :is(h1,p) { text-shadow:none !important; }
+
+/* Settings retain semantic checkboxes and restore complete DOM on failed preflight. */
+#root .settings09x-hero h1 { line-height:1.1; }
+#root .settings09x-status:empty { display:none; }
+#root .settings09x-status { line-height:1.5; padding:12px; }
+#root .settings09x-toggle input:checked ~ .settings09x-switch { background:#a88942; }
+#root .settings09x-toggle input:checked ~ .settings09x-switch::after { transform:translateX(21px); background:#ffe4a0; }
+#root .settings09x-toggle:focus-within { outline:2px solid #ffe6a0; outline-offset:2px; }
+body.a11y-large-text .lws-setting-row strong { font-size:16px; }
+body.a11y-large-text .lws-setting-row small { font-size:14px; }
+body.a11y-bold-text .lws-setting-row :is(strong,small) { font-weight:700; }
+body.a11y-spacious .lws-setting-row { min-height:80px; }
+body.a11y-readable-font .lws-setting-row { font-family:Arial,sans-serif; }
+body.legend-phaser-settings-modal #game-container { z-index:801; }
+body.legend-phaser-settings-modal #legend-world-shell-modal-root { z-index:802; background:transparent!important; backdrop-filter:none!important; }
+body.legend-phaser-settings-modal .lws-modal::before { display:none!important; }
+body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"], body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] :is(.settings09x-hero,.settings09x-toggle,.settings09x-note,.settings09x-actions,.settings09x-btn,.settings09x-status,.lws-modal-header,.lws-modal-footer,.lws-modal-content,.lws-setting-row,.lws-btn,.lws-close-btn) { background:transparent!important; border-color:transparent!important; box-shadow:none!important; filter:none!important; }
+body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] [data-settings-copy="true"], body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] [data-settings-copy="true"] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] :is(.settings09x-switch,.lws-setting-row input) { opacity:0; }
+body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] :is(button,.settings09x-toggle):focus-within { outline:none!important; }
+body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] button { transform:none!important; }
+
+@media(min-width:761px) { body.legend-phaser-world-active #root .settings09x-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; } }
+#root .settings09x-toggle > span:last-of-type > span { line-height:1.6; min-height:3lh; }
+
+#legend-world-shell-modal-root .lws-setting-row > span { flex:1; min-width:0; }
+#legend-world-shell-modal-root .lws-setting-row input { width:22px!important; min-width:22px!important; max-width:22px!important; height:22px!important; flex:0 0 22px; }
+body.a11y-high-contrast #legend-world-shell-modal-root .lws-setting-row { background:#050805; border-color:#f8efc7; }
+body.a11y-high-contrast #legend-world-shell-modal-root .lws-setting-row :is(strong,small) { color:#fff; }

@@ -74,9 +74,9 @@
           return;
         }
         const settings = { ...(storage.loadSettings() || {}), [key]: input.checked };
-        storage.saveSettings(settings);
+        const persisted = storage.saveSettings(settings);
         storage.applySettings?.();
-        announce('Saved ' + (settingDefinitions.find(setting => setting.key === key)?.label || 'setting') + '.');
+        announce(persisted === false ? 'Settings could not be saved permanently. Your preference remains active for this session.' : 'Saved ' + (settingDefinitions.find(setting => setting.key === key)?.label || 'setting') + '.');
       });
     }
     return modalRoot;
@@ -227,6 +227,7 @@
       '<label class="lws-setting-row" for="lws-setting-' + setting.key + '"><span><strong>' + esc(setting.label) + '</strong><small>' + esc(setting.detail) + '</small></span><input type="checkbox" id="lws-setting-' + setting.key + '" data-world-setting="' + setting.key + '"' + (current[setting.key] ? ' checked' : '') + '></label>'
     ).join('') + '</div>';
     return openModal({
+      kind: 'settings',
       eyebrow: 'Realm preferences',
       title: 'Settings',
       icon: 'settings',
