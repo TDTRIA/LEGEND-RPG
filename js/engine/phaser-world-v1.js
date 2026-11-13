@@ -762,6 +762,7 @@
       this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
       this.roadScene = window.LegendPhaserRoadSceneV1?.create(this);
       this.growth = window.LegendPhaserGrowthV1?.create(this);
+      this.bellVault = window.LegendPhaserBellVaultV1?.create(this);
       this.combatResults = window.LegendPhaserCombatResultsV1?.create(this);
       this.roadResults = window.LegendPhaserRoadResultsV1?.create(this);
       this.motionReduced = reducedMotion();
@@ -842,6 +843,7 @@
           nativeRouteBoard: this.routeBoard?.snapshot(),
           nativeRoadSceneUi: this.roadScene?.snapshot(),
           nativeGrowth: this.growth?.snapshot(),
+          nativeBellVault: this.bellVault?.snapshot(),
           nativeCombatResults: this.combatResults?.snapshot(),
           nativeRoadResults: this.roadResults?.snapshot(),
           nativeTitleUi: this.nativeTitleUiActive,
@@ -4372,7 +4374,7 @@
       if (root.dataset.legendShellClip !== 'true') root.dataset.legendShellClip = 'true';
       // Drawer motion can settle after the road painters have sampled their
       // masks. Update those masks with the same final bounds as the DOM clip.
-      if (changed && root.querySelector('.exp150-world-page,.exp100-outcome,.rpg-battle,.v152-combat-results') && this.expeditionClipFrame === null) {
+      if (changed && root.querySelector('.exp150-world-page,.exp100-outcome,.rpg-battle,.v152-combat-results,.bell-vault-v100') && this.expeditionClipFrame === null) {
         this.expeditionClipFrame = window.requestAnimationFrame(() => {
           this.expeditionClipFrame = null;
           this.syncNativeExpeditionHudUi();
@@ -4380,6 +4382,7 @@
           this.roadScene?.sync();
           this.roadResults?.sync();
           this.combatResults?.sync();
+          this.bellVault?.sync();
           this.syncNativeCombatUi();
         });
       }

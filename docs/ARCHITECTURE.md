@@ -143,7 +143,15 @@ The active production entry point loads Phaser 4.1 and the world renderer, follo
 
 <!-- coderabbit-ai-generated-section:v1:0047dde7bc562ad41b6e93e5ff54e7b2282dc85e2a99031627328c173c02e309 -->
 
-The separate `phaser-growth-v1.js` painter reads the body-level production growth dialog, guards complete copy/art/actions, and clips native labels to the panel scroll viewport. Original DOM buttons retain allocation/save callbacks. `LegendLevelUpV152` manages modal focus, background inert state and cleanup, including externally removed/replaced dialogs; it preserves existing attribute and HP formulas. The painter never saves or allocates points.
+The separate `phaser-growth-v1.js` painter reads the body-level production growth dialog, guards complete copy/art/actions, and clips native labels to the panel scroll viewport. Original DOM buttons retain allocation/save callbacks. `LegendLevelUpV152` manages modal focus, background inert state and cleanup, including externally removed/replaced dialogs; it preserves existing attribute and HP formulas. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:46150f9233813972da409a84726d4d2e54bf5cc2068dad859f710293500640b5 -->
+
+The painter never saves or allocates points.
+
+`phaser-bell-vault-v1.js` reads the existing Bell Cellar state metadata and guards the required action/copy/art set for each room and report. It uses the shared shell clip; DOM actions remain in `bell-vault-v100.js`. That dungeon owner adds heading focus/scroll and refreshes an attached report after growth, without repeating treasure settlement. Combat, gear/lore checks, rewards and normalization retain their existing owners.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

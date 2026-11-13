@@ -116,7 +116,23 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:037b3baecfaf0fef3a4501453988d1eaff7cdaf2296ae8a5f13d057976e0b0b2 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:77afe5d58608b2904835ee5945fddb9e8ba6f801d70e97dcfa057c839f979a62 -->
+
+## Bell Cellar rooms and rewards — 2026-11-13 (verified locally)
+
+The existing entrance, locked stair, failed delve, four rooms, completed report and repeat-clear presentation now use a guarded dedicated Phaser painter. It paints the approved archive/undercroft/sentinel artwork, authored room text, equipment and health values, reward details and original choices. Every state's required controls and fields are checked before hiding duplicate DOM visuals; incomplete artwork or unknown copy restores the complete source view. The painter shares the shell clip and follows scrolling and rotation. Room transitions focus the heading and reset stale scroll while respecting an open growth dialog.
+
+Verified repairs include the inherited town background covering native content, a gold Back-button gradient covering its label, and stale health after Endurance allocation from treasure rewards. Growth completion refreshes the report without collecting rewards again. The production dungeon owns all gate/lore/equipment checks, relic choices, combat callbacks, retreat, gold/XP/Buckle/Herb rewards and persistence; no balance or save schema changes were made.
+
+Seven focused cases pass: desktop/mobile room and choice journeys with exact rewards, fallback/rotation/reload, locked/failed/repeat-clear states, treasure-to-growth refresh, and the three original unlock/retreat/boss-victory/defeat journeys. Existing full-journey cases needed a 180-second budget after the old 30-second limit expired; all assertions remain. Syntax checks pass for 103 production scripts and 66 test specs. Shared Chromium desktop, portrait, landscape and fallback screenshots were inspected with an unsaved clone; the original saved traveler was preserved.
+
+This verifies room and treasure presentation. Dedicated regional combat/result visual acceptance remains open, including the cellar debrief's current archive backdrop and depth label. Greyfen and full first-three-towns acceptance remain open. Publication is pending task permissions. Disabling the dedicated painter restores the original semantic DOM controls and presentation.
+
 ## Growth dialog — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The production level-up dialog now has a dedicated guarded Phaser painter for its approved backdrop/portrait, six attribute cards, current/draft values, point meter, explanations and all thirteen semantic controls. Complete-source preflight restores the styled DOM dialog if copy, controls or artwork are unavailable. Text follows measured source bounds and the panel's own scroll clip; mixed inline copy is painted as complete labels to avoid overlap.
 
@@ -438,7 +454,14 @@ The third production annal now uses the exact approved “The Peace, Written Dow
    - [ ] Keep damage, AI, status, loot and progression formulas unchanged during UI migration.
 
 6. **Dungeons and regions**
-   - [ ] Bell Cellar room/choice/combat/reward screens.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:f3db96f531cdb7fc7ddf6c977250be6d19b82ad3a34e9bdcfd4c04b63ccd0dcf -->
+
+   - [x] Bell Cellar entrance, rooms, choices and treasure/report screens verified locally with original callbacks, exact rewards, growth refresh, responsive visuals and DOM fallback.
+   - [ ] Bell Cellar regional combat/result visual acceptance; room and result depth labels/artwork must agree. Production publication remains pending.
+
+<!-- /coderabbit-ai-generated:v1 -->
    - [ ] Greyfen Marsh and Storehouse exploration, map, encounters and results.
 <!-- coderabbit-ai-generated:v1 -->
 

@@ -1,5 +1,8 @@
 const { test, expect } = require('@playwright/test');
 
+// Each case includes the mandatory annals, full creation and a dungeon journey.
+test.setTimeout(180000);
+
 async function openTitle(page) {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');

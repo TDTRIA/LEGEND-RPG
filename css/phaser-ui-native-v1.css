@@ -1420,3 +1420,24 @@ body.legend-phaser-world-active:has(#legendLevelUpOverlay[data-phaser-growth="tr
 #legendLevelUpOverlay[data-phaser-growth="true"] .v152-levelup-rule > span:last-child { opacity:0 !important; }
 
 html:has(#legendLevelUpOverlay),body:has(#legendLevelUpOverlay) { overflow:hidden !important; }
+
+/* The existing cellar DOM remains a complete fallback and input layer. */
+#root .ash099-screen:has(.bell-vault-v100) { background:#101a12 !important; padding-top:calc(var(--cellar-hud-height,72px) + 12px); padding-bottom:90px; }
+#root .ash099-screen:has(.bell-vault-v100) :is(button,h1) { scroll-margin-block:120px 95px; }
+#root .bell-vault-banner { background:#0b140d; }
+#root .bell-vault-scene { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 48%; }
+#root .bell-vault-banner > :not(img) { position:relative; z-index:1; }
+#root .bell-vault-banner:before { content:""; position:absolute; inset:0; background:rgba(7,16,8,.58); z-index:1; }
+#root .bell-vault-banner h1 { line-height:1.15; }
+#root .bell-vault-body { background:rgba(16,26,18,.97); }
+#root .bell-vault-secondary { min-height:44px; }
+#root .bell-vault-choice:is(:hover,:focus-visible) { transform:none; }
+body.legend-phaser-world-active #root .ash099-screen[data-phaser-bell-vault="true"],
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] :is(.ash099-head,.ash099-head > div,.bell-vault-v100,.bell-vault-banner,.bell-vault-body,.bell-vault-room-heading,.bell-vault-room-card,.bell-vault-clue,.bell-vault-treasure,.bell-vault-loadout > div,.bell-vault-footer,.bell-vault-footer > div,.bell-vault-summary > *,.bell-vault-keeper-card,.bell-vault-after-note,.bell-vault-choice-intro,button,#ashBack) { background:transparent !important; border-color:transparent !important; box-shadow:none !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] [data-cellar-copy],
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] [data-cellar-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] img { opacity:0 !important; }
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] :is(.ash099-head,.bell-vault-banner)::before,
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] :is(.ash099-head,.bell-vault-banner)::after { display:none !important; }
+
+#root .bell-vault-banner h1:focus { outline:none; }
