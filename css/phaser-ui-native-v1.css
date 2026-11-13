@@ -778,8 +778,8 @@ body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-contro
 }
 
 
-/* The tactical battle presentation is painted by RealmScene. Character/enemy
-   illustrations and the semantic battle buttons stay in the DOM; only their
+/* The tactical battle presentation is painted by RealmScene. Approved actor artwork is painted below the nameplates;
+   the semantic battle buttons stay in the DOM; only their
    duplicated text/surfaces are visually masked after the Phaser preflight. */
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle {
   background: transparent !important;
@@ -1360,3 +1360,21 @@ body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] [
 body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] img { opacity: 0 !important; }
 body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] .v152-expedition-banner::after { background: none !important; }
 body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] button { outline: none !important; }
+
+/* Combat uses measured shell clearance in both native and DOM fallback modes. */
+body.legend-world-shell-active #root .exp100:has(.rpg-battle) > .exp100-wrap {
+  padding-top: calc(var(--legend-combat-hud-height, 72px) + 12px) !important;
+  padding-bottom: 90px !important;
+}
+body.legend-world-shell-active #root .rpg-battle button { scroll-margin-block: 120px 90px; }
+#root .rpg-arena-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 54%; }
+#root .rpg-battlefield[data-arena="greyfen"] > .rpg-arena-art { object-position: center 58%; }
+/* The four-entry log is part of the page scroll, so it shares one native clip. */
+#root .rpg-battle-log { max-height: none; overflow: visible; }
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root :is(.rpg-battlefield,.rpg-hero-portrait,.rpg-hero-stage-hp,.rpg-foe-hp,.rpg-hero-hp) {
+  background: transparent !important; border-color: transparent !important; box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle :is(img,.rpg-hero-stage-shadow,.rpg-foe-shadow,.rpg-duel-ground,.rpg-hero-stage-hp > i,.rpg-foe-hp > i,.rpg-hero-hp > i) { opacity: 0 !important; }
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battlefield::before,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battlefield::after { opacity: 0 !important; }
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle :is(.rpg-dialogue-star,.rpg-tell-mark) { color: transparent !important; -webkit-text-fill-color: transparent !important; }

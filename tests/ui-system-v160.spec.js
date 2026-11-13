@@ -550,7 +550,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await attachProof(page, 'phase1-old-road-map.png');
   });
   test('combat HUD and eight live controls are painted in Phaser without replacing combat rules', async ({ page }) => {
-    test.setTimeout(120000);
+    test.setTimeout(180000);
     await enterAshmere(page, 'PhaserCombatQA');
     await page.evaluate(() => {
       const rt = window.LegendRuntimeV120;
@@ -559,6 +559,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       player.maxHp = 100;
       player.inventory = player.inventory || {};
       player.inventory.potion = 1;
+      player.inventory.roadPoultice = 1;
+      player.futureCombatRecord = { keep: 17 };
       player.flags = player.flags || {};
       player.flags.roadExpeditionV100 = {
         ...(player.flags.roadExpeditionV100 || {}),
@@ -568,7 +570,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       const road = window.LegendRoadsV100.oldRoad;
       road.enemies = road.enemies
         .filter(enemy => enemy.id === 'goblin')
-        .map(enemy => ({ ...enemy, damage: [3, 3] }));
+        .map(enemy => ({ ...enemy, hp: [999, 999], damage: [3, 3] }));
       rt.savePlayer(player);
     });
 
@@ -692,6 +694,28 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-heavy/);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCombatUi)).toBe(true);
     await expectNoHorizontalOverflow(page);
+    for (const [id, copy] of [['skill', 'Trap Shot lands'], ['strike', 'Your strike lands'], ['heavy', 'Heavy Strike lands'], ['poultice', 'bind a Road Poultice']]) {
+      await page.locator('#' + id).click();
+      await expect(page.locator('.rpg-dialogue')).toContainText(copy);
+      await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeCombatUi)).toBe(true);
+    }
+    await expect(page.locator('.rpg-battle-topline strong')).toContainText('TURN 7');
+    const beforeSound = await page.evaluate(() => localStorage.getItem('legend-roads-of-ashmere-v09'));
+    const soundLabel = await page.locator('#battleSound').textContent();
+    await page.locator('#battleSound').click();
+    await expect(page.locator('#battleSound')).not.toHaveText(soundLabel);
+    expect(await page.evaluate(() => localStorage.getItem('legend-roads-of-ashmere-v09'))).toBe(beforeSound);
+    const beforeRetreat = await page.evaluate(() => LegendStorage.loadPlayer());
+    await page.locator('#flee').click();
+    await expect(page.locator('.exp150-world-page')).toBeVisible();
+    const afterRetreat = await page.evaluate(() => LegendStorage.loadPlayer());
+    expect(afterRetreat.flags.roadExpeditionV100.pressure).toBe(Math.max(0, beforeRetreat.flags.roadExpeditionV100.pressure - 8));
+    expect(afterRetreat.inventory.roadPoultice).toBe(0);
+    expect(afterRetreat.futureCombatRecord).toEqual({ keep: 17 });
+    expect(afterRetreat.gold).toBe(beforeRetreat.gold);
+    expect(afterRetreat.xp).toBe(beforeRetreat.xp);
+    await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeCombatUi)).toBe(false);
+
   });
 
   test('title, town and expedition stay within a 390px touch viewport', async ({ page }) => {

@@ -1007,6 +1007,10 @@
           nativeTownBoardUiExpectedIds: this.nativeTownBoardUiExpectedIds || [],
           nativeTownBoardUiObserverBound: Boolean(this.nativeTownBoardUiObserver && this.nativeTownBoardUiBoundSection?.isConnected),
           nativeTownBoardUiSceneSize: this.dimensions(),
+          nativeCombatUiLabels: this.shellLabelSnapshot(this.nativeCombatUiObjects.filter(item => item?.type === 'Text')),
+          nativeCombatUiClip: this.nativeCombatUiClip || null,
+          nativeCombatUiFailure: this.nativeCombatUiFailure || '',
+          nativeCombatUiArtCount: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Image').length,
           nativeCombatUiObjectCount: this.nativeCombatUiObjects.filter(item => item?.active).length,
           nativeCombatUiTextValues: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
           nativeCombatUiTextCount: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text' && String(item.text || '').trim()).length,
@@ -4329,7 +4333,7 @@
       const root = document.getElementById('root');
       if (!root) return;
       const shell = document.getElementById('legend-world-shell-root');
-      const enabled = shell && !shell.hidden && root.querySelector('.ash100-town,.ash099-terminal,.reg100,.exp100:has(.exp150-world-page,.exp100-outcome)');
+      const enabled = shell && !shell.hidden && root.querySelector('.ash100-town,.ash099-terminal,.reg100,.exp100:has(.exp150-world-page,.exp100-outcome,.rpg-battle)');
       if (!enabled) { root.removeAttribute('data-legend-shell-clip'); return; }
       const box = root.getBoundingClientRect();
       const hud = shell.querySelector('.lws-hud')?.getBoundingClientRect();
@@ -4364,13 +4368,14 @@
       if (root.dataset.legendShellClip !== 'true') root.dataset.legendShellClip = 'true';
       // Drawer motion can settle after the road painters have sampled their
       // masks. Update those masks with the same final bounds as the DOM clip.
-      if (changed && root.querySelector('.exp150-world-page,.exp100-outcome') && this.expeditionClipFrame === null) {
+      if (changed && root.querySelector('.exp150-world-page,.exp100-outcome,.rpg-battle') && this.expeditionClipFrame === null) {
         this.expeditionClipFrame = window.requestAnimationFrame(() => {
           this.expeditionClipFrame = null;
           this.syncNativeExpeditionHudUi();
           this.syncNativeExpeditionActionsUi();
           this.roadScene?.sync();
           this.roadResults?.sync();
+          this.syncNativeCombatUi();
         });
       }
     }
@@ -5183,13 +5188,13 @@
     clearNativeCombatUi(removeClass = true, removeListeners = true) {
       this.nativeCombatUiLayoutEvent?.remove?.(false);
       this.nativeCombatUiLayoutEvent = null;
-      if (this.nativeCombatUiObserver) {
+      if (removeListeners && this.nativeCombatUiObserver) {
         this.nativeCombatUiObserver.disconnect();
         this.nativeCombatUiObserver = null;
       }
       if (removeListeners && this.nativeCombatUiBoundBattle && this.nativeCombatUiInteractionHandler) {
-        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
-          this.nativeCombatUiBoundBattle.removeEventListener(type, this.nativeCombatUiInteractionHandler)
+        ['focusin', 'focusout', 'pointerover', 'pointerout', 'load', 'error'].forEach(type =>
+          this.nativeCombatUiBoundBattle.removeEventListener(type, this.nativeCombatUiInteractionHandler, true)
         );
       }
       if (removeListeners && this.nativeCombatUiScrollHandler) {
@@ -5207,6 +5212,9 @@
         object.destroy(true);
       });
       this.nativeCombatUiObjects = [];
+      (this.nativeCombatUiArtKeys || []).forEach(key => { if (this.textures.exists(key)) this.textures.remove(key); });
+      this.nativeCombatUiArtKeys = [];
+      this.nativeCombatUiClip = null;
       this.nativeCombatUiTextNodes = [];
       this.nativeCombatUiControls = [];
       this.nativeCombatUiSignature = '';
@@ -5236,8 +5244,8 @@
             this.syncNativeCombatUi(this.surface);
           });
         };
-        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
-          battle.addEventListener(type, this.nativeCombatUiInteractionHandler)
+        ['focusin', 'focusout', 'pointerover', 'pointerout', 'load', 'error'].forEach(type =>
+          battle.addEventListener(type, this.nativeCombatUiInteractionHandler, true)
         );
         this.nativeCombatUiScrollHandler = () => this.nativeCombatUiInteractionHandler?.();
         document.addEventListener('scroll', this.nativeCombatUiScrollHandler, true);
@@ -5251,11 +5259,17 @@
             subtree: true,
             characterData: true,
             attributes: true,
-            attributeFilter: ['class', 'disabled', 'aria-disabled']
+            attributeFilter: ['class', 'disabled', 'aria-disabled', 'src', 'hidden']
           });
         }
       }
 
+      const wrapper = battle.closest('.exp100');
+      const hud = document.querySelector('#legend-world-shell-root:not([hidden]) .lws-hud');
+      if (wrapper && hud) {
+        const height = Math.ceil(hud.getBoundingClientRect().height) + 'px';
+        if (wrapper.style.getPropertyValue('--legend-combat-hud-height') !== height) wrapper.style.setProperty('--legend-combat-hud-height', height);
+      }
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -5298,25 +5312,45 @@
         rect: readRect(node),
         style: window.getComputedStyle(node)
       })).filter(item => item.text && item.rect &&
-        !item.node.matches('.rpg-dialogue-star,.rpg-tell-mark') &&
         !item.node.closest('.rpg-hero-stage-art,.rpg-foe-sprite,.rpg-hero-portrait'));
       const controls = Array.from(battle.querySelectorAll('button')).map(node => ({
         node, rect: readRect(node)
       })).filter(item => item.rect);
       const expected = ['battleSound','strike','skill','item','guard','heavy','poultice','flee'];
       const ids = controls.map(item => item.node.id);
-      const complete = expected.every(id => ids.includes(id)) &&
+      const art = [...battle.querySelectorAll('img')];
+      const meters = [...battle.querySelectorAll('.rpg-hero-stage-hp,.rpg-foe-hp,.rpg-hero-hp')];
+      const walker = document.createTreeWalker(battle, NodeFilter.SHOW_TEXT);
+      let unpainted = false, source;
+      while ((source = walker.nextNode())) {
+        const owner = source.parentElement;
+        if (source.textContent.trim() && readRect(owner) && !textNodes.some(item => item.node === owner)) { unpainted = true; break; }
+      }
+      const complete = !unpainted && art.length === 4 && art.every(node => node.complete && node.naturalWidth) &&
+        meters.length === 3 && meters.every(node => node.firstElementChild) && expected.every(id => ids.includes(id)) &&
         expected.length === controls.length &&
         panels.length >= 12 &&
         textNodes.length >= 22;
       if (!complete) {
-        this.clearNativeCombatUi();
+        this.nativeCombatUiFailure = 'Combat source or artwork incomplete';
+        this.clearNativeCombatUi(true, false);
         return;
       }
+      if (this.hasFiniteEntranceAnimation(battle)) {
+        this.clearNativeCombatUi(true, false);
+        this.nativeCombatUiLayoutEvent = this.time.delayedCall(240, () => {
+          this.nativeCombatUiLayoutEvent = null;
+          this.syncNativeCombatUi(this.surface);
+        });
+        return;
+      }
+      const clip = this.expeditionUiClipBounds();
       const signature = JSON.stringify([
         Math.round(size.width), Math.round(size.height),
         Math.round(window.innerWidth), Math.round(window.innerHeight),
-        battle.className,
+        battle.className, clip,
+        ...art.map(node => [readRect(node), node.currentSrc]),
+        ...meters.map(node => [readRect(node), readRect(node.firstElementChild)]),
         ...panels.map(({node, rect}) => [
           node.className, Math.round(rect.x), Math.round(rect.y),
           Math.round(rect.width), Math.round(rect.height)
@@ -5342,8 +5376,40 @@
         object.destroy(true);
       });
       this.nativeCombatUiObjects = [];
-      const graphics = this.add.graphics().setDepth(60);
-      this.nativeCombatUiObjects.push(graphics);
+      (this.nativeCombatUiArtKeys || []).forEach(key => { if (this.textures.exists(key)) this.textures.remove(key); });
+      this.nativeCombatUiArtKeys = [];
+      this.nativeCombatUiClip = null;
+      const container = this.add.container(0, 0).setDepth(60);
+      this.nativeCombatUiObjects.push(container);
+      if (!this.clipExpeditionUi(container, clip)) throw new Error('Combat viewport unavailable');
+      this.nativeCombatUiClip = clip;
+      const add = object => { container.add(object); this.nativeCombatUiObjects.push(object); return object; };
+      const paintArt = node => {
+        const box = readRect(node), bitmap = document.createElement('canvas'), css = getComputedStyle(node);
+        bitmap.width = Math.max(1, Math.ceil(box.width * 2)); bitmap.height = Math.max(1, Math.ceil(box.height * 2));
+        const position = css.objectPosition.split(' ').map(value => ({left:0,top:0,center:0.5,right:1,bottom:1}[value] ?? parseFloat(value)/100));
+        if (position.length !== 2 || position.some(value => !Number.isFinite(value))) throw new Error('Combat artwork position unavailable');
+        const scale = (css.objectFit === 'contain' ? Math.min : Math.max)(bitmap.width/node.naturalWidth, bitmap.height/node.naturalHeight);
+        const ctx = bitmap.getContext('2d');
+        // Actors are clipped by the source battlefield. Preserve that boundary
+        // and the traveler's facing without reproducing the old DOM layer bug.
+        const field = node.closest('.rpg-battlefield');
+        if (field) { const bounds = readRect(field); ctx.beginPath(); ctx.rect((bounds.x-box.x)*2,(bounds.y-box.y)*2,bounds.width*2,bounds.height*2); ctx.clip(); }
+        if (node.closest('.rpg-hero-stage-art')) { ctx.translate(bitmap.width,0); ctx.scale(-1,1); }
+        ctx.drawImage(node,(bitmap.width-node.naturalWidth*scale)*position[0],(bitmap.height-node.naturalHeight*scale)*position[1],node.naturalWidth*scale,node.naturalHeight*scale);
+        if (node.closest('.rpg-hero-stage-art,.rpg-foe-sprite')) {
+          // Match the source actor's elliptical feathering without a CSS blur.
+          ctx.save(); ctx.setTransform(bitmap.width,0,0,bitmap.height,0,0);
+          const fade = ctx.createRadialGradient(0.5,0.43,0,0.5,0.43,0.76);
+          fade.addColorStop(0.3,'rgba(0,0,0,1)'); fade.addColorStop(0.53,'rgba(0,0,0,.95)'); fade.addColorStop(0.79,'rgba(0,0,0,0)');
+          ctx.globalCompositeOperation = 'destination-in'; ctx.fillStyle = fade; ctx.fillRect(0,0,1,1); ctx.restore();
+        }
+        const key = 'legend-native-combat-art-' + this.nativeCombatUiArtKeys.length;
+        this.nativeCombatUiArtKeys.push(key); this.textures.addCanvas(key,bitmap);
+        add(this.add.image(box.x,box.y,key).setOrigin(0).setDisplaySize(box.width,box.height));
+      };
+      art.filter(node => !node.closest('.rpg-hero-portrait')).forEach(paintArt);
+      const graphics = add(this.add.graphics());
       const intent = battle.classList.contains('rpg-intent-staggered') ? 'staggered'
         : battle.classList.contains('rpg-intent-heavy') ? 'heavy'
         : battle.classList.contains('rpg-intent-guardbreak') ? 'guardbreak'
@@ -5409,39 +5475,30 @@
         }
       });
 
-      textNodes.forEach(({node, text, rect, style}) => {
+      art.filter(node => node.closest('.rpg-hero-portrait')).forEach(paintArt);
+      meters.forEach(node => {
+        const track = readRect(node), fill = readRect(node.firstElementChild);
+        graphics.fillStyle(0x40271f).fillRect(track.x,track.y,track.width,track.height);
+        if (fill) graphics.fillStyle(node.classList.contains('rpg-foe-hp') ? 0xc58a67 : 0xb5bd7e)
+          .fillRect(fill.x,fill.y,Math.min(fill.width,track.width),fill.height);
+      });
+      textNodes.forEach(({node, rect}) => {
         const disabled = Boolean(node.closest('button:disabled,[aria-disabled="true"]'));
-        const classText = String(node.className?.baseVal || node.className || '');
-        const kicker = /overline|kicker|tell-mark|intent|rpg-vital-label|rpg-command-glyph|rpg-hero-resources/.test(classText);
-        const isFoe = Boolean(node.closest('.rpg-foe-nameplate') || node.closest('.rpg-enemy-tell'));
-        const color = disabled ? '#918c7c' : kicker ? '#d9bf82' : isFoe ? '#f0d7b5' : '#f0ead9';
-        const rectHeight = Math.max(10, rect.height);
-        const fontSize = Math.max(9, Math.min(36, (parseFloat(style.fontSize) || 12) * sy));
-        const label = this.add.text(rect.x, rect.y, text, {
-          fontFamily: style.fontFamily || 'Arial, sans-serif',
-          fontSize: fontSize + 'px',
-          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-          color,
-          stroke: '#070a07',
-          strokeThickness: fontSize >= 16 ? 1 : 0.45,
-          align: style.textAlign === 'center' ? 'center' : style.textAlign === 'right' ? 'right' : 'left',
-          wordWrap: { width: Math.max(12, rect.width), useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 1, bottom: 2 }
-        }).setOrigin(0, 0).setDepth(62);
-        label.setResolution?.(2);
-        label.setFixedSize?.(Math.max(12, rect.width), rectHeight);
-        this.nativeCombatUiObjects.push(label);
+        const label = this.createShellLabel(node,rect,disabled?'#a49e8e':'#f0ead9',sx,sy,62);
+        if (!label) throw new Error('Combat copy cannot fit: ' + node.className + ' ' + node.textContent.trim());
+        add(label);
       });
 
       this.nativeCombatUiTextNodes = textNodes.map(item => item.node);
       this.nativeCombatUiControls = controls.map(item => item.node);
       this.nativeCombatUiSignature = signature;
       this.nativeCombatUiActive = true;
+      this.nativeCombatUiFailure = '';
       document.body?.classList.add('legend-phaser-combat-ui-active');
       } catch (error) {
         // Never leave source labels transparent after a failed canvas paint.
-        this.clearNativeCombatUi();
-        console.warn('Phaser combat UI paint failed; leaving the accessible DOM battle visible.', error);
+        this.clearNativeCombatUi(true, false);
+        this.nativeCombatUiFailure = error.message;
       }
     }
 

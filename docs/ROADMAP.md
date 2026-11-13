@@ -104,7 +104,21 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- /coderabbit-ai-generated:v1 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:c45336fc81e4a7df2968d59307df277265a94801738fbe9ed425f04b27d0eab5 -->
+
+## Old Road combat presentation checkpoint — 2026-11-13 (local)
+
+The dedicated combat painter now renders the approved arena, traveler, enemy and portrait artwork below native nameplates and health meters. Complete labels use measured content boxes without fixed-height glyph cropping; equipment, HP and utility labels have separate semantic spans. Battle content shares the measured HUD, dock and drawer clip. The existing four-entry log uses the page scroll so its complete copy remains readable.
+
+The original eight DOM controls and production combat callbacks remain authoritative. Missing artwork, controls, meters or unpaintable copy restore the complete DOM battle, and restored source nodes trigger recovery. Local desktop, 390px portrait and 844px landscape screenshots were inspected, including scrolled commands and DOM fallback. Focused checks cover touch, rotation, drawer masks, exact visible copy, potion/guard/intent updates, all eight live commands, retreat, pressure and preserved unknown save data. Fifteen existing combat compatibility checks pass, including damage, status, victory rewards and defeat handoff; those rule checks do not certify native result presentation.
+
+This is an Old Road presentation checkpoint. Victory/defeat/loot/level-up presentation and regional battle acceptance remain open. No combat formulas, enemy balance, rewards, storage keys or normalization rules changed. Publication remains pending task permissions; this is not a claim that Bitbucket or GitHub main has been updated.
+
 ## Expedition regression checkpoint — 2026-11-13 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

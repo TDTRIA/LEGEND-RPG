@@ -131,7 +131,13 @@ The active production entry point loads Phaser 4.1 and the world renderer, follo
 - `LegendRoadControllerV100` is the sole active road controller. The old v087 controller and its button-interception side effect have been removed from the production path and the source file is deleted.
 - Road content now exports `window.LegendRoadsV100`; the old `LegendRoadsV087` namespace is no longer used.
 - Active v100 state is `flags.roadExpeditionV100`, and XP/rewards come from `LegendProgressionV100.award` and the v100 expedition rules. The normalizer discards legacy `flags.roadV087`/`xpUntil` state rather than trying to translate it.
-- Combat behavior is isolated in `js/systems/road/road-combat-v100.js`; battle markup/command binding is in `js/systems/road/road-combat-view-v100.js`; sound preference and effects are isolated in `js/systems/road/road-audio-v100.js`.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:c6af0e146ef4b537ca927548a93c79a6f83de11c5751b338eb16811742282896 -->
+
+- Combat behavior is isolated in `js/systems/road/road-combat-v100.js`; battle markup/command binding is in `js/systems/road/road-combat-view-v100.js`; sound preference and effects are isolated in `js/systems/road/road-audio-v100.js`. RealmScene paints approved source arena/actor images, meters, panels and measured labels in one shell-clipped container. It keeps semantic controls, guards all required source fields and restores DOM presentation on failure. The view supplies arena images and separate mixed-copy spans; neither layer owns damage, rewards or save writes. Combat results remain a separate migration surface.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 ## Runtime and storage call-site inventory
 

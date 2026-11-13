@@ -104,7 +104,21 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- /coderabbit-ai-generated:v1 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:c45336fc81e4a7df2968d59307df277265a94801738fbe9ed425f04b27d0eab5 -->
+
+## Old Road combat presentation checkpoint — 2026-11-13 (local)
+
+The dedicated combat painter now renders the approved arena, traveler, enemy and portrait artwork below native nameplates and health meters. Complete labels use measured content boxes without fixed-height glyph cropping; equipment, HP and utility labels have separate semantic spans. Battle content shares the measured HUD, dock and drawer clip. The existing four-entry log uses the page scroll so its complete copy remains readable.
+
+The original eight DOM controls and production combat callbacks remain authoritative. Missing artwork, controls, meters or unpaintable copy restore the complete DOM battle, and restored source nodes trigger recovery. Local desktop, 390px portrait and 844px landscape screenshots were inspected, including scrolled commands and DOM fallback. Focused checks cover touch, rotation, drawer masks, exact visible copy, potion/guard/intent updates, all eight live commands, retreat, pressure and preserved unknown save data. Fifteen existing combat compatibility checks pass, including damage, status, victory rewards and defeat handoff; those rule checks do not certify native result presentation.
+
+This is an Old Road presentation checkpoint. Victory/defeat/loot/level-up presentation and regional battle acceptance remain open. No combat formulas, enemy balance, rewards, storage keys or normalization rules changed. Publication remains pending task permissions; this is not a claim that Bitbucket or GitHub main has been updated.
+
 ## Expedition regression checkpoint — 2026-11-13 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 
@@ -203,7 +217,13 @@ The third production annal now uses the exact approved “The Peace, Written Dow
 - **Old Road recovery fallback (current):** expedition header/clock/tracker, route and decision cards, optional detours and camp actions have guarded native painters enabled in current main (`27c7afb5`); their semantic DOM remains the fallback. Full per-surface visual acceptance must still be established.
 
 <!-- /coderabbit-ai-generated:v1 --> The connected map and field-journal modal now use a guarded Phaser painter for their framed surfaces and text while the semantic DOM buttons remain the real keyboard/touch actions. If the native mask, visible content or preflight fails, the complete styled DOM modal stays visible. The Phaser world scene remains active behind the expedition UI, including stage-/route-specific background art; the original scene image is hidden only after a matching Phaser texture passes preflight. All existing expedition handlers, route state, travel pressure, encounters, rewards, journals and save data remain authoritative. Re-enable each panel/map painter only after desktop/mobile visual parity, readable labels, keyboard focus, and end-to-end route/detour/camp/map/journal tests pass.
-- **Under active verification:** a dedicated RealmScene combat painter now draws the tactical panels, intent/status text, dialogue/log, turn heading and eight command surfaces. The existing DOM combat buttons remain the real actions; actor/enemy artwork and combat results remain in their production views. The painter keeps the DOM presentation visible whenever its preflight or draw step fails.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:4fc00c540f7a31f3795bdfc315fc4387b1d8d7d994371ef233dd7789f684a795 -->
+
+- **Old Road battle presentation verified locally:** the RealmScene combat painter draws approved arena/actor artwork, meters, tactical panels, complete copy, intent/log and eight command surfaces under the shell clip. Original DOM controls remain the real actions and the complete fallback. Regional battle acceptance and combat result presentation remain open; see the combat checkpoint above.
+
+<!-- /coderabbit-ai-generated:v1 -->
 - **Under active verification:** Ashmere's existing destination-card terminal board now has a dedicated RealmScene painter for its frame, headings, card surfaces, live labels and focus/hover states. Its preflight compares rendered IDs against the live destination catalog, including progression-gated destinations. Scroll/hover/focus updates are coalesced to one Phaser repaint per animation frame, and any incomplete content or draw exception restores the styled DOM board. The original destination buttons and service icons stay in the DOM; service interiors, transaction/job/crafting logic and Greyfen destination screens remain in their original feature modules.
 - **Safety note:** the previous shared DOM-to-Phaser gameplay mirror is disabled. It made DOM text transparent and recreated CSS panels incompletely, which caused missing copy and weak/blurred panel presentation. Do not turn it back on globally.
 
