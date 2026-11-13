@@ -40,6 +40,7 @@
       const victory = result !== 'defeat';
       const assets = A();
       const location = locationName || (dungeon ? 'THE BELL CELLAR' : 'THE OLD ROAD');
+      const journalContext = enemy.greyfenStorehouseV170 ? 'storehouse' : /^GREYFEN/i.test(location) ? 'marsh' : 'road';
       const sceneArt = assets.locations?.[sceneArtKey] || assets.locations?.oldRoad || assets.title?.background || '';
       const title = resultTitle || (victory ? 'Victory' : 'Driven Back');
       const subtitle = resultSubtitle || (dungeon
@@ -79,7 +80,7 @@
         : '';
 
       shell(
-        '<main data-result-secondary="' + Boolean(secondaryLabel) + '" class="v152-combat-results ' + (victory ? 'is-victory' : 'is-defeat') + '" aria-label="' + (dungeon ? 'Cellar ' : 'Battle ') + (victory ? 'victory results' : 'defeat results') + '">' +
+        '<main data-encounter-context="' + journalContext + '" data-result-environment="' + (dungeon ? 'cellar' : journalContext === 'marsh' ? 'marsh' : 'road') + '" data-result-secondary="' + Boolean(secondaryLabel) + '" class="v152-combat-results ' + (victory ? 'is-victory' : 'is-defeat') + '" aria-label="' + (dungeon ? 'Cellar ' : 'Battle ') + (victory ? 'victory results' : 'defeat results') + '">' +
           '<div class="v152-results-backdrop">' + (sceneArt ? '<img src="' + esc(sceneArt) + '" alt="" aria-hidden="true">' : '') + '<div></div></div>' +
           '<section class="v152-results-frame">' +
             '<header class="v152-results-heading"><span class="v152-results-kicker">' + (victory ? 'ENCOUNTER RESOLVED · ' : 'ENCOUNTER INTERRUPTED · ') + esc(location) + '</span>' +

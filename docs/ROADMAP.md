@@ -140,7 +140,27 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:67830791360a1577eb9a7e1de3e2de7c384ab64bdece742fd7541fb6206a06e4 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:1aa93bc4df185bda57e491f930b6e31070ef60fc5bebe49851d5efbb690a23ab -->
+
+## Regional shell and reliable navigation — 2026-11-13 (verified locally)
+
+The Storehouse shell now identifies the current room, mirrors its actual available actions and shows saved dispatch/salvage records and the last report in the native journal drawer. Labels distinguish Back (an active attempt remains resumable) from the room's explicit return (the attempt ends); inactive/locked/failed/completed screens do not promise resumability. All operations call the existing production buttons. Greyfen encounters and reports retain their own journal context and current objective; encounter navigation remains locked while saved summaries stay readable.
+
+Normal-motion verification exposed a shared navigation defect: the scene curtain canceled a forwarded click and synchronously called click() again on the same element. Browser reentrancy protection suppressed that second call, leaving controls inert. The curtain now decorates the original event, preserving one synchronous production callback. A baseline regression failed before the repair; desktop keyboard, shared Preview pointer and mobile touch now apply the exact cargo-sump HP/herb effect once. Native and forwarded events, busy curtains, disabled controls and reduced motion are covered separately.
+
+Closing the Ferry result drawer also reproduced an unexpected return to title. Combat reports had no environment classification, so they selected title and activated its Escape handler. Reports now supply their road/marsh/cellar environment. Existing title and Settings Escape navigation is preserved. The report, its controls and saved settlement remain available after closing a drawer.
+
+Fourteen focused cases pass across fresh runs and equivalent retained results: six regional shell/navigation cases, three shared victory/growth/defeat report cases, two shell readability/fallback cases, the Marsh mobile record openers and transition event semantics, plus Settings Escape compatibility. Initial assertion failures used the wrong test item ID (lampOil instead of oil); that assertion was corrected to the existing production ID. The separate Escape and normal-motion failures were real defects and are repaired. Syntax checks pass for 106 production scripts and 73 test specs. Storage and combat-rule owner results remain valid; no save keys, progression rules, economy or lore changed.
+
+Shared Chromium desktop1440×900, portrait390×844 and landscape844×390 screenshots were inspected, including Storehouse records, contextual actions, focused return and the regional report drawer. Normal-motion pointer input and Escape were exercised; the original Preview save remained unchanged under memory-only fixtures, and the normal title was restored. Semantic DOM controls and drawer fallback remain available. Removing the regional shell changes restores the old generic shell; the transition and report-environment repairs are independent and require no save migration.
+
+Next: settings/accessibility/audio and remaining auxiliary overlays, then reconcile outstanding migration gates against the complete first-session and returning-save paths. Dedicated Storehouse interior artwork and the broader Greyfen/first-three-towns release remain open. Manual permissions still prevent PR creation, merging and production publishing; no deployment is claimed.
+
 ## Greyfen combat and encounter reports — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 Storehouse Keeper encounters now use the approved Greyfen environment and Mirebound enemy artwork. Baseline regressions reproduced the incorrect Bell Cellar arena and innkeeper portrait. Direct-root Marsh battles now reserve the measured shell HUD height and clip retained controls to the same viewport as Phaser. Entering combat resets stale room scrolling; live keyboard commands retain focus, moving to Strike when ACT enters cooldown. Existing production handlers and complete DOM fallback remain authoritative.
 

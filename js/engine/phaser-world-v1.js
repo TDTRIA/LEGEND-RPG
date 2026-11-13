@@ -211,6 +211,10 @@
       const arena = host.querySelector('.rpg-battlefield')?.dataset.arena || 'road';
       environment = arena === 'greyfen' ? 'marsh' : arena === 'cellar' ? 'cellar' : 'road';
     }
+    else if (host.querySelector('.v152-combat-results')) {
+      const resultEnvironment = host.querySelector('.v152-combat-results').dataset.resultEnvironment;
+      environment = ['road','marsh','cellar'].includes(resultEnvironment) ? resultEnvironment : 'road';
+    }
     else if (host.querySelector('.gss170-page')) environment = 'marsh';
     else if (host.querySelector('.gfm160-page')) environment = 'marsh';
     else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'cellar';

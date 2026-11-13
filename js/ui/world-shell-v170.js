@@ -98,10 +98,14 @@
         sublocation:rootNode.querySelector('.gfm160-page h1')?.textContent?.trim() || 'Marsh Path',
         report:!!rootNode.querySelector('.gfm160-results'), camp:false};
     }
+    const storehouse = rootNode.querySelector('.gss170-page[data-storehouse-state]');
+    if (storehouse) return {kind:'storehouse', journal:'storehouse', location:'The Silted Storehouse',
+      sublocation:storehouse.querySelector('h1')?.textContent?.trim() || '', camp:false};
     const liveCombat = rootNode.querySelector('.rpg-battle');
     if (liveCombat) {
       return {
         kind: 'combat',
+        journal: liveCombat.dataset.encounterContext || 'road',
         location: liveCombat.querySelector('.rpg-overline')?.textContent?.trim() || 'Encounter',
         sublocation: liveCombat.querySelector('.rpg-battle-topline strong')?.textContent?.trim() || 'Combat encounter',
         camp: false
@@ -111,6 +115,7 @@
     if (combatResults) {
       return {
         kind: 'combat-results',
+        journal: combatResults.dataset.encounterContext || 'road',
         location: combatResults.querySelector('.v152-results-kicker')?.textContent?.trim() || 'Encounter results',
         sublocation: PANELS().screenHeading?.(rootNode, 'Encounter results') || 'Encounter results',
         camp: false
@@ -210,7 +215,7 @@
     const focusSelector = focusArea && focusAttribute ? (focusArea.id ? '#' + focusArea.id : '.lws-bottom-bar') + ' [' + focusAttribute + '="' + CSS.escape(focused.getAttribute(focusAttribute)) + '"]' : '';
     const rootNode = root();
     const panels = PANELS();
-    const location = context.kind === 'marsh' ? context.location : context.kind === 'road'
+    const location = context.kind === 'marsh' || context.kind === 'storehouse' ? context.location : context.kind === 'road'
       ? (context.sublocation && context.sublocation !== 'Old Road' ? context.sublocation + ' · Old Road' : 'Old Road')
       : context.kind === 'town'
         ? context.location
@@ -342,6 +347,7 @@
   }
 
   function routeTo(view) {
+    if (lastContext?.kind === 'storehouse' && view === 'home') return clickExisting('#ashBack');
     if (lastContext?.kind === 'marsh') {
       if (view === 'home') return clickExisting('#gfm160EarlyExit') || clickExisting('#gfm160ResultReturn');
       showToast('Return with your Marsh report before visiting town services.');
@@ -456,6 +462,14 @@
         event.preventDefault();
         if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
           showToast('Finish the encounter before changing to the journal.');
+        } else if (lastContext?.kind === 'storehouse') {
+          document.body.classList.add('legend-shell-left-open');
+          document.body.classList.remove('legend-shell-right-open');
+          refreshMobileToggleState();
+          const notes = document.querySelector('#lws-storehouse-notes');
+          if (notes) { notes.scrollIntoView({block:'start'}); notes.focus({preventScroll:true}); }
+          window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+          window.LegendPhaserWorldV1?.refreshRightDrawer?.();
         } else if (lastContext?.kind === 'marsh') {
           actionButton.focus({preventScroll:true});
           clickExisting('#gfm160OpenJournal');
@@ -599,6 +613,12 @@
         window.LegendPhaserWorldV1?.refreshRightDrawer?.();
         break;
       default:
+        if (lastContext?.kind === 'storehouse' && /^storehouse-gss170[A-Za-z]+$/.test(action)) {
+          event.preventDefault();
+          document.body.classList.remove('legend-shell-left-open','legend-shell-right-open');
+          refreshMobileToggleState();
+          if (!clickExisting('.gss170-page #' + action.slice('storehouse-'.length))) showToast('That storehouse action is no longer available.');
+        }
         break;
     }
   }
