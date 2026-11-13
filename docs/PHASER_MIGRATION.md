@@ -26,7 +26,19 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 
 <!-- coderabbit-ai-generated-section:v1:972262718e29982526f5c6adeb1bd36445a20559c9d90a4510d5135aa6331229 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:9be0134175d46105e24e4f79864fb095c0050491a526bbe5e5889d0502237a5b -->
+
+## Route Board shell clipping checkpoint — 2026-11-13 (local)
+
+The Ashmere/Greyfen Route Board and regional ledger now clip Phaser content to the same visible world area as the retained DOM. The clip follows the HUD, bottom navigation and moving drawers. Native button transitions are suppressed while those surfaces are painted to prevent normal-motion entry from repeatedly dropping back to the DOM. Production callbacks, costs, region gates and save ownership are unchanged; styled DOM remains the fallback.
+
+Focused desktop and mobile checks passed for drawer opening and closing, orientation changes, keyboard and touch navigation, normal-motion entry and focus, exact saved values and unknown save fields. The Ashmere destination-board test also passed after correcting its scroll-container and keyboard-modality fixtures. Desktop and mobile Preview screenshots were inspected. Full Route Board content/accessibility acceptance and shell font preferences remain open; no release or publishing milestone is claimed.
+
 ## Title readability and accessibility checkpoint — 2026-11-13 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 Long saved names now wrap without overlapping traveler details. Native title labels use their production source font, size, weight and measured boxes, so readable-font, large-text, bold, spacious and high-contrast preferences apply. Button copy grows instead of being cropped; scrolling clips the native menu to its real viewport. Canvas-relative geometry also follows CSS zoom. Existing production buttons, keyboard/touch actions and save owners remain authoritative.
 

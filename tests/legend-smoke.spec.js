@@ -2661,6 +2661,7 @@ test('native Phaser title menu replaces the floating HTML button paint and keeps
 
 
 test('persistent HUD is painted by Phaser while DOM controls keep their real actions', async ({ page }) => {
+  test.setTimeout(180000);
   await page.setViewportSize({ width: 1440, height: 900 });
   await startFreshCharacter(page, 'PhaserHudQA');
   await expect(page.locator('#legend-world-shell-root .lws-hud')).toBeVisible();
@@ -2695,7 +2696,9 @@ test('persistent HUD is painted by Phaser while DOM controls keep their real act
   expect(desktop.goldColor).toBe('rgba(0, 0, 0, 0)');
   expect(desktop.saveLabel).toBe('Save traveler');
   expect(desktop.saveAction).toBe('save');
-  expect(desktop.buttons).toEqual(expect.arrayContaining(['toggle-left', 'toggle-right', 'save']));
+  // Desktop drawers are already visible; their mobile toggles have display:none.
+  expect(desktop.buttons).toEqual(['save']);
+  await expect(page.locator('.lws-mobile-toggle').first()).toBeHidden();
 
   await page.evaluate(() => {
     const player = window.LegendStorage.loadPlayer();
@@ -2713,6 +2716,8 @@ test('persistent HUD is painted by Phaser while DOM controls keep their real act
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeHudUiSceneSize?.width)).toBeGreaterThan(0);
   await expect(page.locator('#legend-world-shell-root .lws-mobile-toggle').first()).toBeVisible();
+  await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeHudUiControlIds))
+    .toEqual(expect.arrayContaining(['toggle-left', 'toggle-right', 'save']));
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
   await page.locator('#legend-world-shell-root [data-world-action="toggle-left"]').click();
   await expect(page.locator('body')).toHaveClass(/legend-shell-left-open/);

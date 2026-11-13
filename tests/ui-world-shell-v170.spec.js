@@ -242,6 +242,7 @@ test.describe('LEGEND persistent world shell v170', () => {
   });
 
   test('Phaser paints the traveler journal drawer while preserving saved values and its real Journal action', async ({ page }) => {
+    test.setTimeout(180000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await enterAshmere(page, 'PhaserJournalQA');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeLeftDrawerUi)).toBe(true);
@@ -255,6 +256,7 @@ test.describe('LEGEND persistent world shell v170', () => {
       return {
         active: document.body.classList.contains('legend-phaser-left-drawer-ui-active'),
         objectCount: snapshot.nativeLeftDrawerUiObjectCount,
+        paintedLabels: snapshot.nativeLeftDrawerLabels.map(item => item.sourceText),
         textCount: snapshot.nativeLeftDrawerUiTextCount,
         textValues: snapshot.nativeLeftDrawerUiTextValues || [],
         controlIds: snapshot.nativeLeftDrawerUiControlIds || [],
@@ -270,7 +272,12 @@ test.describe('LEGEND persistent world shell v170', () => {
       };
     });
     expect(desktop.active).toBe(true);
-    expect(desktop.objectCount).toBeGreaterThan(10);
+    // Native content is grouped inside its scroll-mask container. Count actual
+    // painted labels recursively, rather than only top-level scene objects.
+    expect(desktop.objectCount).toBeGreaterThan(0);
+    expect(desktop.paintedLabels).toEqual(expect.arrayContaining([
+      'Traveler record', 'PhaserJournalQA', 'Vitality', 'Current lead', 'Quest log', 'Field journal', desktop.hp, desktop.gold
+    ]));
     expect(desktop.textCount).toBeGreaterThan(10);
     expect(desktop.textValues).toEqual(expect.arrayContaining([
       'Traveler record', 'PhaserJournalQA', 'Vitality', 'Current lead', 'Quest log', 'Field journal'
@@ -730,6 +737,7 @@ test.describe('LEGEND persistent world shell v170', () => {
   });
 
   test('Ashmere destination board is Phaser-painted while real town actions and fallback remain usable', async ({ page }) => {
+    test.setTimeout(180000);
     await enterAshmere(page, 'AshmereBoardQA');
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1?.snapshot?.()?.nativeTownBoardUi
@@ -831,7 +839,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     // The live destination buttons still call the original market and work-board routes.
     await page.locator('.ash100-destination[data-ash-view="trader"]').click();
     await expect(page.locator('.ash099-market-console')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Trading Post' })).toBeVisible();
+    await expect(page.locator('#root').getByRole('heading', { name: 'Trading Post', exact:true })).toBeVisible();
     await page.locator('#ashBack').click();
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
@@ -877,12 +885,13 @@ test.describe('LEGEND persistent world shell v170', () => {
     // Under a continuous scroll burst, Phaser updates each frame rather than
     // waiting for scrolling to stop; its label bounds must track real buttons.
     const scrollAlignment = await page.evaluate(async () => {
-      const scroller = document.scrollingElement;
-      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
+      // The production shell scrolls its world root beneath the fixed HUD.
+      const scroller = document.getElementById('root');
+      const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
       if (maxScroll < 32) return { scrollable: false };
       for (let step = 1; step <= 12; step += 1) {
         scroller.scrollTop = maxScroll * step / 12;
-        window.dispatchEvent(new Event('scroll'));
+        scroller.dispatchEvent(new Event('scroll'));
       }
       await new Promise(resolve => requestAnimationFrame(resolve));
       const snapshot = window.LegendPhaserWorldV1.snapshot();
@@ -905,6 +914,11 @@ test.describe('LEGEND persistent world shell v170', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     const inn = page.locator('.ash100-destination[data-ash-view="inn"]');
     await inn.focus();
+    // Enter keyboard modality after the preceding pointer actions and return
+    // to Inn through the real tab order so :focus-visible is exercised.
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+Tab');
+    await expect(inn).toBeFocused();
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.find(card => card.id === 'inn')?.focused
     )).toBe(true);

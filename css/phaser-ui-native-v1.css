@@ -1732,3 +1732,8 @@ body.a11y-spacious #root .title-v136-rpg .v136-menu-btn { min-height:64px!import
 body.a11y-high-contrast #root .title-v136-rpg { filter:none!important; }
 body.a11y-high-contrast:not(.legend-phaser-title-ui-active) #root .title-v136-rpg :is(.v120-title-hero,.v136-menu-btn,button#continue.v136-menu-primary,button#newPrimary.v136-menu-primary) { background:#000!important; }
 body.a11y-high-contrast:not(.legend-phaser-title-ui-active) #root .title-v136-rpg :is(.v136-menu-copy strong,.v136-menu-copy small,.v136-menu-arrow,.v120-traveler-line strong,.v120-title-hero > p) { color:#fff!important; }
+
+/* Native navigation owns button feedback; avoid self-triggered fallback loops. */
+body.legend-phaser-world-active #root .legend-phaser-region-ledger .reg100-btn,
+body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-card,
+body.legend-phaser-world-active #root .legend-phaser-route-board #ashBack { transition:none!important; }

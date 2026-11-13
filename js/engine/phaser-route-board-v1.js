@@ -63,7 +63,8 @@
         const box = node.getBoundingClientRect();
         return { x: (box.left - canvas.left) * sx, y: (box.top - canvas.top) * sy, width: box.width * sx, height: box.height * sy };
       };
-      const next = JSON.stringify([size, ...[screen, header, ...cards, ...controls, ...texts].map(node => [
+      const viewport = scene.expeditionUiClipBounds();
+      const next = JSON.stringify([size, viewport, ...[screen, header, ...cards, ...controls, ...texts].map(node => [
         rect(node), node.textContent, node.disabled, node.getAttribute('aria-disabled'),
         document.activeElement === node, node.matches(':hover')
       ])]);
@@ -72,8 +73,9 @@
       try {
         const container = scene.add.container(0, 0).setDepth(30);
         objects.push(container);
-        const scrollRoot = document.getElementById('root');
-        const box = rect(scrollRoot);
+        // Use the same visible world rectangle as the retained DOM artwork.
+        // The root element itself spans beneath the fixed HUD and open drawers.
+        const box = viewport;
         const maskArt = scene.make.graphics({ x: 0, y: 0, add: false });
         objects.push(maskArt);
         maskArt.fillStyle(0xffffff).fillRect(box.x, box.y, box.width, box.height);
@@ -168,7 +170,8 @@
     const observer = new MutationObserver(schedule);
     const root = document.getElementById('root');
     if (root) observer.observe(root, { subtree: true, childList: true, characterData: true, attributes: true,
-      attributeFilter: ['disabled', 'aria-disabled'] });
+      attributeFilter: ['disabled', 'aria-disabled', 'style', 'data-legend-shell-clip'] });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     const destroy = () => {
       if (pending !== null) cancelAnimationFrame(pending);
       observer.disconnect();
