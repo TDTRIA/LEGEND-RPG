@@ -173,6 +173,7 @@ test('Phaser road background follows the live route and stage, with a DOM image 
         return {
           alpha: snapshot.nativeRoadSceneArt?.backgroundAlpha,
           nativeActive: snapshot.nativeRoadSceneArt?.active,
+          controlsActive: snapshot.nativeRoadSceneUi?.active,
           handoffClass: document.body.classList.contains('legend-phaser-road-scene-art-active'),
           domOpacity: getComputedStyle(image).opacity,
           domVisibility: getComputedStyle(image).visibility
@@ -180,6 +181,7 @@ test('Phaser road background follows the live route and stage, with a DOM image 
       });
       expect(duringFade.alpha).toBeLessThan(0.99);
       expect(duringFade.nativeActive).toBe(false);
+      expect(duringFade.controlsActive).toBe(false);
       expect(duringFade.handoffClass).toBe(false);
       expect(duringFade.domOpacity).toBe('1');
       expect(duringFade.domVisibility).toBe('visible');
@@ -222,6 +224,9 @@ test('Phaser road background follows the live route and stage, with a DOM image 
         window.LegendPhaserWorldV1?.snapshot?.()?.nativeRoadSceneArt?.active
       ), { timeout: 15000 }).toBe(true);
 
+      await expect.poll(() => page.evaluate(() =>
+        window.LegendPhaserWorldV1.snapshot().nativeRoadSceneUi?.active
+      ), { timeout: 15000 }).toBe(true);
       const proof = await page.evaluate(() => {
         const snapshot = window.LegendPhaserWorldV1.snapshot();
         const image = document.querySelector('.exp100-scene-live > img');
@@ -229,6 +234,8 @@ test('Phaser road background follows the live route and stage, with a DOM image 
         return {
           environment: snapshot.environment,
           sceneArt: snapshot.nativeRoadSceneArt,
+          controls: snapshot.nativeRoadSceneUi,
+          controlCount: document.querySelectorAll('.exp100-scene-live button').length,
           activeClass: document.body.classList.contains('legend-phaser-road-scene-art-active'),
           fallbackOpacity: style?.opacity || '',
           fallbackVisibility: style?.visibility || '',
@@ -250,6 +257,10 @@ test('Phaser road background follows the live route and stage, with a DOM image 
       expect(proof.fallbackOpacity).toBe('0');
       expect(proof.fallbackVisibility).toBe('hidden');
       expect(proof.sceneLabel).toContain('THE OLD ROAD');
+      expect(proof.controls.failure).toBe('');
+      expect(proof.controls.controls).toHaveLength(proof.controlCount);
+      expect(proof.controls.labels.map(label => label.text)).toContain(proof.sceneLabel.replace(/\s+/g, ' ').trim());
+      expect(proof.controls.labels.some(label => /^Sound: (On|Off)$/.test(label.text))).toBe(true);
     }
 
     // Simulate a failed Phaser texture request independently of the DOM image.
@@ -329,9 +340,14 @@ test('Phaser road background follows the live route and stage, with a DOM image 
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt?.active
     )).toBe(true);
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot().nativeRoadSceneUi?.active
+    )).toBe(true);
     const mobile = await page.evaluate(() => ({
       environment: window.LegendPhaserWorldV1.snapshot()?.environment,
       sceneArt: window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneArt,
+      controls: window.LegendPhaserWorldV1.snapshot()?.nativeRoadSceneUi,
+      sceneLabel: document.querySelector('.exp100-scene-label')?.textContent || '',
       canvas: document.querySelector('#game-container canvas')?.getBoundingClientRect().toJSON(),
       scene: document.querySelector('.exp100-scene-live')?.getBoundingClientRect().toJSON(),
       mapButton: document.querySelector('#exp150OpenMap')?.getBoundingClientRect().toJSON() || null,
@@ -343,6 +359,8 @@ test('Phaser road background follows the live route and stage, with a DOM image 
           height: button.getBoundingClientRect().height
         }))
     }));
+    expect(mobile.controls.active).toBe(true);
+    expect(mobile.controls.labels.map(label => label.text)).toContain(mobile.sceneLabel.replace(/\s+/g, ' ').trim());
     expect(mobile.environment).toBe('ridge');
     expect(mobile.sceneArt.active).toBe(true);
     expect(mobile.canvas.width).toBeGreaterThanOrEqual(390);

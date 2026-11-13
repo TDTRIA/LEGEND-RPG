@@ -72,9 +72,29 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
 
 <!-- coderabbit-ai-generated-section:v1:9f47ac1ad60278b694029c4dc806752658adc4dcf549ec52a31271a27130deba -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:e12de29366cf45214393b399e73e2a8edf5fa252e3ef1b3cd36048a9ea601911 -->
+
+## Main road scene — 2026-11-13 (verified locally)
+
+The Old Road scene now has dedicated Phaser framing, location text, discovery icon/caption, sound state and focus frames alongside its source-matched environment artwork. The existing road-view buttons retain keyboard, touch, audio and discovery callbacks. Native presentation requires complete text, matching loaded artwork and a usable viewport mask; failed painting, partial environment fades and foreground map/journal views restore or retain the original DOM presentation.
+
+Confirmed regressions repaired: the mobile sound control was underneath the fixed HUD, and resizing or closing animated drawers could leave journey text behind a zero-width native mask. Scene controls now start below the measured HUD, and all road masks refresh when shell bounds settle.
+
+Eight distinct focused cases pass: four final scene/control/artwork cases, plus four equivalent journey-readability and map/journal/keyboard consumer passes. Coverage includes all six stages, both routes, Windbreak and Sunken Cart, discovery persistence, sound preference, unknown save properties, failure fallback, scrolling, focus and live orientation/drawer changes. Final shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390. Gameplay, resource costs and reward settlement are unchanged. Expedition results are next; broader migration/release gates and Bitbucket-to-GitHub publication remain open.
+
 ## Expedition regression checkpoint — 2026-11-13 (local)
 
-All seven existing expedition-journal cases pass on the creation/readability repair revision: Mara's secured-report handoff, departure preparation and warnings, map/journal focus and saved discoveries, keyboard route selection, camp-watch ration/pressure persistence, poultice crafting and return reports, and the late-night Reed Cut encounter. The original reward, resource and progression assertions remain intact. This closes the pending journal regression batch; it does not complete the broader production suite or the central road scene/results migration. Next presentation work is the main scene's location label, discovery hotspot and sound control, retaining the existing road-view callbacks. Bitbucket-to-GitHub publication remains pending task permissions.
+<!-- /coderabbit-ai-generated:v1 -->
+
+All seven existing expedition-journal cases pass on the creation/readability repair revision: Mara's secured-report handoff, departure preparation and warnings, map/journal focus and saved discoveries, keyboard route selection, camp-watch ration/pressure persistence, poultice crafting and return reports, and the late-night Reed Cut encounter. The original reward, resource and progression assertions remain intact. This closes the pending journal regression batch; it does not complete the broader production suite or the central road scene/results migration. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:9bd69ae69dc8991a0c2ed67c4116c13b38f2a53aaf2fae2cd67e77a43b516442 -->
+
+The following main-scene slice is verified in the checkpoint above; expedition result presentation remains outstanding.
+
+<!-- /coderabbit-ai-generated:v1 --> Bitbucket-to-GitHub publication remains pending task permissions.
 
 ## Creation and returning-title readability — 2026-11-13 (local)
 
@@ -304,7 +324,14 @@ The third production annal now uses the exact approved “The Peace, Written Dow
    - [ ] Road decision deck (dedicated Phaser painter is enabled for the real expedition regions; original route, discovery, detour and camp handlers remain authoritative, and complete responsive interaction acceptance remains open).
 
 <!-- /coderabbit-ai-generated:v1 -->
-   - [ ] Main road scene and expedition result presentation.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:e83728b7a28f03dc5ee8272b3b4876c8357098e065cd08a1dc3fbff630c82227 -->
+
+   - [x] Main road scene presentation verified locally: native frame, source-matched art, location, discovery and sound controls; desktop/mobile/landscape checks, save preservation, keyboard/touch, responsive masks and DOM fallback pass. Publication remains pending task permissions.
+   - [ ] Expedition result presentation.
+
+<!-- /coderabbit-ai-generated:v1 -->
    - [ ] Keep route state, pressure, rewards, evidence and Road Token settlement in existing modules.
 
 5. **Combat and progression**

@@ -581,6 +581,7 @@
       this.nativeOpeningUiSignature = '';
       this.nativeOpeningUiLayoutEvent = null;
       this.nativeOpeningUiScrollTarget = null;
+      this.expeditionClipFrame = null;
       this.nativeExpeditionActionsUiActive = false;
       this.nativeExpeditionActionsUiObjects = [];
       this.nativeExpeditionActionsUiTaggedNodes = [];
@@ -759,8 +760,11 @@
       this.shellToast = window.LegendPhaserShellToastV1?.create(this);
       this.inventoryOverlay = window.LegendPhaserInventoryOverlayV1?.create(this);
       this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
+      this.roadScene = window.LegendPhaserRoadSceneV1?.create(this);
       this.motionReduced = reducedMotion();
       this.events.once('shutdown', () => {
+        if (this.expeditionClipFrame !== null) window.cancelAnimationFrame(this.expeditionClipFrame);
+        this.expeditionClipFrame = null;
         window.clearTimeout(this.nativeCreationUiLayoutEvent);
         this.nativeCreationUiLayoutEvent = null;
         window.clearTimeout(this.nativeOpeningUiLayoutEvent);
@@ -833,6 +837,7 @@
           nativeShellToast: this.shellToast?.snapshot(),
           nativeInventory: this.inventoryOverlay?.snapshot(),
           nativeRouteBoard: this.routeBoard?.snapshot(),
+          nativeRoadSceneUi: this.roadScene?.snapshot(),
           nativeTitleUi: this.nativeTitleUiActive,
           nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
           nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo'].every(key => this.textures.exists(key)),
@@ -4346,11 +4351,25 @@
         left: Math.max(0, (left?.right || box.left) - box.left),
         right: Math.max(0, box.right - (right?.left || box.right))
       };
+      let changed = root.dataset.legendShellClip !== 'true';
       Object.entries(insets).forEach(([side, value]) => {
         const key = '--legend-shell-clip-' + side, next = value + 'px';
-        if (root.style.getPropertyValue(key) !== next) root.style.setProperty(key, next);
+        if (root.style.getPropertyValue(key) !== next) {
+          root.style.setProperty(key, next);
+          changed = true;
+        }
       });
       if (root.dataset.legendShellClip !== 'true') root.dataset.legendShellClip = 'true';
+      // Drawer motion can settle after the road painters have sampled their
+      // masks. Update those masks with the same final bounds as the DOM clip.
+      if (changed && root.querySelector('.exp150-world-page') && this.expeditionClipFrame === null) {
+        this.expeditionClipFrame = window.requestAnimationFrame(() => {
+          this.expeditionClipFrame = null;
+          this.syncNativeExpeditionHudUi();
+          this.syncNativeExpeditionActionsUi();
+          this.roadScene?.sync();
+        });
+      }
     }
 
     /** Paint a shell label inside its measured content box, never crop its glyph texture. */
@@ -6663,6 +6682,7 @@
         backgroundAlpha: Number(this.background?.alpha || 0)
       } : null;
       document.body?.classList.toggle('legend-phaser-road-scene-art-active', active);
+      this.roadScene?.sync();
       return active;
     }
 

@@ -1309,3 +1309,37 @@ body.legend-phaser-world-active.legend-phaser-road-map-ui-active #root .exp100:h
     margin-top: 0 !important;
   }
 }
+
+/* Hide only the scene chrome whose complete native painter passed preflight.
+   Semantic buttons and their production listeners stay in the DOM. */
+body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] :is(.exp100-scene-label,.exp100-sound,.exp100-hotspot,.exp100-hotspot i) {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  outline: none !important;
+  animation: none !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] :is(.exp100-scene-label i,.exp100-hotspot span) {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+/* Keep the semantic target stationary while its native focus frame is active. */
+body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] .exp100-hotspot:active {
+  transform: translate(-50%, -50%) !important;
+}
+
+/* The scene's real controls must begin below the fixed HUD, including fallback. */
+body.legend-world-shell-active #root .exp100:has(.exp150-world-page) > .exp100-wrap {
+  padding-top: calc(var(--legend-road-hud-height, 72px) + 12px) !important;
+}
+
+body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] > .exp100-scene-shade {
+  background: none !important;
+}

@@ -26,7 +26,13 @@ The story and the systems should reinforce that loop. Town is a place the player
 ## Current implementation checkpoint — 2026-11-08
 
 - **Production main:** v0.30.5. The road-first opening, mandatory annals, Oric/Wolf tutorial, five-stage Old Road, Ashmere services, progression, and early Greyfen activities are part of the browser build.
-- **Phaser migration:** approved and active in the production root. The persistent world renderer, Ashmere landmarks, new-player title presentation, annals, traveler creation, Oric opening-story presentation, persistent HUD and bottom action navigation now have dedicated Phaser visuals. The returning-player title menu is now Phaser-rendered when its required textures, six production actions and live labels pass preflight; its original semantic DOM menu remains the visible fallback if any check fails. The persistent HUD, bottom navigation, traveler journal/quest drawer, Ashmere/road contextual action drawers, connected Old Road map/field-journal modal, Old Road journey HUD and Old Road route/POI/optional-detour/camp decision deck now have dedicated Phaser painters with original DOM controls retained. Ashmere's destination-card terminal board now has a dedicated Phaser painter under verification, using existing service-button geometry and retaining the real DOM buttons and raster icons. The separate shell map drawer, Ashmere service interiors, central road scene, expedition results, combat/results, level-up, dungeon/Greyfen and remaining modal UI remain to be migrated screen by screen. The previous shared all-screen canvas mirror is disabled because it hid copy and produced incomplete panels. Existing production controllers, combat calculations, player saves, account/cloud behavior and rewards remain unchanged.
+- **Phaser migration:** approved and active in the production root. The persistent world renderer, Ashmere landmarks, new-player title presentation, annals, traveler creation, Oric opening-story presentation, persistent HUD and bottom action navigation now have dedicated Phaser visuals. The returning-player title menu is now Phaser-rendered when its required textures, six production actions and live labels pass preflight; its original semantic DOM menu remains the visible fallback if any check fails. The persistent HUD, bottom navigation, traveler journal/quest drawer, Ashmere/road contextual action drawers, connected Old Road map/field-journal modal, Old Road journey HUD and Old Road route/POI/optional-detour/camp decision deck now have dedicated Phaser painters with original DOM controls retained. Ashmere's destination-card terminal board now has a dedicated Phaser painter under verification, using existing service-button geometry and retaining the real DOM buttons and raster icons. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:88b3570472211e9bf13ee58b36d2a05b58b366cf453a280de3b203f0e9e1c7b5 -->
+
+The central Old Road scene now has verified local native framing, location, discovery and sound controls with DOM fallback. Expedition results, combat/results, level-up, dungeon/Greyfen and remaining modal UI continue screen by screen; the later checkpoints below record completed local service and navigation slices.
+
+<!-- /coderabbit-ai-generated:v1 --> The previous shared all-screen canvas mirror is disabled because it hid copy and produced incomplete panels. Existing production controllers, combat calculations, player saves, account/cloud behavior and rewards remain unchanged.
 - **Audio:** the 48-asset generated ambience/effect library and separate roughly 10½-minute main-theme MP3 are merged into main and deployed through [PR #98](https://github.com/TDTRIA/LEGEND-RPG/pull/98). The shared director supplies the persistent score, environment ambience, menu cues, and combat effects. Human listening for mix/loop quality and further event-specific world/town/reward SFX wiring remain.
 - **Region status:** Ashmere and the Old Road form the main playable foundation. Greyfen is an active partial region; Ironpass is future content. The first three towns are still a release target.
 - **Active sequence:** finish the Phaser production migration using the acceptance gates in PHASER_MIGRATION.md. Verify returning-player title parity and the separate shell map drawer, then verify the anchored Ashmere destination board before continuing with Ashmere service screens, the main Old Road expedition/camp/results presentation, combat/results, level-up, dungeon/Greyfen, and remaining overlays. Migrate each presentation surface without replacing the underlying feature controller or save contract. Do not hide a DOM label or asset until the Phaser version is visibly present at desktop and mobile sizes, all controls remain keyboard/touch accessible, live text/state updates correctly, and the focused Playwright journey passes. Only after every listed surface is native Phaser and the full production journey is stable should new Phaser gameplay features begin: multi-skill combat kits, enemy intent/animation, randomized affix loot, enemy families/elites and skill trees.
@@ -60,9 +66,29 @@ The story and the systems should reinforce that loop. Town is a place the player
 
 <!-- coderabbit-ai-generated-section:v1:9f47ac1ad60278b694029c4dc806752658adc4dcf549ec52a31271a27130deba -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:e12de29366cf45214393b399e73e2a8edf5fa252e3ef1b3cd36048a9ea601911 -->
+
+## Main road scene — 2026-11-13 (verified locally)
+
+The Old Road scene now has dedicated Phaser framing, location text, discovery icon/caption, sound state and focus frames alongside its source-matched environment artwork. The existing road-view buttons retain keyboard, touch, audio and discovery callbacks. Native presentation requires complete text, matching loaded artwork and a usable viewport mask; failed painting, partial environment fades and foreground map/journal views restore or retain the original DOM presentation.
+
+Confirmed regressions repaired: the mobile sound control was underneath the fixed HUD, and resizing or closing animated drawers could leave journey text behind a zero-width native mask. Scene controls now start below the measured HUD, and all road masks refresh when shell bounds settle.
+
+Eight distinct focused cases pass: four final scene/control/artwork cases, plus four equivalent journey-readability and map/journal/keyboard consumer passes. Coverage includes all six stages, both routes, Windbreak and Sunken Cart, discovery persistence, sound preference, unknown save properties, failure fallback, scrolling, focus and live orientation/drawer changes. Final shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390. Gameplay, resource costs and reward settlement are unchanged. Expedition results are next; broader migration/release gates and Bitbucket-to-GitHub publication remain open.
+
 ## Expedition regression checkpoint — 2026-11-13 (local)
 
-All seven existing expedition-journal cases pass on the creation/readability repair revision: Mara's secured-report handoff, departure preparation and warnings, map/journal focus and saved discoveries, keyboard route selection, camp-watch ration/pressure persistence, poultice crafting and return reports, and the late-night Reed Cut encounter. The original reward, resource and progression assertions remain intact. This closes the pending journal regression batch; it does not complete the broader production suite or the central road scene/results migration. Next presentation work is the main scene's location label, discovery hotspot and sound control, retaining the existing road-view callbacks. Bitbucket-to-GitHub publication remains pending task permissions.
+<!-- /coderabbit-ai-generated:v1 -->
+
+All seven existing expedition-journal cases pass on the creation/readability repair revision: Mara's secured-report handoff, departure preparation and warnings, map/journal focus and saved discoveries, keyboard route selection, camp-watch ration/pressure persistence, poultice crafting and return reports, and the late-night Reed Cut encounter. The original reward, resource and progression assertions remain intact. This closes the pending journal regression batch; it does not complete the broader production suite or the central road scene/results migration. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:9bd69ae69dc8991a0c2ed67c4116c13b38f2a53aaf2fae2cd67e77a43b516442 -->
+
+The following main-scene slice is verified in the checkpoint above; expedition result presentation remains outstanding.
+
+<!-- /coderabbit-ai-generated:v1 --> Bitbucket-to-GitHub publication remains pending task permissions.
 
 ## Creation and returning-title readability — 2026-11-13 (local)
 
