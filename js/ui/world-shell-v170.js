@@ -16,6 +16,7 @@
   })[char]);
   let observer = null;
   let observedRoot = null;
+  let hudResizeObserver = null;
   let renderQueued = false;
   let lastContext = null;
   let toastTimer = null;
@@ -162,7 +163,25 @@
       '<nav class="lws-bottom-bar" aria-label="World actions"></nav>' +
       '<div class="lws-shell-toast" role="status" aria-live="polite" hidden></div>';
     document.body.appendChild(shell);
+    hudResizeObserver?.disconnect();
+    hudResizeObserver = new ResizeObserver(() => {
+      if (syncHudHeight(shell)) {
+        window.LegendPhaserWorldV1?.refreshHud?.();
+        window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+        window.LegendPhaserWorldV1?.refreshRightDrawer?.();
+      }
+    });
+    hudResizeObserver.observe(shell.querySelector('.lws-hud'));
     return shell;
+  }
+
+  function syncHudHeight(shell) {
+    const height = shell?.querySelector('.lws-hud')?.getBoundingClientRect().height;
+    if (!height) return false;
+    const value = Math.ceil(height) + 'px';
+    if (shell.style.getPropertyValue('--lws-hud-height') === value) return false;
+    shell.style.setProperty('--lws-hud-height', value);
+    return true;
   }
 
   function ensureModalRoot() {
@@ -220,6 +239,7 @@
     document.body.classList.add('legend-world-shell-active');
     syncSceneAtmosphere(player, context);
     refreshMobileToggleState(shell);
+    syncHudHeight(shell);
     // Phaser paints the HUD and bottom navigation. Refresh only after the
     // bottom-bar innerHTML replacement above, so node identity/tags stay current.
     window.LegendPhaserWorldV1?.refreshHud?.();

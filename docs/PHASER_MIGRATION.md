@@ -84,7 +84,13 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
 
 <!-- coderabbit-ai-generated-section:v1:5630dd4f4f9d0a9c1c346e71c9b31b055cb6960a679b5f6b89bf8df8c0781184 -->
 
-   - [ ] HUD and traveler vitals parity: corrected glyph cropping, mobile location wrapping and compact LEGEND branding; town/service DOM artwork now stays beneath the HUD and open drawers. Local desktop/mobile readability checks pass with source callbacks and saves preserved. Combat/results and accessibility-state visual gates remain open.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:52854dcb9a5dda04c2b335b4fdccf0a44a0e8c282bd65fb6379e170c018b6302 -->
+
+   - [ ] HUD and traveler vitals parity: corrected glyph cropping and compact LEGEND branding; compact location names now occupy a full row, with the next lead retained in landscape. Drawers and notifications follow measured HUD height, including text-size changes; town/service content stays beneath the HUD and open drawers. Local desktop/mobile readability, orientation, keyboard/touch, full-save and missing-renderer DOM fallback checks pass, with desktop1440×900, portrait390×844 and landscape844×390 screenshots inspected. Combat/results and wider accessibility-state visual gates remain open.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 <!-- coderabbit-ai-generated:v1 -->

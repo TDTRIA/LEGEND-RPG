@@ -663,3 +663,39 @@ body.legend-world-shell-active #root .ash099-terminal:has(.ash099-traveler-profi
   #legend-world-shell-root .lws-hud .lws-hud-brand { gap: 0; flex-shrink: 0; }
   #legend-world-shell-root .lws-hud .lws-location > span { font-size: 7px; letter-spacing: .03em; white-space: normal; }
 }
+
+/* Compact HUD: full location copy gets its own row instead of competing with controls. */
+@media (max-width: 1199px) {
+  #legend-world-shell-root .lws-hud {
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    gap: 6px;
+    padding: 7px 9px;
+  }
+  #legend-world-shell-root .lws-hud-left,
+  #legend-world-shell-root .lws-hud-right { display: contents; }
+  #legend-world-shell-root .lws-hud [data-world-action="toggle-left"] { grid-column: 1; grid-row: 1; }
+  #legend-world-shell-root .lws-hud-brand { grid-column: 2; grid-row: 1; }
+  #legend-world-shell-root .lws-hud-vitals { grid-column: 3; grid-row: 1; }
+  #legend-world-shell-root .lws-hud-save { grid-column: 4; grid-row: 1; }
+  #legend-world-shell-root .lws-hud [data-world-action="toggle-right"] { grid-column: 5; grid-row: 1; }
+  #legend-world-shell-root .lws-hud .lws-mobile-toggle { min-height: 35px; }
+  #legend-world-shell-root .lws-hud .lws-location {
+    grid-column: 1 / -1; grid-row: 2;
+    flex-direction: row; align-items: baseline; gap: 8px;
+    padding: 0; border: 0;
+  }
+  #legend-world-shell-root .lws-hud .lws-location > span { flex-shrink: 0; white-space: nowrap; font-size: 8px; }
+  #legend-world-shell-root .lws-hud .lws-location strong {
+    flex: 1; min-width: 0; max-width: none;
+    white-space: normal; overflow: visible; overflow-wrap: break-word; text-overflow: clip;
+    font-size: 12px; line-height: 1.35;
+  }
+  #legend-world-shell-root .lws-hud-center { grid-column: 1 / -1; grid-row: 3; }
+  #legend-world-shell-root .lws-objective {
+    display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 0; border: 0;
+  }
+  #legend-world-shell-root .lws-objective-label { flex-shrink: 0; margin: 0; }
+  #legend-world-shell-root .lws-objective strong { white-space: normal; overflow: visible; }
+  #legend-world-shell-root .lws-panel { top: calc(var(--lws-hud-height, 64px) + 6px); }
+  #legend-world-shell-root .lws-shell-toast { top: calc(var(--lws-hud-height, 64px) + 6px); }
+}
