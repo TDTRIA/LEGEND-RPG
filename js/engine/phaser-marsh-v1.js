@@ -8,7 +8,7 @@
     storehouse:['gfm160ReturnFromStorehouse'],sluice:['gfm160FaceWisp','gfm160PassSluice','gfm160ContinueShelter'],
     'sluice-crossed':['gfm160ContinueShelter'],shelter:['gfm160Rest','gfm160ContinueGauge','gfm160VisitStorehouse'],
     'shelter-return':['gfm160Rest','gfm160ContinueGauge'],gauge:['gfm160InspectGauge','gfm160Exit'],
-    'gauge-recorded':['gfm160Complete','gfm160Exit'],report:['gfm160ResultReturn','gfm160ResultAgain']
+    'gauge-recorded':['gfm160Complete','gfm160Exit'],report:['gfm160ResultReturn','gfm160ResultAgain','gfm160OpenMap','gfm160OpenJournal']
   });
   function create(scene) {
     let host=null,container=null,signature='',pending=null,retry=null,labels=[],keys=[],tagged=[],failure='',clip=null;
@@ -29,8 +29,6 @@
     function sync(){
       const source=document.querySelector('#root .gfm160-page[data-marsh-state]');
       if(!source||source.closest('[hidden]')){clear();return;}
-      // The field map has its own complete DOM presentation until its separate gate passes.
-      if(source.querySelector('.gfm160-map-overlay:not([hidden])')){failure='Field map uses DOM presentation';clear();return;}
       const hud=document.querySelector('#legend-world-shell-root:not([hidden]) .lws-hud');
       const height=(hud?Math.ceil(hud.getBoundingClientRect().height):0)+'px';
       if(source.style.getPropertyValue('--marsh-hud-height')!==height)source.style.setProperty('--marsh-hud-height',height);
@@ -39,7 +37,7 @@
       const controls=[...source.querySelectorAll('button')].filter(outsideMap);
       const texts=[...source.querySelectorAll(copySelector)].filter(outsideMap),art=[...source.querySelectorAll('img')];
       const fields=[...source.querySelectorAll(report?'.gfm160-report-metrics > div':'.gfm160-status > div')];
-      const complete=expected&&controls.map(n=>n.id).join(',')===(report?expected:['gfm160OpenMap','gfm160EarlyExit',...expected]).join(',')&&
+      const complete=expected&&controls.map(n=>n.id).join(',')===(report?expected:['gfm160OpenMap','gfm160OpenJournal','gfm160EarlyExit',...expected]).join(',')&&
         source.querySelector(report?'.gfm160-results-panel > h1':'.gfm160-scene-copy h1')&&
         source.querySelector(report?'.gfm160-results-panel > p':'.gfm160-scene-copy p')&&
         fields.length===(report?6:4)&&fields.every(n=>n.querySelector('span')&&n.querySelector('strong'))&&

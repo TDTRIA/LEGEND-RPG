@@ -22,13 +22,13 @@
   let toastTimer = null;
   const SCENE_KINDS = Object.freeze([
     'town', 'road', 'combat', 'combat-results',
-    'expedition-results', 'dungeon', 'service'
+    'expedition-results', 'dungeon', 'service', 'marsh'
   ]);
   const ATMOSPHERE_CLASSES = Object.freeze([
     'legend-world-scene-town', 'legend-world-scene-road',
     'legend-world-scene-combat', 'legend-world-scene-combat-results',
     'legend-world-scene-expedition-results', 'legend-world-scene-dungeon',
-    'legend-world-scene-service', 'legend-world-region-ashmere',
+    'legend-world-scene-service', 'legend-world-scene-marsh', 'legend-world-region-ashmere',
     'legend-world-region-greyfen'
   ]);
 
@@ -92,6 +92,11 @@
         route: state.routeChoice || '',
         camp: !!rootNode.querySelector('#campRest, #campCraft, #campWatch')
       };
+    }
+    if (rootNode.querySelector('.gfm160-page[data-marsh-state]')) {
+      return {kind:'marsh', location:'Greyfen Marsh Path',
+        sublocation:rootNode.querySelector('.gfm160-page h1')?.textContent?.trim() || 'Marsh Path',
+        report:!!rootNode.querySelector('.gfm160-results'), camp:false};
     }
     const liveCombat = rootNode.querySelector('.rpg-battle');
     if (liveCombat) {
@@ -199,9 +204,13 @@
   /** Rebuilds the persistent shell and refreshes only Phaser layers whose DOM controls were just replaced. */
   function renderShell(player, context) {
     const shell = ensureShellRoot();
+    const focused = document.activeElement;
+    const focusArea = focused?.closest('#lws-panel-left,#lws-panel-right,.lws-bottom-bar');
+    const focusAttribute = ['data-world-action','data-world-route','data-world-place'].find(key => focused?.hasAttribute(key));
+    const focusSelector = focusArea && focusAttribute ? (focusArea.id ? '#' + focusArea.id : '.lws-bottom-bar') + ' [' + focusAttribute + '="' + CSS.escape(focused.getAttribute(focusAttribute)) + '"]' : '';
     const rootNode = root();
     const panels = PANELS();
-    const location = context.kind === 'road'
+    const location = context.kind === 'marsh' ? context.location : context.kind === 'road'
       ? (context.sublocation && context.sublocation !== 'Old Road' ? context.sublocation + ' · Old Road' : 'Old Road')
       : context.kind === 'town'
         ? context.location
@@ -240,6 +249,7 @@
     syncSceneAtmosphere(player, context);
     refreshMobileToggleState(shell);
     syncHudHeight(shell);
+    if (focusSelector && !focused.isConnected && document.activeElement === document.body) shell.querySelector(focusSelector)?.focus({preventScroll:true});
     // Phaser paints the HUD and bottom navigation. Refresh only after the
     // bottom-bar innerHTML replacement above, so node identity/tags stay current.
     window.LegendPhaserWorldV1?.refreshHud?.();
@@ -332,6 +342,11 @@
   }
 
   function routeTo(view) {
+    if (lastContext?.kind === 'marsh') {
+      if (view === 'home') return clickExisting('#gfm160EarlyExit') || clickExisting('#gfm160ResultReturn');
+      showToast('Return with your Marsh report before visiting town services.');
+      return false;
+    }
     if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
       showToast('Finish the active encounter through its battle or results controls before changing location.');
       return false;
@@ -441,6 +456,9 @@
         event.preventDefault();
         if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
           showToast('Finish the encounter before changing to the journal.');
+        } else if (lastContext?.kind === 'marsh') {
+          actionButton.focus({preventScroll:true});
+          clickExisting('#gfm160OpenJournal');
         } else if (lastContext?.kind === 'road') {
           if (!clickExisting('#exp150OpenJournal') && !clickExisting('#exp150OpenJournalAside')) showToast('The field journal is not available on this screen.');
         } else {
@@ -452,6 +470,9 @@
         event.preventDefault();
         if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
           showToast('Finish the encounter before changing to the map.');
+        } else if (lastContext?.kind === 'marsh') {
+          actionButton.focus({preventScroll:true});
+          clickExisting('#gfm160OpenMap');
         } else if (lastContext?.kind === 'road') {
           if (!clickExisting('#exp150OpenMap')) showToast('The road map is not available on this screen.');
         } else {
@@ -461,7 +482,9 @@
       }
       case 'world':
         event.preventDefault();
-        if (lastContext?.kind === 'road') {
+        if (lastContext?.kind === 'marsh') {
+          if (!clickExisting('#gfm160EarlyExit')) clickExisting('#gfm160ResultReturn');
+        } else if (lastContext?.kind === 'road') {
           if (!clickExisting('#town')) showToast('Return to Ashmere is not available at this point in the expedition.');
         } else if (lastContext?.kind === 'dungeon') {
           if (!clickExisting('#vaultRetreat') && !clickExisting('#vaultReturn')) showToast('The current cellar room has no retreat action available.');

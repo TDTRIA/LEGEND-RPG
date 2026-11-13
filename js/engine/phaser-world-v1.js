@@ -762,6 +762,7 @@
       this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
       this.roadScene = window.LegendPhaserRoadSceneV1?.create(this);
       this.growth = window.LegendPhaserGrowthV1?.create(this);
+      this.marshMap = window.LegendPhaserMarshMapV1?.create(this);
       this.marsh = window.LegendPhaserMarshV1?.create(this);
       this.bellVault = window.LegendPhaserBellVaultV1?.create(this);
       this.combatResults = window.LegendPhaserCombatResultsV1?.create(this);
@@ -844,6 +845,7 @@
           nativeRouteBoard: this.routeBoard?.snapshot(),
           nativeRoadSceneUi: this.roadScene?.snapshot(),
           nativeGrowth: this.growth?.snapshot(),
+          nativeMarshMap: this.marshMap?.snapshot(),
           nativeMarsh: this.marsh?.snapshot(),
           nativeBellVault: this.bellVault?.snapshot(),
           nativeCombatResults: this.combatResults?.snapshot(),
@@ -4341,7 +4343,7 @@
       const root = document.getElementById('root');
       if (!root) return;
       const shell = document.getElementById('legend-world-shell-root');
-      const enabled = shell && !shell.hidden && root.querySelector('.v152-combat-results,.ash100-town,.ash099-terminal,.reg100,.exp100:has(.exp150-world-page,.exp100-outcome,.rpg-battle)');
+      const enabled = shell && !shell.hidden && root.querySelector('.gfm160-page,.v152-combat-results,.ash100-town,.ash099-terminal,.reg100,.exp100:has(.exp150-world-page,.exp100-outcome,.rpg-battle)');
       if (!enabled) { root.removeAttribute('data-legend-shell-clip'); return; }
       const box = root.getBoundingClientRect();
       const hud = shell.querySelector('.lws-hud')?.getBoundingClientRect();

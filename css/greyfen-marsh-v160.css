@@ -276,3 +276,19 @@
 #root .gfm160-feedback { padding:14px 18px; color:#eee8d7; background:#17332d; border:1px solid #8b9972; line-height:1.6; }
 #root .gfm160-map-dialog button { min-height:44px; min-width:44px; }
 #root .gfm160-map-dialog h2 { text-shadow:none; }
+
+/* Field records sit above the shell without blurring or scrolling the world. */
+.gfm160-map-overlay,.gfm160-map-overlay * { box-sizing:border-box; }
+.gfm160-map-overlay button { font:inherit; cursor:pointer; min-width:44px; min-height:44px; }
+.gfm160-map-overlay button:focus-visible { outline:3px solid #ead6a0; outline-offset:2px; }
+.gfm160-map-dialog h2 { line-height:1.25; text-shadow:none; }
+.gfm160-map-dialog p { color:#d8dfcd; line-height:1.6; }
+.gfm160-map-tabs { display:flex; gap:10px; margin:14px 0; }
+.gfm160-map-tabs button { padding:8px 14px; background:#142d29; color:#eee8d7; border:1px solid #6c8672; border-radius:6px; }
+.gfm160-map-tabs button[aria-pressed="true"] { background:#354c3c; border-color:#cbb679; }
+.gfm160-journal-note { padding:14px; margin:12px 0; border:1px solid #6c8672; background:#102722; }
+.gfm160-journal-note > span { display:block; color:#dfcb91; font-size:12px; line-height:1.6; }
+.gfm160-journal-note h3 { margin:8px 0; font-size:19px; line-height:1.4; }
+.gfm160-journal-note p { margin:0; }
+.gfm160-map-overlay [hidden] { display:none !important; }
+html:has(body.legend-marsh-record-open),body.legend-marsh-record-open { overflow:hidden !important; }

@@ -208,7 +208,8 @@
           return '<li class="lws-equipped-item"><span>' + esc(label) + '</span><span class="lws-equipped-value">' + image + '<strong>' + esc(name) + '</strong></span></li>';
         }).join('') + '</ul></section>'
       : '';
-    const footer = '<button type="button" class="lws-btn quiet" data-shell-modal-close>Return to the world</button><button type="button" class="lws-btn primary" data-world-action="traveler-sheet"><span class="lws-btn-copy"><strong>Open traveler sheet</strong><small>View your attributes and equipment</small></span></button>';
+    const onMarsh = !!document.querySelector('#root .gfm160-page[data-marsh-state]');
+    const footer = '<button type="button" class="lws-btn quiet" data-shell-modal-close>Return to the world</button><button type="button" class="lws-btn primary" data-world-action="traveler-sheet"' + (onMarsh ? ' disabled' : '') + '><span class="lws-btn-copy"><strong>Open traveler sheet</strong><small>' + (onMarsh ? 'Available after returning to Greyfen' : 'View your attributes and equipment') + '</small></span></button>';
     return openModal({
       eyebrow: 'Traveler archive',
       kind: 'inventory',

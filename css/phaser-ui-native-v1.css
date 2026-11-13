@@ -1452,3 +1452,10 @@ body.legend-phaser-world-active #root [data-phaser-marsh="true"] [data-marsh-cop
 body.legend-phaser-world-active #root [data-phaser-marsh="true"] [data-marsh-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
 body.legend-phaser-world-active #root [data-phaser-marsh="true"] :is(img,.gfm160-scene-shade,.gfm160-results-art > div) { opacity:0 !important; }
 body.legend-phaser-world-active #root [data-phaser-marsh="true"] .gfm160-report-findings ul { list-style:none; }
+
+body.legend-phaser-world-active:has(#gfm160MapOverlay[data-phaser-marsh-map="true"]) > [inert]:not(#game-container) { visibility:hidden !important; }
+#gfm160MapOverlay[data-phaser-marsh-map="true"],
+#gfm160MapOverlay[data-phaser-marsh-map="true"] :is(.gfm160-map-dialog,.gfm160-map-node,.gfm160-journal-note,button) { background:transparent !important; border-color:transparent !important; box-shadow:none !important; }
+#gfm160MapOverlay[data-phaser-marsh-map="true"] [data-marsh-map-copy],
+#gfm160MapOverlay[data-phaser-marsh-map="true"] [data-marsh-map-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
+#gfm160MapOverlay[data-phaser-marsh-map="true"] button:focus-visible { outline:none; }

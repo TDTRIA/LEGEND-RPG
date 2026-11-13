@@ -21,15 +21,17 @@ async function open(page,width){
 for(const width of [1440,390])test.describe(`${width}px`,()=>{
   test.use({hasTouch:width===390});
   test(`marsh survey preserves route costs, supplies, evidence, focus and native fallback at ${width}px`,async({page})=>{
+    // This full desktop journey also rebuilds both persistent drawers at every stop.
+    if(width===1440)test.setTimeout(240000);
     const errors=[];page.on('pageerror',e=>errors.push(e.message));await open(page,width);
     const initial=await saved(page),reeds=width===1440;
     const use=async id=>{const n=page.locator('#'+id);await n.scrollIntoViewIfNeeded();if(width===390)await n.tap();else{await n.focus();await page.keyboard.press('Enter');}};
     await expect(page.locator('.gfm160-scene-copy h1')).toBeFocused();
     await use('gfm160Begin');await native(page,'fork');await expect(page.locator('.gfm160-feedback')).toContainText('Split Causeway');
     if(!reeds)await expect(page.locator('#gfm160ChooseReeds')).toBeDisabled();
-    // Map remains a usable DOM modal, with no blur and complete keyboard/focus parity.
+    // The guarded field map remains read-only, with keyboard/focus parity.
     await use('gfm160OpenMap');await expect(page.locator('#gfm160CloseMap')).toBeFocused();
-    await expect.poll(()=>page.evaluate(()=>LegendPhaserWorldV1.snapshot().nativeMarsh.active)).toBe(false);
+    await expect.poll(()=>page.evaluate(()=>LegendPhaserWorldV1.snapshot().nativeMarshMap.active)).toBe(true);
     expect(await page.locator('#gfm160MapOverlay').evaluate(n=>getComputedStyle(n).backdropFilter)).toBe('none');
     await page.keyboard.press('Shift+Tab');await expect(page.locator('#gfm160CloseMapFooter')).toBeFocused();
     await page.keyboard.press('Tab');await expect(page.locator('#gfm160CloseMap')).toBeFocused();
@@ -52,18 +54,22 @@ for(const width of [1440,390])test.describe(`${width}px`,()=>{
     await expect(page.locator('#gfm160Rest')).toBeDisabled();await expect(page.locator('.gfm160-feedback')).toContainText('recover 20 HP');
     await use('gfm160ContinueGauge');await native(page,'gauge');await use('gfm160InspectGauge');let ui=await native(page,'gauge-recorded');
     const beforeFallback=await saved(page);
+    if(width===390){
     for(const selector of ['#gfm160Complete','.gfm160-scene-art','.gfm160-status > div > strong']){
       await page.evaluate(selector=>{const n=document.querySelector(selector);window.__missing={n,parent:n.parentNode,next:n.nextSibling};n.remove();},selector);
       await expect.poll(()=>page.evaluate(()=>LegendPhaserWorldV1.snapshot().nativeMarsh.active)).toBe(false);
       expect(await page.locator('.gfm160-scene-copy h1').evaluate(n=>getComputedStyle(n).color)).not.toBe('rgba(0, 0, 0, 0)');
       await page.evaluate(()=>{const{n,parent,next}=window.__missing;parent.insertBefore(n,next);});await native(page,'gauge-recorded');
     }
+    }
     await page.evaluate(()=>{const n=document.createElement('aside');n.id='future-marsh';n.textContent='Future marsh observation';document.querySelector('.gfm160-content').append(n);});
     await expect.poll(()=>page.evaluate(()=>LegendPhaserWorldV1.snapshot().nativeMarsh.active)).toBe(false);
     await page.evaluate(()=>document.getElementById('future-marsh').remove());await native(page,'gauge-recorded');
+    if(width===390){
     await page.setViewportSize({width:844,height:390});await page.locator('#gfm160Complete').focus();ui=await native(page,'gauge-recorded');
     expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
     for(const label of ui.labels){expect(label.width).toBeLessThanOrEqual(label.sourceBounds.width+1);expect(label.height).toBeLessThanOrEqual(label.sourceBounds.height+4);}
+    }
     expect(await saved(page)).toEqual(beforeFallback);
     await page.setViewportSize({width,height:width===390?844:900});await use('gfm160Complete');ui=await native(page,'report');
     expect(ui.art).toEqual(['assets/generated/locations/greyfen-marsh-walkway.webp']);
@@ -111,4 +117,23 @@ test('complete and partial marsh reports preserve settlement through level growt
     await page.evaluate(()=>LegendGreyfenMarshV160.settle(true));await native(page,'report');expect(await saved(page)).toEqual(after);
     await page.locator('#gfm160ResultReturn').click();await expect(page.locator('.ash100-town')).toBeVisible();expect(await saved(page)).toEqual(after);
   }
+});
+
+test('desktop marsh incomplete sources and landscape retain readable fallback without save writes',async({page})=>{
+  await open(page,1440);
+  await page.evaluate(()=>{
+    const p=LegendStorage.loadPlayer();Object.assign(p.flags.greyfenMarshExpeditionV160,{active:true,stage:4,routeChoice:'reeds',gaugeInspected:true});
+    LegendStorage.savePlayer(p);LegendGreyfenMarshV160.render();
+  });
+  let ui=await native(page,'gauge-recorded');const beforeFallback=await saved(page);
+    for(const selector of ['#gfm160Complete','.gfm160-scene-art','.gfm160-status > div > strong']){
+      await page.evaluate(selector=>{const n=document.querySelector(selector);window.__missing={n,parent:n.parentNode,next:n.nextSibling};n.remove();},selector);
+      await expect.poll(()=>page.evaluate(()=>LegendPhaserWorldV1.snapshot().nativeMarsh.active)).toBe(false);
+      expect(await page.locator('.gfm160-scene-copy h1').evaluate(n=>getComputedStyle(n).color)).not.toBe('rgba(0, 0, 0, 0)');
+      await page.evaluate(()=>{const{n,parent,next}=window.__missing;parent.insertBefore(n,next);});await native(page,'gauge-recorded');
+    }
+    await page.setViewportSize({width:844,height:390});await page.locator('#gfm160Complete').focus();ui=await native(page,'gauge-recorded');
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+    for(const label of ui.labels){expect(label.width).toBeLessThanOrEqual(label.sourceBounds.width+1);expect(label.height).toBeLessThanOrEqual(label.sourceBounds.height+4);}
+    expect(await saved(page)).toEqual(beforeFallback);
 });

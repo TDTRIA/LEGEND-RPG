@@ -128,15 +128,45 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:78b5533fc917030005f9e1ea1370d9912a893d2c45c7751028c8cfd3612f3cce -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:6e9112f67f6011d2d3b2cd65513c93ef18472d956938fe5bb1edec159db1bb1a -->
+
+## Greyfen Marsh field records and shell — 2026-11-13 (verified locally)
+
+The Marsh field map and saved field notes now have dedicated, guarded Phaser presentation. Places retain explicit current/visited/off-route labels; settled reports place the traveler at Greyfen Landing. Both views support keyboard, touch, scrolling and rotation, with original semantic buttons and complete DOM fallback for missing or unknown content. The modal isolates background controls, restores prior inert state and opener focus, and cleans up when its owning screen leaves.
+
+The persistent shell now recognizes Marsh expeditions and reports, shows regional objectives and journal counts, and opens the actual Marsh map/notes. Return actions use the production settlement/report callbacks; town services and the traveler sheet cannot silently leave an active outing. A mobile CSS conflict that clipped dock labels is repaired. Focus is preserved when shell controls are rebuilt.
+
+Fifteen focused cases pass across fresh and equivalent retained checks: map/journal desktop and mobile journeys, detached-modal cleanup, mobile dock/drawer controls, full desktop/mobile surveys, independent desktop missing-source/landscape checks, partial-report fallback, report level growth, inventory overlays, persistent-shell readability and the existing wisp combat handoff. Initial opener-focus failures were fixed. Desktop survey attempts exceeded aggregate time budgets under software rendering; trace inspection found no stuck individual operation. Fallback/rotation assertions were moved into a separate desktop test without removing assertions or widening native-state deadlines. The final bounded checks pass. Mandatory storage and combat-rule passes remain valid because their owners and inputs are unchanged; full release acceptance is still open.
+
+Shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390, including map, populated notes, settled report map and DOM fallback. The final mobile dock shows complete labels. Syntax checks cover 105 active production scripts and 69 test specs. No save keys, normalization rules, reward formulas, costs or authored lore changed; read-only map/notes and navigation checks preserve saves and unknown properties.
+
+Next: Storehouse delve presentation and its unknown nested-state preservation defect, then regional combat acceptance. Greyfen and first-three-towns release gates remain open. This checkpoint is on the assigned feature branch; PR creation, merging and publishing remain unavailable under this task's Manual permissions. Removing the dedicated map painter restores DOM presentation.
+
 ## Greyfen Marsh expedition and reports — 2026-11-13 (verified locally)
 
-The production Marsh Path now has guarded Phaser artwork, status meters, route/encounter decisions, optional salvage, shelter choices, field notes, feedback and return reports. Original semantic controls retain every production callback. Complete action/field/artwork checks and unknown-content guards restore the styled DOM when presentation is incomplete. The field map currently uses its DOM presentation; its blur is removed, Escape and a keyboard focus loop work, and closing restores the opener. Screen transitions focus the new heading and reset stale scroll.
+<!-- /coderabbit-ai-generated:v1 -->
+
+The production Marsh Path now has guarded Phaser artwork, status meters, route/encounter decisions, optional salvage, shelter choices, field notes, feedback and return reports. Original semantic controls retain every production callback. Complete action/field/artwork checks and unknown-content guards restore the styled DOM when presentation is incomplete. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:f1e42526bfe504a236542b57a8c5b1bb44069ab644f33af7a2a549d6ca28e965 -->
+
+At this earlier checkpoint the field map used DOM presentation, with blur removed, Escape, a keyboard focus loop and opener restoration; the field-record checkpoint above supersedes that presentation.
+
+<!-- /coderabbit-ai-generated:v1 --> Screen transitions focus the new heading and reset stale scroll.
 
 Twelve focused cases passed: all eight existing Marsh gameplay regressions plus desktop/mobile native journeys, partial-report fallback, and complete/partial report level growth. They cover both routes, no-ration recovery, skipped and visited detours, both ferry enemies, wisp victory/defeat/retreat, exact pressure/supply/reward costs, reload, unknown save fields, Old Road isolation, Endurance allocation and duplicate-settlement protection. No gameplay formulas, economy, canon or persistence ownership changed. Existing tests use supported reduced motion and a 120-second journey timeout; assertions remain intact.
 
 Desktop1440×900, portrait390×844, landscape844×390 and DOM fallback screenshots were inspected in shared Chromium. An initial extra-paragraph guard failure and a visually obscured report image were repaired; final focused checks passed. Syntax checks cover 104 production scripts and 68 test specs. Broader release acceptance is still open.
 
-Next: dedicated Marsh field-map presentation and persistent-shell integration (the current shell does not recognize Marsh screens), then Storehouse delve and regional combat acceptance. The umbrella Greyfen migration/release gate remains unchecked. Publication remains pending task permissions; this checkpoint is local to the assigned feature branch. Removing the dedicated painter restores DOM presentation and does not change saves.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:ae62a4a9bb173ec4a438fa6d3503300892a28f7b1771c89731d8e3c8f8604fc3 -->
+
+The subsequent field-record checkpoint above completes dedicated Marsh map and shell integration. Storehouse delve and regional combat acceptance remain next.
+
+<!-- /coderabbit-ai-generated:v1 --> The umbrella Greyfen migration/release gate remains unchecked. Publication remains pending task permissions; this checkpoint is local to the assigned feature branch. Removing the dedicated painter restores DOM presentation and does not change saves.
 
 ## Bell Cellar battle and debrief — 2026-11-13 (verified locally)
 
@@ -510,7 +540,14 @@ The third production annal now uses the exact approved “The Peace, Written Dow
 
    - [ ] Greyfen Marsh and Storehouse exploration, map, encounters and results.
    - [x] Marsh expedition decisions, status, salvage, shelter, evidence and reports verified locally with original callbacks, exact saved outcomes, growth, responsive visuals and DOM fallback.
-   - [ ] Dedicated Marsh field map, persistent-shell integration, Storehouse delve and regional combat acceptance.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:88093fbe2df437898f566eef0adb1c3dd681311aedeb1c0def33f024c28d938f -->
+
+   - [x] Dedicated Marsh field map, saved field notes and persistent-shell integration verified locally with keyboard/touch, scrolling/rotation, lifecycle, readable labels, original settlement and DOM fallback.
+   - [ ] Storehouse delve and regional combat acceptance.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 <!-- coderabbit-ai-generated:v1 -->
