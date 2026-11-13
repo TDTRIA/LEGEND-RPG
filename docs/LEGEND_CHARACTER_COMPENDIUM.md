@@ -135,7 +135,7 @@ The invasion also separated Oric from the young soldier he had mentored. They ha
 
 ### Tavin Calder — Veteran and future Second-in-Command of Ashmere
 
-**Background:** Tavin comes from an ordinary family with no military tradition. His family struggled financially to make ends meet while he was growing up. The cause and specific circumstances of the hardship, along with the details of his family, remain open. As a young soldier, he was inexperienced and unsure of himself, yet determined to prove that he belonged. That determination sometimes made him reckless. Oric took him under his wing because he recognized a stubborn courage in Tavin: he kept going even when he was frightened.
+**Background:** Tavin comes from an ordinary family with no military tradition. His family struggled financially to make ends meet while he was growing up. Tavin initially enlisted for two connected reasons: to earn steady pay and help support his family, and to find a way out of the difficult life he had known. The cause and exact circumstances of the family's hardship, along with the details of his family, remain open. As a young soldier, he was inexperienced and unsure of himself, yet determined to prove that he belonged. That determination sometimes made him reckless. Oric took him under his wing because he recognized a stubborn courage in Tavin: he kept going even when he was frightened.
 
 **The scar and the guilt:** During one reckless incident, Oric protected Tavin from a blow and received the prominent scar across his face. Oric scolded him afterward. Tavin carried guilt over the injury for years. After their reunion, Oric eventually tells him that he never regretted saving him; Tavin is able to let go of the guilt.
 
