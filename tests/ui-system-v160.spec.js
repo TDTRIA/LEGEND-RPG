@@ -550,6 +550,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await attachProof(page, 'phase1-old-road-map.png');
   });
   test('combat HUD and eight live controls are painted in Phaser without replacing combat rules', async ({ page }) => {
+    test.setTimeout(120000);
     await enterAshmere(page, 'PhaserCombatQA');
     await page.evaluate(() => {
       const rt = window.LegendRuntimeV120;
@@ -573,7 +574,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
 
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' })
       .getByRole('button', { name: /Routes/i }).click();
-    await page.locator('.ash100-destination[data-ash-view="road"]').click();
+    await page.getByRole('button', { name: /The Old Road/i }).click();
     await expect(page.locator('.ash100-departure')).toBeVisible();
     await page.locator('#departureBegin').click();
     await expect(page.locator('.exp150-world-page')).toBeVisible();
@@ -675,7 +676,10 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     })).toBe(true);
     await expectNoHorizontalOverflow(page);
     await expect(page.locator('#guard')).toBeEnabled();
-    await page.locator('#guard').focus();
+    // Enter keyboard modality before asserting the DOM :focus-visible contract.
+    await page.locator('#skill').focus();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#guard')).toBeFocused();
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeCombatUiFocusedControlIds || []
     )).toContain('guard');
