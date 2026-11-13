@@ -49,12 +49,14 @@ test.describe('LEGEND level-up and road results v0.23.0', () => {
     await expect(page.getByRole('dialog', { name: 'Level 2' })).toBeVisible();
     await expect(page.locator('#v152-growth-total')).toHaveText('2');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUiSurface)).toBe('modal');
+    await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeGrowth?.active)).toBe(true);
     const nativeGrowth = await page.evaluate(() => {
       const panel = document.querySelector('.v152-levelup-panel');
       const confirm = document.querySelector('#v152-growth-confirm');
       return {
         painterActive: window.LegendPhaserWorldV1.snapshot()?.nativeGameplayUi,
         painterClass: document.body.classList.contains('legend-phaser-gameplay-ui-active'),
+        dedicated: window.LegendPhaserWorldV1.snapshot().nativeGrowth,
         panelBackground: panel ? getComputedStyle(panel).backgroundImage : '',
         panelColor: panel ? getComputedStyle(panel).color : '',
         confirmVisible: Boolean(confirm && getComputedStyle(confirm).visibility === 'visible'),
@@ -63,7 +65,9 @@ test.describe('LEGEND level-up and road results v0.23.0', () => {
     });
     expect(nativeGrowth.painterActive).toBe(false);
     expect(nativeGrowth.painterClass).toBe(false);
-    expect(nativeGrowth.panelBackground).not.toBe('none');
+    expect(nativeGrowth.dedicated.active).toBe(true);
+    expect(nativeGrowth.dedicated.controls).toHaveLength(13);
+    expect(nativeGrowth.panelBackground).toBe('none');
     expect(nativeGrowth.panelColor).not.toBe('rgba(0, 0, 0, 0)');
     expect(nativeGrowth.confirmVisible).toBe(true);
     expect(nativeGrowth.confirmText.length).toBeGreaterThan(0);

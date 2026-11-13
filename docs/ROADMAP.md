@@ -112,7 +112,21 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:1db43bbd08ab2ec7614f182f44c78d44266fbb737d23e66f3905c7995649f69d -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:037b3baecfaf0fef3a4501453988d1eaff7cdaf2296ae8a5f13d057976e0b0b2 -->
+
+## Growth dialog — 2026-11-13 (verified locally)
+
+The production level-up dialog now has a dedicated guarded Phaser painter for its approved backdrop/portrait, six attribute cards, current/draft values, point meter, explanations and all thirteen semantic controls. Complete-source preflight restores the styled DOM dialog if copy, controls or artwork are unavailable. Text follows measured source bounds and the panel's own scroll clip; mixed inline copy is painted as complete labels to avoid overlap.
+
+The dialog traps keyboard focus, keeps background surfaces inert, moves focus when an allocation disables its control, and restores the report after confirmation. Touch targets are at least 44px, one panel scrollbar handles small screens, and the old backdrop blur is removed. Pending points survive reload without saving draft choices. Detached confirmation controls cannot apply growth twice. LegendLevelUpV152 retains allocation and persistence; XP, attribute effects, Endurance HP and reward formulas are unchanged, including unknown save properties.
+
+Seven focused cases pass: desktop/mobile allocation and fallback, reload/replacement/landscape, the existing progression consumer, two real combat victory/growth handoffs and early expedition settlement/growth. Shared Chromium desktop, portrait, landscape and fallback screenshots were inspected. Syntax checks pass for 102 production scripts and 65 test specs. Full regional/release acceptance remains open; publication is pending task permissions. The original DOM renderer and callbacks remain the fallback, so disabling the dedicated growth painter restores the source presentation.
+
 ## Combat result presentation — 2026-11-13 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 A dedicated production painter now reads the existing victory/defeat report and draws approved scene/actor artwork, complete reward and progression copy, and the original continue/return controls. It uses measured shell clipping and restores the complete DOM report when artwork, required actions or fields are missing. Results reset stale scroll and focus their heading while preserving an open growth dialog. Title line height accommodates complete glyphs; the authoritative multi-drop reward list replaces the misleading fixed “+1” badge.
 
@@ -120,7 +134,13 @@ Growth completion refreshes the displayed report without replaying settlement. T
 
 <!-- coderabbit-ai-generated-section:v1:219f74d8f1b974fb9c68270843a06196775efa0c630c4f6597b7d5cd7e6d90de -->
 
-Eight focused cases pass across final checks and equivalent retained results: real desktop/mobile victories with exact multi-drop rewards and Endurance growth, defeat/return, existing result and Bell Cellar callbacks, progression/default compatibility, and combat clipping. Desktop, portrait, landscape and DOM fallback screenshots were inspected. The native level-up/attribute-allocation surface is still outstanding, as are full regional combat-result acceptance and release/publication gates.
+Eight focused cases pass across final checks and equivalent retained results: real desktop/mobile victories with exact multi-drop rewards and Endurance growth, defeat/return, existing result and Bell Cellar callbacks, progression/default compatibility, and combat clipping. Desktop, portrait, landscape and DOM fallback screenshots were inspected. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:9aa82dbe03c626af602294deb845b676e983ef789637d3ad90702c290ac68857 -->
+
+The growth dialog is verified in the later checkpoint above. Full regional combat-result acceptance and release/publication gates remain open.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

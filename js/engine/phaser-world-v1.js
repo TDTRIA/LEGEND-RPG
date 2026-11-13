@@ -761,6 +761,7 @@
       this.inventoryOverlay = window.LegendPhaserInventoryOverlayV1?.create(this);
       this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
       this.roadScene = window.LegendPhaserRoadSceneV1?.create(this);
+      this.growth = window.LegendPhaserGrowthV1?.create(this);
       this.combatResults = window.LegendPhaserCombatResultsV1?.create(this);
       this.roadResults = window.LegendPhaserRoadResultsV1?.create(this);
       this.motionReduced = reducedMotion();
@@ -840,6 +841,7 @@
           nativeInventory: this.inventoryOverlay?.snapshot(),
           nativeRouteBoard: this.routeBoard?.snapshot(),
           nativeRoadSceneUi: this.roadScene?.snapshot(),
+          nativeGrowth: this.growth?.snapshot(),
           nativeCombatResults: this.combatResults?.snapshot(),
           nativeRoadResults: this.roadResults?.snapshot(),
           nativeTitleUi: this.nativeTitleUiActive,

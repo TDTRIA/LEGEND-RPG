@@ -25,7 +25,12 @@ async function battle(page, width, defeat=false) {
   await expect(page.locator('.rpg-battle')).toBeVisible();
   const before=await page.evaluate(()=>LegendStorage.loadPlayer());
   await page.locator('#strike').click();
-  await expect(page.locator('.v152-combat-results')).toBeVisible();
+  if (defeat) await expect(page.locator('.v152-combat-results')).toBeVisible();
+  else {
+    await expect(page.getByRole('dialog',{name:'Level 2'})).toBeVisible();
+    await expect(page.locator('.v152-combat-results')).toBeAttached();
+    expect(await page.locator('#root').evaluate(node=>node.inert)).toBe(true);
+  }
   return before;
 }
 for(const width of [1440,390]) test.describe(`${width}px`,()=>{
@@ -39,6 +44,8 @@ for(const width of [1440,390]) test.describe(`${width}px`,()=>{
     await page.locator('[data-attr-add="endurance"]').click();
     await page.locator('[data-attr-add="endurance"]').click();
     await page.locator('#v152-growth-confirm').click();
+    await expect(page.locator('.v152-combat-results')).toBeVisible();
+    expect(await page.locator('#root').evaluate(node=>node.inert)).toBe(false);
     await expect(page.locator('.v152-results-heading h1')).toBeFocused();
     await expect(page.locator('.v152-result-level-note')).toContainText('choices are recorded');
     const saved=await page.evaluate(()=>LegendStorage.loadPlayer());

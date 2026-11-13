@@ -139,7 +139,13 @@ The active production entry point loads Phaser 4.1 and the world renderer, follo
 
 <!-- coderabbit-ai-generated-section:v1:1d466221364a5491abf2866d7cc0c2bd777d0cd8236e87312db9949a6ac9d0ed -->
 
-`phaser-combat-results-v1.js` paints the separate production combat debrief with complete-source preflight, approved images, measured labels and a shell clip. The source view retains continue/return/secondary callbacks, heading focus and growth-notice refresh; it does not settle rewards. Native level-up allocation remains a separate migration surface.
+`phaser-combat-results-v1.js` paints the separate production combat debrief with complete-source preflight, approved images, measured labels and a shell clip. The source view retains continue/return/secondary callbacks, heading focus and growth-notice refresh; it does not settle rewards. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:0047dde7bc562ad41b6e93e5ff54e7b2282dc85e2a99031627328c173c02e309 -->
+
+The separate `phaser-growth-v1.js` painter reads the body-level production growth dialog, guards complete copy/art/actions, and clips native labels to the panel scroll viewport. Original DOM buttons retain allocation/save callbacks. `LegendLevelUpV152` manages modal focus, background inert state and cleanup, including externally removed/replaced dialogs; it preserves existing attribute and HP formulas. The painter never saves or allocates points.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 
