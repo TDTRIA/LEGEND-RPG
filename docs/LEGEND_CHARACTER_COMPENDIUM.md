@@ -1,12 +1,12 @@
 # LEGEND — Character Compendium
 
-**Status:** Expanded character proposals; not locked canon  
+**Status:** Mixed reference: established roles, owner-approved character direction, and proposals; each entry labels its status.  
 **Purpose:** Make the world feel inhabited beyond the main mystery, give recurring characters personal lives and durable relationships, and provide a stable reference for future dialogue, quests, portraits, and sequels.  
 **Companions:** [Series & Title Reframe](LEGEND_SERIES_CONTINUITY_REFRAME.md), [World & Story Bible](LEGEND_WORLD_BIBLE.md), [Deep Canon Foundation](LEGEND_DEEP_CANON_FOUNDATION.md), [Series Myth Arc](LEGEND_SERIES_MYTH_ARC.md), [Culture & History Atlas](LEGEND_CULTURE_AND_HISTORY_ATLAS.md).
 
 > **Character principle:** A person should want something even if the player never finds the Bell Fragment. The central mystery may interrupt their life, expose a contradiction, or force a hard choice—but it should not be the secret explanation for their entire personality.
 
-New biographies below are proposals, not established lore. Before implementing a name or assigning a role to an existing service location, compare it with the live NPC roster, asset inventory, and dialogue. Preserve established names and gameplay roles.
+Entries labeled **PROPOSED** are not established lore. Entries labeled **OWNER-APPROVED DIRECTION** reflect decisions made by the project owner but are not necessarily implemented or playable. Before implementing a name or assigning a role to an existing service location, compare it with the live NPC roster, asset inventory, and dialogue. Preserve established names and gameplay roles.
 
 ---
 
@@ -30,7 +30,7 @@ The new cast should not repeat those jobs. It widens the town with people who re
 
 Not every character needs a tragic past. At least some should be funny, ambitious, irritating, generous, vain, ordinary, lucky, or wrong about something that does not involve the ancient network.
 
-## 2. Established recurring characters: expand, do not replace
+## 2. Established and owner-approved recurring characters: expand, do not replace
 
 ### Mara Vell — Archive Keeper
 
@@ -80,7 +80,13 @@ Not every character needs a tragic past. At least some should be funny, ambitiou
 
 **Established role:** Oric is associated with the gate, road survival, combat guidance, and the practical danger of expeditions. The intended spelling is Captain Oric; do not split him into a second character called Olric.
 
-**Proposed deeper life:** Oric was promoted because he is good at making decisions with incomplete information. He has saved lives by calling a retreat early and damaged trust by closing routes other people depended on. He knows that a captain's order can keep one group safe while leaving another group exposed.
+**Owner-approved personal history and later-story direction (2026-11-13; not yet implemented):** After the ancient monster-sealing war, Oric fought in a separate war between human kingdoms. Another kingdom invaded and conquered his homeland. During the fall, he escaped after playing dead among villagers killed in the invasion. He believes he is the last survivor of his kingdom, though that belief is mistaken. He wandered for years before reaching Ashmere during a monster attack. He fought for the town and stayed to help after the danger passed; the townspeople initially viewed the armed stranger with suspicion.
+
+An ordinary resident Oric saved became the first person in Ashmere to trust him. That bond helped him begin to belong. When the town later asked him to become captain because people had come to rely on him, he hesitated; that first trusted resident helped persuade him to accept. The resident eventually followed a different path but retained a special bond with Oric. He earned the captaincy through his actions and did not arrive seeking authority.
+
+Oric keeps his former kingdom and wartime history almost entirely private. People in Ashmere may know he is a veteran, but they do not know the full story. He deflects questions with vague or deliberately incomplete answers. As the traveler gradually earns his trust, Oric begins telling the story himself in several quiet conversations after difficult journeys, not in a single exposition scene. He struggles to express affection, but eventually comes to regard the traveler as family.
+
+The invasion also separated Oric from the young soldier he had mentored. They had no chance to speak before being separated, and Oric believed the young man was lost. A later chance reunion with that soldier is part of the approved direction below.
 
 **Want:** Make sure people who leave Ashmere understand the cost of the road and return with enough judgment to survive the next trip.
 
@@ -94,7 +100,7 @@ Not every character needs a tragic past. At least some should be funny, ambitiou
 
 **Voice:** Direct, compact, occasionally wry. He explains what can hurt the player and why, rather than speaking in prophecy or battlefield slogans.
 
-**Arc:** Oric learns to distinguish a firm safety rule from an order that must be revisited when the ground contradicts it. His best growth is not becoming reckless; it is learning how to say, “The order was mine. The evidence has changed.”
+**Arc:** Oric learns to distinguish a firm safety rule from an order that must be revisited when the ground contradicts it. His best growth is not becoming reckless; it is learning how to say, “The order was mine. The evidence has changed.” His personal story also asks him to risk trust again: the traveler gradually becomes family, while Tavin's return brings back someone Oric had spent years believing lost. Keep Oric's affection action-led and hard-won; do not make him suddenly sentimental.
 
 **Guardrail:** Oric need not be a disgraced hero or secret veteran of the ancient network. His conflicts should grow from the responsibilities of the person he is now.
 
@@ -121,6 +127,29 @@ Not every character needs a tragic past. At least some should be funny, ambitiou
 **Guardrail:** Do not turn Sella into a secret descendant of Aren or a magical key. Her importance is the ordinary labor that makes every hero's journey possible.
 
 ---
+
+---
+
+## Owner-approved character direction — Tavin Calder and Oric's later story
+**Status:** Owner-approved direction (2026-11-13); not yet implemented. Tavin is not confirmed as part of the live NPC roster. Audit the roster and dialogue before assigning implementation details.
+
+### Tavin Calder — Veteran and future Second-in-Command of Ashmere
+
+**Background:** Tavin comes from an ordinary family with no military tradition. His childhood was difficult, but the details are deliberately open. As a young soldier, he was inexperienced and unsure of himself, yet determined to prove that he belonged. That determination sometimes made him reckless. Oric took him under his wing because he recognized a stubborn courage in Tavin: he kept going even when he was frightened.
+
+**The scar and the guilt:** During one reckless incident, Oric protected Tavin from a blow and received the prominent scar across his face. Oric scolded him afterward. Tavin carried guilt over the injury for years. After their reunion, Oric eventually tells him that he never regretted saving him; Tavin is able to let go of the guilt.
+
+**The invasion and the wandering years:** Oric and Tavin were separated in the chaos of the invasion without a chance to speak. Oric did not see Tavin die and believed he was lost; returning to the conquered homeland was too dangerous. Tavin survived. He spent years wandering and taking work guarding caravans, escorting travelers, and protecting settlements. He made real friendships and remains in touch with some, but eventually stopped searching for his old home and learned to live without one.
+
+**Personality:** Tavin is a hardened veteran, not a younger copy of Oric. He is warmer, more approachable, comfortable with humor, and patient with younger guards because he remembers being inexperienced himself. He is friendly without taking danger lightly. He takes a natural interest in the traveler and becomes a more approachable mentor alongside Oric.
+
+**Ashmere and his role:** Tavin and Oric encounter one another by chance in Ashmere; Tavin is not searching for his former commander. Tavin recognizes Oric by the facial scar and cautiously asks, “Commander?” Oric recognizes Tavin's voice immediately and embraces him. Tavin initially stays while passing through. Over time, he comes to love Ashmere and its people in their own right, not merely because Oric is there. He eventually earns the town's trust and becomes Oric's second-in-command, helping oversee the defenses when Oric is away. He retains his independence and sometimes leaves to visit old friends.
+
+**Relationship with Oric:** Tavin still respects Oric as his former commander, while their relationship has also become that of two seasoned veterans and trusted friends. Tavin occasionally teases Oric about how protective he has become of the traveler, and his presence brings out Oric's quieter humor. Oric is glad to have him back even if he rarely admits it. They may disagree about the best way to protect Ashmere, but they handle disagreements privately, seek compromises, and present a united front to the town.
+
+**Relationship with the traveler:** Tavin can become a friendly mentor who shares practical advice and stories, offers a different kind of guidance from Oric, and helps the traveler feel welcome. His role must remain his own; he is not defined only by his history with Oric.
+
+**Open details:** Tavin's childhood and family specifics; why he first enlisted; the names and histories of his former friends; the names of Oric's former kingdom and its invader; the identity of the Ashmere resident who first trusted Oric; the timing of Tavin's eventual decision to make Ashmere home; and the exact scenes through which the traveler discovers Oric's past.
 
 ## 3. Proposed new characters in Ashmere
 
