@@ -57,7 +57,7 @@
         document.addEventListener('keydown',onKey,true);
         if(page)page.inert=true;
         document.body.appendChild(overlay);
-        overlay.querySelector('h2').focus({preventScroll:true});
+        overlay.querySelector('[data-credits-close]').focus();
       }
 
     return Object.freeze({ renderGate, openCredits });

@@ -82,7 +82,7 @@
           </section>
           <div class="v140-realm-player-state"><span>YOUR JOURNEY</span><strong>${player ? 'Day ' + day + ' · ' + tokens + (Number(tokens) === 1 ? ' Road Token' : ' Road Tokens') : 'A new journey awaits'}</strong><small>${player ? esc(name) + ' · ' + esc(cls) : 'Shape a traveler and enter the realm.'}</small></div>
         </aside>
-        <footer class="portal100-footer portal-footer v120-title-footer"><span>LEGEND: THE AWAKENING</span><span>ASHMERE · THE OLD ROAD · GREYFEN</span></footer>
+        <footer class="portal100-footer portal-footer v120-title-footer"><span>LEGEND: THE AWAKENING${buildVersion ? ' · ' + esc(buildVersion) : ''}</span><span>ASHMERE · THE OLD ROAD · GREYFEN</span></footer>
       </div>`;
     return true;
   }

@@ -192,7 +192,35 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:2f27691a4bb64cca132adf310b240cffeebdda62ba0aaa06cec2df380f1cf607 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:158c24768d5d4cafee8d02edbfdd3e08f71ad8cbccdf75cf6a5e5cf0ff79f76f -->
+
+## Production entry compatibility checkpoint — 2026-11-13 (verified locally)
+
+Eighteen selected production checks now pass across final runs and equivalent retained results. Coverage includes the original Credits focus/Escape contract plus three dedicated native/fallback modal checks; production engine/storage ownership; all six Old Road environments, route/detour variants and Bell Cellar; missing Phaser CDN; native title controls/copy/geometry; the real returning-save DOM fallback and Continue action; build identity; retired runtime/key/script exclusions; the full creation/return-facade journey; the active title owner; rejection of retired save imports; unknown-field normalization; traveler-record construction; and regional asset aliases.
+
+Comparing against the starting Bitbucket main found that the migrated Credits dialog had changed initial focus to its heading. Initial focus is restored to the original Return to the Title button, while keeping the focus trap, inert background, Escape handling and native focus frame. The title footer now displays the existing controller-supplied build version so the tested game can be identified; no release value or gameplay version was changed.
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:a90264bfd2895a42545ea32e6880685ab114752193cbee1ff3f4ba917c905007 -->
+
+Two smoke expectations were stale at the starting revision: unconditional DOM returning-menu rendering, and fixed 16px/dark primary text. The returning-menu test now explicitly removes required native artwork and retains all original DOM readability/navigation assertions; independent desktop/mobile tests cover native rendering. The native smoke check uses the starting code's responsive 13–17px/10–12px light-text contract, matching the existing returning-title gates, and adds exact control inventory and source-label equality while retaining resolution, alignment and real input assertions. Two storage checks now wait for the actual Phaser awakening handoff after reload instead of assuming the separate boot layer means the title is ready. Original normal-motion behavior and all persistence assertions remain intact.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:c10ea60350e01bb55e9da66e54012b13a3e4f2fb60883e5af3a1d68a7986a05c -->
+
+Shared Chromium Credits focus and build-footer screenshots were inspected at desktop and mobile, with footer landscape/overflow coverage and existing modal landscape checks. All saved values remained unchanged in Preview. Syntax checks passed for 118 production scripts and 85 specs. Earlier failures and the final selected checks are recorded in the validation context; no full-suite or release completion is claimed. Long-name/zoom title acceptance, broader shell/combat/accessibility gates, remaining production regressions and first-three-towns requirements remain open. PR creation, merging and production publishing are still blocked by Manual permissions.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
 ## Title navigation notice — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The brief production title handoff notice now uses a dedicated guarded Phaser Graphics/Text canvas in its original semantic DOM layer. Its real message, title callback, focus behavior and 340ms deadline remain owned by the title controller. Complete source copy remains visible if the painter is absent or cannot fit all text; unexpected source children restore the whole DOM notice. Large text, readable font and high contrast are supported.
 
@@ -340,7 +368,13 @@ Next: profile/account presentation, remaining loading/confirmation overlays, aud
 
 The production Credits dialog now has guarded Phaser copy, panel, separators and focused Return presentation over the existing world art. All credits and original return/outside-click/Escape actions remain available. Missing or unexpected copy restores the complete DOM presentation; scrolling and resize keep text within the dialog. No save, account, audio, lore or gameplay owner changed.
 
-Shared Preview reproduced a full-screen 9px blur and Tab escaping the dialog. The blur is removed in both native and fallback views. The title is inert while Credits is open, Tab/Shift+Tab remain within the dialog, initial focus preserves the start of the text, and closing restores the opener and prior inert state. Repeated opening reuses the current dialog. Escape is handled by the dialog before the title-wide listener can replace its opener.
+Shared Preview reproduced a full-screen 9px blur and Tab escaping the dialog. The blur is removed in both native and fallback views. The title is inert while Credits is open, Tab/Shift+Tab remain within the dialog, <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:a6b9ebfaae8d25e451a0fb1b306fa9f8a02c8d0dc47b13377cdc80c8c87afa1a -->
+
+initial focus returns to the original Return to the Title button (restored by the production entry compatibility checkpoint)
+
+<!-- /coderabbit-ai-generated:v1 -->, and closing restores the opener and prior inert state. Repeated opening reuses the current dialog. Escape is handled by the dialog before the title-wide listener can replace its opener.
 
 Four focused checks pass: three new desktop/mobile/accessibility cases for exact copy, keyboard/touch, landscape scrolling, repeated open, fallback/recovery and unchanged raw player/settings/audio/return state; plus the existing returning-player title action regression. The first three interaction checks passed before visual inspection caught an old global button gradient covering the Return label. Scoped style precedence and computed background/color assertions now prevent that regression; all three passed again. Syntax checks pass for 108 production scripts and 75 test specs.
 

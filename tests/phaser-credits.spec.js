@@ -13,7 +13,7 @@ for(const width of [1440,390])test.describe(`${width}px`,()=>{
     await boot(page,width);const before=await raw(page);const errors=[];page.on('pageerror',error=>errors.push(error.message));
     const opener=page.locator('#credits');if(width===390)await opener.tap();else{await opener.focus();await page.keyboard.press('Enter');}
     const dialog=page.getByRole('dialog',{name:'LEGEND',exact:true});await expect(dialog).toBeVisible();let ui=await native(page);
-    await expect(page.locator('#legendCreditsTitle')).toBeFocused();expect(await page.locator('#root').evaluate(n=>n.inert)).toBe(true);
+    await expect(page.locator('[data-credits-close]')).toBeFocused();expect(await page.locator('#root').evaluate(n=>n.inert)).toBe(true);
     await expect(page.locator('.legend-credits-overlay')).toHaveCSS('backdrop-filter','none');await expect(dialog).toHaveCSS('background-image','none');
     expect(ui.labels.map(n=>n.sourceText)).toEqual(await dialog.locator('.legend-credits-kicker,h2,h3,p:not(:has(.legend-credits-line)),.legend-credits-line,button').allTextContents().then(a=>a.map(s=>s.replace(/\s+/g,' ').trim())));
     expect(ui.labels).toHaveLength(10);expect(ui.labels.map(n=>n.text)).toEqual(expect.arrayContaining(['First light: Ashmere','Beyond the lanterns: Greyfen and the wider realm','Return to the Title']));
