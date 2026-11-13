@@ -1,6 +1,12 @@
 # LEGEND — Phaser production migration
 
-Updated: 2026-11-12
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:f9bdada3b7b915d2fe0ac719b816e207c03361ae71f8ea3f6f62e43a861f3991 -->
+
+Updated: 2026-11-13
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 ## Objective
 
@@ -62,7 +68,17 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
 
 <!-- coderabbit-ai-generated-section:v1:a3d019a033fa6b634d06156e47b4edd99af839a9c60bb097a4afd01fafdb7ae9 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:9f47ac1ad60278b694029c4dc806752658adc4dcf549ec52a31271a27130deba -->
+
+## Expedition regression checkpoint — 2026-11-13 (local)
+
+All seven existing expedition-journal cases pass on the creation/readability repair revision: Mara's secured-report handoff, departure preparation and warnings, map/journal focus and saved discoveries, keyboard route selection, camp-watch ration/pressure persistence, poultice crafting and return reports, and the late-night Reed Cut encounter. The original reward, resource and progression assertions remain intact. This closes the pending journal regression batch; it does not complete the broader production suite or the central road scene/results migration. Next presentation work is the main scene's location label, discovery hotspot and sound control, retaining the existing road-view callbacks. Bitbucket-to-GitHub publication remains pending task permissions.
+
 ## Creation and returning-title readability — 2026-11-13 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 Fixed the confirmed creation caption/step-counter wrapping, hidden fallback wordmark copied above the raster logo, cramped mobile presence caption, and excessive spacing inside choice descriptions. Creation labels now use explicit readable colors, measured content boxes, bounded glyph fitting and the source line height. Primary actions keep light text on a dark surface. Failed text or artwork painting restores the complete DOM presentation. The returning-player class/day/token summary fits its original card.
 
