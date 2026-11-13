@@ -51,6 +51,7 @@
     if (!rootNode) return true;
     return !!rootNode.querySelector([
       '.v120-title',
+      '[data-recovery-screen]',
       '.title-v100',
       '.v094-creation',
       '.v094-creation-step',

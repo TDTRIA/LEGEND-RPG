@@ -168,7 +168,25 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:f6e3c506a1c1b293e5584cb9f52d6d8a0782727e40d1a944a11cda78d9f8e3fd -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:ba9cf7e6507ac9ee637e5b287e53b41134787ed7afcb16bca8e57ae83c25b57d -->
+
+## Bootstrap recovery screens — 2026-11-13 (verified locally)
+
+The production missing-module screens now have dedicated guarded Phaser panels, complete explanations, focused reload/return controls and responsive clipping. Coverage includes missing title controller/view, storage, profile controller/view, settings, News & Roadmap, town and traveler-creation modules. The source DOM and original callbacks remain authoritative. The title-view and profile-view failures previously had no recovery button; they now expose Reload Game and Return to Title respectively. Missing town/creation modules say unavailable rather than implying that waiting will finish loading.
+
+Recovery metadata only sets presentation and heading focus. The gameplay shell is excluded on these screens. Unknown or incomplete copy restores the full DOM, and missing Phaser retains the actionable source screen. Accessibility preferences apply to font, text size, weight, contrast and spacing. No save key, normalization, cloud/account service, combat, reward or progression rule changed.
+
+Eleven selected checks pass across fresh and equivalent retained results: desktop/mobile recovery matrices; missing profile view; actual missing-storage startup and reload after its module returns; combined preferences and missing renderer; five existing script-order/bootstrap/navigation/storage-boundary cases; and the full returning-player title regression. Reload and return preserve raw player/settings/audio/pending-return data and unknown player fields. An initial case-sensitive expectation was corrected to compare rendered DOM text, including its existing uppercase style. The shell assertion was strengthened to check the actual shell class.
+
+Visual inspection caught two real obstructions despite successful paint snapshots: a legacy full-page background and profile hero pseudo artwork covered the canvas copy. Scoped recovery styles now remove both, and regressions verify the transparent native surface and suppressed pseudo decoration. Shared Chromium desktop 1440×900, portrait 390×844 and landscape 844×390 screenshots were inspected, including high-contrast/large-text and DOM fallback. Preview module overrides/preferences were restored and saved values were unchanged.
+
+This completes the bootstrap recovery slice. Early loading presentation, confirmation dialogs, remaining overlay inventory, full first-session/returning-save migration acceptance, dedicated Storehouse art and first-three-towns release gates remain open. Manual task permissions still prevent PR creation, merging and production publishing. Removing the recovery painter restores the source UI; the repaired buttons work independently.
+
 ## Title sound and audio-control acceptance — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 New and returning travelers can now mute or enable music and effects directly from the production title. The dedicated Phaser menu paints the Sound: On/Off text, selected state, disabled state and focus frame; the original button retains keyboard/touch activation and a stable Game sound accessible name with aria-pressed. The title audio facade calls the existing shared director and uses legend-road-sound, so title, road and combat stay on the same preference. Missing Phaser retains the usable DOM button; a missing audio module leaves an explicit disabled Sound unavailable control. No navigation, progression, economy or player-save owner changed.
 

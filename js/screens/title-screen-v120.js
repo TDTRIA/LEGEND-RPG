@@ -58,7 +58,9 @@
       soundAvailable: titleAudio.canToggleSound?.() ?? false
     })) {
       const host = root();
-      if (host) host.innerHTML = '<main class="settings09x"><div class="settings09x-wrap"><h1>Title screen unavailable</h1><p>The title menu view could not be loaded. Refresh before continuing.</p></div></main>';
+      if (host) host.innerHTML = '<main class="settings09x"><div class="settings09x-wrap"><h1>Title screen unavailable</h1><p>The title menu view could not be loaded. Refresh before continuing.</p><button id="retryTitle" type="button">Reload Game</button></div></main>';
+      host?.querySelector('#retryTitle')?.addEventListener('click',()=>window.location.reload());
+      window.LegendRecoveryScreenV1?.present(host);
       return;
     }
     titleAudio.startAmbience();

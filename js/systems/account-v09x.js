@@ -59,7 +59,9 @@
 
     if(typeof profileView?.render!=='function'){
       const host=root();
-      if(host)host.innerHTML='<main class="account09x"><div class="account09x-wrap"><h1>Profile is unavailable</h1><p>The profile view module did not load. Refresh before continuing.</p></div></main>';
+      if(host)host.innerHTML='<main class="account09x"><div class="account09x-wrap"><h1>Profile is unavailable</h1><p>The profile view module did not load. Refresh before continuing.</p><button id="backTitle" type="button">Return to Title</button></div></main>';
+      host?.querySelector('#backTitle')?.addEventListener('click',()=>window.LegendGameBootstrap?.title?.());
+      window.LegendRecoveryScreenV1?.present(host);
       return;
     }
 

@@ -32,6 +32,7 @@
       console.warn('LEGEND added a missing #backTitle control to a fallback screen.');
     }
     button.addEventListener('click', onBack);
+    window.LegendRecoveryScreenV1?.present(host);
     return true;
   }
   function loadPlayer(){ return S().loadPlayer ? S().loadPlayer() : null; }
@@ -62,6 +63,7 @@
     if (host) {
       host.innerHTML = '<main class="settings09x"><div class="settings09x-wrap"><h1>Title screen unavailable</h1><p>The title module did not load. Refresh before continuing.</p><button id="retryTitle" type="button">Reload Game</button></div></main>';
       host.querySelector('#retryTitle')?.addEventListener('click', () => window.location.reload());
+      window.LegendRecoveryScreenV1?.present(host);
     }
   }
 
@@ -104,14 +106,14 @@
     }
     S().savePlayer?.(player);
     if(window.LegendAshmereV099?.renderAshmere) return window.LegendAshmereV099.renderAshmere();
-    return renderFallback('<div class="shell"><section class="panel"><h2>Ashmere is loading...</h2><p>The town module did not load. Try a hard refresh if this screen does not change.</p><div class="actions"><button class="btn primary" id="backTitle" type="button">Back to Title</button></div></section></div>');
+    return renderFallback('<div class="shell"><section class="panel"><h2>Town unavailable</h2><p>The town module did not load. Return to the title and refresh before retrying.</p><div class="actions"><button class="btn primary" id="backTitle" type="button">Back to Title</button></div></section></div>');
   }
 
   function newTraveler(){
     if (!root()) return false;
     const beginCreation = () => {
       if(window.LegendBeginningV094?.startCreation) return window.LegendBeginningV094.startCreation();
-      return renderFallback('<div class="shell"><section class="panel"><h2>Traveler creation is loading...</h2><p>The traveler-creation module did not load. Try a hard refresh before retrying.</p><div class="actions"><button class="btn primary" id="backTitle" type="button">Back to Title</button></div></section></div>');
+      return renderFallback('<div class="shell"><section class="panel"><h2>Traveler creation unavailable</h2><p>The traveler-creation module did not load. Try a hard refresh before retrying.</p><div class="actions"><button class="btn primary" id="backTitle" type="button">Back to Title</button></div></section></div>');
     };
     if (window.LegendOpeningPrologueV220?.start) return window.LegendOpeningPrologueV220.start(beginCreation);
     return beginCreation();
@@ -142,6 +144,7 @@
     const container = host;
     container.innerHTML = '<main class="settings09x"><div class="settings09x-wrap"><section class="settings09x-hero"><h1>Settings</h1><p>The settings screen could not be loaded. Return to the title and refresh before retrying.</p></section><div class="settings09x-actions"><button class="settings09x-btn" id="backTitle" type="button">Back to Title</button></div></div></main>';
     container.querySelector('#backTitle')?.addEventListener('click', title);
+    window.LegendRecoveryScreenV1?.present(container);
   }
 
   window.LegendGameBootstrap = { title, titleGate, continueGame, newTraveler, settings, account, credits, dispatches };
@@ -152,6 +155,7 @@
     if (!host) return false;
     host.innerHTML = '<main class="settings09x"><div class="settings09x-wrap"><h1>Traveler storage unavailable</h1><p>The game could not initialize its save system. Your existing traveler data has not been changed. Refresh the page; if this continues, report the failed startup module.</p><button id="reloadGame" type="button">Reload Game</button></div></main>';
     host.querySelector('#reloadGame')?.addEventListener('click', () => window.location.reload());
+    window.LegendRecoveryScreenV1?.present(host);
     console.error('LEGEND startup stopped because LegendStorage did not initialize.');
     return false;
   }

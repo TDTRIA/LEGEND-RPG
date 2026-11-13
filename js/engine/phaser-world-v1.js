@@ -269,6 +269,7 @@
     let surface = 'title';
     if (modal && !modal.hidden) surface = 'modal';
     else if (growthOverlayVisible) surface = 'modal';
+    else if (host.querySelector('[data-recovery-screen]')) surface = 'recovery';
     else if (host.querySelector('.dispatches-v140')) surface = 'dispatches';
     else if (host.querySelector('.settings09x')) surface = 'settings';
     else if (host.querySelector('.legend-credits-overlay')) surface = 'credits';
@@ -767,6 +768,7 @@
       this.creditsUi = window.LegendPhaserCreditsV1?.create(this);
       this.dispatchesUi = window.LegendPhaserDispatchesV1?.create(this);
       this.accountUi = window.LegendPhaserAccountV1?.create(this);
+      this.recoveryUi = window.LegendPhaserRecoveryV1?.create(this);
       this.inventoryOverlay = window.LegendPhaserInventoryOverlayV1?.create(this);
       this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
       this.roadScene = window.LegendPhaserRoadSceneV1?.create(this);
@@ -855,6 +857,7 @@
           nativeCredits: this.creditsUi?.snapshot(),
           nativeDispatches: this.dispatchesUi?.snapshot(),
           nativeAccount: this.accountUi?.snapshot(),
+          nativeRecovery: this.recoveryUi?.snapshot(),
           nativeInventory: this.inventoryOverlay?.snapshot(),
           nativeRouteBoard: this.routeBoard?.snapshot(),
           nativeRoadSceneUi: this.roadScene?.snapshot(),
