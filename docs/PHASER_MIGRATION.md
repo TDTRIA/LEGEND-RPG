@@ -161,7 +161,14 @@ Publishing is blocked in this task by Manual permissions and the assigned-branch
 <!-- coderabbit-ai-generated-section:v1:e6192209dfb89ad7448cd24c592806f7098d0dc781ba14fffd2a028ca85466c8 -->
 
    - [x] Blacksmith and crafting presentation verified locally for Ashmere and Greyfen: guarded Phaser banner, current kit, category tabs, equipment comparisons, purchase/equip states, recipes, ingredient counts and feedback. Original buttons, gear art and recipe icons remain; production controllers still own exact prices, ownership/region/level rules, ingredient consumption and saves. Keyboard focus survives purchases, tab changes and crafts. Desktop1440×900 and mobile390×844 transaction tests cover full-save equality, below-purchase-level owned gear, regional equipment, rare ingredient use, fallback crafting and the 34g Greyfen parcel trade. Shared desktop/mobile screenshots inspected. Publication remains pending task permissions; this does not complete the wider crafting-effects/release gate.
-   - [ ] Workboard/daily board and NPC/dialogue screens.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:8a4d1bdb2718ce8fa04af302be1490b6260d8c9b4f516f38026e13fd56001afb -->
+
+   - [x] Work Board and job presentation verified locally in Ashmere/Greyfen: guarded native regional banners, listings, field posting, prompts, timing marker, sequence reveal/actions, focus and results. Catalog preflight checks regional job/action completeness; original semantic controls, grading, pay, XP, bonus odds and save callbacks remain authoritative. Fixed abandoned timing/sequence jobs retaining handlers after leaving, and keyboard navigation accidentally submitting work. Focused desktop/mobile checks cover exact full-save outcomes, no duplicate/abandoned pay, stale sequence isolation, fallback, Greyfen reload and level-up allocation; shared desktop/portrait/landscape screenshots inspected. Results stay clear of the fixed dock. Publication remains pending task permissions.
+   - [ ] Daily Field Board and NPC/dialogue screens. The wider release requirement to integrate daily contracts into the Work Board remains open.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 

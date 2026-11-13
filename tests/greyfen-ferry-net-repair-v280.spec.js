@@ -1,8 +1,11 @@
 const { test, expect } = require('@playwright/test');
 
 async function openWorkBoard(page, region = 'Greyfen') {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.addInitScript(() => sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready'));
   await page.goto('/');
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 15000 });
+  await page.waitForFunction(() => window.__legendPhaserWorldReady);
   await page.evaluate(({ region }) => {
     window.LegendStorage.deleteSaves();
     const player = {
@@ -40,6 +43,8 @@ async function openWorkBoard(page, region = 'Greyfen') {
 
 test.describe('Greyfen ferry net repair work v0.30.0', () => {
   test('patching ferry nets awards useful Cloth Scrap and survives reload', async ({ page }) => {
+    // Two production scene loads plus the authored reveal need room on software GPUs.
+    test.setTimeout(90000);
     await openWorkBoard(page);
     const job = page.locator('[data-job-open="nets"]');
     await expect(job).toBeVisible();
@@ -49,7 +54,12 @@ test.describe('Greyfen ferry net repair work v0.30.0', () => {
     await expect(page.locator('.ash099-job-game')).toHaveAttribute('data-job-mode', 'sequence');
     await expect(page.locator('.ash099-job-meta')).toContainText('Cloth Scrap ×2');
 
-    await page.evaluate(() => { Math.random = () => 0; });
+    await page.evaluate(() => {
+      // Fix only job-owner randomness; Phaser texture creation keeps its RNG.
+      const random = Math.random;
+      window.addEventListener('click', () => { Math.random = () => new Error().stack?.split('\n')[2]?.includes('ashmere-workboard-v099.js') ? 0 : random(); }, true);
+      window.addEventListener('click', () => { Math.random = random; });
+    });
     await page.locator('#jobStartSequence').click();
     await expect(page.locator('#jobSequenceStatus')).toContainText('Repeat the sequence', { timeout: 6000 });
     for (const action of ['CHECK', 'LOOP', 'KNOT', 'TEST']) {

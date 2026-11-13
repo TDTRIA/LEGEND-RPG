@@ -1164,3 +1164,23 @@ body.legend-phaser-world-active #root [data-phaser-workshop-copy="true"] > small
 /* Keep ingredient names and owned counts together within their available row. */
 #root .ash099-craft-ingredient > span { flex: 1; }
 #root .ash099-craft-ingredient small { display: inline; margin: 0; font-size: inherit; }
+
+/* Each Work Board/job surface retains its production controls and source layout. */
+body.legend-phaser-world-active #root .ash099-terminal:has(.ash099-head[data-ash-service="work"]) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-workboard,
+body.legend-phaser-world-active #root .legend-phaser-workboard :is(.ash099-head,.ash099-head > div,.ash099-job-board-intro,.ash099-field-posting,.ash099-workboard-daily-entry,.ash099-field-posting-reward > *,.ash099-job-game,.ash099-job-meta > span,.ash099-job-challenge,.ash099-job-board-card,.ash099-job-choice,.ash099-job-choice-index,.ash099-sequence-action,#jobStartSequence,#jobSequencePreview,#jobResult,#jobStrike,#backJobs,#ashBack,#openAshmereFieldContracts,#openDailyFieldBoard,#jobTrack) {
+  background: transparent !important; border-color: transparent !important;
+  box-shadow: none !important; backdrop-filter: none !important;
+  transform: none !important; outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-workboard .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-workboard .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-workboard :is(.ash099-head > img,.ash099-job-zone,.ash099-job-marker) { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-phaser-workboard-copy="true"] {
+  color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important;
+}
+/* Leave room for complete introductory copy at narrow canvas font metrics. */
+#root .ash099-job-board-intro > small { line-height: 1.75; }
