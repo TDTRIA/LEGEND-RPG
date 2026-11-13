@@ -148,7 +148,25 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:a4be121a4a02084060887cb2a8cbabd3a63c93217dd84fba9aff0f44580f9c13 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:fcf70e933555aaf62d1571020227bbe850b77f60755304989f4ae4bd2e10991e -->
+
+## Credits dialog — 2026-11-13 (verified locally)
+
+The production Credits dialog now has guarded Phaser copy, panel, separators and focused Return presentation over the existing world art. All credits and original return/outside-click/Escape actions remain available. Missing or unexpected copy restores the complete DOM presentation; scrolling and resize keep text within the dialog. No save, account, audio, lore or gameplay owner changed.
+
+Shared Preview reproduced a full-screen 9px blur and Tab escaping the dialog. The blur is removed in both native and fallback views. The title is inert while Credits is open, Tab/Shift+Tab remain within the dialog, initial focus preserves the start of the text, and closing restores the opener and prior inert state. Repeated opening reuses the current dialog. Escape is handled by the dialog before the title-wide listener can replace its opener.
+
+Four focused checks pass: three new desktop/mobile/accessibility cases for exact copy, keyboard/touch, landscape scrolling, repeated open, fallback/recovery and unchanged raw player/settings/audio/return state; plus the existing returning-player title action regression. The first three interaction checks passed before visual inspection caught an old global button gradient covering the Return label. Scoped style precedence and computed background/color assertions now prevent that regression; all three passed again. Syntax checks pass for 108 production scripts and 75 test specs.
+
+Final shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390, including combined accessibility preferences, focused Return and DOM fallback. Copy and controls are readable, world art remains clear, and no horizontal overflow was observed. Temporary presentation preferences were restored; raw Preview player/settings/audio values were unchanged and the title was restored. Removing the Credits painter restores the semantic dialog; the focus and blur repairs remain independent.
+
+Next: News/Roadmap and profile/account surfaces, remaining loading/confirmation overlays and the full first-session/returning-save migration gate. Audio-control acceptance and production publishing remain outstanding. Manual task permissions still prevent PR creation and merging; this is a local branch checkpoint.
+
 ## Settings and accessibility — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 Both production Settings surfaces now use guarded Phaser panels, complete labels, checked states and keyboard focus, retaining their semantic inputs and callbacks. The title page keeps its six draft preferences and explicit Save; the in-game dialog keeps seven immediately saved preferences, including simplified symbols. Approved icons remain visible. Missing artwork, incomplete fields, unknown copy or failed text fitting restores the DOM presentation. Scroll, resize and replacement content repaint safely.
 
@@ -666,7 +684,14 @@ The third production annal now uses the exact approved “The Peace, Written Dow
    - [ ] Complete audio-control acceptance across title, road and combat.
 
 <!-- /coderabbit-ai-generated:v1 -->
-   - [ ] News/roadmap, credits and profile entry points.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:aad27fe0f9bd07877c943fe8e66da0245b82dbf79e43db8727208b1ea9b92884 -->
+
+   - [x] Credits dialog (local branch: complete copy, modal focus, no blur, keyboard/touch, native/fallback and desktop/mobile/landscape verified). Production publishing is pending.
+   - [ ] News/roadmap and profile entry points.
+
+<!-- /coderabbit-ai-generated:v1 -->
    - [ ] Error, loading, confirmation, defeat and other overlays.
 
 ## Required implementation pattern per surface

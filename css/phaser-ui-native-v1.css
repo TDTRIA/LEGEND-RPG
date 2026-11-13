@@ -1522,3 +1522,19 @@ body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-
 #legend-world-shell-modal-root .lws-setting-row input { width:22px!important; min-width:22px!important; max-width:22px!important; height:22px!important; flex:0 0 22px; }
 body.a11y-high-contrast #legend-world-shell-modal-root .lws-setting-row { background:#050805; border-color:#f8efc7; }
 body.a11y-high-contrast #legend-world-shell-modal-root .lws-setting-row :is(strong,small) { color:#fff; }
+
+/* Credits remain an accessible scrollable dialog, with no global blur. */
+body .legend-credits-overlay { backdrop-filter:none; background:transparent; }
+body .legend-credits-panel { box-sizing:border-box; max-height:min(88dvh,680px); }
+body .legend-credits-line { display:block; }
+body .legend-credits-panel h2:focus { outline:none; }
+body.a11y-reduced-motion .legend-credits-overlay { animation:none; }
+body.legend-phaser-credits-active #game-container { z-index:1001; }
+body.legend-phaser-credits-active .legend-credits-overlay { z-index:1002; }
+body.legend-phaser-credits-active .legend-credits-panel, body.legend-phaser-credits-active .legend-credits-close { background:transparent!important; border-color:transparent!important; box-shadow:none!important; filter:none!important; text-shadow:none!important; transform:none!important; }
+body.legend-phaser-credits-active .legend-credits-panel::before { display:none; }
+body.legend-phaser-credits-active .legend-credits-rule { background:transparent; }
+body.legend-phaser-credits-active [data-credits-copy], body.legend-phaser-credits-active [data-credits-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-credits-active .legend-credits-close:focus-visible { outline:none; }
+body.legend-phaser-credits-active .legend-credits-overlay .legend-credits-panel[data-phaser-credits] .legend-credits-close { background:transparent!important; border-color:transparent!important; box-shadow:none!important; transform:none!important; }
+body.legend-phaser-credits-active .legend-credits-overlay .legend-credits-panel[data-phaser-credits] [data-credits-copy], body.legend-phaser-credits-active .legend-credits-overlay .legend-credits-panel[data-phaser-credits] [data-credits-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
