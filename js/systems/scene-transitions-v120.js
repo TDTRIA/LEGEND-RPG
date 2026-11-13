@@ -1,11 +1,11 @@
 /* LEGEND v0.22.0 — slower branded transitions for the playable route.
  * Navigation stays owned by existing screens; this layer gives destinations one
- * loading curtain and waits for scene images to settle before revealing them.
+ * bounded presentation curtain before revealing them.
  */
 (() => {
   if (window.__legendSceneTransitionsV120) return;
   window.__legendSceneTransitionsV120 = true;
-  const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
+  const reduced = () => document.body.classList.contains('a11y-reduced-motion') || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
   let busy = false;
 
   function overlay() {

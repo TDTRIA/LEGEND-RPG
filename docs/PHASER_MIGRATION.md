@@ -184,7 +184,23 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:373ee5f4bc049bdc58467c3ea49912eda78d092d0caa2dac4b6f93dadf5614fd -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:e5ec165abc7bcafc6321611cf2d72b784dc0ee92b54735b89c807fe71c1c6a90 -->
+
+## Destination transitions — 2026-11-13 (verified locally)
+
+The production scene curtain now has a dedicated guarded Phaser painter for its approved regional landscape, raster wordmark, live destination label, divider, indeterminate activity indicator and caption. Ashmere/title, Old Road, Greyfen and Bell Cellar retain their source artwork identities. The layered darkness and blurred panel are replaced with visible scenery and a readable local panel, including in the DOM fallback. The source label and navigation controller remain authoritative; the activity indicator does not claim asset-load or save progress.
+
+Original capture events are still decorated without replay. Navigation callbacks execute synchronously exactly once; the 1280ms cover and 480ms cleanup deadlines, busy-call behavior and failure cleanup remain unchanged. The controller now honors the saved reduced-motion preference as well as the system preference, repairing the previous mismatch with settings. Document scrolling is locked only while the curtain is active and restored on cleanup. Native opacity follows the source curtain; the destination DOM fades with it without raising the world canvas above the destination. Missing artwork/module, unexpected copy or a panel that cannot fit retains the full styled DOM version. Semantic controls and destination focus stay with their existing owners.
+
+Nine distinct focused checks passed across fresh and equivalent retained results: desktop/mobile keyboard/touch navigation and scroll restoration; regional artwork and accessibility/fallback; saved/system reduced motion; busy and failed callbacks; missing painter; the original normal-motion timing gate; and both desktop/mobile Storehouse actions proving their costs/rewards apply exactly once. The final scroll repair was followed by four fresh affected layout/fallback passes. Syntax checks passed for 117 production scripts and 84 specs. Shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390, including large/readable/bold text, high contrast, regional art and missing-logo fallback. A temporary in-memory hold enabled visual inspection; real bounded timing was tested separately. Preview was restored with all four stored values unchanged.
+
+Save keys, unknown saved properties, gameplay rules, navigation ownership and rewards are unchanged. Removing the painter retains the complete source curtain. The wider overlay inventory, first-session/returning-save acceptance and first-three-towns release gates remain open. Manual permissions still block PR creation, merging and production publishing.
+
 ## Production awakening readability — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The optional production world awakening now keeps the approved Ashmere panorama visible and uses the approved raster wordmark, readable copy and the original real Skip intro button. A dedicated guarded Phaser painter replaces the production black veil, rotating geometric seal, zoom, flash and delayed tiny text. The old native title menu is suppressed during this stage, preventing duplicate floating controls behind it. This repairs the conflict with ART-DIRECTION.md: darkness must not hide scenery, labels or controls. The early mystery reference is removed from the production cinematic; no new lore is introduced. The isolated prototype keeps its previous routine.
 
@@ -885,7 +901,14 @@ The third production annal now uses the exact approved “The Peace, Written Dow
 
 <!-- coderabbit-ai-generated-section:v1:0770cd5af060cc4d90a0395c2ef73a62cd5be4808141eb840f901e15cdd21b43 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:75a5491ec7b51fc2a977478a1b675c75002531e3669c29bfc96c008438cb4ceb -->
+
    - [ ] Error, loading, confirmation, defeat and other overlays.
+   - [x] Destination scene curtain verified locally: complete native regional art/copy, readable DOM fallback, saved/system reduced motion, unchanged callback/timing contract, scrolling restoration and desktop/mobile/landscape checks. Remaining overlay inventory stays open.
+
+<!-- /coderabbit-ai-generated:v1 -->
    - [x] Optional production world awakening verified locally: visible approved panorama/wordmark, complete native/DOM text, usable skip/focus, no dark veil or duplicate title, preserved deadlines, recovery handoff and mandatory annals. Remaining overlay inventory stays open.
 
 <!-- /coderabbit-ai-generated:v1 -->

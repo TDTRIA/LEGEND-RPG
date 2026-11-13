@@ -1675,3 +1675,35 @@ body.legend-phaser-world-active [data-phaser-awakening] #engine-skip:focus-visib
 @media(prefers-reduced-motion:reduce) { .legend-awakening-overlay { transition:none; } }
 body.a11y-reduced-motion .legend-awakening-overlay { transition:none; }
 html.legend-phaser-world-active.engine-intro-active { overflow:hidden!important; }
+
+/* A destination transition is a short presentation, never a dark loading veil.
+   The source remains the complete fallback when native art/copy cannot paint. */
+#legend-scene-curtain::before { inset:0!important; opacity:1!important; filter:none!important; transform:none!important; animation:none!important; border:0!important; box-shadow:none!important; background-image:url('../assets/generated/title/title-ashmere-road.webp')!important; }
+body:is(.legend-world-scene-road,.legend-world-scene-combat,.legend-world-scene-combat-results,.legend-world-scene-expedition-results) #legend-scene-curtain::before { background-image:url('../assets/locations/roads/location_old_road_main_v1.jpg')!important; }
+body.legend-world-region-greyfen #legend-scene-curtain::before { background-image:url('../assets/generated/locations/greyfen-marsh-walkway.webp')!important; }
+body.legend-world-scene-dungeon #legend-scene-curtain::before { background-image:url('../assets/generated/locations/bell-cellar-undercroft.webp')!important; }
+#legend-scene-curtain::after { display:none!important; }
+#legend-scene-curtain .legend-transition-scene { box-sizing:border-box; width:min(560px,calc(100vw - 32px)); max-width:none; max-height:calc(100dvh - 32px); overflow:auto; padding:28px; gap:20px; background:#101a12; border:1px solid #b49d69; box-shadow:none; backdrop-filter:none; opacity:1!important; transform:none!important; animation:none!important; transition:none!important; }
+#legend-scene-curtain .legend-transition-wordmark { width:100%; height:110px; max-height:none; filter:none; }
+#legend-scene-curtain span { opacity:1; transform:none; text-shadow:none; transition:none!important; }
+#legend-scene-curtain .legend-transition-location { padding:0; font-size:clamp(1.2rem,3vw,1.8rem); line-height:1.35; letter-spacing:.05em; color:#f2ead5; overflow-wrap:anywhere; }
+#legend-scene-curtain .legend-transition-caption { font-size:.8rem; line-height:1.5; letter-spacing:.08em; color:#f2ead5; text-shadow:none; }
+#legend-scene-curtain .legend-transition-rule { flex-shrink:0; }
+#legend-scene-curtain .legend-transition-loader { flex-shrink:0; height:3px; }
+#legend-scene-curtain [hidden] { display:none!important; }
+body.a11y-large-text #legend-scene-curtain .legend-transition-location { font-size:2rem; }
+body.a11y-large-text #legend-scene-curtain .legend-transition-caption { font-size:1rem; }
+body.a11y-readable-font #legend-scene-curtain .legend-transition-location { font-family:Verdana,Arial,sans-serif; }
+body.a11y-bold-text #legend-scene-curtain .legend-transition-location { font-weight:700; }
+body.a11y-high-contrast #legend-scene-curtain .legend-transition-scene { background:#000; color:#fff; }
+body.a11y-high-contrast #legend-scene-curtain :is(.legend-transition-location,.legend-transition-caption) { color:#fff; }
+/* Fade the destination DOM with the same bounded curtain opacity. The existing
+   canvas stays in its normal layer, so revealing cannot cover the destination. */
+body.legend-phaser-transition-active > :not(#game-container):not(#legend-scene-curtain) { opacity:calc(1 - var(--legend-transition-opacity,0))!important; }
+body.legend-phaser-transition-active #legend-scene-curtain { background:transparent!important; }
+body.legend-phaser-transition-active #legend-scene-curtain::before { display:none; }
+body.legend-phaser-transition-active #legend-scene-curtain .legend-transition-scene { background:transparent!important; border-color:transparent!important; }
+body.legend-phaser-transition-active #legend-scene-curtain :is(.legend-transition-wordmark,.legend-transition-rule,.legend-transition-loader) { visibility:hidden; }
+body.legend-phaser-transition-active #legend-scene-curtain :is(.legend-transition-location,.legend-transition-caption) { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+@media(max-height:500px) { #legend-scene-curtain .legend-transition-scene { padding:16px; gap:10px; } #legend-scene-curtain .legend-transition-wordmark { height:64px; } }
+html:has(#legend-scene-curtain:is(.is-covering,.is-revealing)) { overflow:hidden!important; }
