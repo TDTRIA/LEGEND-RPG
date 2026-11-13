@@ -191,7 +191,7 @@ This is owner-approved story direction, not a new LOCKED entry and not a claim a
 
 ### Tavin Calder
 
-- Tavin Calder is the name of Oric's former young soldier and eventual Ashmere second-in-command. Tavin came from an ordinary family with no military tradition. His family struggled financially to make ends meet while he was growing up. The cause and specific circumstances of that hardship, and the details of his family, remain open.
+- Tavin Calder is the name of Oric's former young soldier and eventual Ashmere second-in-command. Tavin came from an ordinary family with no military tradition. His family struggled financially to make ends meet while he was growing up. Tavin initially enlisted for two connected reasons: he wanted steady pay so he could help support his family, and he saw military service as a way out of the difficult life he had known. The cause and specific circumstances of the family's hardship, and the details of his family, remain open.
 - As a young soldier, Tavin was inexperienced and unsure of himself, but determined to prove himself. That determination sometimes made him reckless. Oric took him under his wing after recognizing a stubborn courage: Tavin kept going even when afraid.
 - During one reckless incident, Oric protected Tavin from a blow and received the prominent scar across his face. Oric scolded Tavin at the time. Tavin carried guilt over the injury for years; after their reunion, Oric tells him he never regretted saving him, and Tavin is finally able to let that guilt go.
 - During the invasion, Oric and Tavin were separated in the chaos without a chance to speak. Oric never saw Tavin die and believed he was lost. Returning to the conquered homeland was too dangerous. Tavin survived.
