@@ -22,7 +22,23 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
 
 <!-- coderabbit-ai-generated-section:v1:5f771f8dc5008c60cbed7558ed9d8e70eaa68b749f050f737794c53303ed8d13 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:972262718e29982526f5c6adeb1bd36445a20559c9d90a4510d5135aa6331229 -->
+
+## Title readability and accessibility checkpoint — 2026-11-13 (local)
+
+Long saved names now wrap without overlapping traveler details. Native title labels use their production source font, size, weight and measured boxes, so readable-font, large-text, bold, spacious and high-contrast preferences apply. Button copy grows instead of being cropped; scrolling clips the native menu to its real viewport. Canvas-relative geometry also follows CSS zoom. Existing production buttons, keyboard/touch actions and save owners remain authoritative.
+
+A complete-copy guard restores the semantic DOM menu when unexpected text appears. Required artwork is checked before the unchanged-layout cache shortcut, fixing a removed-texture case that previously retained incomplete native paint. The high-contrast DOM fallback now keeps white labels and arrows on black primary buttons; a screenshot exposed and verified the repair of an original primary-gradient specificity conflict. No global mirror or blur is enabled.
+
+Thirteen distinct selected checks pass across fresh runs and equivalent retained results: four new long-name/preferences/zoom/fallback cases, existing scroll/resize/art fallback, native title smoke, original Credits accessibility, four sound cases, and returning-player desktop/mobile journeys covering real actions, focus/hover/disabled states and saves. Initial missing-art cache and fallback contrast failures are resolved. Syntax checks pass for 118 production scripts and 86 specs. Shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390, including native/default, combined preferences, scrolling, CSS zoom/focus and DOM fallback. All four original Preview storage values were preserved. Zoom coverage uses a 720×450 CSS viewport at 2× device pixel ratio plus separate 1.25 CSS zoom; browser-toolbar zoom was not directly exercised.
+
+This completes the local returning-title readability slice. The full production suite, shell/combat accessibility gates and first-three-towns release remain open. Changes are prepared on the assigned task branch; Manual permissions still block PR creation, merging and production publishing. Reverting the presentation slice restores the previous title painter; failed preflight always leaves the complete original DOM controls usable.
+
 ## Title stability checkpoint — 2026-11-12 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The title asset loader accepts cache query strings and rasterizes existing SVG UI assets at explicit dimensions before WebGL upload. This restores the required raster wordmark and fixes distorted button frames. Native primary buttons no longer have their labels covered by an opaque gold DOM background. Focus/hover and disabled textures follow semantic controls; title geometry refreshes on resize and scrolling, and decorative labels remain complete. DOM controls and missing-art fallback remain intact. Save keys, callbacks, gameplay and story are unchanged.
 
@@ -675,7 +691,13 @@ The third production annal now uses the exact approved “The Peace, Written Dow
    - [x] New-player title/menu and world backdrop in Phaser.
    - [x] Annals, traveler creation and Oric opening-road presentation in Phaser.
    - [x] Keep the original returning-player menu as a safe DOM fallback when Phaser preflight fails.
-   - [ ] Complete and verify Phaser Continue text, focus, hover, selected/disabled states and responsive geometry through the desktop/mobile Playwright run; retain the DOM fallback permanently for any failed preflight.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:3add58b8d9e8f29cecf045044965d3bb6669a51b2a4320d0b1daac602e3cb0eb -->
+
+   - [x] Local Continue text, focus/hover/disabled states, original actions and responsive geometry verified at desktop/mobile. Long names and combined accessibility preferences remain readable; effective-viewport/DPR and CSS zoom checks pass. Native missing-art/unknown-copy preflight retains the complete DOM fallback. See the 2026-11-13 title readability checkpoint for evidence and zoom limits; publishing and full-game gates remain open.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 2. **Persistent shell**
 <!-- coderabbit-ai-generated:v1 -->

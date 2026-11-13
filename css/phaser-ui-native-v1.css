@@ -1715,3 +1715,20 @@ body.a11y-readable-font #root .title-transition-notice { font-family:Verdana,Ari
 body.a11y-high-contrast #root .title-transition-notice { background:#000; color:#fff; }
 body #root .title-transition-notice[data-phaser-title-notice] { background:transparent!important; border-color:transparent!important; color:transparent!important; -webkit-text-fill-color:transparent!important; }
 #root .title-wrap.title-is-opening { animation:none!important; transform:none!important; filter:none!important; }
+
+/* Title content grows with saved names and readability preferences. */
+#root .title-v136-rpg .v120-traveler-line > div { flex:1 1 auto; min-width:0; }
+#root .title-v136-rpg .v120-traveler-line strong { white-space:normal!important; overflow:visible!important; text-overflow:clip!important; overflow-wrap:anywhere; line-height:1.5!important; }
+#root .title-v136-rpg .v136-menu-copy { min-width:0; gap:2px; }
+#root .title-v136-rpg .v136-menu-copy strong { font-family:Georgia,'Times New Roman',serif; font-size:1rem!important; line-height:1.4!important; text-transform:none!important; white-space:normal; overflow-wrap:anywhere; }
+#root .title-v136-rpg .v136-menu-copy small { font-size:.75rem!important; line-height:1.5!important; white-space:normal; overflow-wrap:anywhere; }
+#root .title-v136-rpg .v136-menu-btn { height:auto!important; max-height:none!important; min-height:44px!important; }
+#root .title-v136-rpg .v120-title-hero { backdrop-filter:none!important; }
+body.a11y-readable-font #root .title-v136-rpg :is(.v136-menu-copy strong,.v136-menu-copy small,.v120-traveler-line strong,.v120-title-hero > p) { font-family:Verdana,Arial,sans-serif!important; }
+body.a11y-large-text #root .title-v136-rpg :is(.v136-menu-copy strong,.v120-traveler-line strong,.v120-title-hero > p) { font-size:1.2rem!important; line-height:1.5!important; }
+body.a11y-large-text #root .title-v136-rpg :is(.v136-menu-copy small,.v120-traveler-line div > span) { font-size:1rem!important; line-height:1.5!important; }
+body.a11y-large-text #root .title-v136-rpg .v136-menu-btn { width:100%!important; }
+body.a11y-spacious #root .title-v136-rpg .v136-menu-btn { min-height:64px!important; padding-block:12px!important; }
+body.a11y-high-contrast #root .title-v136-rpg { filter:none!important; }
+body.a11y-high-contrast:not(.legend-phaser-title-ui-active) #root .title-v136-rpg :is(.v120-title-hero,.v136-menu-btn,button#continue.v136-menu-primary,button#newPrimary.v136-menu-primary) { background:#000!important; }
+body.a11y-high-contrast:not(.legend-phaser-title-ui-active) #root .title-v136-rpg :is(.v136-menu-copy strong,.v136-menu-copy small,.v136-menu-arrow,.v120-traveler-line strong,.v120-title-hero > p) { color:#fff!important; }

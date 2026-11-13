@@ -788,6 +788,15 @@
       this.bellVault = window.LegendPhaserBellVaultV1?.create(this);
       this.combatResults = window.LegendPhaserCombatResultsV1?.create(this);
       this.roadResults = window.LegendPhaserRoadResultsV1?.create(this);
+      let titlePreferenceFrame = null;
+      const titlePreferences = new MutationObserver(() => {
+        if (this.surface !== 'title' || titlePreferenceFrame !== null) return;
+        titlePreferenceFrame = requestAnimationFrame(() => { titlePreferenceFrame = null; this.syncNativeTitleUi(this.surface); });
+      });
+      titlePreferences.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      titlePreferences.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+      if (root()) titlePreferences.observe(root(), { attributes: true, attributeFilter: ['style'] });
+      this.events.once('shutdown', () => { titlePreferences.disconnect(); if (titlePreferenceFrame !== null) cancelAnimationFrame(titlePreferenceFrame); });
       this.motionReduced = reducedMotion();
       this.events.once('shutdown', () => {
         if (this.expeditionClipFrame !== null) window.cancelAnimationFrame(this.expeditionClipFrame);
@@ -882,6 +891,9 @@
           nativeCombatResults: this.combatResults?.snapshot(),
           nativeRoadResults: this.roadResults?.snapshot(),
           nativeTitleUi: this.nativeTitleUiActive,
+          nativeTitleUiFailure: this.nativeTitleUiFailure || '',
+          nativeTitleUiClip: this.nativeTitleUiClip,
+          nativeTitleUiTextBounds: this.shellLabelSnapshot(this.nativeTitleUiDecorations.map(item => item.object)),
           nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
           nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo'].every(key => this.textures.exists(key)),
           nativeTitleUiLogoPainted: Boolean(this.nativeTitleUiLogoObject?.active),
@@ -1456,6 +1468,7 @@
       this.nativeTitleUiDividerObject = null;
       this.nativeTitleUiSignature = '';
       this.nativeTitleUiActive = false;
+      this.nativeTitleUiClip = null;
       if (removeClass) document.body?.classList.remove('legend-phaser-title-ui-active');
     }
 
@@ -1518,11 +1531,16 @@
       }
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvasBounds = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvasBounds.width);
+      const sy = size.height / Math.max(1, canvasBounds.height);
+      const zoom = panelRect.width / Math.max(1, hero.offsetWidth);
+      const textSx = sx * zoom, textSy = sy * zoom;
+      const contrast = document.body.classList.contains('a11y-high-contrast');
+      const typography = node => { const css = getComputedStyle(node); return [css.fontSize, css.fontFamily, css.fontWeight, css.lineHeight, css.letterSpacing]; };
       const sceneRect = rect => ({
-        x: rect.left * sx,
-        y: rect.top * sy,
+        x: (rect.left - canvasBounds.left) * sx,
+        y: (rect.top - canvasBounds.top) * sy,
         width: rect.width * sx,
         height: rect.height * sy
       });
@@ -1554,32 +1572,41 @@
           rect: rect && rect.width && rect.height ? rect : null
         };
       });
+      const knownCopy = [...titleDecorationNodes.map(item => item.node), ...buttons.flatMap(button =>
+        [...button.querySelectorAll('.v136-menu-copy strong,.v136-menu-copy small,.v136-menu-arrow,.v136-menu-icon')])].filter(Boolean);
+      const walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT);
+      let textNode, unsupportedCopy = false;
+      while ((textNode = walker.nextNode())) {
+        const parent = textNode.parentElement;
+        if (!textNode.textContent.trim() || parent.closest('[hidden],.v120-title-accessible-name,.v120-avatar')) continue;
+        if (!knownCopy.some(node => node.contains(parent))) { unsupportedCopy = true; break; }
+      }
+      if (unsupportedCopy) { this.nativeTitleUiFailure = 'Unknown title copy'; this.clearNativeTitleUi(); return; }
       const logoRect = logoNode?.getBoundingClientRect();
       const dividerRect = dividerNode?.getBoundingClientRect();
       const decorationReady = Boolean(
-        logoNode?.isConnected && logoRect?.width && logoRect?.height &&
+        logoNode?.isConnected && !logoNode.hidden && logoNode.complete && logoNode.naturalWidth && logoRect?.width && logoRect?.height &&
         dividerNode?.isConnected && dividerRect?.width && dividerRect?.height &&
         titleDecorationNodes.every(item => item.node?.isConnected && item.rect && item.text)
       );
       const signature = JSON.stringify([
-        size.width, size.height, window.innerWidth, window.innerHeight,
+        size.width, size.height, canvasBounds.toJSON(), zoom, contrast,
         Math.round(panelRect.left), Math.round(panelRect.top), Math.round(panelRect.width), Math.round(panelRect.height),
         logoRect && [Math.round(logoRect.left), Math.round(logoRect.top), Math.round(logoRect.width), Math.round(logoRect.height)],
         dividerRect && [Math.round(dividerRect.left), Math.round(dividerRect.top), Math.round(dividerRect.width), Math.round(dividerRect.height)],
         ...titleDecorationNodes.map(item => [
-          item.id, item.text,
+          item.id, item.text, item.node && typography(item.node),
           Math.round(item.rect?.left || 0), Math.round(item.rect?.top || 0),
           Math.round(item.rect?.width || 0), Math.round(item.rect?.height || 0)
         ]),
         ...buttons.map(button => {
           const rect = button.getBoundingClientRect();
-          return [button.id, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
+          return [button.id, typography(button.querySelector('strong') || button), typography(button.querySelector('small') || button), Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
             button.querySelector('.v136-menu-copy strong')?.textContent?.trim() || '',
             button.querySelector('.v136-menu-copy small')?.textContent?.trim() || '',
             button.disabled, button.getAttribute('aria-disabled'), button.getAttribute('aria-pressed'), button.classList.contains('v136-menu-primary')];
         })
       ]);
-      if (this.nativeTitleUiActive && signature === this.nativeTitleUiSignature) return;
 
       const expectedIds = hero.querySelector('#continue')
         ? ['continue','new','account','settings','dispatches','titleSound','credits']
@@ -1589,7 +1616,8 @@
       const soundReady = ['true','false'].includes(soundControl?.getAttribute('aria-pressed')) &&
         soundControl.querySelector('.v136-menu-copy strong')?.textContent?.trim() &&
         soundControl.querySelector('.v136-menu-copy small')?.textContent?.trim();
-      const hasAllActions = soundReady && expectedIds.every(id => presentIds.includes(id));
+      const hasAllActions = soundReady && expectedIds.every(id => presentIds.includes(id)) && buttons.every(button =>
+        button.querySelector('.v136-menu-copy strong')?.textContent.trim() && button.querySelector('.v136-menu-copy small')?.textContent.trim());
       const requiredTextures = [
         'menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo',
         'menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'
@@ -1600,6 +1628,9 @@
         return;
       }
 
+      // Required source/artwork checks also apply to an unchanged layout.
+      if (this.nativeTitleUiActive && signature === this.nativeTitleUiSignature) return;
+
       // Reveal the semantic DOM while this frame is being rebuilt. Only hide
       // it after all expected Phaser controls and their live labels are ready.
       this.clearNativeTitleUi();
@@ -1608,7 +1639,7 @@
       const frame = this.add.graphics().setDepth(12);
       frame.fillStyle(0x020302, 0.54);
       frame.fillRect(panel.x - 7 * sx, panel.y + 8 * sy, panel.width + 14 * sx, panel.height + 8 * sy);
-      frame.fillStyle(0x17110c, 0.96);
+      frame.fillStyle(contrast ? 0x000000 : 0x17110c, 1);
       frame.fillRect(panel.x, panel.y, panel.width, panel.height);
       frame.lineStyle(Math.max(1.2, 1.2 * sx), 0x8f6a3d, 0.82);
       frame.strokeRect(panel.x + 0.5, panel.y + 0.5, panel.width - 1, panel.height - 1);
@@ -1657,45 +1688,8 @@
       this.nativeTitleUiObjects.push(dividerObject);
 
       titleDecorationNodes.forEach(item => {
-        const rect = sceneRect(item.rect);
-        const css = window.getComputedStyle(item.node);
-        if (item.id === 'traveler-detail') {
-          const object = this.createShellLabel(item.node, rect, item.color, sx, sy, 16);
-          if (!object) throw new Error('Returning traveler detail does not fit its source box');
-          const lines = object.getWrappedText().length;
-          if (lines > 1 && rect.height > object.height) object.setLineSpacing((rect.height - object.height) / (lines - 1));
-          if (object.displayHeight > rect.height) object.setScale(object.scaleX, rect.height / object.height);
-          this.nativeTitleUiDecorations.push({ id: item.id, node: item.node, object });
-          this.nativeTitleUiObjects.push(object);
-          return;
-        }
-        const centered = css.textAlign === 'center';
-        const fontSize = Math.max(item.id === 'intro' ? 11 : 9,
-          Math.min(item.id === 'intro' ? 20 : 16, (parseFloat(css.fontSize) || 12) * sy));
-        const object = this.add.text(
-          centered ? rect.x + rect.width / 2 : rect.x,
-          rect.y,
-          item.text,
-          {
-            fontFamily: css.fontFamily || 'Arial, sans-serif',
-            fontSize: fontSize + 'px',
-            fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-            color: item.color,
-            stroke: '#080b07',
-            strokeThickness: fontSize >= 14 ? 0.7 : 0.35,
-            letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
-            lineSpacing: Math.max(0, (parseFloat(css.lineHeight) || fontSize * 1.4) - fontSize),
-            align: css.textAlign || 'left',
-            wordWrap: { width: Math.max(12, rect.width), useAdvancedWrap: true },
-            padding: { left: 1, right: 2, top: 1, bottom: 2 }
-          }
-        ).setOrigin(centered ? 0.5 : 0, 0).setDepth(16);
-        object.setResolution?.(2);
-        object.autoRound = true;
-        if (['kicker', 'menu-heading', 'divider-caption'].includes(item.id)) {
-          object.setWordWrapWidth(0);
-          if (object.width > rect.width) object.setFontSize(fontSize * rect.width / object.width);
-        }
+        const object = this.createShellLabel(item.node, sceneRect(item.rect), contrast ? '#ffffff' : item.color, textSx, textSy, 16);
+        if (!object) throw new Error('Title copy cannot fit: ' + item.id);
         this.nativeTitleUiDecorations.push({ id: item.id, node: item.node, object });
         this.nativeTitleUiObjects.push(object);
       });
@@ -1716,11 +1710,8 @@
         const main = button.querySelector('.v136-menu-copy strong')?.textContent?.trim() || button.textContent.trim();
         const detail = button.querySelector('.v136-menu-copy small')?.textContent?.trim() || '';
         if(button.id !== 'titleSound') button.setAttribute('aria-label', [main, detail].filter(Boolean).join('. '));
-        const mainCss = window.getComputedStyle(button.querySelector('.v136-menu-copy strong') || button);
-        const detailCss = window.getComputedStyle(button.querySelector('.v136-menu-copy small') || button);
-        const mainSize = Math.max(10, Math.round((parseFloat(mainCss.fontSize) || 13) * sy));
-        const detailSize = Math.max(9, Math.round((parseFloat(detailCss.fontSize) || 10) * sy));
         const group = this.add.container(rect.x, rect.y).setDepth(13);
+        this.nativeTitleUiObjects.push(group);
         const disabled = Boolean(button.disabled || button.getAttribute('aria-disabled') === 'true');
         const focused = button === document.activeElement || button.matches(':focus-visible');
         const hovered = button.matches(':hover');
@@ -1732,7 +1723,8 @@
         const art = this.add.graphics();
         art.fillStyle(primary ? 0xd5a44e : 0xe0bd75, primary ? 0.72 : 0.52);
         art.fillRect(2 * sx, 3 * sy, Math.max(2 * sx, 2), Math.max(2, rect.height - 6 * sy));
-        const iconX = 10 * sx;
+        if (contrast) art.fillStyle(0x000000, 1).fillRect(3, 3, rect.width - 6, rect.height - 6);
+        const iconX = 10 * textSx;
         const iconY = Math.max(4 * sy, (rect.height - 28 * sy) / 2);
         art.fillStyle(0x100d09, 0.94);
         art.fillRect(iconX, iconY, 28 * sx, Math.min(28 * sy, rect.height - 8 * sy));
@@ -1757,32 +1749,17 @@
             fontSize: (Math.max(14, Math.round(16 * sy))) + 'px',
             color: primary ? '#fff2cf' : '#f4d995'
           })).setOrigin(0.5);
-        const labelX = Math.round(52 * sx);
-        const titleY = Math.round(rect.height * (detail ? 0.38 : 0.5));
-        const labelWidth = Math.max(40, rect.width - labelX - 34 * sx);
-        const title = crispText(this.add.text(labelX, titleY, main, {
-          fontFamily: 'Georgia, Times New Roman, serif',
-          fontSize: `${Math.max(13, Math.min(primary ? 17 : 16, mainSize))}px`,
-          fontStyle: 'bold',
-          color: disabled ? '#aaa18f' : '#f5ead5',
-          stroke: '#100c08',
-          strokeThickness: 1,
-          letterSpacing: 0.16 * sx,
-          wordWrap: { width: labelWidth, useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 2, bottom: 2 }
-        })).setOrigin(0, 0.5);
-        title.setFixedSize?.(labelWidth, Math.max(16, rect.height * (detail ? 0.48 : 0.72)));
-        const subtitle = crispText(this.add.text(labelX, Math.round(rect.height * 0.73), detail, {
-          fontFamily: 'Arial, sans-serif',
-          fontSize: `${Math.max(10, Math.min(12, detailSize))}px`,
-          fontStyle: primary ? 'bold' : 'normal',
-          color: disabled ? '#8e8778' : '#dccba8',
-          stroke: '#100c08',
-          strokeThickness: 0.5,
-          wordWrap: { width: labelWidth, useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 1, bottom: 1 }
-        })).setOrigin(0, 0.5);
-        subtitle.setFixedSize?.(labelWidth, Math.max(15, rect.height * 0.34));
+        group.add([buttonSurface, art, icon]);
+        const paintCopy = (selector, color) => {
+          const node = button.querySelector(selector);
+          if (!node) throw new Error('Title control copy missing');
+          const text = this.createShellLabel(node, sceneRect(node.getBoundingClientRect()), color, textSx, textSy, 14);
+          if (!text) throw new Error('Title control copy cannot fit: ' + button.id);
+          text.x -= rect.x; text.y -= rect.y; group.add(text);
+          return text;
+        };
+        const title = paintCopy('.v136-menu-copy strong', disabled ? '#aaa18f' : contrast ? '#ffffff' : '#f5ead5');
+        const subtitle = paintCopy('.v136-menu-copy small', disabled ? '#8e8778' : contrast ? '#ffffff' : '#dccba8');
         const arrow = crispText(this.add.text(rect.width - 17 * sx, Math.round(rect.height / 2), button.hasAttribute('aria-pressed') ? '' : '›', {
           fontFamily: 'Georgia, serif',
           fontSize: `${Math.max(22, Math.round(24 * sy))}px`,
@@ -1794,9 +1771,8 @@
         focusFrame.lineStyle(2.4, 0xffe6a5, 1);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(!disabled && (focused || hovered));
-        group.add([buttonSurface, art, icon, title, subtitle, arrow, focusFrame]);
+        group.add([arrow, focusFrame]);
         group.setSize(rect.width, rect.height);
-        this.nativeTitleUiObjects.push(group);
         const control = {
           id: button.id,
           label: main,
@@ -1835,10 +1811,19 @@
         this.clearNativeTitleUi();
         return;
       }
+      const content = this.add.container(0, 0).setDepth(14);
+      content.add(this.nativeTitleUiObjects.slice(1));
+      this.nativeTitleUiObjects = [frame, content];
+      const clip = { x: panel.x + hero.clientLeft * textSx, y: panel.y + hero.clientTop * textSy,
+        width: hero.clientWidth * textSx, height: hero.clientHeight * textSy };
+      if (!this.clipExpeditionUi(content, clip)) throw new Error('Title viewport unavailable');
+      this.nativeTitleUiClip = clip;
+      this.nativeTitleUiFailure = '';
       this.nativeTitleUiActive = true;
       this.nativeTitleUiSignature = signature;
       document.body?.classList.add('legend-phaser-title-ui-active');
       } catch (error) {
+        this.nativeTitleUiFailure = error.message;
         this.clearNativeTitleUi();
         console.warn('Phaser title menu paint failed; leaving the accessible DOM menu visible.', error);
       }

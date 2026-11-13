@@ -23,7 +23,23 @@ The owner has approved moving the **entire existing production game's presentati
 
 The story and the systems should reinforce that loop. Town is a place the player wants to return to; the road is where their choices are tested.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:7727dfc44b891f46c29a23dc69f5dbd8280019161bcc993d911f04c12f93890a -->
+
+## Title readability and accessibility checkpoint — 2026-11-13 (local)
+
+Long saved names now wrap without overlapping traveler details. Native title labels use their production source font, size, weight and measured boxes, so readable-font, large-text, bold, spacious and high-contrast preferences apply. Button copy grows instead of being cropped; scrolling clips the native menu to its real viewport. Canvas-relative geometry also follows CSS zoom. Existing production buttons, keyboard/touch actions and save owners remain authoritative.
+
+A complete-copy guard restores the semantic DOM menu when unexpected text appears. Required artwork is checked before the unchanged-layout cache shortcut, fixing a removed-texture case that previously retained incomplete native paint. The high-contrast DOM fallback now keeps white labels and arrows on black primary buttons; a screenshot exposed and verified the repair of an original primary-gradient specificity conflict. No global mirror or blur is enabled.
+
+Thirteen distinct selected checks pass across fresh runs and equivalent retained results: four new long-name/preferences/zoom/fallback cases, existing scroll/resize/art fallback, native title smoke, original Credits accessibility, four sound cases, and returning-player desktop/mobile journeys covering real actions, focus/hover/disabled states and saves. Initial missing-art cache and fallback contrast failures are resolved. Syntax checks pass for 118 production scripts and 86 specs. Shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390, including native/default, combined preferences, scrolling, CSS zoom/focus and DOM fallback. All four original Preview storage values were preserved. Zoom coverage uses a 720×450 CSS viewport at 2× device pixel ratio plus separate 1.25 CSS zoom; browser-toolbar zoom was not directly exercised.
+
+This completes the local returning-title readability slice. The full production suite, shell/combat accessibility gates and first-three-towns release remain open. Changes are prepared on the assigned task branch; Manual permissions still block PR creation, merging and production publishing. Reverting the presentation slice restores the previous title painter; failed preflight always leaves the complete original DOM controls usable.
+
 ## Current implementation checkpoint — 2026-11-08
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 - **Production main:** v0.30.5. The road-first opening, mandatory annals, Oric/Wolf tutorial, five-stage Old Road, Ashmere services, progression, and early Greyfen activities are part of the browser build.
 - **Phaser migration:** approved and active in the production root. The persistent world renderer, Ashmere landmarks, new-player title presentation, annals, traveler creation, Oric opening-story presentation, persistent HUD and bottom action navigation now have dedicated Phaser visuals. The returning-player title menu is now Phaser-rendered when its required textures, six production actions and live labels pass preflight; its original semantic DOM menu remains the visible fallback if any check fails. The persistent HUD, bottom navigation, traveler journal/quest drawer, Ashmere/road contextual action drawers, connected Old Road map/field-journal modal, Old Road journey HUD and Old Road route/POI/optional-detour/camp decision deck now have dedicated Phaser painters with original DOM controls retained. Ashmere's destination-card terminal board now has a dedicated Phaser painter under verification, using existing service-button geometry and retaining the real DOM buttons and raster icons. <!-- coderabbit-ai-generated:v1 -->
