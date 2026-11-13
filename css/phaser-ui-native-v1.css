@@ -1459,3 +1459,21 @@ body.legend-phaser-world-active:has(#gfm160MapOverlay[data-phaser-marsh-map="tru
 #gfm160MapOverlay[data-phaser-marsh-map="true"] [data-marsh-map-copy],
 #gfm160MapOverlay[data-phaser-marsh-map="true"] [data-marsh-map-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
 #gfm160MapOverlay[data-phaser-marsh-map="true"] button:focus-visible { outline:none; }
+
+/* Storehouse retains its complete DOM fallback and semantic action controls. */
+#root .ash099-screen:has(.gss170-page) { background:#102722 !important; padding-top:calc(var(--storehouse-hud-height,72px) + 12px); padding-bottom:90px; }
+#root .ash099-screen:has(.gss170-page) :is(button,h1) { scroll-margin-block:120px 95px; }
+#root .gss170-scene-copy h1 { line-height:1.15; }
+#root .gss170-scene-copy h1:focus { outline:none; }
+#root .gss170-inline-action { min-height:44px; }
+#root .gss170-action:is(:hover,:focus-visible) { transform:none; }
+#root .gss170-status:not(:empty) { padding:12px; background:#102722; border:1px solid #b49d69; line-height:1.6; }
+body.legend-phaser-world-active #root .ash099-screen[data-phaser-storehouse="true"],
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] :is(.ash099-head,.ash099-head > div,.gss170-page,.gss170-scene,.gss170-card,.gss170-stat-grid > div,.gss170-found-note,.gss170-status,button,#ashBack) { background:transparent !important; border-color:transparent !important; box-shadow:none !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] [data-storehouse-copy],
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] [data-storehouse-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] :is(img,.gss170-scene-shade) { opacity:0 !important; }
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] .ash099-head::before,
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] .ash099-head::after { display:none !important; }
+
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] button:focus-visible { outline:none !important; }

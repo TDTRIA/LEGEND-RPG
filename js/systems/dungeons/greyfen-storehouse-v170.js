@@ -73,8 +73,8 @@
     }
     const button = (id, label, detail, kind = '') =>
       '<button type="button" id="' + id + '" class="gss170-action ' + kind + '" data-legend-scene-transition="' + esc(label) + '"><strong>' + esc(label) + '</strong><span>' + esc(detail) + '</span></button>';
-    function scene(title, kicker, copy, content, actions) {
-      return '<section class="gss170-page" aria-label="The Silted Storehouse"><div class="gss170-scene">' +
+    function scene(title, kicker, copy, content, actions, state, extraEvidence = false) {
+      return '<section class="gss170-page" data-storehouse-state="' + state + '" data-storehouse-evidence="' + extraEvidence + '" aria-label="The Silted Storehouse"><div class="gss170-scene">' +
         '<img class="gss170-scene-art" src="' + ART + '" alt="" decoding="async"><div class="gss170-scene-shade"></div>' +
         '<div class="gss170-scene-copy"><span class="gss170-kicker">' + esc(kicker) + '</span><h1>' + esc(title) + '</h1><p>' + esc(copy) + '</p></div></div>' +
         '<div class="gss170-content">' + content + '</div><div class="gss170-actions">' + actions + '</div><p class="gss170-status" id="gss170Status" aria-live="polite"></p></section>';
@@ -99,11 +99,14 @@
     function startRun(player) {
       const previous = runFor(player);
       player.flags[KEY] = {
+        ...previous,
         active: true, room: 0, clears: previous.clears, attempts: previous.attempts + 1, retreats: previous.retreats,
         failed: false, completed: false, inBattle: false, battleWon: false, rewardClaimed: false,
         approach: '', dispatchRead: false, salvageCollected: !!player.flags.greyfenStorehouseSalvageCollected,
         startedDay: Number(player.day || 1), records: previous.records
       };
+      // Preserve extensions while dropping the same prior-attempt outcomes as before.
+      for (const key of ['lastRoom','lastReport','combatXp']) delete player.flags[KEY][key];
       save(player); render();
     }
     function chooseApproach(route) {
@@ -183,6 +186,13 @@
       player.stats.greyfenStorehouseClears = Number(player.stats.greyfenStorehouseClears || 0) + 1;
       save(player); render();
     }
+    function focusHeading() {
+      const heading = document.querySelector('#root .gss170-scene-copy h1');
+      if (!heading) return;
+      const root = document.getElementById('root');
+      root.scrollTop = 0; window.scrollTo(0,0);
+      heading.tabIndex = -1; heading.focus({preventScroll:true});
+    }
     function render() {
       const player = getPlayer(); if (!player) return;
       if (!unlocked(player)) {
@@ -191,7 +201,8 @@
         screen(head('GREYFEN · STOREHOUSE', 'The Silted Storehouse', copy, typeof locationInterior === 'function' ? locationInterior('market') : '', 'dungeon'),
           scene(inTown ? 'The Storehouse Remains Shut' : 'A Lowland Door', 'OPTIONAL DELVE', copy,
             '<article class="gss170-card"><span class="gss170-card-label">ENTRY REQUIREMENT</span><h2>A Dry Crossing</h2><p>This delve is optional; its dispatch adds context but does not prove who authorized the route.</p></article>',
-            button('gss170Return', 'Return to town', 'Leave this closed entry.', 'secondary')));
+            button('gss170Return', 'Return to town', 'Leave this closed entry.', 'secondary'), 'locked'));
+        focusHeading();
         document.getElementById('gss170Return')?.addEventListener('click', retreat);
         return;
       }
@@ -200,13 +211,15 @@
       if (run.active && run.inBattle) { run.inBattle = false; save(player); }
       let title = 'The Silted Storehouse', kicker = 'GREYFEN · OPTIONAL DELVE';
       let copy = 'A low timber building leans above dark water. Inventory records outlived the floorboards; the authorizing names did not.';
-      let content = '', actions = '';
+      let content = '', actions = '', state = 'entry';
       if (run.failed && !run.active) {
+        state = 'failed';
         title = 'Driven from the Storehouse'; kicker = 'DELVES · WITHDRAWAL';
         copy = 'The keeper drove you back. Your gear, saved dispatch, and carried supplies remain yours.';
         content = stats(player, run) + '<article class="gss170-card"><h2>The inner bay</h2><p>Your health is low. Rest and prepare in Greyfen before trying again.</p></article>';
         actions = button('gss170Retry', 'Try the delve again', 'Start a fresh attempt. Saved discoveries stay recorded.', 'primary') + button('gss170Return', 'Return to Greyfen', 'Leave the storehouse.', 'secondary');
       } else if (run.completed && !run.active) {
+        state = 'complete';
         title = 'The Storehouse Remembers'; kicker = 'DELVES · REPORT FILED';
         copy = 'The stores can be searched again later, but each dispatch remains in your journal.';
         content = stats(player, run) + '<article class="gss170-card"><span class="gss170-card-label">FIELD REPORT</span><h2>Delve completed</h2><p>' + esc(run.lastReport || 'Your reward is recorded.') + '</p><p>The dispatch records a temporary supply exception through the lower crossing. Its authorization leaf is missing; it does not name who approved the route.</p></article>';
@@ -216,25 +229,29 @@
           '<article class="gss170-card"><span class="gss170-card-label">ROOM 2 · RECORDS BAY</span><h2>Evidence and salvage</h2><p>A damp dispatch remains below a broken slate. Preserve its words, search stores, or proceed to the inner bay.</p></article></div>';
         actions = button('gss170Begin', 'Enter the storehouse', 'Start an attempt without spending supplies.', 'primary') + button('gss170Return', 'Return to Greyfen', 'Prepare at town services first.', 'secondary');
       } else if (Number(run.room) === 0) {
+        state = 'loading';
         title = 'The Loading Walk'; kicker = 'ROOM 1 / 3 · ROUTE CHOICE';
         copy = 'The walk splits above and below the waterline. Your route changes the cost and supplies before the keeper is reached.';
         content = stats(player, run) + '<div class="gss170-grid"><article class="gss170-card gss170-card-safe"><span class="gss170-card-label">SAFER · SLOWER</span><h2>Upper shelves</h2><p>No health cost; the keeper is weaker.</p></article>' +
           '<article class="gss170-card gss170-card-risk"><span class="gss170-card-label">RISKIER · BETTER FIND</span><h2>Cargo sump</h2><p>Lose 6 HP, gain a Road Herb, and face a stronger keeper. HP cannot drop below 1.</p></article></div>';
         actions = button('gss170Upper', 'Follow the upper shelves', 'Steady footing; the keeper is less prepared.', 'primary') + button('gss170Sump', 'Wade through the cargo sump', 'Spend 6 HP for one herb and a harder encounter.', 'secondary') + button('gss170Retreat', 'Return to Greyfen', 'Leave before committing.', 'secondary');
       } else if (Number(run.room) === 1) {
+        state = 'records';
         title = 'The Records Bay'; kicker = 'ROOM 2 / 3 · OPTIONAL DISCOVERY';
         copy = 'The paper has softened, not every mark. The authorization leaf is gone; preserve only what can be proved.';
         const dispatch = player.flags?.greyfenStorehouseDispatchFound ? '<p class="gss170-found-note"><strong>Dispatch already preserved.</strong> Its signature leaf is missing.</p>' : '<button type="button" id="gss170ReadDispatch" class="gss170-inline-action">Read and preserve the damp dispatch</button>';
         const salvage = run.salvageCollected || player.flags?.greyfenStorehouseSalvageCollected ? '<p class="gss170-found-note"><strong>Salvage recorded.</strong> Dry Peat Brick and Lamp Oil recovered.</p>' : '<button type="button" id="gss170Salvage" class="gss170-inline-action">Search the sealed freight crate</button>';
         content = stats(player, run) + '<article class="gss170-card"><span class="gss170-card-label">OILSKIN RECORD</span><h2>The authorization leaf is gone</h2><p>The dispatch lists supplies moved through the lower crossing as a temporary exception after the flood’s retreat. It records a route decision, not who approved it.</p>' + dispatch + '</article>' +
           '<article class="gss170-card"><span class="gss170-card-label">OPTIONAL SALVAGE</span><h2>Sealed freight</h2><p>Useful material remains beneath the waterline. Searching it does not change the evidence record.</p>' + salvage + '</article>';
-        actions = button('gss170Fight', 'Enter the inner bay', 'Face the keeper using production combat.', 'primary') + button('gss170Retreat', 'Return to Greyfen', 'Leave with saved discoveries and supplies.', 'secondary');
+        actions = button('gss170Fight', 'Enter the inner bay', 'Face the keeper in tactical combat.', 'primary') + button('gss170Retreat', 'Return to Greyfen', 'Leave with saved discoveries and supplies.', 'secondary');
       } else if (Number(run.room) === 2 && !run.battleWon) {
+        state = 'keeper';
         title = 'The Inner Bay'; kicker = 'ROOM 3 / 3 · ENCOUNTER';
         copy = 'The keeper is near the half-submerged freight. A reload restores the encounter entrance without consuming progress.';
         content = stats(player, run) + '<article class="gss170-card"><span class="gss170-card-label">HOSTILE NEARBY</span><h2>Mirebound Storehouse Keeper</h2><p>It guards the last intact shelves, not the missing authorization leaf.</p></article>';
-        actions = button('gss170Reenter', 'Face the keeper', 'Begin production combat.', 'primary') + button('gss170Retreat', 'Return to Greyfen', 'Withdraw safely.', 'secondary');
+        actions = button('gss170Reenter', 'Face the keeper', 'Enter the encounter.', 'primary') + button('gss170Retreat', 'Return to Greyfen', 'Withdraw safely.', 'secondary');
       } else if (Number(run.room) === 3 && run.battleWon) {
+        state = 'treasure';
         title = 'The Inner Bay'; kicker = 'ROOM 3 / 3 · ENCOUNTER WON';
         copy = 'The keeper falls among the waterlogged shelves. The dispatch is incomplete but can be carried to the Boundary Archive.';
         content = stats(player, run) + '<article class="gss170-card"><span class="gss170-card-label">RECOVERED</span><h2>Dry Peat Brick</h2><p>Combat XP and its item reward are already saved. Claim the separate report reward once to finish the delve.</p><small>The dispatch does not identify who authorized the route exception.</small></article>' +
@@ -242,7 +259,8 @@
         actions = button('gss170Collect', 'Claim the field report', 'Claim the saved gold and herb/peat reward.', 'primary') + button('gss170Return', 'Return to Greyfen', 'Leave without claiming the separate report reward.', 'secondary');
       }
       screen(head('GREYFEN · BELOW THE WATERLINE', 'The Silted Storehouse', 'A local delve through flooded freight and missing records.', typeof locationInterior === 'function' ? locationInterior('market') : '', 'dungeon'),
-        scene(title, kicker, copy, content, actions));
+        scene(title, kicker, copy, content, actions, state, state === 'treasure' && !!player.flags?.greyfenStorehouseDispatchFound && !player.flags?.greyfenStorehouseDispatchReported));
+      focusHeading();
       document.getElementById('gss170Begin')?.addEventListener('click', () => startRun(player));
       document.getElementById('gss170Retry')?.addEventListener('click', () => startRun(player));
       document.getElementById('gss170Again')?.addEventListener('click', () => startRun(player));

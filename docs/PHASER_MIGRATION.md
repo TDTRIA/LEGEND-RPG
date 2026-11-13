@@ -132,7 +132,25 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:6e9112f67f6011d2d3b2cd65513c93ef18472d956938fe5bb1edec159db1bb1a -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:267d085d5dcd14c1fc083d64f97c2b87ca47e1d8b9c0b3a5aec89a480de8635d -->
+
+## Silted Storehouse rooms and save compatibility — 2026-11-13 (verified locally)
+
+The existing Storehouse now has guarded Phaser presentation for its locked entry, preparation, loading walk, records bay, restored encounter entrance, won room, failed attempt and completed report. Approved regional artwork, headings, status values, authored evidence, optional salvage, action details and live feedback are painted from the production view. Semantic controls retain their original callbacks. Missing actions, artwork, required fields or unhandled copy restore the complete DOM. Heading focus and scroll reset follow room changes; focused controls and Back remain usable above the fixed dock.
+
+A reproduced save-contract defect is repaired: starting, retrying or repeating a delve previously replaced its nested run object and discarded unknown fields. Restart now preserves extensions and recorded discoveries while resetting the same known attempt fields, including removal of the old report, combat-XP and last-room values. Whole-player comparisons verify the original reset behavior plus preserved extensions. The existing Back action still leaves an active delve resumable; explicit retreat retains its saved effects.
+
+Ten focused cases pass across fresh runs and equivalent retained checks: four new native/save cases and all six existing Storehouse regressions. Coverage includes desktop keyboard/mobile touch, both approach costs, one-time salvage, saved dispatch/reload, unknown fields and Old Road isolation, exact first/repeated report rewards, duplicate claim protection, restored encounter entry, actual keeper victory/defeat/retreat, Mara's evidence handoff, incomplete-source fallback and landscape bounds. The baseline save test failed on the lost extension fields before the repair. A final focus assertion was corrected to exercise real keyboard focus rather than pointer-origin programmatic focus; native and fallback focus expectations both pass. Existing gameplay tests use supported reduced motion and a 120-second command-level budget for software rendering; assertions remain intact.
+
+Shared Chromium desktop1440×900, portrait390×844, landscape844×390, report, feedback and DOM fallback screenshots were inspected. A duplicate DOM/native focus outline found during inspection was removed only while the painter is active. Syntax checks pass for 106 production scripts and 70 test specs. Combat calculations, economy, reward amounts, save keys and authored lore are unchanged. Mandatory storage and combat-rule results remain valid; this is not full release acceptance.
+
+Next: regional shell/journal context and combat-specific presentation acceptance for Greyfen. The Storehouse still uses its existing approved regional artwork; the release plan's dedicated interior-art requirement remains open. Greyfen and first-three-towns release gates remain unchecked. PR creation, merging and publishing remain unavailable under this task's Manual permissions. Removing the dedicated painter restores the semantic DOM presentation; the save compatibility repair is independent.
+
 ## Greyfen Marsh field records and shell — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The Marsh field map and saved field notes now have dedicated, guarded Phaser presentation. Places retain explicit current/visited/off-route labels; settled reports place the traveler at Greyfen Landing. Both views support keyboard, touch, scrolling and rotation, with original semantic buttons and complete DOM fallback for missing or unknown content. The modal isolates background controls, restores prior inert state and opener focus, and cleans up when its owning screen leaves.
 
@@ -142,7 +160,13 @@ Fifteen focused cases pass across fresh and equivalent retained checks: map/jour
 
 Shared Chromium screenshots were inspected at 1440×900, 390×844 and 844×390, including map, populated notes, settled report map and DOM fallback. The final mobile dock shows complete labels. Syntax checks cover 105 active production scripts and 69 test specs. No save keys, normalization rules, reward formulas, costs or authored lore changed; read-only map/notes and navigation checks preserve saves and unknown properties.
 
-Next: Storehouse delve presentation and its unknown nested-state preservation defect, then regional combat acceptance. Greyfen and first-three-towns release gates remain open. This checkpoint is on the assigned feature branch; PR creation, merging and publishing remain unavailable under this task's Manual permissions. Removing the dedicated map painter restores DOM presentation.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:4150be4900426090c765a7d8478a936d9213c7f7a1041d4720316ffab045c208 -->
+
+The later Storehouse checkpoint above completes its room presentation and unknown nested-state repair. Regional shell/journal context and combat acceptance remain next.
+
+<!-- /coderabbit-ai-generated:v1 --> Greyfen and first-three-towns release gates remain open. This checkpoint is on the assigned feature branch; PR creation, merging and publishing remain unavailable under this task's Manual permissions. Removing the dedicated map painter restores DOM presentation.
 
 ## Greyfen Marsh expedition and reports — 2026-11-13 (verified locally)
 
@@ -545,7 +569,14 @@ The third production annal now uses the exact approved “The Peace, Written Dow
 <!-- coderabbit-ai-generated-section:v1:88093fbe2df437898f566eef0adb1c3dd681311aedeb1c0def33f024c28d938f -->
 
    - [x] Dedicated Marsh field map, saved field notes and persistent-shell integration verified locally with keyboard/touch, scrolling/rotation, lifecycle, readable labels, original settlement and DOM fallback.
-   - [ ] Storehouse delve and regional combat acceptance.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:bf1875bc9bd730b14793243d81c8681a308732f38c8f9f5b6b3ff15d2af827bb -->
+
+   - [x] Storehouse room/report presentation and save-extension preservation verified locally with original route, discovery, retreat and reward callbacks, desktop/mobile visuals and complete DOM fallback.
+   - [ ] Regional shell/journal context and combat presentation acceptance; dedicated Storehouse interior artwork remains a release requirement.
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- /coderabbit-ai-generated:v1 -->
 
