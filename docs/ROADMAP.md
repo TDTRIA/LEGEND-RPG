@@ -176,7 +176,25 @@ Expedition result presentation is verified in the later checkpoint above; broade
 
 <!-- coderabbit-ai-generated-section:v1:5008c1ad9c1e3aa4e24af04abf8f327a56ebbf60d8ec1817555693d4ba1ccb24 -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:7317a7a9b1d6044bba3acba4dd79bd97ea6e165d328a078ee99ee36e04fca49c -->
+
+## Cloud-slot confirmation — 2026-11-13 (verified locally)
+
+The production Clear Cloud Slot action now opens an accessible in-game confirmation with dedicated Phaser panels, exact copy, focus frames and real semantic buttons. Keep Slot receives initial focus. Tab/Shift+Tab stay in the dialog; Escape, Keep Slot and backdrop cancellation preserve the cloud slot. Background controls are inert and document scrolling is locked until close. Focus returns to the opener. Missing or incomplete native presentation retains the full DOM dialog; a missing dialog module retains the original browser confirmation and its exact message.
+
+This intentionally changes the confirmation presentation from a synchronous browser prompt to an asynchronous in-game dialog. The account controller serializes pending clearing requests, cancels when the source view leaves, checks the current account identity before deletion, and avoids navigating back to an old account screen after completion. The existing cloud service still owns the same user-scoped, slot-scoped delete and error feedback. Local player/settings/audio/pending-return saves, unknown fields, cloud save/load payloads, progression and gameplay remain unchanged.
+
+Eight selected checks pass across fresh and equivalent retained results: desktop/mobile cancel/accept/focus/backdrop/retry matrices; changed-account and detached-view cancellation; pending-session validation and navigation; combined preferences/landscape/DOM fallback; missing-module browser confirmation; and both existing complete cloud-control journeys. Those journeys retain their original cloud payload, cancelled delete, accepted delete, failed save, denied local restore, successful restore and sign-out assertions. Cloud operations use isolated synthetic provider fixtures; real Supabase authentication/RLS is not claimed verified.
+
+Visual inspection caught a legacy global button gradient covering native labels despite a passing paint snapshot. Scoped confirmation button styles now remove it, with explicit background-image assertions. A second interaction check reproduced document scrolling behind the modal; the dialog now owns a scroll lock and restores it on close. Shared Chromium desktop 1440×900, portrait 390×844 and landscape 844×390 screenshots were inspected, including large text, readable font, high contrast and complete DOM fallback. Preview used a synthetic in-memory provider, returned to the normal title, restored the original provider/preferences, and preserved all four stored values.
+
+Only the cloud-slot confirmation slice is complete locally. The remaining cinematic/overlay audit, full first-session and returning-save migration gate, dedicated Storehouse art and first-three-towns release remain open. Manual task permissions still prevent PR creation, main merges and production publishing. Disabling the painter restores the DOM confirmation; omitting its controller module restores the original browser prompt.
+
 ## Artwork preload and startup fallback — 2026-11-13 (verified locally)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 The actual production RealmScene now presents its artwork-download stage in Phaser before create(): approved title artwork and raster wordmark, the existing boot checks and exact text, plus a separate live artwork count and progress bar. The original DOM loader remains visible until the complete native surface can paint. Missing required artwork, a missing loading module, or unhandled copy keeps the source presentation. Slow downloads no longer leave an empty canvas or lose their loader when the independent DOM boot timer finishes. The system-check message no longer declares the realm ready while artwork is pending.
 

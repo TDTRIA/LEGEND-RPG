@@ -771,6 +771,7 @@
       this.travelerSheet = window.LegendPhaserTravelerSheetV1?.create(this);
       this.shellToast = window.LegendPhaserShellToastV1?.create(this);
       this.settingsUi = window.LegendPhaserSettingsV1?.create(this);
+      this.confirmationUi = window.LegendPhaserConfirmationV1?.create(this);
       this.creditsUi = window.LegendPhaserCreditsV1?.create(this);
       this.dispatchesUi = window.LegendPhaserDispatchesV1?.create(this);
       this.accountUi = window.LegendPhaserAccountV1?.create(this);
@@ -860,6 +861,7 @@
           nativeTravelerSheet: this.travelerSheet?.snapshot(),
           nativeShellToast: this.shellToast?.snapshot(),
           nativeSettings: this.settingsUi?.snapshot(),
+          nativeConfirmation: this.confirmationUi?.snapshot(),
           nativeCredits: this.creditsUi?.snapshot(),
           nativeDispatches: this.dispatchesUi?.snapshot(),
           nativeAccount: this.accountUi?.snapshot(),

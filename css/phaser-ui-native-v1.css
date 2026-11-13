@@ -1627,3 +1627,28 @@ html.legend-phaser-preloading body.a11y-high-contrast .legend-boot-frame { backg
 }
 html.legend-phaser-preloading .legend-boot-wordmark-fallback[hidden] { display:none!important; }
 html.legend-phaser-preloading { overflow:hidden!important; }
+
+/* Cloud confirmation keeps cancel/accept as real accessible buttons. */
+.legend-confirm-overlay { position:fixed; inset:0; z-index:1002; display:flex; align-items:center; justify-content:center; padding:16px; box-sizing:border-box; background:transparent; backdrop-filter:none; }
+.legend-confirm-panel { box-sizing:border-box; width:min(100%,560px); max-height:calc(100dvh - 32px); overflow:auto; overscroll-behavior:contain; padding:24px; border:1px solid #b49d69; background:#101a12; color:#f2ead5; }
+.legend-confirm-panel h2 { margin:0 0 18px; font-size:1.6rem; line-height:1.35; overflow-wrap:anywhere; }
+.legend-confirm-panel p { margin:0 0 24px; font-size:1rem; line-height:1.6; }
+.legend-confirm-actions { display:flex; flex-wrap:wrap; gap:12px; }
+.legend-confirm-panel button { flex:1 1 180px; min-height:48px; padding:12px 16px; background:#233323; border:1px solid #b49d69; border-radius:2px; color:#fff2cf; font:inherit; font-size:1rem; line-height:1.5; cursor:pointer; white-space:normal; touch-action:manipulation; }
+.legend-confirm-panel button:focus-visible { outline:3px solid #ffe6a0; outline-offset:2px; }
+body.a11y-large-text .legend-confirm-panel :is(p,button) { font-size:1.2rem; }
+body.a11y-large-text .legend-confirm-panel h2 { font-size:1.9rem; }
+body.a11y-readable-font .legend-confirm-panel { font-family:Verdana,Arial,sans-serif; }
+body.a11y-bold-text .legend-confirm-panel { font-weight:700; }
+body.a11y-spacious .legend-confirm-panel { padding:32px; }
+body.a11y-high-contrast .legend-confirm-panel { background:#000; color:#fff; }
+body.legend-phaser-confirmation-active #game-container { z-index:1001; }
+body.legend-phaser-confirmation-active .legend-confirm-panel,
+body.legend-phaser-confirmation-active .legend-confirm-panel button { background:transparent!important; border-color:transparent!important; box-shadow:none!important; text-shadow:none!important; transform:none!important; }
+body.legend-phaser-confirmation-active [data-confirmation-copy],
+body.legend-phaser-confirmation-active [data-confirmation-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-confirmation-active .legend-confirm-panel button:focus-visible { outline:none; }
+/* Override the legacy global button theme only on these two controls. */
+body .legend-confirm-panel :is(#legendConfirmCancel,#legendConfirmAccept) { background:#233323!important; border-radius:2px!important; color:#fff2cf!important; transform:none!important; box-shadow:none!important; }
+body.legend-phaser-confirmation-active .legend-confirm-panel :is(#legendConfirmCancel,#legendConfirmAccept) { background:transparent!important; border-color:transparent!important; color:transparent!important; }
+html.legend-confirmation-open { overflow:hidden!important; }
