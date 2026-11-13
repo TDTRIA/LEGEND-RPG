@@ -876,6 +876,8 @@
             ? { x: this.nativeAnnalsUiButtonLabel.x, y: this.nativeAnnalsUiButtonLabel.y }
             : null,
           nativeCreationUi: this.nativeCreationUiActive,
+          nativeCreationUiLabels: this.shellLabelSnapshot(this.nativeCreationUiObjects),
+          nativeCreationUiFailure: this.nativeCreationUiFailure || '',
           nativeCreationUiStep: Number(root()?.querySelector('.v140-creation')?.dataset.creationStep ?? -1),
           nativeCreationUiObjectCount: this.nativeCreationUiObjects.filter(item => item?.active).length,
           nativeCreationUiChoiceIds: this.nativeCreationUiControls.filter(item => item.kind === 'choice').map(item => item.id),
@@ -1540,6 +1542,16 @@
       titleDecorationNodes.forEach(item => {
         const rect = sceneRect(item.rect);
         const css = window.getComputedStyle(item.node);
+        if (item.id === 'traveler-detail') {
+          const object = this.createShellLabel(item.node, rect, item.color, sx, sy, 16);
+          if (!object) throw new Error('Returning traveler detail does not fit its source box');
+          const lines = object.getWrappedText().length;
+          if (lines > 1 && rect.height > object.height) object.setLineSpacing((rect.height - object.height) / (lines - 1));
+          if (object.displayHeight > rect.height) object.setScale(object.scaleX, rect.height / object.height);
+          this.nativeTitleUiDecorations.push({ id: item.id, node: item.node, object });
+          this.nativeTitleUiObjects.push(object);
+          return;
+        }
         const centered = css.textAlign === 'center';
         const fontSize = Math.max(item.id === 'intro' ? 11 : 9,
           Math.min(item.id === 'intro' ? 20 : 16, (parseFloat(css.fontSize) || 12) * sy));
@@ -2114,7 +2126,7 @@
       const choices = Array.from(screen.querySelectorAll('.v094-choice'));
       const controls = Array.from(screen.querySelectorAll('.v094-actions button'));
       const textNodes = Array.from(screen.querySelectorAll('h1,h2,h3,p,small,strong,em,label,span'))
-        .filter(node => !node.matches('#v094NameError,#v094ChoiceError') && !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
+        .filter(node => !node.matches('#v094NameError,#v094ChoiceError,.v150-logo-lockup,.v150-wordmark-fallback') && !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
       const panels = Array.from(screen.querySelectorAll(
         '.v094-beginning-card,.v140-guide-portrait-frame,.v140-dialogue-box,.v094-stepper,.v094-scene-note,.v094-choice,.v094-summary > div,.v094-confirm-benefit,.v094-field,.v094-actions button'
       ));
@@ -2141,13 +2153,6 @@
         screen.querySelector('#v094Name')?.value || ''
       ]);
       if (this.nativeCreationUiActive && signature === this.nativeCreationUiSignature) return;
-
-      const colorNodes = Array.from(screen.querySelectorAll('h1,h2,h3,p,small,strong,em,label,span'));
-      colorNodes.forEach(node => {
-        if (!node.dataset.legendNativeCreationColor) {
-          node.dataset.legendNativeCreationColor = window.getComputedStyle(node).color || '#eee7d6';
-        }
-      });
 
       this.clearNativeCreationUi(false);
       this.nativeCreationUiActive = true;
@@ -2298,7 +2303,7 @@
         } else if (node.matches('.v094-actions button')) {
           const primary = node.classList.contains('primary');
           drawPanel(node, {
-            fill: primary ? 0x604923 : 0x111b13,
+            fill: primary ? 0x233226 : 0x111b13,
             alpha: 0.98,
             stroke: primary ? 0xe8c77e : 0xa89262,
             strokeAlpha: primary ? 0.92 : 0.55,
@@ -2325,36 +2330,46 @@
         }
       });
 
-      const styleOf = node => window.getComputedStyle(node);
+      let copyFits = true;
+      this.nativeCreationUiFailure = '';
       const makeText = (node, overrides = {}) => {
-        if (!node) return null;
         const rect = rectFor(node);
-        if (!rect) return null;
-        let text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
-        if (styleOf(node).textTransform === 'uppercase') text = text.toLocaleUpperCase();
-        else if (styleOf(node).textTransform === 'lowercase') text = text.toLocaleLowerCase();
-        if (!text) return null;
-        const style = styleOf(node);
-        const originalColor = node.dataset.legendNativeCreationColor || style.color || '#eee7d6';
-        const fontPx = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
-        const linePx = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.42;
-        const wrap = Math.max(32, rect.width);
-        const textObject = this.add.text(rect.x, rect.y, text, {
-          fontFamily: style.fontFamily || 'Georgia, Times New Roman, serif',
-          fontSize: fontPx + 'px',
-          fontStyle: Number(style.fontWeight) >= 650 || style.fontWeight === 'bold'
-            ? 'bold'
-            : (style.fontStyle || 'normal'),
-          color: overrides.color || originalColor,
-          lineSpacing: Math.max(0, (linePx - (parseFloat(style.fontSize) || 14)) * sy),
-          letterSpacing: Number.isFinite(parseFloat(style.letterSpacing))
-            ? Math.max(0, parseFloat(style.letterSpacing) * sx)
-            : 0,
-          wordWrap: { width: wrap, useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 1, bottom: 2 },
-          align: style.textAlign || 'left'
-        }).setOrigin(0, 0);
-        return addObject(textObject, 14);
+        if (!rect || !node.textContent.trim()) return null;
+        // Short choice columns can differ by a few glyph pixels between DOM
+        // and canvas. Fit that bounded difference back into the content box.
+        const allowance = node.matches('.v094-choice strong,.v094-choice span,.v094-choice em') ? 16 * sx : node.matches('h1,h2,h3') ? 8 * sx : 0;
+        const label = this.createShellLabel(node, { ...rect, width: rect.width + allowance }, overrides.color || '#eee7d6', sx, sy, 14);
+        if (!label) {
+          copyFits = false;
+          this.nativeCreationUiFailure = 'Creation copy does not fit: ' + node.tagName + ' ' + node.textContent.trim();
+          return null;
+        }
+        const css = getComputedStyle(node);
+        const insetLeft = (parseFloat(css.paddingLeft) + parseFloat(css.borderLeftWidth) || 0) * sx;
+        const insetRight = (parseFloat(css.paddingRight) + parseFloat(css.borderRightWidth) || 0) * sx;
+        const contentWidth = Math.max(1, rect.width - insetLeft - insetRight);
+        if (label.displayWidth > contentWidth) {
+          const ratio = contentWidth / label.displayWidth;
+          if (ratio < 0.85) {
+            label.destroy();
+            copyFits = false;
+            this.nativeCreationUiFailure = 'Creation copy exceeds content width: ' + node.textContent.trim();
+            return null;
+          }
+          label.setScale(label.scaleX * ratio, 1);
+        }
+        label.x = Math.max(rect.x + insetLeft, Math.min(label.x, rect.x + rect.width - insetRight - label.displayWidth));
+        const lines = label.getWrappedText().length;
+        const available = rect.height - (parseFloat(css.paddingTop) + parseFloat(css.paddingBottom) +
+          parseFloat(css.borderTopWidth) + parseFloat(css.borderBottomWidth) || 0) * sy;
+        if (lines > 1 && available > label.height) {
+          const lineHeight = (parseFloat(css.lineHeight) || parseFloat(css.fontSize) * 1.42) * sy;
+          const naturalLineHeight = label.height / lines;
+          label.setLineSpacing(Math.max(0, Math.min(lineHeight - naturalLineHeight, (available - label.height) / (lines - 1))));
+        }
+        if (label.displayHeight > available) label.setScale(label.scaleX, available / label.height);
+        label.setData('shellLabel', { sourceText: node.textContent.trim(), sourceBounds: rect });
+        return addObject(label, 14);
       };
       textNodes.forEach(node => {
         let color = null;
@@ -2401,21 +2416,7 @@
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         const objects = [focusFrame];
-        if (!choice) {
-          const actionStyle = window.getComputedStyle(button);
-          const actionText = button.textContent?.replace(/\s+/g, ' ').trim() || id;
-          const primaryAction = button.classList.contains('primary');
-          const actionLabel = this.add.text(rect.width / 2, rect.height / 2, actionText, {
-            fontFamily: actionStyle.fontFamily || 'Arial, sans-serif',
-            fontSize: Math.max(10, (parseFloat(actionStyle.fontSize) || 13) * sy) + 'px',
-            fontStyle: 'bold',
-            color: primaryAction ? '#241803' : '#e9e2cf',
-            letterSpacing: 0.25 * sx,
-            align: 'center',
-            wordWrap: { width: Math.max(40, rect.width - 24 * sx), useAdvancedWrap: true }
-          }).setOrigin(0.5);
-          objects.push(actionLabel);
-        }
+        if (!choice) makeText(button, { color: '#fff0ca' });
         if (choice && (button.classList.contains('is-selected') || button.getAttribute('aria-pressed') === 'true')) {
           const tick = this.add.text(rect.width - 18 * sx, 15 * sy, '✓', {
             fontFamily: 'Arial, sans-serif',
@@ -2449,6 +2450,7 @@
           button.addEventListener('pointerleave', () => this.setNativeCreationControlFocus(id, document.activeElement === button));
         }
       });
+      if (!copyFits || imageSpecs.some(item => !imageKeys[item.index])) this.clearNativeCreationUi();
     }
 
     clearNativeOpeningUi(removeClass = true) {

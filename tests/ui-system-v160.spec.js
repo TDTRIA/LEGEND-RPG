@@ -1,5 +1,22 @@
 const { test, expect } = require('@playwright/test');
 
+async function expectTravelerDetailFits(page) {
+  const detail = await page.evaluate(() => {
+    const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+    const item = scene.nativeTitleUiDecorations.find(item => item.id === 'traveler-detail');
+    const label = item?.object;
+    return label ? { text: label.text, source: item.node.textContent.trim(),
+      width: label.displayWidth, height: label.displayHeight,
+      bounds: label.getData('shellLabel')?.sourceBounds, resolution: label.style.resolution } : null;
+  });
+  expect(detail).not.toBeNull();
+  expect(detail.text).toBe(detail.source);
+  expect(detail.bounds).toBeTruthy();
+  expect(detail.width).toBeLessThanOrEqual(detail.bounds.width + 1);
+  expect(detail.height).toBeLessThanOrEqual(detail.bounds.height + 1);
+  expect(detail.resolution).toBe(2);
+}
+
 async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await page.setViewportSize(viewport);
   // Use the browser's supported accessibility preference so the game itself
@@ -260,6 +277,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect.poll(settingsTexture).toBe('menuButtonSelected');
     expect(await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()))).toBe(saveBefore);
     await expectNoHorizontalOverflow(page);
+    await expectTravelerDetailFits(page);
     await attachProof(page, 'phase1-returning-title-desktop.png');
 
     // Exercise the original production callbacks behind every remaining menu
@@ -336,6 +354,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       expect(layout.bounds).toHaveLength(6);
       expect(layout.bounds.every(item => item.x >= 0 && item.width > 0 && item.x + item.width <= layout.size.width + 1)).toBe(true);
       await expectNoHorizontalOverflow(mobilePage);
+      await expectTravelerDetailFits(mobilePage);
       await attachProof(mobilePage, 'phase1-returning-title-mobile-390.png');
 
       await mobilePage.locator('#settings').tap();

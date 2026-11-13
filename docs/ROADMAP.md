@@ -46,7 +46,19 @@ The story and the systems should reinforce that loop. Town is a place the player
 
 <!-- coderabbit-ai-generated-section:v1:19bb67543391114c1b5b86ace4c4d1b97e414a9337c9697559a0e47c51ecdfbf -->
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:a3d019a033fa6b634d06156e47b4edd99af839a9c60bb097a4afd01fafdb7ae9 -->
+
+## Creation and returning-title readability — 2026-11-13 (local)
+
+Fixed the confirmed creation caption/step-counter wrapping, hidden fallback wordmark copied above the raster logo, cramped mobile presence caption, and excessive spacing inside choice descriptions. Creation labels now use explicit readable colors, measured content boxes, bounded glyph fitting and the source line height. Primary actions keep light text on a dark surface. Failed text or artwork painting restores the complete DOM presentation. The returning-player class/day/token summary fits its original card.
+
+Seven focused checks pass across final and equivalent retained runs: all seven creation steps at desktop/mobile sizes, keyboard/touch and Back actions, exact existing-save preservation while drafting, text/art fallback recovery, creation observer locality and opening lifecycle, title scroll/resize fallback, and all returning-player title actions. Desktop, 390px portrait and 844px landscape creation screenshots and desktop/mobile title screenshots were inspected. Two runner processes ended with signal 143; the outstanding readability cases subsequently passed individually in attached terminals. No gameplay, storage, reward, story or controller rules changed. Original DOM controls remain authoritative. Long-name/zoom and broader migration/release gates remain open; expedition checkpoint work continues. Publication is still pending task permissions.
+
 ## Opening handoff stability — 2026-11-13 (local)
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 <!-- coderabbit-ai-generated:v1 -->
 
@@ -56,7 +68,13 @@ The native awakening could keep the title hidden when slow rendering stretched P
 
 <!-- coderabbit-ai-generated-section:v1:383f6a78e5e91e802ef1e1bf4b87b96c088b8da0107f5853055639509424a7df -->
 
-Screenshot inspection still shows creation step-counter/caption wrapping and mobile text-spacing issues; those presentation gates remain open. The Oric prologue was also permanently falling back because its authored Old Road JPEG was compared with the South Fork texture. It now selects the existing matching texture and resumes its native painter after the background becomes opaque. Exact-art validation remains mandatory, and the creation-to-Oric regression verifies this handoff. <!-- coderabbit-ai-generated:v1 -->
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:c029f8e4a0f5e6f0c1780f9e470eb7acf661c0734186b56d73e2eb913bfc9fbb -->
+
+Earlier screenshot inspection found creation step-counter/caption wrapping and mobile text-spacing issues; the creation readability follow-up below repairs those confirmed defects.
+
+<!-- /coderabbit-ai-generated:v1 --> The Oric prologue was also permanently falling back because its authored Old Road JPEG was compared with the South Fork texture. It now selects the existing matching texture and resumes its native painter after the background becomes opaque. Exact-art validation remains mandatory, and the creation-to-Oric regression verifies this handoff. <!-- coderabbit-ai-generated:v1 -->
 
 <!-- coderabbit-ai-generated-section:v1:54fa390e59f8cec23585625f1fa8f8b6f41007aaa0b686094322900cc909ca66 -->
 
@@ -64,7 +82,13 @@ Oric layout retries use the same cancellable browser scheduling. Visual verifica
 
 <!-- coderabbit-ai-generated-section:v1:6adff0763d5e00edf89a6d5b049f09131a7505da0eff3808b7e86db3e8dc450d -->
 
-Visual acceptance for the remaining creation typography is still open. Final validation combines seven fresh affected-journey checks with five equivalent boot/title passes: native copy and fallback at desktop/mobile sizes, creation lifecycle and controls, depleted departure, complete road-art parity, and Oric’s ACT tutorial through a secured expedition and return. Syntax checks pass for 98 production scripts and 59 specs; desktop/mobile prologue screenshots were inspected. The broader regression checkpoint and Bitbucket-to-GitHub publication remain outstanding.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:bc750a4ffb4a32e93dda173bd1b7fa1a6e02cf747970d3ec2014b0066a82e1bd -->
+
+At the preceding opening-handoff checkpoint, creation typography remained open. That checkpoint combined
+
+<!-- /coderabbit-ai-generated:v1 --> seven fresh affected-journey checks with five equivalent boot/title passes: native copy and fallback at desktop/mobile sizes, creation lifecycle and controls, depleted departure, complete road-art parity, and Oric’s ACT tutorial through a secured expedition and return. Syntax checks pass for 98 production scripts and 59 specs; desktop/mobile prologue screenshots were inspected. The broader regression checkpoint and Bitbucket-to-GitHub publication remain outstanding.
 
 <!-- /coderabbit-ai-generated:v1 -->
 

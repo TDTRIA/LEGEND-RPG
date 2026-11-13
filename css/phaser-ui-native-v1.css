@@ -125,6 +125,30 @@ body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lo
 
 /* Traveler creation is now drawn in RealmScene. The live inputs and semantic
    buttons stay in the DOM as accessible, focusable hit targets. */
+#root .v140-creation h1,
+#root .v140-creation h2,
+#root .v140-creation h3 {
+  line-height: 1.15 !important;
+  letter-spacing: 0 !important;
+}
+#root .v140-creation .v094-stepper-top,
+#root .v140-creation small {
+  font-size: max(9px, .58rem);
+}
+#root .v140-creation .v094-stepper-top strong {
+  flex-shrink: 0;
+}
+#root .v140-creation .v094-actions button {
+  white-space: nowrap;
+}
+#root .v140-creation .v140-presence-caption {
+  color: #c3bed8;
+}
+@media (max-width: 600px) {
+  #root .v140-creation .v140-presence-frame { min-height: 150px; }
+  #root .v140-creation .v140-presence-glyph { top: 68%; }
+  #root .v140-creation .v140-presence-caption { bottom: 4px; }
+}
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation {
   color: transparent !important;
   background: transparent !important;
