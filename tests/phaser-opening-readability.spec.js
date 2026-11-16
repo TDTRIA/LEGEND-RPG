@@ -64,6 +64,22 @@ for (const width of [1440, 390]) {
         scene.syncNativeOpeningUi();
       });
       await expectNative();
+      // A thrown painter exception must restore the complete DOM prologue surface.
+      await page.evaluate(() => {
+        const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+        window.__openingThrowFactory = scene.createShellLabel;
+        scene.createShellLabel = () => { throw new Error('simulated opening painter failure'); };
+        scene.clearNativeOpeningUi();
+        scene.syncNativeOpeningUi();
+      });
+      expect(await page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeOpeningUi)).toBe(false);
+      await expect(page.locator('.opening-road-v140-prologue-lede')).not.toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+      await page.evaluate(() => {
+        const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+        scene.createShellLabel = window.__openingThrowFactory;
+        scene.syncNativeOpeningUi();
+      });
+      await expectNative();
       const action = page.locator('#openingPrologueContinue');
       await action.scrollIntoViewIfNeeded();
       await action.focus();
