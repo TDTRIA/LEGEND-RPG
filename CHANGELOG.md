@@ -4,6 +4,15 @@
 
 All notable changes to the current project are recorded here. Historical entries may retain old names and versions from the build they describe.
 
+## 2026-11-16 — Documentation reconciled against `main` (docs only)
+
+- Audit `main` against the production docs and correct the drift. `AI_HANDOFF.md` and `TESTING.md` still described the persistent HUD, bottom navigation and both drawers as unmigrated and cited [PR #111](https://github.com/TDTRIA/LEGEND-RPG/pull/111) as pending; that work is present in `main`, and `js/ui/world-shell-v170.js` refreshes `refreshHud`, `refreshNavigation`, `refreshLeftDrawer` and `refreshRightDrawer` after every shell render.
+- Add the missing record of the road map/field-journal and road HUD Phaser painter work that `index.html` already ships under the `?v=20261112-phaser-road-map-modal-1` and `?v=20261112-road-hud-painter-copy-mask-4` cache keys.
+- Mark the Old Road map/field-journal parity item as verified rather than open: `tests/phaser-road-map-modal.spec.js` asserts the painter-active snapshot, transparent DOM copy, focus ring, unchanged save values and 390×844 containment.
+- Name the two genuinely unmigrated surfaces so the next pass does not have to rediscover them: the shell toast (`.lws-shell-toast`, DOM-only, no painter) and the inventory/character-sheet modals (`js/ui/modals-v170.js` never references `LegendPhaserWorldV1`).
+- Note the outstanding supply-chain risk: Phaser is loaded from a live jsdelivr CDN and the repository has no lockfile, so a CDN or version change breaks every player at once.
+- Documentation only. No gameplay, balance, save schema, account or player-data change.
+
 ## 2026-11-08 — Creative direction and documentation alignment (docs only)
 
 - Establish [Darkest Dungeon](docs/DARKEST_DUNGEON_DIRECTION.md) as LEGEND's primary high-level creative reference, replacing the earlier World of Warcraft / Diablo comparison.
