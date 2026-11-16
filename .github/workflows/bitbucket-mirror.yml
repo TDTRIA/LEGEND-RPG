@@ -120,9 +120,13 @@ jobs:
             # other branch. With GH_MIRROR_TOKEN present, checkout uses that
             # higher-scope credential and these refs may be mirrored too.
             if [ -z "${GH_MIRROR_TOKEN:-}" ]; then
+              # GitHub validates every commit being introduced, not only the
+              # final tree diff. A branch can add then revert a workflow file,
+              # leaving an empty tree diff while still requiring Workflows: write.
+              workflow_commits="$(git rev-list "$range_base..$source_sha" -- .github/workflows/ || true)"
               workflow_changes="$(git diff --name-only "$range_base" "$source_sha" -- .github/workflows/ || true)"
-              if [ -n "$workflow_changes" ]; then
-                echo "SKIP_WORKFLOW_SCOPE $branch; add GH_MIRROR_TOKEN with Workflows: write to mirror it"
+              if [ -n "$workflow_commits" ] || [ -n "$workflow_changes" ]; then
+                echo "SKIP_WORKFLOW_SCOPE $branch; add GH_MIRROR_TOKEN with Contents: write and Workflows: write to mirror it"
                 preserved=$((preserved + 1))
                 skipped_workflows=$((skipped_workflows + 1))
                 continue
