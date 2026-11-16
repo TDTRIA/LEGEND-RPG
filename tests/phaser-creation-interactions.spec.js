@@ -160,6 +160,15 @@ test('production screen changes use one transition owner and creation choices us
     await expect(page.locator('[data-gender]')).toHaveCount(4);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeCreationUiStep)).toBe(2);
 
+    // The pointer can remain over a newly-rendered card after a screen handoff.
+    // Move it to empty canvas and blur the prior action before checking the
+    // neutral, unhovered state; a hover outline is intentional and not a stale frame.
+    await page.mouse.move(1400, 850);
+    await page.evaluate(() => {
+      if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    });
+    await page.waitForTimeout(80);
+
     const unselected = await page.locator('.v094-choice').evaluateAll(nodes => {
       const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
       return nodes.map(node => {
