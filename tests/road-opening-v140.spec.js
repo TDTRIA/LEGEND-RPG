@@ -456,7 +456,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await page.getByRole('button', { name: 'Lift your head' }).click();
     await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
     await expect.poll(() => page.locator('body').evaluate(node => node.classList.contains('legend-phaser-opening-ui-active'))).toBe(true);
-    await injectGraphicsFailure('opening', '.opening-road-v140-card h1');
+    await injectGraphicsFailure('opening', '.opening-road-v140');
 
     await expect(page.locator('[data-oric-response="honest"]')).toBeVisible();
     expect(errors).toEqual([]);
