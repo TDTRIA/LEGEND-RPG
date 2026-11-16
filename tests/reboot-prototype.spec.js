@@ -111,7 +111,9 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     await page.locator('#dispatches').click();
     await expect(page.locator('.dispatches-v140')).toBeVisible();
     await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surface)).toBe('dispatches');
-    await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surfaceTransitionCount)).toBeGreaterThan(0);
+    // The shared curtain is the sole transition owner; RealmScene must not
+    // also run its old camera zoom / gold-streak transition.
+    await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surfaceTransitionCount)).toBe(0);
     await expect(page.getByRole('heading', { name: 'News & Roadmap' })).toBeVisible();
     await page.locator('#dispatchesBack').click();
     await expect(page.locator('.v120-title')).toBeVisible();
