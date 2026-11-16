@@ -1419,34 +1419,6 @@
       return;
     }
 
-    playSurfaceTransition(surface) {
-      if (reducedMotion()) return;
-      const size = this.dimensions();
-      const colors = {
-        title: 0xd8bb7b, dispatches: 0xd8bb7b, settings: 0x91a6c0, credits: 0xd8bb7b,
-        annals: 0xc9ad72, creation: 0x9caacb, awakening: 0xb5c99e,
-        combat: 0xd4aa79, 'combat-results': 0xe3c37d, expedition: 0xa6b99a,
-        'expedition-results': 0xe3c37d, town: 0xd8bb7b, 'town-service': 0xd8bb7b,
-        dungeon: 0xa4b4c7, 'field-site': 0x9ac8b2, modal: 0xe3c37d
-      };
-      const color = colors[surface] || 0xd8bb7b;
-      const upper = this.add.rectangle(-size.width * 0.3, size.height * 0.16, size.width * 0.32, 2, color, 0.62).setDepth(8);
-      const lower = this.add.rectangle(size.width * 1.3, size.height * 0.84, size.width * 0.32, 2, color, 0.52).setDepth(8);
-      this.surfaceTransitionCount += 1;
-      this.tweens.add({
-        targets: upper, x: size.width * 0.5, alpha: 0, scaleX: 2.3, duration: 620,
-        ease: 'Cubic.easeOut', onComplete: () => upper.destroy()
-      });
-      this.tweens.add({
-        targets: lower, x: size.width * 0.5, alpha: 0, scaleX: 2.3, duration: 720, delay: 70,
-        ease: 'Cubic.easeOut', onComplete: () => lower.destroy()
-      });
-      const camera = this.cameras.main;
-      this.tweens.killTweensOf(camera);
-      camera.setZoom(1.012);
-      this.tweens.add({ targets: camera, zoom: 1, duration: 520, ease: 'Sine.easeOut' });
-    }
-
     dimensions() {
       return { width: this.scale.width || 1600, height: this.scale.height || 900 };
     }
