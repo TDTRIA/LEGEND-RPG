@@ -1,20 +1,22 @@
 const { test, expect } = require('@playwright/test');
 
-test.describe('LEGEND official site v2.0', () => {
-  test('official game portal loads its scoped theme and playable entry point', async ({ page }) => {
+const PUBLIC_PAGES = ['portal.html', 'blog.html', 'updates.html', 'guide.html', 'playtest.html', 'feedback.html', 'save.html', 'privacy.html'];
+
+test.describe('LEGEND public site shell v2.3', () => {
+  test('official game portal loads the shared site stylesheet and playable entry point', async ({ page }) => {
     const response = await page.goto('/portal.html');
     expect(response && response.status()).toBe(200);
     await expect(page).toHaveTitle(/LEGEND: The Awakening — Official Game Site/i);
-    await expect(page.locator('link[rel="stylesheet"][href*="realm-portal-v200.css"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="stylesheet"][href*="legend-site-v230.css"]')).toHaveCount(1);
     await expect(page.locator('#rp-hero-title')).toBeVisible();
-    await expect(page.getByRole('link', { name: /Play the Game/i })).toBeVisible();
+    await expect(page.locator('.site-nav-play')).toBeVisible();
   });
 
   test('Development Dispatch serves the real Brevo form and required consent fields', async ({ page }) => {
     const response = await page.goto('/updates.html');
     expect(response && response.status()).toBe(200);
     await expect(page).toHaveTitle(/Development Dispatch — LEGEND: The Awakening/i);
-    await expect(page.locator('link[rel="stylesheet"][href*="development-dispatch-v200.css"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="stylesheet"][href*="legend-site-v230.css"]')).toHaveCount(1);
     const form = page.locator('form#sib-form');
     await expect(form).toBeAttached();
     await expect(form).toHaveAttribute('method', 'POST');
@@ -25,30 +27,55 @@ test.describe('LEGEND official site v2.0', () => {
     await expect(page.locator('a[href="privacy.html"]').first()).toBeVisible();
   });
 
-  test('privacy notice starts below the responsive dispatch navigation and returns to signup', async ({ page }) => {
+  test('privacy notice starts below the shared site navigation and returns to signup', async ({ page }) => {
     const response = await page.goto('/privacy.html');
     expect(response && response.status()).toBe(200);
     await expect(page).toHaveTitle(/Privacy Notice — LEGEND: The Awakening/i);
     const geometry = await page.evaluate(() => {
-      const nav = document.querySelector('.dd-nav');
-      const back = document.querySelector('.privacy-back');
-      if (!nav || !back) throw new Error('Privacy navigation or return link is missing.');
+      const nav = document.querySelector('.site-nav');
+      const back = document.querySelector('.prose-back');
+      if (!nav || !back) throw new Error('Shared navigation or the return link is missing.');
       const navRect = nav.getBoundingClientRect();
       const backRect = back.getBoundingClientRect();
       return { navBottom: navRect.bottom, backTop: backRect.top };
     });
     expect(geometry.backTop).toBeGreaterThanOrEqual(geometry.navBottom + 8);
-    await expect(page.locator('.privacy-back')).toBeInViewport();
-    await page.locator('.privacy-back').click();
+    await expect(page.locator('.prose-back')).toBeInViewport();
+    await page.locator('.prose-back').click();
     await expect(page).toHaveURL(/updates\.html#subscribe$/);
   });
 
-  test('Chronicle and player-support pages link back to the official game portal', async ({ page }) => {
-    for (const path of ['blog.html', 'feedback.html', 'guide.html', 'playtest.html', 'save.html']) {
+  test('every public page shares one stylesheet, one header, one nav and one footer', async ({ page }) => {
+    let reference = null;
+
+    for (const path of PUBLIC_PAGES) {
       const response = await page.goto('/' + path);
       expect(response && response.status(), path + ' should load').toBe(200);
-      const portalLink = page.locator('a[href="portal.html"]').filter({ hasText: 'Official Game Site' }).first();
-      await expect(portalLink, path + ' should expose the official portal link').toBeVisible();
+
+      const sheets = await page.locator('link[rel="stylesheet"]').evaluateAll(nodes =>
+        nodes.map(node => node.getAttribute('href')).filter(href => !/^https?:/.test(href))
+      );
+      expect(sheets, path + ' should load exactly one local stylesheet').toEqual(['css/legend-site-v230.css?v=20261116-site-shell']);
+
+      await expect(page.locator('.site-header'), path + ' should render the shared header').toBeVisible();
+      await expect(page.locator('.site-footer'), path + ' should render the shared footer').toBeVisible();
+      await expect(page.locator('.site-brand img')).toHaveAttribute('src', 'assets/ui/logos/logo_legend_awakening_wordmark.png');
+
+      const shell = await page.evaluate(() => ({
+        nav: Array.from(document.querySelectorAll('.site-nav-links a')).map(a => a.getAttribute('href')),
+        footer: Array.from(document.querySelectorAll('.site-footer-links a')).map(a => a.getAttribute('href')),
+        play: document.querySelector('.site-nav-play')?.getAttribute('href') || null,
+        current: document.querySelectorAll('.site-nav-links a[aria-current="page"]').length
+      }));
+
+      expect(shell.current, path + ' should mark exactly one current nav link').toBe(1);
+      expect(shell.play, path + ' should offer the play button').toBe('index.html');
+      if (reference === null) {
+        reference = { nav: shell.nav, footer: shell.footer };
+      } else {
+        expect(shell.nav, path + ' navigation links').toEqual(reference.nav);
+        expect(shell.footer, path + ' footer links').toEqual(reference.footer);
+      }
     }
   });
 });
