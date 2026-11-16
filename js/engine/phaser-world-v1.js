@@ -2384,8 +2384,10 @@
           drawPanel(node, {
             fill: selected ? 0x1b3f2a : 0x0a130d,
             alpha: selected ? 0.95 : 0.91,
-            stroke: selected ? 0x80c88e : 0xc4a867,
-            strokeAlpha: selected ? 0.98 : 0.42,
+            // Neutral cards use a restrained stone/sage frame rather than
+            // the bright gold outline that made every unselected option look active.
+            stroke: selected ? 0x80c88e : 0x87937d,
+            strokeAlpha: selected ? 0.98 : 0.44,
             lineWidth: selected ? 1.8 : 1,
             inset: false
           });
@@ -2527,6 +2529,7 @@
           height: rect.height,
           container,
           focusFrame,
+          focusColor: 0xb5d99a,
           selected: choice && (button.classList.contains('is-selected') || button.getAttribute('aria-pressed') === 'true'),
           button
         };
