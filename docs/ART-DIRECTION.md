@@ -63,7 +63,17 @@ Use this as the shared prefix for environment art:
 
 For character and enemy portraits, append the subject, distinctive silhouette, equipment, emotional read, and a consistent background treatment. For item icons, replace the environment language with “single centered object, clean silhouette, restrained painterly detail, transparent background.”
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:9078b29a47f39e3cb41034995ad8a234e2a1af2feb018e599ded6fd943bd283f -->
+
+## Runtime service-art correction (2026-11-13)
+
+The original `assets/generated/locations/greyfen-market.webp` contains the retired Roads of Ashmere branding. Production market headers and the persistent Phaser environment now use `greyfen-market-scene.webp`, a crop of that same approved illustration with the top branding strip removed (x0, y152, width1536, height704; WebP quality92). The stalls, water, boardwalk and lighting are retained; no scene content or lore was added. The derivative carries XMP provenance describing the CodeRabbit crop. Keep labels as live UI text, and do not restore the branded original to runtime asset mappings.
+
 ## Integration and performance checklist
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 - Keep original high-resolution masters outside the runtime bundle when possible.
 - Export web-ready WebP for large scenes; use PNG for transparency-sensitive icons or sprites.

@@ -16,8 +16,9 @@
     // The Phaser canvas is a fixed, non-interactive world layer behind the HTML
     // game controls. The production CSS intentionally scopes that contract to
     // BODY, while the intro visibility gate is scoped to HTML.
-    document.documentElement.classList.add('legend-phaser-world-active', 'engine-intro-active');
+    document.documentElement.classList.add('legend-phaser-world-active', 'engine-intro-active', 'legend-phaser-preloading');
     document.body?.classList.add('legend-phaser-world-active');
+    if (window.__legendBootSequenceV100) window.__legendBootSequenceV100.rendererLoading = true;
   }
   const root = () => document.getElementById('root');
   const byId = id => document.getElementById(id);
@@ -137,12 +138,13 @@
     archive: 'assets/generated/locations/ashmere-archive.webp',
     cellar: 'assets/generated/locations/bell-cellar-undercroft.webp',
     greyfenInn: 'assets/generated/locations/greyfen-inn.webp',
-    greyfenMarket: 'assets/generated/locations/greyfen-market.webp',
+    greyfenMarket: 'assets/generated/locations/greyfen-market-scene.webp',
     greyfenForge: 'assets/generated/locations/greyfen-forge.webp',
     greyfenArchive: 'assets/generated/locations/greyfen-archive.webp',
     serviceInnIcon: 'assets/generated/ui/icons/service-inn.webp',
     serviceMarketIcon: 'assets/generated/ui/icons/service-market.webp',
     serviceForgeIcon: 'assets/generated/ui/icons/service-blacksmith.webp',
+    serviceMilestoneIcon: 'assets/generated/ui/icons/service-milestone.webp',
     serviceRoadIcon: 'assets/generated/ui/icons/service-map.webp',
     menuCompass: 'assets/generated/ui/icons/legend-icon-compass.webp',
     menuTraveler: 'assets/generated/ui/icons/legend-icon-traveler.webp',
@@ -204,12 +206,16 @@
     if (!host) return;
     const player = loadPlayer();
     let environment = 'title';
-    if (host.querySelector('.opening-road-v140')) environment = 'road';
+    if (host.querySelector('.opening-road-v140')) environment = 'blackroot';
     else if (host.querySelector('.opening-lore-v220')) environment = 'title';
     else if (host.querySelector('.v140-creation')) environment = 'title';
     else if (host.querySelector('.rpg-battle')) {
       const arena = host.querySelector('.rpg-battlefield')?.dataset.arena || 'road';
       environment = arena === 'greyfen' ? 'marsh' : arena === 'cellar' ? 'cellar' : 'road';
+    }
+    else if (host.querySelector('.v152-combat-results')) {
+      const resultEnvironment = host.querySelector('.v152-combat-results').dataset.resultEnvironment;
+      environment = ['road','marsh','cellar'].includes(resultEnvironment) ? resultEnvironment : 'road';
     }
     else if (host.querySelector('.gss170-page')) environment = 'marsh';
     else if (host.querySelector('.gfm160-page')) environment = 'marsh';
@@ -264,6 +270,7 @@
     let surface = 'title';
     if (modal && !modal.hidden) surface = 'modal';
     else if (growthOverlayVisible) surface = 'modal';
+    else if (host.querySelector('[data-recovery-screen]')) surface = 'recovery';
     else if (host.querySelector('.dispatches-v140')) surface = 'dispatches';
     else if (host.querySelector('.settings09x')) surface = 'settings';
     else if (host.querySelector('.legend-credits-overlay')) surface = 'credits';
@@ -350,6 +357,13 @@
     const host = root();
     if (!host || !window.MutationObserver) return;
     observer = new MutationObserver(mutations => {
+      if (mutations.every(mutation => {
+        const target = mutation.target?.nodeType === Node.ELEMENT_NODE ? mutation.target : mutation.target?.parentElement;
+        return Boolean(target?.closest?.('.v120-title-hero'));
+      })) {
+        realmScene?.syncNativeTitleUi?.(currentSurface);
+        return;
+      }
       // Text, prompt, selection and focus updates inside traveler creation are
       // local to that surface. Repaint only its Phaser copy instead of running
       // global environment/surface inference for every memory echo mutation.
@@ -369,7 +383,7 @@
       inferEnvironment();
       observeModalRoot();
     });
-    observer.observe(host, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    observer.observe(host, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class', 'disabled', 'aria-disabled', 'aria-pressed'] });
     inferEnvironment();
     observeModalRoot();
   }
@@ -511,7 +525,9 @@
     }
   }
 
-  class RealmScene extends Phaser.Scene {
+  // Let startPhaser reach its DOM fallback when the CDN library is unavailable.
+  const SceneBase = window.Phaser?.Scene || class {};
+  class RealmScene extends SceneBase {
     constructor() {
       super({ key: 'RealmScene' });
       this.background = null;
@@ -531,6 +547,7 @@
       this.awakeningActive = false;
       this.bootObjects = [];
       this.bootEvents = [];
+      this.bootDeadline = null;
       this.bootCompleteCallback = null;
       this.surface = '';
       this.surfaceTransitionCount = 0;
@@ -573,6 +590,7 @@
       this.nativeOpeningUiSignature = '';
       this.nativeOpeningUiLayoutEvent = null;
       this.nativeOpeningUiScrollTarget = null;
+      this.expeditionClipFrame = null;
       this.nativeExpeditionActionsUiActive = false;
       this.nativeExpeditionActionsUiObjects = [];
       this.nativeExpeditionActionsUiTaggedNodes = [];
@@ -719,6 +737,7 @@
     }
 
     preload() {
+      if (!IS_PROTOTYPE) this.loadingUi = window.LegendPhaserLoadingV1?.create(this);
       // Preload the complete configured Phaser art set, not just the first
       // environment/background and service icons. NPC, enemy and class art are
       // part of the same production asset contract and must be available for
@@ -733,15 +752,64 @@
         }
       });
       Object.entries(ASSETS).forEach(([key, path]) => {
-        if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(path)) {
-          this.load.image(key, path);
+        if (typeof path === 'string' && /\.(?:avif|gif|jpe?g|png|webp|svg)$/i.test(path.split(/[?#]/, 1)[0])) {
+          if (/\.svg$/i.test(path.split(/[?#]/, 1)[0])) {
+            // Give vector UI assets explicit raster dimensions before WebGL upload.
+            this.load.svg(key, path, { scale: 2 });
+          } else {
+            this.load.image(key, path);
+          }
         }
       });
     }
 
     create() {
+      this.loadingUi?.destroy();
+      endPreload();
       this.cameras.main.setBackgroundColor('#090e0d');
+      this.people = window.LegendPhaserPeopleV1?.create(this);
+      this.contracts = window.LegendPhaserContractsV1?.create(this);
+      this.workboard = window.LegendPhaserWorkboardV1?.create(this);
+      this.workshop = window.LegendPhaserWorkshopV1?.create(this);
+      this.market = window.LegendPhaserMarketV1?.create(this);
+      this.inn = window.LegendPhaserInnV1?.create(this);
+      this.travelerSheet = window.LegendPhaserTravelerSheetV1?.create(this);
+      this.settingsUi = window.LegendPhaserSettingsV1?.create(this);
+      this.titleNoticeUi = window.LegendPhaserTitleNoticeV1?.create(this);
+      this.transitionUi = window.LegendPhaserTransitionV1?.create(this);
+      this.confirmationUi = window.LegendPhaserConfirmationV1?.create(this);
+      this.creditsUi = window.LegendPhaserCreditsV1?.create(this);
+      this.dispatchesUi = window.LegendPhaserDispatchesV1?.create(this);
+      this.accountUi = window.LegendPhaserAccountV1?.create(this);
+      this.recoveryUi = window.LegendPhaserRecoveryV1?.create(this);
+      this.inventoryOverlay = window.LegendPhaserInventoryOverlayV1?.create(this);
+      this.routeBoard = window.LegendPhaserRouteBoardV1?.create(this);
+      this.roadScene = window.LegendPhaserRoadSceneV1?.create(this);
+      this.growth = window.LegendPhaserGrowthV1?.create(this);
+      this.marshMap = window.LegendPhaserMarshMapV1?.create(this);
+      this.marsh = window.LegendPhaserMarshV1?.create(this);
+      this.storehouse = window.LegendPhaserStorehouseV1?.create(this);
+      this.bellVault = window.LegendPhaserBellVaultV1?.create(this);
+      this.combatResults = window.LegendPhaserCombatResultsV1?.create(this);
+      this.roadResults = window.LegendPhaserRoadResultsV1?.create(this);
+      let titlePreferenceFrame = null;
+      const titlePreferences = new MutationObserver(() => {
+        if (this.surface !== 'title' || titlePreferenceFrame !== null) return;
+        titlePreferenceFrame = requestAnimationFrame(() => { titlePreferenceFrame = null; this.syncNativeTitleUi(this.surface); });
+      });
+      titlePreferences.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      titlePreferences.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+      if (root()) titlePreferences.observe(root(), { attributes: true, attributeFilter: ['style'] });
+      this.events.once('shutdown', () => { titlePreferences.disconnect(); if (titlePreferenceFrame !== null) cancelAnimationFrame(titlePreferenceFrame); });
       this.motionReduced = reducedMotion();
+      this.events.once('shutdown', () => {
+        if (this.expeditionClipFrame !== null) window.cancelAnimationFrame(this.expeditionClipFrame);
+        this.expeditionClipFrame = null;
+        window.clearTimeout(this.nativeCreationUiLayoutEvent);
+        this.nativeCreationUiLayoutEvent = null;
+        window.clearTimeout(this.nativeOpeningUiLayoutEvent);
+        this.nativeOpeningUiLayoutEvent = null;
+      });
       this.scale.on('resize', () => {
         this.layoutBackground();
         this.syncNativeRoadSceneArt();
@@ -784,6 +852,7 @@
           atmosphereCount: this.ambienceObjects.filter(item => item && item.active).length,
           parallaxEnabled: !reducedMotion(),
           engineAwakened: this.engineAwakened,
+          nativeAwakening: this.productionAwakeningUi?.snapshot(),
           surface: this.surface,
           surfaceTransitionCount: this.surfaceTransitionCount,
           ashmereLandmarks: this.ashmereLandmarks.map(item => ({
@@ -799,7 +868,35 @@
           landmarkIconsLoaded: this.ashmereLandmarks.every(item => this.textures.exists(item.iconKey)),
           serviceDressingCount: this.serviceDressing.filter(item => item.object?.active).length,
           serviceDressingKey: this.serviceDressingKey,
+          nativePeople: this.people?.snapshot(),
+          nativeContracts: this.contracts?.snapshot(),
+          nativeWorkboard: this.workboard?.snapshot(),
+          nativeWorkshop: this.workshop?.snapshot(),
+          nativeMarket: this.market?.snapshot(),
+          nativeInn: this.inn?.snapshot(),
+          nativeTravelerSheet: this.travelerSheet?.snapshot(),
+          nativeSettings: this.settingsUi?.snapshot(),
+          nativeTitleNotice: this.titleNoticeUi?.snapshot(),
+          nativeTransition: this.transitionUi?.snapshot(),
+          nativeConfirmation: this.confirmationUi?.snapshot(),
+          nativeCredits: this.creditsUi?.snapshot(),
+          nativeDispatches: this.dispatchesUi?.snapshot(),
+          nativeAccount: this.accountUi?.snapshot(),
+          nativeRecovery: this.recoveryUi?.snapshot(),
+          nativeInventory: this.inventoryOverlay?.snapshot(),
+          nativeRouteBoard: this.routeBoard?.snapshot(),
+          nativeRoadSceneUi: this.roadScene?.snapshot(),
+          nativeGrowth: this.growth?.snapshot(),
+          nativeMarshMap: this.marshMap?.snapshot(),
+          nativeMarsh: this.marsh?.snapshot(),
+          nativeStorehouse: this.storehouse?.snapshot(),
+          nativeBellVault: this.bellVault?.snapshot(),
+          nativeCombatResults: this.combatResults?.snapshot(),
+          nativeRoadResults: this.roadResults?.snapshot(),
           nativeTitleUi: this.nativeTitleUiActive,
+          nativeTitleUiFailure: this.nativeTitleUiFailure || '',
+          nativeTitleUiClip: this.nativeTitleUiClip,
+          nativeTitleUiTextBounds: this.shellLabelSnapshot(this.nativeTitleUiDecorations.map(item => item.object)),
           nativeTitleUiIconsLoaded: ['menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'].every(key => this.textures.exists(key)),
           nativeTitleUiAssetsLoaded: ['menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo'].every(key => this.textures.exists(key)),
           nativeTitleUiLogoPainted: Boolean(this.nativeTitleUiLogoObject?.active),
@@ -816,7 +913,9 @@
             y: item.y,
             width: item.width,
             height: item.height,
-            focused: Boolean(item.focusFrame?.visible)
+            focused: Boolean(item.focusFrame?.visible),
+            pressed: item.button.getAttribute('aria-pressed'),
+            texture: item.buttonSurface?.texture?.key || ''
           })),
           nativeTitleUiTextQuality: this.nativeTitleUiControls.map(item => ({
             id: item.id,
@@ -834,10 +933,15 @@
           nativeAnnalsUiButtonFocused: Boolean(this.nativeAnnalsUiButtonFocus?.visible),
           nativeAnnalsUiButtonHovered: Boolean(this.nativeAnnalsUiButtonHovered),
           nativeAnnalsUiButtonTexture: this.nativeAnnalsUiButtonBackground?.texture?.key || '',
+          nativeAnnalsUiButtonColor: this.nativeAnnalsUiButtonBackground?.fillColor ?? null,
+          nativeAnnalsUiLabels: this.shellLabelSnapshot(this.nativeAnnalsUiObjects),
+          nativeAnnalsUiFailure: this.nativeAnnalsUiFailure || '',
           nativeAnnalsUiButtonLabelPosition: this.nativeAnnalsUiButtonLabel
             ? { x: this.nativeAnnalsUiButtonLabel.x, y: this.nativeAnnalsUiButtonLabel.y }
             : null,
           nativeCreationUi: this.nativeCreationUiActive,
+          nativeCreationUiLabels: this.shellLabelSnapshot(this.nativeCreationUiObjects),
+          nativeCreationUiFailure: this.nativeCreationUiFailure || '',
           nativeCreationUiStep: Number(root()?.querySelector('.v140-creation')?.dataset.creationStep ?? -1),
           nativeCreationUiObjectCount: this.nativeCreationUiObjects.filter(item => item?.active).length,
           nativeCreationUiChoiceIds: this.nativeCreationUiControls.filter(item => item.kind === 'choice').map(item => item.id),
@@ -846,10 +950,15 @@
           nativeCreationUiSceneSize: this.dimensions(),
           nativeCreationUiScrollTargetBound: Boolean(this.nativeCreationUiScrollTarget),
           nativeOpeningUi: this.nativeOpeningUiActive,
+          nativeOpeningUiLabels: this.shellLabelSnapshot(this.nativeOpeningUiObjects),
+          nativeOpeningUiFailure: this.nativeOpeningUiFailure || '',
           nativeOpeningUiObjectCount: this.nativeOpeningUiObjects.filter(item => item?.active).length,
           nativeOpeningUiControlBounds: this.nativeOpeningUiControls.map(item => ({ id: item.id, label: item.label, x: item.x, y: item.y, width: item.width, height: item.height, focused: Boolean(item.focusFrame?.visible) })),
           nativeOpeningUiSceneSize: this.dimensions(),
           nativeOpeningUiScrollTargetBound: Boolean(this.nativeOpeningUiScrollTarget),
+          nativeHudLabels: this.shellLabelSnapshot(this.nativeHudUiObjects),
+          nativeLeftDrawerLabels: this.shellLabelSnapshot(this.nativeLeftDrawerUiObjects),
+          nativeRightDrawerLabels: this.shellLabelSnapshot(this.nativeRightDrawerUiObjects),
           nativeHudUi: this.nativeHudUiActive,
           nativeHudUiObjectCount: this.nativeHudUiObjects.filter(item => item?.active).length,
           nativeHudUiTextCount: this.nativeHudUiTextNodes.filter(node => node?.isConnected).length,
@@ -902,6 +1011,8 @@
           nativeRoadMapUiMaskFilterActive: Boolean(this.nativeRoadMapUiMaskFilter),
           nativeRoadMapUiSceneSize: this.dimensions(),
           nativeExpeditionHudUi: this.nativeExpeditionHudUiActive,
+          nativeExpeditionHudUiLabels: this.shellLabelSnapshot(this.nativeExpeditionHudUiObjects),
+          nativeExpeditionHudUiClip: this.nativeExpeditionHudUiObjects[0]?.getData?.('expeditionClip') || null,
           nativeExpeditionHudUiObjectCount: this.nativeExpeditionHudUiObjects.filter(item => item?.active).length,
           nativeExpeditionHudUiTextCount: this.nativeExpeditionHudUiTextNodes.filter(node => node?.isConnected).length,
           nativeExpeditionHudUiTextValues: this.nativeExpeditionHudUiTextNodes.filter(node => node?.isConnected)
@@ -910,6 +1021,8 @@
             .map(node => node.id || node.getAttribute('aria-label') || ''),
           nativeExpeditionHudUiSceneSize: this.dimensions(),
           nativeExpeditionActionsUi: this.nativeExpeditionActionsUiActive,
+          nativeExpeditionActionsUiLabels: this.shellLabelSnapshot(this.nativeExpeditionActionsUiObjects),
+          nativeExpeditionActionsUiClip: this.nativeExpeditionActionsUiObjects[0]?.getData?.('expeditionClip') || null,
           nativeExpeditionActionsUiObjectCount: this.nativeExpeditionActionsUiObjects.filter(item => item?.active).length,
           nativeExpeditionActionsUiTextCount: this.nativeExpeditionActionsUiTextNodes.filter(node => node?.isConnected).length,
           nativeExpeditionActionsUiTextValues: this.nativeExpeditionActionsUiTextNodes.filter(node => node?.isConnected)
@@ -956,6 +1069,10 @@
           nativeTownBoardUiExpectedIds: this.nativeTownBoardUiExpectedIds || [],
           nativeTownBoardUiObserverBound: Boolean(this.nativeTownBoardUiObserver && this.nativeTownBoardUiBoundSection?.isConnected),
           nativeTownBoardUiSceneSize: this.dimensions(),
+          nativeCombatUiLabels: this.shellLabelSnapshot(this.nativeCombatUiObjects.filter(item => item?.type === 'Text')),
+          nativeCombatUiClip: this.nativeCombatUiClip || null,
+          nativeCombatUiFailure: this.nativeCombatUiFailure || '',
+          nativeCombatUiArtCount: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Image').length,
           nativeCombatUiObjectCount: this.nativeCombatUiObjects.filter(item => item?.active).length,
           nativeCombatUiTextValues: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text').map(item => String(item.text || '').replace(/\s+/g, ' ').trim()).filter(Boolean),
           nativeCombatUiTextCount: this.nativeCombatUiObjects.filter(item => item?.active && item.type === 'Text' && String(item.text || '').trim()).length,
@@ -994,12 +1111,66 @@
     }
 
     runEngineAwakening(onComplete) {
+      if (IS_PROTOTYPE) return this.runPrototypeAwakening(onComplete);
+      if (this.awakeningActive || this.engineAwakened) { onComplete?.(); return; }
+      this.awakeningActive = true;
+      this.bootCompleteCallback = onComplete;
+      this.clearNativeTitleUi();
+      this.tweens.killTweensOf(this.cameras.main);
+      this.cameras.main.setZoom(1);
+      this.productionAwakeningUi = window.LegendPhaserAwakeningV1?.create(this);
+      this.bootObjects = this.productionAwakeningUi?.objects || [];
+      this.productionAwakeningKey = event => {
+        if (event.key === 'Tab') {
+          event.preventDefault(); event.stopImmediatePropagation();
+          byId('engine-skip')?.focus({preventScroll:true}); return;
+        }
+        if (['Shift','Control','Alt','Meta','CapsLock'].includes(event.key)) return;
+        event.preventDefault(); event.stopImmediatePropagation();
+        this.finishEngineAwakening(true);
+      };
+      document.addEventListener('keydown', this.productionAwakeningKey, true);
+      this.events.once('shutdown', () => {
+        window.clearTimeout(this.bootDeadline); this.bootDeadline = null;
+        document.removeEventListener('keydown', this.productionAwakeningKey, true);
+        this.productionAwakeningUi?.destroy(); this.bootCompleteCallback = null;
+      });
+      this.bootDeadline = window.setTimeout(() => this.finishEngineAwakening(false), reducedMotion() ? 450 : 4700);
+      if (!this.productionAwakeningUi || skipAwakeningRequested) {
+        skipAwakeningRequested = false; this.finishEngineAwakening(true);
+      }
+    }
+
+    finishProductionAwakening(skipped) {
+      if (!this.awakeningActive) return;
+      this.awakeningActive = false; this.engineAwakened = true;
+      window.clearTimeout(this.bootDeadline); this.bootDeadline = null;
+      document.removeEventListener('keydown', this.productionAwakeningKey, true);
+      this.cameras.main.setZoom(1);
+      const finish = () => {
+        window.clearTimeout(this.bootDeadline); this.bootDeadline = null;
+        this.productionAwakeningUi?.destroy(); this.bootObjects = [];
+        const callback = this.bootCompleteCallback; this.bootCompleteCallback = null;
+        callback?.();
+        root()?.querySelector('#continue,#newPrimary,[data-recovery-screen] h1,[data-recovery-screen] h2')?.focus({preventScroll:true});
+      };
+      if (reducedMotion() || skipped) { finish(); return; }
+      this.productionAwakeningUi?.fade();
+      this.bootDeadline = window.setTimeout(finish, 620);
+    }
+
+    runPrototypeAwakening(onComplete) {
       if (this.awakeningActive || this.engineAwakened) {
         onComplete?.();
         return;
       }
       this.awakeningActive = true;
       this.bootCompleteCallback = onComplete;
+      this.events.once('shutdown', () => {
+        window.clearTimeout(this.bootDeadline);
+        this.bootDeadline = null;
+        this.bootCompleteCallback = null;
+      });
       const size = this.dimensions();
       const cx = size.width / 2;
       const cy = size.height / 2;
@@ -1146,7 +1317,9 @@
         });
         this.bootEvents.push(event);
       });
-      this.bootEvents.push(this.time.delayedCall(duration, () => this.finishEngineAwakening(false)));
+      // Navigation must not wait for the renderer's smoothed game clock: low
+      // frame rates can stretch a short opening into the startup watchdog.
+      this.bootDeadline = window.setTimeout(() => this.finishEngineAwakening(false), duration);
       const skip = byId('engine-skip');
       if (skip) skip.hidden = false;
       this.input.keyboard?.once('keydown', () => this.finishEngineAwakening(true));
@@ -1157,8 +1330,11 @@
     }
 
     finishEngineAwakening(skipped = false) {
+      if (!IS_PROTOTYPE) return this.finishProductionAwakening(skipped);
       if (!this.awakeningActive) return;
       this.awakeningActive = false;
+      window.clearTimeout(this.bootDeadline);
+      this.bootDeadline = null;
       this.bootEvents.forEach(event => event?.remove?.(false));
       this.bootEvents = [];
       this.bootObjects.forEach(object => {
@@ -1168,7 +1344,15 @@
       this.bootObjects = [];
       this.engineAwakened = true;
       this.cameras.main.setZoom(1);
+      let finished = false;
       const finish = () => {
+        if (finished) return;
+        finished = true;
+        window.clearTimeout(this.bootDeadline);
+        this.bootDeadline = null;
+        objects.forEach(object => {
+          if (object?.active) this.tweens.killTweensOf(object);
+        });
         objects.forEach(object => object?.active && object.destroy());
         this.cameras.main.flash(reducedMotion() ? 0 : skipped ? 100 : 220, 202, 178, 116, true);
         const callback = this.bootCompleteCallback;
@@ -1188,6 +1372,7 @@
         ease: 'Sine.easeInOut',
         onComplete: finish
       });
+      this.bootDeadline = window.setTimeout(finish, 620);
       const veil = objects[0];
       if (veil?.active) this.tweens.add({ targets: veil, alpha: 0, duration: 660, ease: 'Sine.easeInOut' });
     }
@@ -1291,13 +1476,19 @@
       this.nativeTitleUiDividerObject = null;
       this.nativeTitleUiSignature = '';
       this.nativeTitleUiActive = false;
+      this.nativeTitleUiClip = null;
       if (removeClass) document.body?.classList.remove('legend-phaser-title-ui-active');
     }
 
     setNativeTitleControlFocus(id, active) {
       const control = this.nativeTitleUiControls.find(item => item.id === id);
       if (!control?.container?.active) return;
-      control.focusFrame?.setVisible?.(Boolean(active));
+      const disabled = Boolean(control.button.disabled || control.button.getAttribute('aria-disabled') === 'true');
+      active = Boolean(active && !disabled);
+      control.buttonSurface.setTexture(disabled ? 'menuButtonDisabled'
+        : active || control.button.getAttribute('aria-pressed') === 'true' || control.button.classList.contains('v136-menu-primary') ? 'menuButtonSelected' : 'menuButtonNormal');
+      control.focusFrame?.setVisible?.(active);
+      this.tweens.killTweensOf(control.container);
       const targetX = control.x + (active && !reducedMotion() ? 2 : 0);
       if (reducedMotion()) {
         control.container.x = targetX;
@@ -1318,7 +1509,7 @@
       // The DOM remains visible until every required action has a real Phaser
       // label, state texture, and semantic button target. Any failed preflight
       // leaves the existing title menu untouched as a safe fallback.
-      if (String(surface || '') !== 'title' || !hero) {
+      if ((!IS_PROTOTYPE && document.documentElement.classList.contains('engine-intro-active')) || String(surface || '') !== 'title' || !hero) {
         if (this.nativeTitleUiActive || document.body?.classList.contains('legend-phaser-title-ui-active')) {
           this.clearNativeTitleUi();
         }
@@ -1348,15 +1539,30 @@
       }
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvasBounds = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvasBounds.width);
+      const sy = size.height / Math.max(1, canvasBounds.height);
+      const zoom = panelRect.width / Math.max(1, hero.offsetWidth);
+      const textSx = sx * zoom, textSy = sy * zoom;
+      const contrast = document.body.classList.contains('a11y-high-contrast');
+      const typography = node => { const css = getComputedStyle(node); return [css.fontSize, css.fontFamily, css.fontWeight, css.lineHeight, css.letterSpacing]; };
       const sceneRect = rect => ({
-        x: rect.left * sx,
-        y: rect.top * sy,
+        x: (rect.left - canvasBounds.left) * sx,
+        y: (rect.top - canvasBounds.top) * sy,
         width: rect.width * sx,
         height: rect.height * sy
       });
       const logoNode = hero.querySelector('.v150-logo-lockup .v120-legend-logo');
+      if (logoNode && !logoNode.__legendNativeTitleLayoutBound) {
+        logoNode.__legendNativeTitleLayoutBound = true;
+        const retryTitleLayout = () => {
+          if (logoNode.isConnected && realmScene === this) this.syncNativeTitleUi(this.surface);
+        };
+        // A rebuilt title may be measured before its cached image is decoded.
+        // Retry when geometry arrives; failed artwork still keeps DOM visible.
+        logoNode.addEventListener('load', retryTitleLayout, { once: true });
+        logoNode.addEventListener('error', retryTitleLayout, { once: true });
+      }
       const dividerNode = hero.querySelector('.v120-divider');
       const titleDecorationNodes = [
         { id: 'kicker', node: hero.querySelector('.portal100-kicker'), color: '#efcf83' },
@@ -1374,36 +1580,52 @@
           rect: rect && rect.width && rect.height ? rect : null
         };
       });
+      const knownCopy = [...titleDecorationNodes.map(item => item.node), ...buttons.flatMap(button =>
+        [...button.querySelectorAll('.v136-menu-copy strong,.v136-menu-copy small,.v136-menu-arrow,.v136-menu-icon')])].filter(Boolean);
+      const walker = document.createTreeWalker(hero, NodeFilter.SHOW_TEXT);
+      let textNode, unsupportedCopy = false;
+      while ((textNode = walker.nextNode())) {
+        const parent = textNode.parentElement;
+        if (!textNode.textContent.trim() || parent.closest('[hidden],.v120-title-accessible-name,.v120-avatar')) continue;
+        if (!knownCopy.some(node => node.contains(parent))) { unsupportedCopy = true; break; }
+      }
+      if (unsupportedCopy) { this.nativeTitleUiFailure = 'Unknown title copy'; this.clearNativeTitleUi(); return; }
       const logoRect = logoNode?.getBoundingClientRect();
       const dividerRect = dividerNode?.getBoundingClientRect();
       const decorationReady = Boolean(
-        logoNode?.isConnected && logoRect?.width && logoRect?.height &&
+        logoNode?.isConnected && !logoNode.hidden && logoNode.complete && logoNode.naturalWidth && logoRect?.width && logoRect?.height &&
         dividerNode?.isConnected && dividerRect?.width && dividerRect?.height &&
         titleDecorationNodes.every(item => item.node?.isConnected && item.rect && item.text)
       );
       const signature = JSON.stringify([
+        size.width, size.height, canvasBounds.toJSON(), zoom, contrast,
         Math.round(panelRect.left), Math.round(panelRect.top), Math.round(panelRect.width), Math.round(panelRect.height),
         logoRect && [Math.round(logoRect.left), Math.round(logoRect.top), Math.round(logoRect.width), Math.round(logoRect.height)],
         dividerRect && [Math.round(dividerRect.left), Math.round(dividerRect.top), Math.round(dividerRect.width), Math.round(dividerRect.height)],
         ...titleDecorationNodes.map(item => [
-          item.id, item.text,
+          item.id, item.text, item.node && typography(item.node),
           Math.round(item.rect?.left || 0), Math.round(item.rect?.top || 0),
           Math.round(item.rect?.width || 0), Math.round(item.rect?.height || 0)
         ]),
         ...buttons.map(button => {
           const rect = button.getBoundingClientRect();
-          return [button.id, Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
+          return [button.id, typography(button.querySelector('strong') || button), typography(button.querySelector('small') || button), Math.round(rect.left), Math.round(rect.top), Math.round(rect.width), Math.round(rect.height),
             button.querySelector('.v136-menu-copy strong')?.textContent?.trim() || '',
-            button.querySelector('.v136-menu-copy small')?.textContent?.trim() || ''];
+            button.querySelector('.v136-menu-copy small')?.textContent?.trim() || '',
+            button.disabled, button.getAttribute('aria-disabled'), button.getAttribute('aria-pressed'), button.classList.contains('v136-menu-primary')];
         })
       ]);
-      if (this.nativeTitleUiActive && signature === this.nativeTitleUiSignature) return;
 
       const expectedIds = hero.querySelector('#continue')
-        ? ['continue','new','account','settings','dispatches','credits']
-        : ['newPrimary','account','settings','dispatches','credits'];
+        ? ['continue','new','account','settings','dispatches','titleSound','credits']
+        : ['newPrimary','account','settings','dispatches','titleSound','credits'];
       const presentIds = buttons.map(button => button.id);
-      const hasAllActions = expectedIds.every(id => presentIds.includes(id));
+      const soundControl = hero.querySelector('#titleSound');
+      const soundReady = ['true','false'].includes(soundControl?.getAttribute('aria-pressed')) &&
+        soundControl.querySelector('.v136-menu-copy strong')?.textContent?.trim() &&
+        soundControl.querySelector('.v136-menu-copy small')?.textContent?.trim();
+      const hasAllActions = soundReady && expectedIds.every(id => presentIds.includes(id)) && buttons.every(button =>
+        button.querySelector('.v136-menu-copy strong')?.textContent.trim() && button.querySelector('.v136-menu-copy small')?.textContent.trim());
       const requiredTextures = [
         'menuButtonNormal','menuButtonSelected','menuButtonDisabled','menuFrameCorner','menuDivider','menuTitleLogo',
         'menuCompass','menuTraveler','menuInn','menuJournal','menuSettings','menuRoad','menuMilestone'
@@ -1414,6 +1636,9 @@
         return;
       }
 
+      // Required source/artwork checks also apply to an unchanged layout.
+      if (this.nativeTitleUiActive && signature === this.nativeTitleUiSignature) return;
+
       // Reveal the semantic DOM while this frame is being rebuilt. Only hide
       // it after all expected Phaser controls and their live labels are ready.
       this.clearNativeTitleUi();
@@ -1422,7 +1647,7 @@
       const frame = this.add.graphics().setDepth(12);
       frame.fillStyle(0x020302, 0.54);
       frame.fillRect(panel.x - 7 * sx, panel.y + 8 * sy, panel.width + 14 * sx, panel.height + 8 * sy);
-      frame.fillStyle(0x17110c, 0.96);
+      frame.fillStyle(contrast ? 0x000000 : 0x17110c, 1);
       frame.fillRect(panel.x, panel.y, panel.width, panel.height);
       frame.lineStyle(Math.max(1.2, 1.2 * sx), 0x8f6a3d, 0.82);
       frame.strokeRect(panel.x + 0.5, panel.y + 0.5, panel.width - 1, panel.height - 1);
@@ -1471,32 +1696,8 @@
       this.nativeTitleUiObjects.push(dividerObject);
 
       titleDecorationNodes.forEach(item => {
-        const rect = sceneRect(item.rect);
-        const css = window.getComputedStyle(item.node);
-        const centered = css.textAlign === 'center';
-        const fontSize = Math.max(item.id === 'intro' ? 11 : 9,
-          Math.min(item.id === 'intro' ? 20 : 16, (parseFloat(css.fontSize) || 12) * sy));
-        const object = this.add.text(
-          centered ? rect.x + rect.width / 2 : rect.x,
-          rect.y,
-          item.text,
-          {
-            fontFamily: css.fontFamily || 'Arial, sans-serif',
-            fontSize: fontSize + 'px',
-            fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-            color: item.color,
-            stroke: '#080b07',
-            strokeThickness: fontSize >= 14 ? 0.7 : 0.35,
-            letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
-            lineSpacing: Math.max(0, (parseFloat(css.lineHeight) || fontSize * 1.4) - fontSize),
-            align: css.textAlign || 'left',
-            wordWrap: { width: Math.max(12, rect.width), useAdvancedWrap: true },
-            padding: { left: 1, right: 2, top: 1, bottom: 2 }
-          }
-        ).setOrigin(centered ? 0.5 : 0, 0).setDepth(16);
-        object.setResolution?.(2);
-        object.autoRound = true;
-        object.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        const object = this.createShellLabel(item.node, sceneRect(item.rect), contrast ? '#ffffff' : item.color, textSx, textSy, 16);
+        if (!object) throw new Error('Title copy cannot fit: ' + item.id);
         this.nativeTitleUiDecorations.push({ id: item.id, node: item.node, object });
         this.nativeTitleUiObjects.push(object);
       });
@@ -1507,6 +1708,7 @@
         new: 'menuInn',
         account: 'menuJournal',
         settings: 'menuSettings',
+        titleSound: 'menuSettings',
         dispatches: 'menuRoad',
         credits: 'menuMilestone'
       };
@@ -1515,24 +1717,22 @@
         const primary = button.classList.contains('v136-menu-primary');
         const main = button.querySelector('.v136-menu-copy strong')?.textContent?.trim() || button.textContent.trim();
         const detail = button.querySelector('.v136-menu-copy small')?.textContent?.trim() || '';
-        button.setAttribute('aria-label', [main, detail].filter(Boolean).join('. '));
-        const mainCss = window.getComputedStyle(button.querySelector('.v136-menu-copy strong') || button);
-        const detailCss = window.getComputedStyle(button.querySelector('.v136-menu-copy small') || button);
-        const mainSize = Math.max(10, Math.round((parseFloat(mainCss.fontSize) || 13) * sy));
-        const detailSize = Math.max(9, Math.round((parseFloat(detailCss.fontSize) || 10) * sy));
+        if(button.id !== 'titleSound') button.setAttribute('aria-label', [main, detail].filter(Boolean).join('. '));
         const group = this.add.container(rect.x, rect.y).setDepth(13);
+        this.nativeTitleUiObjects.push(group);
         const disabled = Boolean(button.disabled || button.getAttribute('aria-disabled') === 'true');
         const focused = button === document.activeElement || button.matches(':focus-visible');
         const hovered = button.matches(':hover');
         const stateTexture = disabled ? 'menuButtonDisabled'
-          : primary || focused || hovered ? 'menuButtonSelected' : 'menuButtonNormal';
+          : primary || focused || hovered || button.getAttribute('aria-pressed') === 'true' ? 'menuButtonSelected' : 'menuButtonNormal';
         const buttonSurface = this.add.image(rect.width / 2, rect.height / 2, stateTexture)
           .setDisplaySize(rect.width, rect.height)
           .setAlpha(0.99);
         const art = this.add.graphics();
         art.fillStyle(primary ? 0xd5a44e : 0xe0bd75, primary ? 0.72 : 0.52);
         art.fillRect(2 * sx, 3 * sy, Math.max(2 * sx, 2), Math.max(2, rect.height - 6 * sy));
-        const iconX = 10 * sx;
+        if (contrast) art.fillStyle(0x000000, 1).fillRect(3, 3, rect.width - 6, rect.height - 6);
+        const iconX = 10 * textSx;
         const iconY = Math.max(4 * sy, (rect.height - 28 * sy) / 2);
         art.fillStyle(0x100d09, 0.94);
         art.fillRect(iconX, iconY, 28 * sx, Math.min(28 * sy, rect.height - 8 * sy));
@@ -1557,33 +1757,18 @@
             fontSize: (Math.max(14, Math.round(16 * sy))) + 'px',
             color: primary ? '#fff2cf' : '#f4d995'
           })).setOrigin(0.5);
-        const labelX = Math.round(52 * sx);
-        const titleY = Math.round(rect.height * (detail ? 0.38 : 0.5));
-        const labelWidth = Math.max(40, rect.width - labelX - 34 * sx);
-        const title = crispText(this.add.text(labelX, titleY, main, {
-          fontFamily: 'Georgia, Times New Roman, serif',
-          fontSize: `${Math.max(13, Math.min(primary ? 17 : 16, mainSize))}px`,
-          fontStyle: 'bold',
-          color: disabled ? '#aaa18f' : '#f5ead5',
-          stroke: '#100c08',
-          strokeThickness: 1,
-          letterSpacing: 0.16 * sx,
-          wordWrap: { width: labelWidth, useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 2, bottom: 2 }
-        })).setOrigin(0, 0.5);
-        title.setFixedSize?.(labelWidth, Math.max(16, rect.height * (detail ? 0.48 : 0.72)));
-        const subtitle = crispText(this.add.text(labelX, Math.round(rect.height * 0.73), detail, {
-          fontFamily: 'Arial, sans-serif',
-          fontSize: `${Math.max(10, Math.min(12, detailSize))}px`,
-          fontStyle: primary ? 'bold' : 'normal',
-          color: disabled ? '#8e8778' : '#dccba8',
-          stroke: '#100c08',
-          strokeThickness: 0.5,
-          wordWrap: { width: labelWidth, useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 1, bottom: 1 }
-        })).setOrigin(0, 0.5);
-        subtitle.setFixedSize?.(labelWidth, Math.max(15, rect.height * 0.34));
-        const arrow = crispText(this.add.text(rect.width - 17 * sx, Math.round(rect.height / 2), '›', {
+        group.add([buttonSurface, art, icon]);
+        const paintCopy = (selector, color) => {
+          const node = button.querySelector(selector);
+          if (!node) throw new Error('Title control copy missing');
+          const text = this.createShellLabel(node, sceneRect(node.getBoundingClientRect()), color, textSx, textSy, 14);
+          if (!text) throw new Error('Title control copy cannot fit: ' + button.id);
+          text.x -= rect.x; text.y -= rect.y; group.add(text);
+          return text;
+        };
+        const title = paintCopy('.v136-menu-copy strong', disabled ? '#aaa18f' : contrast ? '#ffffff' : '#f5ead5');
+        const subtitle = paintCopy('.v136-menu-copy small', disabled ? '#8e8778' : contrast ? '#ffffff' : '#dccba8');
+        const arrow = crispText(this.add.text(rect.width - 17 * sx, Math.round(rect.height / 2), button.hasAttribute('aria-pressed') ? '' : '›', {
           fontFamily: 'Georgia, serif',
           fontSize: `${Math.max(22, Math.round(24 * sy))}px`,
           fontStyle: 'bold',
@@ -1593,10 +1778,9 @@
         const focusFrame = this.add.graphics();
         focusFrame.lineStyle(2.4, 0xffe6a5, 1);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
-        focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
-        group.add([buttonSurface, art, icon, title, subtitle, arrow, focusFrame]);
+        focusFrame.setVisible(!disabled && (focused || hovered));
+        group.add([arrow, focusFrame]);
         group.setSize(rect.width, rect.height);
-        this.nativeTitleUiObjects.push(group);
         const control = {
           id: button.id,
           label: main,
@@ -1606,6 +1790,7 @@
           height: rect.height,
           container: group,
           focusFrame,
+          buttonSurface,
           titleText: title,
           subtitleText: subtitle,
           button
@@ -1634,10 +1819,19 @@
         this.clearNativeTitleUi();
         return;
       }
+      const content = this.add.container(0, 0).setDepth(14);
+      content.add(this.nativeTitleUiObjects.slice(1));
+      this.nativeTitleUiObjects = [frame, content];
+      const clip = { x: panel.x + hero.clientLeft * textSx, y: panel.y + hero.clientTop * textSy,
+        width: hero.clientWidth * textSx, height: hero.clientHeight * textSy };
+      if (!this.clipExpeditionUi(content, clip)) throw new Error('Title viewport unavailable');
+      this.nativeTitleUiClip = clip;
+      this.nativeTitleUiFailure = '';
       this.nativeTitleUiActive = true;
       this.nativeTitleUiSignature = signature;
       document.body?.classList.add('legend-phaser-title-ui-active');
       } catch (error) {
+        this.nativeTitleUiFailure = error.message;
         this.clearNativeTitleUi();
         console.warn('Phaser title menu paint failed; leaving the accessible DOM menu visible.', error);
       }
@@ -1726,10 +1920,8 @@
       // Each lore page is rebuilt by the existing prologue controller. Phaser
       // mirrors the resulting text and controls; the controller remains in charge
       // of chapter order and the hand-off into traveler creation.
-      this.clearNativeAnnalsUi(false);
-      this.nativeAnnalsUiActive = true;
-      this.nativeAnnalsUiSignature = signature;
-      document.body?.classList.add('legend-phaser-annals-ui-active');
+      this.clearNativeAnnalsUi();
+      try {
 
       if (!this.nativeAnnalsUiScrollTarget) {
         this.nativeAnnalsUiScrollTarget = screen;
@@ -1750,38 +1942,33 @@
         this.nativeAnnalsUiObjects.push(object);
         return object;
       };
-      const styleOf = node => window.getComputedStyle(node);
+      let copyFits = true;
+      this.nativeAnnalsUiFailure = '';
       const makeText = (node, rect, overrides = {}) => {
-        if (!node || !rect) return null;
-        const style = styleOf(node);
-        let text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
-        if (style.textTransform === 'uppercase') text = text.toLocaleUpperCase();
-        else if (style.textTransform === 'lowercase') text = text.toLocaleLowerCase();
-        if (!text) return null;
-        const fontSize = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
-        const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.4;
-        const config = {
-          fontFamily: style.fontFamily || 'Georgia, Times New Roman, serif',
-          fontSize: fontSize + 'px',
-          fontStyle: style.fontWeight === 'bold' || Number(style.fontWeight) >= 650 ? 'bold' : (style.fontStyle || 'normal'),
-          color: overrides.color || style.color || '#f0e8d4',
-          lineSpacing: Math.max(0, (lineHeight - (parseFloat(style.fontSize) || 14)) * sy),
-          letterSpacing: Number.isFinite(parseFloat(style.letterSpacing)) ? Math.max(0, parseFloat(style.letterSpacing) * sx) : 0,
-          wordWrap: { width: Math.max(36, rect.width), useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 1, bottom: 2 },
-          align: overrides.align || style.textAlign || 'left'
-        };
-        const centered = overrides.center === true;
-        const textX = centered
-          ? rect.x + rect.width / 2
-          : rect.x + Math.max(0, Number(overrides.insetLeft) || 0) * sx;
-        const textY = centered ? rect.y + rect.height / 2 : rect.y;
-        const label = addObject(this.add.text(textX, textY, text, config)
-          .setOrigin(centered ? 0.5 : 0, centered ? 0.5 : 0));
-        if (centered && node.classList?.contains('opening-lore-v220-continue')) {
-          this.nativeAnnalsUiButtonLabel = label;
+        if (!node || !rect) { copyFits = false; return null; }
+        // Respect the source content box (including the quote's border/padding).
+        // The shared label guard preserves full copy or restores the DOM surface.
+        // Canvas word wrapping includes trailing-space metrics. A small heading
+        // allowance avoids an extra line at browser wrap boundaries; fit the
+        // resulting glyphs back into the original box without reducing height.
+        const headingAllowance = node.tagName === 'H1' ? 8 * sx : 0;
+        const label = this.createShellLabel(node, { ...rect, width: rect.width + headingAllowance }, overrides.color || '#f0e8d4', sx, sy, 12);
+        if (!label) { copyFits = false; this.nativeAnnalsUiFailure = 'Annals copy does not fit: ' + node.tagName + ' ' + node.textContent.trim(); return null; }
+        if (headingAllowance) {
+          if (label.displayWidth > rect.width) label.setScale(label.scaleX * rect.width / label.displayWidth, 1);
+          label.setData('shellLabel', { sourceText: node.textContent.trim(), sourceBounds: rect });
         }
-        return label;
+        if (overrides.center) {
+          label.setOrigin(0.5).setPosition(rect.x + rect.width / 2, rect.y + rect.height / 2);
+          this.nativeAnnalsUiButtonLabel = label;
+        } else {
+          const css = getComputedStyle(node);
+          const lines = label.getWrappedText().length;
+          const available = rect.height - (parseFloat(css.paddingTop) + parseFloat(css.paddingBottom) +
+            parseFloat(css.borderTopWidth) + parseFloat(css.borderBottomWidth) || 0) * sy;
+          if (lines > 1 && available > label.height) label.setLineSpacing((available - label.height) / (lines - 1));
+        }
+        return addObject(label);
       };
 
       const screenRect = readRect(screen);
@@ -1829,7 +2016,7 @@
       makeText(kicker, readRect(kicker), { color: '#e0c780' });
       makeText(heading, readRect(heading), { color: '#fff0cf' });
       paragraphs.forEach(node => makeText(node, readRect(node), { color: '#f0f0e5' }));
-      makeText(quote, readRect(quote), { color: '#ffe6b2', insetLeft: 19 });
+      makeText(quote, readRect(quote), { color: '#ffe6b2' });
 
       if (progress) {
         const track = readRect(progress);
@@ -1849,12 +2036,9 @@
         if (rect) {
           button.setAttribute('aria-label', button.textContent.replace(/→/g, '').trim());
           this.nativeAnnalsUiButtonNode = button;
-          const initialTexture = button.disabled ? 'menuButtonDisabled'
-            : button.matches(':hover') || button.matches(':focus-visible')
-              ? 'menuButtonSelected' : 'menuButtonNormal';
-          const background = this.add.image(
-            rect.x + rect.width / 2, rect.y + rect.height / 2, initialTexture
-          ).setDisplaySize(rect.width, rect.height).setDepth(11);
+          const background = this.add.rectangle(
+            rect.x + rect.width / 2, rect.y + rect.height / 2, rect.width, rect.height, 0x17251d, 0.95
+          ).setDepth(11);
           addObject(background);
           this.nativeAnnalsUiButtonBackground = background;
           this.nativeAnnalsUiButtonHovered = button.matches(':hover');
@@ -1871,12 +2055,22 @@
             button.addEventListener('pointerleave', () => this.setNativeAnnalsButtonHover(false));
           }
           const focus = this.add.graphics();
-          focus.lineStyle(2, 0xffe7a6, 0.96);
+          focus.lineStyle(2, 0xd8e8df, 0.96);
           focus.strokeRoundedRect(rect.x - 2, rect.y - 2, rect.width + 4, rect.height + 4, 3);
           focus.setVisible(this.nativeAnnalsUiButtonKeyboardFocused);
           addObject(focus);
           this.nativeAnnalsUiButtonFocus = focus;
+          this.refreshNativeAnnalsButtonTexture();
         }
+      }
+      if (!copyFits) { this.clearNativeAnnalsUi(); return; }
+      this.nativeAnnalsUiActive = true;
+      this.nativeAnnalsUiSignature = signature;
+      document.body?.classList.add('legend-phaser-annals-ui-active');
+      } catch (error) {
+        this.nativeAnnalsUiFailure = error?.message || String(error);
+        this.clearNativeAnnalsUi();
+        console.warn('[LEGEND Phaser] Annals overlay paint failed; preserving DOM fallback.', error);
       }
     }
 
@@ -1895,14 +2089,13 @@
       const button = this.nativeAnnalsUiButtonNode;
       const background = this.nativeAnnalsUiButtonBackground;
       if (!button?.isConnected || !background?.active) return;
-      const texture = button.disabled ? 'menuButtonDisabled'
-        : this.nativeAnnalsUiButtonKeyboardFocused || this.nativeAnnalsUiButtonHovered
-          ? 'menuButtonSelected' : 'menuButtonNormal';
-      if (background.texture?.key !== texture) background.setTexture(texture);
+      const active = this.nativeAnnalsUiButtonKeyboardFocused || this.nativeAnnalsUiButtonHovered;
+      background.setFillStyle(button.disabled ? 0x121812 : active ? 0x304638 : 0x17251d, 0.95);
+
     }
 
     clearNativeCreationUi(removeClass = true) {
-      this.nativeCreationUiLayoutEvent?.remove?.(false);
+      window.clearTimeout(this.nativeCreationUiLayoutEvent);
       this.nativeCreationUiLayoutEvent = null;
       if (this.nativeCreationUiScrollTarget) {
         this.nativeCreationUiScrollTarget.removeEventListener('scroll', this.nativeCreationUiScrollTarget.__legendCreationScrollHandler);
@@ -2006,14 +2199,14 @@
         // A new creation step can have a different layout. Never leave the
         // previous step's Phaser cards over the incoming DOM while it animates.
         this.clearNativeCreationUi();
-        this.nativeCreationUiLayoutEvent?.remove?.(false);
-        this.nativeCreationUiLayoutEvent = this.time.delayedCall(720, () => {
+        window.clearTimeout(this.nativeCreationUiLayoutEvent);
+        this.nativeCreationUiLayoutEvent = window.setTimeout(() => {
           this.nativeCreationUiLayoutEvent = null;
           this.syncNativeCreationUi(surface);
-        });
+        }, 720);
         return;
       }
-      this.nativeCreationUiLayoutEvent?.remove?.(false);
+      window.clearTimeout(this.nativeCreationUiLayoutEvent);
       this.nativeCreationUiLayoutEvent = null;
 
       const screenImages = Array.from(screen.querySelectorAll('img')).filter(img =>
@@ -2031,11 +2224,11 @@
       });
       const pendingImages = screenImages.some(img => !img.complete);
       if (pendingImages) {
-        this.nativeCreationUiLayoutEvent?.remove?.(false);
-        this.nativeCreationUiLayoutEvent = this.time.delayedCall(240, () => {
+        window.clearTimeout(this.nativeCreationUiLayoutEvent);
+        this.nativeCreationUiLayoutEvent = window.setTimeout(() => {
           this.nativeCreationUiLayoutEvent = null;
           this.syncNativeCreationUi(surface);
-        });
+        }, 240);
         return;
       }
 
@@ -2050,7 +2243,7 @@
       const choices = Array.from(screen.querySelectorAll('.v094-choice'));
       const controls = Array.from(screen.querySelectorAll('.v094-actions button'));
       const textNodes = Array.from(screen.querySelectorAll('h1,h2,h3,p,small,strong,em,label,span'))
-        .filter(node => !node.matches('#v094NameError,#v094ChoiceError') && !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
+        .filter(node => !node.matches('#v094NameError,#v094ChoiceError,.v150-logo-lockup,.v150-wordmark-fallback') && !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
       const panels = Array.from(screen.querySelectorAll(
         '.v094-beginning-card,.v140-guide-portrait-frame,.v140-dialogue-box,.v094-stepper,.v094-scene-note,.v094-choice,.v094-summary > div,.v094-confirm-benefit,.v094-field,.v094-actions button'
       ));
@@ -2078,17 +2271,8 @@
       ]);
       if (this.nativeCreationUiActive && signature === this.nativeCreationUiSignature) return;
 
-      const colorNodes = Array.from(screen.querySelectorAll('h1,h2,h3,p,small,strong,em,label,span'));
-      colorNodes.forEach(node => {
-        if (!node.dataset.legendNativeCreationColor) {
-          node.dataset.legendNativeCreationColor = window.getComputedStyle(node).color || '#eee7d6';
-        }
-      });
-
-      this.clearNativeCreationUi(false);
-      this.nativeCreationUiActive = true;
-      this.nativeCreationUiSignature = signature;
-      document.body?.classList.add('legend-phaser-creation-ui-active');
+      this.clearNativeCreationUi();
+      try {
 
       if (!this.nativeCreationUiScrollTarget) {
         // The production Phaser layout keeps the document as the vertical
@@ -2097,10 +2281,10 @@
         this.nativeCreationUiScrollTarget = window;
         const handler = () => {
           if (this.nativeCreationUiLayoutEvent) return;
-          this.nativeCreationUiLayoutEvent = this.time.delayedCall(24, () => {
+          this.nativeCreationUiLayoutEvent = window.setTimeout(() => {
             this.nativeCreationUiLayoutEvent = null;
             this.syncNativeCreationUi(surface);
-          });
+          }, 24);
         };
         window.__legendCreationScrollHandler = handler;
         window.addEventListener('scroll', handler, { passive: true });
@@ -2234,7 +2418,7 @@
         } else if (node.matches('.v094-actions button')) {
           const primary = node.classList.contains('primary');
           drawPanel(node, {
-            fill: primary ? 0x604923 : 0x111b13,
+            fill: primary ? 0x233226 : 0x111b13,
             alpha: 0.98,
             stroke: primary ? 0xe8c77e : 0xa89262,
             strokeAlpha: primary ? 0.92 : 0.55,
@@ -2261,36 +2445,46 @@
         }
       });
 
-      const styleOf = node => window.getComputedStyle(node);
+      let copyFits = true;
+      this.nativeCreationUiFailure = '';
       const makeText = (node, overrides = {}) => {
-        if (!node) return null;
         const rect = rectFor(node);
-        if (!rect) return null;
-        let text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
-        if (styleOf(node).textTransform === 'uppercase') text = text.toLocaleUpperCase();
-        else if (styleOf(node).textTransform === 'lowercase') text = text.toLocaleLowerCase();
-        if (!text) return null;
-        const style = styleOf(node);
-        const originalColor = node.dataset.legendNativeCreationColor || style.color || '#eee7d6';
-        const fontPx = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
-        const linePx = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.42;
-        const wrap = Math.max(32, rect.width);
-        const textObject = this.add.text(rect.x, rect.y, text, {
-          fontFamily: style.fontFamily || 'Georgia, Times New Roman, serif',
-          fontSize: fontPx + 'px',
-          fontStyle: Number(style.fontWeight) >= 650 || style.fontWeight === 'bold'
-            ? 'bold'
-            : (style.fontStyle || 'normal'),
-          color: overrides.color || originalColor,
-          lineSpacing: Math.max(0, (linePx - (parseFloat(style.fontSize) || 14)) * sy),
-          letterSpacing: Number.isFinite(parseFloat(style.letterSpacing))
-            ? Math.max(0, parseFloat(style.letterSpacing) * sx)
-            : 0,
-          wordWrap: { width: wrap, useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 1, bottom: 2 },
-          align: style.textAlign || 'left'
-        }).setOrigin(0, 0);
-        return addObject(textObject, 14);
+        if (!rect || !node.textContent.trim()) return null;
+        // Short choice columns can differ by a few glyph pixels between DOM
+        // and canvas. Fit that bounded difference back into the content box.
+        const allowance = node.matches('.v094-choice strong,.v094-choice span,.v094-choice em') ? 16 * sx : node.matches('h1,h2,h3') ? 8 * sx : 0;
+        const label = this.createShellLabel(node, { ...rect, width: rect.width + allowance }, overrides.color || '#eee7d6', sx, sy, 14);
+        if (!label) {
+          copyFits = false;
+          this.nativeCreationUiFailure = 'Creation copy does not fit: ' + node.tagName + ' ' + node.textContent.trim();
+          return null;
+        }
+        const css = getComputedStyle(node);
+        const insetLeft = (parseFloat(css.paddingLeft) + parseFloat(css.borderLeftWidth) || 0) * sx;
+        const insetRight = (parseFloat(css.paddingRight) + parseFloat(css.borderRightWidth) || 0) * sx;
+        const contentWidth = Math.max(1, rect.width - insetLeft - insetRight);
+        if (label.displayWidth > contentWidth) {
+          const ratio = contentWidth / label.displayWidth;
+          if (ratio < 0.85) {
+            label.destroy();
+            copyFits = false;
+            this.nativeCreationUiFailure = 'Creation copy exceeds content width: ' + node.textContent.trim();
+            return null;
+          }
+          label.setScale(label.scaleX * ratio, 1);
+        }
+        label.x = Math.max(rect.x + insetLeft, Math.min(label.x, rect.x + rect.width - insetRight - label.displayWidth));
+        const lines = label.getWrappedText().length;
+        const available = rect.height - (parseFloat(css.paddingTop) + parseFloat(css.paddingBottom) +
+          parseFloat(css.borderTopWidth) + parseFloat(css.borderBottomWidth) || 0) * sy;
+        if (lines > 1 && available > label.height) {
+          const lineHeight = (parseFloat(css.lineHeight) || parseFloat(css.fontSize) * 1.42) * sy;
+          const naturalLineHeight = label.height / lines;
+          label.setLineSpacing(Math.max(0, Math.min(lineHeight - naturalLineHeight, (available - label.height) / (lines - 1))));
+        }
+        if (label.displayHeight > available) label.setScale(label.scaleX, available / label.height);
+        label.setData('shellLabel', { sourceText: node.textContent.trim(), sourceBounds: rect });
+        return addObject(label, 14);
       };
       textNodes.forEach(node => {
         let color = null;
@@ -2337,21 +2531,7 @@
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         const objects = [focusFrame];
-        if (!choice) {
-          const actionStyle = window.getComputedStyle(button);
-          const actionText = button.textContent?.replace(/\s+/g, ' ').trim() || id;
-          const primaryAction = button.classList.contains('primary');
-          const actionLabel = this.add.text(rect.width / 2, rect.height / 2, actionText, {
-            fontFamily: actionStyle.fontFamily || 'Arial, sans-serif',
-            fontSize: Math.max(10, (parseFloat(actionStyle.fontSize) || 13) * sy) + 'px',
-            fontStyle: 'bold',
-            color: primaryAction ? '#241803' : '#e9e2cf',
-            letterSpacing: 0.25 * sx,
-            align: 'center',
-            wordWrap: { width: Math.max(40, rect.width - 24 * sx), useAdvancedWrap: true }
-          }).setOrigin(0.5);
-          objects.push(actionLabel);
-        }
+        if (!choice) makeText(button, { color: '#fff0ca' });
         if (choice && (button.classList.contains('is-selected') || button.getAttribute('aria-pressed') === 'true')) {
           const tick = this.add.text(rect.width - 18 * sx, 15 * sy, '✓', {
             fontFamily: 'Arial, sans-serif',
@@ -2385,10 +2565,19 @@
           button.addEventListener('pointerleave', () => this.setNativeCreationControlFocus(id, document.activeElement === button));
         }
       });
+      if (!copyFits || imageSpecs.some(item => !imageKeys[item.index])) { this.clearNativeCreationUi(); return; }
+      this.nativeCreationUiActive = true;
+      this.nativeCreationUiSignature = signature;
+      document.body?.classList.add('legend-phaser-creation-ui-active');
+      } catch (error) {
+        this.nativeCreationUiFailure = error?.message || String(error);
+        this.clearNativeCreationUi();
+        console.warn('[LEGEND Phaser] Traveler creation overlay paint failed; preserving DOM fallback.', error);
+      }
     }
 
     clearNativeOpeningUi(removeClass = true) {
-      this.nativeOpeningUiLayoutEvent?.remove?.(false);
+      window.clearTimeout(this.nativeOpeningUiLayoutEvent);
       this.nativeOpeningUiLayoutEvent = null;
       if (this.nativeOpeningUiScrollTarget) {
         this.nativeOpeningUiScrollTarget.removeEventListener('scroll', this.nativeOpeningUiScrollTarget.__legendOpeningScrollHandler);
@@ -2445,14 +2634,14 @@
         // Prologue backgrounds and lantern sweeps loop forever; only wait for
         // finite panel entrances, and reveal DOM paint until the new frame is ready.
         this.clearNativeOpeningUi();
-        this.nativeOpeningUiLayoutEvent?.remove?.(false);
-        this.nativeOpeningUiLayoutEvent = this.time.delayedCall(700, () => {
+        window.clearTimeout(this.nativeOpeningUiLayoutEvent);
+        this.nativeOpeningUiLayoutEvent = window.setTimeout(() => {
           this.nativeOpeningUiLayoutEvent = null;
           this.syncNativeOpeningUi(surface);
-        });
+        }, 700);
         return;
       }
-      this.nativeOpeningUiLayoutEvent?.remove?.(false);
+      window.clearTimeout(this.nativeOpeningUiLayoutEvent);
       this.nativeOpeningUiLayoutEvent = null;
 
       const size = this.dimensions();
@@ -2467,8 +2656,8 @@
       const sceneNotes = Array.from(screen.querySelectorAll('.opening-road-v140-scene-note'));
       const quotes = Array.from(screen.querySelectorAll('blockquote'));
       const buttons = Array.from(screen.querySelectorAll('.opening-road-v140-choice,.opening-road-v140-primary,.opening-road-v140-secondary'));
-      const textNodes = Array.from(screen.querySelectorAll('.opening-road-v140-kicker,h1,h2,p,blockquote strong,blockquote p,.opening-road-v140-choice strong,.opening-road-v140-choice span'))
-        .filter(node => !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
+      const textNodes = Array.from(screen.querySelectorAll('.opening-road-v140-kicker,.opening-road-v140-prologue-rule > span,.opening-road-v140-scene-note > span,h1,h2,p,blockquote strong'))
+        .filter(node => !node.closest('[hidden],button') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
       const panels = [...cards, ...sceneNotes, ...quotes, ...buttons];
       const signature = JSON.stringify([
         screen.className, Math.round(window.innerWidth), Math.round(window.innerHeight), screen.scrollTop,
@@ -2481,22 +2670,20 @@
       ]);
       if (this.nativeOpeningUiActive && signature === this.nativeOpeningUiSignature) return;
 
-      this.clearNativeOpeningUi(false);
-      this.nativeOpeningUiActive = true;
-      this.nativeOpeningUiSignature = signature;
-      document.body?.classList.add('legend-phaser-opening-ui-active');
+      this.clearNativeOpeningUi();
+      try {
 
       if (!this.nativeOpeningUiScrollTarget) {
-        this.nativeOpeningUiScrollTarget = screen;
+        this.nativeOpeningUiScrollTarget = window;
         const handler = () => {
-          this.nativeOpeningUiLayoutEvent?.remove?.(false);
-          this.nativeOpeningUiLayoutEvent = this.time.delayedCall(48, () => {
+          window.clearTimeout(this.nativeOpeningUiLayoutEvent);
+          this.nativeOpeningUiLayoutEvent = window.setTimeout(() => {
             this.nativeOpeningUiLayoutEvent = null;
             this.syncNativeOpeningUi(surface);
-          });
+          }, 48);
         };
-        screen.__legendOpeningScrollHandler = handler;
-        screen.addEventListener('scroll', handler, { passive: true });
+        window.__legendOpeningScrollHandler = handler;
+        window.addEventListener('scroll', handler, { passive: true });
       }
 
       const add = (object, depth = 13) => {
@@ -2526,7 +2713,7 @@
         const choice = node.classList.contains('opening-road-v140-choice');
         const primary = node.classList.contains('opening-road-v140-primary');
         drawPanel(node, {
-          fill: primary ? 0x674b20 : choice ? 0x152319 : 0x111a13,
+          fill: primary ? 0x233226 : choice ? 0x152319 : 0x111a13,
           alpha: 0.98,
           stroke: primary ? 0xe8c878 : 0xc6a666,
           strokeAlpha: primary ? 0.94 : 0.68,
@@ -2535,32 +2722,33 @@
         });
       });
 
-      textNodes.forEach(node => {
+      let copyFits = true;
+      this.nativeOpeningUiFailure = '';
+      const makeText = (node, color = '#e5e0d1') => {
         const rect = rectFor(node);
-        if (!rect) return;
-        const style = window.getComputedStyle(node);
-        let text = node.textContent?.replace(/\s+/g, ' ').trim() || '';
-        if (style.textTransform === 'uppercase') text = text.toLocaleUpperCase();
-        if (!text) return;
-        let color = style.color || '#e5e0d1';
-        if (node.matches('.opening-road-v140-kicker,.opening-road-v140-scene-note > span,blockquote strong')) color = '#e2c47f';
-        else if (node.matches('h1,h2')) color = '#f4e8c6';
-        else if (node.matches('.opening-road-v140-choice strong')) color = '#fff0ca';
-        else if (node.matches('.opening-road-v140-choice span')) color = '#c4d0c4';
-        else if (node.matches('.opening-road-v140-footnote')) color = '#a7b5a8';
-        const fontSize = Math.max(9, (parseFloat(style.fontSize) || 14) * sy);
-        const lineHeight = parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.45;
-        add(this.add.text(rect.x, rect.y, text, {
-          fontFamily: style.fontFamily || 'Georgia, Times New Roman, serif',
-          fontSize: fontSize + 'px',
-          fontStyle: Number(style.fontWeight) >= 650 || style.fontWeight === 'bold' ? 'bold' : (style.fontStyle || 'normal'),
-          color,
-          lineSpacing: Math.max(0, (lineHeight - (parseFloat(style.fontSize) || 14)) * sy),
-          letterSpacing: Number.isFinite(parseFloat(style.letterSpacing)) ? Math.max(0, parseFloat(style.letterSpacing) * sx) : 0,
-          wordWrap: { width: Math.max(36, rect.width), useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 1, bottom: 2 },
-          align: style.textAlign || 'left'
-        }).setOrigin(0, 0), 14);
+        if (!rect || !node.textContent.trim()) return;
+        const allowance = node.matches('h1,h2') ? 8 * sx : 0;
+        const label = this.createShellLabel(node, { ...rect, width: rect.width + allowance }, color, sx, sy, 14);
+        if (!label) {
+          copyFits = false;
+          this.nativeOpeningUiFailure = 'Opening copy does not fit: ' + node.tagName + ' ' + node.textContent.trim();
+          return;
+        }
+        if (label.displayWidth > rect.width) label.setScale(label.scaleX * rect.width / label.displayWidth, 1);
+        const css = getComputedStyle(node);
+        const lines = label.getWrappedText().length;
+        const available = rect.height - (parseFloat(css.paddingTop) + parseFloat(css.paddingBottom) +
+          parseFloat(css.borderTopWidth) + parseFloat(css.borderBottomWidth) || 0) * sy;
+        if (lines > 1 && available > label.height) label.setLineSpacing((available - label.height) / (lines - 1));
+        if (label.displayHeight > available) label.setScale(label.scaleX, available / label.height);
+        label.setData('shellLabel', { sourceText: node.textContent.trim(), sourceBounds: rect });
+        add(label, 14);
+      };
+      textNodes.forEach(node => {
+        const color = node.matches('.opening-road-v140-kicker,.opening-road-v140-scene-note > span,.opening-road-v140-prologue-rule > span,blockquote strong') ? '#e2c47f'
+          : node.matches('h1,h2') ? '#f4e8c6'
+          : node.matches('.opening-road-v140-footnote') ? '#c4d0c4' : '#e5e0d1';
+        makeText(node, color);
       });
 
       buttons.forEach((button, index) => {
@@ -2576,31 +2764,8 @@
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         const objects = [focusFrame];
         if (button.classList.contains('opening-road-v140-choice')) {
-          const title = button.querySelector('strong')?.textContent?.trim() || label;
-          const description = button.querySelector('span')?.textContent?.trim() || '';
-          objects.push(this.add.text(12 * sx, rect.height * 0.30, title, {
-            fontFamily: 'Georgia, Times New Roman, serif',
-            fontSize: Math.max(10, 15 * sy) + 'px',
-            fontStyle: 'bold',
-            color: '#fff0ca',
-            wordWrap: { width: Math.max(32, rect.width - 24 * sx), useAdvancedWrap: true }
-          }).setOrigin(0, 0.5));
-          objects.push(this.add.text(12 * sx, rect.height * 0.72, description, {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: Math.max(9, 12 * sy) + 'px',
-            color: '#c4d0c4',
-            wordWrap: { width: Math.max(32, rect.width - 24 * sx), useAdvancedWrap: true }
-          }).setOrigin(0, 0.5));
-        } else {
-          objects.push(this.add.text(rect.width / 2, rect.height / 2, label, {
-            fontFamily: 'Arial, sans-serif',
-            fontSize: Math.max(10, 14 * sy) + 'px',
-            fontStyle: 'bold',
-            color: button.classList.contains('opening-road-v140-primary') ? '#261c08' : '#f4efdd',
-            align: 'center',
-            wordWrap: { width: Math.max(36, rect.width - 22 * sx), useAdvancedWrap: true }
-          }).setOrigin(0.5));
-        }
+          for (const node of button.querySelectorAll('strong,span')) makeText(node, node.tagName === 'STRONG' ? '#fff0ca' : '#c4d0c4');
+        } else makeText(button, '#fff0ca');
         container.add(objects);
         add(container, 15);
         const control = { id, x: rect.x, y: rect.y, width: rect.width, height: rect.height, container, focusFrame, button, label };
@@ -2613,6 +2778,15 @@
           button.addEventListener('pointerleave', () => this.setNativeOpeningControlFocus(id, document.activeElement === button));
         }
       });
+      if (!copyFits) { this.clearNativeOpeningUi(); return; }
+      this.nativeOpeningUiActive = true;
+      this.nativeOpeningUiSignature = signature;
+      document.body?.classList.add('legend-phaser-opening-ui-active');
+      } catch (error) {
+        this.nativeOpeningUiFailure = error?.message || String(error);
+        this.clearNativeOpeningUi();
+        console.warn('[LEGEND Phaser] Oric opening overlay paint failed; preserving DOM fallback.', error);
+      }
     }
 
     clearNativeGameplayUi(removeClass = true) {
@@ -2826,6 +3000,94 @@
         attributeOldValue: true,
         attributeFilter: ['class','style','hidden','disabled','inert','aria-hidden','aria-label','aria-expanded','aria-pressed','aria-selected']
       }));
+    }
+
+
+    /** Clears the Phaser shell-toast painting and reveals the accessible DOM status message again. */
+    clearNativeToastUi(removeClass = true) {
+      this.nativeToastUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeToastUiObjects = [];
+      this.nativeToastUiTaggedNodes.forEach(node => {
+        if (node?.dataset) delete node.dataset.legendPhaserToastText;
+      });
+      this.nativeToastUiTaggedNodes = [];
+      this.nativeToastUiSignature = '';
+      this.nativeToastUiMessage = '';
+      this.nativeToastUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-toast-ui-active');
+    }
+
+    /** Paints the shell toast message in Phaser while its DOM node keeps role="status" for assistive tech. */
+    syncNativeToastUi() {
+      const shell = document.getElementById('legend-world-shell-root');
+      const toast = shell?.querySelector('.lws-shell-toast');
+      const message = toast?.textContent?.replace(/\s+/g, ' ').trim() || '';
+      if (!toast || shell.hidden || toast.hidden || !message) {
+        if (this.nativeToastUiActive || this.nativeToastUiTaggedNodes.length ||
+            document.body?.classList.contains('legend-phaser-toast-ui-active')) {
+          this.clearNativeToastUi();
+        }
+        return;
+      }
+
+      const rect = toast.getBoundingClientRect();
+      const css = window.getComputedStyle(toast);
+      if (!rect.width || !rect.height || css.display === 'none' || css.visibility === 'hidden') {
+        this.clearNativeToastUi();
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const signature = JSON.stringify([
+        message,
+        Math.round(rect.left), Math.round(rect.top),
+        Math.round(rect.width), Math.round(rect.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight)
+      ]);
+      if (this.nativeToastUiActive && signature === this.nativeToastUiSignature) return;
+
+      this.clearNativeToastUi(false);
+      this.nativeToastUiActive = true;
+      this.nativeToastUiSignature = signature;
+      this.nativeToastUiMessage = message;
+      document.body?.classList.add('legend-phaser-toast-ui-active');
+
+      const x = rect.left * sx;
+      const y = rect.top * sy;
+      const width = rect.width * sx;
+      const height = rect.height * sy;
+      const radius = Math.max(2, (Number.parseFloat(css.borderTopLeftRadius) || 0) * sx);
+      const graphics = this.add.graphics().setDepth(58);
+      graphics.fillStyle(0x080d09, 0.68);
+      graphics.fillRoundedRect(x, y, width, height, radius);
+      graphics.lineStyle(Math.max(1, Math.round(sx)), 0xe7c982, 0.43);
+      graphics.strokeRoundedRect(x, y, width, height, radius);
+      this.nativeToastUiObjects.push(graphics);
+
+      const paddingLeft = (Number.parseFloat(css.paddingLeft) || 0) * sx;
+      const paddingRight = (Number.parseFloat(css.paddingRight) || 0) * sx;
+      const paddingTop = (Number.parseFloat(css.paddingTop) || 0) * sy;
+      const text = this.add.text(x + paddingLeft, y + paddingTop, message, {
+        fontFamily: css.fontFamily || 'Arial, sans-serif',
+        fontSize: Math.max(9, Math.round((Number.parseFloat(css.fontSize) || 12) * sy)) + 'px',
+        color: '#e9e4d5',
+        align: 'left',
+        wordWrap: {
+          width: Math.max(12, width - paddingLeft - paddingRight),
+          useAdvancedWrap: true
+        }
+      }).setDepth(59);
+      text.setOrigin(0, 0);
+      text.setResolution?.(2);
+      this.nativeToastUiObjects.push(text);
+      toast.dataset.legendPhaserToastText = 'true';
+      this.nativeToastUiTaggedNodes.push(toast);
     }
 
 
@@ -3294,6 +3556,7 @@
         return;
       }
 
+      const clip = this.expeditionUiClipBounds();
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -3336,7 +3599,7 @@
         ...Array.from(region.querySelectorAll(surfaceSelector))
       ]))).map(node => ({ node, rect: readRect(node) })).filter(item => item.rect);
 
-      const signature = JSON.stringify([
+      const signature = JSON.stringify([clip,
         Math.round(window.innerWidth), Math.round(window.innerHeight),
         Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
         ...regions.map(node => {
@@ -3361,13 +3624,13 @@
       const tagsCurrent =
         textNodes.length === this.nativeExpeditionActionsUiTextNodes.length &&
         textNodes.every((node,index) => node === this.nativeExpeditionActionsUiTextNodes[index] &&
-          node.dataset.legendPhaserRoadActionText === 'true') &&
+          ['true','fallback'].includes(node.dataset.legendPhaserRoadActionText)) &&
         controls.length === this.nativeExpeditionActionsUiControls.length &&
         controls.every((node,index) => node === this.nativeExpeditionActionsUiControls[index] &&
-          node.dataset.legendPhaserRoadActionControl === 'true') &&
+          ['true','fallback'].includes(node.dataset.legendPhaserRoadActionControl)) &&
         iconNodes.length === this.nativeExpeditionActionsUiIconNodes.length &&
         iconNodes.every((node,index) => node === this.nativeExpeditionActionsUiIconNodes[index] &&
-          node.dataset.legendPhaserRoadActionIcon === 'true');
+          ['true','fallback'].includes(node.dataset.legendPhaserRoadActionIcon));
       if (this.nativeExpeditionActionsUiActive && tagsCurrent && signature === this.nativeExpeditionActionsUiSignature) return;
 
       this.clearNativeExpeditionActionsUi(false, false);
@@ -3377,6 +3640,10 @@
       const graphics = this.add.graphics();
       container.add(graphics);
       this.nativeExpeditionActionsUiObjects.push(container);
+      if (!this.clipExpeditionUi(container, clip)) {
+        this.clearNativeExpeditionActionsUi(true, false);
+        return;
+      }
 
       surfaces.forEach(({node,rect}) => {
         const classes = node.classList;
@@ -3440,19 +3707,8 @@
           : node.matches('small,em') ? '#d6c18b'
           : '#b6c0b2';
         const value = node.textContent?.replace(/\s+/g, ' ').trim() || '';
-        const object = this.add.text(rect.x, rect.y, value, {
-          fontFamily: style.fontFamily || 'Arial, sans-serif',
-          fontSize: Math.max(isIcon ? 10 : 8,
-            Math.round((parseFloat(style.fontSize) || (isIcon ? 15 : 10)) * sy)) + 'px',
-          fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
-          color,
-          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
-          wordWrap: { width: Math.max(10, rect.width) },
-          align: style.textAlign || 'left'
-        }).setDepth(58).setOrigin(0,0);
-        object.setResolution?.(2);
-        object.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
-        container.add(object);
+        const object = this.createShellLabel(node, rect, color, sx, sy, 58);
+        if (object) container.add(object);
         // Save and mask the DOM copy inline. This avoids legacy CSS cascade
         // conflicts while preserving exact restoration if Phaser preflight
         // fails or the expedition surface is removed.
@@ -3464,18 +3720,20 @@
         rememberInlineStyle('color', 'legendPhaserRoadOriginalColor', 'legendPhaserRoadOriginalColorPriority');
         rememberInlineStyle('text-shadow', 'legendPhaserRoadOriginalTextShadow', 'legendPhaserRoadOriginalTextShadowPriority');
         rememberInlineStyle('-webkit-text-fill-color', 'legendPhaserRoadOriginalTextFill', 'legendPhaserRoadOriginalTextFillPriority');
-        node.style.setProperty('color', 'transparent', 'important');
+        node.style.setProperty('color', object ? 'transparent' : color, 'important');
         node.style.setProperty('text-shadow', 'none', 'important');
-        node.style.setProperty('-webkit-text-fill-color', 'transparent', 'important');
-        node.dataset.legendPhaserRoadActionText = 'true';
+        node.style.setProperty('-webkit-text-fill-color', object ? 'transparent' : color, 'important');
+        node.dataset.legendPhaserRoadActionText = object ? 'true' : 'fallback';
         this.nativeExpeditionActionsUiTaggedNodes.push(node);
       });
       controls.forEach(node => {
-        node.dataset.legendPhaserRoadActionControl = 'true';
+        node.dataset.legendPhaserRoadActionControl = textNodes.some(text =>
+          text.dataset.legendPhaserRoadActionText === 'fallback' && (text === node || text.contains(node))) ? 'fallback' : 'true';
         this.nativeExpeditionActionsUiTaggedNodes.push(node);
       });
       iconNodes.forEach(node => {
-        node.dataset.legendPhaserRoadActionIcon = 'true';
+        node.dataset.legendPhaserRoadActionIcon = textNodes.some(text =>
+          text.dataset.legendPhaserRoadActionText === 'fallback' && (text === node || text.contains(node))) ? 'fallback' : 'true';
         this.nativeExpeditionActionsUiTaggedNodes.push(node);
       });
 
@@ -3590,6 +3848,7 @@
         return;
       }
 
+      const clip = this.expeditionUiClipBounds();
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -3655,7 +3914,7 @@
         node, markerRect: readRect(node.querySelector('.exp150-stop-marker'))
       })).filter(item => item.markerRect);
 
-      const signature = JSON.stringify([
+      const signature = JSON.stringify([clip,
         Math.round(window.innerWidth), Math.round(window.innerHeight),
         Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
         ...regions.map(node => {
@@ -3679,13 +3938,13 @@
       const tagsCurrent =
         textNodes.length === this.nativeExpeditionHudUiTextNodes.length &&
         textNodes.every((node,index) => node === this.nativeExpeditionHudUiTextNodes[index] &&
-          node.dataset.legendPhaserExpeditionText === 'true') &&
+          ['true','fallback'].includes(node.dataset.legendPhaserExpeditionText)) &&
         controls.length === this.nativeExpeditionHudUiControls.length &&
         controls.every((node,index) => node === this.nativeExpeditionHudUiControls[index] &&
-          node.dataset.legendPhaserExpeditionControl === 'true') &&
+          ['true','fallback'].includes(node.dataset.legendPhaserExpeditionControl)) &&
         iconNodes.length === this.nativeExpeditionHudUiIconNodes.length &&
         iconNodes.every((node,index) => node === this.nativeExpeditionHudUiIconNodes[index] &&
-          node.dataset.legendPhaserExpeditionIcon === 'true');
+          ['true','fallback'].includes(node.dataset.legendPhaserExpeditionIcon));
       if (this.nativeExpeditionHudUiActive && tagsCurrent && signature === this.nativeExpeditionHudUiSignature) return;
 
       this.clearNativeExpeditionHudUi(false, false);
@@ -3695,6 +3954,10 @@
       const graphics = this.add.graphics();
       container.add(graphics);
       this.nativeExpeditionHudUiObjects.push(container);
+      if (!this.clipExpeditionUi(container, clip)) {
+        this.clearNativeExpeditionHudUi(true, false);
+        return;
+      }
 
       surfaces.forEach(({node,rect}) => {
         const classes = node.classList;
@@ -3765,20 +4028,8 @@
           : node.matches('.exp150-title-group h1,.exp150-journey-aside h2') ? '#efe7d4'
           : node.matches('.exp150-kicker,.exp150-tracker-label > span') ? '#c9ad6e'
           : '#b6c0b2';
-        const textObject = this.add.text(rect.x, rect.y,
-          node.textContent?.replace(/\s+/g, ' ').trim() || '', {
-            fontFamily: style.fontFamily || 'Arial, sans-serif',
-            fontSize: Math.max(isIcon ? 10 : 8,
-              Math.round((parseFloat(style.fontSize) || (isIcon ? 14 : 10))*sy)) + 'px',
-            fontStyle: Number.parseInt(style.fontWeight,10) >= 600 ? 'bold' : 'normal',
-            color,
-            letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
-            wordWrap: { width: Math.max(10, rect.width) },
-            align: style.textAlign || 'left'
-          }).setDepth(54).setOrigin(0,0);
-        textObject.setResolution?.(2);
-        textObject.setFixedSize?.(Math.max(10,rect.width),Math.max(9,rect.height));
-        container.add(textObject);
+        const textObject = this.createShellLabel(node, rect, color, sx, sy, 54);
+        if (textObject) container.add(textObject);
         // Mask the DOM copy inline only after its Phaser replacement exists.
         // Save the exact prior inline declarations so any preflight failure,
         // screen transition or cleanup restores the original accessible UI.
@@ -3790,18 +4041,20 @@
         rememberInlineStyle('color', 'legendPhaserExpeditionOriginalColor', 'legendPhaserExpeditionOriginalColorPriority');
         rememberInlineStyle('text-shadow', 'legendPhaserExpeditionOriginalTextShadow', 'legendPhaserExpeditionOriginalTextShadowPriority');
         rememberInlineStyle('-webkit-text-fill-color', 'legendPhaserExpeditionOriginalTextFill', 'legendPhaserExpeditionOriginalTextFillPriority');
-        node.style.setProperty('color', 'transparent', 'important');
+        node.style.setProperty('color', textObject ? 'transparent' : color, 'important');
         node.style.setProperty('text-shadow', 'none', 'important');
-        node.style.setProperty('-webkit-text-fill-color', 'transparent', 'important');
-        node.dataset.legendPhaserExpeditionText = 'true';
+        node.style.setProperty('-webkit-text-fill-color', textObject ? 'transparent' : color, 'important');
+        node.dataset.legendPhaserExpeditionText = textObject ? 'true' : 'fallback';
         this.nativeExpeditionHudUiTaggedNodes.push(node);
       });
       controls.forEach(node => {
-        node.dataset.legendPhaserExpeditionControl = 'true';
+        node.dataset.legendPhaserExpeditionControl = textNodes.some(text =>
+          text.dataset.legendPhaserExpeditionText === 'fallback' && (text === node || text.contains(node))) ? 'fallback' : 'true';
         this.nativeExpeditionHudUiTaggedNodes.push(node);
       });
       iconNodes.forEach(node => {
-        node.dataset.legendPhaserExpeditionIcon = 'true';
+        node.dataset.legendPhaserExpeditionIcon = textNodes.some(text =>
+          text.dataset.legendPhaserExpeditionText === 'fallback' && (text === node || text.contains(node))) ? 'fallback' : 'true';
         this.nativeExpeditionHudUiTaggedNodes.push(node);
       });
 
@@ -4253,7 +4506,145 @@
       if (removeClass) document.body?.classList.remove('legend-phaser-right-drawer-ui-active');
     }
 
+    expeditionUiClipBounds() {
+      this.syncShellContentClip();
+      const node = root(), box = node.getBoundingClientRect(), css = getComputedStyle(node);
+      const canvas = this.game.canvas.getBoundingClientRect(), size = this.dimensions();
+      const sx = size.width / canvas.width, sy = size.height / canvas.height;
+      const inset = side => node.dataset.legendShellClip === 'true'
+        ? parseFloat(css.getPropertyValue('--legend-shell-clip-' + side)) || 0 : 0;
+      return { x: (box.left - canvas.left + inset('left')) * sx,
+        y: (box.top - canvas.top + inset('top')) * sy,
+        width: Math.max(0, box.width - inset('left') - inset('right')) * sx,
+        height: Math.max(0, box.height - inset('top') - inset('bottom')) * sy };
+    }
+
+    clipExpeditionUi(container, bounds) {
+      const art = this.make.graphics({ x: 0, y: 0, add: false });
+      let mask = null;
+      container.once('destroy', () => { mask?.destroy(); art.destroy(); });
+      art.fillStyle(0xffffff).fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+      try {
+        if (this.game.renderer.type === Phaser.WEBGL) {
+          container.enableFilters?.(); container.setFiltersFocusContext?.(true);
+          if (!container.filters?.internal?.addMask?.(art, false, this.cameras.main, 'world')) return false;
+        } else { mask = art.createGeometryMask(); container.setMask(mask); }
+        container.setData('expeditionClip', bounds);
+        return true;
+      } catch { return false; }
+    }
+
+    /** Keep retained town/service DOM artwork below the shell's native paint. */
+    syncShellContentClip() {
+      const root = document.getElementById('root');
+      if (!root) return;
+      const shell = document.getElementById('legend-world-shell-root');
+      const enabled = shell && !shell.hidden && root.querySelector('.rpg-battle,.gss170-page,.gfm160-page,.v152-combat-results,.ash100-town,.ash099-terminal,.reg100,.exp100:has(.exp150-world-page,.exp100-outcome,.rpg-battle)');
+      if (!enabled) { root.removeAttribute('data-legend-shell-clip'); return; }
+      const box = root.getBoundingClientRect();
+      const hud = shell.querySelector('.lws-hud')?.getBoundingClientRect();
+      const dock = shell.querySelector('.lws-bottom-bar')?.getBoundingClientRect();
+      const leftPanel = shell.querySelector('#lws-panel-left');
+      const rightPanel = shell.querySelector('#lws-panel-right');
+      const left = leftPanel?.getBoundingClientRect();
+      const right = rightPanel?.getBoundingClientRect();
+      // Closed drawers release their painter listeners before CSS motion ends.
+      // Re-read the final transform so closing cannot leave the world clipped.
+      if (!this.shellClipLayoutEvent && [leftPanel, rightPanel].some(panel =>
+        panel?.getAnimations?.().some(animation => animation.playState === 'running'))) {
+        this.shellClipLayoutEvent = this.time.delayedCall(220, () => {
+          this.shellClipLayoutEvent = null;
+          this.syncShellContentClip();
+        });
+      }
+      const insets = {
+        top: Math.max(0, (hud?.bottom || box.top) - box.top),
+        bottom: Math.max(0, box.bottom - (dock?.top || box.bottom)),
+        left: Math.max(0, (left?.right || box.left) - box.left),
+        right: Math.max(0, box.right - (right?.left || box.right))
+      };
+      let changed = root.dataset.legendShellClip !== 'true';
+      Object.entries(insets).forEach(([side, value]) => {
+        const key = '--legend-shell-clip-' + side, next = value + 'px';
+        if (root.style.getPropertyValue(key) !== next) {
+          root.style.setProperty(key, next);
+          changed = true;
+        }
+      });
+      if (root.dataset.legendShellClip !== 'true') root.dataset.legendShellClip = 'true';
+      // Drawer motion can settle after the road painters have sampled their
+      // masks. Update those masks with the same final bounds as the DOM clip.
+      if (changed && root.querySelector('.exp150-world-page,.exp100-outcome,.rpg-battle,.v152-combat-results,.bell-vault-v100,.gfm160-page') && this.expeditionClipFrame === null) {
+        this.expeditionClipFrame = window.requestAnimationFrame(() => {
+          this.expeditionClipFrame = null;
+          this.syncNativeExpeditionHudUi();
+          this.syncNativeExpeditionActionsUi();
+          this.roadScene?.sync();
+          this.roadResults?.sync();
+          this.combatResults?.sync();
+          this.bellVault?.sync();
+          this.marsh?.sync();
+          this.syncNativeCombatUi();
+        });
+      }
+    }
+
+    /** Paint a shell label inside its measured content box, never crop its glyph texture. */
+    createShellLabel(node, rect, color, sx, sy, depth) {
+      const css = window.getComputedStyle(node);
+      const insetX = (parseFloat(css.paddingLeft) + parseFloat(css.borderLeftWidth) || 0) * sx;
+      const insetY = (parseFloat(css.paddingTop) + parseFloat(css.borderTopWidth) || 0) * sy;
+      const width = Math.max(1, rect.width - insetX - (parseFloat(css.paddingRight) + parseFloat(css.borderRightWidth) || 0) * sx);
+      const height = Math.max(1, rect.height - insetY - (parseFloat(css.paddingBottom) + parseFloat(css.borderBottomWidth) || 0) * sy);
+      const fontSize = (parseFloat(css.fontSize) || 10) * sy;
+      const sourceText = node.textContent?.replace(/\s+/g, ' ').trim() || '';
+      const copy = css.textTransform === 'uppercase' ? sourceText.toUpperCase() : sourceText;
+      let text;
+      try {
+        text = this.add.text(rect.x + insetX, rect.y + insetY, copy, {
+          fontFamily: css.fontFamily || 'Arial, sans-serif', fontSize: fontSize + 'px',
+          fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : css.fontStyle === 'italic' ? 'italic' : 'normal',
+          color, letterSpacing: (parseFloat(css.letterSpacing) || 0) * sx,
+          align: css.textAlign || 'left'
+        }).setDepth(depth).setOrigin(0, 0).setResolution(2);
+        if (!css.whiteSpace.includes('nowrap') && height > fontSize * 1.65 && width > fontSize) {
+          text.setWordWrapWidth(width, true);
+        }
+        // Browser and canvas glyph metrics differ by fractions of a pixel.
+        // Bounded horizontal fitting preserves complete digits at the mask edge.
+        if (text.width > width) {
+          const ratio = width / text.width;
+          if (ratio < 0.85) throw new Error('Shell label exceeds source width');
+          text.setScale(ratio, 1);
+        }
+        if (text.height > height + Math.max(3 * sy, fontSize * 0.25)) throw new Error('Shell label exceeds source height');
+        if (css.textAlign === 'right' || css.textAlign === 'end') text.x += width - text.displayWidth;
+        if (css.textAlign === 'center' || node.tagName === 'BUTTON' || node.classList.contains('lws-brand-mark')) {
+          text.x = rect.x + insetX + (width - text.displayWidth) / 2;
+        }
+        if (node.tagName === 'BUTTON' || node.classList.contains('lws-brand-mark') || node.classList.contains('lws-tag')) {
+          text.y += (height - text.height) / 2;
+        }
+        text.setData('shellLabel', { sourceText, sourceBounds: rect });
+        return text;
+      } catch {
+        text?.destroy();
+        // Leave this semantic label visible when its replacement cannot fit.
+        return null;
+      }
+    }
+
+    shellLabelSnapshot(objects) {
+      return objects.flatMap(object => object?.type === 'Container' ? this.shellLabelSnapshot(object.list) :
+        object?.active && object.getData?.('shellLabel') ? [{
+          ...object.getData('shellLabel'), text: object.text, x: object.x, y: object.y,
+          width: object.displayWidth, height: object.displayHeight,
+          wrappedLines: object.getWrappedText().length
+        }] : []);
+    }
+
     syncNativeRightDrawerUi() {
+      this.syncShellContentClip();
       const shell = document.getElementById('legend-world-shell-root');
       const panel = shell?.querySelector('#lws-panel-right');
       const scroll = panel?.querySelector('.lws-panel-scroll');
@@ -4300,16 +4691,17 @@
       }
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvas = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvas.width);
+      const sy = size.height / Math.max(1, canvas.height);
       const readRect = node => {
         if (!node || !node.isConnected) return null;
         const rect = node.getBoundingClientRect();
         const style = window.getComputedStyle(node);
         if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
         return {
-          x: rect.left * sx,
-          y: rect.top * sy,
+          x: (rect.left - canvas.left) * sx,
+          y: (rect.top - canvas.top) * sy,
           width: rect.width * sx,
           height: rect.height * sy
         };
@@ -4407,18 +4799,8 @@
         const rect = readRect(node);
         if (!rect) return;
         const style = window.getComputedStyle(node);
-        const text = this.add.text(rect.x, rect.y, content(node), {
-          fontFamily: style.fontFamily || 'Arial, sans-serif',
-          fontSize: Math.max(9, Math.round((parseFloat(style.fontSize) || 11) * sy)) + 'px',
-          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-          color: node.matches('.lws-panel-eyebrow') ? '#c9a96e'
-            : node.matches('.lws-panel-header h2') ? '#efe7d4'
-            : '#b1b8aa',
-          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
-          align: style.textAlign || 'left'
-        }).setDepth(39).setOrigin(0, 0);
-        text.setResolution?.(2);
-        text.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        const text = this.createShellLabel(node, rect, node.matches('.lws-panel-eyebrow') ? '#c9a96e' : node.matches('.lws-panel-header h2') ? '#efe7d4' : '#d8cba9', sx, sy, 41);
+        if (!text) return;
         this.nativeRightDrawerUiObjects.push(text);
         node.dataset.legendPhaserRightText = 'true';
         this.nativeRightDrawerUiTaggedNodes.push(node);
@@ -4539,16 +4921,9 @@
           : node.matches('.lws-place-option-copy > strong,.lws-selected-place h3,.lws-quest-item > strong,.lws-poi-hint > strong') ? '#eee7d6'
           : node.matches('.lws-context-copy,.lws-quest-item > p,.lws-place-option-copy > small,.lws-selected-place p,.lws-poi-hint > p,.lws-btn-copy > small') ? '#b1b8aa'
           : '#f0ead9';
-        const text = addContent(this.add.text(rect.x, rect.y, content(node), {
-          fontFamily: style.fontFamily || 'Arial, sans-serif',
-          fontSize: Math.max(8, Math.round((parseFloat(style.fontSize) || 10) * sy)) + 'px',
-          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-          color,
-          letterSpacing: (Number.parseFloat(style.letterSpacing) || 0) * sx,
-          align: style.textAlign || 'left'
-        }).setOrigin(0, 0).setDepth(42));
-        text.setResolution?.(2);
-        text.setFixedSize?.(Math.max(12, rect.width), Math.max(9, rect.height));
+        const text = this.createShellLabel(node, rect, color, sx, sy, 42);
+        if (!text) return;
+        addContent(text);
         node.dataset.legendPhaserRightText = 'true';
         this.nativeRightDrawerUiTaggedNodes.push(node);
       });
@@ -4563,6 +4938,7 @@
     }
 
     syncNativeLeftDrawerUi() {
+      this.syncShellContentClip();
       const shell = document.getElementById('legend-world-shell-root');
       const panel = shell?.querySelector('#lws-panel-left');
       const scroll = panel?.querySelector('.lws-panel-scroll');
@@ -4610,16 +4986,17 @@
       }
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvas = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvas.width);
+      const sy = size.height / Math.max(1, canvas.height);
       const readRect = node => {
         if (!node || !node.isConnected) return null;
         const rect = node.getBoundingClientRect();
         const style = window.getComputedStyle(node);
         if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
         return {
-          x: rect.left * sx,
-          y: rect.top * sy,
+          x: (rect.left - canvas.left) * sx,
+          y: (rect.top - canvas.top) * sy,
           width: rect.width * sx,
           height: rect.height * sy
         };
@@ -4714,19 +5091,8 @@
         const rect = readRect(node);
         if (!rect) return;
         const css = window.getComputedStyle(node);
-        const text = this.add.text(rect.x, rect.y, content(node), {
-          fontFamily: css.fontFamily || 'Arial, sans-serif',
-          fontSize: Math.max(9, Math.round((parseFloat(css.fontSize) || 11) * sy)) + 'px',
-          fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-          color: node.matches('.lws-panel-eyebrow') ? '#c9a96e'
-            : node.matches('.lws-panel-header h2') ? '#efe7d4'
-            : node.matches('.lws-panel-header .lws-tag') ? '#d8cba9'
-            : '#b1b8aa',
-          letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
-          align: css.textAlign || 'left'
-        }).setDepth(41).setOrigin(0, 0);
-        text.setResolution?.(2);
-        text.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        const text = this.createShellLabel(node, rect, node.matches('.lws-panel-eyebrow') ? '#c9a96e' : node.matches('.lws-panel-header h2') ? '#efe7d4' : '#d8cba9', sx, sy, 41);
+        if (!text) return;
         this.nativeLeftDrawerUiObjects.push(text);
         node.dataset.legendPhaserLeftText = 'true';
         this.nativeLeftDrawerUiTaggedNodes.push(node);
@@ -4825,16 +5191,9 @@
           : node.matches('.lws-btn-copy > strong') ? '#f0ead9'
           : node.matches('.lws-note,.lws-quest-item > p,.lws-small-list li > span,.lws-health-line > span,.lws-btn-copy > small') ? '#b1b8aa'
           : '#eee7d6';
-        const text = addContent(this.add.text(rect.x, rect.y, content(node), {
-          fontFamily: css.fontFamily || 'Arial, sans-serif',
-          fontSize: Math.max(8, Math.round((parseFloat(css.fontSize) || 10) * sy)) + 'px',
-          fontStyle: Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-          color,
-          letterSpacing: (Number.parseFloat(css.letterSpacing) || 0) * sx,
-          align: css.textAlign || 'left'
-        }).setOrigin(0, 0).setDepth(42));
-        text.setResolution?.(2);
-        text.setFixedSize?.(Math.max(10, rect.width), Math.max(9, rect.height));
+        const text = this.createShellLabel(node, rect, color, sx, sy, 42);
+        if (!text) return;
+        addContent(text);
         node.dataset.legendPhaserLeftText = 'true';
         this.nativeLeftDrawerUiTaggedNodes.push(node);
       });
@@ -4870,6 +5229,7 @@
     }
 
     syncNativeHudUi() {
+      this.syncShellContentClip();
       const shell = document.getElementById('legend-world-shell-root');
       const hud = shell?.querySelector('.lws-hud');
       if (!hud || shell.hidden || hud.hidden) {
@@ -4899,15 +5259,16 @@
       }
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvas = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvas.width);
+      const sy = size.height / Math.max(1, canvas.height);
       const readRect = node => {
         if (!node || !node.isConnected) return null;
         const rect = node.getBoundingClientRect();
         const style = window.getComputedStyle(node);
         if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
         return {
-          x: rect.left * sx, y: rect.top * sy,
+          x: (rect.left - canvas.left) * sx, y: (rect.top - canvas.top) * sy,
           width: rect.width * sx, height: rect.height * sy
         };
       };
@@ -5018,26 +5379,8 @@
       textNodes.forEach(node => {
         const rect = readRect(node);
         if (!rect) return;
-        const css = window.getComputedStyle(node);
-        const fontSize = Math.max(9, Math.round((parseFloat(css.fontSize) || 12) * sy));
-        const letterSpacing = Number.parseFloat(css.letterSpacing) || 0;
-        const text = this.add.text(
-          node.classList.contains('lws-brand-mark') ? rect.x + rect.width / 2 : rect.x,
-          node.classList.contains('lws-brand-mark') ? rect.y + rect.height / 2 : rect.y,
-          content(node),
-          {
-            fontFamily: css.fontFamily || 'Arial, sans-serif',
-            fontSize: fontSize + 'px',
-            fontStyle: css.fontWeight === 'bold' || Number.parseInt(css.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-            color: fallbackColors(node),
-            letterSpacing: letterSpacing * sx,
-            align: node.classList.contains('lws-brand-mark') ? 'center' : 'left'
-          }
-        ).setDepth(54);
-        if (node.classList.contains('lws-brand-mark')) text.setOrigin(0.5);
-        else text.setOrigin(0, 0);
-        text.setResolution?.(2);
-        text.setFixedSize?.(Math.max(12, rect.width), Math.max(10, rect.height));
+        const text = this.createShellLabel(node, rect, fallbackColors(node), sx, sy, 54);
+        if (!text) return;
         this.nativeHudUiObjects.push(text);
         node.dataset.legendPhaserHudText = 'true';
         this.nativeHudUiTaggedNodes.push(node);
@@ -5049,105 +5392,18 @@
       });
     }
 
-    /** Clears the Phaser shell-toast painting and reveals the accessible DOM status message again. */
-    clearNativeToastUi(removeClass = true) {
-      this.nativeToastUiObjects.forEach(object => {
-        if (!object?.active) return;
-        this.tweens.killTweensOf(object);
-        object.destroy(true);
-      });
-      this.nativeToastUiObjects = [];
-      this.nativeToastUiTaggedNodes.forEach(node => {
-        if (node?.dataset) delete node.dataset.legendPhaserToastText;
-      });
-      this.nativeToastUiTaggedNodes = [];
-      this.nativeToastUiSignature = '';
-      this.nativeToastUiMessage = '';
-      this.nativeToastUiActive = false;
-      if (removeClass) document.body?.classList.remove('legend-phaser-toast-ui-active');
-    }
-
-    /** Paints the shell toast message in Phaser while its DOM node keeps role="status" for assistive tech. */
-    syncNativeToastUi() {
-      const shell = document.getElementById('legend-world-shell-root');
-      const toast = shell?.querySelector('.lws-shell-toast');
-      const message = toast?.textContent?.replace(/\s+/g, ' ').trim() || '';
-      if (!toast || shell.hidden || toast.hidden || !message) {
-        if (this.nativeToastUiActive || this.nativeToastUiTaggedNodes.length ||
-            document.body?.classList.contains('legend-phaser-toast-ui-active')) {
-          this.clearNativeToastUi();
-        }
-        return;
-      }
-
-      const rect = toast.getBoundingClientRect();
-      const css = window.getComputedStyle(toast);
-      if (!rect.width || !rect.height || css.display === 'none' || css.visibility === 'hidden') {
-        this.clearNativeToastUi();
-        return;
-      }
-
-      const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
-      const signature = JSON.stringify([
-        message,
-        Math.round(rect.left), Math.round(rect.top),
-        Math.round(rect.width), Math.round(rect.height),
-        Math.round(window.innerWidth), Math.round(window.innerHeight)
-      ]);
-      if (this.nativeToastUiActive && signature === this.nativeToastUiSignature) return;
-
-      this.clearNativeToastUi(false);
-      this.nativeToastUiActive = true;
-      this.nativeToastUiSignature = signature;
-      this.nativeToastUiMessage = message;
-      document.body?.classList.add('legend-phaser-toast-ui-active');
-
-      const x = rect.left * sx;
-      const y = rect.top * sy;
-      const width = rect.width * sx;
-      const height = rect.height * sy;
-      const radius = Math.max(2, (Number.parseFloat(css.borderTopLeftRadius) || 0) * sx);
-      const graphics = this.add.graphics().setDepth(58);
-      graphics.fillStyle(0x080d09, 0.68);
-      graphics.fillRoundedRect(x, y, width, height, radius);
-      graphics.lineStyle(Math.max(1, Math.round(sx)), 0xe7c982, 0.43);
-      graphics.strokeRoundedRect(x, y, width, height, radius);
-      this.nativeToastUiObjects.push(graphics);
-
-      const paddingLeft = (Number.parseFloat(css.paddingLeft) || 0) * sx;
-      const paddingRight = (Number.parseFloat(css.paddingRight) || 0) * sx;
-      const paddingTop = (Number.parseFloat(css.paddingTop) || 0) * sy;
-      const text = this.add.text(x + paddingLeft, y + paddingTop, message, {
-        fontFamily: css.fontFamily || 'Arial, sans-serif',
-        fontSize: Math.max(9, Math.round((Number.parseFloat(css.fontSize) || 12) * sy)) + 'px',
-        color: '#e9e4d5',
-        align: 'left',
-        wordWrap: {
-          width: Math.max(12, width - paddingLeft - paddingRight),
-          useAdvancedWrap: true
-        }
-      }).setDepth(59);
-      text.setOrigin(0, 0);
-      text.setResolution?.(2);
-      this.nativeToastUiObjects.push(text);
-      toast.dataset.legendPhaserToastText = 'true';
-      this.nativeToastUiTaggedNodes.push(toast);
-    }
-
 
     /** Clears combat scene objects and releases observers while revealing the accessible DOM battle fallback. */
     clearNativeCombatUi(removeClass = true, removeListeners = true) {
       this.nativeCombatUiLayoutEvent?.remove?.(false);
       this.nativeCombatUiLayoutEvent = null;
-      if (this.nativeCombatUiObserver) {
+      if (removeListeners && this.nativeCombatUiObserver) {
         this.nativeCombatUiObserver.disconnect();
         this.nativeCombatUiObserver = null;
       }
       if (removeListeners && this.nativeCombatUiBoundBattle && this.nativeCombatUiInteractionHandler) {
-        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
-          this.nativeCombatUiBoundBattle.removeEventListener(type, this.nativeCombatUiInteractionHandler)
+        ['focusin', 'focusout', 'pointerover', 'pointerout', 'load', 'error'].forEach(type =>
+          this.nativeCombatUiBoundBattle.removeEventListener(type, this.nativeCombatUiInteractionHandler, true)
         );
       }
       if (removeListeners && this.nativeCombatUiScrollHandler) {
@@ -5165,6 +5421,9 @@
         object.destroy(true);
       });
       this.nativeCombatUiObjects = [];
+      (this.nativeCombatUiArtKeys || []).forEach(key => { if (this.textures.exists(key)) this.textures.remove(key); });
+      this.nativeCombatUiArtKeys = [];
+      this.nativeCombatUiClip = null;
       this.nativeCombatUiTextNodes = [];
       this.nativeCombatUiControls = [];
       this.nativeCombatUiSignature = '';
@@ -5194,8 +5453,8 @@
             this.syncNativeCombatUi(this.surface);
           });
         };
-        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
-          battle.addEventListener(type, this.nativeCombatUiInteractionHandler)
+        ['focusin', 'focusout', 'pointerover', 'pointerout', 'load', 'error'].forEach(type =>
+          battle.addEventListener(type, this.nativeCombatUiInteractionHandler, true)
         );
         this.nativeCombatUiScrollHandler = () => this.nativeCombatUiInteractionHandler?.();
         document.addEventListener('scroll', this.nativeCombatUiScrollHandler, true);
@@ -5209,11 +5468,17 @@
             subtree: true,
             characterData: true,
             attributes: true,
-            attributeFilter: ['class', 'disabled', 'aria-disabled']
+            attributeFilter: ['class', 'disabled', 'aria-disabled', 'src', 'hidden']
           });
         }
       }
 
+      const wrapper = battle.closest('.exp100') || battle;
+      const hud = document.querySelector('#legend-world-shell-root:not([hidden]) .lws-hud');
+      if (wrapper && hud) {
+        const height = Math.ceil(hud.getBoundingClientRect().height) + 'px';
+        if (wrapper.style.getPropertyValue('--legend-combat-hud-height') !== height) wrapper.style.setProperty('--legend-combat-hud-height', height);
+      }
       const size = this.dimensions();
       const sx = size.width / Math.max(1, window.innerWidth || size.width);
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
@@ -5243,6 +5508,7 @@
         '.rpg-command-grid',
         '.rpg-command',
         '.rpg-battle-utilities',
+        '.rpg-battle-footnote',
         '.rpg-utility-command'
       ].join(',');
       const panels = Array.from(new Set([
@@ -5256,25 +5522,45 @@
         rect: readRect(node),
         style: window.getComputedStyle(node)
       })).filter(item => item.text && item.rect &&
-        !item.node.matches('.rpg-dialogue-star,.rpg-tell-mark') &&
         !item.node.closest('.rpg-hero-stage-art,.rpg-foe-sprite,.rpg-hero-portrait'));
       const controls = Array.from(battle.querySelectorAll('button')).map(node => ({
         node, rect: readRect(node)
       })).filter(item => item.rect);
       const expected = ['battleSound','strike','skill','item','guard','heavy','poultice','flee'];
       const ids = controls.map(item => item.node.id);
-      const complete = expected.every(id => ids.includes(id)) &&
+      const art = [...battle.querySelectorAll('img')];
+      const meters = [...battle.querySelectorAll('.rpg-hero-stage-hp,.rpg-foe-hp,.rpg-hero-hp')];
+      const walker = document.createTreeWalker(battle, NodeFilter.SHOW_TEXT);
+      let unpainted = false, source;
+      while ((source = walker.nextNode())) {
+        const owner = source.parentElement;
+        if (source.textContent.trim() && readRect(owner) && !textNodes.some(item => item.node === owner)) { unpainted = true; break; }
+      }
+      const complete = !unpainted && art.length === 4 && art.every(node => node.complete && node.naturalWidth) &&
+        meters.length === 3 && meters.every(node => node.firstElementChild) && expected.every(id => ids.includes(id)) &&
         expected.length === controls.length &&
         panels.length >= 12 &&
         textNodes.length >= 22;
       if (!complete) {
-        this.clearNativeCombatUi();
+        this.nativeCombatUiFailure = 'Combat source or artwork incomplete';
+        this.clearNativeCombatUi(true, false);
         return;
       }
+      if (this.hasFiniteEntranceAnimation(battle)) {
+        this.clearNativeCombatUi(true, false);
+        this.nativeCombatUiLayoutEvent = this.time.delayedCall(240, () => {
+          this.nativeCombatUiLayoutEvent = null;
+          this.syncNativeCombatUi(this.surface);
+        });
+        return;
+      }
+      const clip = this.expeditionUiClipBounds();
       const signature = JSON.stringify([
         Math.round(size.width), Math.round(size.height),
         Math.round(window.innerWidth), Math.round(window.innerHeight),
-        battle.className,
+        battle.className, clip,
+        ...art.map(node => [readRect(node), node.currentSrc]),
+        ...meters.map(node => [readRect(node), readRect(node.firstElementChild)]),
         ...panels.map(({node, rect}) => [
           node.className, Math.round(rect.x), Math.round(rect.y),
           Math.round(rect.width), Math.round(rect.height)
@@ -5300,8 +5586,40 @@
         object.destroy(true);
       });
       this.nativeCombatUiObjects = [];
-      const graphics = this.add.graphics().setDepth(60);
-      this.nativeCombatUiObjects.push(graphics);
+      (this.nativeCombatUiArtKeys || []).forEach(key => { if (this.textures.exists(key)) this.textures.remove(key); });
+      this.nativeCombatUiArtKeys = [];
+      this.nativeCombatUiClip = null;
+      const container = this.add.container(0, 0).setDepth(60);
+      this.nativeCombatUiObjects.push(container);
+      if (!this.clipExpeditionUi(container, clip)) throw new Error('Combat viewport unavailable');
+      this.nativeCombatUiClip = clip;
+      const add = object => { container.add(object); this.nativeCombatUiObjects.push(object); return object; };
+      const paintArt = node => {
+        const box = readRect(node), bitmap = document.createElement('canvas'), css = getComputedStyle(node);
+        bitmap.width = Math.max(1, Math.ceil(box.width * 2)); bitmap.height = Math.max(1, Math.ceil(box.height * 2));
+        const position = css.objectPosition.split(' ').map(value => ({left:0,top:0,center:0.5,right:1,bottom:1}[value] ?? parseFloat(value)/100));
+        if (position.length !== 2 || position.some(value => !Number.isFinite(value))) throw new Error('Combat artwork position unavailable');
+        const scale = (css.objectFit === 'contain' ? Math.min : Math.max)(bitmap.width/node.naturalWidth, bitmap.height/node.naturalHeight);
+        const ctx = bitmap.getContext('2d');
+        // Actors are clipped by the source battlefield. Preserve that boundary
+        // and the traveler's facing without reproducing the old DOM layer bug.
+        const field = node.closest('.rpg-battlefield');
+        if (field) { const bounds = readRect(field); ctx.beginPath(); ctx.rect((bounds.x-box.x)*2,(bounds.y-box.y)*2,bounds.width*2,bounds.height*2); ctx.clip(); }
+        if (node.closest('.rpg-hero-stage-art')) { ctx.translate(bitmap.width,0); ctx.scale(-1,1); }
+        ctx.drawImage(node,(bitmap.width-node.naturalWidth*scale)*position[0],(bitmap.height-node.naturalHeight*scale)*position[1],node.naturalWidth*scale,node.naturalHeight*scale);
+        if (node.closest('.rpg-hero-stage-art,.rpg-foe-sprite')) {
+          // Match the source actor's elliptical feathering without a CSS blur.
+          ctx.save(); ctx.setTransform(bitmap.width,0,0,bitmap.height,0,0);
+          const fade = ctx.createRadialGradient(0.5,0.43,0,0.5,0.43,0.76);
+          fade.addColorStop(0.3,'rgba(0,0,0,1)'); fade.addColorStop(0.53,'rgba(0,0,0,.95)'); fade.addColorStop(0.79,'rgba(0,0,0,0)');
+          ctx.globalCompositeOperation = 'destination-in'; ctx.fillStyle = fade; ctx.fillRect(0,0,1,1); ctx.restore();
+        }
+        const key = 'legend-native-combat-art-' + this.nativeCombatUiArtKeys.length;
+        this.nativeCombatUiArtKeys.push(key); this.textures.addCanvas(key,bitmap);
+        add(this.add.image(box.x,box.y,key).setOrigin(0).setDisplaySize(box.width,box.height));
+      };
+      art.filter(node => !node.closest('.rpg-hero-portrait')).forEach(paintArt);
+      const graphics = add(this.add.graphics());
       const intent = battle.classList.contains('rpg-intent-staggered') ? 'staggered'
         : battle.classList.contains('rpg-intent-heavy') ? 'heavy'
         : battle.classList.contains('rpg-intent-guardbreak') ? 'guardbreak'
@@ -5320,6 +5638,7 @@
         if (cls.contains('rpg-turn-heading')) return { fill: 0x1a2118, alpha: 0.92, line: 0x9f8a5d };
         if (cls.contains('rpg-command-grid')) return { fill: 0x070c08, alpha: 0.90, line: 0x9f8a5d };
         if (cls.contains('rpg-battle-utilities')) return { fill: 0x0a100b, alpha: 0.90, line: 0x88754e };
+        if (cls.contains('rpg-battle-footnote')) return { fill: 0x101a12, alpha: 0.97, line: 0x82734f };
         if (cls.contains('rpg-battle-topline')) return { fill: 0x0b120d, alpha: 0.92, line: 0x9f8a5d };
         return null;
       };
@@ -5367,39 +5686,30 @@
         }
       });
 
-      textNodes.forEach(({node, text, rect, style}) => {
+      art.filter(node => node.closest('.rpg-hero-portrait')).forEach(paintArt);
+      meters.forEach(node => {
+        const track = readRect(node), fill = readRect(node.firstElementChild);
+        graphics.fillStyle(0x40271f).fillRect(track.x,track.y,track.width,track.height);
+        if (fill) graphics.fillStyle(node.classList.contains('rpg-foe-hp') ? 0xc58a67 : 0xb5bd7e)
+          .fillRect(fill.x,fill.y,Math.min(fill.width,track.width),fill.height);
+      });
+      textNodes.forEach(({node, rect}) => {
         const disabled = Boolean(node.closest('button:disabled,[aria-disabled="true"]'));
-        const classText = String(node.className?.baseVal || node.className || '');
-        const kicker = /overline|kicker|tell-mark|intent|rpg-vital-label|rpg-command-glyph|rpg-hero-resources/.test(classText);
-        const isFoe = Boolean(node.closest('.rpg-foe-nameplate') || node.closest('.rpg-enemy-tell'));
-        const color = disabled ? '#918c7c' : kicker ? '#d9bf82' : isFoe ? '#f0d7b5' : '#f0ead9';
-        const rectHeight = Math.max(10, rect.height);
-        const fontSize = Math.max(9, Math.min(36, (parseFloat(style.fontSize) || 12) * sy));
-        const label = this.add.text(rect.x, rect.y, text, {
-          fontFamily: style.fontFamily || 'Arial, sans-serif',
-          fontSize: fontSize + 'px',
-          fontStyle: Number.parseInt(style.fontWeight, 10) >= 600 ? 'bold' : 'normal',
-          color,
-          stroke: '#070a07',
-          strokeThickness: fontSize >= 16 ? 1 : 0.45,
-          align: style.textAlign === 'center' ? 'center' : style.textAlign === 'right' ? 'right' : 'left',
-          wordWrap: { width: Math.max(12, rect.width), useAdvancedWrap: true },
-          padding: { left: 1, right: 2, top: 1, bottom: 2 }
-        }).setOrigin(0, 0).setDepth(62);
-        label.setResolution?.(2);
-        label.setFixedSize?.(Math.max(12, rect.width), rectHeight);
-        this.nativeCombatUiObjects.push(label);
+        const label = this.createShellLabel(node,rect,disabled?'#a49e8e':'#f0ead9',sx,sy,62);
+        if (!label) throw new Error('Combat copy cannot fit: ' + node.className + ' ' + node.textContent.trim());
+        add(label);
       });
 
       this.nativeCombatUiTextNodes = textNodes.map(item => item.node);
       this.nativeCombatUiControls = controls.map(item => item.node);
       this.nativeCombatUiSignature = signature;
       this.nativeCombatUiActive = true;
+      this.nativeCombatUiFailure = '';
       document.body?.classList.add('legend-phaser-combat-ui-active');
       } catch (error) {
         // Never leave source labels transparent after a failed canvas paint.
-        this.clearNativeCombatUi();
-        console.warn('Phaser combat UI paint failed; leaving the accessible DOM battle visible.', error);
+        this.clearNativeCombatUi(true, false);
+        this.nativeCombatUiFailure = error.message;
       }
     }
 
@@ -6450,15 +6760,8 @@
       }
 
       if (isMarket) {
-        // Low-opacity cloth pennants frame the market stall without obscuring its art.
-        const cloth = greyfen ? [0x456c63, 0x9a7950, 0x526d72] : [0x71503b, 0x8a7140, 0x3f664c];
-        [0.29, 0.5, 0.71].forEach((u, i) => {
-          const canopy = this.add.rectangle(0, 0, size.width * 0.12, 19, cloth[i], 0.28);
-          canopy.setStrokeStyle(1, 0xc3a76b, 0.22);
-          this.addServiceDressingObject(canopy, u, 0.14, 4);
-          const tail = this.add.triangle(0, 0, -size.width * 0.035, -1, size.width * 0.035, -1, 0, 21, cloth[i], 0.23);
-          this.addServiceDressingObject(tail, u, 0.157, 4);
-        });
+        // Approved market artwork supplies the stalls and awnings. Geometric
+        // pennants looked like empty floating controls above the service screen.
         this.addServiceLantern(0.5, 0.22, warm);
       }
 
@@ -6603,6 +6906,9 @@
           onComplete: () => {
             this.syncNativeRoadSceneArt();
             this.syncNativeScreenArt();
+            // The prologue may have deferred its panels until this exact
+            // background became opaque. Resume that painter after handoff.
+            this.syncNativeOpeningUi(this.surface);
           }
         });
       }
@@ -6647,6 +6953,7 @@
         backgroundAlpha: Number(this.background?.alpha || 0)
       } : null;
       document.body?.classList.toggle('legend-phaser-road-scene-art-active', active);
+      this.roadScene?.sync();
       return active;
     }
 
@@ -6866,9 +7173,17 @@
     }
   }
 
+  function endPreload() {
+    if (IS_PROTOTYPE) return;
+    document.documentElement.classList.remove('legend-phaser-preloading');
+    const state = window.__legendBootSequenceV100;
+    if (state) { state.rendererLoading = false; state.resumeReveal?.(); }
+  }
+
   function startPhaser() {
     if (game) return;
     if (!window.Phaser) {
+      endPreload();
       console.warn('Phaser could not be loaded; keeping the available HTML game interface active.');
       try { window.sessionStorage.removeItem(ENGINE_SESSION_KEY); } catch (_) {}
       document.documentElement.classList.remove('engine-intro-active');
@@ -6934,6 +7249,8 @@
 
     const keepDomFallback = () => {
       if (startupFinalized) return;
+      endPreload();
+      game?.scene?.getScene?.('RealmScene')?.loadingUi?.destroy();
       startupFinalized = true;
       if (startupWatchdog) window.clearTimeout(startupWatchdog);
       startupWatchdog = null;
@@ -7059,6 +7376,14 @@
     root()?.addEventListener('pointerleave', () => {
       window.__legendRebootBridge?.lookAt?.(window.innerWidth / 2, window.innerHeight / 2);
     }, { passive: true });
+    let titleScrollFrame = null;
+    document.addEventListener('scroll', () => {
+      if (currentSurface !== 'title' || titleScrollFrame !== null) return;
+      titleScrollFrame = window.requestAnimationFrame(() => {
+        titleScrollFrame = null;
+        realmScene?.syncNativeTitleUi?.(currentSurface);
+      });
+    }, { capture: true, passive: true });
     window.addEventListener('resize', inferEnvironment, { passive: true });
   }
 
@@ -7067,6 +7392,7 @@
     mode: IS_PROTOTYPE ? 'preview' : 'production',
     get ready() { return engineReady; },
     get engine() { return game; },
+    loadingSnapshot: () => game?.scene?.getScene?.('RealmScene')?.loadingUi?.snapshot?.() || null,
     snapshot: () => realmScene ? window.__legendRebootBridge?.snapshot?.() || null : null,
     setEnvironment: (name, immediate = false) => setEnvironment(name, immediate),
     pulse: kind => realmScene?.pulse?.(kind),

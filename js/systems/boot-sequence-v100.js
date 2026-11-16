@@ -12,6 +12,8 @@
     if (element) element.textContent = value;
   };
   function reveal() {
+    if (state.rendererLoading) { state.revealPending = true; return; }
+    state.revealPending = false;
     screen.classList.add('is-closing');
     window.setTimeout(() => {
       screen.hidden = true;
@@ -20,6 +22,7 @@
       state.durationMs = state.finishedAt - state.startedAt;
     }, state.reducedMotion?.() ? 30 : 620);
   }
+  state.resumeReveal = () => { if (state.revealPending) reveal(); };
   function waitForOpeningArt() {
     const imgs = Array.from(document.querySelectorAll('#root .v120-title-backdrop, #root .v120-legend-logo'));
     const pending = imgs.filter(img => !img.complete);
@@ -68,6 +71,8 @@
 
     if (!systemsReady) {
       paint(100, 'Opening recovery view', 'One or more game systems need attention');
+    } else if (state.rendererLoading) {
+      paint(100, 'World systems checked', 'Loading world artwork');
     } else {
       paint(100, 'The realm is ready', saveFound ? 'Traveler record located' : 'Ready for a new journey');
     }

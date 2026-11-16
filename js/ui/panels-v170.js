@@ -123,6 +123,10 @@
 
   function objectiveFor(player, root, context) {
     const sceneObjective = root?.querySelector('.ash100-route-strip-copy strong, .ash100-departure-card h2, .exp150-title-group h1');
+    if (context?.kind === 'storehouse') return root?.querySelector('.gss170-scene-copy h1')?.textContent?.trim() || 'The Silted Storehouse';
+    if (context?.kind === 'combat' && ['marsh','storehouse'].includes(context.journal)) return root?.querySelector('.exp100-intent')?.textContent?.trim() || 'Choose your next command';
+    if (context?.kind === 'combat-results' && context.journal === 'marsh') return root?.querySelector('.v152-results-heading h1')?.textContent?.trim() || 'Review the encounter report';
+    if (context?.kind === 'marsh') return context.report ? 'Review the Marsh report and return to Greyfen' : root?.querySelector('.gfm160-content h2,.gfm160-content h3')?.textContent?.trim() || 'Record the Waterline Gauge';
     if (context?.kind === 'expedition-results') return 'Field report secured — choose a return or handoff';
     if (context?.kind === 'road') {
       const state = player?.flags?.roadExpeditionV100 || {};
@@ -170,11 +174,19 @@
     const healthPercent = pct(hp, maxHp);
     const objective = esc(objectiveFor(player, root, context));
     const quests = Array.isArray(player?.questLog) ? player.questLog.slice(0, 3) : [];
-    const roadJournal = player?.flags?.roadFieldJournalV150 || {};
+    const marsh = context?.kind === 'marsh' || context?.journal === 'marsh';
+    const storehouse = context?.kind === 'storehouse' || context?.journal === 'storehouse';
+    const locked = ['combat','combat-results'].includes(context?.kind);
+    const run = player?.flags?.greyfenStorehouseV170 || {};
+    const records = Array.isArray(run.records) ? run.records : [];
+    const storehouseNotes = storehouse ? '<section class="lws-section" id="lws-storehouse-notes" tabindex="-1" aria-label="Storehouse records"><div class="lws-section-title"><span>Field journal</span><span>Storehouse notes</span></div><ul class="lws-small-list"><li><span>Attempts</span><strong>' + safeNumber(run.attempts) + '</strong></li><li><span>Cleared</span><strong>' + safeNumber(run.clears) + '</strong></li></ul>' +
+      (records.length ? records.map(record => '<div class="lws-quest-item"><strong>' + esc(record?.title || 'Saved record') + '</strong><p>' + esc(record?.note || '') + '</p></div>').join('') : '<p class="lws-note">No Storehouse observations recorded yet.</p>') +
+      (run.lastReport ? '<div class="lws-quest-item"><strong>Last field report</strong><p>' + esc(run.lastReport) + '</p></div>' : '') + '</section>' : '';
+    const roadJournal = (marsh ? player?.flags?.greyfenMarshFieldJournalV160 : player?.flags?.roadFieldJournalV150) || {};
     const visits = Array.isArray(roadJournal.visitedPlaces) ? roadJournal.visitedPlaces.length : 0;
     const discoveries = Array.isArray(roadJournal.discoveries) ? roadJournal.discoveries.length : 0;
-    const routes = Array.isArray(roadJournal.routes) ? roadJournal.routes.length : 0;
-    const reports = Array.isArray(roadJournal.campReports) ? roadJournal.campReports.length : 0;
+    const routes = marsh ? new Set([...(roadJournal.trips || []).map(trip => trip.route), ({raised:'Raised Posts',reeds:'Reed Bed'})[player?.flags?.greyfenMarshExpeditionV160?.routeChoice]].filter(route => route && route !== 'Route not chosen')).size : Array.isArray(roadJournal.routes) ? roadJournal.routes.length : 0;
+    const reports = marsh ? (roadJournal.trips || []).length : Array.isArray(roadJournal.campReports) ? roadJournal.campReports.length : 0;
     const day = Math.max(1, safeNumber(player?.day || 1));
     const inventory = player?.inventory || {};
     const roadTokens = Math.max(0, safeNumber(inventory.roadToken));
@@ -194,7 +206,7 @@
         '<section class="lws-section"><div class="lws-section-title"><span>Vitality</span><span>' + healthPercent + '%</span></div><div class="lws-health-line"><span>Health</span><strong>' + hp + ' / ' + maxHp + '</strong></div><div class="lws-meter" aria-label="Health ' + hp + ' of ' + maxHp + '"><span style="width:' + healthPercent + '%"></span></div><ul class="lws-small-list" style="margin-top:9px"><li><span>Gold</span><strong>' + Math.max(0, safeNumber(player?.gold)) + 'g</strong></li><li><span>Rations</span><strong>' + Math.max(0, safeNumber(inventory.food)) + '</strong></li><li><span>Healing potions</span><strong>' + Math.max(0, safeNumber(inventory.potion)) + '</strong></li></ul></section>' +
         '<section class="lws-section"><div class="lws-section-title"><span>' + (context?.kind === 'road' ? 'The road ahead' : 'Current lead') + '</span><span aria-hidden="true">✦</span></div><div class="lws-quest-item"><strong>' + objective + '</strong><p>' + (context?.kind === 'road' ? 'Every trail, find, and camp report leaves a mark in your field journal.' : 'Keep this lead close as you move through the borderlands.') + '</p></div></section>' +
         '<section class="lws-section"><div class="lws-section-title"><span>Quest log</span><span>' + quests.length + '</span></div><ul class="lws-small-list" style="display:block">' + questMarkup + '</ul></section>' +
-        '<section class="lws-section"><div class="lws-section-title"><span>Field journal</span><span>Road notes</span></div><ul class="lws-small-list"><li><span>Places visited</span><strong>' + visits + '</strong></li><li><span>Discoveries</span><strong>' + discoveries + '</strong></li><li><span>Routes recorded</span><strong>' + routes + '</strong></li><li><span>Camp reports</span><strong>' + reports + '</strong></li></ul><p class="lws-note" style="margin-top:8px">Landmarks, discoveries, and camp reports gathered beyond the gate.</p><button class="lws-btn quiet" type="button" data-world-action="journal" style="margin-top:9px"><span class="lws-btn-icon runway-icon runway-icon-journal" aria-hidden="true"></span><span class="lws-btn-copy"><strong>Open journal</strong><small>Read your gathered notes</small></span></button></section>' +
+        (storehouse ? storehouseNotes : '<section class="lws-section"><div class="lws-section-title"><span>Field journal</span><span>' + (marsh ? 'Marsh notes' : 'Road notes') + '</span></div><ul class="lws-small-list"><li><span>Places visited</span><strong>' + visits + '</strong></li><li><span>Discoveries</span><strong>' + discoveries + '</strong></li><li><span>Routes recorded</span><strong>' + routes + '</strong></li><li><span>' + (marsh ? 'Outing reports' : 'Camp reports') + '</span><strong>' + reports + '</strong></li></ul><p class="lws-note" style="margin-top:8px">' + (marsh ? 'Observations and reports saved from the Marsh Path.' : 'Landmarks, discoveries, and camp reports gathered beyond the gate.') + '</p><button class="lws-btn quiet" type="button" data-world-action="journal"' + (locked ? ' disabled aria-disabled="true"' : '') + ' style="margin-top:9px"><span class="lws-btn-icon runway-icon runway-icon-journal" aria-hidden="true"></span><span class="lws-btn-copy"><strong>Open journal</strong><small>' + (locked ? 'Available after the encounter' : 'Read your gathered notes') + '</small></span></button></section>') +
       '</div>';
   }
 
@@ -234,7 +246,7 @@
   }
 
   function renderRightPanel(player, context, root) {
-    const heading = esc(context?.kind === 'road' ? 'The Old Road'
+    const heading = esc(context?.kind === 'marsh' ? (context.report ? 'Marsh Field Report' : 'The Marsh Path') : context?.kind === 'road' ? 'The Old Road'
       : context?.kind === 'town' ? 'Landmarks & Services'
       : context?.kind === 'combat' ? 'The Battlefield'
       : context?.kind === 'combat-results' ? 'After the Fight'
@@ -243,7 +255,20 @@
       : (context?.sublocation || 'Local Services'));
     let intro = 'Choose your next step.';
     let actions = '';
-    if (context?.kind === 'road') {
+    if (context?.kind === 'storehouse') {
+      const activeAttempt = !!player?.flags?.greyfenStorehouseV170?.active;
+      intro = activeAttempt ? 'Use the choices in this room. Back to town keeps the attempt resumable; the room’s return action ends it.' : 'Use the choices in this room or return to Greyfen.';
+      actions = Array.from(root?.querySelectorAll('.gss170-page button[id]') || []).map(button => {
+        const title = button.querySelector('strong')?.textContent || button.textContent;
+        const detail = button.querySelector('span')?.textContent || '';
+        return '<button class="lws-btn" type="button" data-world-action="storehouse-' + esc(button.id) + '"' + (button.disabled || button.getAttribute('aria-disabled') === 'true' ? ' disabled aria-disabled="true"' : '') + '>' + rasterIcon('milestone') + '<span class="lws-btn-copy"><strong>' + esc(title) + '</strong><small>' + esc(detail) + '</small></span></button>';
+      }).join('') + '<button class="lws-btn quiet" type="button" data-world-action="world">' + rasterIcon('inn') + '<span class="lws-btn-copy"><strong>Back to town</strong><small>' + (activeAttempt ? 'Keep this attempt resumable' : 'Return to the town streets') + '</small></span></button>';
+    } else if (context?.kind === 'marsh') {
+      intro = context.report ? 'Your findings and rewards are saved. Review the report before returning.' : 'Use the route choices in the scene. Your field map and saved notes remain close at hand.';
+      actions = '<button class="lws-btn" type="button" data-world-action="map">' + rasterIcon('compass') + '<span class="lws-btn-copy"><strong>Marsh field map</strong><small>Review places and route knowledge</small></span></button>' +
+        '<button class="lws-btn" type="button" data-world-action="journal">' + rasterIcon('journal') + '<span class="lws-btn-copy"><strong>Marsh field notes</strong><small>Read your saved observations</small></span></button>' +
+        '<button class="lws-btn primary" type="button" data-world-action="world">' + rasterIcon('road') + '<span class="lws-btn-copy"><strong>' + (context.report ? 'Return to Greyfen' : 'End outing with a report') + '</strong><small>' + (context.report ? 'Recover and prepare in town' : 'Keep supplies and discoveries already secured') + '</small></span></button>';
+    } else if (context?.kind === 'road') {
       intro = 'Watch the ground, follow the markers, or make camp before the dark closes in.';
       const roadIconByAction = Object.freeze({
         'continue-road': 'road',
@@ -322,7 +347,7 @@
   function renderBottomBar(context) {
     const active = context?.kind || 'town';
     const lockNavigation = active === 'combat' || active === 'combat-results';
-    const worldTitle = active === 'road' ? 'Town' : active === 'dungeon' ? 'Retreat' : active === 'expedition-results' ? 'Return' : active === 'combat' || active === 'combat-results' ? 'Encounter' : 'World';
+    const worldTitle = active === 'storehouse' ? 'Back' : active === 'marsh' ? (context.report ? 'Return' : 'Report') : active === 'road' ? 'Town' : active === 'dungeon' ? 'Retreat' : active === 'expedition-results' ? 'Return' : active === 'combat' || active === 'combat-results' ? 'Encounter' : 'World';
     const bottomIconByAction = Object.freeze({
       world: 'inn',
       inventory: 'traveler',

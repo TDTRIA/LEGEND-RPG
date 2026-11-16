@@ -1,9 +1,9 @@
 const { test, expect } = require('@playwright/test');
 
 async function seedGreyfen(page, options = {}) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 30000 });
-  await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }' });
   await page.evaluate(options => {
     window.LegendStorage.deleteSaves();
     const player = {

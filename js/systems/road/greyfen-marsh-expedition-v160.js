@@ -153,12 +153,23 @@
     if (!s.active) beginNewTrip(pl);
     return render();
   }
+  let closeFieldMap = null;
+  function focusHeading(host) {
+    const heading = host?.querySelector('h1');
+    if (!heading || document.getElementById('legendLevelUpOverlay')) return;
+    host.scrollTop = 0;
+    window.scrollTo(0, 0);
+    heading.tabIndex = -1;
+    heading.focus({ preventScroll: true });
+  }
   function renderNotice(message) {
+    closeFieldMap?.(false);
     const host = root();
     if (!host) return;
     host.innerHTML =
       '<main class="gfm160-page" aria-label="Greyfen Marsh Path notice"><section class="gfm160-panel"><span class="gfm160-kicker">GREYFEN · FIELD NOTICE</span><h1>Marsh Path</h1><p>' + esc(message) + '</p><button class="gfm160-action is-primary" id="gfm160NoticeReturn" type="button">Return to Greyfen</button></section></main>';
     document.getElementById('gfm160NoticeReturn')?.addEventListener('click', returnToGreyfen);
+    focusHeading(host);
   }
   function routeChoiceMarkup(pl, s) {
     if (s.routeChoice) {
@@ -382,13 +393,14 @@
     return renderResult(pl, report);
   }
   function renderResult(pl, report) {
+    closeFieldMap?.(false);
     const host = root(); if (!host) return;
     const art = A().locations?.greyfenMarshWalkway || A().locations?.greyfenMain || '';
     const discoveries = (report.discoveries || []).length
       ? '<ul>' + report.discoveries.map(name => '<li>' + esc(name) + '</li>').join('') + '</ul>'
       : '<p>No landmark was recorded on this outing.</p>';
     host.innerHTML =
-      '<main class="gfm160-page gfm160-results" aria-label="Marsh expedition results">' +
+      '<main class="gfm160-page gfm160-results" data-marsh-state="report" aria-label="Marsh expedition results">' +
         '<div class="gfm160-results-art">' + (art ? '<img src="' + esc(art) + '" alt="" aria-hidden="true">' : '') + '<div></div></div>' +
         '<section class="gfm160-results-panel">' +
           '<span class="gfm160-kicker">GREYFEN · FIELD REPORT · TRIP ' + Number(report.trip || 1) + '</span>' +
@@ -403,10 +415,12 @@
             '<div><span>EXPERIENCE</span><strong>+' + Number(report.xpGained || 0) + ' XP</strong></div>' +
           '</div>' +
           '<section class="gfm160-report-findings" aria-label="Field discoveries"><h2>Recorded Findings</h2>' + discoveries + '<p><strong>Route supply:</strong> ' + esc(report.items || 'None') + '</p><p><strong>Optional salvage:</strong> ' + esc(report.optionalSalvage || 'None') + '</p><p><strong>Shelter:</strong> ' + (report.shelterRested ? 'Rested at Mossbarrow Shelter' : 'No shelter rest recorded') + '</p><p><strong>Waterline Gauge:</strong> ' + (report.gaugeInspected ? 'Reading saved' : 'Not reached or not inspected') + '</p></section>' +
-          '<div class="gfm160-report-actions"><button class="gfm160-action is-primary" id="gfm160ResultReturn" data-legend-scene-transition="Returning to Greyfen" type="button">Return to Greyfen <span aria-hidden="true">→</span></button><button class="gfm160-action" id="gfm160ResultAgain" type="button">Plan another outing</button></div>' +
-        '</section></main>';
+          '<div class="gfm160-report-actions"><button class="gfm160-action is-primary" id="gfm160ResultReturn" data-legend-scene-transition="Returning to Greyfen" type="button">Return to Greyfen <span aria-hidden="true">→</span></button><button class="gfm160-action" id="gfm160ResultAgain" type="button">Plan another outing</button><button class="gfm160-action" id="gfm160OpenMap" type="button">Field Map</button><button class="gfm160-action" id="gfm160OpenJournal" type="button">Field Notes</button></div>' +
+        '</section>' + mapMarkup(pl, ensure(pl)) + '</main>';
+    bindFieldMap(host);
     document.getElementById('gfm160ResultReturn')?.addEventListener('click', returnToGreyfen);
     document.getElementById('gfm160ResultAgain')?.addEventListener('click', () => { sNotAvailable(); });
+    focusHeading(host);
   }
   function sNotAvailable() {
     // Keep repeated outings routed through the town so players can rest, trade or report first.
@@ -655,6 +669,7 @@
     return window.LegendRoadCombatV100?.start(context, enemy, 'A pale Reed Wisp circles the Flooded Sluice. Read its intent before committing to a strike.');
   }
   function render(note = '') {
+    closeFieldMap?.(false);
     const pl = player(); if (!pl) return;
     if (String(pl.currentRegion || 'Ashmere') !== 'Greyfen') return renderNotice('The Marsh Path can only be entered from Greyfen.');
     const s = ensure(pl);
@@ -716,15 +731,21 @@
                 : s.gaugeInspected
                   ? 'The latest notch records a height. It does not tell you who cut it or what they intended.'
                   : stop.description;
+    const state = activeFerry ? (s.ferryRaiderDefeated || s.ferryRaiderAvoided ? 'ferry-cleared' : 'ferry')
+      : activeStorehouse ? 'storehouse' : Number(s.stage) === 0 ? 'landing'
+      : Number(s.stage) === 1 ? (!s.routeChoice ? 'fork' : s.routeChoice === 'raised' ? 'raised' : has(s.visitedNodeIds, 'fallen-ferry') ? 'reeds-return' : 'reeds')
+      : Number(s.stage) === 2 ? (s.sluiceCleared || s.encounterAvoided ? 'sluice-crossed' : 'sluice')
+      : Number(s.stage) === 3 ? (has(s.visitedNodeIds, 'silted-storehouse') ? 'shelter-return' : 'shelter')
+      : s.gaugeInspected ? 'gauge-recorded' : 'gauge';
     const map = mapMarkup(pl, s);
     const host = root(); if (!host) return;
     host.innerHTML =
-      '<main class="gfm160-page" aria-label="Greyfen Marsh Path expedition">' +
+      '<main class="gfm160-page" data-marsh-state="' + state + '" aria-label="Greyfen Marsh Path expedition">' +
         '<section class="gfm160-scene">' +
           '<img class="gfm160-scene-art" src="' + esc(art) + '" alt="" aria-hidden="true" onerror="this.style.display=\'none\'">' +
           '<div class="gfm160-scene-shade"></div>' +
           '<div class="gfm160-scene-copy"><span class="gfm160-kicker">GREYFEN · TRIP ' + Number(s.trips || 1) + ' · MARSH EXPEDITION</span><h1>' + esc(stop.name) + '</h1><p>' + esc(contentText) + '</p></div>' +
-          '<div class="gfm160-scene-toolbar"><button class="gfm160-map-button" id="gfm160OpenMap" type="button">Field Map <span>' + Number((s.discoveredNodeIds || []).length) + ' known</span></button><button class="gfm160-map-button" id="gfm160EarlyExit" type="button">Return to Greyfen</button></div>' +
+          '<div class="gfm160-scene-toolbar"><button class="gfm160-map-button" id="gfm160OpenMap" type="button">Field Map <span>' + Number((s.discoveredNodeIds || []).length) + ' known</span></button><button class="gfm160-map-button" id="gfm160OpenJournal" type="button">Field Notes</button><button class="gfm160-map-button" id="gfm160EarlyExit" type="button">Return to Greyfen</button></div>' +
         '</section>' +
         '<section class="gfm160-status" aria-label="Traveler and expedition status">' +
           '<div><span>TRAVELER</span><strong>' + esc(pl.username || 'Traveler') + ' · Lv ' + Number(pl.level || 1) + '</strong></div>' +
@@ -732,16 +753,18 @@
           '<div><span>ROAD PRESSURE</span><strong>' + Number(s.pressure || 0) + '</strong><i><b style="width:' + clamp(Number(s.pressure || 0), 0, 100) + '%"></b></i></div>' +
           '<div><span>FIELD TIME</span><strong>' + Number(s.hoursElapsed || 0) + ' hours · Day ' + Number(pl.day || 1) + '</strong></div>' +
         '</section>' +
+        (note ? '<p class="gfm160-feedback" role="status">' + esc(note) + '</p>' : '') +
         '<section class="gfm160-content">' + actions +
           '<aside class="gfm160-field-note"><span class="gfm160-kicker">FIELD JOURNAL</span><strong>' + (s.routeChoice ? esc(s.routeChoice === 'raised' ? 'Raised Posts' : 'Reed Bed') : 'No route chosen yet') + '</strong><p>' + (s.gaugeInspected ? 'Waterline Gauge reading saved.' : s.sluiceCleared ? 'The sluice encounter is recorded.' : s.encounterAvoided ? 'The encounter was avoided at a disclosed pressure cost.' : 'Route evidence and optional salvage are saved independently of the mandatory survey.') + '</p></aside>' +
         '</section>' + map +
       '</main>';
     bindActions();
+    focusHeading(host);
     return true;
   }
   function mapMarkup(pl, s) {
     const graph = content(), nodes = graph.stops || [], edges = graph.edges || [];
-    const current = currentNodeId(s), visited = new Set(s.visitedNodeIds || []), discovered = new Set(s.discoveredNodeIds || []);
+    const current = s.active ? currentNodeId(s) : 'greyfen-landing', visited = new Set(s.visitedNodeIds || []), discovered = new Set(s.discoveredNodeIds || []);
     const route = s.routeChoice;
     const reachable = new Set(edges.filter(edge => edge.from === current && (!edge.route || !route || edge.route === route)).map(edge => edge.to));
     const cards = nodes.map(node => {
@@ -751,10 +774,70 @@
       const isDiscovered = discovered.has(node.id);
       const isReachable = reachable.has(node.id);
       const status = offRoute ? 'Route not taken' : isCurrent ? 'You are here' : isVisited ? 'Visited this trip' : isDiscovered ? 'Discovered, not visited' : isReachable ? (node.optional ? 'Optional detour available' : 'Reachable next') : 'Uncharted';
-      return '<article class="gfm160-map-node' + (isCurrent ? ' is-current' : isVisited ? ' is-visited' : isReachable ? ' is-reachable' : '') + (node.optional ? ' is-optional' : '') + '" role="listitem" aria-label="' + esc(node.name + ', ' + status) + '"><div><strong>' + esc(node.name) + (node.optional ? ' <small>OPTIONAL</small>' : '') + '</strong><span>' + esc(node.type || 'Marsh stop') + '</span></div><em>' + esc(status) + '</em></article>';
+      return '<article class="gfm160-map-node' + (isCurrent ? ' is-current' : isVisited ? ' is-visited' : isReachable ? ' is-reachable' : '') + (node.optional ? ' is-optional' : '') + '" role="listitem" data-marsh-stop="' + esc(node.id) + '" aria-label="' + esc(node.name + ', ' + status) + '"><div><strong>' + esc(node.name) + (node.optional ? ' <small>OPTIONAL</small>' : '') + '</strong><span>' + esc(node.type || 'Marsh stop') + '</span></div><em>' + esc(status) + '</em></article>';
     }).join('');
-    return '<div class="gfm160-map-overlay" id="gfm160MapOverlay" hidden><section class="gfm160-map-dialog" role="dialog" aria-modal="true" aria-label="Greyfen Marsh field map"><header><div><span class="gfm160-kicker">FIELD MAP · TRIP ' + Number(s.trips || 1) + '</span><h2>The Marsh Path</h2></div><button type="button" id="gfm160CloseMap" aria-label="Close field map">×</button></header><p>Text labels show the state of each place, so route knowledge is not conveyed by color alone.</p><div class="gfm160-map-list" role="list">' + cards + '</div><footer><span>' + visited.size + ' places visited · ' + discovered.size + ' places discovered</span><button type="button" id="gfm160CloseMapFooter">Return to the path</button></footer></section></div>';
+    const records = (journalFor(pl).discoveries || []);
+    const notes = records.length ? records.map(entry => '<article class="gfm160-journal-note"><span>TRIP ' + Number(entry.trip || 1) + ' · ' + esc(entry.place || 'Marsh Path') + '</span><h3>' + esc(entry.name || entry.place || 'Field observation') + '</h3><p>' + esc(entry.note || '') + '</p></article>').join('') : '<p class="gfm160-journal-empty">No field observations have been recorded yet.</p>';
+    return '<div class="gfm160-map-overlay" id="gfm160MapOverlay" data-map-view="map" data-note-count="' + records.length + '" hidden><section class="gfm160-map-dialog" role="dialog" aria-modal="true" aria-label="Greyfen Marsh field map"><header><div><span class="gfm160-kicker">FIELD RECORD · TRIP ' + Number(s.trips || 1) + '</span><h2>The Marsh Path</h2></div><button type="button" id="gfm160CloseMap" aria-label="Close field map">×</button></header><nav class="gfm160-map-tabs" aria-label="Field record views"><button id="gfm160MapPlaces" type="button" aria-pressed="true">Places</button><button id="gfm160MapNotes" type="button" aria-pressed="false">Field notes</button></nav><div class="gfm160-map-places"><p>Text labels show the state of each place, so route knowledge is not conveyed by color alone.</p><div class="gfm160-map-list" role="list">' + cards + '</div></div><div class="gfm160-map-notes" hidden>' + notes + '</div><footer><span>' + visited.size + ' places visited · ' + discovered.size + ' places discovered</span><button type="button" id="gfm160CloseMapFooter">' + (s.active ? 'Return to the path' : 'Return to the report') + '</button></footer></section></div>';
   }
+  function bindFieldMap(host) {
+    const panel = host.querySelector('#gfm160MapOverlay');
+    if (!panel) return;
+    const dialog = panel.querySelector('.gfm160-map-dialog');
+    const setView = view => {
+      panel.dataset.mapView = view;
+      panel.querySelector('.gfm160-map-places').hidden = view !== 'map';
+      panel.querySelector('.gfm160-map-notes').hidden = view !== 'journal';
+      panel.querySelector('#gfm160MapPlaces').setAttribute('aria-pressed', String(view === 'map'));
+      panel.querySelector('#gfm160MapNotes').setAttribute('aria-pressed', String(view === 'journal'));
+      dialog.setAttribute('aria-label', view === 'map' ? 'Greyfen Marsh field map' : 'Greyfen Marsh field notes');
+      dialog.scrollTop = 0;
+    };
+    const owner = panel.parentElement;
+    const open = (view, opener) => {
+      if (closeFieldMap) return;
+      const previous = document.activeElement?.closest('#legend-world-shell-root') ? document.activeElement : opener;
+      const shellArea = previous?.closest('#lws-panel-left,#lws-panel-right,.lws-bottom-bar');
+      const shellSelector = shellArea && previous.dataset.worldAction ? (shellArea.id ? '#' + shellArea.id : '.lws-bottom-bar') + ' [data-world-action="' + previous.dataset.worldAction + '"]' : '';
+      const background = [...document.body.children].filter(n => !n.matches('script,style,link'));
+      const inertBefore = background.map(n => [n,n.inert]);
+      document.body.append(panel);
+      background.forEach(n => { n.inert = true; });
+      panel.hidden = false;
+      document.body.classList.add('legend-marsh-record-open');
+      setView(view);
+      const observer = new MutationObserver(() => { if (!owner.isConnected) closeFieldMap?.(false); });
+      observer.observe(host,{childList:true,subtree:true});
+      closeFieldMap = (restore = true) => {
+        observer.disconnect();
+        panel.hidden = true;
+        if (owner.isConnected) owner.append(panel); else panel.remove();
+        inertBefore.forEach(([n,inert]) => { n.inert = inert; });
+        document.body.classList.remove('legend-marsh-record-open');
+        closeFieldMap = null;
+        if (restore) {
+          const target = previous?.isConnected ? previous : document.querySelector(shellSelector || '#gfm160OpenMap');
+          target?.focus({preventScroll:true});
+        }
+      };
+      panel.querySelector('#gfm160CloseMap').focus({preventScroll:true});
+    };
+    host.querySelector('#gfm160OpenMap')?.addEventListener('click', event => open('map', event.currentTarget));
+    host.querySelector('#gfm160OpenJournal')?.addEventListener('click', event => open('journal', event.currentTarget));
+    panel.querySelector('#gfm160MapPlaces').addEventListener('click', () => setView('map'));
+    panel.querySelector('#gfm160MapNotes').addEventListener('click', () => setView('journal'));
+    panel.querySelector('#gfm160CloseMap').addEventListener('click', () => closeFieldMap?.());
+    panel.querySelector('#gfm160CloseMapFooter').addEventListener('click', () => closeFieldMap?.());
+    panel.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeFieldMap?.(); }
+      if (event.key === 'Tab') {
+        const first = panel.querySelector('#gfm160CloseMap'), last = panel.querySelector('#gfm160CloseMapFooter');
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    });
+  }
+
   function bindActions() {
     document.getElementById('gfm160Begin')?.addEventListener('click', () => {
       const pl = player(); if (!pl) return;
@@ -782,13 +865,7 @@
     document.getElementById('gfm160Complete')?.addEventListener('click', () => settle(true));
     document.getElementById('gfm160Exit')?.addEventListener('click', () => settle(false));
     document.getElementById('gfm160EarlyExit')?.addEventListener('click', () => settle(false));
-    document.getElementById('gfm160OpenMap')?.addEventListener('click', () => {
-      const panel = document.getElementById('gfm160MapOverlay');
-      if (panel) panel.hidden = false;
-      document.getElementById('gfm160CloseMap')?.focus({ preventScroll: true });
-    });
-    document.getElementById('gfm160CloseMap')?.addEventListener('click', () => { const panel = document.getElementById('gfm160MapOverlay'); if (panel) panel.hidden = true; });
-    document.getElementById('gfm160CloseMapFooter')?.addEventListener('click', () => { const panel = document.getElementById('gfm160MapOverlay'); if (panel) panel.hidden = true; });
+    bindFieldMap(root());
   }
   window.LegendGreyfenMarshV160 = Object.freeze({ start, render, settle });
 })();

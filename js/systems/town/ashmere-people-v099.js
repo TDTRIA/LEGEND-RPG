@@ -7,6 +7,18 @@
     if (!context || typeof context.getPlayer !== 'function' ||
         typeof context.screen !== 'function') return;
 
+    const result = renderView(context, view, id);
+    const root = document.getElementById('root');
+    const heading = root?.querySelector('.ash099-head h1');
+    if (heading) {
+      heading.tabIndex = -1;
+      heading.focus({ preventScroll: true });
+      root.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+    return result;
+  }
+
+  function renderView(context, view, id) {
     if (view === 'npc') {
       const dialogue = window.LegendAshmereNpcDialogueV099;
       if (dialogue?.render) return dialogue.render(context, id);

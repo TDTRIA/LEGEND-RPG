@@ -36,13 +36,17 @@
     };
 function render(pl, enemy, note = '', w, a, technique) {
  if (!pl) return;
+ const entering=!document.querySelector('#root .rpg-battle');
+ const focusedControl=document.activeElement?.closest('.rpg-battle button')?.id;
  const intentText=enemy.staggered?'Staggered · its guard is open. Strike now for bonus damage.':enemy.snared?'Snared · its next blow is weakened':enemy.intent==='heavy'?'Heavy wind-up · GUARD or disrupt it':enemy.intent==='guardbreak'?'Guard-break · strike first or use ACT':'Quick strike · GUARD softens the hit';
  const foeIntentClass=enemy.staggered?'staggered':enemy.snared?'snared':enemy.intent==='heavy'?'heavy':enemy.intent==='guardbreak'?'guardbreak':'attack';
  const foeIntentLabel=foeIntentClass==='staggered'?'STAGGERED':foeIntentClass==='heavy'?'HEAVY WIND-UP':foeIntentClass==='guardbreak'?'GUARD BREAK':foeIntentClass==='snared'?'SNARED':'OPPONENT';
  const stableEnemies=A().enemies||{},legacyArt=A().byName?.(enemy.name)||'',enemyName=String(enemy.name||'').toLowerCase();
  const location=String(encounterLocation(pl,enemy)||'').toLowerCase();
- const arenaKey=enemy.greyfenMarshV160||location.includes('greyfen')?'greyfen':enemy.dungeonV100||location.includes('cellar')?'cellar':'road';
- const art=enemy.art||(enemyName.includes('wolf')?stableEnemies.blackrootWolf:enemyName.includes('goblin')?stableEnemies.roadGoblin:enemyName.includes('wisp')?stableEnemies.lanternWisp:enemyName.includes('sentinel')?stableEnemies.mireboundSentinel:enemyName.includes('bandit')?A().classes?.Thief:enemyName.includes('raider')?A().classes?.Ranger:'')||legacyArt;
+ const arenaKey=enemy.greyfenStorehouseV170||enemy.greyfenMarshV160||location.includes('greyfen')?'greyfen':enemy.dungeonV100||location.includes('cellar')?'cellar':'road';
+ const journalContext=enemy.greyfenStorehouseV170?'storehouse':arenaKey==='greyfen'?'marsh':'road';
+ const arenaArt={road:'assets/generated/locations/old-road-south-fork.webp',greyfen:'assets/generated/locations/greyfen-marsh-walkway.webp',cellar:'assets/generated/locations/bell-cellar-undercroft.webp'}[arenaKey];
+ const art=enemy.art||(enemyName.includes('wolf')?stableEnemies.blackrootWolf:enemyName.includes('goblin')?stableEnemies.roadGoblin:enemyName.includes('wisp')?stableEnemies.lanternWisp:(enemyName.includes('mirebound')||enemyName.includes('sentinel'))?stableEnemies.mireboundSentinel:enemyName.includes('bandit')?A().classes?.Thief:enemyName.includes('raider')?A().classes?.Ranger:'')||legacyArt;
  const battleLog=(Array.isArray(enemy.combatLog)?enemy.combatLog:[]).slice(-4);
  const heroArt=A().travelerPortrait?.(pl)||A().classes?.[pl.className]||'',health=hpPct(pl);
  const playerHit=/hits you for|blow|damage taken/i.test(note),foeHit=/lands for|attack lands|Heavy Strike lands|Rune Bolt lands|Cleave lands|Trap Shot lands|Swipe lands/i.test(note);
@@ -50,16 +54,16 @@ function render(pl, enemy, note = '', w, a, technique) {
  const openingEncounter=enemy.openingEncounterV140===true;
  const disabledForOpening=openingEncounter?' disabled aria-disabled="true"':'';
  
- shell('<section class="exp100-panel exp100-combat rpg-battle rpg-intent-'+foeIntentClass+(openingEncounter?' rpg-opening-awakening':'')+' '+(playerHit?'rpg-player-hit ':'')+(foeHit?'rpg-foe-hit':'')+'" aria-label="Turn-based battle">'+
-  '<div class="rpg-battle-topline"><div><span class="rpg-overline">'+esc(encounterLocation(pl, enemy) || 'THE OLD ROAD')+'</span><strong>ENCOUNTER <i> / </i> TURN '+turnNumber+'</strong></div><button class="rpg-sound-toggle" id="battleSound" type="button" aria-label="Toggle battle music and sound">'+(soundOn()?'♫ SOUND ON':'♫ SOUND OFF')+'</button></div>'+
-  '<div class="rpg-battlefield" data-arena="'+arenaKey+'"><div class="rpg-battle-moon" aria-hidden="true"></div><div class="rpg-battle-orbit" aria-hidden="true"></div><div class="rpg-ground-haze" aria-hidden="true"></div>'+
+ shell('<section data-encounter-context="'+journalContext+'" class="exp100-panel exp100-combat rpg-battle rpg-intent-'+foeIntentClass+(openingEncounter?' rpg-opening-awakening':'')+' '+(playerHit?'rpg-player-hit ':'')+(foeHit?'rpg-foe-hit':'')+'" aria-label="Turn-based battle">'+
+  '<div class="rpg-battle-topline"><div><span class="rpg-overline">'+esc(encounterLocation(pl, enemy) || 'THE OLD ROAD')+'</span><strong><span>ENCOUNTER</span> <i> / </i> <span>TURN '+turnNumber+'</span></strong></div><button class="rpg-sound-toggle" id="battleSound" type="button" aria-label="Game sound" aria-pressed="'+soundOn()+'">'+(soundOn()?'♫ SOUND ON':'♫ SOUND OFF')+'</button></div>'+
+  '<div class="rpg-battlefield" data-arena="'+arenaKey+'"><img class="rpg-arena-art" src="'+arenaArt+'" alt="" aria-hidden="true"><div class="rpg-battle-moon" aria-hidden="true"></div><div class="rpg-battle-orbit" aria-hidden="true"></div><div class="rpg-ground-haze" aria-hidden="true"></div>'+
    '<div class="rpg-hero-side" aria-label="Traveler on the battlefield"><div class="rpg-hero-stage-art" data-combatant="traveler">'+(heroArt?'<img src="'+esc(heroArt)+'" alt="" aria-hidden="true">':'<span aria-hidden="true">✧</span>')+'<i class="rpg-hero-stage-shadow" aria-hidden="true"></i></div><div class="rpg-hero-stage-plate" aria-label="Traveler combat stance"><span>YOUR STANCE</span><strong>'+esc(pl.username||'Traveler')+'</strong><small>'+Number(pl.hp||0)+' / '+Number(pl.maxHp||1)+' HP</small><div class="rpg-hero-stage-hp"><i style="width:'+health+'%"></i></div></div></div><div class="rpg-duel-ground" aria-hidden="true"></div><div class="rpg-foe-side"><div class="rpg-foe-nameplate rpg-foe-intent-'+foeIntentClass+'"><span>'+foeIntentLabel+'</span><strong>'+esc(enemy.name)+'</strong><small>'+Math.max(0,Number(enemy.hp))+' / '+Number(enemy.maxHp)+' HP</small><div class="rpg-foe-hp"><i style="width:'+clamp(Math.round(Number(enemy.hp)/Math.max(1,Number(enemy.maxHp))*100),0,100)+'%"></i></div></div>'+
    '<div class="rpg-foe-sprite">'+(art?'<img class="rpg-foe-art" src="'+esc(art)+'" alt="'+esc(enemy.name)+'">':'<span class="rpg-foe-unknown" aria-hidden="true">✦</span>')+'<i class="rpg-foe-shadow"></i></div></div>'+
    '<div class="rpg-target-arrow" aria-hidden="true">‹</div></div>'+
   '<div class="rpg-combat-status"><div class="rpg-hero-portrait">'+(heroArt?'<img src="'+esc(heroArt)+'" alt="">':'<span aria-hidden="true">✧</span>')+'</div>'+
    '<div class="rpg-hero-copy"><div class="rpg-hero-name"><strong>'+esc(pl.username||'Traveler')+'</strong><span>LV '+Math.max(1,Number(pl.level||1))+' · '+esc(pl.className||'Wayfarer')+'</span></div>'+
-   '<div class="rpg-hero-vitals"><div class="rpg-vital-label"><span>HP</span><strong>'+Number(pl.hp||0)+' <i>/</i> '+Number(pl.maxHp||1)+'</strong></div><div class="rpg-hero-hp"><i style="width:'+health+'%"></i></div></div>'+
-   '<div class="rpg-hero-resources"><span>WEAPON <b>'+esc(w.name)+'</b></span><span>ARMOR <b>'+esc(a.name)+'</b></span><span>POTIONS <b>'+Number(pl.inventory?.potion||0)+'</b></span><span>GOLD <b>'+Number(pl.gold||0)+'g</b></span></div></div></div>'+
+   '<div class="rpg-hero-vitals"><div class="rpg-vital-label"><span>HP</span><strong><span>'+Number(pl.hp||0)+'</span> <i>/</i> <span>'+Number(pl.maxHp||1)+'</span></strong></div><div class="rpg-hero-hp"><i style="width:'+health+'%"></i></div></div>'+
+   '<div class="rpg-hero-resources"><span><span>WEAPON</span> <b>'+esc(w.name)+'</b></span><span><span>ARMOR</span> <b>'+esc(a.name)+'</b></span><span><span>POTIONS</span> <b>'+Number(pl.inventory?.potion||0)+'</b></span><span><span>GOLD</span> <b>'+Number(pl.gold||0)+'g</b></span></div></div></div>'+
   '<div class="rpg-dialogue" aria-live="polite"><span class="rpg-dialogue-star" aria-hidden="true">✦</span><div><span class="rpg-dialogue-kicker">'+(note?'BATTLE LOG':'A HOSTILE APPROACHES')+'</span><p>'+(note?esc(note):esc(enemy.name+' blocks the road. Read its intent, then choose your move.'))+'</p></div></div>'+
   '<ol class="rpg-battle-log" aria-label="Recent battle log">'+(battleLog.length?battleLog.map(entry=>'<li>'+esc(entry)+'</li>').join(''):'<li class="is-muted">The encounter is waiting for your first command.</li>')+'</ol>'+
   '<div class="rpg-enemy-tell"><span class="rpg-tell-mark" aria-hidden="true">!</span><div><small>ENEMY INTENT</small><span class="exp100-intent">'+intentText+'</span></div></div>'+
@@ -70,9 +74,9 @@ function render(pl, enemy, note = '', w, a, technique) {
    '<button class="rpg-command rpg-command-item" id="item" type="button" '+(openingEncounter||Number(pl.inventory?.potion||0)<1||Number(pl.hp||0)>=Number(pl.maxHp||1)?'disabled':'')+'><span class="rpg-command-glyph" aria-hidden="true">✚</span><span class="rpg-command-label"><strong>ITEM</strong><small>Healing potion</small></span><em>'+Number(pl.inventory?.potion||0)+' LEFT</em></button>'+
    '<button class="rpg-command rpg-command-guard" id="guard" type="button"'+disabledForOpening+'><span class="rpg-command-glyph" aria-hidden="true">⬡</span><span class="rpg-command-label"><strong>GUARD</strong><small>Brace for impact</small></span><em>DEFEND</em></button>'+
   '</div>'+
-  '<div class="rpg-battle-utilities"><span>OTHER MOVES</span><button class="rpg-utility-command" id="heavy" type="button"'+disabledForOpening+'>Heavy Strike <small>Risky · high damage</small></button>'+
-   '<button class="rpg-utility-command" id="poultice" type="button" '+(openingEncounter||Number(pl.inventory?.roadPoultice||0)<1||Number(pl.hp||0)>=Number(pl.maxHp||1)?'disabled':'')+'>Road Poultice <small>'+Number(pl.inventory?.roadPoultice||0)+' in pack</small></button>'+
-   '<button class="rpg-utility-command rpg-retreat" id="flee" data-legend-scene-transition="Retreating from the encounter" type="button"'+disabledForOpening+'>Retreat <small>Abandon this encounter</small></button></div>'+
+  '<div class="rpg-battle-utilities"><span>OTHER MOVES</span><button class="rpg-utility-command" id="heavy" type="button"'+disabledForOpening+'><span>Heavy Strike</span> <small>Risky · high damage</small></button>'+
+   '<button class="rpg-utility-command" id="poultice" type="button" '+(openingEncounter||Number(pl.inventory?.roadPoultice||0)<1||Number(pl.hp||0)>=Number(pl.maxHp||1)?'disabled':'')+'><span>Road Poultice</span> <small>'+Number(pl.inventory?.roadPoultice||0)+' in pack</small></button>'+
+   '<button class="rpg-utility-command rpg-retreat" id="flee" data-legend-scene-transition="Retreating from the encounter" type="button"'+disabledForOpening+'><span>Retreat</span> <small>Abandon this encounter</small></button></div>'+
   '<p class="rpg-battle-footnote">'+(openingEncounter?'The voice leaves no time to understand. Use ACT to answer it.':esc(technique.text)+' Armor softens incoming blows; the heavy wind-up can be guarded against or disrupted.')+'</p></section>');
  const button=(id,fn)=>{const el=document.getElementById(id);if(el)el.onclick=fn;};
  button('strike',()=>onCommand?.(enemy,'attack'));
@@ -82,7 +86,15 @@ function render(pl, enemy, note = '', w, a, technique) {
  button('item',()=>onCommand?.(enemy,'item'));
  button('poultice',()=>onCommand?.(enemy,'poultice'));
  button('flee',()=>onRetreat?.(enemy));
- button('battleSound',()=>{ onToggleSound?.(); const control=document.getElementById('battleSound'); if(control)control.textContent=soundOn()?'♫ SOUND ON':'♫ SOUND OFF'; });
+ button('battleSound',()=>{ onToggleSound?.(); const control=document.getElementById('battleSound'); if(control){control.textContent=soundOn()?'♫ SOUND ON':'♫ SOUND OFF';control.setAttribute('aria-pressed',String(soundOn()));} });
+ if(entering){
+  const root=document.getElementById('root'),battle=root?.querySelector('.rpg-battle');
+  if(root)root.scrollTop=0;window.scrollTo(0,0);
+  if(battle){battle.tabIndex=-1;battle.focus({preventScroll:true});}
+ }else if(focusedControl){
+  const control=document.getElementById(focusedControl);
+  (control&&!control.disabled?control:document.getElementById(openingEncounter?'skill':'strike'))?.focus();
+ }
 }
     return Object.freeze({ render });
   }

@@ -17,6 +17,8 @@
     } = context;
 
   function renderSmith(tab='weapon'){
+    const active=document.activeElement;
+    const restoreFocus=active?.closest('.ash099-forge-console') ? {gear:active.dataset.gear, tab:active.dataset.forgeTab} : null;
     const pl=p(),assets=A().items||{};
     const weapons=(D().weapons||[]).filter(w=>w.id!=='hand');
     const allArmors=(D().armors||[]).filter(a=>a.id!=='none');
@@ -29,8 +31,8 @@
     screen(head('Workshop',String(pl.currentRegion||'Ashmere')==='Greyfen'?'Causeway Smithy':'The Blacksmith','A good weapon is chosen. Good armor is earned. Equip what you own, or spend gold to improve your odds.',locationInterior('forge'),'smith'),
       '<section class="ash099-forge-console">'+
         '<div class="ash099-forge-loadout">'+(portrait?'<img class="ash099-forge-traveler" src="'+esc(portrait)+'" alt="'+esc(pl.className||'Traveler')+'" onerror="this.onerror=null;this.style.display=\'none\'">':'')+'<div class="ash099-forge-loadout-copy"><span class="ash099-eyebrow">YOUR CURRENT KIT</span><h2>Level '+Number(pl.level||1)+' · '+esc(pl.className||'Traveler')+'</h2><p>Owned gear stays yours. New gear is equipped as soon as you buy it.</p></div><div class="ash099-forge-slots">'+loadoutItem(equippedWeapon?.name||weaponName(pl.weapon),equippedWeapon?'Damage '+equippedWeapon.min+'–'+equippedWeapon.max:'Basic attack',assets.shortSword||'','weapon')+loadoutItem(equippedArmor?.name||armorName(pl.armor),equippedArmor?'Defense '+equippedArmor.defense:'No protection',armorArt(pl.armor),'armor')+'</div></div>'+
-        '<div class="ash099-forge-tabs" role="tablist" aria-label="Workshop category"><button data-forge-tab="weapon" class="'+(tab==='weapon'?'active':'')+'" role="tab" aria-selected="'+(tab==='weapon')+'">Weapons</button><button data-forge-tab="armor" class="'+(tab==='armor'?'active':'')+'" role="tab" aria-selected="'+(tab==='armor')+'">Armor</button><button data-forge-tab="craft" class="" role="tab" aria-selected="false">Crafting Bench</button><span>YOUR GOLD <strong>'+gold(pl.gold)+'</strong></span></div>'+
-        '<div class="ash099-forge-grid">'+list.map(x=>gearCard(x,tab)).join('')+'</div><div id="ashNote" class="ash099-note" style="display:none"></div></section>');
+        '<div class="ash099-forge-tabs" role="tablist" aria-label="Workshop category"><button data-forge-tab="weapon" class="'+(tab==='weapon'?'active':'')+'" role="tab" aria-selected="'+(tab==='weapon')+'">Weapons</button><button data-forge-tab="armor" class="'+(tab==='armor'?'active':'')+'" role="tab" aria-selected="'+(tab==='armor')+'">Armor</button><button data-forge-tab="craft" class="" role="tab" aria-selected="false">Crafting Bench</button><span><small class="ash099-forge-gold-label">YOUR GOLD</small><strong>'+gold(pl.gold)+'</strong></span></div>'+
+        '<div class="ash099-forge-grid">'+list.map(x=>gearCard(x,tab)).join('')+'</div><div id="ashNote" class="ash099-note" role="status" aria-live="polite" style="display:none"></div></section>');
     document.querySelectorAll('[data-forge-tab]').forEach(button=>button.onclick=()=>{
       if(button.dataset.forgeTab==='craft'){
         if(typeof context.openCrafting==='function')return context.openCrafting('');
@@ -39,6 +41,10 @@
       return renderSmith(button.dataset.forgeTab);
     });
     document.querySelectorAll('[data-gear]').forEach(b=>b.onclick=()=>buyGear(b.dataset.gear,b.dataset.kind));
+    if(restoreFocus){
+      const target=[...document.querySelectorAll('[data-gear]')].find(button=>!button.disabled && button.dataset.gear===restoreFocus.gear);
+      (target || [...document.querySelectorAll('[data-forge-tab]')].find(button=>button.dataset.forgeTab===tab))?.focus();
+    }
   }
   function weaponArtSvg(id){
     const palette={

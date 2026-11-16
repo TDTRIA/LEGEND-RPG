@@ -57,7 +57,14 @@
   let music=null,musicPath='',ambience=null,ambiencePath='';
   let environment='title',surface='title',unlocked=false;
   const effects=new Set();
-  const soundOn=()=>{try{return localStorage.getItem(KEY)!=='off';}catch{return true;}};
+  // Keep the user's choice for this page when browser storage is unavailable.
+  // Successful reads still honor the established key and its legacy values.
+  let sessionPreference=null,lastPreference=true;
+  const soundOn=()=>{
+    if(sessionPreference!==null)return sessionPreference;
+    try{lastPreference=localStorage.getItem(KEY)!=='off';}catch{}
+    return lastPreference;
+  };
   function stop(a){if(!a)return;try{a.pause();a.currentTime=0;}catch{}}
   function play(a){if(!a)return;try{const p=a.play?.();if(p&&p.catch)p.catch(()=>{});}catch{}}
   function loop(current,path,next,volume){
@@ -91,7 +98,9 @@
   function startBattleMusic(){return startWorldAudio();}
   function stopBattleMusic(){apply();}
   function toggleSound(){
-    const on=!soundOn();try{localStorage.setItem(KEY,on?'on':'off');}catch{}
+    const on=!soundOn();
+    lastPreference=on;
+    try{localStorage.setItem(KEY,on?'on':'off');sessionPreference=null;}catch{sessionPreference=on;}
     if(on)apply();else{stop(music);stop(ambience);music=null;musicPath='';ambience=null;ambiencePath='';effects.forEach(stop);effects.clear();}
     return on;
   }

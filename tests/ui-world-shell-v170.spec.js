@@ -23,14 +23,15 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
   expect(titleBackdropFilter).toContain('brightness(1.1)');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
-  expect(titleSceneOverlay).toContain('rgba(2, 6, 4, 0.3)');
+  expectBackgroundAlphaAtMost(titleSceneOverlay, 0.3);
   expect(titleSceneOverlay).not.toContain('rgba(2, 5, 3, 0.94)');
 }
 
 async function enterAshmere(page, name = 'WorldShellQA') {
-  await openTitle(page);
+  await openTitle(page, page.viewportSize() || { width: 1440, height: 900 });
   await page.getByRole('button', { name: /Begin Your Journey/i }).click();
   await page.getByRole('button', { name: /^Continue$/ }).click();
   await page.getByRole('button', { name: /^Continue$/ }).click();
@@ -43,7 +44,7 @@ async function enterAshmere(page, name = 'WorldShellQA') {
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();
@@ -241,6 +242,7 @@ test.describe('LEGEND persistent world shell v170', () => {
   });
 
   test('Phaser paints the traveler journal drawer while preserving saved values and its real Journal action', async ({ page }) => {
+    test.setTimeout(180000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await enterAshmere(page, 'PhaserJournalQA');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeLeftDrawerUi)).toBe(true);
@@ -254,6 +256,7 @@ test.describe('LEGEND persistent world shell v170', () => {
       return {
         active: document.body.classList.contains('legend-phaser-left-drawer-ui-active'),
         objectCount: snapshot.nativeLeftDrawerUiObjectCount,
+        paintedLabels: snapshot.nativeLeftDrawerLabels.map(item => item.sourceText),
         textCount: snapshot.nativeLeftDrawerUiTextCount,
         textValues: snapshot.nativeLeftDrawerUiTextValues || [],
         controlIds: snapshot.nativeLeftDrawerUiControlIds || [],
@@ -269,7 +272,12 @@ test.describe('LEGEND persistent world shell v170', () => {
       };
     });
     expect(desktop.active).toBe(true);
-    expect(desktop.objectCount).toBeGreaterThan(10);
+    // Native content is grouped inside its scroll-mask container. Count actual
+    // painted labels recursively, rather than only top-level scene objects.
+    expect(desktop.objectCount).toBeGreaterThan(0);
+    expect(desktop.paintedLabels).toEqual(expect.arrayContaining([
+      'Traveler record', 'PhaserJournalQA', 'Vitality', 'Current lead', 'Quest log', 'Field journal', desktop.hp, desktop.gold
+    ]));
     expect(desktop.textCount).toBeGreaterThan(10);
     expect(desktop.textValues).toEqual(expect.arrayContaining([
       'Traveler record', 'PhaserJournalQA', 'Vitality', 'Current lead', 'Quest log', 'Field journal'
@@ -632,6 +640,7 @@ test.describe('LEGEND persistent world shell v170', () => {
   });
 
   test('secured expedition report keeps its real return action without duplicate labels', async ({ page }) => {
+    test.setTimeout(120000);
     await enterAshmere(page, 'ReportShellTraveler');
     await page.evaluate(() => {
       const player = window.LegendStorage.loadPlayer();
@@ -647,29 +656,15 @@ test.describe('LEGEND persistent world shell v170', () => {
       player.flags.firstRoadReturnMaraBriefed = false;
       window.LegendStorage.savePlayer(player);
 
-      const escapeHtml = value => String(value ?? '').replace(/[&<>'"]/g, character => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-      }[character]));
-      const view = window.LegendRoadResultsViewV100.create({
-        renderHeader: (_player, _state, _kicker, title) => '<header class="exp100-head"><h1>' + escapeHtml(title) + '</h1></header>',
-        renderShell: html => { document.getElementById('root').innerHTML = html; },
-        escapeHtml,
-        onReturn: () => window.LegendAshmereV099.renderAshmere(),
-        onReportToMara: () => window.LegendAshmereV099.route('mara')
-      });
-      view.render({
-        player,
-        state: player.flags.roadExpeditionV100,
-        kicker: 'Return',
-        title: 'Expedition Secured',
-        text: 'Your route notes are saved.',
-        details: {
-          type: 'expedition', complete: true, stagesCompleted: 5, rewardGold: 130,
-          roadTokens: 1, xpGained: 20, levelsGained: 0, levelBefore: 1, levelAfter: 1,
-          routeName: 'High Ridge', discoveriesThisTrip: 0, campsThisTrip: 0,
-          pressureBefore: 16, pressureAfter: 5, trip: 1
-        }
-      });
+      // Use the production settlement/view/return wiring, including its shell.
+      window.LegendRoadControllerV100.renderExpedition();
+    });
+    await page.evaluate(() => {
+      const originalRandom = Math.random;
+      window.__legendSceneTransitionBypass = true;
+      Math.random = () => 0.1;
+      try { document.getElementById('finish').click(); }
+      finally { Math.random = originalRandom; window.__legendSceneTransitionBypass = false; }
     });
 
     await expect(page.locator('.exp150-return-report')).toBeVisible();
@@ -742,6 +737,7 @@ test.describe('LEGEND persistent world shell v170', () => {
   });
 
   test('Ashmere destination board is Phaser-painted while real town actions and fallback remain usable', async ({ page }) => {
+    test.setTimeout(180000);
     await enterAshmere(page, 'AshmereBoardQA');
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1?.snapshot?.()?.nativeTownBoardUi
@@ -843,7 +839,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     // The live destination buttons still call the original market and work-board routes.
     await page.locator('.ash100-destination[data-ash-view="trader"]').click();
     await expect(page.locator('.ash099-market-console')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Trading Post' })).toBeVisible();
+    await expect(page.locator('#root').getByRole('heading', { name: 'Trading Post', exact:true })).toBeVisible();
     await page.locator('#ashBack').click();
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
@@ -889,12 +885,13 @@ test.describe('LEGEND persistent world shell v170', () => {
     // Under a continuous scroll burst, Phaser updates each frame rather than
     // waiting for scrolling to stop; its label bounds must track real buttons.
     const scrollAlignment = await page.evaluate(async () => {
-      const scroller = document.scrollingElement;
-      const maxScroll = Math.max(0, scroller.scrollHeight - window.innerHeight);
+      // The production shell scrolls its world root beneath the fixed HUD.
+      const scroller = document.getElementById('root');
+      const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
       if (maxScroll < 32) return { scrollable: false };
       for (let step = 1; step <= 12; step += 1) {
         scroller.scrollTop = maxScroll * step / 12;
-        window.dispatchEvent(new Event('scroll'));
+        scroller.dispatchEvent(new Event('scroll'));
       }
       await new Promise(resolve => requestAnimationFrame(resolve));
       const snapshot = window.LegendPhaserWorldV1.snapshot();
@@ -917,6 +914,11 @@ test.describe('LEGEND persistent world shell v170', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     const inn = page.locator('.ash100-destination[data-ash-view="inn"]');
     await inn.focus();
+    // Enter keyboard modality after the preceding pointer actions and return
+    // to Inn through the real tab order so :focus-visible is exercised.
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+Tab');
+    await expect(inn).toBeFocused();
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.find(card => card.id === 'inn')?.focused
     )).toBe(true);

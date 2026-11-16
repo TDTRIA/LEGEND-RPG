@@ -147,9 +147,9 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     await expect(page.locator('.opening-lore-v220')).toContainText('seal over the deep ways');
     await page.locator('#openingLoreContinue').click();
 
-    await expect(page.getByRole('heading', { name: 'The Kindness That Failed' })).toBeVisible();
-    await expect(page.locator('.opening-lore-v220')).toContainText('Last Mercy');
-    await expect(page.locator('.opening-lore-v220')).toContainText('the Veil');
+    await expect(page.getByRole('heading', { name: 'The Peace, Written Down' })).toBeVisible();
+    await expect(page.locator('.opening-lore-v220')).toContainText('III · THE PEACE KEPT');
+    await expect(page.locator('.opening-lore-v220')).not.toContainText(/Last Mercy|Veil|echo|wound|healer|Saint/i);
     await page.locator('#openingLoreContinue').click();
 
     await page.locator('#v094Name').fill('PhaserRoadQA');

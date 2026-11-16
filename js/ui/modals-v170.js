@@ -74,9 +74,9 @@
           return;
         }
         const settings = { ...(storage.loadSettings() || {}), [key]: input.checked };
-        storage.saveSettings(settings);
+        const persisted = storage.saveSettings(settings);
         storage.applySettings?.();
-        announce('Saved ' + (settingDefinitions.find(setting => setting.key === key)?.label || 'setting') + '.');
+        announce(persisted === false ? 'Settings could not be saved permanently. Your preference remains active for this session.' : 'Saved ' + (settingDefinitions.find(setting => setting.key === key)?.label || 'setting') + '.');
       });
     }
     return modalRoot;
@@ -88,8 +88,9 @@
     if (status) status.textContent = message;
   }
 
-  function openModal({ eyebrow = 'The Borderlands', title, description = '', content = '', footer = '', icon = 'journal' } = {}) {
+  function openModal({ kind = '', eyebrow = 'The Borderlands', title, description = '', content = '', footer = '', icon = 'journal' } = {}) {
     const root = ensureRoot();
+    root.dataset.shellModalKind = kind;
     previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const iconName = MODAL_ICON_CLASSES.includes(icon) ? icon : 'journal';
     root.innerHTML = '<section class="lws-modal" role="dialog" aria-modal="true" aria-labelledby="lws-modal-title" aria-describedby="lws-modal-description" tabindex="-1">' +
@@ -171,6 +172,7 @@
     if (!player) {
       return openModal({
         eyebrow: 'Traveler archive',
+        kind: 'inventory',
         title: 'Inventory unavailable',
         icon: 'traveler',
         description: 'No saved traveler record could be read.',
@@ -206,9 +208,11 @@
           return '<li class="lws-equipped-item"><span>' + esc(label) + '</span><span class="lws-equipped-value">' + image + '<strong>' + esc(name) + '</strong></span></li>';
         }).join('') + '</ul></section>'
       : '';
-    const footer = '<button type="button" class="lws-btn quiet" data-shell-modal-close>Return to the world</button><button type="button" class="lws-btn primary" data-world-action="traveler-sheet"><span class="lws-btn-copy"><strong>Open traveler sheet</strong><small>View your attributes and equipment</small></span></button>';
+    const onMarsh = !!document.querySelector('#root .gfm160-page[data-marsh-state]');
+    const footer = '<button type="button" class="lws-btn quiet" data-shell-modal-close>Return to the world</button><button type="button" class="lws-btn primary" data-world-action="traveler-sheet"' + (onMarsh ? ' disabled' : '') + '><span class="lws-btn-copy"><strong>Open traveler sheet</strong><small>' + (onMarsh ? 'Available after returning to Greyfen' : 'View your attributes and equipment') + '</small></span></button>';
     return openModal({
       eyebrow: 'Traveler archive',
+      kind: 'inventory',
       title: 'Inventory',
       icon: 'traveler',
       description: 'Everything carried for the road: provisions, finds, keepsakes, and gear.',
@@ -223,6 +227,7 @@
       '<label class="lws-setting-row" for="lws-setting-' + setting.key + '"><span><strong>' + esc(setting.label) + '</strong><small>' + esc(setting.detail) + '</small></span><input type="checkbox" id="lws-setting-' + setting.key + '" data-world-setting="' + setting.key + '"' + (current[setting.key] ? ' checked' : '') + '></label>'
     ).join('') + '</div>';
     return openModal({
+      kind: 'settings',
       eyebrow: 'Realm preferences',
       title: 'Settings',
       icon: 'settings',

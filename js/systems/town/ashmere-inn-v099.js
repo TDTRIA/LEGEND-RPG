@@ -25,7 +25,7 @@
     '<button class="ash099-btn ash099-service-card" id="rest" type="button"><span class="ash099-service-icon">'+serviceArt('inn',icon('inn'))+'</span><span class="ash099-service-copy"><small>RECOVER</small><strong>Rest for the night</strong><span>Restore all health and return to the road ready.</span></span><em>35g</em></button>'+
     '<button class="ash099-btn ash099-service-card" id="camp" type="button"><span class="ash099-service-icon">'+serviceArt('milestone',icon('road'))+'</span><span class="ash099-service-copy"><small>PACK SUPPLIES</small><strong>Camp Supplies</strong><span>Carry shelter and dry kindling for safer expeditions.</span></span><em>90g</em></button>'+
     '<button class="ash099-btn ash099-service-card" id="rumor" type="button"><span class="ash099-service-icon">'+serviceArt('journal',icon('archive'))+'</span><span class="ash099-service-copy"><small>LISTEN IN</small><strong>Hear a Rumor</strong><span>Ask what has been happening beyond the lantern line.</span></span><em>FREE</em></button>'+
-   '</div><div id="ashNote" class="ash099-note" style="display:none"></div></section>');
+   '</div><div id="ashNote" class="ash099-note" role="status" aria-live="polite" style="display:none"></div></section>');
  document.getElementById('rest').onclick=()=>buyService(35,pl=>{pl.hp=pl.maxHp},'You rest at the inn and recover completely.');
  document.getElementById('camp').onclick=()=>buyService(90,pl=>{pl.inventory.camp=Number(pl.inventory.camp||0)+1},'Bought camp supplies.');
  document.getElementById('rumor').onclick=()=>{
@@ -35,7 +35,18 @@
   note(rumors[Math.floor(Math.random()*rumors.length)]);
  };
 }
-function buyService(cost,fn,msg){const pl=p();if(Number(pl.gold||0)<cost)return note('Not enough gold.');pl.gold-=cost;fn(pl);save(pl);note(msg);}
+function buyService(cost,fn,msg){
+ const pl=p();if(Number(pl.gold||0)<cost)return note('Not enough gold.');
+ pl.gold-=cost;fn(pl);save(pl);
+ // Refresh the existing view without replacing the focused service button.
+ const wallet=document.querySelector('.ash099-service-wallet');
+ if(wallet){
+  wallet.querySelector('strong').textContent=gold(pl.gold);
+  wallet.querySelector('small').textContent='HEALTH · '+Number(pl.hp||0)+' / '+Number(pl.maxHp||1);
+  wallet.querySelector('i b').style.width=Math.max(0,Math.min(100,Math.round(Number(pl.hp||0)/Math.max(1,Number(pl.maxHp||1))*100)))+'%';
+ }
+ note(msg);
+}
 
 
     renderInn();

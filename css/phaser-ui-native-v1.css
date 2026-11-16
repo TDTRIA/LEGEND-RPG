@@ -1,3 +1,5 @@
+/* The title mute control stays touch-sized in short landscape viewports too. */
+#root .title-v136-rpg #titleSound { min-height: 44px !important; }
 /* Native Phaser presentation for the title menu.
    The semantic HTML controls remain in place as transparent, accessible hit targets.
    If Phaser fails to load, this class is never applied and the classic title remains visible. */
@@ -43,6 +45,8 @@ body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-
   opacity: 0 !important;
   background: transparent !important;
 }
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg button#continue.v136-menu-primary,
+body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg button#newPrimary.v136-menu-primary,
 body.legend-phaser-world-active.legend-phaser-title-ui-active #root .title-v136-rpg .v136-menu-btn {
   color: transparent !important;
   background: transparent !important;
@@ -123,6 +127,30 @@ body.legend-phaser-world-active.legend-phaser-annals-ui-active #root .opening-lo
 
 /* Traveler creation is now drawn in RealmScene. The live inputs and semantic
    buttons stay in the DOM as accessible, focusable hit targets. */
+#root .v140-creation h1,
+#root .v140-creation h2,
+#root .v140-creation h3 {
+  line-height: 1.15 !important;
+  letter-spacing: 0 !important;
+}
+#root .v140-creation .v094-stepper-top,
+#root .v140-creation small {
+  font-size: max(9px, .58rem);
+}
+#root .v140-creation .v094-stepper-top strong {
+  flex-shrink: 0;
+}
+#root .v140-creation .v094-actions button {
+  white-space: nowrap;
+}
+#root .v140-creation .v140-presence-caption {
+  color: #c3bed8;
+}
+@media (max-width: 600px) {
+  #root .v140-creation .v140-presence-frame { min-height: 150px; }
+  #root .v140-creation .v140-presence-glyph { top: 68%; }
+  #root .v140-creation .v140-presence-caption { bottom: 4px; }
+}
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation {
   color: transparent !important;
   background: transparent !important;
@@ -268,6 +296,12 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
 /* Oric's prologue, response, ambush and aftermath now use native scene panels.
    The original semantic content and button targets remain available to assistive
    technology and continue to invoke the existing production tutorial controller. */
+/* Give browser and canvas glyphs the same readable heading line boxes. */
+#root .opening-road-v140 h1,
+#root .opening-road-v140 h2 {
+  line-height: 1.15 !important;
+  letter-spacing: 0 !important;
+}
 body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 {
   color: transparent !important;
   background: transparent !important;
@@ -287,6 +321,7 @@ body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-r
   display: none !important;
   content: none !important;
 }
+body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140-kicker,
 body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 h1,
 body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 h2,
 body.legend-phaser-world-active.legend-phaser-opening-ui-active #root .opening-road-v140 p,
@@ -481,20 +516,6 @@ body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-
   outline: 2px solid #ffe6a0 !important;
   outline-offset: 3px !important;
   box-shadow: 0 0 0 4px rgba(231, 201, 130, .18) !important;
-}
-
-/* The shell toast message is painted in RealmScene. Its DOM node keeps
-   role="status" and aria-live so assistive tech still receives every message,
-   and it becomes the visible fallback again the moment the painter is cleared. */
-body.legend-phaser-world-active.legend-phaser-toast-ui-active #legend-world-shell-root .lws-shell-toast {
-  background: transparent !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-}
-body.legend-phaser-world-active.legend-phaser-toast-ui-active #legend-world-shell-root .lws-shell-toast[data-legend-phaser-toast-text="true"] {
-  color: transparent !important;
-  text-shadow: none !important;
 }
 
 
@@ -759,8 +780,8 @@ body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-contro
 }
 
 
-/* The tactical battle presentation is painted by RealmScene. Character/enemy
-   illustrations and the semantic battle buttons stay in the DOM; only their
+/* The tactical battle presentation is painted by RealmScene. Approved actor artwork is painted below the nameplates;
+   the semantic battle buttons stay in the DOM; only their
    duplicated text/surfaces are visually masked after the Phaser preflight. */
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle {
   background: transparent !important;
@@ -776,7 +797,8 @@ body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-enemy-tell,
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-turn-heading,
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-command-grid,
-body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-utilities {
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-utilities,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle-footnote {
   background: transparent !important;
   border-color: transparent !important;
   box-shadow: none !important;
@@ -991,3 +1013,741 @@ body.legend-phaser-road-actions-ui-active .exp100:has(.exp150-world-page) .exp10
   background: transparent !important;
   border-color: transparent !important;
 }
+
+/* Only this complete, preflighted route-board painter conceals its source copy.
+   Semantic actions and raster art remain in the production DOM. */
+body.legend-phaser-world-active #root .ash099-screen.legend-phaser-route-board,
+body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-head,
+body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-card,
+body.legend-phaser-world-active #root .legend-phaser-route-board #ashBack {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-head::after {
+  display: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-route-board :is(.ash099-kicker,h1,p,strong,small,em),
+body.legend-phaser-world-active #root .legend-phaser-route-board #ashBack {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+
+/* Explicit regional-ledger presentation; unavailable regions retain their real
+   state labels and never receive synthetic unlock/travel targets. */
+body.legend-phaser-world-active #root .reg100:has(.legend-phaser-region-ledger),
+body.legend-phaser-world-active #root .legend-phaser-region-ledger :is(.reg100-head,.reg100-panel,.reg100-card,.reg100-wallet > div,.reg100-note,.reg100-btn,.reg100-state) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-region-ledger :is(.reg100-kicker,h1,h2,p,.reg100-wallet strong,.reg100-wallet span,.reg100-title > span,.reg100-meta,.reg100-state,.reg100-btn,.reg100-note) {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+
+/* Promote the existing scene only while a complete inventory frame is ready.
+   The semantic modal remains above it for input, artwork and accessibility. */
+body.legend-phaser-world-active.legend-phaser-inventory-active #game-container { z-index: 801; }
+body.legend-phaser-world-active.legend-phaser-inventory-active #legend-world-shell-modal-root {
+  z-index: 802;
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-inventory-active #legend-world-shell-modal-root :is(.lws-modal,.lws-modal-content,.lws-modal-header,.lws-modal-footer,.lws-inventory-card,.lws-btn,.lws-close-btn) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-inventory-active #legend-world-shell-modal-root .lws-modal::before { display: none !important; }
+body.legend-phaser-inventory-active #legend-world-shell-modal-root :is(.lws-modal-heading > span,h2,p,strong,small,.lws-empty-state,.lws-section-title,.lws-equipped-item > span:first-child,button) {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+
+body.legend-phaser-world-active.legend-phaser-inventory-active #legend-world-shell-modal-root button:focus-visible,
+body.legend-phaser-world-active.legend-phaser-inventory-active #legend-world-shell-modal-root button {
+  outline: none !important;
+  transform: none !important;
+}
+
+/* A complete traveler-sheet preflight is required before hiding source paint. */
+body.legend-phaser-world-active #root .legend-phaser-traveler-sheet,
+body.legend-phaser-world-active #root .legend-phaser-traveler-sheet :is(.ash099-head,.ash099-traveler-profile-top,.ash099-traveler-vitals > div,.ash099-profile-equipment,.ash099-traveler-detail-grid > div,.ash099-inventory-item,i,i b,#ashBack) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-traveler-sheet .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-traveler-sheet .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root [data-phaser-sheet-copy="true"],
+body.legend-phaser-world-active #root [data-phaser-sheet-copy="true"] small {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+/* The shell toast message is painted in RealmScene. Its DOM node keeps
+   role="status" and aria-live so assistive tech still receives every message,
+   and it becomes the visible fallback again the moment the painter is cleared. */
+body.legend-phaser-world-active.legend-phaser-toast-ui-active #legend-world-shell-root .lws-shell-toast {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-toast-ui-active #legend-world-shell-root .lws-shell-toast[data-legend-phaser-toast-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
+body.legend-phaser-world-active #legend-world-shell-root .legend-phaser-shell-toast {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+body.legend-phaser-world-active #root:has(.ash099-traveler-profile) {
+  clip-path: inset(var(--legend-sheet-clip-top, 0px) 0 var(--legend-sheet-clip-bottom, 0px));
+}
+
+/* Nested badge text must follow its guarded native replacement. */
+body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-text="true"] strong {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-world-shell-active #root[data-legend-shell-clip="true"] {
+  clip-path: inset(var(--legend-shell-clip-top, 0px) var(--legend-shell-clip-right, 0px) var(--legend-shell-clip-bottom, 0px) var(--legend-shell-clip-left, 0px));
+}
+body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud [data-legend-phaser-hud-control="true"]:not([data-legend-phaser-hud-text="true"]) {
+  color: #e9e4d5 !important;
+}
+
+/* Inn copy, artwork and panels switch together only after native preflight. */
+body.legend-phaser-world-active #root .ash099-terminal:has(.ash099-head[data-ash-service="inn"]) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-inn,
+body.legend-phaser-world-active #root .legend-phaser-inn :is(.ash099-head,.ash099-head > div,.ash099-service-overview,.ash099-service-wallet,.ash099-service-wallet i,.ash099-service-wallet i b,.ash099-service-card,#ashNote,#ashBack) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-inn .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-inn .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-inn .ash099-head > img { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-phaser-inn-copy="true"] {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+
+/* Production market actions remain semantic DOM buttons beneath native copy. */
+body.legend-phaser-world-active #root .ash099-terminal:has(.ash099-head[data-ash-service="trader"]) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-market,
+body.legend-phaser-world-active #root .legend-phaser-market :is(.ash099-head,.ash099-head > div,.ash099-market-wallet,.ash099-market-tabs,.ash099-market-tabs button,.ash099-market-tabs button span,.ash099-market-item,.ash099-empty-state,#sellAllLoot,#ashNote,#ashBack) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-market .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-market .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-market .ash099-head > img { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-phaser-market-copy="true"],
+body.legend-phaser-world-active #root [data-phaser-market-copy="true"] > span {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+/* Tab labels occupy one line; prevent canvas glyph rounding from wrapping them. */
+#root .ash099-market-tabs button { white-space: nowrap; }
+
+/* Equipment and ingredient state stays in the production workshop controls. */
+#root .ash099-forge-tabs button { white-space: nowrap; }
+#root .ash099-forge-gold-label { display: block; font-size: inherit; }
+body.legend-phaser-world-active #root .ash099-terminal:has(.ash099-head:is([data-ash-service="smith"],[data-ash-service="craft"])) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-workshop,
+body.legend-phaser-world-active #root .legend-phaser-workshop :is(.ash099-head,.ash099-head > div,.ash099-forge-loadout,.ash099-loadout-slot,.ash099-forge-tabs,.ash099-forge-tabs button,.ash099-gear-item,.ash099-market-summary,.ash099-craft-card,.ash099-craft-feedback,#openTrader,#ashNote,#ashBack) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  transform: none !important;
+  outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-workshop .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-workshop .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-workshop .ash099-head > img { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-phaser-workshop-copy="true"],
+body.legend-phaser-world-active #root [data-phaser-workshop-copy="true"] > small {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
+/* Keep ingredient names and owned counts together within their available row. */
+#root .ash099-craft-ingredient > span { flex: 1; }
+#root .ash099-craft-ingredient small { display: inline; margin: 0; font-size: inherit; }
+
+/* Each Work Board/job surface retains its production controls and source layout. */
+body.legend-phaser-world-active #root .ash099-terminal:has(.ash099-head[data-ash-service="work"]) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-workboard,
+body.legend-phaser-world-active #root .legend-phaser-workboard :is(.ash099-head,.ash099-head > div,.ash099-job-board-intro,.ash099-field-posting,.ash099-workboard-daily-entry,.ash099-field-posting-reward > *,.ash099-job-game,.ash099-job-meta > span,.ash099-job-challenge,.ash099-job-board-card,.ash099-job-choice,.ash099-job-choice-index,.ash099-sequence-action,#jobStartSequence,#jobSequencePreview,#jobResult,#jobStrike,#backJobs,#ashBack,#openAshmereFieldContracts,#openDailyFieldBoard,#jobTrack) {
+  background: transparent !important; border-color: transparent !important;
+  box-shadow: none !important; backdrop-filter: none !important;
+  transform: none !important; outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-workboard .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-workboard .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-workboard :is(.ash099-head > img,.ash099-job-zone,.ash099-job-marker) { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-phaser-workboard-copy="true"] {
+  color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important;
+}
+/* Leave room for complete introductory copy at narrow canvas font metrics. */
+#root .ash099-job-board-intro > small { line-height: 1.75; }
+
+/* Daily and story contracts keep their source controls, art and disclosure. */
+body.legend-phaser-world-active #root .ash099-terminal:has(.ash099-daily-board) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+#root .ash099-cache-odds summary { list-style: none; position: relative; padding-left: 24px; }
+#root .ash099-cache-odds summary::-webkit-details-marker { display: none; }
+#root .ash099-cache-odds summary::before { content: '▸'; position: absolute; left: 2px; }
+#root .ash099-cache-odds[open] summary::before { content: '▾'; }
+body.legend-phaser-world-active #root .legend-phaser-contracts,
+body.legend-phaser-world-active #root .legend-phaser-contracts :is(.ash099-head,.ash099-head > div,.ash099-daily-intro,.ash099-contract-intro,.ash099-daily-card,.ash099-road-cache,.ash099-cache-odds,.ash099-contract-card,.ash099-contract-objective,.ash099-daily-notice,button,summary,#dailyCacheOpen,#ashBack) {
+  background: transparent !important; border-color: transparent !important;
+  box-shadow: none !important; backdrop-filter: none !important;
+  transform: none !important; outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-contracts .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-contracts .ash099-head::after,
+body.legend-phaser-world-active #root .legend-phaser-contracts summary::before { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-contracts :is(.ash099-head > img,.ash099-daily-progress) { opacity: 0 !important; }
+body.legend-phaser-world-active #root .ash099-screen.legend-phaser-contracts [data-phaser-contracts-copy="true"],
+body.legend-phaser-world-active #root .ash099-screen.legend-phaser-contracts [data-phaser-contracts-copy="true"] > strong {
+  color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important;
+}
+
+/* People and dialogue retain their source cards, portraits and story callbacks. */
+body.legend-world-shell-active #root .ash099-terminal:has(.ash099-head:is([data-ash-service="people"],[data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"])) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px)) !important;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) {
+  display: grid !important; grid-template-columns: 180px minmax(0, 1fr) !important; gap: 20px !important;
+}
+body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) > img {
+  width: 180px !important; height: 220px !important; max-width: 100% !important;
+  object-fit: cover !important; object-position: 50% 18% !important;
+}
+@media (max-width: 760px) {
+  body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) > img { justify-self: center; }
+}
+body.legend-phaser-world-active #root .legend-phaser-people,
+body.legend-phaser-world-active #root .legend-phaser-people :is(.ash099-head,.ash099-head > div,.ash099-lines,.ash099-lines > p,#turnTokens,#ashBack),
+body.legend-phaser-world-active #root .legend-phaser-people .ash099-npc-grid .ash099-npc-card {
+  background: transparent !important; border-color: transparent !important;
+  box-shadow: none !important; backdrop-filter: none !important;
+  transform: none !important; outline: none !important;
+}
+body.legend-phaser-world-active #root .legend-phaser-people .ash099-head::before,
+body.legend-phaser-world-active #root .legend-phaser-people .ash099-head::after { display: none !important; }
+body.legend-phaser-world-active #root .legend-phaser-people :is(.ash099-head > img,.ash099-npc-card > img) { opacity: 0 !important; }
+body.legend-phaser-world-active #root .ash099-screen.legend-phaser-people [data-phaser-people-copy="true"],
+body.legend-phaser-world-active #root .ash099-screen.legend-phaser-people .ash099-npc-grid .ash099-npc-card [data-phaser-people-copy="true"] {
+  color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important;
+}
+
+/* Conversation headings receive reading focus; actionable controls retain their focus frames. */
+body.legend-world-shell-active #root .ash099-terminal:has(.ash099-head:is([data-ash-service="people"],[data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"])) h1[tabindex="-1"] { outline: none; }
+/* Keyboard focus scrolling must account for the fixed shell above and below the reader. */
+body.legend-world-shell-active #root:has(.ash099-head:is([data-ash-service="people"],[data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"])) {
+  scroll-padding-top: 112px;
+  scroll-padding-bottom: 88px;
+}
+
+/* Retained road panels must not obscure or blur the corresponding native copy.
+   Scope the stronger legacy override to each successful painter's surface. */
+body.legend-phaser-world-active.legend-world-shell-active.legend-phaser-expedition-hud-ui-active #root .exp100:has(.exp150-world-page) :is(.exp150-expedition-head,.exp150-meter,.exp150-meter > i,.exp150-meter > i > b,.exp150-road-clock,.exp150-route-tracker,.exp150-aside-card,.exp150-route-reminder,.exp150-supply-row,.exp150-pressure-track,.exp150-pressure-track > i),
+body.legend-phaser-world-active.legend-world-shell-active.legend-phaser-road-actions-ui-active #root .exp100:has(.exp150-world-page) :is(.exp150-guide,.exp100-panel,.exp100-poi,.exp100-camp,.exp150-camp-atmosphere,.exp100-camp-heading,.exp150-action-dock,.exp150-section-heading,.exp150-action,.exp100-choice,.exp160-optional-detour,.exp160-optional-site,.exp160-field-contract,.exp160-field-report-note,.exp160-site-complete) {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-world-shell-active #root:has(.exp150-world-page) {
+  scroll-padding-top: calc(var(--lws-hud-height, 72px) + 16px);
+  scroll-padding-bottom: 88px;
+}
+/* The road dialog owns the foreground, including its retained DOM controls. */
+body.legend-phaser-world-active.legend-world-shell-active #root[data-legend-shell-clip="true"]:has(#exp150Modal:not([hidden])) {
+  clip-path: none;
+}
+body.legend-phaser-world-active #root .exp100:has(#exp150Modal:not([hidden])) { visibility: hidden; }
+body.legend-phaser-world-active #root #exp150Modal:not([hidden]) { visibility: visible; }
+body.legend-phaser-world-active.legend-phaser-road-map-ui-active #root .exp100:has(.exp150-world-page) #exp150Modal {
+  background: transparent !important;
+}
+@media (max-width: 720px) {
+  body.legend-phaser-world-active #root .exp100:has(.exp150-world-page) .exp150-expedition-head.exp100-head {
+    margin-top: 0 !important;
+  }
+}
+
+/* Hide only the scene chrome whose complete native painter passed preflight.
+   Semantic buttons and their production listeners stay in the DOM. */
+body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] :is(.exp100-scene-label,.exp100-sound,.exp100-hotspot,.exp100-hotspot i) {
+  color: transparent !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  outline: none !important;
+  animation: none !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] :is(.exp100-scene-label i,.exp100-hotspot span) {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+/* Keep the semantic target stationary while its native focus frame is active. */
+body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] .exp100-hotspot:active {
+  transform: translate(-50%, -50%) !important;
+}
+
+/* The scene's real controls must begin below the fixed HUD, including fallback. */
+body.legend-world-shell-active #root .exp100:has(.exp150-world-page) > .exp100-wrap {
+  padding-top: calc(var(--legend-road-hud-height, 72px) + 12px) !important;
+}
+
+body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-road-scene-ui="true"] > .exp100-scene-shade {
+  background: none !important;
+}
+
+/* Settled reports retain their semantic source and restore it on paint failure. */
+body.legend-world-shell-active #root .exp100:has(.exp100-outcome) > .exp100-wrap {
+  padding-top: calc(var(--legend-result-hud-height, 72px) + 12px) !important;
+  padding-bottom: 80px;
+}
+body.legend-world-shell-active #root .exp100:has(.exp100-outcome) :is(button,h1) { scroll-margin-block: 120px 90px; }
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] :is(.exp100-scene,.exp100-scene-shade,.exp100-head,.exp100-bars i,.exp100-bars b,.v152-expedition-summary,.v152-expedition-banner,.v152-expedition-metrics,.v152-expedition-metrics > div,.v152-expedition-reward-tile,.v152-expedition-xp,.v152-expedition-xp-track,.v152-expedition-xp-track i,.v152-expedition-growth,.exp150-return-report,.exp150-return-report-head,.exp150-return-report-route,.exp150-return-report-columns li,.exp150-return-report-columns h3 b,.exp150-return-report-foot,.exp100-outcome,.exp100-outcome button,.exp100-scene-label,.exp100-sound) {
+  background: transparent !important; border-color: transparent !important; box-shadow: none !important; backdrop-filter: none !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] [data-phaser-result-copy],
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] [data-phaser-result-copy] * {
+  color: transparent !important; text-shadow: none !important; -webkit-text-fill-color: transparent !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] img { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] .v152-expedition-banner::after { background: none !important; }
+body.legend-phaser-world-active #root [data-legend-phaser-road-results="true"] button { outline: none !important; }
+
+/* Combat uses measured shell clearance in both native and DOM fallback modes. */
+body.legend-world-shell-active #root .exp100:has(.rpg-battle) > .exp100-wrap {
+  padding-top: calc(var(--legend-combat-hud-height, 72px) + 12px) !important;
+  padding-bottom: 90px !important;
+}
+body.legend-world-shell-active #root .rpg-battle button { scroll-margin-block: 120px 90px; }
+#root .rpg-arena-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 54%; }
+#root .rpg-battlefield[data-arena="greyfen"] > .rpg-arena-art { object-position: center 58%; }
+/* The four-entry log is part of the page scroll, so it shares one native clip. */
+#root .rpg-battle-log { max-height: none; overflow: visible; }
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root :is(.rpg-battlefield,.rpg-hero-portrait,.rpg-hero-stage-hp,.rpg-foe-hp,.rpg-hero-hp) {
+  background: transparent !important; border-color: transparent !important; box-shadow: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle :is(img,.rpg-hero-stage-shadow,.rpg-foe-shadow,.rpg-duel-ground,.rpg-hero-stage-hp > i,.rpg-foe-hp > i,.rpg-hero-hp > i) { opacity: 0 !important; }
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battlefield::before,
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battlefield::after { opacity: 0 !important; }
+body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle :is(.rpg-dialogue-star,.rpg-tell-mark) { color: transparent !important; -webkit-text-fill-color: transparent !important; }
+
+/* Combat reports keep their full semantic source and restore it on failure. */
+body.legend-world-shell-active #root .v152-combat-results {
+  padding-top: calc(var(--legend-combat-result-hud-height,72px) + 12px) !important;
+  padding-bottom: 90px !important;
+}
+#root .v152-combat-results :is(button,h1) { scroll-margin-block: 120px 90px; }
+#root .v152-results-backdrop img { transform: none; }
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] :is(.v152-results-heading,.v152-results-duel,.v152-results-rewards,.v152-results-metrics > div,.v152-result-reward,.v152-result-card-symbol,.v152-result-small-reward,.v152-result-level-note,.v152-result-action) {
+  background: transparent !important; border-color: transparent !important; box-shadow: none !important; text-shadow: none !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] [data-phaser-combat-result-copy],
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] [data-phaser-combat-result-copy] * {
+  color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important;
+}
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] img,
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] .v152-results-backdrop > div,
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] .v152-results-divider::before,
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] .v152-results-divider::after { opacity: 0 !important; }
+body.legend-phaser-world-active #root [data-legend-phaser-combat-results="true"] .v152-results-backdrop { background: transparent !important; }
+/* Match the full glyph height so result titles cannot collide with subtitles. */
+#root .v152-results-heading h1 { line-height: 1.2; }
+
+/* Growth remains a complete semantic modal, including renderer failure. */
+#legendLevelUpOverlay .v152-growth-backdrop { background: none !important; backdrop-filter: none !important; }
+#legendLevelUpOverlay .v152-growth-backdrop > img { width:100%; height:100%; object-fit:cover; object-position:center 52%; }
+#legendLevelUpOverlay .v152-levelup-panel { background:rgba(16,26,18,.97) !important; }
+#legendLevelUpOverlay h2 { line-height:1.2; }
+#legendLevelUpOverlay button { scroll-margin-block:12px; }
+#legendLevelUpOverlay .v152-growth-controls button { width:44px; height:44px; flex-basis:44px; }
+#legendLevelUpOverlay .v152-growth-point-track span { transition:none; }
+body.legend-phaser-world-active:has(#legendLevelUpOverlay[data-phaser-growth="true"]) > [inert]:not(#game-container) { visibility:hidden !important; }
+#legendLevelUpOverlay[data-phaser-growth="true"] :is(.v152-levelup-panel,.v152-growth-pointbar,.v152-growth-card,.v152-growth-monogram,.v152-growth-current,.v152-growth-controls,.v152-growth-footer,button,.v152-growth-point-track,.v152-growth-point-track > span) {
+  background:transparent !important; border-color:transparent !important; box-shadow:none !important;
+}
+#legendLevelUpOverlay[data-phaser-growth="true"] [data-growth-copy],
+#legendLevelUpOverlay[data-phaser-growth="true"] [data-growth-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
+#legendLevelUpOverlay[data-phaser-growth="true"] img,
+#legendLevelUpOverlay[data-phaser-growth="true"] .v152-levelup-rule > span:first-child,
+#legendLevelUpOverlay[data-phaser-growth="true"] .v152-levelup-rule > span:last-child { opacity:0 !important; }
+
+html:has(#legendLevelUpOverlay),body:has(#legendLevelUpOverlay) { overflow:hidden !important; }
+
+/* The existing cellar DOM remains a complete fallback and input layer. */
+#root .ash099-screen:has(.bell-vault-v100) { background:#101a12 !important; padding-top:calc(var(--cellar-hud-height,72px) + 12px); padding-bottom:90px; }
+#root .ash099-screen:has(.bell-vault-v100) :is(button,h1) { scroll-margin-block:120px 95px; }
+#root .bell-vault-banner { background:#0b140d; }
+#root .bell-vault-scene { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 48%; }
+#root .bell-vault-banner > :not(img) { position:relative; z-index:1; }
+#root .bell-vault-banner:before { content:""; position:absolute; inset:0; background:rgba(7,16,8,.58); z-index:1; }
+#root .bell-vault-banner h1 { line-height:1.15; }
+#root .bell-vault-body { background:rgba(16,26,18,.97); }
+#root .bell-vault-secondary { min-height:44px; }
+#root .bell-vault-choice:is(:hover,:focus-visible) { transform:none; }
+body.legend-phaser-world-active #root .ash099-screen[data-phaser-bell-vault="true"],
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] :is(.ash099-head,.ash099-head > div,.bell-vault-v100,.bell-vault-banner,.bell-vault-body,.bell-vault-room-heading,.bell-vault-room-card,.bell-vault-clue,.bell-vault-treasure,.bell-vault-loadout > div,.bell-vault-footer,.bell-vault-footer > div,.bell-vault-summary > *,.bell-vault-keeper-card,.bell-vault-after-note,.bell-vault-choice-intro,button,#ashBack) { background:transparent !important; border-color:transparent !important; box-shadow:none !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] [data-cellar-copy],
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] [data-cellar-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] img { opacity:0 !important; }
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] :is(.ash099-head,.bell-vault-banner)::before,
+body.legend-phaser-world-active #root [data-phaser-bell-vault="true"] :is(.ash099-head,.bell-vault-banner)::after { display:none !important; }
+
+#root .bell-vault-banner h1:focus { outline:none; }
+
+/* Tactical guidance stays readable over bright regional environments. */
+#root .rpg-battle-footnote { padding:12px; background:rgba(16,26,18,.97); color:#e4dfc9; }
+
+/* Guarded Marsh Path presentation: DOM retains every callback and fallback. */
+body.legend-phaser-world-active #root [data-phaser-marsh="true"] :is(.gfm160-results-art,.gfm160-scene,.gfm160-scene-copy,.gfm160-scene-toolbar,.gfm160-status > div,.gfm160-status i,.gfm160-status b,.gfm160-panel,.gfm160-route-choices,.gfm160-route-selected,.gfm160-optional,.gfm160-field-note,.gfm160-feedback,.gfm160-note,.gfm160-results-panel,.gfm160-report-metrics > div,.gfm160-report-findings,button,.gfm160-route-number) { background:transparent !important; border-color:transparent !important; box-shadow:none !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-marsh="true"] [data-marsh-copy],
+body.legend-phaser-world-active #root [data-phaser-marsh="true"] [data-marsh-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-marsh="true"] :is(img,.gfm160-scene-shade,.gfm160-results-art > div) { opacity:0 !important; }
+body.legend-phaser-world-active #root [data-phaser-marsh="true"] .gfm160-report-findings ul { list-style:none; }
+
+body.legend-phaser-world-active:has(#gfm160MapOverlay[data-phaser-marsh-map="true"]) > [inert]:not(#game-container) { visibility:hidden !important; }
+#gfm160MapOverlay[data-phaser-marsh-map="true"],
+#gfm160MapOverlay[data-phaser-marsh-map="true"] :is(.gfm160-map-dialog,.gfm160-map-node,.gfm160-journal-note,button) { background:transparent !important; border-color:transparent !important; box-shadow:none !important; }
+#gfm160MapOverlay[data-phaser-marsh-map="true"] [data-marsh-map-copy],
+#gfm160MapOverlay[data-phaser-marsh-map="true"] [data-marsh-map-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
+#gfm160MapOverlay[data-phaser-marsh-map="true"] button:focus-visible { outline:none; }
+
+/* Storehouse retains its complete DOM fallback and semantic action controls. */
+#root .ash099-screen:has(.gss170-page) { background:#102722 !important; padding-top:calc(var(--storehouse-hud-height,72px) + 12px); padding-bottom:90px; }
+#root .ash099-screen:has(.gss170-page) :is(button,h1) { scroll-margin-block:120px 95px; }
+#root .gss170-scene-copy h1 { line-height:1.15; }
+#root .gss170-scene-copy h1:focus { outline:none; }
+#root .gss170-inline-action { min-height:44px; }
+#root .gss170-action:is(:hover,:focus-visible) { transform:none; }
+#root .gss170-status:not(:empty) { padding:12px; background:#102722; border:1px solid #b49d69; line-height:1.6; }
+body.legend-phaser-world-active #root .ash099-screen[data-phaser-storehouse="true"],
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] :is(.ash099-head,.ash099-head > div,.gss170-page,.gss170-scene,.gss170-card,.gss170-stat-grid > div,.gss170-found-note,.gss170-status,button,#ashBack) { background:transparent !important; border-color:transparent !important; box-shadow:none !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] [data-storehouse-copy],
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] [data-storehouse-copy] * { color:transparent !important; -webkit-text-fill-color:transparent !important; text-shadow:none !important; }
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] :is(img,.gss170-scene-shade) { opacity:0 !important; }
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] .ash099-head::before,
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] .ash099-head::after { display:none !important; }
+
+body.legend-phaser-world-active #root [data-phaser-storehouse="true"] button:focus-visible { outline:none !important; }
+
+/* Regional encounters rendered directly in root need the same shell clearance. */
+body.legend-world-shell-active #root > .rpg-battle {
+  padding-top:calc(var(--legend-combat-hud-height,72px) + 12px) !important;
+  padding-bottom:90px !important;
+}
+#root .rpg-battle:focus { outline:none; }
+
+/* Keep regional status words readable in compact encounter reports. */
+#root .v152-results-metrics > div strong { overflow-wrap:anywhere; line-height:1.2; }
+@media(max-width:480px) {
+  #root .v152-results-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  #root .v152-results-metrics > div:last-child { grid-column:1/-1; }
+}
+#root .v152-combat-results:not([data-legend-phaser-combat-results="true"]) :is(.v152-results-heading,.v152-results-duel,.v152-results-rewards) { background:rgba(16,26,18,.97) !important; }
+#root .v152-combat-results:not([data-legend-phaser-combat-results="true"]) .v152-results-heading :is(h1,p) { text-shadow:none !important; }
+
+/* Settings retain semantic checkboxes and restore complete DOM on failed preflight. */
+#root .settings09x-hero h1 { line-height:1.1; }
+#root .settings09x-status:empty { display:none; }
+#root .settings09x-status { line-height:1.5; padding:12px; }
+#root .settings09x-toggle input:checked ~ .settings09x-switch { background:#a88942; }
+#root .settings09x-toggle input:checked ~ .settings09x-switch::after { transform:translateX(21px); background:#ffe4a0; }
+#root .settings09x-toggle:focus-within { outline:2px solid #ffe6a0; outline-offset:2px; }
+body.a11y-large-text .lws-setting-row strong { font-size:16px; }
+body.a11y-large-text .lws-setting-row small { font-size:14px; }
+body.a11y-bold-text .lws-setting-row :is(strong,small) { font-weight:700; }
+body.a11y-spacious .lws-setting-row { min-height:80px; }
+body.a11y-readable-font .lws-setting-row { font-family:Arial,sans-serif; }
+body.legend-phaser-settings-modal #game-container { z-index:801; }
+body.legend-phaser-settings-modal #legend-world-shell-modal-root { z-index:802; background:transparent!important; backdrop-filter:none!important; }
+body.legend-phaser-settings-modal .lws-modal::before { display:none!important; }
+body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"], body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] :is(.settings09x-hero,.settings09x-toggle,.settings09x-note,.settings09x-actions,.settings09x-btn,.settings09x-status,.lws-modal-header,.lws-modal-footer,.lws-modal-content,.lws-setting-row,.lws-btn,.lws-close-btn) { background:transparent!important; border-color:transparent!important; box-shadow:none!important; filter:none!important; }
+body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] [data-settings-copy="true"], body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] [data-settings-copy="true"] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] :is(.settings09x-switch,.lws-setting-row input) { opacity:0; }
+body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] :is(button,.settings09x-toggle):focus-within { outline:none!important; }
+body.legend-phaser-world-active :is(#root,#legend-world-shell-modal-root) [data-phaser-settings="true"] button { transform:none!important; }
+
+@media(min-width:761px) { body.legend-phaser-world-active #root .settings09x-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; } }
+#root .settings09x-toggle > span:last-of-type > span { line-height:1.6; min-height:3lh; }
+
+#legend-world-shell-modal-root .lws-setting-row > span { flex:1; min-width:0; }
+#legend-world-shell-modal-root .lws-setting-row input { width:22px!important; min-width:22px!important; max-width:22px!important; height:22px!important; flex:0 0 22px; }
+body.a11y-high-contrast #legend-world-shell-modal-root .lws-setting-row { background:#050805; border-color:#f8efc7; }
+body.a11y-high-contrast #legend-world-shell-modal-root .lws-setting-row :is(strong,small) { color:#fff; }
+
+/* Credits remain an accessible scrollable dialog, with no global blur. */
+body .legend-credits-overlay { backdrop-filter:none; background:transparent; }
+body .legend-credits-panel { box-sizing:border-box; max-height:min(88dvh,680px); }
+body .legend-credits-line { display:block; }
+body .legend-credits-panel h2:focus { outline:none; }
+body.a11y-reduced-motion .legend-credits-overlay { animation:none; }
+body.legend-phaser-credits-active #game-container { z-index:1001; }
+body.legend-phaser-credits-active .legend-credits-overlay { z-index:1002; }
+body.legend-phaser-credits-active .legend-credits-panel, body.legend-phaser-credits-active .legend-credits-close { background:transparent!important; border-color:transparent!important; box-shadow:none!important; filter:none!important; text-shadow:none!important; transform:none!important; }
+body.legend-phaser-credits-active .legend-credits-panel::before { display:none; }
+body.legend-phaser-credits-active .legend-credits-rule { background:transparent; }
+body.legend-phaser-credits-active [data-credits-copy], body.legend-phaser-credits-active [data-credits-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-credits-active .legend-credits-close:focus-visible { outline:none; }
+body.legend-phaser-credits-active .legend-credits-overlay .legend-credits-panel[data-phaser-credits] .legend-credits-close { background:transparent!important; border-color:transparent!important; box-shadow:none!important; transform:none!important; }
+body.legend-phaser-credits-active .legend-credits-overlay .legend-credits-panel[data-phaser-credits] [data-credits-copy], body.legend-phaser-credits-active .legend-credits-overlay .legend-credits-panel[data-phaser-credits] [data-credits-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+
+/* Native dispatches keep actual anchors, complete authored copy and fallback. */
+#root .dispatches-v140 :is(p,h1,h2,h3) { line-height:1.6; }
+#root .dispatches-v140 h1 { line-height:1.15; }
+#root .dispatches-v140 :is(h2,h3) { line-height:1.4; }
+#root .dispatches-v140 a { min-height:44px; display:inline-flex; align-items:center; }
+#root .dispatches-v140 h1:focus { outline:none; }
+body.legend-phaser-world-active #root [data-phaser-dispatches="true"], body.legend-phaser-world-active #root [data-phaser-dispatches="true"] :is(.dispatches-v140-header,.dispatches-v140-feature,.dispatches-v140-feature-mark,.dispatches-v140-card,.dispatches-v140-section-heading,.dispatches-v140-footer,button,a) { background:transparent!important; border-color:transparent!important; box-shadow:none!important; filter:none!important; transform:none!important; }
+body.legend-phaser-world-active #root [data-phaser-dispatches="true"] .dispatches-v140-backdrop { display:none!important; }
+body.legend-phaser-world-active #root [data-phaser-dispatches="true"] [data-dispatch-copy], body.legend-phaser-world-active #root [data-phaser-dispatches="true"] [data-dispatch-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-world-active #root [data-phaser-dispatches="true"] .dispatches-v140-feature-mark img { opacity:0; }
+body.legend-phaser-world-active #root [data-phaser-dispatches="true"] :is(button,a):focus-visible { outline:none!important; }
+
+/* Account fields stay browser-native for editing, autofill and password masking. */
+#root .account09x-clean :is(h1,h2,h3) { line-height:1.4; overflow-wrap:anywhere; }
+#root .account09x-clean :is(p,small) { line-height:1.65; overflow-wrap:anywhere; }
+#root .account09x-clean :is(.account09x-profile-main,.account09x-section-head > div) { min-width:0; }
+#root .account09x-clean .account09x-cloud-state { white-space:normal; }
+#root .account09x-clean .account09x-auth-switch-copy { display:block; margin-bottom:8px; }
+#root .account09x-clean #authSwitchBtn { min-height:44px; padding:8px 12px; }
+#root .account09x-clean :is(h1,.account09x-success):focus { outline:none; }
+body.legend-phaser-world-active #root [data-phaser-account="true"], body.legend-phaser-world-active #root [data-phaser-account="true"] :is(.account09x-header,.account09x-panel,.account09x-traveler-summary,.account09x-cloud-slot,.account09x-actions,.account09x-auth-tabs,.account09x-note,.account09x-success,.account09x-avatar,button,input) { background:transparent!important; border-color:transparent!important; box-shadow:none!important; filter:none!important; transform:none!important; transition:none!important; }
+body.legend-phaser-world-active #root [data-phaser-account="true"] .account09x-panel::before { display:none; }
+body.legend-phaser-world-active #root [data-phaser-account="true"] [data-account-copy], body.legend-phaser-world-active #root [data-phaser-account="true"] [data-account-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-world-active #root [data-phaser-account="true"] :is(button,input):focus-visible { outline:none!important; }
+body.legend-phaser-world-active #root [data-phaser-account="true"] input { color:#f2ead5!important; -webkit-text-fill-color:#f2ead5!important; caret-color:#ffe6a0; }
+body.legend-phaser-world-active #root [data-phaser-account="true"] input::placeholder { color:#bfc6b8!important; opacity:1; }
+
+/* Recovery screens retain their real reload/return controls with or without Phaser. */
+#root [data-recovery-screen] { box-sizing:border-box; display:flex!important; align-items:center; justify-content:center; min-height:100dvh; width:100%; max-width:none!important; margin:0!important; padding:24px 16px!important; background:transparent!important; }
+#root [data-recovery-screen] .legend-recovery-panel { box-sizing:border-box; width:min(100%,640px); max-width:640px!important; margin:0!important; padding:clamp(20px,4vw,36px)!important; background:#101a12!important; border:1px solid #b49d69!important; border-radius:2px!important; color:#f2ead5; box-shadow:none!important; }
+#root [data-recovery-screen] :is(.account09x-hero,.account09x-hero-content,.account09x-actions,.settings09x-hero,.settings09x-actions,.actions) { display:block!important; margin:0!important; padding:0!important; background:none!important; border:0!important; box-shadow:none!important; }
+#root [data-recovery-screen] :is(h1,h2) { margin:0 0 18px!important; font-size:clamp(1.5rem,4vw,2.1rem)!important; line-height:1.3!important; color:#fff2cf!important; text-shadow:none!important; overflow-wrap:anywhere; }
+#root [data-recovery-screen] p { margin:0 0 22px!important; font-size:1rem!important; line-height:1.6!important; color:#e5e3d7!important; overflow-wrap:anywhere; }
+#root [data-recovery-screen] button { box-sizing:border-box; min-height:48px!important; max-width:100%; padding:12px 20px!important; margin:0!important; border:1px solid #b49d69!important; border-radius:2px!important; background:#233323!important; color:#fff2cf!important; font-size:1rem!important; line-height:1.4!important; white-space:normal!important; transform:none!important; }
+#root [data-recovery-screen] button:focus-visible { outline:3px solid #ffe6a0; outline-offset:3px; }
+body.legend-phaser-world-active #root [data-phaser-recovery], body.legend-phaser-world-active #root [data-phaser-recovery] button { background:transparent!important; border-color:transparent!important; box-shadow:none!important; }
+body.legend-phaser-world-active #root [data-phaser-recovery] [data-recovery-copy], body.legend-phaser-world-active #root [data-phaser-recovery] [data-recovery-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-world-active #root [data-phaser-recovery] button:focus-visible { outline:none!important; }
+body.legend-phaser-world-active #root [data-recovery-screen]:has([data-phaser-recovery]) { background:transparent!important; }
+#root [data-recovery-screen], #root [data-recovery-screen] * { backdrop-filter:none!important; }
+#root [data-recovery-screen] :is(h1,h2):focus { outline:none; }
+body.a11y-large-text #root [data-recovery-screen] :is(p,button) { font-size:1.2rem!important; }
+body.a11y-large-text #root [data-recovery-screen] :is(h1,h2) { font-size:clamp(1.8rem,5vw,2.5rem)!important; }
+body.a11y-readable-font #root [data-recovery-screen] * { font-family:Verdana,Arial,sans-serif!important; }
+body.a11y-bold-text #root [data-recovery-screen] :is(h1,h2,p,button) { font-weight:700!important; }
+body.a11y-spacious #root [data-recovery-screen] .legend-recovery-panel { padding:clamp(26px,5vw,44px)!important; }
+body.a11y-high-contrast #root [data-recovery-screen] .legend-recovery-panel { background:#000!important; border-color:#fff!important; }
+body.a11y-high-contrast #root [data-recovery-screen] :is(h1,h2,p,button) { color:#fff!important; }
+body.a11y-high-contrast.legend-phaser-world-active #root [data-phaser-recovery] { background:transparent!important; border-color:transparent!important; }
+body.a11y-high-contrast.legend-phaser-world-active #root [data-phaser-recovery] [data-recovery-copy] { color:transparent!important; }
+body #root [data-recovery-screen] .legend-recovery-panel :is(.account09x-hero,.settings09x-hero)::before,
+body #root [data-recovery-screen] .legend-recovery-panel :is(.account09x-hero,.settings09x-hero)::after { content:none!important; display:none!important; background:none!important; }
+#root [data-recovery-screen] :is(.account09x-hero,.account09x-hero-content,.settings09x-hero) { min-height:0!important; }
+
+/* Keep real boot copy visible until the preload painter is complete. */
+html.legend-phaser-preloading #legend-boot-screen { display:grid!important; overflow-y:auto; align-items:safe center; padding:20px 16px; animation:none!important; }
+html.legend-phaser-preloading #root { visibility:hidden!important; pointer-events:none!important; }
+html.legend-phaser-preloading #engine-skip { display:none!important; }
+html.legend-phaser-preloading #legend-boot-screen::before,
+html.legend-phaser-preloading #legend-boot-screen::after,
+html.legend-phaser-preloading .legend-boot-vignette,
+html.legend-phaser-preloading .legend-boot-sigil { display:none!important; }
+html.legend-phaser-preloading .legend-boot-frame { padding:24px; background:#101a12; border:1px solid #b49d69; }
+html.legend-phaser-preloading .legend-boot-wordmark { height:110px; width:100%; filter:none; }
+html.legend-phaser-preloading .legend-boot-frame :is(p,span,strong,b) { font-size:14px; line-height:1.5; letter-spacing:normal; white-space:normal; color:#f2ead5; }
+html.legend-phaser-preloading .legend-boot-checklist { grid-template-columns:1fr 1fr; margin-top:14px; }
+html.legend-phaser-preloading .legend-boot-checklist>div { grid-template-columns:24px 1fr; padding:6px 0; }
+html.legend-phaser-preloading .legend-boot-subtitle { margin-bottom:16px; }
+html.legend-phaser-preloading .legend-boot-footnote { margin:14px 0; }
+.legend-boot-assets p { margin:14px 0 6px; }
+.legend-boot-assets [role="progressbar"] { height:6px; background:#35402c; }
+.legend-boot-assets [role="progressbar"] span { display:block; height:100%; background:#e2c47e; }
+html.legend-phaser-preloading #legend-boot-screen[data-phaser-loading] { background:transparent!important; }
+html.legend-phaser-preloading [data-phaser-loading] .legend-boot-frame,
+html.legend-phaser-preloading [data-phaser-loading] .legend-boot-frame * { background:transparent!important; border-color:transparent!important; box-shadow:none!important; text-shadow:none!important; color:transparent!important; }
+html.legend-phaser-preloading [data-phaser-loading] .legend-boot-wordmark { opacity:0; }
+html.legend-phaser-preloading body.a11y-large-text .legend-boot-frame :is(p,span,strong,b) { font-size:18px; }
+html.legend-phaser-preloading body.a11y-readable-font .legend-boot-frame * { font-family:Verdana,Arial,sans-serif; }
+html.legend-phaser-preloading body.a11y-bold-text .legend-boot-frame :is(p,span,strong,b) { font-weight:700; }
+html.legend-phaser-preloading body.a11y-high-contrast .legend-boot-frame { background:#000; color:#fff; }
+@media(max-height:500px) {
+  html.legend-phaser-preloading .legend-boot-wordmark { height:70px; }
+  html.legend-phaser-preloading .legend-boot-frame { padding:16px; }
+}
+html.legend-phaser-preloading .legend-boot-wordmark-fallback[hidden] { display:none!important; }
+html.legend-phaser-preloading { overflow:hidden!important; }
+
+/* Cloud confirmation keeps cancel/accept as real accessible buttons. */
+.legend-confirm-overlay { position:fixed; inset:0; z-index:1002; display:flex; align-items:center; justify-content:center; padding:16px; box-sizing:border-box; background:transparent; backdrop-filter:none; }
+.legend-confirm-panel { box-sizing:border-box; width:min(100%,560px); max-height:calc(100dvh - 32px); overflow:auto; overscroll-behavior:contain; padding:24px; border:1px solid #b49d69; background:#101a12; color:#f2ead5; }
+.legend-confirm-panel h2 { margin:0 0 18px; font-size:1.6rem; line-height:1.35; overflow-wrap:anywhere; }
+.legend-confirm-panel p { margin:0 0 24px; font-size:1rem; line-height:1.6; }
+.legend-confirm-actions { display:flex; flex-wrap:wrap; gap:12px; }
+.legend-confirm-panel button { flex:1 1 180px; min-height:48px; padding:12px 16px; background:#233323; border:1px solid #b49d69; border-radius:2px; color:#fff2cf; font:inherit; font-size:1rem; line-height:1.5; cursor:pointer; white-space:normal; touch-action:manipulation; }
+.legend-confirm-panel button:focus-visible { outline:3px solid #ffe6a0; outline-offset:2px; }
+body.a11y-large-text .legend-confirm-panel :is(p,button) { font-size:1.2rem; }
+body.a11y-large-text .legend-confirm-panel h2 { font-size:1.9rem; }
+body.a11y-readable-font .legend-confirm-panel { font-family:Verdana,Arial,sans-serif; }
+body.a11y-bold-text .legend-confirm-panel { font-weight:700; }
+body.a11y-spacious .legend-confirm-panel { padding:32px; }
+body.a11y-high-contrast .legend-confirm-panel { background:#000; color:#fff; }
+body.legend-phaser-confirmation-active #game-container { z-index:1001; }
+body.legend-phaser-confirmation-active .legend-confirm-panel,
+body.legend-phaser-confirmation-active .legend-confirm-panel button { background:transparent!important; border-color:transparent!important; box-shadow:none!important; text-shadow:none!important; transform:none!important; }
+body.legend-phaser-confirmation-active [data-confirmation-copy],
+body.legend-phaser-confirmation-active [data-confirmation-copy] * { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-confirmation-active .legend-confirm-panel button:focus-visible { outline:none; }
+/* Override the legacy global button theme only on these two controls. */
+body .legend-confirm-panel :is(#legendConfirmCancel,#legendConfirmAccept) { background:#233323!important; border-radius:2px!important; color:#fff2cf!important; transform:none!important; box-shadow:none!important; }
+body.legend-phaser-confirmation-active .legend-confirm-panel :is(#legendConfirmCancel,#legendConfirmAccept) { background:transparent!important; border-color:transparent!important; color:transparent!important; }
+html.legend-confirmation-open { overflow:hidden!important; }
+
+/* The optional world awakening keeps the approved panorama visible. */
+.legend-awakening-overlay { position:fixed; inset:0; z-index:100001; display:flex; align-items:center; justify-content:center; padding:16px; box-sizing:border-box; background:transparent; backdrop-filter:none; transition:opacity .62s ease; }
+.legend-awakening-panel { box-sizing:border-box; width:min(560px,100%); max-height:calc(100dvh - 32px); overflow:auto; overscroll-behavior:contain; padding:28px; border:1px solid #b49d69; background:#101a12; text-align:center; color:#f2ead5; }
+.legend-awakening-wordmark { display:block; width:100%; height:140px; object-fit:contain; margin:0 0 22px; }
+.legend-awakening-panel h1 { font-size:2rem; line-height:1.3; margin:0 0 22px; }
+.legend-awakening-panel [hidden] { display:none!important; }
+.legend-awakening-panel p { font-size:1rem; line-height:1.6; margin:0 0 16px; }
+.legend-awakening-panel #engine-skip { position:static; display:block!important; width:100%; min-height:48px; margin:22px 0 0; padding:12px 16px; transform:none!important; border-radius:2px!important; background:#233323!important; color:#fff2cf!important; font:inherit; font-size:1rem; line-height:1.5; letter-spacing:normal; text-transform:none; backdrop-filter:none; box-shadow:none!important; }
+.legend-awakening-panel #engine-skip:focus-visible { outline:2px solid #ffe6a0; outline-offset:2px; }
+body.a11y-large-text .legend-awakening-panel :is(p,#engine-skip) { font-size:1.2rem; }
+body.a11y-readable-font .legend-awakening-panel { font-family:Verdana,Arial,sans-serif; }
+body.a11y-bold-text .legend-awakening-panel { font-weight:700; }
+body.a11y-spacious .legend-awakening-panel { padding:36px; }
+body.a11y-high-contrast .legend-awakening-panel { background:#000; color:#fff; }
+body.legend-phaser-world-active .legend-awakening-panel[data-phaser-awakening],body.legend-phaser-world-active .legend-awakening-panel[data-phaser-awakening] #engine-skip { background:transparent!important; border-color:transparent!important; box-shadow:none!important; }
+body.legend-phaser-world-active [data-phaser-awakening] .legend-awakening-wordmark { opacity:0; }
+body.legend-phaser-world-active [data-awakening-copy],body.legend-phaser-world-active [data-phaser-awakening] #engine-skip { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+body.legend-phaser-world-active [data-phaser-awakening] #engine-skip:focus-visible { outline:none; }
+@media(max-height:500px) { .legend-awakening-wordmark { height:80px; margin-bottom:14px; } .legend-awakening-panel { padding:18px; } }
+@media(prefers-reduced-motion:reduce) { .legend-awakening-overlay { transition:none; } }
+body.a11y-reduced-motion .legend-awakening-overlay { transition:none; }
+html.legend-phaser-world-active.engine-intro-active { overflow:hidden!important; }
+
+/* A destination transition is a short presentation, never a dark loading veil.
+   The source remains the complete fallback when native art/copy cannot paint. */
+#legend-scene-curtain::before { inset:0!important; opacity:1!important; filter:none!important; transform:none!important; animation:none!important; border:0!important; box-shadow:none!important; background-image:url('../assets/generated/title/title-ashmere-road.webp')!important; }
+body:is(.legend-world-scene-road,.legend-world-scene-combat,.legend-world-scene-combat-results,.legend-world-scene-expedition-results) #legend-scene-curtain::before { background-image:url('../assets/locations/roads/location_old_road_main_v1.jpg')!important; }
+body.legend-world-region-greyfen #legend-scene-curtain::before { background-image:url('../assets/generated/locations/greyfen-marsh-walkway.webp')!important; }
+body.legend-world-scene-dungeon #legend-scene-curtain::before { background-image:url('../assets/generated/locations/bell-cellar-undercroft.webp')!important; }
+#legend-scene-curtain::after { display:none!important; }
+#legend-scene-curtain .legend-transition-scene { box-sizing:border-box; width:min(560px,calc(100vw - 32px)); max-width:none; max-height:calc(100dvh - 32px); overflow:auto; padding:28px; gap:20px; background:#101a12; border:1px solid #b49d69; box-shadow:none; backdrop-filter:none; opacity:1!important; transform:none!important; animation:none!important; transition:none!important; }
+#legend-scene-curtain .legend-transition-wordmark { width:100%; height:110px; max-height:none; filter:none; }
+#legend-scene-curtain span { opacity:1; transform:none; text-shadow:none; transition:none!important; }
+#legend-scene-curtain .legend-transition-location { padding:0; font-size:clamp(1.2rem,3vw,1.8rem); line-height:1.35; letter-spacing:.05em; color:#f2ead5; overflow-wrap:anywhere; }
+#legend-scene-curtain .legend-transition-caption { font-size:.8rem; line-height:1.5; letter-spacing:.08em; color:#f2ead5; text-shadow:none; }
+#legend-scene-curtain .legend-transition-rule { flex-shrink:0; }
+#legend-scene-curtain .legend-transition-loader { flex-shrink:0; height:3px; }
+#legend-scene-curtain [hidden] { display:none!important; }
+body.a11y-large-text #legend-scene-curtain .legend-transition-location { font-size:2rem; }
+body.a11y-large-text #legend-scene-curtain .legend-transition-caption { font-size:1rem; }
+body.a11y-readable-font #legend-scene-curtain .legend-transition-location { font-family:Verdana,Arial,sans-serif; }
+body.a11y-bold-text #legend-scene-curtain .legend-transition-location { font-weight:700; }
+body.a11y-high-contrast #legend-scene-curtain .legend-transition-scene { background:#000; color:#fff; }
+body.a11y-high-contrast #legend-scene-curtain :is(.legend-transition-location,.legend-transition-caption) { color:#fff; }
+/* Fade the destination DOM with the same bounded curtain opacity. The existing
+   canvas stays in its normal layer, so revealing cannot cover the destination. */
+body.legend-phaser-transition-active > :not(#game-container):not(#legend-scene-curtain) { opacity:calc(1 - var(--legend-transition-opacity,0))!important; }
+body.legend-phaser-transition-active #legend-scene-curtain { background:transparent!important; }
+body.legend-phaser-transition-active #legend-scene-curtain::before { display:none; }
+body.legend-phaser-transition-active #legend-scene-curtain .legend-transition-scene { background:transparent!important; border-color:transparent!important; }
+body.legend-phaser-transition-active #legend-scene-curtain :is(.legend-transition-wordmark,.legend-transition-rule,.legend-transition-loader) { visibility:hidden; }
+body.legend-phaser-transition-active #legend-scene-curtain :is(.legend-transition-location,.legend-transition-caption) { color:transparent!important; -webkit-text-fill-color:transparent!important; text-shadow:none!important; }
+@media(max-height:500px) { #legend-scene-curtain .legend-transition-scene { padding:16px; gap:10px; } #legend-scene-curtain .legend-transition-wordmark { height:64px; } }
+html:has(#legend-scene-curtain:is(.is-covering,.is-revealing)) { overflow:hidden!important; }
+
+/* Short title handoff: keep the live notice readable in native and DOM modes. */
+#root .title-transition-notice { box-sizing:border-box; border-radius:2px; background:#101a12; border-color:#b49d69; color:#f2ead5; font:700 1rem/1.5 system-ui,sans-serif; text-transform:none; letter-spacing:normal; text-align:center; text-shadow:none; box-shadow:none; }
+body.a11y-large-text #root .title-transition-notice { font-size:1.2rem; }
+body.a11y-readable-font #root .title-transition-notice { font-family:Verdana,Arial,sans-serif; }
+body.a11y-high-contrast #root .title-transition-notice { background:#000; color:#fff; }
+body #root .title-transition-notice[data-phaser-title-notice] { background:transparent!important; border-color:transparent!important; color:transparent!important; -webkit-text-fill-color:transparent!important; }
+#root .title-wrap.title-is-opening { animation:none!important; transform:none!important; filter:none!important; }
+
+/* Title content grows with saved names and readability preferences. */
+#root .title-v136-rpg .v120-traveler-line > div { flex:1 1 auto; min-width:0; }
+#root .title-v136-rpg .v120-traveler-line strong { white-space:normal!important; overflow:visible!important; text-overflow:clip!important; overflow-wrap:anywhere; line-height:1.5!important; }
+#root .title-v136-rpg .v136-menu-copy { min-width:0; gap:2px; }
+#root .title-v136-rpg .v136-menu-copy strong { font-family:Georgia,'Times New Roman',serif; font-size:1rem!important; line-height:1.4!important; text-transform:none!important; white-space:normal; overflow-wrap:anywhere; }
+#root .title-v136-rpg .v136-menu-copy small { font-size:.75rem!important; line-height:1.5!important; white-space:normal; overflow-wrap:anywhere; }
+#root .title-v136-rpg .v136-menu-btn { height:auto!important; max-height:none!important; min-height:44px!important; }
+#root .title-v136-rpg .v120-title-hero { backdrop-filter:none!important; }
+body.a11y-readable-font #root .title-v136-rpg :is(.v136-menu-copy strong,.v136-menu-copy small,.v120-traveler-line strong,.v120-title-hero > p) { font-family:Verdana,Arial,sans-serif!important; }
+body.a11y-large-text #root .title-v136-rpg :is(.v136-menu-copy strong,.v120-traveler-line strong,.v120-title-hero > p) { font-size:1.2rem!important; line-height:1.5!important; }
+body.a11y-large-text #root .title-v136-rpg :is(.v136-menu-copy small,.v120-traveler-line div > span) { font-size:1rem!important; line-height:1.5!important; }
+body.a11y-large-text #root .title-v136-rpg .v136-menu-btn { width:100%!important; }
+body.a11y-spacious #root .title-v136-rpg .v136-menu-btn { min-height:64px!important; padding-block:12px!important; }
+body.a11y-high-contrast #root .title-v136-rpg { filter:none!important; }
+body.a11y-high-contrast:not(.legend-phaser-title-ui-active) #root .title-v136-rpg :is(.v120-title-hero,.v136-menu-btn,button#continue.v136-menu-primary,button#newPrimary.v136-menu-primary) { background:#000!important; }
+body.a11y-high-contrast:not(.legend-phaser-title-ui-active) #root .title-v136-rpg :is(.v136-menu-copy strong,.v136-menu-copy small,.v136-menu-arrow,.v120-traveler-line strong,.v120-title-hero > p) { color:#fff!important; }
+
+/* Native navigation owns button feedback; avoid self-triggered fallback loops. */
+body.legend-phaser-world-active #root .legend-phaser-region-ledger .reg100-btn,
+body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-card,
+body.legend-phaser-world-active #root .legend-phaser-route-board #ashBack { transition:none!important; }

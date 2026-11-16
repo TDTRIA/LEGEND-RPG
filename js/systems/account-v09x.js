@@ -47,6 +47,7 @@
     sessionEmail,
     formatDate:fmtDate
   });
+  let clearingSlot = false;
   async function renderAccount(message = ''){
     await refreshHealth();
     const session=await getSession();
@@ -59,7 +60,9 @@
 
     if(typeof profileView?.render!=='function'){
       const host=root();
-      if(host)host.innerHTML='<main class="account09x"><div class="account09x-wrap"><h1>Profile is unavailable</h1><p>The profile view module did not load. Refresh before continuing.</p></div></main>';
+      if(host)host.innerHTML='<main class="account09x"><div class="account09x-wrap"><h1>Profile is unavailable</h1><p>The profile view module did not load. Refresh before continuing.</p><button id="backTitle" type="button">Return to Title</button></div></main>';
+      host?.querySelector('#backTitle')?.addEventListener('click',()=>window.LegendGameBootstrap?.title?.());
+      window.LegendRecoveryScreenV1?.present(host);
       return;
     }
 
@@ -101,9 +104,28 @@
         renderAccount(result.message);
       },
       onCloudDelete:async slot=>{
-        if(!confirm('Clear Cloud Slot '+slot+'? This does not delete your local traveler.'))return;
-        const result=await cloudDelete(session,slot);
-        renderAccount(result.message);
+        if(clearingSlot)return;
+        clearingSlot=true;
+        const source=root()?.querySelector('.account09x');
+        const button=source?.querySelector(`[data-cloud-delete="${slot}"]`);
+        try{
+          const accepted=window.LegendCloudSlotConfirmationV1?.request
+            ? await window.LegendCloudSlotConfirmationV1.request(slot,source)
+            : confirm('Clear Cloud Slot '+slot+'? This does not delete your local traveler.');
+          if(!accepted||!source?.isConnected)return;
+          const currentSession=await getSession();
+          if(!source.isConnected)return;
+          if(currentSession?.user?.id!==session?.user?.id){
+            await renderAccount('Your account changed. Open your profile again before clearing a cloud slot.');
+            return;
+          }
+          if(button){button.disabled=true;button.textContent='Clearing...';}
+          const result=await cloudDelete(session,slot);
+          if(source.isConnected)await renderAccount(result.message);
+        }finally{
+          clearingSlot=false;
+          if(button?.isConnected){button.disabled=false;button.textContent='Clear';}
+        }
       }
     });
 

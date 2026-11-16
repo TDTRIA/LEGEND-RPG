@@ -264,7 +264,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   background: linear-gradient(150deg, rgba(17, 24, 17, .44), rgba(7, 12, 8, .34) 70%);
   box-shadow: 0 20px 55px rgba(0, 0, 0, .42), inset 0 0 0 3px rgba(0, 0, 0, .24), inset 0 0 32px rgba(191, 160, 100, .025);
   pointer-events: auto;
-  backdrop-filter: blur(2px);
+  backdrop-filter: none;
 }
 .lws-panel-left { left: 12px; }
 .lws-panel-right { right: 12px; }
@@ -378,7 +378,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   padding: clamp(12px, 3vw, 32px);
   color: var(--lws-paper);
   background: rgba(3, 6, 4, .30);
-  backdrop-filter: blur(2px);
+  backdrop-filter: none;
 }
 #legend-world-shell-modal-root[hidden] { display: none; }
 .lws-modal {
@@ -501,7 +501,7 @@ body.legend-world-shell-active #root .v152-combat-results {
   .lws-mobile-toggle { display: inline-flex; width: auto; min-height: 29px; padding: 5px 7px; font-size: 10px; }
   .lws-bottom-bar { right: 7px; bottom: 7px; left: 7px; min-height: 48px; gap: 4px; padding: 4px; }
   .lws-bottom-bar .lws-btn { min-width: 72px; min-height: 38px; padding: 5px 7px; gap: 5px; }
-  .lws-bottom-bar .lws-btn .lws-btn-icon { display: none; }
+  #legend-world-shell-root .lws-bottom-bar .lws-btn .lws-btn-icon { display: none !important; }
   .lws-bottom-bar .lws-btn strong { font-size: 10px; }
   .lws-shell-toast { top: 64px; }
   .lws-inventory-grid { grid-template-columns: minmax(0, 1fr); }
@@ -629,4 +629,73 @@ body.a11y-reduced-motion #legend-world-shell-modal-root *::after {
   border-color:#e7c982;
   background:linear-gradient(180deg,#293327,#141c14);
   color:#fff0c6!important;
+}
+
+/* Keep the regional ledger's final return control above the fixed action dock. */
+body.legend-world-shell-active #root .reg100-screen {
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+
+/* The region ledger is an inner scrolling screen; reserve the persistent HUD. */
+body.legend-world-shell-active #root .reg100 {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px));
+}
+
+/* Keep the complete records screen clear of the persistent HUD and action dock. */
+body.legend-world-shell-active #root .ash099-terminal:has(.ash099-traveler-profile) {
+  padding-top: calc(72px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+
+.lws-panel-header > div { min-width: 0; flex: 1; }
+.lws-panel-header h2 { overflow-wrap: anywhere; }
+.lws-panel-header .lws-tag { flex-shrink: 0; }
+@media (max-width: 760px) {
+  #legend-world-shell-root .lws-hud .lws-mobile-toggle { font-size: 10px !important; }
+  #legend-world-shell-root .lws-hud .lws-location strong {
+    white-space: normal; overflow-wrap: anywhere; text-overflow: clip;
+  }
+}
+@media (max-width: 760px) {
+  #legend-world-shell-root .lws-hud .lws-brand-mark { display: none; }
+  #legend-world-shell-root .lws-hud .lws-brand-copy { display: flex; flex-shrink: 0; }
+  #legend-world-shell-root .lws-hud .lws-brand-copy strong { font-size: 9px; letter-spacing: .04em; }
+  #legend-world-shell-root .lws-hud .lws-hud-brand { gap: 0; flex-shrink: 0; }
+  #legend-world-shell-root .lws-hud .lws-location > span { font-size: 7px; letter-spacing: .03em; white-space: normal; }
+}
+
+/* Compact HUD: full location copy gets its own row instead of competing with controls. */
+@media (max-width: 1199px) {
+  #legend-world-shell-root .lws-hud {
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    gap: 6px;
+    padding: 7px 9px;
+  }
+  #legend-world-shell-root .lws-hud-left,
+  #legend-world-shell-root .lws-hud-right { display: contents; }
+  #legend-world-shell-root .lws-hud [data-world-action="toggle-left"] { grid-column: 1; grid-row: 1; }
+  #legend-world-shell-root .lws-hud-brand { grid-column: 2; grid-row: 1; }
+  #legend-world-shell-root .lws-hud-vitals { grid-column: 3; grid-row: 1; }
+  #legend-world-shell-root .lws-hud-save { grid-column: 4; grid-row: 1; }
+  #legend-world-shell-root .lws-hud [data-world-action="toggle-right"] { grid-column: 5; grid-row: 1; }
+  #legend-world-shell-root .lws-hud .lws-mobile-toggle { min-height: 35px; }
+  #legend-world-shell-root .lws-hud .lws-location {
+    grid-column: 1 / -1; grid-row: 2;
+    flex-direction: row; align-items: baseline; gap: 8px;
+    padding: 0; border: 0;
+  }
+  #legend-world-shell-root .lws-hud .lws-location > span { flex-shrink: 0; white-space: nowrap; font-size: 8px; }
+  #legend-world-shell-root .lws-hud .lws-location strong {
+    flex: 1; min-width: 0; max-width: none;
+    white-space: normal; overflow: visible; overflow-wrap: break-word; text-overflow: clip;
+    font-size: 12px; line-height: 1.35;
+  }
+  #legend-world-shell-root .lws-hud-center { grid-column: 1 / -1; grid-row: 3; }
+  #legend-world-shell-root .lws-objective {
+    display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 0; border: 0;
+  }
+  #legend-world-shell-root .lws-objective-label { flex-shrink: 0; margin: 0; }
+  #legend-world-shell-root .lws-objective strong { white-space: normal; overflow: visible; }
+  #legend-world-shell-root .lws-panel { top: calc(var(--lws-hud-height, 64px) + 6px); }
+  #legend-world-shell-root .lws-shell-toast { top: calc(var(--lws-hud-height, 64px) + 6px); }
 }

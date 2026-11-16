@@ -15,7 +15,15 @@ This documents the active production data path. Per the current project directio
 
 `LegendStorage.loadPlayer()` reads only `LEGEND_DATA.SAVE_KEY`, parses that value, and calls `normalize()`. An absent or malformed active save returns `null`. Old `legend-recovered-build-v0*` keys are no longer imported. `LegendRuntimeV120` delegates player reads/writes to `LegendStorage` and no longer provides its own legacy key fallback.
 
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:1b4a476caadefb68a5b68ff655fe75bbae87a78dcb4f7d3a8429b69925342656 -->
+
+Audio storage failure: if a preference write is rejected, the shared audio director retains the latest toggle for the current page. A failed read retains the last known preference. Reload uses the persisted key again, so an unsaved choice is not promised across reload. Player/settings/return storage is unaffected.
+
 ## Normalization behavior
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 `LegendStorage.normalize(player)` delegates to `LegendPlayerNormalizerV120.normalize(player)` and preserves the existing public API. The normalizer mutates the parsed player object in place and sets `player.version = LEGEND_DATA.VERSION`. It adds defaults for missing fields but does not enforce a strict whitelist or remove unknown fields. Existing unknown inventory entries, stat counters, flags, and nested state must therefore be preserved by refactors.
 

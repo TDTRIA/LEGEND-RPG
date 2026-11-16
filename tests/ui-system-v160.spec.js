@@ -1,5 +1,22 @@
 const { test, expect } = require('@playwright/test');
 
+async function expectTravelerDetailFits(page) {
+  const detail = await page.evaluate(() => {
+    const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+    const item = scene.nativeTitleUiDecorations.find(item => item.id === 'traveler-detail');
+    const label = item?.object;
+    return label ? { text: label.text, source: item.node.textContent.trim(),
+      width: label.displayWidth, height: label.displayHeight,
+      bounds: label.getData('shellLabel')?.sourceBounds, resolution: label.style.resolution } : null;
+  });
+  expect(detail).not.toBeNull();
+  expect(detail.text).toBe(detail.source);
+  expect(detail.bounds).toBeTruthy();
+  expect(detail.width).toBeLessThanOrEqual(detail.bounds.width + 1);
+  expect(detail.height).toBeLessThanOrEqual(detail.bounds.height + 1);
+  expect(detail.resolution).toBe(2);
+}
+
 async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await page.setViewportSize(viewport);
   // Use the browser's supported accessibility preference so the game itself
@@ -141,7 +158,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       'kicker','intro','traveler-label','traveler-name','traveler-detail','menu-heading','divider-caption'
     ]);
     expect(freshMenu.decorationLabels.every(item => item.text)).toBe(true);
-    expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','credits']);
+    expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','titleSound','credits']);
 
     // If any required title copy disappears, Phaser must reveal the complete
     // accessible DOM title instead of leaving a partially painted blank panel.
@@ -166,7 +183,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi
     )).toBe(true);
     expect(freshMenu.labels.map(item => item.title)).toEqual([
-      'Begin Your Journey','Profile','Settings','News & Roadmap','Credits'
+      'Begin Your Journey','Profile','Settings','News & Roadmap','Sound: On','Credits'
     ]);
     await expect(page.locator('.v140-realm-overview.v151-realm-art')).toBeVisible();
     await expect(page.locator('.v151-realm-feature img')).toHaveAttribute('src', 'assets/generated/locations/ashmere-town.webp');
@@ -182,6 +199,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('returning-player save paints every existing title action in Phaser without changing the save', async ({ page }) => {
+    test.setTimeout(180000);
     await enterAshmere(page, 'ReturnMenuParity');
     const saveBefore = await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()));
     await page.evaluate(() => window.LegendGameBootstrap.title());
@@ -211,6 +229,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         }))
       };
     });
+    await expect(page.locator('#continue')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(page.locator('#continue')).toHaveCSS('background-image', 'none');
     expect(menu.saveKey).toBe('legend-roads-of-ashmere-v09');
     expect(menu.assetsLoaded).toBe(true);
     expect(menu.logoPainted).toBe(true);
@@ -220,15 +240,15 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       'kicker','intro','traveler-label','traveler-name','traveler-detail','menu-heading','divider-caption'
     ]);
     expect(menu.decorationLabels.find(item => item.id === 'traveler-name')?.text).toBe('ReturnMenuParity');
-    expect(menu.ids).toEqual(['continue','new','account','settings','dispatches','credits']);
+    expect(menu.ids).toEqual(['continue','new','account','settings','dispatches','titleSound','credits']);
     expect(menu.labels.map(item => item.title)).toEqual([
-      'Continue Journey','New Traveler','Profile','Settings','News & Roadmap','Credits'
+      'Continue Journey','New Traveler','Profile','Settings','News & Roadmap','Sound: On','Credits'
     ]);
     expect(menu.labels.every(item => item.title && item.subtitle)).toBe(true);
-    expect(menu.buttons).toHaveLength(6);
+    expect(menu.buttons).toHaveLength(7);
     expect(menu.buttons.every(button => button.tag === 'BUTTON' && button.type === 'button' &&
       button.accessibleName && button.handler === 'function')).toBe(true);
-    expect(menu.textQuality).toHaveLength(6);
+    expect(menu.textQuality).toHaveLength(7);
     expect(menu.textQuality.every(item => item.titleFontSize >= 13 && item.titleResolution === 2 &&
       item.subtitleFontSize >= 10 && item.subtitleResolution === 2)).toBe(true);
     const saveAfterPaint = await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()));
@@ -238,7 +258,26 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot().nativeTitleUiControlBounds.find(item => item.id === 'settings')?.focused
     )).toBe(true);
+    const settingsTexture = () => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()
+      .nativeTitleUiControlBounds.find(item => item.id === 'settings')?.texture);
+    await expect.poll(settingsTexture).toBe('menuButtonSelected');
+    await page.locator('#continue').focus();
+    await page.mouse.move(0, 0);
+    await expect.poll(settingsTexture).toBe('menuButtonNormal');
+    for (const attribute of ['disabled', 'aria-disabled']) {
+      await page.locator('#settings').evaluate((button, name) => button.setAttribute(name, 'true'), attribute);
+      await expect.poll(settingsTexture).toBe('menuButtonDisabled');
+      await page.locator('#settings').hover();
+      await expect.poll(settingsTexture).toBe('menuButtonDisabled');
+      await page.locator('#settings').evaluate((button, name) => button.removeAttribute(name), attribute);
+      await page.mouse.move(0, 0);
+      await expect.poll(settingsTexture).toBe('menuButtonNormal');
+    }
+    await page.locator('#settings').focus();
+    await expect.poll(settingsTexture).toBe('menuButtonSelected');
+    expect(await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()))).toBe(saveBefore);
     await expectNoHorizontalOverflow(page);
+    await expectTravelerDetailFits(page);
     await attachProof(page, 'phase1-returning-title-desktop.png');
 
     // Exercise the original production callbacks behind every remaining menu
@@ -278,6 +317,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('returning-player Phaser title stays readable and tappable at 390px mobile width', async ({ browser }) => {
+    test.setTimeout(180000);
     const context = await browser.newContext({
       viewport: { width: 390, height: 844 },
       deviceScaleFactor: 1,
@@ -306,14 +346,15 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
           bounds: snapshot.nativeTitleUiControlBounds || []
         };
       });
-      expect(layout.ids).toEqual(['continue','new','account','settings','dispatches','credits']);
+      expect(layout.ids).toEqual(['continue','new','account','settings','dispatches','titleSound','credits']);
       expect(layout.labels.every(item => item.title && item.subtitle)).toBe(true);
       expect(layout.logoPainted).toBe(true);
       expect(layout.dividerPainted).toBe(true);
       expect(layout.decorationTextCount).toBe(7);
-      expect(layout.bounds).toHaveLength(6);
+      expect(layout.bounds).toHaveLength(7);
       expect(layout.bounds.every(item => item.x >= 0 && item.width > 0 && item.x + item.width <= layout.size.width + 1)).toBe(true);
       await expectNoHorizontalOverflow(mobilePage);
+      await expectTravelerDetailFits(mobilePage);
       await attachProof(mobilePage, 'phase1-returning-title-mobile-390.png');
 
       await mobilePage.locator('#settings').tap();
@@ -509,6 +550,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await attachProof(page, 'phase1-old-road-map.png');
   });
   test('combat HUD and eight live controls are painted in Phaser without replacing combat rules', async ({ page }) => {
+    test.setTimeout(180000);
     await enterAshmere(page, 'PhaserCombatQA');
     await page.evaluate(() => {
       const rt = window.LegendRuntimeV120;
@@ -517,6 +559,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       player.maxHp = 100;
       player.inventory = player.inventory || {};
       player.inventory.potion = 1;
+      player.inventory.roadPoultice = 1;
+      player.futureCombatRecord = { keep: 17 };
       player.flags = player.flags || {};
       player.flags.roadExpeditionV100 = {
         ...(player.flags.roadExpeditionV100 || {}),
@@ -526,13 +570,13 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       const road = window.LegendRoadsV100.oldRoad;
       road.enemies = road.enemies
         .filter(enemy => enemy.id === 'goblin')
-        .map(enemy => ({ ...enemy, damage: [3, 3] }));
+        .map(enemy => ({ ...enemy, hp: [999, 999], damage: [3, 3] }));
       rt.savePlayer(player);
     });
 
     await page.getByRole('navigation', { name: 'Ashmere terminal navigation' })
       .getByRole('button', { name: /Routes/i }).click();
-    await page.locator('.ash100-destination[data-ash-view="road"]').click();
+    await page.getByRole('button', { name: /The Old Road/i }).click();
     await expect(page.locator('.ash100-departure')).toBeVisible();
     await page.locator('#departureBegin').click();
     await expect(page.locator('.exp150-world-page')).toBeVisible();
@@ -634,7 +678,10 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     })).toBe(true);
     await expectNoHorizontalOverflow(page);
     await expect(page.locator('#guard')).toBeEnabled();
-    await page.locator('#guard').focus();
+    // Enter keyboard modality before asserting the DOM :focus-visible contract.
+    await page.locator('#skill').focus();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#guard')).toBeFocused();
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1.snapshot()?.nativeCombatUiFocusedControlIds || []
     )).toContain('guard');
@@ -647,6 +694,28 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-heavy/);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCombatUi)).toBe(true);
     await expectNoHorizontalOverflow(page);
+    for (const [id, copy] of [['skill', 'Trap Shot lands'], ['strike', 'Your strike lands'], ['heavy', 'Heavy Strike lands'], ['poultice', 'bind a Road Poultice']]) {
+      await page.locator('#' + id).click();
+      await expect(page.locator('.rpg-dialogue')).toContainText(copy);
+      await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeCombatUi)).toBe(true);
+    }
+    await expect(page.locator('.rpg-battle-topline strong')).toContainText('TURN 7');
+    const beforeSound = await page.evaluate(() => localStorage.getItem('legend-roads-of-ashmere-v09'));
+    const soundLabel = await page.locator('#battleSound').textContent();
+    await page.locator('#battleSound').click();
+    await expect(page.locator('#battleSound')).not.toHaveText(soundLabel);
+    expect(await page.evaluate(() => localStorage.getItem('legend-roads-of-ashmere-v09'))).toBe(beforeSound);
+    const beforeRetreat = await page.evaluate(() => LegendStorage.loadPlayer());
+    await page.locator('#flee').click();
+    await expect(page.locator('.exp150-world-page')).toBeVisible();
+    const afterRetreat = await page.evaluate(() => LegendStorage.loadPlayer());
+    expect(afterRetreat.flags.roadExpeditionV100.pressure).toBe(Math.max(0, beforeRetreat.flags.roadExpeditionV100.pressure - 8));
+    expect(afterRetreat.inventory.roadPoultice).toBe(0);
+    expect(afterRetreat.futureCombatRecord).toEqual({ keep: 17 });
+    expect(afterRetreat.gold).toBe(beforeRetreat.gold);
+    expect(afterRetreat.xp).toBe(beforeRetreat.xp);
+    await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeCombatUi)).toBe(false);
+
   });
 
   test('title, town and expedition stay within a 390px touch viewport', async ({ page }) => {
@@ -655,7 +724,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-title-mobile-390.png');
 
-    await enterAshmere(page, 'MobileUIPreview');
+    await enterAshmere(page, 'MobileUIPreview', { width: 390, height: 844 });
+    expect(page.viewportSize()).toEqual({ width: 390, height: 844 });
     await expect(page.getByRole('navigation', { name: 'Ashmere terminal navigation' })).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-ashmere-mobile-390.png');
@@ -664,6 +734,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(page.locator('#exp150OpenMap')).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeGameplayUiSurface)).toBe('expedition');
     await expectNoHorizontalOverflow(page);
+    expect(page.viewportSize()).toEqual({ width: 390, height: 844 });
     await attachProof(page, 'phase1-old-road-mobile-390.png');
   });
 

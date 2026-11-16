@@ -1,11 +1,11 @@
 /* LEGEND v0.22.0 — slower branded transitions for the playable route.
  * Navigation stays owned by existing screens; this layer gives destinations one
- * loading curtain and waits for scene images to settle before revealing them.
+ * bounded presentation curtain before revealing them.
  */
 (() => {
   if (window.__legendSceneTransitionsV120) return;
   window.__legendSceneTransitionsV120 = true;
-  const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
+  const reduced = () => document.body.classList.contains('a11y-reduced-motion') || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
   let busy = false;
 
   function overlay() {
@@ -78,19 +78,10 @@
     if (window.__legendSceneTransitionBypass || busy || event.defaultPrevented) return;
     const target = event.target?.closest?.('[data-legend-scene-transition],[data-ash-view],[data-travel],[data-unlock]');
     if (!target || target.disabled || reduced()) return;
-    if (target.dataset.legendTransitioning === '1') return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    transitionTo(destinationLabel(target), () => {
-      target.dataset.legendTransitioning = '1';
-      window.__legendSceneTransitionBypass = true;
-      try {
-        target.click();
-      } finally {
-        window.__legendSceneTransitionBypass = false;
-        delete target.dataset.legendTransitioning;
-      }
-    });
+    // Decorate the original event. Replaying click() here suppresses forwarded
+    // clicks because HTMLElement.click() ignores a reentrant call on itself.
+    // The existing target handlers still run synchronously, exactly once.
+    transitionTo(destinationLabel(target), () => {});
   }, true);
 
   // Other systems (notably combat outcomes) can use the same curtain when a
