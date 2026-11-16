@@ -186,7 +186,9 @@ test('production screen changes use one transition owner and creation choices us
     });
     expect(unselected).toHaveLength(4);
     expect(unselected.every(item => !item.hovered && !item.focused && !item.focusFrameVisible)).toBe(true);
-    expect(unselected.every(item => item.border.includes('151, 168, 150'))).toBe(true);
+    // DOM borders are deliberately transparent: the Phaser panel is the
+    // visible frame, so no duplicate HTML outline should appear underneath.
+    expect(unselected.every(item => item.border === 'rgba(0, 0, 0, 0)')).toBe(true);
     expect(unselected.every(item => item.outlineStyle === 'none')).toBe(true);
 
     const firstChoice = page.locator('.v094-choice').first();
@@ -199,10 +201,12 @@ test('production screen changes use one transition owner and creation choices us
     expect(focused).toEqual({ outlineColor: 'rgb(181, 217, 154)', outlineStyle: 'solid', outlineWidth: '2px' });
     const visibleFrames = await page.evaluate(() => {
       const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
-      return scene.nativeCreationUiControls.filter(control => control.focusFrame?.visible).map(control => control.id);
+      return scene.nativeCreationUiControls.filter(control => control.focusFrame?.visible)
+        .map(control => ({ id: control.id, color: control.focusColor }));
     });
     expect(visibleFrames).toHaveLength(1);
-    expect(visibleFrames[0]).toMatch(/^choice-gender-/);
+    expect(visibleFrames[0].id).toMatch(/^choice-gender-/);
+    expect(visibleFrames[0].color).toBe(0xb5d99a);
     expect(errors).toEqual([]);
   } finally {
     await context.close();
