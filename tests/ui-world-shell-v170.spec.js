@@ -926,7 +926,7 @@ test.describe('LEGEND persistent world shell v170', () => {
       outlineColor: getComputedStyle(node).outlineColor,
       outlineStyle: getComputedStyle(node).outlineStyle
     }));
-    expect(townFocusStyle).toEqual({ outlineColor: 'rgb(255, 230, 160)', outlineStyle: 'solid' });
+    expect(townFocusStyle).toEqual({ outlineColor: 'rgb(181, 217, 154)', outlineStyle: 'solid' });
     await expectNoHorizontalOverflow(page);
     const mobile = await page.evaluate(() => ({
       width: document.documentElement.clientWidth,
