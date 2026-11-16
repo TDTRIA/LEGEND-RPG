@@ -88,6 +88,22 @@ for (const width of [1440, 390]) {
         scene.syncNativeCreationUi();
       });
       await checkCopy(7);
+      // A thrown painter exception must leave the original creation markup visible.
+      await page.evaluate(() => {
+        const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+        window.__creationThrowFactory = scene.createShellLabel;
+        scene.createShellLabel = () => { throw new Error('simulated creation painter failure'); };
+        scene.clearNativeCreationUi();
+        scene.syncNativeCreationUi();
+      });
+      expect(await page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeCreationUi)).toBe(false);
+      await expect(page.locator('.v094-beginning-card h2')).not.toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+      await page.evaluate(() => {
+        const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+        scene.createShellLabel = window.__creationThrowFactory;
+        scene.syncNativeCreationUi();
+      });
+      await checkCopy(7);
       // Missing canvas artwork must also restore the original images and text.
       await page.evaluate(() => {
         const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
