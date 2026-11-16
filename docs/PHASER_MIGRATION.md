@@ -1049,3 +1049,12 @@ The migration is complete only when:
 The shell toast is painted by the production `RealmScene` via `refreshToast` and `clearToast` on `LegendPhaserWorldV1`. The existing `.lws-shell-toast` remains the semantic `role="status"` / `aria-live="polite"` target; its DOM presentation is restored when the Phaser painter clears. The 3.2-second shell timer and shell shutdown clear the painter. Desktop and 390px mobile coverage is retained in `tests/phaser-shell-toast.spec.js`.
 
 The current GitHub-main documentation and story updates are retained alongside this migration. The approved Oric and Tavin direction remains owner-approved story canon, not implemented gameplay.
+
+
+## Rendering stability follow-up — 2026-11-16
+
+The Phaser runtime now has one transition authority. The shared `LegendSceneTransitionsV120` curtain remains responsible for explicitly annotated navigation, while the old RealmScene camera zoom/gold-streak handoff has been removed. The legacy `#root` entrance-class observer is disabled while `legend-phaser-world-active` is present, preventing a DOM entrance animation from running over the same Phaser handoff. Unannotated screen changes no longer trigger an additional camera animation.
+
+Native keyboard focus indicators use a restrained sage accent (`#b5d99a`) instead of bright gold; hover and selected states remain distinct, and title-screen treatment is left to the separate Lovable title/intro redesign. Traveler Creation has explicit assertions for neutral unhovered card borders, a single visible keyboard-focus frame, and no duplicate transition animation across title → Annals → creation. The older reboot contract now asserts that the removed second camera transition count remains zero.
+
+Run `npm run test:e2e:creation` and the full production suite against the PR head before treating this as visually accepted. Manual desktop/mobile screenshot review remains required.
