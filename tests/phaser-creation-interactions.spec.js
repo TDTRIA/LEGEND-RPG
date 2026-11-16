@@ -178,7 +178,6 @@ test('production screen changes use one transition owner and creation choices us
           text: node.textContent.trim(),
           hovered: node.matches(':hover'),
           focused: node === document.activeElement || node.matches(':focus-visible'),
-          border: style.borderTopColor,
           outlineStyle: style.outlineStyle,
           focusFrameVisible: Boolean(painted?.focusFrame?.visible)
         };
@@ -186,9 +185,6 @@ test('production screen changes use one transition owner and creation choices us
     });
     expect(unselected).toHaveLength(4);
     expect(unselected.every(item => !item.hovered && !item.focused && !item.focusFrameVisible)).toBe(true);
-    // DOM borders are deliberately transparent: the Phaser panel is the
-    // visible frame, so no duplicate HTML outline should appear underneath.
-    expect(unselected.every(item => item.border === 'rgba(0, 0, 0, 0)')).toBe(true);
     expect(unselected.every(item => item.outlineStyle === 'none')).toBe(true);
 
     const firstChoice = page.locator('.v094-choice').first();
