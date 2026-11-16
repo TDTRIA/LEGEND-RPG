@@ -183,3 +183,5 @@ jobs:
 
           echo "MIRROR_SUMMARY mirrored=$mirrored current=$current archived=$archived preserved=$preserved skipped_workflows=$skipped_workflows"
           echo "GitHub-only refs were not deleted."
+
+# Credential recheck trigger: verify GH_MIRROR_TOKEN after owner replaced the repository secret.
