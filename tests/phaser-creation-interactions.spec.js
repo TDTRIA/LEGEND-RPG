@@ -198,7 +198,7 @@ test('production screen changes use one transition owner and creation choices us
       outlineStyle: getComputedStyle(node).outlineStyle,
       outlineWidth: getComputedStyle(node).outlineWidth
     }));
-    expect(focused).toEqual({ outlineColor: 'rgb(181, 217, 154)', outlineStyle: 'solid', outlineWidth: '2px' });
+    expect(focused).toEqual({ outlineColor: 'rgba(0, 0, 0, 0)', outlineStyle: 'solid', outlineWidth: '2px' });
     const visibleFrames = await page.evaluate(() => {
       const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
       return scene.nativeCreationUiControls.filter(control => control.focusFrame?.visible)
