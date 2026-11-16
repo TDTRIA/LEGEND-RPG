@@ -229,22 +229,10 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
   }
 }
 
-/* Creation options keep a restrained stone frame; keyboard focus is sage,
-   not the bright gold outline from the legacy DOM-only presentation. */
-body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice {
-  border-color: rgba(151, 168, 150, .24) !important;
-}
-body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice:hover:not(.is-selected) {
-  border-color: rgba(181, 217, 154, .44) !important;
-  box-shadow: inset 0 0 0 1px rgba(181, 217, 154, .08) !important;
-  transform: none !important;
-}
-body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice.is-selected {
-  border-color: rgba(181, 217, 154, .72) !important;
-  box-shadow: 0 0 0 1px rgba(181, 217, 154, .15), inset 0 0 0 2px rgba(3, 7, 4, .65) !important;
-}
+/* Phaser owns the visible creation cards and focus frames. Keep the semantic
+   DOM targets transparent so they do not double-draw the canvas presentation. */
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation :is(.v094-choice,.v094-btn):focus-visible {
-  outline: 2px solid #b5d99a !important;
+  outline: 2px solid transparent !important;
   outline-offset: 3px !important;
 }
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation :is(.v094-choice,.v094-btn) {
