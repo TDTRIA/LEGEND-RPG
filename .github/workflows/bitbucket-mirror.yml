@@ -41,6 +41,12 @@ jobs:
         run: |
           set -euo pipefail
 
+          if [ -n "${GH_MIRROR_TOKEN:-}" ]; then
+            echo "MIRROR_AUTH_TOKEN_PRESENT: scoped GH_MIRROR_TOKEN detected"
+          else
+            echo "::warning::MIRROR_AUTH_TOKEN_MISSING: GH_MIRROR_TOKEN was not available to this run"
+          fi
+
           git config user.name "Bitbucket Mirror Bot"
           git config user.email "bitbucket-mirror[bot]@users.noreply.github.com"
 
