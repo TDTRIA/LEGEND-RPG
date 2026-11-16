@@ -657,6 +657,11 @@
       this.nativeHudUiLayoutEvent = null;
       this.nativeHudUiBoundElement = null;
       this.nativeHudUiInteractionHandler = null;
+      this.nativeToastUiActive = false;
+      this.nativeToastUiObjects = [];
+      this.nativeToastUiTaggedNodes = [];
+      this.nativeToastUiMessage = '';
+      this.nativeToastUiSignature = '';
       this.nativeBottomBarUiActive = false;
       this.nativeBottomBarUiObjects = [];
       this.nativeBottomBarUiTaggedNodes = [];
@@ -852,6 +857,11 @@
           nativeHudUiControlIds: this.nativeHudUiControls.filter(node => node?.isConnected).map(node => node.dataset.worldAction || node.getAttribute('aria-label') || node.textContent?.trim() || ''),
           nativeHudUiFocusedControlIds: this.nativeHudUiControls.filter(node => node?.isConnected && (node === document.activeElement || node.matches(':focus-visible'))).map(node => node.dataset.worldAction || node.getAttribute('aria-label') || node.textContent?.trim() || ''),
           nativeHudUiSceneSize: this.dimensions(),
+          nativeToastUi: this.nativeToastUiActive,
+          nativeToastUiMessage: this.nativeToastUiMessage,
+          nativeToastUiObjectCount: this.nativeToastUiObjects.filter(item => item?.active).length,
+          nativeToastUiTextValues: this.nativeToastUiTaggedNodes.filter(node => node?.isConnected).map(node => node.textContent?.replace(/\s+/g, ' ').trim() || ''),
+          nativeToastUiSceneSize: this.dimensions(),
           nativeLeftDrawerUi: this.nativeLeftDrawerUiActive,
           nativeLeftDrawerUiObjectCount: this.nativeLeftDrawerUiObjects.filter(item => item?.active).length,
           nativeLeftDrawerUiTextCount: this.nativeLeftDrawerUiTextNodes.filter(node => node?.isConnected).length,
@@ -5039,6 +5049,93 @@
       });
     }
 
+    /** Clears the Phaser shell-toast painting and reveals the accessible DOM status message again. */
+    clearNativeToastUi(removeClass = true) {
+      this.nativeToastUiObjects.forEach(object => {
+        if (!object?.active) return;
+        this.tweens.killTweensOf(object);
+        object.destroy(true);
+      });
+      this.nativeToastUiObjects = [];
+      this.nativeToastUiTaggedNodes.forEach(node => {
+        if (node?.dataset) delete node.dataset.legendPhaserToastText;
+      });
+      this.nativeToastUiTaggedNodes = [];
+      this.nativeToastUiSignature = '';
+      this.nativeToastUiMessage = '';
+      this.nativeToastUiActive = false;
+      if (removeClass) document.body?.classList.remove('legend-phaser-toast-ui-active');
+    }
+
+    /** Paints the shell toast message in Phaser while its DOM node keeps role="status" for assistive tech. */
+    syncNativeToastUi() {
+      const shell = document.getElementById('legend-world-shell-root');
+      const toast = shell?.querySelector('.lws-shell-toast');
+      const message = toast?.textContent?.replace(/\s+/g, ' ').trim() || '';
+      if (!toast || shell.hidden || toast.hidden || !message) {
+        if (this.nativeToastUiActive || this.nativeToastUiTaggedNodes.length ||
+            document.body?.classList.contains('legend-phaser-toast-ui-active')) {
+          this.clearNativeToastUi();
+        }
+        return;
+      }
+
+      const rect = toast.getBoundingClientRect();
+      const css = window.getComputedStyle(toast);
+      if (!rect.width || !rect.height || css.display === 'none' || css.visibility === 'hidden') {
+        this.clearNativeToastUi();
+        return;
+      }
+
+      const size = this.dimensions();
+      const sx = size.width / Math.max(1, window.innerWidth || size.width);
+      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const signature = JSON.stringify([
+        message,
+        Math.round(rect.left), Math.round(rect.top),
+        Math.round(rect.width), Math.round(rect.height),
+        Math.round(window.innerWidth), Math.round(window.innerHeight)
+      ]);
+      if (this.nativeToastUiActive && signature === this.nativeToastUiSignature) return;
+
+      this.clearNativeToastUi(false);
+      this.nativeToastUiActive = true;
+      this.nativeToastUiSignature = signature;
+      this.nativeToastUiMessage = message;
+      document.body?.classList.add('legend-phaser-toast-ui-active');
+
+      const x = rect.left * sx;
+      const y = rect.top * sy;
+      const width = rect.width * sx;
+      const height = rect.height * sy;
+      const radius = Math.max(2, (Number.parseFloat(css.borderTopLeftRadius) || 0) * sx);
+      const graphics = this.add.graphics().setDepth(58);
+      graphics.fillStyle(0x080d09, 0.68);
+      graphics.fillRoundedRect(x, y, width, height, radius);
+      graphics.lineStyle(Math.max(1, Math.round(sx)), 0xe7c982, 0.43);
+      graphics.strokeRoundedRect(x, y, width, height, radius);
+      this.nativeToastUiObjects.push(graphics);
+
+      const paddingLeft = (Number.parseFloat(css.paddingLeft) || 0) * sx;
+      const paddingRight = (Number.parseFloat(css.paddingRight) || 0) * sx;
+      const paddingTop = (Number.parseFloat(css.paddingTop) || 0) * sy;
+      const text = this.add.text(x + paddingLeft, y + paddingTop, message, {
+        fontFamily: css.fontFamily || 'Arial, sans-serif',
+        fontSize: Math.max(9, Math.round((Number.parseFloat(css.fontSize) || 12) * sy)) + 'px',
+        color: '#e9e4d5',
+        align: 'left',
+        wordWrap: {
+          width: Math.max(12, width - paddingLeft - paddingRight),
+          useAdvancedWrap: true
+        }
+      }).setDepth(59);
+      text.setOrigin(0, 0);
+      text.setResolution?.(2);
+      this.nativeToastUiObjects.push(text);
+      toast.dataset.legendPhaserToastText = 'true';
+      this.nativeToastUiTaggedNodes.push(toast);
+    }
+
 
     /** Clears combat scene objects and releases observers while revealing the accessible DOM battle fallback. */
     clearNativeCombatUi(removeClass = true, removeListeners = true) {
@@ -6978,6 +7075,8 @@
     refreshNavigation: () => realmScene?.syncNativeBottomBarUi?.(),
     refreshLeftDrawer: () => realmScene?.syncNativeLeftDrawerUi?.(),
     refreshRightDrawer: () => realmScene?.syncNativeRightDrawerUi?.(),
+    refreshToast: () => realmScene?.syncNativeToastUi?.(),
+    clearToast: () => realmScene?.clearNativeToastUi?.(),
     refreshRoadMap: () => realmScene?.syncNativeRoadMapUi?.(),
     clearRoadMap: () => realmScene?.clearNativeRoadMapUi?.(),
     refreshExpedition: () => realmScene?.syncNativeExpeditionHudUi?.(),

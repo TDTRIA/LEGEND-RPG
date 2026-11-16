@@ -483,6 +483,20 @@ body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-
   box-shadow: 0 0 0 4px rgba(231, 201, 130, .18) !important;
 }
 
+/* The shell toast message is painted in RealmScene. Its DOM node keeps
+   role="status" and aria-live so assistive tech still receives every message,
+   and it becomes the visible fallback again the moment the painter is cleared. */
+body.legend-phaser-world-active.legend-phaser-toast-ui-active #legend-world-shell-root .lws-shell-toast {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-toast-ui-active #legend-world-shell-root .lws-shell-toast[data-legend-phaser-toast-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
 
 /* The persistent bottom action bar is painted in RealmScene. Its semantic DOM
    buttons stay on top as real touch/keyboard targets and retain accessible names. */
