@@ -190,6 +190,10 @@ test('production screen changes use one transition owner and creation choices us
     const firstChoice = page.locator('.v094-choice').first();
     await firstChoice.focus();
     expect(await firstChoice.evaluate(node => node === document.activeElement)).toBe(true);
+    await expect.poll(() => page.evaluate(() => {
+      const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+      return scene.nativeCreationUiControls.filter(control => control.focusFrame?.visible).length;
+    })).toBe(1);
     const visibleFrames = await page.evaluate(() => {
       const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
       return scene.nativeCreationUiControls.filter(control => control.focusFrame?.visible)
