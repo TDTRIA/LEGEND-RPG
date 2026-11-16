@@ -45,6 +45,22 @@ for (const width of [1440, 390]) {
         expect(await title.evaluate(node => getComputedStyle(node).color)).not.toBe('rgba(0, 0, 0, 0)');
         await title.evaluate(node => { node.textContent = 'The Peace, Written Down'; });
         await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeAnnalsUi)).toBe(true);
+        // A thrown painter error must keep the semantic DOM readable and recover cleanly.
+        await page.evaluate(() => {
+          const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+          window.__annalsLabelFactory = scene.createShellLabel;
+          scene.createShellLabel = () => { throw new Error('simulated annals painter failure'); };
+          scene.clearNativeAnnalsUi();
+          scene.syncNativeAnnalsUi();
+        });
+        await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeAnnalsUi)).toBe(false);
+        expect(await title.evaluate(node => getComputedStyle(node).color)).not.toBe('rgba(0, 0, 0, 0)');
+        await page.evaluate(() => {
+          const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+          scene.createShellLabel = window.__annalsLabelFactory;
+          scene.syncNativeAnnalsUi();
+        });
+        await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeAnnalsUi)).toBe(true);
         expect(await next.evaluate(node => getComputedStyle(node).borderTopColor)).toBe('rgba(0, 0, 0, 0)');
         await page.locator('.opening-lore-v220').evaluate(node => { node.scrollTop = node.scrollHeight; });
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
