@@ -1031,6 +1031,10 @@ The third production annal now uses the exact approved “The Peace, Written Dow
 
 ## Global acceptance gate
 
+
+
+Traveler Creation's neutral choice-card frame is drawn by Phaser, not the hidden semantic DOM button. Its unselected stroke was previously hard-coded gold (`0xc4a867`); it now uses a muted stone/sage tone (`0x87937d`), while the selected card retains its distinct green frame and keyboard focus uses a single Phaser-painted sage frame (`0xb5d99a`). The DOM focus outline stays transparent to prevent a second ring being drawn beneath the canvas.
+
 The migration is complete only when:
 
 - Every screen listed above is rendered and visually composed by Phaser; no gameplay page is relying on a DOM card/menu as its primary presentation.
