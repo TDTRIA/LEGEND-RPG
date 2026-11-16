@@ -118,6 +118,23 @@ jobs:
             source_sha="$(git rev-parse "$source_ref")"
             github_ref="refs/remotes/origin/$branch"
 
+            # The default GITHUB_TOKEN cannot publish feature refs that carry
+            # workflow-file history. Do not attempt any feature push until the
+            # owner supplies the narrowly-scoped GH_MIRROR_TOKEN secret.
+            if [ -z "${GH_MIRROR_TOKEN:-}" ]; then
+              if git show-ref --verify --quiet "$github_ref"; then
+                github_sha="$(git rev-parse "$github_ref")"
+                if [ "$github_sha" = "$source_sha" ] || git merge-base --is-ancestor "$source_sha" "$github_sha"; then
+                  echo "CURRENT $branch already preserved on GitHub at $github_sha"
+                  current=$((current + 1))
+                  continue
+                fi
+              fi
+              echo "SKIP_MIRROR_AUTH $branch; add GH_MIRROR_TOKEN (Contents: write, Workflows: write)"
+              preserved=$((preserved + 1))
+              continue
+            fi
+
             if git show-ref --verify --quiet "$github_ref"; then
               github_sha="$(git rev-parse "$github_ref")"
               if [ "$github_sha" = "$source_sha" ]; then
@@ -140,24 +157,6 @@ jobs:
               if [ -z "$range_base" ]; then
                 echo "NO_COMMON_BASE preserve $branch; refusing an unrelated-root branch creation"
                 preserved=$((preserved + 1))
-                continue
-              fi
-            fi
-
-            # GitHub's default Actions token cannot push commits that add/change
-            # .github/workflows files. Avoid letting one such branch stop every
-            # other branch. With GH_MIRROR_TOKEN present, checkout uses that
-            # higher-scope credential and these refs may be mirrored too.
-            if [ -z "${GH_MIRROR_TOKEN:-}" ]; then
-              # GitHub validates every commit being introduced, not only the
-              # final tree diff. A branch can add then revert a workflow file,
-              # leaving an empty tree diff while still requiring Workflows: write.
-              workflow_commits="$(git rev-list "$range_base..$source_sha" -- .github/workflows/ || true)"
-              workflow_changes="$(git diff --name-only "$range_base" "$source_sha" -- .github/workflows/ || true)"
-              if [ -n "$workflow_commits" ] || [ -n "$workflow_changes" ]; then
-                echo "SKIP_WORKFLOW_SCOPE $branch; add GH_MIRROR_TOKEN with Contents: write and Workflows: write to mirror it"
-                preserved=$((preserved + 1))
-                skipped_workflows=$((skipped_workflows + 1))
                 continue
               fi
             fi
