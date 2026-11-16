@@ -91,7 +91,11 @@
   const root = document.getElementById('root');
   if (root && 'MutationObserver' in window) {
     const observer = new MutationObserver(() => {
-      if (reduced()) return;
+      // Phaser's shared scene curtain owns screen transitions in production.
+      // A second DOM entrance animation on each #root replacement makes the
+      // canvas and page appear to fight while both systems animate the same
+      // destination. Keep the old entrance only for the non-Phaser fallback.
+      if (reduced() || document.body.classList.contains('legend-phaser-world-active')) return;
       const screen = root.firstElementChild;
       if (!screen || screen.classList.contains('legend-scene-arriving')) return;
       screen.classList.add('legend-scene-arriving');

@@ -1413,36 +1413,10 @@
       this.syncNativeRoadMapUi();
       this.syncNativeExpeditionHudUi();
       this.syncNativeExpeditionActionsUi();
-      if (!previous || !this.engineAwakened || this.awakeningActive) return;
-      this.playSurfaceTransition(next);
-    }
-
-    playSurfaceTransition(surface) {
-      if (reducedMotion()) return;
-      const size = this.dimensions();
-      const colors = {
-        title: 0xd8bb7b, dispatches: 0xd8bb7b, settings: 0x91a6c0, credits: 0xd8bb7b,
-        annals: 0xc9ad72, creation: 0x9caacb, awakening: 0xb5c99e,
-        combat: 0xd4aa79, 'combat-results': 0xe3c37d, expedition: 0xa6b99a,
-        'expedition-results': 0xe3c37d, town: 0xd8bb7b, 'town-service': 0xd8bb7b,
-        dungeon: 0xa4b4c7, 'field-site': 0x9ac8b2, modal: 0xe3c37d
-      };
-      const color = colors[surface] || 0xd8bb7b;
-      const upper = this.add.rectangle(-size.width * 0.3, size.height * 0.16, size.width * 0.32, 2, color, 0.62).setDepth(8);
-      const lower = this.add.rectangle(size.width * 1.3, size.height * 0.84, size.width * 0.32, 2, color, 0.52).setDepth(8);
-      this.surfaceTransitionCount += 1;
-      this.tweens.add({
-        targets: upper, x: size.width * 0.5, alpha: 0, scaleX: 2.3, duration: 620,
-        ease: 'Cubic.easeOut', onComplete: () => upper.destroy()
-      });
-      this.tweens.add({
-        targets: lower, x: size.width * 0.5, alpha: 0, scaleX: 2.3, duration: 720, delay: 70,
-        ease: 'Cubic.easeOut', onComplete: () => lower.destroy()
-      });
-      const camera = this.cameras.main;
-      this.tweens.killTweensOf(camera);
-      camera.setZoom(1.012);
-      this.tweens.add({ targets: camera, zoom: 1, duration: 520, ease: 'Sine.easeOut' });
+      // One transition owner only: explicit navigation uses the shared
+      // Phaser-painted curtain. Do not also zoom the world camera or draw
+      // a second set of scene streaks for the same surface handoff.
+      return;
     }
 
     dimensions() {
@@ -2410,8 +2384,10 @@
           drawPanel(node, {
             fill: selected ? 0x1b3f2a : 0x0a130d,
             alpha: selected ? 0.95 : 0.91,
-            stroke: selected ? 0x80c88e : 0xc4a867,
-            strokeAlpha: selected ? 0.98 : 0.42,
+            // Neutral cards use a restrained stone/sage frame rather than
+            // the bright gold outline that made every unselected option look active.
+            stroke: selected ? 0x80c88e : 0x87937d,
+            strokeAlpha: selected ? 0.98 : 0.44,
             lineWidth: selected ? 1.8 : 1,
             inset: false
           });
@@ -2527,7 +2503,7 @@
         if (!rect) return;
         const container = this.add.container(rect.x, rect.y).setDepth(15);
         const focusFrame = this.add.graphics();
-        focusFrame.lineStyle(2, choice ? 0xb5d99a : 0xffe7a6, 0.98);
+        focusFrame.lineStyle(2, 0xb5d99a, 0.98);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         const objects = [focusFrame];
@@ -2553,16 +2529,24 @@
           height: rect.height,
           container,
           focusFrame,
+          focusColor: 0xb5d99a,
           selected: choice && (button.classList.contains('is-selected') || button.getAttribute('aria-pressed') === 'true'),
           button
         };
         this.nativeCreationUiControls.push(control);
         if (!button.__legendNativeCreationBound) {
           button.__legendNativeCreationBound = true;
-          button.addEventListener('focus', () => this.setNativeCreationControlFocus(id, true));
-          button.addEventListener('blur', () => this.setNativeCreationControlFocus(id, button.matches(':hover')));
-          button.addEventListener('pointerenter', () => this.setNativeCreationControlFocus(id, true));
-          button.addEventListener('pointerleave', () => this.setNativeCreationControlFocus(id, document.activeElement === button));
+          // A creation button can be reused when a later step repaints the
+          // surface. Resolve its current control by node, not by the id from
+          // the first paint, so focus/hover events never target a stale frame.
+          const updateCurrentFocusFrame = active => {
+            const current = this.nativeCreationUiControls.find(item => item.button === button);
+            if (current) this.setNativeCreationControlFocus(current.id, active);
+          };
+          button.addEventListener('focus', () => updateCurrentFocusFrame(true));
+          button.addEventListener('blur', () => updateCurrentFocusFrame(button.matches(':hover')));
+          button.addEventListener('pointerenter', () => updateCurrentFocusFrame(true));
+          button.addEventListener('pointerleave', () => updateCurrentFocusFrame(document.activeElement === button));
         }
       });
       if (!copyFits || imageSpecs.some(item => !imageKeys[item.index])) { this.clearNativeCreationUi(); return; }
@@ -2759,7 +2743,7 @@
         if (!rect) return;
         const container = this.add.container(rect.x, rect.y).setDepth(15);
         const focusFrame = this.add.graphics();
-        focusFrame.lineStyle(2, button.classList.contains('opening-road-v140-choice') ? 0xe5c78c : 0xffe7a6, 0.98);
+        focusFrame.lineStyle(2, 0xb5d99a, 0.98);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         const objects = [focusFrame];
@@ -3332,7 +3316,7 @@
         const focused = button === document.activeElement || button.matches(':focus-visible');
         const hovered = button.matches(':hover');
         const fill = primary ? 0x49391e : hovered || focused ? 0x38432b : 0x142016;
-        const line = focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xa98d55;
+        const line = focused ? 0xb5d99a : hovered ? 0xe7c982 : 0xa98d55;
         graphics.fillStyle(fill, disabled ? 0.30 : primary ? 0.98 : 0.92);
         graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
         graphics.lineStyle(focused ? Math.max(2, 2 * Math.min(sx, sy)) : Math.max(1, sx), line, disabled ? 0.26 : focused ? 0.98 : 0.68);
@@ -3688,7 +3672,7 @@
             disabled ? 0.32 : 0.97);
           graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 4*sx);
           graphics.lineStyle(focused ? 2*Math.min(sx,sy) : Math.max(1,sx),
-            focused ? 0xffe6a0 : primary ? 0xd7b86a : 0x829078, disabled ? 0.30 : 0.62);
+            focused ? 0xb5d99a : primary ? 0xd7b86a : 0x829078, disabled ? 0.30 : 0.62);
           graphics.strokeRoundedRect(rect.x + sx/2, rect.y + sy/2,
             Math.max(1,rect.width-sx), Math.max(1,rect.height-sy), 4*sx);
           graphics.fillStyle(primary ? 0xe7c982 : 0x91a080, disabled ? 0.26 : 0.66);
@@ -4372,7 +4356,7 @@
           graphics.fillStyle(focused || hovered ? 0x4a4328 : 0x292f22, 0.98);
           graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3 * sx);
           graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
-            focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xbfa064, 0.72);
+            focused ? 0xb5d99a : hovered ? 0xe7c982 : 0xbfa064, 0.72);
           graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
             Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 3 * sx);
         } else if (classes.contains('exp150-map-discovery')) {
@@ -4875,7 +4859,7 @@
             disabled ? 0.3 : pressed ? 0.98 : 0.93);
           graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
           graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
-            focused ? 0xffe6a0 : pressed || hovered ? 0xe7c982 : 0xbfa064, disabled ? 0.28 : 0.60);
+            focused ? 0xb5d99a : pressed || hovered ? 0xe7c982 : 0xbfa064, disabled ? 0.28 : 0.60);
           graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
           graphics.fillStyle(0xe7c982, pressed ? 0.92 : 0.56);
           graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
@@ -5170,7 +5154,7 @@
           draw.fillStyle(focused || hovered ? 0x39412a : 0x172116, disabled ? 0.34 : 0.95);
           draw.fillRect(rect.x, rect.y, rect.width, rect.height);
           draw.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
-            focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xbfa064, disabled ? 0.30 : 0.62);
+            focused ? 0xb5d99a : hovered ? 0xe7c982 : 0xbfa064, disabled ? 0.30 : 0.62);
           draw.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
         }
       });
@@ -5357,7 +5341,7 @@
         const hovered = isButton && node.matches(':hover');
         const disabled = isButton && node.disabled;
         const fill = isBrand ? 0x182116 : isVital ? 0x111a11 : (hovered || focused) ? 0x39412a : 0x172116;
-        const stroke = focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xbfa064;
+        const stroke = focused ? 0xb5d99a : hovered ? 0xe7c982 : 0xbfa064;
         graphics.fillStyle(fill, disabled ? 0.42 : isBrand ? 0.92 : 0.96);
         graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
         graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx), stroke, disabled ? 0.34 : focused ? 0.98 : 0.54);
@@ -5677,7 +5661,7 @@
         else if (id === 'battleSound') { fill = 0x121a13; accent = 0xc4a86a; }
         graphics.fillStyle(disabled ? 0x20221d : hovered || focused ? fill + 0x060000 : fill, disabled ? 0.48 : 0.96);
         graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, Math.max(2, 4 * sx));
-        graphics.lineStyle(focused ? Math.max(2, 2 * sx) : Math.max(1, sx), focused ? 0xffe6a0 : hovered ? 0xe7c982 : accent, disabled ? 0.30 : focused ? 1 : 0.72);
+        graphics.lineStyle(focused ? Math.max(2, 2 * sx) : Math.max(1, sx), focused ? 0xb5d99a : hovered ? 0xe7c982 : accent, disabled ? 0.30 : focused ? 1 : 0.72);
         graphics.strokeRoundedRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1), Math.max(2, 4 * sx));
         graphics.fillStyle(accent, disabled ? 0.24 : 0.80);
         graphics.fillRect(rect.x + 1, rect.y + 3 * sy, Math.max(2, 2 * sx), Math.max(1, rect.height - 6 * sy));
@@ -5916,7 +5900,7 @@
         if (!node.hasAttribute('aria-label')) node.setAttribute('aria-label',label);
         const rect = item.rect;
         const focusFrame = this.add.graphics();
-        focusFrame.lineStyle(2, node.disabled ? 0x9a8f72 : 0xffe6a0, .98);
+        focusFrame.lineStyle(2, node.disabled ? 0x9a8f72 : 0xb5d99a, .98);
         focusFrame.strokeRect(rect.x + 1,rect.y + 1,Math.max(1,rect.width-2),Math.max(1,rect.height-2));
         focusFrame.setVisible(node === document.activeElement || node.matches(':hover'));
         focusFrame.setDepth(40);

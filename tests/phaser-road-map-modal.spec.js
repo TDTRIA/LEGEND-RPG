@@ -212,7 +212,7 @@ test('Phaser Old Road map and field journal paint complete content while preserv
     outlineStyle: getComputedStyle(node).outlineStyle
   }));
   expect(focusStyle).toEqual({
-    outlineColor: 'rgb(255, 230, 160)',
+    outlineColor: 'rgb(181, 217, 154)',
     outlineStyle: 'solid'
   });
   await page.keyboard.press('Enter');
