@@ -689,7 +689,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       outlineColor: getComputedStyle(node).outlineColor,
       outlineStyle: getComputedStyle(node).outlineStyle
     }));
-    expect(combatFocusStyle).toEqual({ outlineColor: 'rgb(255, 230, 160)', outlineStyle: 'solid' });
+    expect(combatFocusStyle).toEqual({ outlineColor: 'rgb(181, 217, 154)', outlineStyle: 'solid' });
     await page.locator('#guard').click();
     await expect(page.locator('.rpg-foe-nameplate')).toHaveClass(/rpg-foe-intent-heavy/);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCombatUi)).toBe(true);
