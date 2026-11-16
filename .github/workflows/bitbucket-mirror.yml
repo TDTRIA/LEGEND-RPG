@@ -21,7 +21,7 @@ jobs:
   mirror:
     name: Mirror Bitbucket branch updates
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Check out GitHub main with full history
         uses: actions/checkout@v4
@@ -29,9 +29,15 @@ jobs:
           ref: main
           fetch-depth: 0
           persist-credentials: true
+          # Add repository secret GH_MIRROR_TOKEN with Contents: write and
+          # Workflows: write to mirror branches that modify GitHub Actions files.
+          # Without it, those specific refs are skipped and reported below.
+          token: ${{ secrets.GH_MIRROR_TOKEN || github.token }}
 
       - name: Fetch Bitbucket and mirror safe refs
         shell: bash
+        env:
+          GH_MIRROR_TOKEN: ${{ secrets.GH_MIRROR_TOKEN }}
         run: |
           set -euo pipefail
 
@@ -41,13 +47,11 @@ jobs:
           BITBUCKET_URL="https://bitbucket.org/legend-ta/legend-rpg.git"
           git remote add bitbucket "$BITBUCKET_URL"
 
-          # Fetch both histories in full. The source repository is public.
           git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
           git fetch --no-tags bitbucket '+refs/heads/*:refs/remotes/bitbucket/*'
 
-          # Main is source-authoritative, but never force-push. If GitHub has
-          # workflow-only commits, merge Bitbucket main into them so neither
-          # history is discarded. Future Bitbucket main updates merge the same way.
+          # Never force-push. Preserve both histories when GitHub has a
+          # workflow-only commit that Bitbucket does not contain.
           git checkout main
           git reset --hard refs/remotes/origin/main
           BITBUCKET_MAIN="$(git rev-parse refs/remotes/bitbucket/main)"
@@ -64,18 +68,18 @@ jobs:
             echo "MAIN_MERGE Bitbucket $BITBUCKET_MAIN into GitHub $GITHUB_MAIN"
             if ! git merge --no-ff --no-edit "$BITBUCKET_MAIN" -m "Mirror Bitbucket main into GitHub main"; then
               git merge --abort || true
-              echo "::error::Bitbucket main conflicts with GitHub main. Neither ref was overwritten; resolve the conflict before mirroring."
+              echo "::error::Bitbucket main conflicts with GitHub main. Neither ref was overwritten."
               exit 1
             fi
             git push origin HEAD:refs/heads/main
           fi
 
-          # Re-fetch GitHub after the main update before syncing feature refs.
           git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
 
           mirrored=0
           current=0
           preserved=0
+          skipped_workflows=0
 
           while IFS= read -r source_ref; do
             [ -n "$source_ref" ] || continue
@@ -85,28 +89,59 @@ jobs:
             source_sha="$(git rev-parse "$source_ref")"
             github_ref="refs/remotes/origin/$branch"
 
-            if ! git show-ref --verify --quiet "$github_ref"; then
-              echo "CREATE $branch $source_sha"
-              git push origin "$source_sha:refs/heads/$branch"
-              mirrored=$((mirrored + 1))
-              continue
+            if git show-ref --verify --quiet "$github_ref"; then
+              github_sha="$(git rev-parse "$github_ref")"
+              if [ "$github_sha" = "$source_sha" ]; then
+                current=$((current + 1))
+                continue
+              fi
+              if git merge-base --is-ancestor "$source_sha" "$github_sha"; then
+                echo "GITHUB_AHEAD preserve $branch at $github_sha"
+                preserved=$((preserved + 1))
+                continue
+              fi
+              if ! git merge-base --is-ancestor "$github_sha" "$source_sha"; then
+                echo "DIVERGED preserve $branch GitHub=$github_sha Bitbucket=$source_sha"
+                preserved=$((preserved + 1))
+                continue
+              fi
+              range_base="$github_sha"
+            else
+              range_base="$(git merge-base refs/remotes/origin/main "$source_ref" || true)"
+              if [ -z "$range_base" ]; then
+                echo "NO_COMMON_BASE preserve $branch; refusing an unrelated-root branch creation"
+                preserved=$((preserved + 1))
+                continue
+              fi
             fi
 
-            github_sha="$(git rev-parse "$github_ref")"
-            if [ "$github_sha" = "$source_sha" ]; then
-              current=$((current + 1))
-            elif git merge-base --is-ancestor "$github_sha" "$source_sha"; then
-              echo "FAST_FORWARD $branch $github_sha -> $source_sha"
-              git push origin "$source_sha:refs/heads/$branch"
-              mirrored=$((mirrored + 1))
-            elif git merge-base --is-ancestor "$source_sha" "$github_sha"; then
-              echo "GITHUB_AHEAD preserve $branch at $github_sha"
-              preserved=$((preserved + 1))
+            # GitHub's default Actions token cannot push commits that add/change
+            # .github/workflows files. Avoid letting one such branch stop every
+            # other branch. With GH_MIRROR_TOKEN present, checkout uses that
+            # higher-scope credential and these refs may be mirrored too.
+            if [ -z "${GH_MIRROR_TOKEN:-}" ]; then
+              workflow_changes="$(git diff --name-only "$range_base" "$source_sha" -- .github/workflows/ || true)"
+              if [ -n "$workflow_changes" ]; then
+                echo "SKIP_WORKFLOW_SCOPE $branch; add GH_MIRROR_TOKEN with Workflows: write to mirror it"
+                preserved=$((preserved + 1))
+                skipped_workflows=$((skipped_workflows + 1))
+                continue
+              fi
+            fi
+
+            if git show-ref --verify --quiet "$github_ref"; then
+              echo "FAST_FORWARD $branch $range_base -> $source_sha"
             else
-              echo "DIVERGED preserve $branch GitHub=$github_sha Bitbucket=$source_sha"
+              echo "CREATE $branch at $source_sha"
+            fi
+
+            if git push origin "$source_sha:refs/heads/$branch"; then
+              mirrored=$((mirrored + 1))
+            else
+              echo "::warning::Push failed for $branch. Preserving both refs and continuing with remaining branches."
               preserved=$((preserved + 1))
             fi
           done < <(git for-each-ref --format='%(refname)' refs/remotes/bitbucket)
 
-          echo "MIRROR_SUMMARY mirrored=$mirrored current=$current preserved=$preserved"
+          echo "MIRROR_SUMMARY mirrored=$mirrored current=$current preserved=$preserved skipped_workflows=$skipped_workflows"
           echo "GitHub-only refs were not deleted."
