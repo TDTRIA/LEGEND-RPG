@@ -1912,10 +1912,8 @@
       // Each lore page is rebuilt by the existing prologue controller. Phaser
       // mirrors the resulting text and controls; the controller remains in charge
       // of chapter order and the hand-off into traveler creation.
-      this.clearNativeAnnalsUi(false);
-      this.nativeAnnalsUiActive = true;
-      this.nativeAnnalsUiSignature = signature;
-      document.body?.classList.add('legend-phaser-annals-ui-active');
+      this.clearNativeAnnalsUi();
+      try {
 
       if (!this.nativeAnnalsUiScrollTarget) {
         this.nativeAnnalsUiScrollTarget = screen;
@@ -2057,7 +2055,15 @@
           this.refreshNativeAnnalsButtonTexture();
         }
       }
-      if (!copyFits) this.clearNativeAnnalsUi();
+      if (!copyFits) { this.clearNativeAnnalsUi(); return; }
+      this.nativeAnnalsUiActive = true;
+      this.nativeAnnalsUiSignature = signature;
+      document.body?.classList.add('legend-phaser-annals-ui-active');
+      } catch (error) {
+        this.nativeAnnalsUiFailure = error?.message || String(error);
+        this.clearNativeAnnalsUi();
+        console.warn('[LEGEND Phaser] Annals overlay paint failed; preserving DOM fallback.', error);
+      }
     }
 
     setNativeAnnalsButtonFocus(active) {
@@ -2257,10 +2263,8 @@
       ]);
       if (this.nativeCreationUiActive && signature === this.nativeCreationUiSignature) return;
 
-      this.clearNativeCreationUi(false);
-      this.nativeCreationUiActive = true;
-      this.nativeCreationUiSignature = signature;
-      document.body?.classList.add('legend-phaser-creation-ui-active');
+      this.clearNativeCreationUi();
+      try {
 
       if (!this.nativeCreationUiScrollTarget) {
         // The production Phaser layout keeps the document as the vertical
@@ -2553,7 +2557,15 @@
           button.addEventListener('pointerleave', () => this.setNativeCreationControlFocus(id, document.activeElement === button));
         }
       });
-      if (!copyFits || imageSpecs.some(item => !imageKeys[item.index])) this.clearNativeCreationUi();
+      if (!copyFits || imageSpecs.some(item => !imageKeys[item.index])) { this.clearNativeCreationUi(); return; }
+      this.nativeCreationUiActive = true;
+      this.nativeCreationUiSignature = signature;
+      document.body?.classList.add('legend-phaser-creation-ui-active');
+      } catch (error) {
+        this.nativeCreationUiFailure = error?.message || String(error);
+        this.clearNativeCreationUi();
+        console.warn('[LEGEND Phaser] Traveler creation overlay paint failed; preserving DOM fallback.', error);
+      }
     }
 
     clearNativeOpeningUi(removeClass = true) {
@@ -2650,10 +2662,8 @@
       ]);
       if (this.nativeOpeningUiActive && signature === this.nativeOpeningUiSignature) return;
 
-      this.clearNativeOpeningUi(false);
-      this.nativeOpeningUiActive = true;
-      this.nativeOpeningUiSignature = signature;
-      document.body?.classList.add('legend-phaser-opening-ui-active');
+      this.clearNativeOpeningUi();
+      try {
 
       if (!this.nativeOpeningUiScrollTarget) {
         this.nativeOpeningUiScrollTarget = window;
@@ -2760,7 +2770,15 @@
           button.addEventListener('pointerleave', () => this.setNativeOpeningControlFocus(id, document.activeElement === button));
         }
       });
-      if (!copyFits) this.clearNativeOpeningUi();
+      if (!copyFits) { this.clearNativeOpeningUi(); return; }
+      this.nativeOpeningUiActive = true;
+      this.nativeOpeningUiSignature = signature;
+      document.body?.classList.add('legend-phaser-opening-ui-active');
+      } catch (error) {
+        this.nativeOpeningUiFailure = error?.message || String(error);
+        this.clearNativeOpeningUi();
+        console.warn('[LEGEND Phaser] Oric opening overlay paint failed; preserving DOM fallback.', error);
+      }
     }
 
     clearNativeGameplayUi(removeClass = true) {
