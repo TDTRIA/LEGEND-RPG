@@ -36,9 +36,10 @@ The existing modules remain the source of truth. Phaser owns scene presentation,
    - [x] Journal/quest drawer.
    - [ ] Persistent shell map drawer.
    - [x] Contextual action/POI drawer.
-   - [x] Old Road map / field-journal modal (guarded Phaser painter enabled; styled DOM modal remains the fallback when preflight fails; desktop/mobile parity verification remains open).
+   - [x] Old Road map / field-journal modal (guarded Phaser painter enabled; styled DOM modal remains the fallback when preflight fails; parity verified by `tests/phaser-road-map-modal.spec.js` at 390×844).
    - [x] Bottom navigation.
-   - [ ] Shell toast, inventory and character-sheet modals.
+   - [x] Shell toast. `refreshToast` / `clearToast` on the facade paint the message in RealmScene; `showToast`, the 3200 ms timer and `hideShell` in `js/ui/world-shell-v170.js` drive it. The DOM node keeps `role="status"` / `aria-live="polite"` and full text, so assistive tech still receives every message and the styled toast returns whenever the painter clears. Covered by `tests/phaser-shell-toast.spec.js` at 1440px and 390px.
+   - [ ] Inventory and character-sheet modals. `js/ui/modals-v170.js` still does not reference `LegendPhaserWorldV1`.
    - [x] Mobile journal/context side-panel states and scrolling.
    - [x] DOM fallback map/journal scrolling stays within mobile width; native Phaser modal is enabled with guarded fallback; full visual parity verification remains open.
    - [ ] Remaining shell map drawer/modal scrolling.
