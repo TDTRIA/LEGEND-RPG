@@ -229,6 +229,29 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
   }
 }
 
+/* Creation options keep a restrained stone frame; keyboard focus is sage,
+   not the bright gold outline from the legacy DOM-only presentation. */
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice {
+  border-color: rgba(151, 168, 150, .24) !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice:hover:not(.is-selected) {
+  border-color: rgba(181, 217, 154, .44) !important;
+  box-shadow: inset 0 0 0 1px rgba(181, 217, 154, .08) !important;
+  transform: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice.is-selected {
+  border-color: rgba(181, 217, 154, .72) !important;
+  box-shadow: 0 0 0 1px rgba(181, 217, 154, .15), inset 0 0 0 2px rgba(3, 7, 4, .65) !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation :is(.v094-choice,.v094-btn):focus-visible {
+  outline: 2px solid #b5d99a !important;
+  outline-offset: 3px !important;
+}
+body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation :is(.v094-choice,.v094-btn) {
+  transition: none !important;
+  transform: none !important;
+}
+
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice-art,
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-gender-emblem,
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-class-art {
@@ -513,9 +536,9 @@ body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-
   touch-action: manipulation;
 }
 body.legend-phaser-world-active.legend-phaser-hud-ui-active #legend-world-shell-root .lws-hud [data-legend-phaser-hud-control="true"]:focus-visible {
-  outline: 2px solid #ffe6a0 !important;
+  outline: 2px solid #b5d99a !important;
   outline-offset: 3px !important;
-  box-shadow: 0 0 0 4px rgba(231, 201, 130, .18) !important;
+  box-shadow: 0 0 0 4px rgba(181, 217, 154, .16) !important;
 }
 
 
@@ -549,9 +572,9 @@ body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world
   touch-action: manipulation;
 }
 body.legend-phaser-world-active.legend-phaser-bottom-bar-ui-active #legend-world-shell-root .lws-bottom-bar [data-legend-phaser-bottom-control="true"]:focus-visible {
-  outline: 2px solid #ffe6a0 !important;
+  outline: 2px solid #b5d99a !important;
   outline-offset: 2px !important;
-  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+  box-shadow: 0 0 0 3px rgba(181, 217, 154, .14) !important;
 }
 
 
@@ -590,9 +613,9 @@ body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-worl
   touch-action: manipulation;
 }
 body.legend-phaser-world-active.legend-phaser-left-drawer-ui-active #legend-world-shell-root #lws-panel-left [data-legend-phaser-left-control="true"]:focus-visible {
-  outline: 2px solid #ffe6a0 !important;
+  outline: 2px solid #b5d99a !important;
   outline-offset: 3px !important;
-  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+  box-shadow: 0 0 0 3px rgba(181, 217, 154, .14) !important;
 }
 
 
@@ -632,9 +655,9 @@ body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-wor
   touch-action: manipulation;
 }
 body.legend-phaser-world-active.legend-phaser-right-drawer-ui-active #legend-world-shell-root #lws-panel-right [data-legend-phaser-right-control="true"]:focus-visible {
-  outline: 2px solid #ffe6a0 !important;
+  outline: 2px solid #b5d99a !important;
   outline-offset: 3px !important;
-  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+  box-shadow: 0 0 0 3px rgba(181, 217, 154, .14) !important;
 }
 
 
@@ -689,9 +712,9 @@ body.legend-phaser-world-active.legend-phaser-road-map-ui-active #root .exp100:h
 }
 
 body.legend-phaser-road-map-ui-active #exp150Modal [data-legend-phaser-road-map-control="true"]:focus-visible {
-  outline: 2px solid #ffe6a0 !important;
+  outline: 2px solid #b5d99a !important;
   outline-offset: 3px !important;
-  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+  box-shadow: 0 0 0 3px rgba(181, 217, 154, .14) !important;
 }
 
 
@@ -731,9 +754,9 @@ body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-contr
   touch-action: manipulation;
 }
 body.legend-phaser-expedition-hud-ui-active [data-legend-phaser-expedition-control="true"]:focus-visible {
-  outline: 2px solid #ffe6a0 !important;
+  outline: 2px solid #b5d99a !important;
   outline-offset: 3px !important;
-  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+  box-shadow: 0 0 0 3px rgba(181, 217, 154, .14) !important;
 }
 
 
@@ -774,9 +797,9 @@ body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-contro
   touch-action: manipulation;
 }
 body.legend-phaser-road-actions-ui-active [data-legend-phaser-road-action-control="true"]:focus-visible {
-  outline: 2px solid #ffe6a0 !important;
+  outline: 2px solid #b5d99a !important;
   outline-offset: 3px !important;
-  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+  box-shadow: 0 0 0 3px rgba(181, 217, 154, .14) !important;
 }
 
 
@@ -854,9 +877,9 @@ body.legend-phaser-world-active.legend-phaser-combat-ui-active #root #battleSoun
   text-shadow: none !important;
 }
 body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle button:focus-visible {
-  outline: 2px solid #ffe6a0 !important;
+  outline: 2px solid #b5d99a !important;
   outline-offset: 3px !important;
-  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+  box-shadow: 0 0 0 3px rgba(181, 217, 154, .14) !important;
 }
 @media (prefers-reduced-motion: reduce) {
   body.legend-phaser-world-active.legend-phaser-combat-ui-active #root .rpg-battle button {
@@ -890,7 +913,7 @@ body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100
   transform: none !important;
 }
 body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:focus-visible {
-  outline: 2px solid #ffe6a0 !important;
+  outline: 2px solid #b5d99a !important;
   outline-offset: 3px !important;
 }
 body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-section-head .ash099-kicker,
@@ -908,9 +931,9 @@ body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100
   visibility: visible !important;
 }
 body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination:focus-visible {
-  outline: 2px solid #ffe6a0 !important;
+  outline: 2px solid #b5d99a !important;
   outline-offset: 3px !important;
-  box-shadow: 0 0 0 3px rgba(231, 201, 130, .16) !important;
+  box-shadow: 0 0 0 3px rgba(181, 217, 154, .14) !important;
 }
 @media (prefers-reduced-motion: reduce) {
   body.legend-phaser-world-active.legend-phaser-town-board-ui-active #root .ash100-destination {
