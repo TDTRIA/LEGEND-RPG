@@ -2536,10 +2536,17 @@
         this.nativeCreationUiControls.push(control);
         if (!button.__legendNativeCreationBound) {
           button.__legendNativeCreationBound = true;
-          button.addEventListener('focus', () => this.setNativeCreationControlFocus(id, true));
-          button.addEventListener('blur', () => this.setNativeCreationControlFocus(id, button.matches(':hover')));
-          button.addEventListener('pointerenter', () => this.setNativeCreationControlFocus(id, true));
-          button.addEventListener('pointerleave', () => this.setNativeCreationControlFocus(id, document.activeElement === button));
+          // A creation button can be reused when a later step repaints the
+          // surface. Resolve its current control by node, not by the id from
+          // the first paint, so focus/hover events never target a stale frame.
+          const updateCurrentFocusFrame = active => {
+            const current = this.nativeCreationUiControls.find(item => item.button === button);
+            if (current) this.setNativeCreationControlFocus(current.id, active);
+          };
+          button.addEventListener('focus', () => updateCurrentFocusFrame(true));
+          button.addEventListener('blur', () => updateCurrentFocusFrame(button.matches(':hover')));
+          button.addEventListener('pointerenter', () => updateCurrentFocusFrame(true));
+          button.addEventListener('pointerleave', () => updateCurrentFocusFrame(document.activeElement === button));
         }
       });
       if (!copyFits || imageSpecs.some(item => !imageKeys[item.index])) { this.clearNativeCreationUi(); return; }
