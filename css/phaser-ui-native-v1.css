@@ -1095,6 +1095,20 @@ body.legend-phaser-world-active #root [data-phaser-sheet-copy="true"] small {
   -webkit-text-fill-color: transparent !important;
   text-shadow: none !important;
 }
+/* The shell toast message is painted in RealmScene. Its DOM node keeps
+   role="status" and aria-live so assistive tech still receives every message,
+   and it becomes the visible fallback again the moment the painter is cleared. */
+body.legend-phaser-world-active.legend-phaser-toast-ui-active #legend-world-shell-root .lws-shell-toast {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+body.legend-phaser-world-active.legend-phaser-toast-ui-active #legend-world-shell-root .lws-shell-toast[data-legend-phaser-toast-text="true"] {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
 body.legend-phaser-world-active #legend-world-shell-root .legend-phaser-shell-toast {
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;

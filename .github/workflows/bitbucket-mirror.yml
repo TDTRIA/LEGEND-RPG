@@ -1,0 +1,187 @@
+name: Mirror Bitbucket branches
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/bitbucket-mirror.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bitbucket-branch-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    name: Mirror Bitbucket branch updates
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out GitHub main with full history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+          # Add repository secret GH_MIRROR_TOKEN with Contents: write and
+          # Workflows: write to mirror branches that modify GitHub Actions files.
+          # Without it, those specific refs are skipped and reported below.
+          token: ${{ secrets.GH_MIRROR_TOKEN || github.token }}
+
+      - name: Fetch Bitbucket and mirror safe refs
+        shell: bash
+        env:
+          GH_MIRROR_TOKEN: ${{ secrets.GH_MIRROR_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "${GH_MIRROR_TOKEN:-}" ]; then
+            echo "MIRROR_AUTH_TOKEN_PRESENT: scoped GH_MIRROR_TOKEN detected"
+          else
+            echo "::warning::MIRROR_AUTH_TOKEN_MISSING: GH_MIRROR_TOKEN was not available to this run"
+          fi
+
+          git config user.name "Bitbucket Mirror Bot"
+          git config user.email "bitbucket-mirror[bot]@users.noreply.github.com"
+
+          BITBUCKET_URL="https://bitbucket.org/legend-ta/legend-rpg.git"
+          git remote add bitbucket "$BITBUCKET_URL"
+
+          git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+          git fetch --no-tags bitbucket '+refs/heads/*:refs/remotes/bitbucket/*'
+
+          # Never force-push. Preserve both histories when GitHub has a
+          # workflow-only commit that Bitbucket does not contain.
+          git checkout main
+          git reset --hard refs/remotes/origin/main
+          BITBUCKET_MAIN="$(git rev-parse refs/remotes/bitbucket/main)"
+          GITHUB_MAIN="$(git rev-parse HEAD)"
+
+          if [ "$BITBUCKET_MAIN" = "$GITHUB_MAIN" ]; then
+            echo "MAIN_CURRENT $GITHUB_MAIN"
+          elif git merge-base --is-ancestor "$BITBUCKET_MAIN" "$GITHUB_MAIN"; then
+            echo "MAIN_ALREADY_CONTAINS_BITBUCKET $BITBUCKET_MAIN"
+          elif git merge-base --is-ancestor "$GITHUB_MAIN" "$BITBUCKET_MAIN"; then
+            echo "MAIN_FAST_FORWARD $GITHUB_MAIN -> $BITBUCKET_MAIN"
+            git push origin "$BITBUCKET_MAIN:refs/heads/main"
+          else
+            echo "MAIN_MERGE Bitbucket $BITBUCKET_MAIN into GitHub $GITHUB_MAIN"
+            if ! git merge --no-ff --no-edit "$BITBUCKET_MAIN" -m "Mirror Bitbucket main into GitHub main"; then
+              git merge --abort || true
+              echo "::error::Bitbucket main conflicts with GitHub main. Neither ref was overwritten."
+              exit 1
+            fi
+            git push origin HEAD:refs/heads/main
+          fi
+
+          git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+
+          mirrored=0
+          current=0
+          archived=0
+          preserved=0
+          skipped_workflows=0
+
+          # Keep a divergent/blocked Bitbucket tip on GitHub as an immutable tag
+          # before considering its Bitbucket branch eligible for pruning.
+          archive_source_tip() {
+            branch="$1"
+            source_sha="$2"
+            archive_ref="refs/tags/bitbucket-archive/$branch"
+            existing_tag="$(git ls-remote origin "$archive_ref" | awk 'NR == 1 {print $1}')"
+
+            if [ "$existing_tag" = "$source_sha" ]; then
+              echo "ARCHIVE_CURRENT $branch $source_sha"
+              archived=$((archived + 1))
+              return 0
+            fi
+            if [ -n "$existing_tag" ]; then
+              echo "ARCHIVE_COLLISION preserve $branch existing=$existing_tag source=$source_sha"
+              preserved=$((preserved + 1))
+              return 1
+            fi
+            if git push origin "$source_sha:$archive_ref"; then
+              echo "ARCHIVED $branch at $source_sha"
+              archived=$((archived + 1))
+              return 0
+            fi
+            echo "::warning::Could not archive Bitbucket tip for $branch. Keep the Bitbucket branch."
+            preserved=$((preserved + 1))
+            return 1
+          }
+
+          while IFS= read -r source_ref; do
+            [ -n "$source_ref" ] || continue
+            branch="${source_ref#refs/remotes/bitbucket/}"
+            [ "$branch" = "main" ] && continue
+
+            source_sha="$(git rev-parse "$source_ref")"
+            github_ref="refs/remotes/origin/$branch"
+
+            # The default GITHUB_TOKEN cannot publish feature refs that carry
+            # workflow-file history. Do not attempt any feature push until the
+            # owner supplies the narrowly-scoped GH_MIRROR_TOKEN secret.
+            if [ -z "${GH_MIRROR_TOKEN:-}" ]; then
+              if git show-ref --verify --quiet "$github_ref"; then
+                github_sha="$(git rev-parse "$github_ref")"
+                if [ "$github_sha" = "$source_sha" ] || git merge-base --is-ancestor "$source_sha" "$github_sha"; then
+                  echo "CURRENT $branch already preserved on GitHub at $github_sha"
+                  current=$((current + 1))
+                  continue
+                fi
+              fi
+              echo "SKIP_MIRROR_AUTH $branch; add GH_MIRROR_TOKEN (Contents: write, Workflows: write)"
+              preserved=$((preserved + 1))
+              continue
+            fi
+
+            if git show-ref --verify --quiet "$github_ref"; then
+              github_sha="$(git rev-parse "$github_ref")"
+              if [ "$github_sha" = "$source_sha" ]; then
+                current=$((current + 1))
+                continue
+              fi
+              if git merge-base --is-ancestor "$source_sha" "$github_sha"; then
+                echo "GITHUB_AHEAD already_contains $branch at $github_sha"
+                current=$((current + 1))
+                continue
+              fi
+              if ! git merge-base --is-ancestor "$github_sha" "$source_sha"; then
+                echo "DIVERGED archive Bitbucket tip for $branch GitHub=$github_sha Bitbucket=$source_sha"
+                archive_source_tip "$branch" "$source_sha" || true
+                continue
+              fi
+              range_base="$github_sha"
+            else
+              range_base="$(git merge-base refs/remotes/origin/main "$source_ref" || true)"
+              if [ -z "$range_base" ]; then
+                echo "NO_COMMON_BASE preserve $branch; refusing an unrelated-root branch creation"
+                preserved=$((preserved + 1))
+                continue
+              fi
+            fi
+
+            if git show-ref --verify --quiet "$github_ref"; then
+              echo "FAST_FORWARD $branch $range_base -> $source_sha"
+            else
+              echo "CREATE $branch at $source_sha"
+            fi
+
+            if git push origin "$source_sha:refs/heads/$branch"; then
+              mirrored=$((mirrored + 1))
+            else
+              echo "::warning::Branch push failed for $branch; archive the exact source tip instead."
+              archive_source_tip "$branch" "$source_sha" || true
+            fi
+          done < <(git for-each-ref --format='%(refname)' refs/remotes/bitbucket)
+
+          echo "MIRROR_SUMMARY mirrored=$mirrored current=$current archived=$archived preserved=$preserved skipped_workflows=$skipped_workflows"
+          echo "GitHub-only refs were not deleted."
+
+# Credential recheck trigger: verify GH_MIRROR_TOKEN after owner replaced the repository secret.

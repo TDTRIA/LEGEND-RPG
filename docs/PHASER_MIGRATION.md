@@ -1042,3 +1042,10 @@ The migration is complete only when:
 - GitHub Pages deployment for the tested main commit succeeds.
 
 **Do not start new gameplay feature development on top of the migration until this gate is met.** Afterward, use Phaser's scene/entity/animation/input systems for new combat and world features while continuing to invoke the authoritative production systems.
+
+
+## Reconciled main-branch work — 2026-11-16
+
+The shell toast is painted by the production `RealmScene` via `refreshToast` and `clearToast` on `LegendPhaserWorldV1`. The existing `.lws-shell-toast` remains the semantic `role="status"` / `aria-live="polite"` target; its DOM presentation is restored when the Phaser painter clears. The 3.2-second shell timer and shell shutdown clear the painter. Desktop and 390px mobile coverage is retained in `tests/phaser-shell-toast.spec.js`.
+
+The current GitHub-main documentation and story updates are retained alongside this migration. The approved Oric and Tavin direction remains owner-approved story canon, not implemented gameplay.

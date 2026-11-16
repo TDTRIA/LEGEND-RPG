@@ -177,7 +177,15 @@ Greyfen should feel unlike Ashmere even when the player uses familiar systems.
 - **Strength:** Tactical judgment and knowledge of ordinary danger.
 - **Boundary:** He does not need to understand the supernatural to recognize a pattern of deaths or missing travelers.
 - **Voice:** Direct, blunt, economical.
-- **Continuity note:** Confirm canonical spelling (Oric versus the informal “Olric” variant) before expanding his biography.
+- **Continuity note:** The current source uses Captain Oric; do not create a second character called Olric.
+- **Owner-approved later-story direction (2026-11-13; not yet implemented):** Oric served in a human kingdom war after the ancient monster-sealing war. His homeland was invaded and conquered; he escaped believing himself the last survivor. Years later, he defended Ashmere during a monster attack, stayed to help, and reluctantly accepted its captaincy after the townspeople came to rely on him. He keeps his former life private and reveals it gradually to the traveler, who eventually becomes family to him. See the Oric and Tavin Calder sections in [Canon](CANON.md) and the [Character Compendium](LEGEND_CHARACTER_COMPENDIUM.md) for the approved direction and its open details.
+
+### Tavin Calder — future Ashmere Watch Second-in-Command
+- **Status:** Owner-approved character direction (2026-11-13); not yet implemented or confirmed in the live NPC roster.
+- **Role:** Oric's former young soldier, now a hardened veteran who eventually earns the town's trust and becomes second-in-command, helping oversee Ashmere's defenses when Oric is away.
+- **Personality:** Warmer, more approachable, humorous, and more patient with younger guards than Oric. He mentors the traveler and has his own history, friendships, and independent life.
+- **Oric relationship:** They reunite by chance in Ashmere after Tavin recognizes Oric by the scar he received protecting him. Their relationship is built on old respect, affection, private disagreement, compromise, and a united public front.
+- **Story guardrail:** Tavin eventually considers Ashmere home because he comes to care for its people, not simply because Oric is there. Keep his detailed childhood, former friends, and settlement timeline open until developed with the owner.
 
 ### Sella and other town residents
 Sella already exists in the project's systems with conversation/errand progression. Build from that implementation, but audit her present role before assigning her a large new backstory. Other residents should have jobs, personal stakes, and their own opinions; do not make every NPC a channel for the Bell mystery.

@@ -293,6 +293,7 @@
     window.LegendPhaserWorldV1?.refreshNavigation?.();
     window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
     window.LegendPhaserWorldV1?.refreshRightDrawer?.();
+    window.LegendPhaserWorldV1?.clearToast?.();
     lastContext = null;
   }
 
@@ -336,7 +337,13 @@
     toast.hidden = !message;
     if (toastTimer) window.clearTimeout(toastTimer);
     if (message) {
-      toastTimer = window.setTimeout(() => { toast.hidden = true; }, 3200);
+      toastTimer = window.setTimeout(() => {
+        toast.hidden = true;
+        window.LegendPhaserWorldV1?.clearToast?.();
+      }, 3200);
+      window.LegendPhaserWorldV1?.refreshToast?.();
+    } else {
+      window.LegendPhaserWorldV1?.clearToast?.();
     }
   }
 
