@@ -1,0 +1,112 @@
+name: Mirror Bitbucket branches
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/bitbucket-mirror.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bitbucket-branch-mirror
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    name: Mirror Bitbucket branch updates
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out GitHub main with full history
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Fetch Bitbucket and mirror safe refs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "Bitbucket Mirror Bot"
+          git config user.email "bitbucket-mirror[bot]@users.noreply.github.com"
+
+          BITBUCKET_URL="https://bitbucket.org/legend-ta/legend-rpg.git"
+          git remote add bitbucket "$BITBUCKET_URL"
+
+          # Fetch both histories in full. The source repository is public.
+          git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+          git fetch --no-tags bitbucket '+refs/heads/*:refs/remotes/bitbucket/*'
+
+          # Main is source-authoritative, but never force-push. If GitHub has
+          # workflow-only commits, merge Bitbucket main into them so neither
+          # history is discarded. Future Bitbucket main updates merge the same way.
+          git checkout main
+          git reset --hard refs/remotes/origin/main
+          BITBUCKET_MAIN="$(git rev-parse refs/remotes/bitbucket/main)"
+          GITHUB_MAIN="$(git rev-parse HEAD)"
+
+          if [ "$BITBUCKET_MAIN" = "$GITHUB_MAIN" ]; then
+            echo "MAIN_CURRENT $GITHUB_MAIN"
+          elif git merge-base --is-ancestor "$BITBUCKET_MAIN" "$GITHUB_MAIN"; then
+            echo "MAIN_ALREADY_CONTAINS_BITBUCKET $BITBUCKET_MAIN"
+          elif git merge-base --is-ancestor "$GITHUB_MAIN" "$BITBUCKET_MAIN"; then
+            echo "MAIN_FAST_FORWARD $GITHUB_MAIN -> $BITBUCKET_MAIN"
+            git push origin "$BITBUCKET_MAIN:refs/heads/main"
+          else
+            echo "MAIN_MERGE Bitbucket $BITBUCKET_MAIN into GitHub $GITHUB_MAIN"
+            if ! git merge --no-ff --no-edit "$BITBUCKET_MAIN" -m "Mirror Bitbucket main into GitHub main"; then
+              git merge --abort || true
+              echo "::error::Bitbucket main conflicts with GitHub main. Neither ref was overwritten; resolve the conflict before mirroring."
+              exit 1
+            fi
+            git push origin HEAD:refs/heads/main
+          fi
+
+          # Re-fetch GitHub after the main update before syncing feature refs.
+          git fetch --no-tags origin '+refs/heads/*:refs/remotes/origin/*'
+
+          mirrored=0
+          current=0
+          preserved=0
+
+          while IFS= read -r source_ref; do
+            [ -n "$source_ref" ] || continue
+            branch="${source_ref#refs/remotes/bitbucket/}"
+            [ "$branch" = "main" ] && continue
+
+            source_sha="$(git rev-parse "$source_ref")"
+            github_ref="refs/remotes/origin/$branch"
+
+            if ! git show-ref --verify --quiet "$github_ref"; then
+              echo "CREATE $branch $source_sha"
+              git push origin "$source_sha:refs/heads/$branch"
+              mirrored=$((mirrored + 1))
+              continue
+            fi
+
+            github_sha="$(git rev-parse "$github_ref")"
+            if [ "$github_sha" = "$source_sha" ]; then
+              current=$((current + 1))
+            elif git merge-base --is-ancestor "$github_sha" "$source_sha"; then
+              echo "FAST_FORWARD $branch $github_sha -> $source_sha"
+              git push origin "$source_sha:refs/heads/$branch"
+              mirrored=$((mirrored + 1))
+            elif git merge-base --is-ancestor "$source_sha" "$github_sha"; then
+              echo "GITHUB_AHEAD preserve $branch at $github_sha"
+              preserved=$((preserved + 1))
+            else
+              echo "DIVERGED preserve $branch GitHub=$github_sha Bitbucket=$source_sha"
+              preserved=$((preserved + 1))
+            fi
+          done < <(git for-each-ref --format='%(refname)' refs/remotes/bitbucket)
+
+          echo "MIRROR_SUMMARY mirrored=$mirrored current=$current preserved=$preserved"
+          echo "GitHub-only refs were not deleted."
