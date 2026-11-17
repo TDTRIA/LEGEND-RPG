@@ -1150,4 +1150,53 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('persistent world-shell action frames use stone and sage states', async ({ page }) => {
+    // This test creates a traveler and enters Ashmere before checking the
+    // world shell. Give the full first-session flow enough time in CI.
+    test.setTimeout(120000);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await enterAshmere(page, 'OptionFramePaletteQA');
+    // Unlock the established landmark catalog so this test exercises the real
+    // place-selection and Visit action path, not the new-traveler welcome actions.
+    await page.evaluate(() => {
+      const player = window.LegendStorage.loadPlayer();
+      player.flags = player.flags || {};
+      player.flags.firstRoadReturnSeen = true;
+      window.LegendStorage.savePlayer(player);
+      window.LegendAshmereV099.renderAshmere();
+    });
+    await expect(page.locator('#lws-panel-right [data-world-place="market"]')).toBeVisible();
+
+    const snapshot = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
+    expect(snapshot.nativeShellOptionFramePalette).toEqual({
+      neutral: 0x72816f,
+      hover: 0x9eae8e,
+      focus: 0xb5d99a,
+      normalAccent: 0x83947d,
+      selectedAccent: 0xc8a96e,
+      brandAccent: 0xe7c982
+    });
+    expect(snapshot.nativeRightDrawerUi).toBe(true);
+    expect(snapshot.nativeRightDrawerUiControlIds).toEqual(expect.arrayContaining([
+      'inn', 'market', 'forge', 'road'
+    ]));
+    expect(snapshot.nativeRightDrawerUiControlIds).not.toContain('visit-selected-place');
+
+    // At desktop width the left journal drawer is already visible and painted.
+    // Assert its controls without toggling a second surface during the right-place click.
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeLeftDrawerUi)).toBe(true);
+    await expect(page.locator('#lws-panel-left [data-world-action="journal"]')).toBeEnabled();
+
+    // Selection still uses the production place handler, and the warm accent
+    // is reserved for an actually selected action rather than every idle option.
+    await page.locator('#lws-panel-right [data-world-place="market"]').click();
+    await expect(page.locator('#lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#lws-panel-right .lws-selected-place h3')).toHaveText('Market');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot().nativeRightDrawerUiControlIds
+    )).toEqual(expect.arrayContaining(['market', 'visit-selected-place']));
+    await page.locator('#lws-panel-right [data-world-action="visit-selected-place"]').click();
+    await expect(page.locator('.ash099-screen')).toBeVisible();
+  });
+
 });

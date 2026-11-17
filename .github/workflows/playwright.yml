@@ -100,6 +100,10 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:overlay-fallback
 
+      - name: Run persistent world-shell option frame palette regression
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:option-frames
+
       - name: Run focused Phaser Old Road map and journal modal regression
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:road-map
