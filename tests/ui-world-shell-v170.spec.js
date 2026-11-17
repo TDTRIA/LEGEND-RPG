@@ -19,6 +19,10 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+  // The title exists in the DOM before the production intro releases the
+  // native painter. Wait for both boot readiness and the intro gate.
+  await page.waitForFunction(() => window.__legendPhaserWorldReady &&
+    !document.documentElement.classList.contains('engine-intro-active'));
   await expect(page.locator('.v120-title')).toBeVisible();
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
