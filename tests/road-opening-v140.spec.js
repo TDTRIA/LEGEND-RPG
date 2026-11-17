@@ -433,6 +433,34 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
     await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
     await expect.poll(() => page.locator('body').evaluate(node => node.classList.contains('legend-phaser-annals-ui-active'))).toBe(true);
+    const transitionProbe = await page.evaluate(() => {
+      const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+      const screen = document.querySelector('.opening-lore-v220');
+      const button = screen?.querySelector('.opening-lore-v220-continue');
+      if (!scene || !screen || !button) throw new Error('Annals transition probe could not find its production targets');
+      const originalTransition = button.style.getPropertyValue('transition');
+      const originalTransitionPriority = button.style.getPropertyPriority('transition');
+      const originalBorder = button.style.getPropertyValue('border-color');
+      button.style.setProperty('transition', 'border-color 2000ms linear', 'important');
+      const before = getComputedStyle(button).borderColor;
+      button.getBoundingClientRect();
+      button.style.setProperty('border-color', before === 'rgb(1, 2, 3)' ? 'rgb(4, 5, 6)' : 'rgb(1, 2, 3)', 'important');
+      button.getBoundingClientRect();
+      const activeTransition = button.getAnimations().some(animation =>
+        animation.transitionProperty === 'border-color' && ['running', 'pending'].includes(animation.playState)
+      );
+      const treatedAsEntrance = scene.hasFiniteEntranceAnimation(screen);
+      scene.syncNativeAnnalsUi();
+      const painterStayedActive = document.body.classList.contains('legend-phaser-annals-ui-active');
+      if (originalTransition) button.style.setProperty('transition', originalTransition, originalTransitionPriority);
+      else button.style.removeProperty('transition');
+      if (originalBorder) button.style.setProperty('border-color', originalBorder);
+      else button.style.removeProperty('border-color');
+      return { activeTransition, treatedAsEntrance, painterStayedActive };
+    });
+    expect(transitionProbe.activeTransition).toBe(true);
+    expect(transitionProbe.treatedAsEntrance).toBe(false);
+    expect(transitionProbe.painterStayedActive).toBe(true);
     await injectGraphicsFailure('annals', '.opening-lore-v220-copy h1');
 
     await page.getByRole('button', { name: /^Continue$/ }).click();
