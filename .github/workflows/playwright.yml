@@ -19,7 +19,11 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # PR runs may cancel each other: each branch has its own group and the
+  # newest commit is the only one worth testing. Main runs must NOT cancel:
+  # every push to main shares one group, so rapid merges were cancelling the
+  # full suite before it finished and production health went unverified.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
