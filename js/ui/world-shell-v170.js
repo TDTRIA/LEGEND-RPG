@@ -51,6 +51,7 @@
     if (!rootNode) return true;
     return !!rootNode.querySelector([
       '.v120-title',
+      '.ashmere-hub-v240',
       '[data-recovery-screen]',
       '.title-v100',
       '.v094-creation',
