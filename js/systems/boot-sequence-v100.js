@@ -20,19 +20,6 @@
     state.durationMs = state.finishedAt - state.startedAt;
   }
   state.resumeReveal = () => { if (state.revealPending) reveal(); };
-  function waitForOpeningArt() {
-    const imgs = Array.from(document.querySelectorAll('#root .v120-title-backdrop, #root .v120-legend-logo'));
-    const pending = imgs.filter(img => !img.complete);
-    if (!pending.length) return Promise.resolve();
-    return Promise.race([
-      Promise.all(pending.map(img => new Promise(resolve => {
-        img.addEventListener('load', resolve, { once: true });
-        img.addEventListener('error', resolve, { once: true });
-      }))),
-      wait(1400)
-    ]);
-  }
-
   async function start() {
     const dataReady = Boolean(window.LEGEND_DATA?.VERSION && window.LEGEND_DATA?.SAVE_KEY);
     const systems = {
@@ -54,7 +41,6 @@
     mark('traveler', saveFound ? 'FOUND' : 'NEW JOURNEY', true);
 
     paint(91, 'Kindling the opening scene', 'Settling the title art and world paths');
-    await waitForOpeningArt();
     const titleBackdrop = document.querySelector('#root .v120-title-backdrop');
     const titleLogo = document.querySelector('#root .v120-legend-logo');
     const artReady = Boolean(titleBackdrop?.complete && titleBackdrop.naturalWidth > 0) &&
@@ -63,7 +49,6 @@
     mark('scene', artReady ? 'READY' : 'FALLBACK OK', true);
 
     // Startup checks remain, but the old branded loading screen is no longer shown.
-    const elapsed = performance.now() - state.startedAt;
     // Never hold the player at a loading screen after the required checks finish.
 
     if (!systemsReady) {
