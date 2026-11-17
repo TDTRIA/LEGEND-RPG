@@ -232,7 +232,7 @@
     else if (host.querySelector('.gfm160-page')) environment = 'marsh';
     else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'cellar';
     else if (host.querySelector('.ash100-town-greyfen')) environment = 'greyfen';
-    else if (host.querySelector('.ash100-town-ashmere')) environment = 'ashmere';
+    else if (host.querySelector('.ashmere-hub-v240, .ash100-town-ashmere')) environment = 'ashmere';
     else if (host.querySelector('.exp100-scene')) {
       const state = player?.flags?.roadExpeditionV100 || {};
       const stage = Number(state.stage || 0);
