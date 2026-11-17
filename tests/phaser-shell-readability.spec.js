@@ -59,10 +59,13 @@ for (const width of [1440, 390]) {
     }));
     if (width === 390) { expect(clip.top).toBeGreaterThan(50); expect(clip.right).toBeGreaterThan(250); }
     await page.locator('#lws-panel-right [data-world-action="world"]').tap();
-    await expect(page.locator('.ash100-town')).toBeVisible();
+    await expect(page.locator('.ashmere-hub-v240')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
     expect(await page.evaluate(() => localStorage.getItem('legend-roads-of-ashmere-v09'))).toBe(original);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     if (width === 390) {
+      await page.evaluate(() => window.LegendAshmereV099.route('trader'));
+      await expect(page.locator('#legend-world-shell-root')).toBeVisible();
       if (await page.locator('body').evaluate(node => node.classList.contains('legend-shell-right-open'))) await page.locator('[data-world-action="toggle-right"]').tap();
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.locator('[data-world-action="toggle-left"]').tap();
