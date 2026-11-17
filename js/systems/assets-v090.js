@@ -8,7 +8,7 @@
       emblemFull: 'assets/generated/ui/icons/legend-icon-milestone.webp'
     },
     title: {
-      background: 'assets/generated/title/title-ashmere-road.webp'
+      background: 'assets/title/title_bg_ashmere_road_v089.jpg'
     },
     locations: {
       ashmereMain: 'assets/generated/locations/ashmere-town.webp',
