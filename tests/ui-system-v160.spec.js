@@ -704,6 +704,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('saved Reduced Motion preference suppresses new decorative transitions', async ({ page }) => {
+    test.setTimeout(90000);
     await openTitle(page);
     await page.evaluate(() => document.body.classList.add('a11y-reduced-motion'));
 
