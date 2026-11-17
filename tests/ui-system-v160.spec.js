@@ -223,7 +223,19 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(menu.logoVisible).toBe('visible');
     expect(await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()))).toBe(saveBefore);
 
-    await page.locator('#settings').focus();
+    // Verify the focus ring under genuine keyboard navigation, not programmatic
+    // focus after the prior mouse-driven title/menu actions.
+    await page.evaluate(() => document.activeElement?.blur?.());
+    let reachedSettingsByKeyboard = false;
+    for (let tab = 0; tab < 20; tab += 1) {
+      await page.keyboard.press('Tab');
+      const activeId = await page.evaluate(() => document.activeElement?.id || '');
+      if (activeId === 'settings') {
+        reachedSettingsByKeyboard = true;
+        break;
+      }
+    }
+    expect(reachedSettingsByKeyboard).toBe(true);
     await expect(page.locator('#settings')).toBeFocused();
     const focus = await page.locator('#settings').evaluate(button => getComputedStyle(button).outlineStyle);
     expect(focus).toBe('solid');
