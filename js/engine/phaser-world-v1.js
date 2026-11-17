@@ -294,7 +294,7 @@
     else if (host.querySelector('.exp150-world-page, .exp100-scene')) surface = 'expedition';
     else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) surface = 'dungeon';
     else if (host.querySelector('.gss170-page, .gfm160-page')) surface = 'field-site';
-    else if (host.querySelector('.ash100-town')) surface = 'town';
+    else if (host.querySelector('.ashmere-hub-v240, .ash100-town')) surface = 'town';
     else if (host.querySelector('.ash099, .reg100')) surface = 'town-service';
     else if (host.querySelector('.v120-title')) surface = 'title';
     window.LegendRoadAudioV100?.setSurface?.(surface);
