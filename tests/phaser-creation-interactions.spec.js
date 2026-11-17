@@ -117,14 +117,15 @@ test('screen transitions keep one owner while DOM creation choices retain native
       return {
         active: focused?.matches('.v094-choice'),
         keyboardVisible: focused?.matches(':focus-visible'),
-        focusBorder: focused ? getComputedStyle(focused).borderTopColor : '',
-        idleBorder: idle ? getComputedStyle(idle).borderTopColor : '',
+        outlineStyle: focused ? getComputedStyle(focused).outlineStyle : '',
+        outlineWidth: focused ? getComputedStyle(focused).outlineWidth : '',
         ariaPressed: focused?.getAttribute('aria-pressed')
       };
     });
     expect(focusedState.active).toBe(true);
     expect(focusedState.keyboardVisible).toBe(true);
-    expect(focusedState.focusBorder).not.toBe(focusedState.idleBorder);
+    expect(focusedState.outlineStyle).toBe('solid');
+    expect(focusedState.outlineWidth).toBe('2px');
     expect(focusedState.ariaPressed).toBe('false');
     await firstChoice.click();
     await expect(firstChoice).toHaveAttribute('aria-pressed', 'true');
