@@ -11,7 +11,6 @@ async function openGame(page, width = 1440) {
 
 test('production uses the DOM curtain as its only scene-transition presentation', async ({ page }) => {
   await openGame(page);
-  const scene = await page.evaluate(() => window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene'));
   expect(await page.evaluate(() => Boolean(window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').transitionUi))).toBe(false);
 
   const before = Date.now();
