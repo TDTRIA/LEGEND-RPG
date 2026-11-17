@@ -222,23 +222,14 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
   outline: 2px solid #b5d99a !important;
   outline-offset: 2px !important;
 }
-@media (prefers-reduced-motion: reduce) {
-  body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice {
-    transition: none !important;
-    transform: none !important;
-  }
-}
-
 /* Phaser owns the visible creation cards and focus frames. Keep the semantic
    DOM targets transparent so they do not double-draw the canvas presentation. */
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation :is(.v094-choice,.v094-btn):focus-visible {
   outline: 2px solid transparent !important;
   outline-offset: 3px !important;
 }
-body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation :is(.v094-choice,.v094-btn) {
-  transition: none !important;
-  transform: none !important;
-}
+/* Keep authored hover/selection geometry identical while Phaser paints the
+   duplicate presentation; the DOM remains the focusable hit target. */
 
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice-art,
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-gender-emblem,
@@ -263,8 +254,6 @@ body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-cre
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-actions .v094-btn:hover,
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-choice:active,
 body.legend-phaser-world-active.legend-phaser-creation-ui-active #root .v140-creation .v094-actions .v094-btn:active {
-  transform: none !important;
-  transition: none !important;
   filter: none !important;
 }
 
