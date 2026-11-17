@@ -16,7 +16,9 @@ async function openTitle(page) {
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
-  await expect(page.locator('.v120-title')).toBeVisible();
+  const skipAwakening = page.getByRole('button', { name: /Skip the world awakening/i });
+  if (await skipAwakening.isVisible().catch(() => false)) await skipAwakening.click();
+  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 10000 });
   await expect(page.locator('.v120-title-hero .v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
   await expect(page.locator('.v120-title-hero .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
   await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
@@ -383,6 +385,87 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await expect(page.locator('.rpg-battle')).toBeVisible();
     await expect(page.locator('.rpg-battle')).toContainText('Awaken');
   });
+
+  test('native Annals, creation and Oric overlays recover to readable DOM when Phaser painting throws', async ({ page }) => {
+    test.setTimeout(120000);
+    const errors = [];
+    page.on('pageerror', error => errors.push(error.message));
+    await openTitle(page);
+
+    const injectGraphicsFailure = async (kind, selector) => {
+      await page.evaluate(kind => {
+        const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+        window.__legendOverlayPainterProbe = window.__legendOverlayPainterProbe || {};
+        window.__legendOverlayPainterProbe.graphics = scene.add.graphics;
+        scene.add.graphics = function () {
+          throw new Error('simulated ' + kind + ' Phaser graphics failure');
+        };
+        if (kind === 'annals') {
+          scene.clearNativeAnnalsUi();
+          scene.syncNativeAnnalsUi();
+        } else if (kind === 'creation') {
+          scene.clearNativeCreationUi();
+          scene.syncNativeCreationUi();
+        } else {
+          scene.clearNativeOpeningUi();
+          scene.syncNativeOpeningUi();
+        }
+      }, kind);
+
+      const className = {
+        annals: 'legend-phaser-annals-ui-active',
+        creation: 'legend-phaser-creation-ui-active',
+        opening: 'legend-phaser-opening-ui-active'
+      }[kind];
+      await expect.poll(() => page.locator('body').evaluate((node, name) => node.classList.contains(name), className)).toBe(false);
+      await expect(page.locator(selector)).not.toHaveCSS('color', 'rgba(0, 0, 0, 0)');
+      await page.evaluate(kind => {
+        const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+        scene.add.graphics = window.__legendOverlayPainterProbe.graphics;
+        delete window.__legendOverlayPainterProbe.graphics;
+        if (kind === 'annals') scene.syncNativeAnnalsUi();
+        else if (kind === 'creation') scene.syncNativeCreationUi();
+        else scene.syncNativeOpeningUi();
+      }, kind);
+      await expect.poll(() => page.locator('body').evaluate((node, name) => node.classList.contains(name), className)).toBe(true);
+    };
+
+    await page.getByRole('button', { name: /Begin Your Journey/i }).click();
+    await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
+    await expect.poll(() => page.locator('body').evaluate(node => node.classList.contains('legend-phaser-annals-ui-active'))).toBe(true);
+    await injectGraphicsFailure('annals', '.opening-lore-v220-copy h1');
+
+    await page.getByRole('button', { name: /^Continue$/ }).click();
+    await page.getByRole('button', { name: /^Continue$/ }).click();
+    await page.getByRole('button', { name: /Shape the traveler/i }).click();
+    await expect(page.locator('#v094Name')).toBeVisible();
+    await expect.poll(() => page.locator('body').evaluate(node => node.classList.contains('legend-phaser-creation-ui-active'))).toBe(true);
+    await injectGraphicsFailure('creation', '.v140-creation h1');
+
+    await page.locator('#v094Name').fill('OverlayRecoveryQA');
+    await page.locator('#v094Next').click();
+    await page.locator('[data-gender="unspoken"]').click();
+    await page.locator('#v094Next').click();
+    await page.locator('[data-personality="kind"]').click();
+    await page.locator('#v094Next').click();
+    await page.locator('[data-origin]').first().click();
+    await page.locator('#v094Next').click();
+    await page.locator('[data-class="Ranger"]').click();
+    await page.locator('#v094Next').click();
+    await page.locator('[data-keepsake="Old Map"]').click();
+    await page.locator('#v094Next').click();
+    await expect(page.getByRole('heading', { name: 'OverlayRecoveryQA', exact: true })).toBeVisible();
+    await page.getByRole('button', { name: /Let Me Wake/i }).click();
+    await expect(page.getByRole('heading', { name: 'One Bell. No Tower.' })).toBeVisible();
+    await page.getByRole('button', { name: 'Lift your head' }).click();
+    await expect(page.getByRole('heading', { name: 'Beneath the Dead Lantern' })).toBeVisible();
+    await expect.poll(() => page.locator('body').evaluate(node => node.classList.contains('legend-phaser-opening-ui-active'))).toBe(true);
+    await injectGraphicsFailure('opening', '.opening-road-v140');
+
+    await expect(page.locator('[data-oric-response="honest"]')).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
 
   test('new opening uses existing save key and production script order', async () => {
     expect(indexSource).toContain('js/systems/road-opening-v140.js');
