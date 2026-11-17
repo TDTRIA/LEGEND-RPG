@@ -563,7 +563,7 @@
 #root .title-v230-ashmere-dom button#continue.v136-menu-primary .v136-menu-icon,
 #root .title-v230-ashmere-dom button#newPrimary.v136-menu-primary .v136-menu-icon {
   border: 0 !important;
-  background: transparent !important;
+  background-color: transparent !important;
   filter: saturate(.72) brightness(1.08) drop-shadow(0 1px 5px rgba(0, 0, 0, .88)) !important;
 }
 
