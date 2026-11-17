@@ -568,6 +568,20 @@
 }
 
 
+/* The v0.6 legacy presentation layer adds full-screen body pseudo-backdrops.
+   They were designed for the old page-wide art and create a second framed image
+   beneath the Phaser scene. The v230 title owns its own full-bleed backdrop. */
+body:has(.title-v230-ashmere-dom) {
+  background: #05090a !important;
+  background-image: none !important;
+}
+body:has(.title-v230-ashmere-dom)::before,
+body:has(.title-v230-ashmere-dom)::after {
+  content: none !important;
+  display: none !important;
+  background: none !important;
+}
+
 /* Honor the in-game accessibility toggle as well as the OS media preference. */
 body.a11y-reduced-motion #root .title-v230-ashmere-dom .v120-title-backdrop,
 body.a11y-reduced-motion #root .title-v230-ashmere-dom .v120-title-hero {
