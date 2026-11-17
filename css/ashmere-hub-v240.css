@@ -216,6 +216,8 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
 }
 .ashmere-hub-v240-place {
   position:relative;
+  border-radius:2px;
+  font:inherit;
   display:grid;
   grid-template-columns:94px minmax(0,1fr) 16px;
   align-items:stretch;
@@ -290,6 +292,8 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
 }
 .ashmere-hub-v240-gate {
   position:relative;
+  border-radius:2px;
+  font:inherit;
   display:grid;
   grid-template-columns:104px minmax(0,1fr) 22px;
   align-items:center;
@@ -314,6 +318,7 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
 .ashmere-hub-v240-more { min-width:0; border-top:1px solid rgba(206,187,145,.28); border-bottom:1px solid rgba(206,187,145,.18); }
 .ashmere-hub-v240-more-toggle {
   display:grid;
+  font:inherit;
   grid-template-columns:minmax(0,1fr) 19px;
   align-items:center;
   width:100%;
@@ -345,6 +350,7 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
 .ashmere-hub-v240-more-list>p { grid-column:1/-1; margin:0; color:#bbb; font-size:.7rem; }
 .ashmere-hub-v240-more-place {
   display:grid;
+  font:inherit;
   gap:2px;
   min-width:0;
   padding:8px 2px;
