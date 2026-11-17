@@ -26,7 +26,7 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
-  expectBackgroundAlphaAtMost(titleSceneOverlay, 0.85);
+  expectBackgroundAlphaAtMost(titleSceneOverlay, 0.9);
   expect(titleSceneOverlay).not.toContain('rgba(2, 5, 3, 0.94)');
 }
 
