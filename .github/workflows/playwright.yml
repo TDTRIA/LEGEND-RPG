@@ -57,7 +57,7 @@ jobs:
 
           const html = fs.readFileSync('index.html', 'utf8');
           const productionScripts = [...new Set(
-            [...html.matchAll(/<script\\b[^>]*\\bsrc=["']([^"']+)["'][^>]*>/gi)]
+            [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)]
               .map(([, src]) => src.split('?')[0])
               .filter(src => src.startsWith('js/') && src.endsWith('.js'))
           )].sort();
@@ -77,7 +77,7 @@ jobs:
           function checkSyntax(file) {
             const result = spawnSync(process.execPath, ['--check', file], { encoding: 'utf8' });
             if (result.status !== 0) {
-              process.stderr.write('Syntax check failed: ' + file + '\\n');
+              process.stderr.write('Syntax check failed: ' + file + '\n');
               process.stderr.write(result.stderr || result.stdout || '');
               process.exit(result.status || 1);
             }
