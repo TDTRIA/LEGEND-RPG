@@ -2552,10 +2552,12 @@ test('the Ashmere title keeps its native DOM menu while Phaser renders only the 
 });
 
 
-test('persistent HUD is painted by Phaser while DOM controls keep their real actions', async ({ page }) => {
+test('Old Road HUD is painted by Phaser while DOM controls keep their real actions', async ({ page }) => {
   test.setTimeout(180000);
   await page.setViewportSize({ width: 1440, height: 900 });
   await startFreshCharacter(page, 'PhaserHudQA');
+  await clickAshmereView(page, 'routes');
+  await enterOldRoadFromDeparture(page);
   await expect(page.locator('#legend-world-shell-root .lws-hud')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeHudUi)).toBe(true);
 
@@ -2581,7 +2583,7 @@ test('persistent HUD is painted by Phaser while DOM controls keep their real act
   expect(desktop.objectCount).toBeGreaterThan(8);
   expect(desktop.textCount).toBeGreaterThanOrEqual(10);
   expect(desktop.values).toEqual(expect.arrayContaining([
-    'LEGEND', 'BEYOND THE LANTERN LINE', 'Ashmere', 'Your next lead',
+    'LEGEND', 'BEYOND THE LANTERN LINE', 'Old Road', 'Your next lead',
     'Health', 'Gold', 'Save'
   ]));
   expect(desktop.locationColor).toBe('rgba(0, 0, 0, 0)');
