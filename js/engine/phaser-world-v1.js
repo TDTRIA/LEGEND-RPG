@@ -5,6 +5,23 @@
 (() => {
   'use strict';
 
+  // Software WebGL can stall on the full road scene. Prefer Phaser's existing
+  // Canvas presentation only when the browser identifies SwiftShader explicitly.
+  function productionRendererType() {
+    let probe;
+    try {
+      const canvas = document.createElement('canvas');
+      probe = canvas.getContext('webgl2') || canvas.getContext('webgl');
+      const info = probe?.getExtension('WEBGL_debug_renderer_info');
+      const renderer = info ? String(probe.getParameter(info.UNMASKED_RENDERER_WEBGL)) : '';
+      return /SwiftShader/i.test(renderer) ? Phaser.CANVAS : Phaser.AUTO;
+    } catch {
+      return Phaser.AUTO;
+    } finally {
+      probe?.getExtension('WEBGL_lose_context')?.loseContext();
+    }
+  }
+
   const IS_PROTOTYPE = /\/prototypes\/reboot(?:\/|$)/.test(window.location.pathname);
   const SAVE_KEY = IS_PROTOTYPE
     ? 'legend-reboot-prototype-save-v1'
@@ -298,7 +315,7 @@
     else if (host.querySelector('.ash099, .reg100')) surface = 'town-service';
     else if (host.querySelector('.v120-title')) surface = 'title';
     window.LegendRoadAudioV100?.setSurface?.(surface);
-    if (surface !== currentSurface) {
+    if (surface !== currentSurface || (realmScene && realmScene.surface !== surface)) {
       currentSurface = surface;
       realmScene?.setSurface?.(surface);
     } else {
@@ -803,6 +820,7 @@
       this.bellVault = window.LegendPhaserBellVaultV1?.create(this);
       this.combatResults = window.LegendPhaserCombatResultsV1?.create(this);
       this.roadResults = window.LegendPhaserRoadResultsV1?.create(this);
+      this.observePresentationGeometry();
       let titlePreferenceFrame = null;
       const titlePreferences = new MutationObserver(() => {
         if (this.surface !== 'title' || titlePreferenceFrame !== null) return;
@@ -812,6 +830,20 @@
       titlePreferences.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
       if (root()) titlePreferences.observe(root(), { attributes: true, attributeFilter: ['style'] });
       this.events.once('shutdown', () => { titlePreferences.disconnect(); if (titlePreferenceFrame !== null) cancelAnimationFrame(titlePreferenceFrame); });
+      this.events.once('shutdown', () => {
+        ['Title', 'Annals', 'Creation', 'Opening', 'Gameplay', 'Combat',
+          'TownBoard', 'Hud', 'BottomBar', 'LeftDrawer', 'RightDrawer',
+          'RoadMap', 'ExpeditionHud', 'ExpeditionActions', 'Toast'].forEach(kind => this['clearNative' + kind + 'Ui']?.());
+        this.nativeScreenArtNodes.forEach(node => node.removeAttribute('data-legend-phaser-scene-art-active'));
+        this.nativeScreenArtNodes = [];
+        this.nativeScreenArtState = [];
+        this.nativeRoadSceneArtActive = false;
+        document.body?.classList.remove('legend-phaser-road-scene-art-active', 'legend-phaser-world-active');
+        if (realmScene === this) {
+          realmScene = null;
+          window.__legendRebootBridge = null;
+        }
+      });
       this.motionReduced = reducedMotion();
       this.events.once('shutdown', () => {
         if (this.expeditionClipFrame !== null) window.cancelAnimationFrame(this.expeditionClipFrame);
@@ -821,7 +853,7 @@
         window.clearTimeout(this.nativeOpeningUiLayoutEvent);
         this.nativeOpeningUiLayoutEvent = null;
       });
-      this.scale.on('resize', () => {
+      const resizePresentation = () => {
         this.layoutBackground();
         this.syncNativeRoadSceneArt();
         this.syncNativeScreenArt();
@@ -841,8 +873,14 @@
         this.syncNativeExpeditionHudUi();
         this.syncNativeExpeditionActionsUi();
       });
-      this.input.keyboard?.on('keydown', event => {
+      const keyPresentation = event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
+      };
+      this.scale.on('resize', resizePresentation);
+      this.input.keyboard?.on('keydown', keyPresentation);
+      this.events.once('shutdown', () => {
+        this.scale.off('resize', resizePresentation);
+        this.input.keyboard?.off('keydown', keyPresentation);
       });
       realmScene = this;
       window.__legendRebootBridge = {
@@ -1388,6 +1426,49 @@
       const veil = objects[0];
       if (veil?.active) this.tweens.add({ targets: veil, alpha: 0, duration: 660, ease: 'Sine.easeInOut' });
     }
+    observePresentationGeometry() {
+      const canvas = this.game.canvas;
+      let frame = null, disposed = false, signature = '', media = null;
+      const refresh = () => {
+        frame = null;
+        if (disposed) return;
+        const box = canvas.getBoundingClientRect();
+        const next = JSON.stringify([box.x, box.y, box.width, box.height,
+          devicePixelRatio, window.visualViewport?.scale]);
+        if (next === signature) return;
+        signature = next;
+        this.setSurface(this.surface);
+        ['people', 'contracts', 'workboard', 'workshop', 'market', 'inn',
+          'travelerSheet', 'shellToast', 'settingsUi', 'titleNoticeUi', 'transitionUi',
+          'confirmationUi', 'creditsUi', 'dispatchesUi', 'accountUi', 'recoveryUi',
+          'inventoryOverlay', 'routeBoard', 'roadScene', 'growth', 'marshMap', 'marsh',
+          'storehouse', 'bellVault', 'combatResults', 'roadResults'].forEach(key => this[key]?.sync?.());
+      };
+      const schedule = () => { if (!disposed && frame === null) frame = requestAnimationFrame(refresh); };
+      const resize = new ResizeObserver(schedule);
+      resize.observe(canvas);
+      const styles = new MutationObserver(schedule);
+      for (let node = canvas; node; node = node.parentElement) {
+        styles.observe(node, { attributes: true, attributeFilter: ['class', 'style'] });
+      }
+      const density = () => {
+        media?.removeEventListener('change', density);
+        media = matchMedia(`(resolution: ${devicePixelRatio}dppx)`);
+        media.addEventListener('change', density);
+        schedule();
+      };
+      density();
+      const targets = [[window, 'resize'], [window, 'orientationchange'], [document, 'scroll'],
+        [window.visualViewport, 'resize'], [window.visualViewport, 'scroll']];
+      targets.forEach(([target, type]) => target?.addEventListener(type, schedule, true));
+      this.events.once('shutdown', () => {
+        disposed = true;
+        if (frame !== null) cancelAnimationFrame(frame);
+        resize.disconnect(); styles.disconnect(); media?.removeEventListener('change', density);
+        targets.forEach(([target, type]) => target?.removeEventListener(type, schedule, true));
+      });
+    }
+
 
     setSurface(surface) {
       const next = String(surface || 'title');
@@ -1450,8 +1531,262 @@
         return Boolean(timing && timing.iterations !== Infinity && Number.isFinite(timing.endTime));
       });
     }
+    syncNativePresentation(kind, surface, selector, expectedSurface) {
+      const key = 'native' + kind + 'Ui';
+      const screen = root()?.querySelector(selector);
+      const clear = () => this['clearNative' + kind + 'Ui']();
+      const previous = this[key + 'Transaction'];
+      const className = 'legend-phaser-' + kind.toLowerCase() + '-ui-active';
+      if (!screen || surface !== expectedSurface || !this.sys.isActive()) {
+        if (previous || this[key + 'Active'] || this[key + 'Objects'].length || document.body.classList.contains(className)) clear();
+        return;
+      }
+      if (previous?.screen === screen) {
+        if (!previous.committed && !previous.staged) previous.attempted = false;
+        previous.refresh();
+        return;
+      }
+      clear();
+      const transaction = { screen, frame: null, building: false, signature: '', committed: false };
+      this[key + 'Transaction'] = transaction;
+      const measure = () => JSON.stringify([
+        window.devicePixelRatio, window.visualViewport?.scale, this.dimensions(),
+        ...[this.game.canvas, screen, ...screen.querySelectorAll('button,input,img,h1,h2,h3,p,span,strong,small,label,blockquote')].map(node => {
+          const r = node.getBoundingClientRect();
+          const css = getComputedStyle(node);
+          return [r.x, r.y, r.width, r.height, node.textContent, node.value,
+            node.className, node.disabled, node.getAttribute('aria-disabled'), node.getAttribute('aria-pressed'),
+            node.currentSrc, css.fontFamily, css.fontSize, css.fontWeight, css.letterSpacing, css.textTransform, css.lineHeight];
+        })
+      ]);
+      const rollback = () => {
+        transaction.cancelPaint?.();
+        transaction.building = true;
+        try { clear(); } finally { transaction.building = false; }
+        transaction.committed = false;
+        transaction.staged = null;
+      };
+      transaction.refresh = () => {
+        try {
+          if ((transaction.committed || transaction.staged) && measure() !== transaction.signature) {
+            rollback();
+            transaction.signature = '';
+            transaction.attempted = false;
+          }
+          transaction.schedule();
+        } catch (error) {
+          this[key + 'Failure'] = error.message;
+          clear();
+        }
+      };
+      const tick = () => {
+        transaction.frame = null;
+        if (this[key + 'Transaction'] !== transaction) return;
+        transaction.remaining -= 1;
+        let settling = false;
+        if (!screen.isConnected || this.surface !== expectedSurface || !this.sys.isActive()) { clear(); return; }
+        let before;
+        try {
+          const images = [...screen.querySelectorAll('img')].filter(img => img.getBoundingClientRect().width > 0);
+          images.forEach(img => { if (img.loading !== 'eager') img.loading = 'eager'; });
+          const ready = (!document.fonts || (document.fonts.status === 'loaded' &&
+            ![...document.fonts].some(font => font.status === 'error'))) &&
+            images.every(img => img.complete && img.naturalWidth > 0) &&
+            !this.hasFiniteEntranceAnimation(screen);
+          const signature = measure();
+          if (!ready || signature !== transaction.signature) {
+            if (transaction.committed || transaction.staged) rollback();
+            transaction.signature = ready ? signature : '';
+            transaction.attempted = false;
+            settling = ready;
+          } else if (transaction.staged) {
+            if (!transaction.cancelPaint) {
+              // rAF layout readiness does not prove that Phaser has drawn the
+              // replacement. Publish visibility immediately before rendering,
+              // then transfer DOM ownership only after that render completes.
+              // A sleeping/stalled renderer leaves the semantic DOM usable.
+              let painted = false;
+              const reveal = () => {
+                if (this[key + 'Transaction'] !== transaction || !transaction.staged) return;
+                transaction.staged.forEach(({ object, visible }) => object.setVisible(visible));
+                painted = true;
+              };
+              const commit = () => {
+                transaction.cancelPaint();
+                if (this[key + 'Transaction'] !== transaction) return;
+                try {
+                  if (!painted || !screen.isConnected || this.surface !== expectedSurface ||
+                      !this.sys.isActive() || measure() !== transaction.signature) {
+                    rollback();
+                    transaction.schedule(true);
+                    return;
+                  }
+                  transaction.staged = null;
+                  this[key + 'Active'] = true;
+                  document.body.classList.add(className);
+                  transaction.committed = true;
+                } catch (error) {
+                  this[key + 'Failure'] = error.message;
+                  rollback();
+                }
+              };
+              transaction.cancelPaint = () => {
+                this.game.events.off('prerender', reveal);
+                this.game.events.off('postrender', commit);
+                transaction.cancelPaint = null;
+              };
+              this.game.events.once('prerender', reveal);
+              this.game.events.once('postrender', commit);
+            }
+          } else if (!transaction.attempted) {
+            transaction.attempted = true;
+            transaction.building = true;
+            before = new Set(this.children.list);
+            this['paintNative' + kind + 'Ui'](surface);
+            const objects = this[key + 'Objects'];
+            if (!this[key + 'Active'] || !objects.length || objects.some(object => !object.active)) {
+              throw new Error(this[key + 'Failure'] || 'Incomplete native presentation');
+            }
+            // Stage the complete object set invisibly for another frame. The
+            // source DOM stays visible until its geometry is stable again.
+            transaction.staged = objects.map(object => ({ object, visible: object.visible }));
+            objects.forEach(object => object.setVisible(false));
+            this[key + 'Active'] = false;
+            settling = true;
+          }
+        } catch (error) {
+          rollback();
+          // Factory calls can throw before an object reaches the renderer's list.
+          if (before) this.children.list.slice().forEach(object => {
+            if (!before.has(object) && object.scene) object.destroy();
+          });
+          this[key + 'Failure'] = error.message;
+          console.warn('[LEGEND Phaser] ' + kind + ' handoff rolled back:', error);
+        } finally {
+          transaction.building = false;
+        }
+        if (settling && this[key + 'Transaction'] === transaction && transaction.frame === null) {
+          if (transaction.remaining > 0) transaction.frame = requestAnimationFrame(tick);
+          else rollback(); // Unstable layout stays in DOM until the next real invalidation.
+        }
+      };
+      transaction.schedule = (invalidate = false) => {
+        if (this[key + 'Transaction'] !== transaction) return;
+        // DOM Event / FontFaceSet payloads are notifications, not a request
+        // to discard identical geometry (our ownership styles emit them too).
+        if (invalidate === true) transaction.signature = '';
+        if (!transaction.committed && !transaction.staged) transaction.attempted = false;
+        if (transaction.frame !== null) return;
+        transaction.remaining = 12;
+        transaction.frame = requestAnimationFrame(tick);
+      };
+      const dispose = [];
+      const listen = (target, type, handler = transaction.schedule, options) => {
+        target?.addEventListener(type, handler, options);
+        dispose.push(() => target?.removeEventListener(type, handler, options));
+      };
+      const resize = new ResizeObserver(() => transaction.schedule());
+      const observeLayout = () => {
+        resize.disconnect();
+        [this.game.canvas, screen, ...screen.querySelectorAll('*')].forEach(node => resize.observe(node));
+      };
+      observeLayout();
+      dispose.push(() => resize.disconnect());
+      // Ignore our own ownership classes; they must not recursively invalidate
+      // the transaction which just published them. Authored styles still do.
+      const authoredClasses = value => String(value || '').replace(/\blegend-phaser-[\w-]+-ui-active\b/g, '').trim();
+      const mutations = new MutationObserver(records => {
+        const changed = records.some(record => {
+          if (record.target === document.body && record.attributeName === 'class') {
+            return authoredClasses(record.oldValue) !== authoredClasses(document.body.className);
+          }
+          return true;
+        });
+        if (!changed) return;
+        if (records.some(record => record.type === 'childList' && screen.contains(record.target))) observeLayout();
+        transaction.schedule(true);
+      });
+      mutations.observe(document.body, { subtree: true, childList: true, characterData: true,
+        attributes: true, attributeOldValue: true,
+        attributeFilter: ['class', 'style', 'hidden', 'src', 'disabled', 'aria-disabled', 'aria-pressed', 'open', 'value'] });
+      mutations.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+      dispose.push(() => mutations.disconnect());
+      ['scroll', 'load', 'error', 'input', 'change', 'focusin', 'focusout', 'pointerover', 'pointerout', 'animationstart', 'animationend',
+        'animationcancel', 'transitionrun', 'transitionend', 'transitioncancel'].forEach(type => listen(document, type, transaction.schedule, true));
+      listen(window, 'resize');
+      listen(window, 'orientationchange');
+      listen(window.visualViewport, 'resize');
+      listen(window.visualViewport, 'scroll');
+      ['loading', 'loadingdone', 'loadingerror'].forEach(type => listen(document.fonts, type));
+      document.fonts?.ready.then(transaction.schedule);
+      let density;
+      const densityChanged = () => {
+        density?.removeEventListener('change', densityChanged);
+        density = window.matchMedia('(resolution: ' + window.devicePixelRatio + 'dppx)');
+        density.addEventListener('change', densityChanged);
+        transaction.schedule(true);
+      };
+      densityChanged();
+      dispose.push(() => density?.removeEventListener('change', densityChanged));
+      transaction.dispose = () => {
+        transaction.cancelPaint?.();
+        dispose.forEach(cleanup => cleanup());
+      };
+      transaction.schedule();
+    }
+
+    bindNativePresentationEvent(kind, node, flag, type, listener) {
+      node.addEventListener(type, listener);
+      const key = 'native' + kind + 'UiListeners';
+      (this[key] ||= []).push({ node, flag, type, listener });
+    }
+    bindNativePresentationEvent(kind, node, flag, type, listener) {
+      node.addEventListener(type, listener);
+      const key = 'native' + kind + 'UiListeners';
+      (this[key] ||= []).push({ node, flag, type, listener });
+    }
+
+
+    clearNativePresentationEvents(kind) {
+      const key = 'native' + kind + 'UiListeners';
+      (this[key] || []).forEach(({ node, flag, type, listener }) => {
+        node.removeEventListener(type, listener);
+        delete node[flag];
+      });
+      this[key] = [];
+    }
+    clearNativePresentationEvents(kind) {
+      const key = 'native' + kind + 'UiListeners';
+      (this[key] || []).forEach(({ node, flag, type, listener }) => {
+        node.removeEventListener(type, listener);
+        delete node[flag];
+      });
+      this[key] = [];
+    }
+
+
+    cancelNativePresentation(kind) {
+      const key = 'native' + kind + 'UiTransaction';
+      const transaction = this[key];
+      if (!transaction || transaction.building) return;
+      cancelAnimationFrame(transaction.frame);
+      transaction.dispose?.();
+      this[key] = null;
+    }
+
+    cancelNativePresentation(kind) {
+      const key = 'native' + kind + 'UiTransaction';
+      const transaction = this[key];
+      if (!transaction || transaction.building) return;
+      cancelAnimationFrame(transaction.frame);
+      transaction.dispose?.();
+      this[key] = null;
+    }
+
 
     clearNativeTitleUi(removeClass = true) {
+      this.cancelNativePresentation('Title');
+      this.clearNativePresentationEvents('Title');
       this.nativeTitleUiLayoutEvent?.remove?.(false);
       this.nativeTitleUiLayoutEvent = null;
       this.nativeTitleUiObjects.forEach(object => {
@@ -1494,6 +1829,10 @@
     }
 
     syncNativeTitleUi(surface = this.surface) {
+      this.syncNativePresentation('Title', surface, '.title-v136-rpg .v120-title-hero', 'title');
+    }
+
+    paintNativeTitleUi(surface = this.surface) {
       const hero = root()?.querySelector('.title-v136-rpg .v120-title-hero');
       // Returning saves use the same native menu painter as first-time players.
       // The DOM remains visible until every required action has a real Phaser
@@ -1543,16 +1882,6 @@
         height: rect.height * sy
       });
       const logoNode = hero.querySelector('.v150-logo-lockup .v120-legend-logo');
-      if (logoNode && !logoNode.__legendNativeTitleLayoutBound) {
-        logoNode.__legendNativeTitleLayoutBound = true;
-        const retryTitleLayout = () => {
-          if (logoNode.isConnected && realmScene === this) this.syncNativeTitleUi(this.surface);
-        };
-        // A rebuilt title may be measured before its cached image is decoded.
-        // Retry when geometry arrives; failed artwork still keeps DOM visible.
-        logoNode.addEventListener('load', retryTitleLayout, { once: true });
-        logoNode.addEventListener('error', retryTitleLayout, { once: true });
-      }
       const dividerNode = hero.querySelector('.v120-divider');
       const titleDecorationNodes = [
         { id: 'kicker', node: hero.querySelector('.portal100-kicker'), color: '#efcf83' },
@@ -1789,10 +2118,10 @@
 
         if (!button.__legendNativeTitleUiBound) {
           button.__legendNativeTitleUiBound = true;
-          button.addEventListener('pointerenter', () => this.setNativeTitleControlFocus(button.id, true));
-          button.addEventListener('pointerleave', () => this.setNativeTitleControlFocus(button.id, document.activeElement === button));
-          button.addEventListener('focus', () => this.setNativeTitleControlFocus(button.id, true));
-          button.addEventListener('blur', () => this.setNativeTitleControlFocus(button.id, button.matches(':hover')));
+          this.bindNativePresentationEvent('Title', button, '__legendNativeTitleUiBound', 'pointerenter', () => this.setNativeTitleControlFocus(button.id, true));
+          this.bindNativePresentationEvent('Title', button, '__legendNativeTitleUiBound', 'pointerleave', () => this.setNativeTitleControlFocus(button.id, document.activeElement === button));
+          this.bindNativePresentationEvent('Title', button, '__legendNativeTitleUiBound', 'focus', () => this.setNativeTitleControlFocus(button.id, true));
+          this.bindNativePresentationEvent('Title', button, '__legendNativeTitleUiBound', 'blur', () => this.setNativeTitleControlFocus(button.id, button.matches(':hover')));
         }
       });
 
@@ -1819,7 +2148,7 @@
       this.nativeTitleUiFailure = '';
       this.nativeTitleUiActive = true;
       this.nativeTitleUiSignature = signature;
-      document.body?.classList.add('legend-phaser-title-ui-active');
+
       } catch (error) {
         this.nativeTitleUiFailure = error.message;
         this.clearNativeTitleUi();
@@ -1828,6 +2157,8 @@
     }
 
     clearNativeAnnalsUi(removeClass = true) {
+      this.cancelNativePresentation('Annals');
+      this.clearNativePresentationEvents('Annals');
       this.nativeAnnalsUiLayoutEvent?.remove?.(false);
       this.nativeAnnalsUiLayoutEvent = null;
       if (this.nativeAnnalsUiScrollTarget) {
@@ -1852,6 +2183,10 @@
     }
 
     syncNativeAnnalsUi(surface = this.surface) {
+      this.syncNativePresentation('Annals', surface, '.opening-lore-v220', 'annals');
+    }
+
+    paintNativeAnnalsUi(surface = this.surface) {
       const screen = root()?.querySelector('.opening-lore-v220');
       if (String(surface || '') !== 'annals' || !screen) {
         if (this.nativeAnnalsUiActive || document.body?.classList.contains('legend-phaser-annals-ui-active')) {
@@ -1873,12 +2208,13 @@
       this.nativeAnnalsUiLayoutEvent = null;
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvasBounds = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvasBounds.width);
+      const sy = size.height / Math.max(1, canvasBounds.height);
       const readRect = node => {
         const rect = node?.getBoundingClientRect();
         if (!rect || !rect.width || !rect.height) return null;
-        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+        return { x: (rect.left - canvasBounds.left) * sx, y: (rect.top - canvasBounds.top) * sy, width: rect.width * sx, height: rect.height * sy };
       };
       const top = screen.querySelector('.opening-lore-v220-top');
       const content = screen.querySelector('.opening-lore-v220-content');
@@ -1910,8 +2246,10 @@
       // Each lore page is rebuilt by the existing prologue controller. Phaser
       // mirrors the resulting text and controls; the controller remains in charge
       // of chapter order and the hand-off into traveler creation.
-      this.clearNativeAnnalsUi(false);
-      try {
+      this.clearNativeAnnalsUi();
+      this.nativeAnnalsUiActive = true;
+      this.nativeAnnalsUiSignature = signature;
+
 
       if (!this.nativeAnnalsUiScrollTarget) {
         this.nativeAnnalsUiScrollTarget = screen;
@@ -2037,12 +2375,12 @@
           makeText(button, labelRect, { color: '#fff0c5', align: 'center', center: true });
           if (!button.__legendNativeAnnalsBound) {
             button.__legendNativeAnnalsBound = true;
-            button.addEventListener('focus', () =>
+            this.bindNativePresentationEvent('Annals', button, '__legendNativeAnnalsBound', 'focus', () =>
               this.setNativeAnnalsButtonFocus(button.matches(':focus-visible'))
             );
-            button.addEventListener('blur', () => this.setNativeAnnalsButtonFocus(false));
-            button.addEventListener('pointerenter', () => this.setNativeAnnalsButtonHover(true));
-            button.addEventListener('pointerleave', () => this.setNativeAnnalsButtonHover(false));
+            this.bindNativePresentationEvent('Annals', button, '__legendNativeAnnalsBound', 'blur', () => this.setNativeAnnalsButtonFocus(false));
+            this.bindNativePresentationEvent('Annals', button, '__legendNativeAnnalsBound', 'pointerenter', () => this.setNativeAnnalsButtonHover(true));
+            this.bindNativePresentationEvent('Annals', button, '__legendNativeAnnalsBound', 'pointerleave', () => this.setNativeAnnalsButtonHover(false));
           }
           const focus = this.add.graphics();
           focus.lineStyle(2, 0xd8e8df, 0.96);
@@ -2053,15 +2391,7 @@
           this.refreshNativeAnnalsButtonTexture();
         }
       }
-      if (!copyFits) { this.clearNativeAnnalsUi(); return; }
-      this.nativeAnnalsUiActive = true;
-      this.nativeAnnalsUiSignature = signature;
-      document.body?.classList.add('legend-phaser-annals-ui-active');
-      } catch (error) {
-        this.nativeAnnalsUiFailure = error?.message || String(error);
-        this.clearNativeAnnalsUi();
-        console.warn('[LEGEND Phaser] Annals overlay paint failed; preserving DOM fallback.', error);
-      }
+      if (!copyFits) this.clearNativeAnnalsUi();
     }
 
     setNativeAnnalsButtonFocus(active) {
@@ -2085,6 +2415,8 @@
     }
 
     clearNativeCreationUi(removeClass = true) {
+      this.cancelNativePresentation('Creation');
+      this.clearNativePresentationEvents('Creation');
       window.clearTimeout(this.nativeCreationUiLayoutEvent);
       this.nativeCreationUiLayoutEvent = null;
       if (this.nativeCreationUiScrollTarget) {
@@ -2177,6 +2509,10 @@
     }
 
     syncNativeCreationUi(surface = this.surface) {
+      this.syncNativePresentation('Creation', surface, '.v140-creation:not(.v140-arrival)', 'creation');
+    }
+
+    paintNativeCreationUi(surface = this.surface) {
       const screen = root()?.querySelector('.v140-creation:not(.v140-arrival)');
       if (String(surface || '') !== 'creation' || !screen) {
         if (this.nativeCreationUiActive || document.body?.classList.contains('legend-phaser-creation-ui-active')) {
@@ -2202,35 +2538,25 @@
       const screenImages = Array.from(screen.querySelectorAll('img')).filter(img =>
         !img.closest('[hidden]') && img.getBoundingClientRect().width > 0
       );
-      screenImages.forEach(img => {
-        img.loading = 'eager';
-        if (!img.complete) {
-          if (!img.__legendCreationLoadBound) {
-            img.__legendCreationLoadBound = true;
-            img.addEventListener('load', () => this.syncNativeCreationUi(surface), { once: true });
-            img.addEventListener('error', () => this.syncNativeCreationUi(surface), { once: true });
-          }
-        }
-      });
-      const pendingImages = screenImages.some(img => !img.complete);
-      if (pendingImages) {
-        window.clearTimeout(this.nativeCreationUiLayoutEvent);
-        this.nativeCreationUiLayoutEvent = window.setTimeout(() => {
-          this.nativeCreationUiLayoutEvent = null;
-          this.syncNativeCreationUi(surface);
-        }, 240);
-        return;
-      }
-
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvasBounds = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvasBounds.width);
+      const sy = size.height / Math.max(1, canvasBounds.height);
       const readRect = node => {
         const rect = node?.getBoundingClientRect();
         if (!rect || !rect.width || !rect.height) return null;
-        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+        return { x: (rect.left - canvasBounds.left) * sx, y: (rect.top - canvasBounds.top) * sy, width: rect.width * sx, height: rect.height * sy };
       };
       const choices = Array.from(screen.querySelectorAll('.v094-choice'));
+      // The DOM image error handlers remove broken images. An empty image
+      // list therefore does not establish readiness: preserve the original
+      // fallback art and controls until the required source artwork returns.
+      if (!screen.querySelector('.v140-creation-brand .v150-logo-lockup img') ||
+          !screen.querySelector('.v140-presence-mark') ||
+          choices.some(node => node.classList.contains('v094-choice-has-art') &&
+            !node.querySelector('img, .v094-gender-emblem > span'))) {
+        throw new Error('Creation artwork source incomplete');
+      }
       const controls = Array.from(screen.querySelectorAll('.v094-actions button'));
       const textNodes = Array.from(screen.querySelectorAll('h1,h2,h3,p,small,strong,em,label,span'))
         .filter(node => !node.matches('#v094NameError,#v094ChoiceError,.v150-logo-lockup,.v150-wordmark-fallback') && !node.closest('[hidden]') && node.getBoundingClientRect().width > 0 && node.getBoundingClientRect().height > 0);
@@ -2261,8 +2587,10 @@
       ]);
       if (this.nativeCreationUiActive && signature === this.nativeCreationUiSignature) return;
 
-      this.clearNativeCreationUi(false);
-      try {
+      this.clearNativeCreationUi();
+      this.nativeCreationUiActive = true;
+      this.nativeCreationUiSignature = signature;
+
 
       if (!this.nativeCreationUiScrollTarget) {
         // The production Phaser layout keeps the document as the vertical
@@ -2400,10 +2728,8 @@
           drawPanel(node, {
             fill: selected ? 0x1b3f2a : 0x0a130d,
             alpha: selected ? 0.95 : 0.91,
-            // Neutral cards use a restrained stone/sage frame rather than
-            // the bright gold outline that made every unselected option look active.
-            stroke: selected ? 0x80c88e : 0x87937d,
-            strokeAlpha: selected ? 0.98 : 0.44,
+            stroke: selected ? 0x80c88e : 0xc4a867,
+            strokeAlpha: selected ? 0.98 : 0.42,
             lineWidth: selected ? 1.8 : 1,
             inset: false
           });
@@ -2519,7 +2845,7 @@
         if (!rect) return;
         const container = this.add.container(rect.x, rect.y).setDepth(15);
         const focusFrame = this.add.graphics();
-        focusFrame.lineStyle(2, 0xb5d99a, 0.98);
+        focusFrame.lineStyle(2, choice ? 0xb5d99a : 0xffe7a6, 0.98);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         const objects = [focusFrame];
@@ -2545,38 +2871,24 @@
           height: rect.height,
           container,
           focusFrame,
-          focusColor: 0xb5d99a,
           selected: choice && (button.classList.contains('is-selected') || button.getAttribute('aria-pressed') === 'true'),
           button
         };
         this.nativeCreationUiControls.push(control);
         if (!button.__legendNativeCreationBound) {
           button.__legendNativeCreationBound = true;
-          // A creation button can be reused when a later step repaints the
-          // surface. Resolve its current control by node, not by the id from
-          // the first paint, so focus/hover events never target a stale frame.
-          const updateCurrentFocusFrame = active => {
-            const current = this.nativeCreationUiControls.find(item => item.button === button);
-            if (current) this.setNativeCreationControlFocus(current.id, active);
-          };
-          button.addEventListener('focus', () => updateCurrentFocusFrame(true));
-          button.addEventListener('blur', () => updateCurrentFocusFrame(button.matches(':hover')));
-          button.addEventListener('pointerenter', () => updateCurrentFocusFrame(true));
-          button.addEventListener('pointerleave', () => updateCurrentFocusFrame(document.activeElement === button));
+          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'focus', () => this.setNativeCreationControlFocus(id, true));
+          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'blur', () => this.setNativeCreationControlFocus(id, button.matches(':hover')));
+          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'pointerenter', () => this.setNativeCreationControlFocus(id, true));
+          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'pointerleave', () => this.setNativeCreationControlFocus(id, document.activeElement === button));
         }
       });
-      if (!copyFits || imageSpecs.some(item => !imageKeys[item.index])) { this.clearNativeCreationUi(); return; }
-      this.nativeCreationUiActive = true;
-      this.nativeCreationUiSignature = signature;
-      document.body?.classList.add('legend-phaser-creation-ui-active');
-      } catch (error) {
-        this.nativeCreationUiFailure = error?.message || String(error);
-        this.clearNativeCreationUi();
-        console.warn('[LEGEND Phaser] Traveler creation overlay paint failed; preserving DOM fallback.', error);
-      }
+      if (!copyFits || imageSpecs.some(item => !imageKeys[item.index])) this.clearNativeCreationUi();
     }
 
     clearNativeOpeningUi(removeClass = true) {
+      this.cancelNativePresentation('Opening');
+      this.clearNativePresentationEvents('Opening');
       window.clearTimeout(this.nativeOpeningUiLayoutEvent);
       this.nativeOpeningUiLayoutEvent = null;
       if (this.nativeOpeningUiScrollTarget) {
@@ -2612,6 +2924,10 @@
     }
 
     syncNativeOpeningUi(surface = this.surface) {
+      this.syncNativePresentation('Opening', surface, '.opening-road-v140', 'awakening');
+    }
+
+    paintNativeOpeningUi(surface = this.surface) {
       const screen = root()?.querySelector('.opening-road-v140');
       if (String(surface || '') !== 'awakening' || !screen) {
         if (this.nativeOpeningUiActive || document.body?.classList.contains('legend-phaser-opening-ui-active')) {
@@ -2645,12 +2961,13 @@
       this.nativeOpeningUiLayoutEvent = null;
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvasBounds = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvasBounds.width);
+      const sy = size.height / Math.max(1, canvasBounds.height);
       const rectFor = node => {
         const rect = node?.getBoundingClientRect();
         if (!rect || !rect.width || !rect.height) return null;
-        return { x: rect.left * sx, y: rect.top * sy, width: rect.width * sx, height: rect.height * sy };
+        return { x: (rect.left - canvasBounds.left) * sx, y: (rect.top - canvasBounds.top) * sy, width: rect.width * sx, height: rect.height * sy };
       };
       const cards = Array.from(screen.querySelectorAll('.opening-road-v140-card,.opening-road-v140-prologue-card'));
       const sceneNotes = Array.from(screen.querySelectorAll('.opening-road-v140-scene-note'));
@@ -2670,8 +2987,10 @@
       ]);
       if (this.nativeOpeningUiActive && signature === this.nativeOpeningUiSignature) return;
 
-      this.clearNativeOpeningUi(false);
-      try {
+      this.clearNativeOpeningUi();
+      this.nativeOpeningUiActive = true;
+      this.nativeOpeningUiSignature = signature;
+
 
       if (!this.nativeOpeningUiScrollTarget) {
         this.nativeOpeningUiScrollTarget = window;
@@ -2759,7 +3078,7 @@
         if (!rect) return;
         const container = this.add.container(rect.x, rect.y).setDepth(15);
         const focusFrame = this.add.graphics();
-        focusFrame.lineStyle(2, 0xb5d99a, 0.98);
+        focusFrame.lineStyle(2, button.classList.contains('opening-road-v140-choice') ? 0xe5c78c : 0xffe7a6, 0.98);
         focusFrame.strokeRect(1, 1, Math.max(1, rect.width - 2), Math.max(1, rect.height - 2));
         focusFrame.setVisible(button === document.activeElement || button.matches(':hover'));
         const objects = [focusFrame];
@@ -2772,21 +3091,13 @@
         this.nativeOpeningUiControls.push(control);
         if (!button.__legendNativeOpeningBound) {
           button.__legendNativeOpeningBound = true;
-          button.addEventListener('focus', () => this.setNativeOpeningControlFocus(id, true));
-          button.addEventListener('blur', () => this.setNativeOpeningControlFocus(id, button.matches(':hover')));
-          button.addEventListener('pointerenter', () => this.setNativeOpeningControlFocus(id, true));
-          button.addEventListener('pointerleave', () => this.setNativeOpeningControlFocus(id, document.activeElement === button));
+          this.bindNativePresentationEvent('Opening', button, '__legendNativeOpeningBound', 'focus', () => this.setNativeOpeningControlFocus(id, true));
+          this.bindNativePresentationEvent('Opening', button, '__legendNativeOpeningBound', 'blur', () => this.setNativeOpeningControlFocus(id, button.matches(':hover')));
+          this.bindNativePresentationEvent('Opening', button, '__legendNativeOpeningBound', 'pointerenter', () => this.setNativeOpeningControlFocus(id, true));
+          this.bindNativePresentationEvent('Opening', button, '__legendNativeOpeningBound', 'pointerleave', () => this.setNativeOpeningControlFocus(id, document.activeElement === button));
         }
       });
-      if (!copyFits) { this.clearNativeOpeningUi(); return; }
-      this.nativeOpeningUiActive = true;
-      this.nativeOpeningUiSignature = signature;
-      document.body?.classList.add('legend-phaser-opening-ui-active');
-      } catch (error) {
-        this.nativeOpeningUiFailure = error?.message || String(error);
-        this.clearNativeOpeningUi();
-        console.warn('[LEGEND Phaser] Oric opening overlay paint failed; preserving DOM fallback.', error);
-      }
+      if (!copyFits) this.clearNativeOpeningUi();
     }
 
     clearNativeGameplayUi(removeClass = true) {
@@ -4121,6 +4432,21 @@
     }
 
     syncNativeRoadMapUi() {
+      // A failed allocation may never reach the tracked-object list. Roll back
+      // every object created by this synchronous build as well as DOM tags.
+      const before = new Set(this.children.list);
+      try {
+        this.paintNativeRoadMapUi();
+      } catch (error) {
+        this.clearNativeRoadMapUi();
+        this.children.list.slice().forEach(object => {
+          if (!before.has(object)) object.destroy?.(true);
+        });
+        console.warn('[LEGEND Phaser] Road map construction failed; restored DOM controls.', error);
+      }
+    }
+
+    paintNativeRoadMapUi() {
       // The DOM remains the semantic action layer. Phaser paints a duplicate
       // presentation only after all visible text, surfaces and controls are
       // measured; failed mask creation leaves the fully styled DOM modal up.
@@ -4173,15 +4499,16 @@
       }
 
       const size = this.dimensions();
-      const sx = size.width / Math.max(1, window.innerWidth || size.width);
-      const sy = size.height / Math.max(1, window.innerHeight || size.height);
+      const canvas = this.game.canvas.getBoundingClientRect();
+      const sx = size.width / Math.max(1, canvas.width);
+      const sy = size.height / Math.max(1, canvas.height);
       const readRect = node => {
         if (!node || !node.isConnected) return null;
         const rect = node.getBoundingClientRect();
         const style = window.getComputedStyle(node);
         if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
         return {
-          x: rect.left * sx, y: rect.top * sy,
+          x: (rect.left - canvas.left) * sx, y: (rect.top - canvas.top) * sy,
           width: rect.width * sx, height: rect.height * sy
         };
       };
@@ -4372,7 +4699,7 @@
           graphics.fillStyle(focused || hovered ? 0x4a4328 : 0x292f22, 0.98);
           graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3 * sx);
           graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
-            focused ? 0xb5d99a : hovered ? 0x9eae8e : 0x72816f, 0.72);
+            focused ? 0xffe6a0 : hovered ? 0xe7c982 : 0xbfa064, 0.72);
           graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
             Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 3 * sx);
         } else if (classes.contains('exp150-map-discovery')) {
@@ -4633,6 +4960,17 @@
         return null;
       }
     }
+    presentationObjects(objects) {
+      const found = new Set();
+      const visit = object => {
+        if (!object?.active || found.has(object)) return;
+        found.add(object);
+        if (object.type === 'Container') object.list.forEach(visit);
+      };
+      objects.forEach(visit);
+      return [...found];
+    }
+
 
     shellLabelSnapshot(objects) {
       return objects.flatMap(object => object?.type === 'Container' ? this.shellLabelSnapshot(object.list) :
@@ -7325,7 +7663,7 @@
 
     try {
       game = new Phaser.Game({
-        type: Phaser.AUTO,
+        type: IS_PROTOTYPE ? Phaser.AUTO : productionRendererType(),
         parent: 'game-container',
         backgroundColor: '#090e0d',
         width: 1600,
