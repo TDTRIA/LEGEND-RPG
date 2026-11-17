@@ -108,7 +108,6 @@ test('screen transitions keep one owner while DOM creation choices retain native
     expect(unselected).toHaveLength(4);
     expect(unselected.every(item => !item.hovered && !item.focused)).toBe(true);
     const firstChoice = choices.first();
-    const secondChoice = choices.nth(1);
     await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
     await page.keyboard.press('Tab');
     await expect(firstChoice).toBeFocused();
