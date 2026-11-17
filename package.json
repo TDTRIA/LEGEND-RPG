@@ -17,6 +17,7 @@
     "test:e2e:road-map": "playwright test tests/phaser-road-map-modal.spec.js --project=\"Desktop Chrome\"",
     "test:e2e:road-map-ui-contract": "playwright test tests/ui-system-v160.spec.js --grep \"Old Road scene, HUD and field map keep sharp DOM copy and real controls|Phaser paints Old Road decision cards while retaining real route, detour and camp actions\" --project=\"Desktop Chrome\" --workers=1",
     "test:e2e:overlay-fallback": "playwright test tests/road-opening-v140.spec.js --grep \"native Annals, creation and Oric overlays recover to readable DOM when Phaser painting throws\" --project=\"Desktop Chrome\"",
+    "test:e2e:phaser-stability": "playwright test tests/phaser-handoff-invalidation.spec.js tests/phaser-handoff-stability.spec.js tests/phaser-render-commit.spec.js tests/phaser-renderer-parity.spec.js tests/phaser-creation-asset-recovery.spec.js tests/phaser-creation-geometry.spec.js tests/phaser-pointer-ownership.spec.js --project=\"Desktop Chrome\" --workers=1",
     "test:e2e:option-frames": "playwright test tests/ui-world-shell-v170.spec.js --grep \"persistent world-shell action frames use stone and sage states\" --project=\"Desktop Chrome\" --workers=1"
   },
   "devDependencies": {
