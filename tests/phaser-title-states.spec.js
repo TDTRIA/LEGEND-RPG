@@ -7,6 +7,7 @@ test('Ashmere title uses the existing moonlit scene and crisp DOM menu at deskto
   await page.goto('/');
 
   await expect(page.locator('.title-v230-ashmere-dom')).toBeVisible({ timeout: 20000 });
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
   await expect(page.locator('.v120-title-backdrop')).toHaveAttribute('src', /title_bg_ashmere_road_v089\.jpg/);
   await expect.poll(() => page.locator('.v120-title-backdrop').evaluate(image =>
     image.complete && image.naturalWidth > 0
@@ -42,6 +43,40 @@ test('Ashmere title uses the existing moonlit scene and crisp DOM menu at deskto
 
   await page.setViewportSize({ width: 1440, height: 900 });
   await expect(page.locator('#newPrimary')).toBeVisible();
+  const geometry = await page.evaluate(() => {
+    const bounds = selector => {
+      const node = document.querySelector(selector);
+      if (!node) return null;
+      const rect = node.getBoundingClientRect();
+      const style = getComputedStyle(node);
+      return {
+        x: Math.round(rect.x), y: Math.round(rect.y),
+        width: Math.round(rect.width), height: Math.round(rect.height),
+        position: style.position, widthStyle: style.width, heightStyle: style.height,
+        margin: style.margin, transform: style.transform, maxWidth: style.maxWidth
+      };
+    };
+    const scene = window.LegendPhaserWorldV1?.engine?.scene?.getScene('RealmScene');
+    const background = scene?.background;
+    return {
+      viewport: { width: innerWidth, height: innerHeight },
+      container: bounds('#game-container'),
+      canvas: bounds('#game-container canvas'),
+      root: bounds('#root'),
+      title: bounds('.title-v230-ashmere-dom'),
+      backdrop: bounds('.v120-title-backdrop'),
+      sceneSize: scene ? { width: scene.scale.width, height: scene.scale.height } : null,
+      phaserScale: window.LegendPhaserWorldV1?.engine?.scale
+        ? { width: window.LegendPhaserWorldV1.engine.scale.width, height: window.LegendPhaserWorldV1.engine.scale.height }
+        : null,
+      worldImage: background?.active ? {
+        x: Math.round(background.x), y: Math.round(background.y),
+        width: Math.round(background.displayWidth), height: Math.round(background.displayHeight)
+      } : null
+    };
+  });
+  console.log('[LEGEND title world geometry]', JSON.stringify(geometry));
+
   const desktop = await page.evaluate(() => {
     const button = document.querySelector('#newPrimary');
     const label = button?.querySelector('strong');
