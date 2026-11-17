@@ -73,7 +73,7 @@ test('Crafting Bench shows ingredients, recipe feedback, and armor comparisons',
     window.LegendAshmereV099.renderAshmere();
   });
   await expect(page.locator('.ash100-town')).toBeVisible();
-  await page.locator('.ash100-destination').filter({ hasText: /Forge & Workshop/ }).click();
+  await page.locator('.ashmere-hub-v240-place[data-ash-view="smith"]').click();
   await expect(page.locator('.ash099-forge-console')).toBeVisible();
   await page.locator('[data-forge-tab="armor"]').click();
   await expect(page.locator('.ash099-gear-item')).toHaveCount(4);
