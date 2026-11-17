@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 test.setTimeout(90000);
 const unchanged = page => page.evaluate(() => ({ player: localStorage.getItem('legend-roads-of-ashmere-v09'), settings: localStorage.getItem('legend-settings-v1'), pending: sessionStorage.getItem('legend-awakening-return-to-town-v1') }));
 async function ready(page) {
-  await expect.poll(() => page.evaluate(() => window.__legendPhaserWorldReady && window.LegendPhaserWorldV1?.snapshot()?.nativeTitleUi), { timeout: 20000 }).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.__legendPhaserWorldReady && window.LegendPhaserWorldV1?.ready && Boolean(document.querySelector('.title-v230-ashmere-dom'))), { timeout: 20000 }).toBe(true);
 }
 async function begin(page) {
   await page.addInitScript(() => {
@@ -22,16 +22,16 @@ for(const width of [1440,390]) test.describe(`${width}px title audio`,()=>{
     await expect(sound).toHaveAttribute('aria-pressed','false');await expect(sound).toContainText('Sound: Off');
     const activate=async()=>{await sound.scrollIntoViewIfNeeded();await sound.focus();if(width===390)await sound.tap();else await page.keyboard.press('Space');};
     await activate();await expect(sound).toHaveAttribute('aria-pressed','true');
-    await expect.poll(()=>page.evaluate(()=>LegendPhaserWorldV1.snapshot().nativeTitleUiLabels.find(n=>n.id==='titleSound')?.title)).toBe('Sound: On');
-    if(width===390)await page.locator('.portal100-brand').tap();
+    await expect(sound.locator('strong')).toHaveText('Sound: On');
+    if(width===390)await page.locator('.v120-title-hero > p').tap();
     await page.locator('#credits').focus();await page.mouse.move(0,0);
-    await expect.poll(()=>page.evaluate(()=>LegendPhaserWorldV1.snapshot().nativeTitleUiControlBounds.find(n=>n.id==='titleSound')?.texture)).toBe('menuButtonSelected');
+    await expect.poll(()=>sound.evaluate(node=>getComputedStyle(node).borderLeftColor)).toBe('rgba(205, 180, 125, 0.72)');
     expect(await page.evaluate(()=>LegendRoadAudioV100.snapshot())).toMatchObject({enabled:true,unlocked:true,musicPlaying:true,ambiencePlaying:true});
     await activate();await expect(sound).toHaveAttribute('aria-pressed','false');await expect(sound).toBeFocused();
-    await expect.poll(()=>page.evaluate(()=>LegendPhaserWorldV1.snapshot().nativeTitleUiControlBounds.find(n=>n.id==='titleSound')?.focused)).toBe(true);
-    if(width===390)await page.locator('.portal100-brand').tap();
+    await expect(sound).toBeFocused();
+    if(width===390)await page.locator('.v120-title-hero > p').tap();
     await page.locator('#credits').focus();await page.mouse.move(0,0);
-    await expect.poll(()=>page.evaluate(()=>LegendPhaserWorldV1.snapshot().nativeTitleUiControlBounds.find(n=>n.id==='titleSound')?.texture)).toBe('menuButtonNormal');
+    await expect.poll(()=>sound.evaluate(node=>getComputedStyle(node).borderLeftColor)).toBe('rgba(0, 0, 0, 0)');
     expect(await unchanged(page)).toEqual(before);
     await page.reload();await ready(page);await expect(sound).toHaveAttribute('aria-pressed','false');
     expect(await unchanged(page)).toEqual(before);
