@@ -38,6 +38,22 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
       surface: scene?.surface || '',
       introActive: document.documentElement.classList.contains('engine-intro-active'),
       sceneActive: Boolean(scene?.sys?.isActive?.()),
+      sceneVisible: scene?.sys?.settings?.visible ?? null,
+      documentVisibility: document.visibilityState,
+      gameLoop: scene?.game?.loop ? {
+        running: scene.game.loop.running ?? null,
+        isRunning: scene.game.loop.isRunning ?? null,
+        time: scene.game.loop.time ?? null,
+        frame: scene.game.loop.frame ?? null,
+        delta: scene.game.loop.delta ?? null
+      } : null,
+      eventListeners: scene?.game ? {
+        gamePreRender: scene.game.events.listenerCount('prerender'),
+        gamePostRender: scene.game.events.listenerCount('postrender'),
+        scenePreRender: scene.events.listenerCount('prerender'),
+        rendererPreRender: scene.game.renderer?.events?.listenerCount?.('prerender') ?? null,
+        rendererPostRender: scene.game.renderer?.events?.listenerCount?.('postrender') ?? null
+      } : null,
       transaction: transaction ? {
         framePending: transaction.frame !== null,
         remaining: transaction.remaining,
@@ -45,7 +61,8 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
         committed: Boolean(transaction.committed),
         staged: Boolean(transaction.staged),
         building: Boolean(transaction.building),
-        hasSignature: Boolean(transaction.signature)
+        hasSignature: Boolean(transaction.signature),
+        cancelPaint: Boolean(transaction.cancelPaint)
       } : null,
       fonts: {
         status: document.fonts?.status || 'unavailable',
