@@ -566,3 +566,18 @@
   background: transparent !important;
   filter: saturate(.72) brightness(1.08) drop-shadow(0 1px 5px rgba(0, 0, 0, .88)) !important;
 }
+
+
+/* Honor the in-game accessibility toggle as well as the OS media preference. */
+body.a11y-reduced-motion #root .title-v230-ashmere-dom .v120-title-backdrop,
+body.a11y-reduced-motion #root .title-v230-ashmere-dom .v120-title-hero {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+  will-change: auto !important;
+}
+body.a11y-reduced-motion #root .title-v230-ashmere-dom .v136-menu-btn {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
