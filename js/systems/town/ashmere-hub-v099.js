@@ -95,7 +95,7 @@
     const host = document.getElementById('root');
     if (!host) return;
     host.innerHTML = `
-      <section class="ashmere-hub-v240" aria-label="Ashmere settlement">
+      <section class="ashmere-hub-v240 ash100-town ash100-town-ashmere" aria-label="Ashmere settlement">
         <div class="ashmere-hub-v240-backdrop" aria-hidden="true">${img(bg(), '')}</div>
         <div class="ashmere-hub-v240-atmosphere" aria-hidden="true"></div>
 
