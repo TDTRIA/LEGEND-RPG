@@ -14,13 +14,10 @@
   function reveal() {
     if (state.rendererLoading) { state.revealPending = true; return; }
     state.revealPending = false;
-    screen.classList.add('is-closing');
-    window.setTimeout(() => {
-      screen.hidden = true;
-      document.body.classList.remove('legend-booting');
-      state.finishedAt = performance.now();
-      state.durationMs = state.finishedAt - state.startedAt;
-    }, state.reducedMotion?.() ? 30 : 620);
+    screen.hidden = true;
+    document.body.classList.remove('legend-booting');
+    state.finishedAt = performance.now();
+    state.durationMs = state.finishedAt - state.startedAt;
   }
   state.resumeReveal = () => { if (state.revealPending) reveal(); };
   function waitForOpeningArt() {
@@ -76,7 +73,6 @@
     } else {
       paint(100, 'The realm is ready', saveFound ? 'Traveler record located' : 'Ready for a new journey');
     }
-    await wait(state.reducedMotion?.() ? 80 : 430);
     reveal();
   }
 
