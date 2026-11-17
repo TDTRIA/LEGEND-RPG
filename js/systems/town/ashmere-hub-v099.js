@@ -97,6 +97,14 @@
       <button class="ashmere-hub-v240-more-place" type="button" data-ash-view="${esc(destination.view)}">
         <span>${esc(destination.title)}</span><small>${esc(destination.desc)}</small><em>${esc(destination.cta)}</em>
       </button>`).join('');
+    const utilityButtons = `
+      <div class="ashmere-hub-v240-utilities" aria-label="Traveler tools">
+        <span class="ashmere-hub-v240-utilities-label">TRAVELER TOOLS</span>
+        <button type="button" data-ash-hub-action="inventory"><span aria-hidden="true">▤</span> Pack & inventory</button>
+        <button type="button" data-ash-hub-action="settings"><span aria-hidden="true">⚙</span> Settings</button>
+        <button type="button" data-ash-hub-action="save"><span aria-hidden="true">⌑</span> Save traveler</button>
+      </div>
+      <p class="ashmere-hub-v240-utility-status" id="ashmereHubUtilityStatus" role="status" aria-live="polite"></p>`;
 
     const host = document.getElementById('root');
     if (!host) return;
@@ -143,7 +151,7 @@
             <button class="ashmere-hub-v240-more-toggle" id="ashmereHubMoreToggle" type="button" aria-expanded="false" aria-controls="ashmereHubMorePlaces">
               <span>Other places in Ashmere</span><small>Work, records, routes and places unlocked by your journey</small><em aria-hidden="true">＋</em>
             </button>
-            <div class="ashmere-hub-v240-more-list" id="ashmereHubMorePlaces" hidden>${moreButtons || '<p>There are no other postings to show just now.</p>'}</div>
+            <div class="ashmere-hub-v240-more-list" id="ashmereHubMorePlaces" hidden>${moreButtons || '<p>There are no other postings to show just now.</p>'}${utilityButtons}</div>
           </div>
         </footer>
       </section>`;
@@ -158,6 +166,44 @@
       if (marker) marker.textContent = opening ? '−' : '＋';
     });
     bind();
+    const utilityStatus = document.getElementById('ashmereHubUtilityStatus');
+    const announceUtility = message => {
+      if (utilityStatus) utilityStatus.textContent = String(message || '');
+    };
+    document.querySelectorAll('[data-ash-hub-action]').forEach(button => {
+      button.addEventListener('click', () => {
+        const action = String(button.dataset.ashHubAction || '');
+        if (action === 'inventory') {
+          if (typeof window.LegendWorldShellModalsV170?.openInventory === 'function') {
+            window.LegendWorldShellModalsV170.openInventory(getPlayer());
+          } else announceUtility('The traveler pack is unavailable right now.');
+          return;
+        }
+        if (action === 'settings') {
+          if (typeof window.LegendWorldShellModalsV170?.openSettings === 'function') {
+            window.LegendWorldShellModalsV170.openSettings();
+          } else announceUtility('Settings are unavailable right now.');
+          return;
+        }
+        if (action === 'save') {
+          try {
+            const storage = window.LegendStorage;
+            const player = getPlayer();
+            if (!player || typeof storage?.savePlayer !== 'function') {
+              announceUtility('The traveler record could not be saved. Storage is unavailable.');
+              return;
+            }
+            const saved = storage.savePlayer(player);
+            announceUtility(saved === false
+              ? 'The traveler record could not be saved. Check browser storage settings.'
+              : 'Traveler record saved locally.');
+          } catch (error) {
+            console.error('[LEGEND Ashmere] Traveler save failed', error);
+            announceUtility('The traveler record could not be saved. Check browser storage settings.');
+          }
+        }
+      });
+    });
     window.LegendWorldShellV170?.refresh?.();
   }
 
