@@ -16,6 +16,7 @@
       host=container=null;signature='';labels=[];keys=[];tagged=[];clip=null;
     }
     function sync(){
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const vault=document.querySelector('#root .gss170-page'),source=vault?.closest('.ash099-screen');
       if(!source||source.closest('[hidden]')){clear();return;}
       const hud=document.querySelector('#legend-world-shell-root:not([hidden]) .lws-hud');

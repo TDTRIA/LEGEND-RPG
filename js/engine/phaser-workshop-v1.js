@@ -17,6 +17,7 @@
       clipMask = null; clipBounds = null;
     }
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const header = document.querySelector('.ash099-head[data-ash-service="smith"],.ash099-head[data-ash-service="craft"]');
       const screen = header?.closest('.ash099-screen');
       if (!screen || screen.closest('[hidden]')) { clear(); return; }

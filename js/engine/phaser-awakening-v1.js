@@ -11,6 +11,7 @@
     const objects=[];
     function clear(){delete panel.dataset.phaserAwakening;tagged.forEach(n=>n.removeAttribute('data-awakening-copy'));objects.forEach(o=>{scene.tweens.killTweensOf(o);o.destroy(true);});objects.length=0;labels=[];tagged=[];signature='';active=false;}
     function sync(){
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       if(stopped||exiting)return;
       if(!scene.textures.exists('menuTitleLogo')||!logo.complete||!logo.naturalWidth||logo.hidden){clear();return;}
       const texts=[...panel.querySelectorAll('p,button')];

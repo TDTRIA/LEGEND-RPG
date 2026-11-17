@@ -19,6 +19,7 @@
       host = container = null; signature = ''; labels = []; keys = []; tagged = []; clip = null;
     }
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const source = document.querySelector('#root .v152-combat-results');
       if (!source || source.closest('[hidden]')) { clear(); return; }
       const hud = document.querySelector('#legend-world-shell-root:not([hidden]) .lws-hud');

@@ -12,6 +12,7 @@
       host=null;objects=[];tagged=[];labels=[];signature='';states=[];clip=null;kind='';
     }
     function sync(){
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const modal=document.querySelector('#legend-world-shell-modal-root:not([hidden])[data-shell-modal-kind="settings"]');
       const source=modal?.querySelector('.lws-modal')||document.querySelector('#root [data-settings-screen="true"]');
       if(!source){clear();return;}

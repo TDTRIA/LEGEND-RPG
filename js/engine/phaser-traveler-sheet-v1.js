@@ -27,6 +27,7 @@
       signature = '';
     };
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const profile = document.querySelector('.ash099-traveler-profile');
       const screen = profile?.closest('.ash099-screen');
       const header = screen?.querySelector('.ash099-head[data-ash-service="profile"]');

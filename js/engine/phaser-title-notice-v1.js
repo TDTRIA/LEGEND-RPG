@@ -5,6 +5,7 @@
     let source=null,canvas=null,pending=null,signature='',failure='',copy='';
     function clear(){source?.removeAttribute('data-phaser-title-notice');canvas?.remove();canvas=null;signature='';copy='';}
     function sync(){
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const nextSource=document.querySelector('#root .title-transition-notice');
       if(source!==nextSource){clear();source=nextSource;}
       if(!source||!source.textContent.trim()||[...source.children].some(n=>n!==canvas)){clear();return;}

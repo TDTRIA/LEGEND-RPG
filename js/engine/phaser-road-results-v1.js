@@ -26,6 +26,7 @@
       painted = container = null; signature = ''; tagged = []; labels = []; artKeys = []; clip = null;
     }
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const host = document.querySelector('#root .exp100:has(.exp100-outcome)');
       if (!host || host.closest('[hidden]')) { clear(); return; }
       const hud = document.querySelector('#legend-world-shell-root:not([hidden]) .lws-hud');

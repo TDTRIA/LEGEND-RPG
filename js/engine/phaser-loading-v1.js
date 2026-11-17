@@ -16,6 +16,7 @@
       objects = []; labels = []; active = false; signature = '';
     }
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       if (stopped) return;
       const source = screen.querySelector('.legend-boot-frame');
       const logo = source?.querySelector('.legend-boot-wordmark');

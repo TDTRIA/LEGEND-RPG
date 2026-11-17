@@ -10,6 +10,7 @@
       objects = []; mask = null; signature = ''; labels = []; active = false; clipBounds = null;
     };
     const sync = () => {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       bindRoot();
       const dialog = root?.querySelector('.lws-modal');
       const content = dialog?.querySelector('.lws-modal-content');

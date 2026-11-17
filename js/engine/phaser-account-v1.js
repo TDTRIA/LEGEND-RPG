@@ -6,6 +6,7 @@
     let host=null,objects=[],labels=[],tagged=[],signature='',pending=null,retry=null,failure='',controls=[],fields=[];
     function clear(){if(host)delete host.dataset.phaserAccount;tagged.forEach(n=>n.removeAttribute('data-account-copy'));objects.forEach(n=>n.destroy(true));host=null;objects=[];labels=[];tagged=[];signature='';controls=[];fields=[];}
     function sync(){
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const source=document.querySelector('#root .account09x-clean');if(!source){clear();return;}
       const visible=n=>{const b=n.getBoundingClientRect();return b.width>0&&b.height>0&&!n.closest('[hidden]');};
       const texts=[...source.querySelectorAll(copySelector)].filter(visible),buttons=[...source.querySelectorAll('button')].filter(visible),inputs=[...source.querySelectorAll('input')].filter(visible);

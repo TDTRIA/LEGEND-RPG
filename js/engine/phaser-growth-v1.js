@@ -16,6 +16,7 @@
       source=frame=body=null;tagged=[];labels=[];keys=[];signature='';clip=null;
     }
     function sync(){
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const overlay=document.getElementById('legendLevelUpOverlay'),panel=overlay?.querySelector('.v152-levelup-panel');
       if(!overlay||!panel){clear();return;}
       const attributes=Object.keys(window.LegendLevelUpV152?.attributes||{}),cards=[...panel.querySelectorAll('[data-growth-card]')];
