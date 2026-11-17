@@ -672,7 +672,8 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
 
   test('title, town and expedition stay within a 390px touch viewport', async ({ page }) => {
     await openTitle(page, { width: 390, height: 844 });
-    await expect(page.locator('.v140-realm-overview.v151-realm-art')).toBeVisible();
+    await expect(page.locator('.v140-realm-overview.v151-realm-art')).toBeHidden();
+    await expect(page.locator('.v136-rpg-menu')).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-title-mobile-390.png');
 
@@ -694,13 +695,13 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await openTitle(page);
     await page.evaluate(() => document.body.classList.add('a11y-reduced-motion'));
 
-    const realmMotion = await page.locator('.v151-realm-feature > img').evaluate(el => {
+    const titleMotion = await page.locator('.v120-title-backdrop').evaluate(el => {
       const style = getComputedStyle(el);
       return { transition: style.transitionProperty, animation: style.animationName, transform: style.transform };
     });
-    expect(realmMotion.transition).toBe('none');
-    expect(realmMotion.animation).toBe('none');
-    expect(realmMotion.transform).toBe('none');
+    expect(titleMotion.transition).toBe('none');
+    expect(titleMotion.animation).toBe('none');
+    expect(titleMotion.transform).toBe('none');
 
     await enterAshmere(page, 'MotionUIPreview');
     await page.evaluate(() => document.body.classList.add('a11y-reduced-motion'));
