@@ -3403,6 +3403,13 @@
 
 
     clearNativeHudUi(removeClass = true) {
+      if (removeClass && this.nativeHudUiBoundElement && this.nativeHudUiInteractionHandler) {
+        ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
+          this.nativeHudUiBoundElement.removeEventListener(type, this.nativeHudUiInteractionHandler)
+        );
+        this.nativeHudUiBoundElement = null;
+        this.nativeHudUiInteractionHandler = null;
+      }
       this.nativeHudUiLayoutEvent?.remove?.(false);
       this.nativeHudUiLayoutEvent = null;
       this.nativeHudUiObjects.forEach(object => {
