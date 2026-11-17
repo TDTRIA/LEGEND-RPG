@@ -58,13 +58,50 @@ test('Ashmere title uses the existing moonlit scene and crisp DOM menu at deskto
     };
     const scene = window.LegendPhaserWorldV1?.engine?.scene?.getScene('RealmScene');
     const background = scene?.background;
+    const body = document.body;
+    const title = document.querySelector('.title-v230-ashmere-dom');
+    const summarizePseudo = (node, pseudo) => {
+      const style = node ? getComputedStyle(node, pseudo) : null;
+      return style ? {
+        content: style.content, display: style.display, position: style.position,
+        background: style.background, backgroundImage: style.backgroundImage,
+        opacity: style.opacity, zIndex: style.zIndex, boxShadow: style.boxShadow
+      } : null;
+    };
+    const exactOverlayCandidates = Array.from(document.querySelectorAll('body *')).flatMap(node => {
+      const rect = node.getBoundingClientRect();
+      if (Math.abs(rect.x - 270) > 3 || Math.abs(rect.y) > 3 ||
+          Math.abs(rect.width - 900) > 3 || Math.abs(rect.height - 720) > 3) return [];
+      const style = getComputedStyle(node);
+      return [{
+        tag: node.tagName, id: node.id, className: String(node.className || ''),
+        background: style.background, backgroundImage: style.backgroundImage,
+        opacity: style.opacity, position: style.position, zIndex: style.zIndex,
+        filter: style.filter, boxShadow: style.boxShadow
+      }];
+    }).slice(0, 20);
+    const sceneObjects = (scene?.children?.list || []).map(object => ({
+      type: object.type, name: object.name || '', key: object.texture?.key || '',
+      x: Math.round(object.getBounds?.().x ?? object.x ?? 0),
+      y: Math.round(object.getBounds?.().y ?? object.y ?? 0),
+      width: Math.round(object.displayWidth ?? object.width ?? 0),
+      height: Math.round(object.displayHeight ?? object.height ?? 0),
+      alpha: Number(object.alpha ?? 1).toFixed(3), depth: object.depth ?? 0,
+      visible: object.visible !== false, active: object.active !== false
+    })).filter(object => object.width >= 700 && object.height >= 500).slice(0, 20);
     return {
       viewport: { width: innerWidth, height: innerHeight },
+      bodyClass: body.className,
       container: bounds('#game-container'),
       canvas: bounds('#game-container canvas'),
       root: bounds('#root'),
       title: bounds('.title-v230-ashmere-dom'),
       backdrop: bounds('.v120-title-backdrop'),
+      bodyBefore: summarizePseudo(body, '::before'),
+      bodyAfter: summarizePseudo(body, '::after'),
+      titleBefore: summarizePseudo(title, '::before'),
+      titleAfter: summarizePseudo(title, '::after'),
+      exactOverlayCandidates,
       sceneSize: scene ? { width: scene.scale.width, height: scene.scale.height } : null,
       phaserScale: window.LegendPhaserWorldV1?.engine?.scale
         ? { width: window.LegendPhaserWorldV1.engine.scale.width, height: window.LegendPhaserWorldV1.engine.scale.height }
@@ -72,10 +109,15 @@ test('Ashmere title uses the existing moonlit scene and crisp DOM menu at deskto
       worldImage: background?.active ? {
         x: Math.round(background.x), y: Math.round(background.y),
         width: Math.round(background.displayWidth), height: Math.round(background.displayHeight)
-      } : null
+      } : null,
+      sceneObjects
     };
   });
   console.log('[LEGEND title world geometry]', JSON.stringify(geometry));
+  await test.info().attach('ashmere-title-desktop', {
+    body: await page.screenshot({ animations: 'disabled' }),
+    contentType: 'image/png'
+  });
 
   const desktop = await page.evaluate(() => {
     const button = document.querySelector('#newPrimary');
