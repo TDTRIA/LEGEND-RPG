@@ -4,38 +4,17 @@
   const state = window.__legendBootSequenceV100;
   if (!screen || !state) return;
 
-  const wait = ms => new Promise(resolve => window.setTimeout(resolve, ms));
   const paint = typeof state.paintProgress === 'function' ? state.paintProgress : () => {};
   const mark = typeof state.markStep === 'function' ? state.markStep : () => {};
-  const text = (selector, value) => {
-    const element = document.querySelector(selector);
-    if (element) element.textContent = value;
-  };
   function reveal() {
     if (state.rendererLoading) { state.revealPending = true; return; }
     state.revealPending = false;
-    screen.classList.add('is-closing');
-    window.setTimeout(() => {
-      screen.hidden = true;
-      document.body.classList.remove('legend-booting');
-      state.finishedAt = performance.now();
-      state.durationMs = state.finishedAt - state.startedAt;
-    }, state.reducedMotion?.() ? 30 : 620);
+    screen.hidden = true;
+    document.body.classList.remove('legend-booting');
+    state.finishedAt = performance.now();
+    state.durationMs = state.finishedAt - state.startedAt;
   }
   state.resumeReveal = () => { if (state.revealPending) reveal(); };
-  function waitForOpeningArt() {
-    const imgs = Array.from(document.querySelectorAll('#root .v120-title-backdrop, #root .v120-legend-logo'));
-    const pending = imgs.filter(img => !img.complete);
-    if (!pending.length) return Promise.resolve();
-    return Promise.race([
-      Promise.all(pending.map(img => new Promise(resolve => {
-        img.addEventListener('load', resolve, { once: true });
-        img.addEventListener('error', resolve, { once: true });
-      }))),
-      wait(1400)
-    ]);
-  }
-
   async function start() {
     const dataReady = Boolean(window.LEGEND_DATA?.VERSION && window.LEGEND_DATA?.SAVE_KEY);
     const systems = {
@@ -57,7 +36,6 @@
     mark('traveler', saveFound ? 'FOUND' : 'NEW JOURNEY', true);
 
     paint(91, 'Kindling the opening scene', 'Settling the title art and world paths');
-    await waitForOpeningArt();
     const titleBackdrop = document.querySelector('#root .v120-title-backdrop');
     const titleLogo = document.querySelector('#root .v120-legend-logo');
     const artReady = Boolean(titleBackdrop?.complete && titleBackdrop.naturalWidth > 0) &&
@@ -65,9 +43,8 @@
     state.checks.artwork = artReady;
     mark('scene', artReady ? 'READY' : 'FALLBACK OK', true);
 
-    const minimumVisibleMs = state.reducedMotion?.() ? 700 : 4200;
-    const elapsed = performance.now() - state.startedAt;
-    if (elapsed < minimumVisibleMs) await wait(minimumVisibleMs - elapsed);
+    // Startup checks remain, but the old branded loading screen is no longer shown.
+    // Never hold the player at a loading screen after the required checks finish.
 
     if (!systemsReady) {
       paint(100, 'Opening recovery view', 'One or more game systems need attention');
@@ -76,7 +53,6 @@
     } else {
       paint(100, 'The realm is ready', saveFound ? 'Traveler record located' : 'Ready for a new journey');
     }
-    await wait(state.reducedMotion?.() ? 80 : 430);
     reveal();
   }
 

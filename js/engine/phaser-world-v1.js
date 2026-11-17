@@ -16,7 +16,7 @@
     // The Phaser canvas is a fixed, non-interactive world layer behind the HTML
     // game controls. The production CSS intentionally scopes that contract to
     // BODY, while the intro visibility gate is scoped to HTML.
-    document.documentElement.classList.add('legend-phaser-world-active', 'engine-intro-active', 'legend-phaser-preloading');
+    document.documentElement.classList.add('legend-phaser-world-active', 'legend-phaser-preloading');
     document.body?.classList.add('legend-phaser-world-active');
     if (window.__legendBootSequenceV100) window.__legendBootSequenceV100.rendererLoading = true;
   }
@@ -748,7 +748,7 @@
     }
 
     preload() {
-      if (!IS_PROTOTYPE) this.loadingUi = window.LegendPhaserLoadingV1?.create(this);
+      // Asset loading stays active; the old loading painter duplicated the boot UI.
       // Preload the complete configured Phaser art set, not just the first
       // environment/background and service icons. NPC, enemy and class art are
       // part of the same production asset contract and must be available for
@@ -787,7 +787,8 @@
       this.travelerSheet = window.LegendPhaserTravelerSheetV1?.create(this);
       this.settingsUi = window.LegendPhaserSettingsV1?.create(this);
       this.titleNoticeUi = window.LegendPhaserTitleNoticeV1?.create(this);
-      this.transitionUi = window.LegendPhaserTransitionV1?.create(this);
+      // Production uses the DOM curtain as its single transition owner.
+      if (IS_PROTOTYPE) this.transitionUi = window.LegendPhaserTransitionV1?.create(this);
       this.confirmationUi = window.LegendPhaserConfirmationV1?.create(this);
       this.creditsUi = window.LegendPhaserCreditsV1?.create(this);
       this.dispatchesUi = window.LegendPhaserDispatchesV1?.create(this);
@@ -7327,9 +7328,12 @@
         // READY event that can fire before a listener is attached.
         if (!realmScene) realmScene = game?.scene?.getScene?.('RealmScene') || null;
         if (!realmScene) throw new Error('RealmScene did not register before its ready signal.');
-        if (needsAwakening && typeof realmScene.runEngineAwakening === 'function') {
+        if (IS_PROTOTYPE && needsAwakening && typeof realmScene.runEngineAwakening === 'function') {
+          // Keep the isolated reboot preview's own awakening flow intact.
           realmScene.runEngineAwakening(finishStartup);
         } else {
+          // The production pre-title renderer awakening was only a loading animation,
+          // not story content. Start directly at the title once RealmScene is ready.
           finishStartup();
         }
       } catch (error) {

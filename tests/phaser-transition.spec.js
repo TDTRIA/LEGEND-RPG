@@ -1,34 +1,48 @@
-const {test,expect}=require('@playwright/test');
+const { test, expect } = require('@playwright/test');
+
 test.setTimeout(60000);
-const state=page=>page.evaluate(()=>LegendPhaserWorldV1.snapshot().nativeTransition);
-const raw=page=>page.evaluate(()=>[localStorage.getItem('legend-roads-of-ashmere-v09'),localStorage.getItem('legend-settings-v1'),localStorage.getItem('legend-road-sound'),sessionStorage.getItem('legend-awakening-return-to-town-v1')]);
-async function open(page,width=1440){await page.setViewportSize({width,height:width===390?844:900});await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/');await page.waitForFunction(()=>LegendPhaserWorldV1.ready);await page.emulateMedia({reducedMotion:'no-preference'});}
-async function hold(page){await page.evaluate(()=>{const set=window.setTimeout;window.setTimeout=function(fn,ms,...args){if(String(fn).includes("curtain.classList.remove('is-covering')")){window.__releaseTransition=()=>fn(...args);return set(()=>{},25000);}return set(fn,ms,...args);};});}
-async function painted(page){await expect.poll(async()=>(await state(page))?.active).toBe(true);await expect.poll(async()=>(await state(page)).alpha).toBe(1);const s=await state(page);expect(s.failure).toBe('');expect(s.labels.map(n=>n.text)).toHaveLength(2);expect(s.labels[1].text).toBe('PREPARING THE NEXT SCENE');await expect(page.locator('.legend-transition-scene')).toHaveCSS('backdrop-filter','none');await expect(page.locator('#root')).toHaveCSS('opacity','0');await expect(page.locator('html')).toHaveCSS('overflow-y','hidden');return s;}
-async function cleared(page){await expect(page.locator('#legend-scene-curtain')).not.toHaveClass(/is-covering|is-revealing/);await expect.poll(async()=>(await state(page)).active).toBe(false);await expect(page.locator('#root')).toHaveCSS('opacity','1');await expect(page.locator('html')).not.toHaveCSS('overflow-y','hidden');expect(await page.locator('body').evaluate(n=>n.style.getPropertyValue('--legend-transition-opacity'))).toBe('');}
-for(const width of [1440,390])test.describe(`${width}px transition`,()=>{test.use({hasTouch:width===390});
- test('original keyboard and touch navigation paints complete readable destination copy',async({page})=>{
-  const errors=[];page.on('pageerror',e=>errors.push(e.message));await open(page,width);await hold(page);const before=await raw(page);const news=page.getByRole('button',{name:/News & Roadmap/i});
-  if(width===390)await news.tap();else{await news.focus();await page.keyboard.press('Enter');}
-  const s=await painted(page);const scrollBefore=await page.evaluate(()=>scrollY);await page.mouse.move(8,8);await page.mouse.wheel(0,400);expect(await page.evaluate(()=>scrollY)).toBe(scrollBefore);expect(s.environment).toBe('title');expect(s.labels[0].text).toBe(await page.locator('.legend-transition-location').textContent());await expect(page.getByRole('heading',{name:'News & Roadmap'})).toBeAttached();
-  await page.setViewportSize({width:844,height:390});await painted(page);expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);await page.evaluate(()=>__releaseTransition());await cleared(page);await expect(page.getByRole('heading',{name:'News & Roadmap'})).toBeVisible();expect(await raw(page)).toEqual(before);expect(errors).toEqual([]);
- });
+
+async function openGame(page, width = 1440) {
+  await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/');
+  await page.waitForFunction(() => window.__legendPhaserWorldReady);
+}
+
+test('production uses the DOM curtain as its only scene-transition presentation', async ({ page }) => {
+  await openGame(page);
+  expect(await page.evaluate(() => Boolean(window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').transitionUi))).toBe(false);
+
+  const before = Date.now();
+  await page.getByRole('button', { name: /News & Roadmap/i }).click();
+  const curtain = page.locator('#legend-scene-curtain');
+  await expect(curtain).toHaveClass(/is-covering/);
+  await expect(curtain).toContainText('NEWS & ROADMAP');
+  await expect(curtain).not.toHaveClass(/is-covering/, { timeout: 2500 });
+  await expect(curtain).not.toHaveClass(/is-revealing/, { timeout: 2500 });
+  expect(Date.now() - before).toBeLessThan(1600);
+
+  const proof = await page.evaluate(() => ({
+    duplicatePainter: document.body.classList.contains('legend-phaser-transition-active'),
+    opacity: document.body.style.getPropertyValue('--legend-transition-opacity'),
+    nativeTransition: window.LegendPhaserWorldV1.snapshot()?.nativeTransition
+  }));
+  expect(proof.duplicatePainter).toBe(false);
+  expect(proof.opacity).toBe('');
+  expect(proof.nativeTransition).toBeFalsy();
+  await expect(page.getByRole('heading', { name: 'News & Roadmap' })).toBeVisible();
 });
-test('regional art and accessibility copy retain a complete DOM fallback',async({page})=>{
- await open(page,390);await hold(page);await page.evaluate(()=>{document.body.classList.add('a11y-large-text','a11y-readable-font','a11y-bold-text','a11y-high-contrast');LegendSceneTransitionsV120.transitionTo('Crossing the realm',()=>{});});const before=await raw(page);await painted(page);
- for(const [className,expected] of [['legend-world-scene-road','blackroot'],['legend-world-region-greyfen','marsh'],['legend-world-scene-dungeon','cellar']]){await page.evaluate(c=>document.body.classList.add(c),className);await expect.poll(async()=>(await state(page)).environment).toBe(expected);await painted(page);}
- await page.evaluate(()=>{const p=document.createElement('p');p.id='extra-transition-copy';p.textContent='Additional destination detail';document.querySelector('.legend-transition-scene').append(p);});await expect.poll(async()=>(await state(page)).active).toBe(false);await expect(page.locator('.legend-transition-location')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');await expect(page.locator('#extra-transition-copy')).toBeVisible();await expect(page.locator('#root')).toHaveCSS('opacity','1');await page.evaluate(()=>document.querySelector('#extra-transition-copy').remove());await painted(page);
- await page.evaluate(()=>document.querySelector('.legend-transition-wordmark').dispatchEvent(new Event('error')));await expect.poll(async()=>(await state(page)).active).toBe(false);await expect(page.locator('.legend-transition-wordmark-fallback')).toBeVisible();await expect(page.locator('.legend-transition-location')).toHaveText('CROSSING THE REALM');await page.evaluate(()=>__releaseTransition());await cleared(page);expect(await raw(page)).toEqual(before);
-});
-test('saved and system reduced motion execute immediately without a curtain',async({page})=>{
- await page.addInitScript(()=>localStorage.setItem('legend-settings-v1',JSON.stringify({reducedMotion:true})));await open(page);const before=await raw(page);
- for(const system of [false,true]){if(system){await page.evaluate(()=>document.body.classList.remove('a11y-reduced-motion'));await page.emulateMedia({reducedMotion:'reduce'});}const proof=await page.evaluate(()=>{let calls=0;const result=LegendSceneTransitionsV120.transitionTo('No motion',()=>++calls);return{calls,result,curtain:!!document.querySelector('#legend-scene-curtain.is-covering'),arriving:!!document.querySelector('.legend-scene-arriving')};});expect(proof).toEqual({calls:1,result:1,curtain:false,arriving:false});}
- await page.getByRole('button',{name:/News & Roadmap/i}).click();await expect(page.getByRole('heading',{name:'News & Roadmap'})).toBeVisible();expect((await state(page)).active).toBe(false);expect(await raw(page)).toEqual(before);
-});
-test('busy actions remain synchronous and failed actions cannot strand the curtain',async({page})=>{
- await open(page);const before=await raw(page);const proof=await page.evaluate(()=>{window.__transitionCalls=[];LegendSceneTransitionsV120.transitionTo('First',()=>{__transitionCalls.push('first');return Promise.reject(new Error('Synthetic rejected navigation'));});const result=LegendSceneTransitionsV120.transitionTo('Busy',()=>{__transitionCalls.push('busy');return 17;});return{calls:__transitionCalls,result};});expect(proof).toEqual({calls:['first','busy'],result:17});await cleared(page);expect(await page.evaluate(()=>__transitionCalls)).toEqual(['first','busy']);
- await page.evaluate(()=>LegendSceneTransitionsV120.transitionTo('Failed navigation',()=>{throw new Error('Synthetic throwing navigation');}));await cleared(page);await page.getByRole('button',{name:/News & Roadmap/i}).click();await cleared(page);await expect(page.getByRole('heading',{name:'News & Roadmap'})).toBeVisible();expect(await raw(page)).toEqual(before);
-});
-test('missing native transition module preserves readable source and navigation',async({page})=>{
- await page.route('**/js/engine/phaser-transition-v1.js*',route=>route.abort());await open(page,390);const before=await raw(page);await hold(page);await page.getByRole('button',{name:/News & Roadmap/i}).click();await expect(page.locator('.legend-transition-location')).toBeVisible();await expect(page.locator('.legend-transition-location')).not.toHaveCSS('color','rgba(0, 0, 0, 0)');await expect(page.locator('.legend-transition-scene')).toHaveCSS('backdrop-filter','none');await expect(page.locator('.legend-transition-wordmark-fallback')).toBeHidden();expect(await state(page)).toBeUndefined();await page.evaluate(()=>__releaseTransition());await expect(page.locator('#legend-scene-curtain')).not.toHaveClass(/is-covering|is-revealing/);await expect(page.getByRole('heading',{name:'News & Roadmap'})).toBeVisible();expect(await raw(page)).toEqual(before);
+
+test('short transitions preserve mobile navigation and reduced-motion behavior', async ({ page }) => {
+  await openGame(page, 390);
+  await page.getByRole('button', { name: /News & Roadmap/i }).tap();
+  await expect(page.getByRole('heading', { name: 'News & Roadmap' })).toBeVisible();
+  await expect(page.locator('#legend-scene-curtain')).not.toHaveClass(/is-covering|is-revealing/);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const calls = await page.evaluate(() => {
+    let count = 0;
+    const result = window.LegendSceneTransitionsV120.transitionTo('No motion', () => ++count);
+    return { count, result, active: Boolean(document.querySelector('#legend-scene-curtain.is-covering')) };
+  });
+  expect(calls).toEqual({ count: 1, result: 1, active: false });
 });

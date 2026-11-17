@@ -62,7 +62,7 @@
 
     // Keep the reveal bounded. A scene image that never fires load/error must
     // not strand a mobile player beneath the curtain or leave navigation locked.
-    const minimumCoverMs = Math.max(0, 1280 - (Date.now() - startedAt));
+    const minimumCoverMs = Math.max(0, 420 - (Date.now() - startedAt));
     window.setTimeout(() => {
       curtain.classList.remove('is-covering');
       curtain.classList.add('is-revealing');
@@ -71,7 +71,7 @@
         curtain.classList.remove('is-revealing');
         curtain.style.pointerEvents = 'none';
         busy = false;
-      }, 480);
+      }, 260);
     }, minimumCoverMs);  }
 
   document.addEventListener('click', event => {

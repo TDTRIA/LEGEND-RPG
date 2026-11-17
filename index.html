@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="css/opening-road-v140.css?v=0.29.4-oric-field-guide">
   <link rel="stylesheet" href="css/immersive-world-v150.css?v=0.24.1-title-ring-removed-5">
   <link rel="stylesheet" href="css/bell-vault-v100.css?v=0.21.0-first-delve">
-  <link rel="stylesheet" href="css/world-client-boot-v100.css?v=0.27.1-cinematic-boot-1">
+  <link rel="stylesheet" href="css/world-client-boot-v100.css?v=20261117-short-scene-curtain-1">
   <link rel="stylesheet" href="css/runway-art-pass-v151.css?v=0.24.1-runway-icon-square-1">
   <link rel="stylesheet" href="css/progression-results-v152.css?v=0.23.0-growth-results">
   <link rel="stylesheet" href="css/greyfen-marsh-v160.css?v=20261113-marsh-map-1">
@@ -59,7 +59,7 @@
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 </head>
 <body>
-  <div id="legend-boot-screen" class="legend-boot-screen" role="status" aria-label="Loading LEGEND: The Awakening">
+  <div id="legend-boot-screen" class="legend-boot-screen" hidden role="status" aria-label="Loading LEGEND: The Awakening">
     <div class="legend-boot-vignette" aria-hidden="true"></div>
     <section class="legend-boot-frame" aria-labelledby="legend-boot-title">
       <div class="legend-boot-sigil" aria-hidden="true"><span>✦</span><i></i></div>
@@ -100,7 +100,7 @@
         checks: {}
       };
       window.__legendBootSequenceV100 = state;
-      document.body.classList.add('legend-booting');
+      // Keep boot diagnostics available without blocking the title behind a fake loading screen.
 
       function paintProgress(value, message, detail) {
         const bounded = Math.max(0, Math.min(100, Math.round(value)));
@@ -146,7 +146,7 @@
   </script>
   <div id="game-container" aria-label="LEGEND world rendered by Phaser" aria-hidden="true"></div>
   <div id="root"></div>
-  <button id="engine-skip" type="button" aria-label="Skip the world awakening">Skip intro</button>
+  <button id="engine-skip" type="button" aria-label="Skip the world awakening" hidden>Skip intro</button>
   <div id="toast" role="status" aria-live="polite"></div>
   <script defer src="https://cdn.jsdelivr.net/npm/phaser@4.1.0/dist/phaser.min.js"></script>
   <script defer src="js/data.js?v=0.30.5-release"></script>
@@ -233,8 +233,8 @@
   <script defer src="js/systems/road-controller-v100.js?v=20261113-cellar-combat-1"></script>
   <script defer src="js/systems/road-opening-v140.js?v=20261103-world-audio-actions-1"></script>
   <script defer src="js/systems/opening-prologue-v220.js?v=20261113-peace-annal-1"></script>
-  <script defer src="js/systems/scene-transitions-v120.js?v=20261113-transition-1"></script>
-  <script defer src="js/systems/boot-sequence-v100.js?v=20261113-loading-1"></script>
+  <script defer src="js/systems/scene-transitions-v120.js?v=20261117-single-curtain-1"></script>
+  <script defer src="js/systems/boot-sequence-v100.js?v=20261117-no-pretitle-boot-1"></script>
   <script defer src="js/systems/road/greyfen-marsh-expedition-v160.js?v=20261113-marsh-map-1"></script>
   <script defer src="js/ui/panels-v170.js?v=20261113-regional-shell-1"></script>
   <script defer src="js/ui/modals-v170.js?v=20261113-settings-1"></script>
@@ -248,9 +248,9 @@
   <script defer src="js/engine/phaser-inn-v1.js?v=20261112-inn-1"></script>
   <script defer src="js/engine/phaser-traveler-sheet-v1.js?v=20261112-records-1"></script>
   <script defer src="js/engine/phaser-title-notice-v1.js?v=20261113-title-notice-1"></script>
-  <script defer src="js/engine/phaser-transition-v1.js?v=20261113-transition-1"></script>
-  <script defer src="js/engine/phaser-awakening-v1.js?v=20261113-awakening-1"></script>
-  <script defer src="js/engine/phaser-loading-v1.js?v=20261113-loading-1"></script>
+  <script defer src="js/engine/phaser-transition-v1.js?v=20261117-dom-only-transitions-1"></script>
+  <script defer src="js/engine/phaser-awakening-v1.js?v=20261117-no-pretitle-awakening-1"></script>
+  <script defer src="js/engine/phaser-loading-v1.js?v=20261117-no-loading-painter-1"></script>
   <script defer src="js/engine/phaser-recovery-v1.js?v=20261113-recovery-1"></script>
   <script defer src="js/engine/phaser-account-v1.js?v=20261113-account-1"></script>
   <script defer src="js/engine/phaser-dispatches-v1.js?v=20261113-dispatches-1"></script>
@@ -267,6 +267,6 @@
   <script defer src="js/engine/phaser-growth-v1.js?v=20261113-growth-1"></script>
   <script defer src="js/engine/phaser-combat-results-v1.js?v=20261113-combat-results-1"></script>
   <script defer src="js/engine/phaser-road-results-v1.js?v=20261113-results-1"></script>
-  <script defer src="js/engine/phaser-world-v1.js?v=20261113-title-access-1"></script>
+  <script defer src="js/engine/phaser-world-v1.js?v=20261117-direct-title-startup-1"></script>
 </body>
 </html>
