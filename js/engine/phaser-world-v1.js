@@ -2846,16 +2846,24 @@
           height: rect.height,
           container,
           focusFrame,
+          focusColor: 0xb5d99a,
           selected: choice && (button.classList.contains('is-selected') || button.getAttribute('aria-pressed') === 'true'),
           button
         };
         this.nativeCreationUiControls.push(control);
         if (!button.__legendNativeCreationBound) {
           button.__legendNativeCreationBound = true;
-          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'focus', () => this.setNativeCreationControlFocus(id, true));
-          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'blur', () => this.setNativeCreationControlFocus(id, button.matches(':hover')));
-          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'pointerenter', () => this.setNativeCreationControlFocus(id, true));
-          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'pointerleave', () => this.setNativeCreationControlFocus(id, document.activeElement === button));
+          // A creation button can be reused when a later step repaints the
+          // surface. Resolve the current control by node, not the id from the
+          // first paint, so focus/hover events never target a stale frame.
+          const updateCurrentFocusFrame = active => {
+            const current = this.nativeCreationUiControls.find(item => item.button === button);
+            if (current) this.setNativeCreationControlFocus(current.id, active);
+          };
+          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'focus', () => updateCurrentFocusFrame(true));
+          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'blur', () => updateCurrentFocusFrame(button.matches(':hover')));
+          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'pointerenter', () => updateCurrentFocusFrame(true));
+          this.bindNativePresentationEvent('Creation', button, '__legendNativeCreationBound', 'pointerleave', () => updateCurrentFocusFrame(document.activeElement === button));
         }
       });
       if (!copyFits || imageSpecs.some(item => !imageKeys[item.index])) this.clearNativeCreationUi();
