@@ -19,11 +19,12 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Queue production checks instead of cancelling them when another push arrives.
+  cancel-in-progress: false
 
 jobs:
   test:
-    timeout-minutes: 25
+    timeout-minutes: 45
     runs-on: ubuntu-latest
 
     steps:
@@ -113,7 +114,6 @@ jobs:
         run: npm run test:e2e:road-map-ui-contract
 
       - name: Run full production regression suite
-        if: github.event_name != 'pull_request'
         env:
           FULL_BROWSER_MATRIX: ${{ inputs.full_browser_matrix && '1' || '0' }}
         run: npm run test:e2e
