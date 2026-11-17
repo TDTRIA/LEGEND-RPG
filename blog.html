@@ -8,140 +8,155 @@
   <title>Development Chronicle — LEGEND: The Awakening</title>
   <link rel="icon" type="image/webp" href="assets/generated/ui/icons/service-milestone.webp">
   <link rel="preload" as="image" href="assets/generated/title/title-ashmere-road.webp">
-  <link rel="stylesheet" href="css/legend-site-v090.css?v=0.30.4-devlog">
-  <link rel="stylesheet" href="css/chronicle-v140.css?v=20261103-chronicle-v140">
+  <link rel="stylesheet" href="css/legend-site-v230.css?v=20261116-site-shell">
 </head>
-<body class="chronicle-page chronicle-index">
-  <nav class="chronicle-nav" aria-label="Chronicle navigation">
-    <div class="chronicle-nav-inner">
-      <a class="chronicle-brand" href="index.html" aria-label="LEGEND: The Awakening — return to the game">
-        <img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening" decoding="async">
-        <span class="chronicle-brand-copy"><strong>Field Records</strong><span>Development Chronicle</span></span>
+<body class="legend-site">
+  <a class="site-skip" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <nav class="site-nav" aria-label="Main navigation">
+      <a class="site-brand" href="portal.html" aria-label="LEGEND: The Awakening home">
+        <img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening">
+        <span class="site-brand-divider" aria-hidden="true"></span>
+        <span class="site-brand-label">Official Game Site</span>
       </a>
-      <div class="chronicle-nav-links">
-        <a class="chronicle-hub-link" href="portal.html">Official Game Site</a>
-        
-        <a href="index.html" class="chronicle-play">Enter the World</a>
+      <div class="site-nav-links">
+        <a href="portal.html">Home</a>
         <a href="blog.html" aria-current="page">Chronicle</a>
         <a href="updates.html">Dispatch</a>
-        <a href="docs/ROADMAP.md">Roadmap</a>
-        <a href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener">Repository</a>
+        <a href="guide.html">Field Guide</a>
+        <a href="save.html">Save Vault</a>
+        <a href="feedback.html">Feedback</a>
       </div>
-    </div>
-  </nav>
+      <a class="site-nav-play" href="index.html">Play the Game <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
 
-  <main class="chronicle-shell">
-    <header class="chronicle-index-hero">
-      <div>
-        <p class="chronicle-kicker">The making of a living frontier · Updated November 11, 2026</p>
-        <h1 class="chronicle-index-title">The Road<br>Remembers</h1>
-        <p class="chronicle-index-lede">Dispatches from the making of <strong>LEGEND: The Awakening</strong> — the world, its people, the journeys beyond Ashmere, and the systems that turn a dangerous road into an RPG worth returning to.</p>
-        <div class="chronicle-hero-actions">
-          <a class="chronicle-action primary" href="posts/014-the-sound-of-the-realm.html">Read the latest field record</a>
-          <a class="chronicle-action" href="#recent-entries">Browse recent entries</a>
+  <main id="main-content">
+    <div class="shell">
+      <header class="page-head">
+        <p class="kicker">The making of a living frontier · Updated November 11, 2026</p>
+        <h1>The Road <em>Remembers</em></h1>
+        <p class="intro-copy">Dispatches from the making of <strong>LEGEND: The Awakening</strong> — the world, its people, the journeys beyond Ashmere, and the systems that turn a dangerous road into an RPG worth returning to.</p>
+        <div class="actions">
+          <a class="btn primary" href="posts/014-the-sound-of-the-realm.html">Read the latest field record</a>
+          <a class="btn" href="#recent-entries">Browse recent entries</a>
         </div>
-      </div>
-      <aside class="chronicle-build-plate" aria-label="Current production status">
-        <p class="plate-label">Production build</p>
-        <p class="chronicle-build-number">v0.30.5</p>
-        <p class="chronicle-build-copy">The road-first opening, Ashmere, turn-based encounters, expedition progression, and early Greyfen activities form the current playable foundation.</p>
-        <div class="chronicle-build-status">Active development</div>
-      </aside>
-    </header>
+        <p class="small">Production build v0.30.5 · Active development</p>
+      </header>
 
-    <section class="chronicle-section" aria-labelledby="latest-record">
-      <div class="chronicle-section-head">
-        <h2 id="latest-record">Latest field record</h2>
-        <p>November 3, 2026 · Audio identity &amp; engine transition</p>
-      </div>
-      <article class="chronicle-feature">
-        <div class="chronicle-feature-media">
-          <img src="assets/generated/locations/old-road-south-fork.webp" alt="The Old Road branching into the frontier beyond Ashmere" loading="lazy" decoding="async">
-        </div>
-        <div class="chronicle-feature-copy">
-          <div class="chronicle-meta"><span>Devlog 014</span><span>Sound &amp; Systems</span></div>
-          <h3>The Sound of the Realm</h3>
-          <p>The 48-asset location ambience and gameplay-effects library and the newly rendered 10½-minute main-theme loop are now integrated in the deployed game. The next audio pass is real-browser listening, mix/loop verification, and wiring the remaining effects to their matching world actions.</p>
-          <a class="chronicle-text-link" href="posts/014-the-sound-of-the-realm.html">Open field record</a>
-        </div>
-      </article>
-    </section>
-
-    <div class="chronicle-content-grid" id="recent-entries">
-      <section aria-labelledby="recent-title">
-        <div class="chronicle-section-head">
-          <h2 id="recent-title">Recent entries</h2>
-          <p>What has changed in the realm</p>
-        </div>
-        <div class="chronicle-entries">
-          <a class="chronicle-entry" href="posts/013-from-road-rework-to-rpg.html">
-            <div class="chronicle-entry-media"><img src="assets/generated/locations/ashmere-town.webp" alt="Ashmere town at the edge of the frontier" loading="lazy" decoding="async"></div>
-            <div class="chronicle-entry-copy">
-              <div class="chronicle-meta"><span>Devlog 013</span><span>November 2, 2026</span></div>
-              <h3>From Road Rework to a Living RPG Loop</h3>
-              <p>A catch-up on the road-first opening, Ashmere services, tactical encounters, traveler progression, and the first Greyfen activities.</p>
-            </div>
-          </a>
-          <a class="chronicle-entry" href="posts/012-greyfen-in-progress.html">
-            <div class="chronicle-entry-media"><img src="assets/generated/locations/greyfen-marsh-walkway.webp" alt="Raised walkways through the Greyfen marsh" loading="lazy" decoding="async"></div>
-            <div class="chronicle-entry-copy">
-              <div class="chronicle-meta"><span>Devlog 012</span><span>November 2, 2026</span></div>
-              <h3>Greyfen Is Taking Shape</h3>
-              <p>Ferry work, marsh routes, salvage and the pieces still needed before Greyfen becomes a complete region.</p>
-            </div>
-          </a>
-          <a class="chronicle-entry" href="posts/011-the-first-journey.html">
-            <div class="chronicle-entry-media"><img src="assets/generated/locations/high-ridge.webp" alt="The High Ridge route above the Old Road" loading="lazy" decoding="async"></div>
-            <div class="chronicle-entry-copy">
-              <div class="chronicle-meta"><span>Devlog 011</span><span>November 2, 2026</span></div>
-              <h3>The First Journey: A Road That Can Bite Back</h3>
-              <p>The mandatory annals, Oric and the Blackroot Wolf, the five-stage Old Road, and rewards that remain worth earning.</p>
-            </div>
-          </a>
-        </div>
-
-        <section class="chronicle-archive" aria-labelledby="archive-title">
-          <div class="chronicle-section-head">
-            <h2 id="archive-title">Earlier chronicle</h2>
-            <p>From the recovered build to the first road</p>
+      <section class="card">
+        <div class="section-head">
+          <div>
+            <h2>Latest field record</h2>
+            <p>November 3, 2026 · Audio identity &amp; engine transition</p>
           </div>
-          <div class="chronicle-archive-list">
-            <a class="chronicle-archive-link" href="posts/010-ashmere-road-rework.html"><span>Devlog 010 · Rework</span><strong>Ashmere and the Old Road Rework</strong></a>
-            <a class="chronicle-archive-link" href="posts/009-interface-encounter-update.html"><span>Devlog 009 · Interface</span><strong>Interface &amp; Encounter Update</strong></a>
-            <a class="chronicle-archive-link" href="posts/007-refactor-and-accessibility.html"><span>Devlog 007 · Stability</span><strong>Refactor and Accessibility</strong></a>
-            <a class="chronicle-archive-link" href="posts/006-first-road-balance.html"><span>Devlog 006 · Balance</span><strong>First Road Balance</strong></a>
-            <a class="chronicle-archive-link" href="posts/005-the-first-road.html"><span>Devlog 005 · Journey</span><strong>The First Road</strong></a>
-            <a class="chronicle-archive-link" href="posts/004-mobile-polish.html"><span>Devlog 004 · Mobile</span><strong>Mobile Polish</strong></a>
-            <a class="chronicle-archive-link" href="posts/003-voices-of-ashmere.html"><span>Devlog 003 · Characters</span><strong>Voices of Ashmere</strong></a>
-            <a class="chronicle-archive-link" href="posts/002-roads-beyond-ashmere.html"><span>Devlog 002 · World</span><strong>The Roads Beyond Ashmere</strong></a>
-            <a class="chronicle-archive-link" href="posts/001-recovered-build.html"><span>Devlog 001 · Origin</span><strong>I Recovered My First Game</strong></a>
+        </div>
+        <article class="feature">
+          <div class="feature-media">
+            <img src="assets/generated/locations/old-road-south-fork.webp" alt="The Old Road branching into the frontier beyond Ashmere" loading="lazy" decoding="async">
           </div>
-        </section>
+          <div class="feature-copy">
+            <div class="chronicle-meta"><span>Devlog 014</span><span>Sound &amp; Systems</span></div>
+            <h3>The Sound of the Realm</h3>
+            <p>The 48-asset location ambience and gameplay-effects library and the newly rendered 10½-minute main-theme loop are now integrated in the deployed game. The next audio pass is real-browser listening, mix/loop verification, and wiring the remaining effects to their matching world actions.</p>
+            <div class="actions"><a class="btn primary" href="posts/014-the-sound-of-the-realm.html">Open field record</a></div>
+          </div>
+        </article>
       </section>
 
-      <aside class="chronicle-sidebar" aria-label="World development status">
-        <div class="chronicle-sidebar-head">The world today</div>
-        <div class="chronicle-world-row">
-          <span class="chronicle-world-mark" aria-hidden="true">I</span>
-          <div><strong>Ashmere &amp; the Old Road</strong><span>The first journey, town services, encounters and progression are in the production build.</span></div>
-        </div>
-        <div class="chronicle-world-row">
-          <span class="chronicle-world-mark" aria-hidden="true">II</span>
-          <div><strong>Greyfen</strong><span>Playable regional activities are growing; the complete town, story and economy loop remains unfinished.</span></div>
-        </div>
-        <div class="chronicle-world-row">
-          <span class="chronicle-world-mark" aria-hidden="true">III</span>
-          <div><strong>Phaser transition</strong><span>The title, opening sequence, world scene, and key shell surfaces now have Phaser presentation. Expedition decisions, service screens, combat, results, and other interfaces are still being migrated incrementally, with the existing DOM controls and gameplay systems retained as fallbacks and sources of truth.</span></div>
-        </div>
-        <div class="chronicle-world-row">
-          <span class="chronicle-world-mark" aria-hidden="true">IV</span>
-          <div><strong>Sound of the realm</strong><span>The 48-asset ambience/effects library and replacement main theme are integrated in the production build. Human listening checks and wiring the remaining world and town effects are still in progress.</span></div>
-        </div>
-        <p class="chronicle-sidebar-note">Ironpass and the complete first-three-town journey remain future development goals. This chronicle distinguishes playable content from work still being built.</p>
-      </aside>
-    </div>
+      <div class="two-col">
+        <section class="card" id="recent-entries">
+          <div class="section-head">
+            <div>
+              <h2>Recent entries</h2>
+              <p>What has changed in the realm</p>
+            </div>
+          </div>
+          <div class="entry-grid">
+            <a class="entry-card" href="posts/013-from-road-rework-to-rpg.html">
+              <div class="entry-media"><img src="assets/generated/locations/ashmere-town.webp" alt="Ashmere town at the edge of the frontier" loading="lazy" decoding="async"></div>
+              <div class="entry-copy">
+                <div class="chronicle-meta"><span>Devlog 013</span><span>November 2, 2026</span></div>
+                <h3>From Road Rework to a Living RPG Loop</h3>
+                <p>A catch-up on the road-first opening, Ashmere services, tactical encounters, traveler progression, and the first Greyfen activities.</p>
+              </div>
+            </a>
+            <a class="entry-card" href="posts/012-greyfen-in-progress.html">
+              <div class="entry-media"><img src="assets/generated/locations/greyfen-marsh-walkway.webp" alt="Raised walkways through the Greyfen marsh" loading="lazy" decoding="async"></div>
+              <div class="entry-copy">
+                <div class="chronicle-meta"><span>Devlog 012</span><span>November 2, 2026</span></div>
+                <h3>Greyfen Is Taking Shape</h3>
+                <p>Ferry work, marsh routes, salvage and the pieces still needed before Greyfen becomes a complete region.</p>
+              </div>
+            </a>
+            <a class="entry-card" href="posts/011-the-first-journey.html">
+              <div class="entry-media"><img src="assets/generated/locations/high-ridge.webp" alt="The High Ridge route above the Old Road" loading="lazy" decoding="async"></div>
+              <div class="entry-copy">
+                <div class="chronicle-meta"><span>Devlog 011</span><span>November 2, 2026</span></div>
+                <h3>The First Journey: A Road That Can Bite Back</h3>
+                <p>The mandatory annals, Oric and the Blackroot Wolf, the five-stage Old Road, and rewards that remain worth earning.</p>
+              </div>
+            </a>
+          </div>
 
-    <footer class="chronicle-index-footer">LEGEND: The Awakening · Development Chronicle · A living record of the work behind the world</footer>
+          <div class="section-head">
+            <div>
+              <h2>Earlier chronicle</h2>
+              <p>From the recovered build to the first road</p>
+            </div>
+          </div>
+          <div class="archive-list">
+            <a class="archive-link" href="posts/010-ashmere-road-rework.html"><span>Devlog 010 · Rework</span><strong>Ashmere and the Old Road Rework</strong></a>
+            <a class="archive-link" href="posts/009-interface-encounter-update.html"><span>Devlog 009 · Interface</span><strong>Interface &amp; Encounter Update</strong></a>
+            <a class="archive-link" href="posts/007-refactor-and-accessibility.html"><span>Devlog 007 · Stability</span><strong>Refactor and Accessibility</strong></a>
+            <a class="archive-link" href="posts/006-first-road-balance.html"><span>Devlog 006 · Balance</span><strong>First Road Balance</strong></a>
+            <a class="archive-link" href="posts/005-the-first-road.html"><span>Devlog 005 · Journey</span><strong>The First Road</strong></a>
+            <a class="archive-link" href="posts/004-mobile-polish.html"><span>Devlog 004 · Mobile</span><strong>Mobile Polish</strong></a>
+            <a class="archive-link" href="posts/003-voices-of-ashmere.html"><span>Devlog 003 · Characters</span><strong>Voices of Ashmere</strong></a>
+            <a class="archive-link" href="posts/002-roads-beyond-ashmere.html"><span>Devlog 002 · World</span><strong>The Roads Beyond Ashmere</strong></a>
+            <a class="archive-link" href="posts/001-recovered-build.html"><span>Devlog 001 · Origin</span><strong>I Recovered My First Game</strong></a>
+          </div>
+        </section>
+
+        <aside class="side-panel" aria-label="World development status">
+          <div class="side-panel-head">The world today</div>
+          <div class="world-row">
+            <span class="world-mark" aria-hidden="true">I</span>
+            <div><strong>Ashmere &amp; the Old Road</strong><span>The first journey, town services, encounters and progression are in the production build.</span></div>
+          </div>
+          <div class="world-row">
+            <span class="world-mark" aria-hidden="true">II</span>
+            <div><strong>Greyfen</strong><span>Playable regional activities are growing; the complete town, story and economy loop remains unfinished.</span></div>
+          </div>
+          <div class="world-row">
+            <span class="world-mark" aria-hidden="true">III</span>
+            <div><strong>Phaser transition</strong><span>The title, opening sequence, world scene, and key shell surfaces now have Phaser presentation. Expedition decisions, service screens, combat, results, and other interfaces are still being migrated incrementally, with the existing DOM controls and gameplay systems retained as fallbacks and sources of truth.</span></div>
+          </div>
+          <div class="world-row">
+            <span class="world-mark" aria-hidden="true">IV</span>
+            <div><strong>Sound of the realm</strong><span>The 48-asset ambience/effects library and replacement main theme are integrated in the production build. Human listening checks and wiring the remaining world and town effects are still in progress.</span></div>
+          </div>
+          <p class="side-note">Ironpass and the complete first-three-town journey remain future development goals. This chronicle distinguishes playable content from work still being built.</p>
+        </aside>
+      </div>
+    </div>
   </main>
+
+  <footer class="site-footer">
+    <a class="site-footer-brand" href="portal.html"><img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening"></a>
+    <div class="site-footer-links">
+      <a href="index.html">Play</a>
+      <a href="portal.html">Home</a>
+      <a href="blog.html">Chronicle</a>
+      <a href="updates.html">Dispatch</a>
+      <a href="guide.html">Field Guide</a>
+      <a href="save.html">Save Vault</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="playtest.html">Playtest Runner</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <p>LEGEND: The Awakening · An independent dark-fantasy browser RPG in active development.</p>
+  </footer>
 </body>
 </html>
