@@ -787,7 +787,8 @@
       this.travelerSheet = window.LegendPhaserTravelerSheetV1?.create(this);
       this.settingsUi = window.LegendPhaserSettingsV1?.create(this);
       this.titleNoticeUi = window.LegendPhaserTitleNoticeV1?.create(this);
-      // The DOM scene curtain is the single transition owner in production.
+      // Production uses the DOM curtain as its single transition owner.
+      if (IS_PROTOTYPE) this.transitionUi = window.LegendPhaserTransitionV1?.create(this);
       this.confirmationUi = window.LegendPhaserConfirmationV1?.create(this);
       this.creditsUi = window.LegendPhaserCreditsV1?.create(this);
       this.dispatchesUi = window.LegendPhaserDispatchesV1?.create(this);
@@ -7327,9 +7328,14 @@
         // READY event that can fire before a listener is attached.
         if (!realmScene) realmScene = game?.scene?.getScene?.('RealmScene') || null;
         if (!realmScene) throw new Error('RealmScene did not register before its ready signal.');
-        // The pre-title renderer awakening was only a loading animation, not story content.
-        // Start directly at the title once the world renderer is actually ready.
-        finishStartup();
+        if (IS_PROTOTYPE && needsAwakening && typeof realmScene.runEngineAwakening === 'function') {
+          // Keep the isolated reboot preview's own awakening flow intact.
+          realmScene.runEngineAwakening(finishStartup);
+        } else {
+          // The production pre-title renderer awakening was only a loading animation,
+          // not story content. Start directly at the title once RealmScene is ready.
+          finishStartup();
+        }
       } catch (error) {
         console.error('[LEGEND Phaser] RealmScene startup failed.', error);
         keepDomFallback();
