@@ -42,7 +42,7 @@ for (const width of [1440, 390]) {
       await expect(action).toBeFocused();
       if (width === 390) await action.tap(); else await page.keyboard.press('Enter');
       await expect(page.getByRole('group', { name: 'Your answer to Captain Oric' })).toBeVisible();
-      await expectReadable('.opening-road-v140-card', 'Beneath the Dead Lantern');
+      await expectReadable('#openingRoadTitle', 'Beneath the Dead Lantern');
       const answer = page.locator('[data-oric-response="honest"]');
       await expectReadable('[data-oric-response="honest"]', 'I remember a bell');
       if (width === 390) await answer.tap(); else await answer.click();
