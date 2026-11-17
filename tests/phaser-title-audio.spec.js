@@ -25,7 +25,7 @@ for(const width of [1440,390]) test.describe(`${width}px title audio`,()=>{
     await expect.poll(()=>page.evaluate(()=>document.querySelector('#titleSound .v136-menu-copy strong')?.textContent.trim())).toBe('Sound: On');
     if(width===390)await page.locator('.portal100-brand').tap();
     await page.locator('#credits').focus();await page.mouse.move(0,0);
-    await expect.poll(()=>page.evaluate(()=>document.activeElement?.id === 'credits')).toBe('menuButtonSelected');
+    await expect.poll(()=>page.evaluate(()=>document.activeElement?.id === 'credits')).toBe(true);
     expect(await page.evaluate(()=>LegendRoadAudioV100.snapshot())).toMatchObject({enabled:true,unlocked:true,musicPlaying:true,ambiencePlaying:true});
     await activate();await expect(sound).toHaveAttribute('aria-pressed','false');await expect(sound).toBeFocused();
     await expect.poll(()=>page.evaluate(()=>document.activeElement?.id === 'titleSound')).toBe(true);
