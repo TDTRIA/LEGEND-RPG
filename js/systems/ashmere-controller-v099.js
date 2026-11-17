@@ -72,6 +72,7 @@
         imageMarkup: img,
         regionShopArt,
         serviceArt,
+        npcArt: npc,
         icon,
         shell,
         bind
