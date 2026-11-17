@@ -19,8 +19,9 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  # Queue production checks instead of cancelling them when another push arrives.
-  cancel-in-progress: false
+  # Superseded PR commits may cancel; main runs must always finish.
+  # Main pushes share one concurrency group, so never cancel that production gate.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
