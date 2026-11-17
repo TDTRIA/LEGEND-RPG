@@ -379,10 +379,17 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(iconNames.filter(name => name === 'runway-icon-settings')).toHaveLength(2);
     expect(new Set(iconNames.filter(name => name !== 'runway-icon-settings')).size).toBe(menuIcons.length - 2);
     expect(menuIcons.every(icon => icon.width === 28 && icon.height === 28 && icon.overflow === 'hidden' && !icon.hasImageChild)).toBe(true);
-    expect(menuIcons.every(icon => {
+    const iconSpriteAudit = menuIcons.map(icon => {
       const name = icon.classes[0].replace('runway-icon-', '');
-      return icon.backgroundImage.includes('legend-icon-' + name + '.webp');
-    })).toBe(true);
+      return {
+        className: icon.classes[0],
+        backgroundImage: icon.backgroundImage,
+        expectedAsset: 'legend-icon-' + name + '.webp',
+        matches: icon.backgroundImage.includes('legend-icon-' + name + '.webp')
+      };
+    });
+    console.log('[LEGEND title icon sprite audit]', JSON.stringify(iconSpriteAudit));
+    expect(iconSpriteAudit.filter(icon => !icon.matches)).toEqual([]);
     await expect(page.locator('.title-v136-rpg .title-atmosphere')).toBeVisible();
     const legacyRing = await page.locator('.title-v136-rpg.portal-v100').evaluate(node => {
       const style = getComputedStyle(node, '::before');
