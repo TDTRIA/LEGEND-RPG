@@ -300,7 +300,11 @@
   height: 28px !important;
   border: 0 !important;
   border-radius: 0 !important;
-  background: transparent !important;
+  background-color: transparent !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+  overflow: hidden !important;
   box-shadow: none !important;
   filter: saturate(.62) brightness(.92) drop-shadow(0 1px 4px rgba(0, 0, 0, .8)) !important;
   opacity: .76 !important;
