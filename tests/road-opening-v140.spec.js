@@ -436,28 +436,25 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     const transitionProbe = await page.evaluate(() => {
       const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
       const screen = document.querySelector('.opening-lore-v220');
-      const button = screen?.querySelector('.opening-lore-v220-continue');
-      if (!scene || !screen || !button) throw new Error('Annals transition probe could not find its production targets');
-      const originalTransition = button.style.getPropertyValue('transition');
-      const originalTransitionPriority = button.style.getPropertyPriority('transition');
-      const originalBorder = button.style.getPropertyValue('border-color');
-      button.style.setProperty('transition', 'border-color 2000ms linear', 'important');
-      const before = getComputedStyle(button).borderColor;
-      button.getBoundingClientRect();
-      button.style.setProperty('border-color', before === 'rgb(1, 2, 3)' ? 'rgb(4, 5, 6)' : 'rgb(1, 2, 3)', 'important');
-      button.getBoundingClientRect();
-      const activeTransition = button.getAnimations().some(animation =>
-        animation.transitionProperty === 'border-color' && ['running', 'pending'].includes(animation.playState)
+      if (!scene || !screen) throw new Error('Annals transition probe could not find its production targets');
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:absolute;left:-10000px;top:-10000px;width:2px;height:2px;opacity:0;';
+      probe.style.setProperty('transition', 'opacity 2000ms linear', 'important');
+      screen.appendChild(probe);
+      probe.getBoundingClientRect();
+      probe.style.setProperty('opacity', '1', 'important');
+      probe.getBoundingClientRect();
+      const activeTransition = probe.getAnimations().some(animation =>
+        animation.transitionProperty === 'opacity' && ['running', 'pending'].includes(animation.playState)
       );
+      const computedTransition = getComputedStyle(probe).transition;
       const treatedAsEntrance = scene.hasFiniteEntranceAnimation(screen);
       scene.syncNativeAnnalsUi();
       const painterStayedActive = document.body.classList.contains('legend-phaser-annals-ui-active');
-      if (originalTransition) button.style.setProperty('transition', originalTransition, originalTransitionPriority);
-      else button.style.removeProperty('transition');
-      if (originalBorder) button.style.setProperty('border-color', originalBorder);
-      else button.style.removeProperty('border-color');
-      return { activeTransition, treatedAsEntrance, painterStayedActive };
+      probe.remove();
+      return { activeTransition, computedTransition, treatedAsEntrance, painterStayedActive };
     });
+    expect(transitionProbe.computedTransition).toContain('2s');
     expect(transitionProbe.activeTransition).toBe(true);
     expect(transitionProbe.treatedAsEntrance).toBe(false);
     expect(transitionProbe.painterStayedActive).toBe(true);
