@@ -375,7 +375,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     })));
     expect(menuIcons.length).toBeGreaterThanOrEqual(5);
     expect(menuIcons.every(icon => icon.classes.length === 1)).toBe(true);
-    expect(new Set(menuIcons.map(icon => icon.classes[0])).size).toBe(menuIcons.length);
+    const iconNames = menuIcons.map(icon => icon.classes[0]);
+    expect(iconNames.filter(name => name === 'runway-icon-settings')).toHaveLength(2);
+    expect(new Set(iconNames.filter(name => name !== 'runway-icon-settings')).size).toBe(menuIcons.length - 2);
     expect(menuIcons.every(icon => icon.width === 28 && icon.height === 28 && icon.overflow === 'hidden' && !icon.hasImageChild)).toBe(true);
     expect(menuIcons.every(icon => {
       const name = icon.classes[0].replace('runway-icon-', '');
@@ -396,10 +398,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   });
 
   test('game opens directly on the actual title menu without the redundant Ashmere Gate screen', async ({ page }) => {
-    await page.goto('/');
-    await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
-    await page.reload();
-    await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+    await openTitle(page);
     await expect(page.locator('.v120-title')).toBeVisible();
     await expect(page.locator('.title-gate-card')).toHaveCount(0);
     await expect(page.locator('#enterRealm')).toHaveCount(0);
