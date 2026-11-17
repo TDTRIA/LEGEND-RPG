@@ -124,7 +124,7 @@
             <span class="ashmere-hub-v240-kicker">THE TOWN'S CURRENT CONCERN</span>
             <h2 id="ashmereHubFieldOrder">${esc(g.title || 'A Place to Begin')}</h2>
             <p>${esc(currentOrder)}</p>
-            <button class="ashmere-hub-v240-order-action" type="button" data-ash-view="${esc(g.view || 'people')}">${esc(g.cta || 'Speak with the townsfolk')} <span aria-hidden="true">↗</span></button>
+            ${String(g.view || '') !== 'road' ? `<button class="ashmere-hub-v240-order-action" type="button" data-ash-view="${esc(g.view || 'people')}">${esc(g.cta || 'Speak with the townsfolk')} <span aria-hidden="true">↗</span></button>` : ''}
           </section>
 
           <section class="ashmere-hub-v240-landmarks" aria-labelledby="ashmereHubLandmarks">
