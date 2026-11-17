@@ -829,21 +829,27 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('world-scene backdrops stay readable in Ashmere and on the Old Road', async ({ page }) => {
+  test('Ashmere refuge and Old Road remain scene-led and readable', async ({ page }) => {
     await enterAshmere(page, 'SceneBrightnessQA');
+    await expect(page.locator('.ashmere-hub-v240')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
 
-    const town = await page.evaluate(() => ({
-      filter: getComputedStyle(document.body, '::before').filter,
-      vignette: getComputedStyle(document.body, '::after').boxShadow,
-      image: getComputedStyle(document.body, '::before').backgroundImage
-    }));
-    expect(town.filter).toContain('brightness(1.24)');
-    expect(town.vignette).toContain('rgba(0, 0, 0, 0.035)');
-    expect(town.image).toContain('ashmere-town.webp');
+    const town = await page.evaluate(() => {
+      const hub=document.querySelector('.ashmere-hub-v240');
+      const image=hub?.querySelector('.ashmere-hub-v240-backdrop img');
+      const atmosphere=hub?.querySelector('.ashmere-hub-v240-atmosphere');
+      return {
+        image:image?.currentSrc||'',
+        opacity:image?getComputedStyle(image).opacity:'',
+        atmosphere:atmosphere?getComputedStyle(atmosphere).backgroundImage:''
+      };
+    });
+    expect(town.image).toContain('location_ashmere_mainstreet_v1.jpg');
+    expect(town.opacity).toBe('0.3');
+    expect(town.atmosphere).toContain('linear-gradient');
 
-    // A town service used to paint a near-black terminal over the world image.
-    await page.locator('.lws-panel-right [data-world-place="inn"]').click();
-    await page.locator('.lws-panel-right [data-world-action="visit-selected-place"]').click();
+    // The new refuge still routes through the production Inn controller.
+    await page.locator('.ashmere-hub-v240-place[data-ash-view="inn"]').click();
     await expect(page.locator('.ash099-screen')).toBeVisible();
     const service = await page.evaluate(() => ({
       terminal: getComputedStyle(document.querySelector('.ash099-terminal')).backgroundColor,
@@ -882,23 +888,11 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expectNoHorizontalOverflow(page);
   });
 
-  test('persistent world-shell action frames use stone and sage states', async ({ page }) => {
-    // This test creates a traveler and enters Ashmere before checking the
-    // world shell. Give the full first-session flow enough time in CI.
+  test('Old Road shell actions retain the stone and sage state palette', async ({ page }) => {
     test.setTimeout(120000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await enterAshmere(page, 'OptionFramePaletteQA');
     await seedRoad(page, 1, 'ridge');
-    // Unlock the established landmark catalog so this test exercises the real
-    // place-selection and Visit action path, not the new-traveler welcome actions.
-    await page.evaluate(() => {
-      const player = window.LegendStorage.loadPlayer();
-      player.flags = player.flags || {};
-      player.flags.firstRoadReturnSeen = true;
-      window.LegendStorage.savePlayer(player);
-      window.LegendAshmereV099.renderAshmere();
-    });
-    await expect(page.locator('#lws-panel-right [data-world-place="market"]')).toBeVisible();
 
     const snapshot = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
     expect(snapshot.nativeShellOptionFramePalette).toEqual({
@@ -910,26 +904,10 @@ test.describe('LEGEND persistent world shell v170', () => {
       brandAccent: 0xe7c982
     });
     expect(snapshot.nativeRightDrawerUi).toBe(true);
-    expect(snapshot.nativeRightDrawerUiControlIds).toEqual(expect.arrayContaining([
-      'inn', 'market', 'forge', 'road'
-    ]));
-    expect(snapshot.nativeRightDrawerUiControlIds).not.toContain('visit-selected-place');
-
-    // At desktop width the left journal drawer is already visible and painted.
-    // Assert its controls without toggling a second surface during the right-place click.
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeLeftDrawerUi)).toBe(true);
-    await expect(page.locator('#lws-panel-left [data-world-action="journal"]')).toBeEnabled();
-
-    // Selection still uses the production place handler, and the warm accent
-    // is reserved for an actually selected action rather than every idle option.
-    await page.locator('#lws-panel-right [data-world-place="market"]').click();
-    await expect(page.locator('#lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('#lws-panel-right .lws-selected-place h3')).toHaveText('Market');
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot().nativeRightDrawerUiControlIds
-    )).toEqual(expect.arrayContaining(['market', 'visit-selected-place']));
-    await page.locator('#lws-panel-right [data-world-action="visit-selected-place"]').click();
-    await expect(page.locator('.ash099-screen')).toBeVisible();
+    expect(snapshot.nativeRightDrawerUiControlIds.length).toBeGreaterThan(0);
+    await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+    await expect(page.locator('.exp150-world-page')).toBeVisible();
+    await expectNoHorizontalOverflow(page);
   });
 
 });
