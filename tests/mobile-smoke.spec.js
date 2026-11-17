@@ -109,6 +109,17 @@ async function startFreshCharacter(page, name) {
   });
   await expect(page.locator('.ash100-town')).toBeVisible();
 }
+async function openAshmereMore(page) {
+  const toggle=page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle');
+  if(await toggle.count() && await toggle.getAttribute('aria-expanded')!=='true') await toggle.click();
+}
+async function clickAshmereView(page, view) {
+  const hub=page.locator('.ashmere-hub-v240');
+  const primary=hub.locator(`.ashmere-hub-v240-place[data-ash-view="${view}"]`);
+  if(await primary.count()) return primary.click();
+  await openAshmereMore(page);
+  return hub.locator(`.ashmere-hub-v240-more-place[data-ash-view="${view}"]`).click();
+}
 async function expectNoHorizontalOverflow(page) {
   const widths = await page.evaluate(() => ({
     viewport: document.documentElement.clientWidth,
@@ -172,51 +183,41 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     expect(errors).toEqual([]);
   });
 
-  test('Ashmere Phaser actions drawer masks the hub beneath it and still opens real services', async ({ page }) => {
-    const errors = [];
-    page.on('pageerror', error => errors.push(error.message));
-    await page.setViewportSize({ width: 390, height: 844 });
-    await startFreshCharacter(page, 'MobilePhaserHubQA');
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
-
-    const shell = page.locator('#legend-world-shell-root');
-    const actionsToggle = shell.locator('[data-world-action="toggle-right"]');
-    await tap(page, actionsToggle);
-    await expect(actionsToggle).toHaveAttribute('aria-expanded', 'true');
-    await expect(shell.locator('#lws-panel-right')).toBeVisible();
-
-    // The right drawer overlaps the legacy hub at touch widths. Its surface and
-    // its large place buttons must be opaque so the hub controls do not show
-    // through them or create a confusing double-button appearance.
-    const surfaceAlphas = await page.evaluate(() => {
-      const alphaValues = value => Array.from(String(value || '').matchAll(
-        /rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)/g
-      ), match => Number(match[1]));
-      const panel = document.querySelector('#lws-panel-right');
-      const option = panel?.querySelector('.lws-place-option');
-      return {
-        panel: alphaValues(getComputedStyle(panel).backgroundImage),
-        option: alphaValues(getComputedStyle(option).backgroundImage)
-      };
-    });
-    expect(surfaceAlphas.panel.length).toBeGreaterThan(0);
-    expect(surfaceAlphas.option.length).toBeGreaterThan(0);
-    expect(Math.min(...surfaceAlphas.panel)).toBeGreaterThanOrEqual(0.94);
-    expect(Math.min(...surfaceAlphas.option)).toBeGreaterThanOrEqual(0.94);
-
-    await tap(page, shell.locator('#lws-panel-right [data-world-place="market"]'));
-    await expect(shell.locator('#lws-panel-right .lws-selected-place h3')).toHaveText('Market');
-    await tap(page, shell.locator('#lws-panel-right [data-world-action="visit-selected-place"]'));
-    await expect(page.locator('.ash099-market-console')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.environment)).toBe('market');
+  test('mobile Ashmere refuge replaces the old actions drawer and still opens real services', async ({ page }) => {
+    const errors=[];
+    page.on('pageerror',error=>errors.push(error.message));
+    await page.setViewportSize({width:390,height:844});
+    await startFreshCharacter(page,'MobilePhaserHubQA');
+    const hub=page.locator('.ashmere-hub-v240');
+    await expect(hub).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
+    await expect(hub.locator('.ashmere-hub-v240-place')).toHaveCount(4);
+    await expect(hub.locator('.ashmere-hub-v240-gate')).toBeVisible();
     await expectNoHorizontalOverflow(page);
+
+    const before=await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()));
+    await tap(page,hub.locator('.ashmere-hub-v240-place[data-ash-view="trader"]'));
+    await expect(page.locator('.ash099-market-console')).toBeVisible();
+    await expect.poll(()=>page.evaluate(()=>window.LegendPhaserWorldV1?.snapshot?.()?.environment)).toBe('market');
+    expect(await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()))).toBe(before);
+    await expectNoHorizontalOverflow(page);
+
+    await page.locator('#ashBack').click();
+    await expect(page.locator('.ashmere-hub-v240')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
+    await openAshmereMore(page);
+    const more=hub.locator('.ashmere-hub-v240-more-list');
+    await expect(more).toContainText('Work Board');
+    await expect(more).toContainText('Daily Field Board');
+    await expect(more).toContainText('Road Network');
     expect(errors).toEqual([]);
   });
 
   test('Work Board signal job accepts taps and fits the viewport', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await startFreshCharacter(page, 'MobileWorkQA');
-    await tap(page, page.locator('.ash100-destinations').getByRole('button', { name: /Work Board/i }));
+    await tap(page, page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle'));
+    await tap(page, page.locator('.ashmere-hub-v240-more-place[data-ash-view="work"]'));
     await expect(page.locator('[data-job-open="wood"]')).toContainText(/Timing challenge/i);
     await expect(page.locator('[data-job-open="gate"]')).toContainText(/Read the signal/i);
     await expect(page.locator('[data-job-open="crates"]')).toContainText(/Memory sequence/i);
@@ -230,7 +231,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
   test('Old Road route and discovery respond to touch input', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await startFreshCharacter(page, 'MobileRoadQA');
-    await tap(page, page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }));
+    await clickAshmereView(page,'routes');
     await enterOldRoadFromDeparture(page);
     await expect(page.locator('#routeRidge')).toBeVisible();
     await tap(page, page.locator('#routeRidge'));
@@ -259,7 +260,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
       road.enemies=road.enemies.filter(enemy=>enemy.id==='goblin').map(enemy=>({...enemy,damage:[3,3]}));
       rt.savePlayer(pl);
     });
-    await tap(page,page.getByRole('navigation',{name:'Ashmere terminal navigation'}).getByRole('button',{name:/Routes/i}));
+    await clickAshmereView(page,'routes');
     await enterOldRoadFromDeparture(page);
     await tap(page,page.locator('#routeRidge'));
     await tap(page,page.locator('#push'));
