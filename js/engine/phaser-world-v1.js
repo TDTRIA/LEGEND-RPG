@@ -6244,7 +6244,8 @@
     syncAshmereLandmarks() {
       const active = this.environment === 'ashmere' &&
         this.surface === 'town' &&
-        Boolean(root()?.querySelector('.ash100-town-ashmere'));
+        Boolean(root()?.querySelector('.ash100-town-ashmere')) &&
+        !Boolean(root()?.querySelector('.ashmere-hub-v240'));
       if (!active) {
         this.clearAshmereLandmarks();
         return;
