@@ -872,7 +872,7 @@
         this.syncNativeRoadMapUi();
         this.syncNativeExpeditionHudUi();
         this.syncNativeExpeditionActionsUi();
-      });
+      };
       const keyPresentation = event => {
         if (event.key === 'Escape' && currentEnvironment === 'title') showTitle();
       };
@@ -1740,12 +1740,6 @@
       const key = 'native' + kind + 'UiListeners';
       (this[key] ||= []).push({ node, flag, type, listener });
     }
-    bindNativePresentationEvent(kind, node, flag, type, listener) {
-      node.addEventListener(type, listener);
-      const key = 'native' + kind + 'UiListeners';
-      (this[key] ||= []).push({ node, flag, type, listener });
-    }
-
 
     clearNativePresentationEvents(kind) {
       const key = 'native' + kind + 'UiListeners';
@@ -1754,24 +1748,6 @@
         delete node[flag];
       });
       this[key] = [];
-    }
-    clearNativePresentationEvents(kind) {
-      const key = 'native' + kind + 'UiListeners';
-      (this[key] || []).forEach(({ node, flag, type, listener }) => {
-        node.removeEventListener(type, listener);
-        delete node[flag];
-      });
-      this[key] = [];
-    }
-
-
-    cancelNativePresentation(kind) {
-      const key = 'native' + kind + 'UiTransaction';
-      const transaction = this[key];
-      if (!transaction || transaction.building) return;
-      cancelAnimationFrame(transaction.frame);
-      transaction.dispose?.();
-      this[key] = null;
     }
 
     cancelNativePresentation(kind) {
@@ -1782,7 +1758,6 @@
       transaction.dispose?.();
       this[key] = null;
     }
-
 
     clearNativeTitleUi(removeClass = true) {
       this.cancelNativePresentation('Title');
