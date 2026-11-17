@@ -1153,6 +1153,16 @@ test.describe('LEGEND persistent world shell v170', () => {
   test('persistent world-shell action frames use stone and sage states', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await enterAshmere(page, 'OptionFramePaletteQA');
+    // Unlock the established landmark catalog so this test exercises the real
+    // place-selection and Visit action path, not the new-traveler welcome actions.
+    await page.evaluate(() => {
+      const player = window.LegendStorage.loadPlayer();
+      player.flags = player.flags || {};
+      player.flags.firstRoadReturnSeen = true;
+      window.LegendStorage.savePlayer(player);
+      window.LegendAshmereV099.renderAshmere();
+    });
+    await expect(page.locator('#lws-panel-right [data-world-place="market"]')).toBeVisible();
 
     const snapshot = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
     expect(snapshot.nativeShellOptionFramePalette).toEqual({
@@ -1169,7 +1179,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     ]));
 
     const leftToggle = page.locator('#legend-world-shell-root [data-world-action="toggle-left"]');
-    if (await page.locator('#lws-panel-left').getAttribute('aria-hidden') === 'true') {
+    if (await page.locator('#lws-panel-left').getAttribute('aria-hidden') === 'true' || await page.locator('#lws-panel-left').isHidden()) {
       await leftToggle.click();
     }
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeLeftDrawerUi)).toBe(true);
