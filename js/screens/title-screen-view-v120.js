@@ -16,13 +16,15 @@
       tokens,
       buildVersion,
       backgroundImage,
-      logoImage
+      logoImage,
+      soundEnabled = true,
+      soundAvailable = false
     } = config;
     if (!root || typeof root !== 'object') return false;
 
     root.innerHTML = `
-      <div class="title-wrap title-v100 portal-shell portal-v100 v120-title title-v136-rpg">
-        <img class="v120-title-backdrop" src="${esc(backgroundImage || 'assets/generated/title/title-ashmere-road.webp')}" alt="" aria-hidden="true" loading="eager" fetchpriority="high" decoding="async" onerror="if(this.dataset.fallbackApplied){this.style.display='none'}else{this.dataset.fallbackApplied='1';this.src='assets/generated/title/title-ashmere-road.webp'}">
+      <div class="title-wrap title-v100 portal-shell portal-v100 v120-title title-v136-rpg title-v230-ashmere-dom" data-title-layout="ashmere-road-v230">
+        <img class="v120-title-backdrop" src="${esc(backgroundImage || 'assets/title/title_bg_ashmere_road_v089.jpg')}" alt="" aria-hidden="true" loading="eager" fetchpriority="high" decoding="async" onerror="if(this.dataset.fallbackApplied){this.style.display='none'}else{this.dataset.fallbackApplied='1';this.src='assets/title/title_bg_ashmere_road_v089.jpg'}">
         <div class="title-atmosphere" aria-hidden="true"><div class="title-embers"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="title-fog"><i></i><i></i><i></i></div></div>
         <header class="portal100-header">
           <div class="portal100-brand">
@@ -48,6 +50,7 @@
                 <button class="v136-menu-btn" id="account" data-legend-scene-transition="Opening traveler profile" type="button"><span class="v136-menu-icon runway-icon runway-icon-journal" aria-hidden="true"></span><span class="v136-menu-copy"><strong>Profile</strong><small>Traveler identity and registry</small></span><span class="v136-menu-arrow" aria-hidden="true">›</span></button>
                 <button class="v136-menu-btn" id="settings" data-legend-scene-transition="Opening settings" type="button"><span class="v136-menu-icon runway-icon runway-icon-settings" aria-hidden="true"></span><span class="v136-menu-copy"><strong>Settings</strong><small>Readability and game comfort</small></span><span class="v136-menu-arrow" aria-hidden="true">›</span></button>
                 <button class="v136-menu-btn" id="dispatches" data-legend-scene-transition="Opening the roadmap" type="button"><span class="v136-menu-icon runway-icon runway-icon-road" aria-hidden="true"></span><span class="v136-menu-copy"><strong>News &amp; Roadmap</strong><small>Latest updates and what comes next</small></span><span class="v136-menu-arrow" aria-hidden="true">›</span></button>
+                <button class="v136-menu-btn" id="titleSound" type="button" aria-label="Game sound" aria-pressed="${Boolean(soundEnabled)}"${soundAvailable ? '' : ' disabled'}><span class="v136-menu-icon runway-icon runway-icon-settings" aria-hidden="true"></span><span class="v136-menu-copy"><strong>${soundAvailable ? 'Sound: ' + (soundEnabled ? 'On' : 'Off') : 'Sound unavailable'}</strong><small>Music and sound effects</small></span><span class="v136-menu-arrow" aria-hidden="true"></span></button>
                 <button class="v136-menu-btn v136-menu-credits" id="credits" data-legend-scene-transition="Opening the credits" type="button"><span class="v136-menu-icon runway-icon runway-icon-milestone" aria-hidden="true"></span><span class="v136-menu-copy"><strong>Credits</strong><small>The people and craft behind LEGEND</small></span><span class="v136-menu-arrow" aria-hidden="true">›</span></button>
               </div>
             </nav>
@@ -79,7 +82,7 @@
           </section>
           <div class="v140-realm-player-state"><span>YOUR JOURNEY</span><strong>${player ? 'Day ' + day + ' · ' + tokens + (Number(tokens) === 1 ? ' Road Token' : ' Road Tokens') : 'A new journey awaits'}</strong><small>${player ? esc(name) + ' · ' + esc(cls) : 'Shape a traveler and enter the realm.'}</small></div>
         </aside>
-        <footer class="portal100-footer portal-footer v120-title-footer"><span>LEGEND: THE AWAKENING</span><span>ASHMERE · THE OLD ROAD · GREYFEN</span></footer>
+        <footer class="portal100-footer portal-footer v120-title-footer"><span>LEGEND: THE AWAKENING${buildVersion ? ' · ' + esc(buildVersion) : ''}</span><span>ASHMERE · THE OLD ROAD · GREYFEN</span></footer>
       </div>`;
     return true;
   }

@@ -15,6 +15,7 @@
     } = context;
 
   function renderCrafting(feedback=''){
+    const focusedRecipe=document.activeElement?.dataset.craft;
     const pl=p();
     const recipes=[
       ['roadPoultice','Road Poultice',[['roadHerb',2],['clothScrap',1]],'Healing item for rough travel.'],
@@ -28,8 +29,12 @@
       recipes.splice(1, 0, ['marshParcel','Peat-Wrapped Parcel',[['peatBrick',2],['clothScrap',1]],'A sale-ready Float Market parcel with a base trade value of 34g.']);
     }
     const cards=recipes.map(([id,name,needs,desc])=>{const art=itemIcon(id);return `<button class="ash099-btn ash099-card ash099-craft-card" data-craft="${id}" data-needs="${needs.map(n=>n.join(':')).join(',')}" ${canCraft(pl,needs)?'':'disabled'}>${art?'<img class="ash099-craft-output" src="'+esc(art)+'" alt="" aria-hidden="true" loading="lazy" onerror="this.onerror=null;this.style.display=\'none\'">':icon('craft')}<strong>${name}</strong><small>${desc}</small><span class="ash099-craft-needs"><b>Needs</b>${needsMarkup(pl,needs)}</span><em>${canCraft(pl,needs)?'Craft':'Missing'}</em></button>`;}).join('');
-    screen(head('Crafting',String(p()?.currentRegion||'Ashmere')==='Greyfen'?'Marsh Workbench':'Crafting Bench','Road drops should matter. Convert herbs, fangs, hides, ash, and scraps into useful items or better sellables.',locationInterior('forge'),'craft'),`<div class="ash099-market-summary">${regionShopArt(String(p()?.currentRegion||'Ashmere')==='Greyfen'?'greyfenWorkbench':'ashmereWorkbench')}<div class="ash099-bench-copy"><strong>Bench Stock</strong><span>Use road drops here before selling raw loot.</span></div><button class="ash099-btn" id="openTrader">Open Trading Post</button></div>${feedback?'<div class="ash099-craft-feedback" role="status"><span class="ash099-craft-feedback-mark" aria-hidden="true">✓</span><span>'+esc(feedback)+'</span></div>':''}<div class="ash099-cards">${cards}</div><div id="ashNote" class="ash099-note" style="display:none"></div>`);
+    screen(head('Crafting',String(p()?.currentRegion||'Ashmere')==='Greyfen'?'Marsh Workbench':'Crafting Bench','Road drops should matter. Convert herbs, fangs, hides, ash, and scraps into useful items or better sellables.',locationInterior('forge'),'craft'),`<div class="ash099-market-summary">${regionShopArt(String(p()?.currentRegion||'Ashmere')==='Greyfen'?'greyfenWorkbench':'ashmereWorkbench')}<div class="ash099-bench-copy"><strong>Bench Stock</strong><span>Use road drops here before selling raw loot.</span></div><button class="ash099-btn" id="openTrader">Open Trading Post</button></div>${feedback?'<div id="ashCraftFeedback" class="ash099-craft-feedback" role="status" tabindex="-1"><span class="ash099-craft-feedback-mark" aria-hidden="true">✓</span><span>'+esc(feedback)+'</span></div>':''}<div class="ash099-cards">${cards}</div><div id="ashNote" class="ash099-note" role="status" aria-live="polite" style="display:none"></div>`);
     document.querySelectorAll('[data-craft]').forEach(b=>b.onclick=()=>craftItem(b.dataset.craft,b.dataset.needs));
+    if(focusedRecipe){
+      const target=[...document.querySelectorAll('[data-craft]')].find(button=>button.dataset.craft===focusedRecipe && !button.disabled);
+      (target || document.getElementById('ashCraftFeedback'))?.focus();
+    }
     const openTrader=document.getElementById('openTrader');
     if(openTrader) openTrader.onclick=()=>{
       if(typeof context.openTradingPost==='function')return context.openTradingPost();

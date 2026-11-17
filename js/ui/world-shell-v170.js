@@ -16,18 +16,19 @@
   })[char]);
   let observer = null;
   let observedRoot = null;
+  let hudResizeObserver = null;
   let renderQueued = false;
   let lastContext = null;
   let toastTimer = null;
   const SCENE_KINDS = Object.freeze([
     'town', 'road', 'combat', 'combat-results',
-    'expedition-results', 'dungeon', 'service'
+    'expedition-results', 'dungeon', 'service', 'marsh'
   ]);
   const ATMOSPHERE_CLASSES = Object.freeze([
     'legend-world-scene-town', 'legend-world-scene-road',
     'legend-world-scene-combat', 'legend-world-scene-combat-results',
     'legend-world-scene-expedition-results', 'legend-world-scene-dungeon',
-    'legend-world-scene-service', 'legend-world-region-ashmere',
+    'legend-world-scene-service', 'legend-world-scene-marsh', 'legend-world-region-ashmere',
     'legend-world-region-greyfen'
   ]);
 
@@ -50,6 +51,7 @@
     if (!rootNode) return true;
     return !!rootNode.querySelector([
       '.v120-title',
+      '[data-recovery-screen]',
       '.title-v100',
       '.v094-creation',
       '.v094-creation-step',
@@ -92,10 +94,19 @@
         camp: !!rootNode.querySelector('#campRest, #campCraft, #campWatch')
       };
     }
+    if (rootNode.querySelector('.gfm160-page[data-marsh-state]')) {
+      return {kind:'marsh', location:'Greyfen Marsh Path',
+        sublocation:rootNode.querySelector('.gfm160-page h1')?.textContent?.trim() || 'Marsh Path',
+        report:!!rootNode.querySelector('.gfm160-results'), camp:false};
+    }
+    const storehouse = rootNode.querySelector('.gss170-page[data-storehouse-state]');
+    if (storehouse) return {kind:'storehouse', journal:'storehouse', location:'The Silted Storehouse',
+      sublocation:storehouse.querySelector('h1')?.textContent?.trim() || '', camp:false};
     const liveCombat = rootNode.querySelector('.rpg-battle');
     if (liveCombat) {
       return {
         kind: 'combat',
+        journal: liveCombat.dataset.encounterContext || 'road',
         location: liveCombat.querySelector('.rpg-overline')?.textContent?.trim() || 'Encounter',
         sublocation: liveCombat.querySelector('.rpg-battle-topline strong')?.textContent?.trim() || 'Combat encounter',
         camp: false
@@ -105,6 +116,7 @@
     if (combatResults) {
       return {
         kind: 'combat-results',
+        journal: combatResults.dataset.encounterContext || 'road',
         location: combatResults.querySelector('.v152-results-kicker')?.textContent?.trim() || 'Encounter results',
         sublocation: PANELS().screenHeading?.(rootNode, 'Encounter results') || 'Encounter results',
         camp: false
@@ -162,7 +174,25 @@
       '<nav class="lws-bottom-bar" aria-label="World actions"></nav>' +
       '<div class="lws-shell-toast" role="status" aria-live="polite" hidden></div>';
     document.body.appendChild(shell);
+    hudResizeObserver?.disconnect();
+    hudResizeObserver = new ResizeObserver(() => {
+      if (syncHudHeight(shell)) {
+        window.LegendPhaserWorldV1?.refreshHud?.();
+        window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+        window.LegendPhaserWorldV1?.refreshRightDrawer?.();
+      }
+    });
+    hudResizeObserver.observe(shell.querySelector('.lws-hud'));
     return shell;
+  }
+
+  function syncHudHeight(shell) {
+    const height = shell?.querySelector('.lws-hud')?.getBoundingClientRect().height;
+    if (!height) return false;
+    const value = Math.ceil(height) + 'px';
+    if (shell.style.getPropertyValue('--lws-hud-height') === value) return false;
+    shell.style.setProperty('--lws-hud-height', value);
+    return true;
   }
 
   function ensureModalRoot() {
@@ -180,9 +210,13 @@
   /** Rebuilds the persistent shell and refreshes only Phaser layers whose DOM controls were just replaced. */
   function renderShell(player, context) {
     const shell = ensureShellRoot();
+    const focused = document.activeElement;
+    const focusArea = focused?.closest('#lws-panel-left,#lws-panel-right,.lws-bottom-bar');
+    const focusAttribute = ['data-world-action','data-world-route','data-world-place'].find(key => focused?.hasAttribute(key));
+    const focusSelector = focusArea && focusAttribute ? (focusArea.id ? '#' + focusArea.id : '.lws-bottom-bar') + ' [' + focusAttribute + '="' + CSS.escape(focused.getAttribute(focusAttribute)) + '"]' : '';
     const rootNode = root();
     const panels = PANELS();
-    const location = context.kind === 'road'
+    const location = context.kind === 'marsh' || context.kind === 'storehouse' ? context.location : context.kind === 'road'
       ? (context.sublocation && context.sublocation !== 'Old Road' ? context.sublocation + ' · Old Road' : 'Old Road')
       : context.kind === 'town'
         ? context.location
@@ -220,6 +254,8 @@
     document.body.classList.add('legend-world-shell-active');
     syncSceneAtmosphere(player, context);
     refreshMobileToggleState(shell);
+    syncHudHeight(shell);
+    if (focusSelector && !focused.isConnected && document.activeElement === document.body) shell.querySelector(focusSelector)?.focus({preventScroll:true});
     // Phaser paints the HUD and bottom navigation. Refresh only after the
     // bottom-bar innerHTML replacement above, so node identity/tags stay current.
     window.LegendPhaserWorldV1?.refreshHud?.();
@@ -257,6 +293,7 @@
     window.LegendPhaserWorldV1?.refreshNavigation?.();
     window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
     window.LegendPhaserWorldV1?.refreshRightDrawer?.();
+    window.LegendPhaserWorldV1?.clearToast?.();
     lastContext = null;
   }
 
@@ -300,7 +337,13 @@
     toast.hidden = !message;
     if (toastTimer) window.clearTimeout(toastTimer);
     if (message) {
-      toastTimer = window.setTimeout(() => { toast.hidden = true; }, 3200);
+      toastTimer = window.setTimeout(() => {
+        toast.hidden = true;
+        window.LegendPhaserWorldV1?.clearToast?.();
+      }, 3200);
+      window.LegendPhaserWorldV1?.refreshToast?.();
+    } else {
+      window.LegendPhaserWorldV1?.clearToast?.();
     }
   }
 
@@ -312,6 +355,12 @@
   }
 
   function routeTo(view) {
+    if (lastContext?.kind === 'storehouse' && view === 'home') return clickExisting('#ashBack');
+    if (lastContext?.kind === 'marsh') {
+      if (view === 'home') return clickExisting('#gfm160EarlyExit') || clickExisting('#gfm160ResultReturn');
+      showToast('Return with your Marsh report before visiting town services.');
+      return false;
+    }
     if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
       showToast('Finish the active encounter through its battle or results controls before changing location.');
       return false;
@@ -421,6 +470,17 @@
         event.preventDefault();
         if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
           showToast('Finish the encounter before changing to the journal.');
+        } else if (lastContext?.kind === 'storehouse') {
+          document.body.classList.add('legend-shell-left-open');
+          document.body.classList.remove('legend-shell-right-open');
+          refreshMobileToggleState();
+          const notes = document.querySelector('#lws-storehouse-notes');
+          if (notes) { notes.scrollIntoView({block:'start'}); notes.focus({preventScroll:true}); }
+          window.LegendPhaserWorldV1?.refreshLeftDrawer?.();
+          window.LegendPhaserWorldV1?.refreshRightDrawer?.();
+        } else if (lastContext?.kind === 'marsh') {
+          actionButton.focus({preventScroll:true});
+          clickExisting('#gfm160OpenJournal');
         } else if (lastContext?.kind === 'road') {
           if (!clickExisting('#exp150OpenJournal') && !clickExisting('#exp150OpenJournalAside')) showToast('The field journal is not available on this screen.');
         } else {
@@ -432,6 +492,9 @@
         event.preventDefault();
         if (lastContext?.kind === 'combat' || lastContext?.kind === 'combat-results') {
           showToast('Finish the encounter before changing to the map.');
+        } else if (lastContext?.kind === 'marsh') {
+          actionButton.focus({preventScroll:true});
+          clickExisting('#gfm160OpenMap');
         } else if (lastContext?.kind === 'road') {
           if (!clickExisting('#exp150OpenMap')) showToast('The road map is not available on this screen.');
         } else {
@@ -441,7 +504,9 @@
       }
       case 'world':
         event.preventDefault();
-        if (lastContext?.kind === 'road') {
+        if (lastContext?.kind === 'marsh') {
+          if (!clickExisting('#gfm160EarlyExit')) clickExisting('#gfm160ResultReturn');
+        } else if (lastContext?.kind === 'road') {
           if (!clickExisting('#town')) showToast('Return to Ashmere is not available at this point in the expedition.');
         } else if (lastContext?.kind === 'dungeon') {
           if (!clickExisting('#vaultRetreat') && !clickExisting('#vaultReturn')) showToast('The current cellar room has no retreat action available.');
@@ -556,6 +621,12 @@
         window.LegendPhaserWorldV1?.refreshRightDrawer?.();
         break;
       default:
+        if (lastContext?.kind === 'storehouse' && /^storehouse-gss170[A-Za-z]+$/.test(action)) {
+          event.preventDefault();
+          document.body.classList.remove('legend-shell-left-open','legend-shell-right-open');
+          refreshMobileToggleState();
+          if (!clickExisting('.gss170-page #' + action.slice('storehouse-'.length))) showToast('That storehouse action is no longer available.');
+        }
         break;
     }
   }

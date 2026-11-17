@@ -8,7 +8,7 @@
       emblemFull: 'assets/generated/ui/icons/legend-icon-milestone.webp'
     },
     title: {
-      background: 'assets/generated/title/title-ashmere-road.webp'
+      background: 'assets/title/title_bg_ashmere_road_v089.jpg'
     },
     locations: {
       ashmereMain: 'assets/generated/locations/ashmere-town.webp',
@@ -22,8 +22,9 @@
       ashmereMarket: 'assets/generated/locations/ashmere-market.webp',
       ashmereForge: 'assets/generated/locations/ashmere-forge.webp',
       ashmereArchive: 'assets/generated/locations/ashmere-archive.webp',
+      bellCellar: 'assets/generated/locations/bell-cellar-undercroft.webp',
       greyfenInn: 'assets/generated/locations/greyfen-inn.webp',
-      greyfenMarket: 'assets/generated/locations/greyfen-market.webp',
+      greyfenMarket: 'assets/generated/locations/greyfen-market-scene.webp',
       greyfenForge: 'assets/generated/locations/greyfen-forge.webp',
       greyfenArchive: 'assets/generated/locations/greyfen-archive.webp',
       greyfenMarshWalkway: 'assets/generated/locations/greyfen-marsh-walkway.webp',

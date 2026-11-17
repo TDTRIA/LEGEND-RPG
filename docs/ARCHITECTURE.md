@@ -1,7 +1,19 @@
 # Production architecture audit
 Updated: 2026-11-08
 
-This is a working map of the production browser game. It is not a map of prototypes/reboot/. The production runtime is migrating incrementally to Phaser 4.1. RealmScene owns the persistent world backgrounds, atmosphere, camera movement, transitions, Ashmere landmarks and native presentation for the new-player title menu, mandatory annals, traveler creation and Oric's opening-road story. The returning-player title menu uses Phaser-native buttons and labels after its finite entrance pose settles and required textures, six production actions and text pass preflight; the original semantic DOM menu stays visible during entrance/initialization and whenever the Phaser engine, assets or native painter cannot complete. The persistent HUD, bottom action bar, traveler journal/quest drawer and contextual action/POI drawer now have dedicated RealmScene painters for panel surfaces, live text and existing raster icons. The original DOM buttons and links remain the accessible input/action layer. The connected Old Road map and field-journal modal also have a dedicated Phaser frame, route graph, cards, discoveries and text painter; their existing route/optional-stop buttons remain the real action targets. The Old Road journey header, time/conditions strip, health and pressure meters, six-leg progress rail, supply/next-stop sidebar, route fork, discovery/POI panels, optional detours, Blackroot survey and camp/next-move cards now have dedicated native Phaser presentation. Original DOM buttons remain the real actions. The persistent shell map drawer, central road scene and expedition results remain DOM-rendered over the Phaser world. Ashmere's destination-card terminal board now has a dedicated Phaser painter under verification, with exact catalog-ID preflight, per-frame scroll synchronization and a DOM-restoring draw-error fallback; real DOM destination buttons/icons remain, and the service interiors and their gameplay callbacks stay in the existing feature modules. Combat's existing buttons, actor art and controller remain production DOM content while its dedicated Phaser tactical-panel painter is under verification; combat results, level-up, dungeon, Greyfen, settings and remaining modal content are still DOM-rendered. Ashmere destination cards are painted from their existing service-board geometry rather than being floated over town artwork as detached landmarks. The shared DOM-to-canvas gameplay painter is currently held behind a safe fallback after it hid text and weakened panel presentation; it must not be re-enabled wholesale. Existing browser controllers, save data and rule systems remain authoritative while each screen is migrated and tested separately.
+This is a working map of the production browser game. It is not a map of prototypes/reboot/. The production runtime is migrating incrementally to Phaser 4.1. RealmScene owns the persistent world backgrounds, atmosphere, camera movement, transitions, Ashmere landmarks and native presentation for the new-player title menu, mandatory annals, traveler creation and Oric's opening-road story. The returning-player title menu uses Phaser-native buttons and labels after its finite entrance pose settles and required textures, six production actions and text pass preflight; the original semantic DOM menu stays visible during entrance/initialization and whenever the Phaser engine, assets or native painter cannot complete. The persistent HUD, bottom action bar, traveler journal/quest drawer and contextual action/POI drawer now have dedicated RealmScene painters for panel surfaces, live text and existing raster icons. The original DOM buttons and links remain the accessible input/action layer. The connected Old Road map and field-journal modal also have a dedicated Phaser frame, route graph, cards, discoveries and text painter; their existing route/optional-stop buttons remain the real action targets. The Old Road journey header, time/conditions strip, health and pressure meters, six-leg progress rail, supply/next-stop sidebar, route fork, discovery/POI panels, optional detours, Blackroot survey and camp/next-move cards now have dedicated native Phaser presentation. Original DOM buttons remain the real actions. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:f5cf0611200b6283388e0a71b5eb6609fb59d85861072a1d52e6f8e205a2caab -->
+
+The central road scene uses `js/engine/phaser-road-scene-v1.js` for guarded native framing, location, discovery and sound controls, synchronized with the existing source-matched environment artwork. `road-view-v100.js` retains the semantic controls and all discovery/audio callbacks; incomplete paint or artwork restores DOM presentation. Shared shell-bound changes refresh the road scene, journey HUD and decision masks after responsive drawer motion. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:f68161496354f4cb5e3cf4ef5b2fc0706eee78ce8e2c802f32772a774023b7e9 -->
+
+Expedition results use `js/engine/phaser-road-results-v1.js` for guarded native source artwork, complete report/reward copy, meters and focus frames. `road-results-view-v100.js` owns heading entry, semantic return/Mara controls and a read-only refresh after saved attribute growth. The controller disables obsolete exploration hotspots in settled headers. `road-results-v100.js` still owns every reward, progression and settlement mutation; repainting cannot award again. Missing content or artwork restores the DOM report.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 --> Ashmere's destination-card terminal board now has a dedicated Phaser painter under verification, with exact catalog-ID preflight, per-frame scroll synchronization and a DOM-restoring draw-error fallback; real DOM destination buttons/icons remain, and the service interiors and their gameplay callbacks stay in the existing feature modules. Combat's existing buttons, actor art and controller remain production DOM content while its dedicated Phaser tactical-panel painter is under verification; combat results, level-up, dungeon, Greyfen, settings and remaining modal content are still DOM-rendered. Ashmere destination cards are painted from their existing service-board geometry rather than being floated over town artwork as detached landmarks. The shared DOM-to-canvas gameplay painter is currently held behind a safe fallback after it hid text and weakened panel presentation; it must not be re-enabled wholesale. Existing browser controllers, save data and rule systems remain authoritative while each screen is migrated and tested separately.
 
 ## Entry point and module model
 
@@ -16,7 +28,37 @@ The active production entry point loads Phaser 4.1 and the world renderer, follo
 - `js/screens/title-screen-v120.js` owns title state preparation, transition feedback, optional gate screen and credits; navigation actions are injected.
 - `js/systems/title-audio-v120.js` is the title-audio compatibility façade; `js/systems/road/road-audio-v100.js` owns the shared production score, world ambience, UI cues, and event effects.
 - `js/game.js` is the thin bootstrap/navigation adapter for continue, new traveler, account, settings, and title-screen callbacks. It publishes `window.LegendGameBootstrap`.
-- js/engine/phaser-world-v1.js is the active production Phaser presentation engine. RealmScene owns the persistent environments, atmosphere, transitions, Ashmere landmarks, native new-player title, annals, traveler-creation and Oric opening-road UI artwork, and dedicated persistent HUD/bottom-navigation, traveler journal drawer, contextual action drawer, Old Road map/journal modal, Old Road journey HUD and Old Road decision deck visual layers. It now preloads the full configured world-art set, including NPC, enemy and class textures. The returning-player title menu is Phaser-rendered when its required textures, production actions and live labels pass preflight; the original semantic DOM menu remains the visible fallback on any failed check. A dedicated combat painter is now under verification for the tactical panels, intent/status text, battle log, turn heading and command surfaces; the existing battle buttons, combat rules and persistence remain authoritative, and the DOM fallback is restored if the dedicated painter fails. The previous all-at-once gameplay surface painter remains disabled behind an explicit safe fallback; reintroduce other gameplay surfaces one at a time only after visual, responsive, text, focus, control and save-state parity is demonstrated. The real feature modules continue to own navigation, rules and persistence.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:93b968855154329d9a86a630bf3ea96f00ada7af3cf882f9725a98a29719dc6a -->
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:a84a9b5041b235a917798cf9fd38f5b3bbe0b379412bb4fc5d2cab9e3937b4d2 -->
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:e0a371bb6c22d4750dec5517eaab3cfa173053681a4de0b8fcfa0ba432742d90 -->
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:1a01a4ac96365b800078d02eee116a468fb784ac72c213349d4cfb04f7146936 -->
+
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:c2a3a6021bd9adbed6c5d5bf71cd51bb4e134b70b02141d2b00ecb30899a74fc -->
+
+- js/engine/phaser-world-v1.js is the active production Phaser presentation engine. RealmScene owns the persistent environments, atmosphere, transitions, Ashmere landmarks, native new-player title, annals, traveler-creation and Oric opening-road UI artwork, and dedicated persistent HUD/bottom-navigation, traveler journal drawer, contextual action drawer, Old Road map/journal modal, Old Road journey HUD and Old Road decision deck visual layers. It now preloads the full configured world-art set, including NPC, enemy and class textures. The returning-player title menu is Phaser-rendered when its required textures, production actions and live labels pass preflight; the original semantic DOM menu remains the visible fallback on any failed check. A dedicated combat painter is now under verification for the tactical panels, intent/status text, battle log, turn heading and command surfaces; the existing battle buttons, combat rules and persistence remain authoritative, and the DOM fallback is restored if the dedicated painter fails. The previous all-at-once gameplay surface painter remains disabled behind an explicit safe fallback; reintroduce other gameplay surfaces one at a time only after visual, responsive, text, focus, control and save-state parity is demonstrated. The real feature modules continue to own navigation, rules and persistence. The dedicated `phaser-market-v1.js` painter reads the production market console, applies exact-field preflight, paints its regional artwork/copy/frames/focus, and restores styled DOM presentation if a required field or image is unavailable. It neither calculates prices nor mutates player state. The market controller also restores focus after its existing render/transaction callbacks. Source-size entries below are refactor snapshots; the market controller now contains 69 lines. The dedicated `phaser-workshop-v1.js` painter reads forge/crafting markup and retains source art and semantic controls, clips native content beneath the fixed shell, and restores styled DOM if required copy/art cannot be painted. Forge and crafting controllers restore focus after their existing renders; they retain all transaction and save ownership. No recipes, prices, equipment IDs or reward rules move into the painter. `phaser-workboard-v1.js` paints only the existing regional board and job activities; catalog preflight restores styled DOM for incomplete actions/copy. Its timing marker follows production DOM geometry without computing grades. The Work Board controller cancels timers/listeners when an activity is detached, scopes sequence controls to that activity, and retains all job reward calculations. Result focus/scroll preserves the level-up dialog when progression opens it. `phaser-contracts-v1.js` reads the production daily board, cache disclosure and side-contract records, including progress geometry and complete copy. The original contracts owner retains calendar baselines, claim guards, RNG/odds, currencies, memories and persistence; its only presentation changes are record IDs, expanded-odds preservation and feedback focus that respects the level-up dialog. `phaser-people-v1.js` reads only the existing Ashmere/Greyfen directory and conversation markup, paints complete labels and approved portraits, and restores DOM presentation when required source copy/art is unavailable. The people facade establishes heading focus and resets scroll on entry; scoped scroll clearance keeps keyboard actions above the fixed dock. NPC catalog, dialogue, evidence and story services retain their visit counts, conditional lines, quest effects and saves; painter refreshes never invoke them.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
 - `js/screens/settings-screen-v090.js` owns settings presentation and its control binding. Persistence remains in `js/storage.js`.
 - Feature systems use classic browser scripts and shared `window` namespaces; injection objects provide the dependencies between extracted screens.
 - `docs/ADDING_FEATURES.md` maps common feature types to their data, rules, views, and facade wiring points so new gameplay stays inside the existing module boundaries.
@@ -89,7 +131,33 @@ The active production entry point loads Phaser 4.1 and the world renderer, follo
 - `LegendRoadControllerV100` is the sole active road controller. The old v087 controller and its button-interception side effect have been removed from the production path and the source file is deleted.
 - Road content now exports `window.LegendRoadsV100`; the old `LegendRoadsV087` namespace is no longer used.
 - Active v100 state is `flags.roadExpeditionV100`, and XP/rewards come from `LegendProgressionV100.award` and the v100 expedition rules. The normalizer discards legacy `flags.roadV087`/`xpUntil` state rather than trying to translate it.
-- Combat behavior is isolated in `js/systems/road/road-combat-v100.js`; battle markup/command binding is in `js/systems/road/road-combat-view-v100.js`; sound preference and effects are isolated in `js/systems/road/road-audio-v100.js`.
+<!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:c6af0e146ef4b537ca927548a93c79a6f83de11c5751b338eb16811742282896 -->
+
+- Combat behavior is isolated in `js/systems/road/road-combat-v100.js`; battle markup/command binding is in `js/systems/road/road-combat-view-v100.js`; sound preference and effects are isolated in `js/systems/road/road-audio-v100.js`. RealmScene paints approved source arena/actor images, meters, panels and measured labels in one shell-clipped container. It keeps semantic controls, guards all required source fields and restores DOM presentation on failure. The view supplies arena images and separate mixed-copy spans; neither layer owns damage, rewards or save writes. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:1d466221364a5491abf2866d7cc0c2bd777d0cd8236e87312db9949a6ac9d0ed -->
+
+`phaser-combat-results-v1.js` paints the separate production combat debrief with complete-source preflight, approved images, measured labels and a shell clip. The source view retains continue/return/secondary callbacks, heading focus and growth-notice refresh; it does not settle rewards. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:0047dde7bc562ad41b6e93e5ff54e7b2282dc85e2a99031627328c173c02e309 -->
+
+The separate `phaser-growth-v1.js` painter reads the body-level production growth dialog, guards complete copy/art/actions, and clips native labels to the panel scroll viewport. Original DOM buttons retain allocation/save callbacks. `LegendLevelUpV152` manages modal focus, background inert state and cleanup, including externally removed/replaced dialogs; it preserves existing attribute and HP formulas. <!-- coderabbit-ai-generated:v1 -->
+
+<!-- coderabbit-ai-generated-section:v1:46150f9233813972da409a84726d4d2e54bf5cc2068dad859f710293500640b5 -->
+
+The painter never saves or allocates points.
+
+`phaser-bell-vault-v1.js` reads the existing Bell Cellar state metadata and guards the required action/copy/art set for each room and report. It uses the shared shell clip; DOM actions remain in `bell-vault-v100.js`. That dungeon owner adds heading focus/scroll and refreshes an attached report after growth, without repeating treasure settlement. Combat, gear/lore checks, rewards and normalization retain their existing owners.
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
+
+<!-- /coderabbit-ai-generated:v1 -->
 
 ## Runtime and storage call-site inventory
 

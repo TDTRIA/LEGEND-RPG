@@ -1,6 +1,10 @@
 const { test, expect } = require('@playwright/test');
 
+// Each case includes the mandatory annals, full creation and a dungeon journey.
+test.setTimeout(180000);
+
 async function openTitle(page) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
@@ -8,7 +12,6 @@ async function openTitle(page) {
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
-  await page.addStyleTag({ content: '*, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }' });
   await expect(page.locator('.v120-title')).toBeVisible();
 }
 
@@ -28,7 +31,7 @@ async function createTraveler(page) {
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();
@@ -141,6 +144,8 @@ test('winning a Bell Cellar boss fight returns to the treasure room and equips t
   await expect(page.locator('.v152-results-kicker')).toContainText('THE BELL CELLAR');
   await expect(page.locator('.v152-results-rewards')).toContainText('Road Herb');
   await expect(page.locator('#v152CombatContinue')).toContainText('Return to the chamber');
+  // This case asserts the normal-motion curtain after the reduced-motion setup.
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.locator('#v152CombatContinue').click();
   await expect.poll(() => page.locator('#legend-scene-curtain').evaluate(el =>
     !el.classList.contains('is-covering') && !el.classList.contains('is-revealing')

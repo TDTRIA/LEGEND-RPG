@@ -44,16 +44,20 @@
       }
 
     function openCredits(){
+        const existing=document.querySelector('.legend-credits-overlay');
+        if(existing){existing.querySelector('[data-credits-close]')?.focus();return;}
+        const page=document.getElementById('root'),wasInert=page?.inert,opener=document.activeElement;
         const overlay=document.createElement('div');
         overlay.className='legend-credits-overlay';
-        overlay.innerHTML='<section class="legend-credits-panel" role="dialog" aria-modal="true" aria-labelledby="legendCreditsTitle"><div class="legend-credits-kicker">A WORLD IN THE MAKING</div><h2 id="legendCreditsTitle">LEGEND</h2><h3>THE AWAKENING</h3><div class="legend-credits-rule"></div><p>A dark-fantasy role-playing game about the roads we travel, the magic we awaken, and the places we choose to protect.</p><p><strong>World &amp; game:</strong> LEGEND RPG project</p><p><strong>Visual development:</strong> Original game art and AI-assisted asset production</p><p><strong>First light:</strong> Ashmere<br><strong>Beyond the lanterns:</strong> Greyfen and the wider realm</p><div class="legend-credits-rule"></div><p>Thank you for walking the road.</p><button class="legend-credits-close" type="button" data-credits-close>Return to the Title</button></section>';
-        const close=()=>{overlay.remove();document.removeEventListener('keydown',onKey);document.getElementById('credits')?.focus();};
-        const onKey=e=>{if(e.key==='Escape'){e.preventDefault();close();}};
+        overlay.innerHTML='<section class="legend-credits-panel" role="dialog" aria-modal="true" aria-labelledby="legendCreditsTitle"><div class="legend-credits-kicker">A WORLD IN THE MAKING</div><h2 id="legendCreditsTitle" tabindex="-1">LEGEND</h2><h3>THE AWAKENING</h3><div class="legend-credits-rule"></div><p>A dark-fantasy role-playing game about the roads we travel, the magic we awaken, and the places we choose to protect.</p><p><strong>World &amp; game:</strong> LEGEND RPG project</p><p><strong>Visual development:</strong> Original game art and AI-assisted asset production</p><p><span class="legend-credits-line"><strong>First light:</strong> Ashmere</span> <span class="legend-credits-line"><strong>Beyond the lanterns:</strong> Greyfen and the wider realm</span></p><div class="legend-credits-rule"></div><p>Thank you for walking the road.</p><button class="legend-credits-close" type="button" data-credits-close>Return to the Title</button></section>';
+        const close=()=>{overlay.remove();document.removeEventListener('keydown',onKey,true);if(page)page.inert=wasInert;if(opener?.isConnected)opener.focus();else document.getElementById('credits')?.focus();};
+        const onKey=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close();}else if(e.key==='Tab'){e.preventDefault();overlay.querySelector('[data-credits-close]').focus();}};
         overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
         overlay.querySelector('[data-credits-close]').addEventListener('click',close);
-        document.addEventListener('keydown',onKey);
+        document.addEventListener('keydown',onKey,true);
+        if(page)page.inert=true;
         document.body.appendChild(overlay);
-        overlay.querySelector('button').focus();
+        overlay.querySelector('[data-credits-close]').focus();
       }
 
     return Object.freeze({ renderGate, openCredits });

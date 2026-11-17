@@ -65,18 +65,24 @@
     const marker=document.getElementById('jobMarker');
     const strike=document.getElementById('jobStrike');
     const result=document.getElementById('jobResult');
+    const activity=document.querySelector('.ash099-job-game');
     let pos=0,dir=1,done=false,timer=null;
     let sequenceIndex=0,sequenceErrors=0,sequenceReady=false;
     const sequenceTimers=[];
+    const observer=new MutationObserver(()=>{if(!activity.isConnected)cancel();});
+    observer.observe(document.getElementById('root'),{childList:true,subtree:true});
     function cleanup(){
       if(timer)clearInterval(timer);
       sequenceTimers.forEach(t=>clearTimeout(t));
       document.removeEventListener('keydown',onKey);
+      observer.disconnect();
     }
+    function cancel(){done=true;cleanup();}
     if(mode==='timing'){
-      timer=setInterval(()=>{if(done)return;pos+=dir*2.35;if(pos>=100){pos=100;dir=-1;}if(pos<=0){pos=0;dir=1;}if(marker)marker.style.left=pos+'%';},24);
+      timer=setInterval(()=>{if(!activity.isConnected)return cancel();if(done)return;pos+=dir*2.35;if(pos>=100){pos=100;dir=-1;}if(pos<=0){pos=0;dir=1;}if(marker)marker.style.left=pos+'%';},24);
     }
     function finish(gradeOverride,feedback){
+      if(!activity.isConnected)return cancel();
       if(done)return;
       done=true;
       cleanup();
@@ -98,9 +104,9 @@
       save(player);
       playWorldFx('workboard');
       const xpNote=progress?' XP +'+progress.gained+(progress.levels?' · Level up! You are now level '+progress.level:'')+'.':'';
-      if(result){result.style.display='block';result.textContent=grade+'! '+(feedback?feedback+' ':'')+'Earned '+pay+'g.'+bonus+' Local standing increased.'+xpNote;}
+      if(result){result.style.display='block';result.textContent=grade+'! '+(feedback?feedback+' ':'')+'Earned '+pay+'g.'+bonus+' Local standing increased.'+xpNote;result.tabIndex=-1;if(!progress?.levels){result.focus();result.scrollIntoView({block:"center"});}}
       if(strike){strike.disabled=true;strike.textContent='Job Complete';}
-      document.querySelectorAll('[data-job-choice],[data-job-sequence],#jobStartSequence').forEach(b=>b.disabled=true);
+      activity.querySelectorAll('[data-job-choice],[data-job-sequence],#jobStartSequence').forEach(b=>b.disabled=true);
       // Keep the reward summary visible until the player chooses to leave the activity.
       // An auto-refresh here can erase the result before it is read or asserted by a smoke test.
     }
@@ -113,16 +119,18 @@
       const preview=document.getElementById('jobSequencePreview');
       const status=document.getElementById('jobSequenceStatus');
       start?.addEventListener('click',()=>{
+        if(!activity.isConnected)return cancel();
         if(done)return;
         start.disabled=true;
         let revealIndex=0;
         const reveal=()=>{
+          if(!activity.isConnected)return cancel();
           if(done)return;
           if(revealIndex>=sequence.length){
             sequenceReady=true;
             if(preview)preview.textContent='Your turn · repeat all '+sequence.length+' steps';
             if(status)status.textContent='Repeat the sequence from memory.';
-            document.querySelectorAll('[data-job-sequence]').forEach(b=>b.disabled=false);
+            activity.querySelectorAll('[data-job-sequence]').forEach(b=>b.disabled=false);
             return;
           }
           if(preview)preview.innerHTML='<span>STEP '+(revealIndex+1)+' / '+sequence.length+'</span><strong>'+esc(sequence[revealIndex])+'</strong>';
@@ -132,6 +140,7 @@
         reveal();
       });
       document.querySelectorAll('[data-job-sequence]').forEach(b=>b.addEventListener('click',()=>{
+        if(!activity.isConnected)return cancel();
         if(done||!sequenceReady)return;
         if(b.dataset.jobSequence===sequence[sequenceIndex]){
           sequenceIndex++;
@@ -144,10 +153,17 @@
         }
       }));
     }
-    const onKey=e=>{if(mode!=='timing'||(e.key!==' '&&e.key!=='Enter'))return;e.preventDefault();document.removeEventListener('keydown',onKey);finish();};
+    function onKey(e){
+      if(mode!=='timing'||e.repeat||e.defaultPrevented||(e.key!==' '&&e.key!=='Enter'))return;
+      if(!activity.isConnected)return cancel();
+      // Preserve native keyboard activation for navigation, shell and form controls.
+      const control=e.target.closest?.('button,a,input,select,textarea,[role="button"],[role="tab"],[contenteditable]');
+      if(control && control!==strike)return;
+      e.preventDefault();finish();
+    }
     if(mode==='timing')document.addEventListener('keydown',onKey);
     const backJobs=document.getElementById('backJobs');
-    if(backJobs)backJobs.onclick=()=>{done=true;cleanup();renderWorkBoard();};
+    if(backJobs)backJobs.onclick=()=>{cancel();renderWorkBoard();};
   }
 
     renderWorkBoard();

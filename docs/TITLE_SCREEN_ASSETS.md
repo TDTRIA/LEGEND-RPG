@@ -1,36 +1,52 @@
-# LEGEND: The Awakening — Title & Menu Art
+# LEGEND: The Awakening — Title Screen Art & Composition
 
-**Last updated:** 2026-10-16  
-**Production title:** **LEGEND: The Awakening**. “The Unquiet Road” is a retired working subtitle and must not appear as the product subtitle in current UI, documentation, or promotional copy.
+**Updated:** 2026-11-17  
+**Production title:** **LEGEND: The Awakening**.
 
-## Current visual direction
+## Locked visual direction
 
-The production title should read as a **fantasy RPG main menu**, not a web landing page. Use the approved panoramic Ashmere landscape as a full-screen scene, with the gold Awakening wordmark and a compact, framed menu panel on the left. The panel should feel like dark-stained timber/blackened iron and aged gold: clear, tactile, slightly ornate, and restrained enough for the landscape to remain present.
+The title screen is an in-world game scene, not a web landing page or a promotional poster. Its mood is balanced dark fantasy: lonely, weathered, mysterious, and quietly threatening. The world should feel cold and indifferent, with only a few small warm lights suggesting shelter and life.
 
-The production view is rendered by `js/game.js` and styled by `css/title-screen-v135.css` plus the new last-loaded `css/title-rpg-menu-v136.css`. Do not add a second title replacement overlay. All menu text and controls stay in semantic HTML; text must never be baked into the background image.
+The composition combines:
+- A cinematic, full-screen environment that remains the visual focus.
+- The visual character of an illustrated dark-fantasy chronicle.
+- A compact, integrated game menu placed in the darker left side of the environment, not inside a large web card.
+- Subtle environmental movement and sound, so the title screen feels like a place the player has entered.
 
-## Stable art
+Avoid generic castle panoramas, bright sunset spectacle, oversized blood moons, giant floating menu cards, marketing-style destination grids, and decorative gold borders that make the interface look like a website.
 
-- `assets/generated/title/title-ashmere-road.webp` — 1536×857 cinematic title background, local and cache-independent.
-- `assets/ui/logos/logo_legend_awakening_wordmark.png` — local transparent Runway raster wordmark; exact visible title is `LEGEND` / `THE AWAKENING`.
-- `js/systems/assets-v090.js` — asset manifest for the panorama, generated wordmark, and scene art.
-- `js/game.js` — active title rendering and menu actions.
-- `css/title-rpg-menu-v136.css` — framed RPG menu, menu hierarchy, responsive behavior, focus state, and motion preferences.
+## Approved existing art
+
+- `assets/title/title_bg_ashmere_road_v089.jpg` — **active title-screen background**. A moonlit, blue-green Old Road with a small lantern, bare trees, distant village, and road disappearing into mist. It is already committed; do not regenerate or replace it for this pass.
+- `assets/title/title_keyart_ashmere_v1.png` — portrait-oriented companion art of a lone traveler entering a rain-soaked village. Reserve it for a later story transition or opening beat.
+- `assets/generated/title/title-ashmere-road.webp` — alternate wide Ashmere approach image. Keep available for other transitions and story scenes.
+- `assets/ui/logos/logo_legend_awakening_wordmark.png` — active transparent raster wordmark. The visible title must read **LEGEND / THE AWAKENING**. Keep the image as a separate, sharp UI asset; never bake title text or menu labels into the background.
+
+## Production implementation
+
+- `js/screens/title-screen-view-v120.js` owns the semantic HTML title markup.
+- `js/screens/title-screen-v120.js` owns menu navigation and callbacks. Continue, Begin Your Journey, New Traveler, Profile, Settings, News & Roadmap, Sound, and Credits remain connected to the existing controllers.
+- `js/systems/assets-v090.js` and the Phaser `ASSETS.title` manifest point to the same committed JPG.
+- `css/title-screen-ashmere-v230.css` owns the new composition and responsive presentation. It is loaded after the earlier title styles so the active design has one clear source of styling.
+- `js/engine/phaser-world-v1.js` continues to render the environment, but skips the Phaser title-menu painter for the v230 title. All visible title text and controls stay in the DOM for crisp rendering, keyboard focus, screen readers, and touch input.
+
+This is a presentation change only. It does not modify the save key, player schema, progression, story flow, game rules, or title-menu action handlers.
+
+## Layout and behavior requirements
+
+- Use the left-side shadow of the existing painting for the wordmark and compact vertical menu; keep the lantern, village, moonlit mist, and road visible.
+- The title itself has no opaque card or ornamental frame. Menu choices use restrained rows, a clear selected/hover treatment, and a visible keyboard focus ring.
+- The traveler/save summary is contextual and visually secondary.
+- The old right-side realm showcase is not part of the title composition. Its public updates remain reachable through the News & Roadmap menu action.
+- Preserve responsive desktop, portrait, and landscape layouts; no horizontal overflow.
+- Respect reduced-motion and existing accessibility settings.
+- If Phaser or the environment image fails, the HTML wordmark and real menu controls must remain usable.
+- Never create a duplicate canvas menu over the DOM controls.
 
 ## Menu hierarchy
 
-- With an existing traveler: **Continue Journey** is primary; New Traveler, Profile, Settings, and Credits remain available.
-- Without a save: **Begin Your Journey** is primary; Profile, Settings, and Credits remain available.
-- The saved traveler summary is contextual information, not a competing action.
-- No Quit button: a browser game should not offer a misleading control that cannot reliably close the browser tab.
+With an existing traveler: **Continue Journey** is primary; New Traveler, Profile, Settings, News & Roadmap, Sound, and Credits remain available.
 
-## Behavior and art guardrails
+Without a save: **Begin Your Journey** is primary; Profile, Settings, News & Roadmap, Sound, and Credits remain available.
 
-- Keep keyboard focus visible and labels readable over the landscape.
-- Preserve `prefers-reduced-motion` and existing accessibility settings.
-- Keep the responsive layout usable around 390px wide and on short desktop viewports.
-- The corrected Runway PNG is committed locally; title, traveler-memory, and transition views use it with an HTML text fallback. No signed external asset URL is required.
-- Title, memory-creation, and transition views render the Runway PNG with an HTML `LEGEND / THE AWAKENING` fallback; the title wordmark must not use SVG artwork.
-- The background image may fail without blocking the menu; fallback branding remains readable.
-- Historical filenames and save keys may keep older wording for compatibility. That does not make the old subtitle current branding.
-- See [PRODUCTION_ASSET_PACK.md](PRODUCTION_ASSET_PACK.md) for the production art list and [ART-DIRECTION.md](ART-DIRECTION.md) for shared visual rules.
+No Quit button: a browser game should not offer a misleading control that cannot reliably close the browser tab.

@@ -56,7 +56,7 @@ const roadView=window.LegendRoadViewV100?.create({
 function scene(stage=0,interactive=true){return roadView?.scene(stage,interactive)||'';}
 function shell(body){return roadView?.shell(body);}
 function bindHotspotDelegation(){return roadView?.bindHotspotDelegation();}
-function header(pl,s,kicker,title,text){return roadView?.header(pl,s,kicker,title,text)||'';}
+function header(pl,s,kicker,title,text,interactive=true){return roadView?.header(pl,s,kicker,title,text,interactive)||'';}
 function start(){
  stopBattleMusic();
  roadDiscovery.hide();
@@ -164,6 +164,7 @@ function reportToMaraFromRoad(){
   }
 }
 const combatResultsView=window.LegendRoadCombatResultsViewV152?.create({
+  getPlayer:p,
   renderShell:html=>{const host=root();if(host)host.innerHTML=html;},
   getAssets:A,
   escapeHtml:esc,
@@ -174,14 +175,15 @@ function showDungeonCombatResults(payload = {}){
   const enemy=payload.enemy||{},victory=payload.result!=='defeat';
   const rewardId=enemy.reward||'fur';
   const rewardName=window.LEGEND_DATA?.itemNames?.[rewardId]||rewardId;
-  const room=Math.max(1,Number(payload.room||(victory?3:2)));
+  // Dungeon rooms are saved as 0..3; reports use the same 1..4 labels as the rooms.
+  const room=Math.max(0,Math.min(3,Math.floor(Number(payload.room ?? (victory?3:2))||0)));
   return combatResultsView?.render({
     ...payload,
     dungeon:true,
     locationName:'THE BELL CELLAR',
-    sceneArtKey:'ashmereArchive',
+    sceneArtKey:'bellCellar',
     progressLabel:'CELLAR DEPTH',
-    progressValue:room+' / 3',
+    progressValue:(room+1)+' / 4',
     progressHint:victory?'Bell chamber reached':'Last room reached before retreat',
     rewardName:victory?(payload.rewardName||rewardName):'',
     primaryTitle:victory?'Return to the chamber':'Return to Ashmere',
@@ -195,8 +197,10 @@ function showDungeonCombatResults(payload = {}){
     onSecondary:victory?returnToTownFromRoad:()=>window.LegendAshmereV099?.route?.('dungeon')
   })===true;
 }
+const resultHeader=(pl,s,kicker,title,text)=>header(pl,s,kicker,title,text,false);
 const roadResultsView=window.LegendRoadResultsViewV100?.create({
-  renderHeader:header,
+  getPlayer:p,
+  renderHeader:resultHeader,
   renderShell:shell,
   escapeHtml:esc,
   onReturn:returnToTownFromRoad,
@@ -205,7 +209,7 @@ const roadResultsView=window.LegendRoadResultsViewV100?.create({
 const roadResults=window.LegendRoadResultsV100?.create({
   getPlayer:p,savePlayer:save,ensureState:ensure,addInventory:inv,clamp,setBellQuestObjective,
   awardProgress:(player,amount)=>window.LegendProgressionV100?.award(player,amount),
-  stopMusic:stopBattleMusic,renderHeader:header,renderShell:shell,escapeHtml:esc,getRoot:root,
+  stopMusic:stopBattleMusic,renderHeader:resultHeader,renderShell:shell,escapeHtml:esc,getRoot:root,
   resultView:roadResultsView,
   returnToTown:returnToTownFromRoad,
   returnToAshmere:ret

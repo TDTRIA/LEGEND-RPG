@@ -26,13 +26,17 @@
     return player.attributesV152;
   }
 
+  let releaseDialog = null;
+
   function open(player, summary = {}) {
     if (!player) return false;
     const attributes = ensureAttributes(player);
     const points = Number(player.pendingStatPointsV152 || 0);
     if (points < 1) return false;
 
+    releaseDialog?.(false);
     document.getElementById('legendLevelUpOverlay')?.remove();
+    const previousFocus = document.activeElement;
     const allocations = Object.fromEntries(Object.keys(ATTRIBUTES).map(key => [key, 0]));
     const art = window.LegendAssetsV090?.travelerPortrait?.(player) || window.LegendAssetsV090?.classes?.[player.className] || '';
     const previousLevel = Math.max(1, Number(player.level || 1) - Math.max(1, Number(summary.levels || 1)));
@@ -60,7 +64,7 @@
     overlay.className = 'v152-levelup-overlay';
     overlay.setAttribute('role', 'presentation');
     overlay.innerHTML =
-      '<div class="v152-growth-backdrop" aria-hidden="true"></div>' +
+      '<div class="v152-growth-backdrop" aria-hidden="true"><img src="assets/locations/roads/location_old_road_main_v1.jpg" alt=""></div>' +
       '<section class="v152-levelup-panel" role="dialog" aria-modal="true" aria-labelledby="v152-levelup-title">' +
         '<div class="v152-levelup-rule"><span></span><span>THE ROAD REMEMBERS</span><span></span></div>' +
         '<div class="v152-levelup-hero">' +
@@ -78,15 +82,52 @@
         '<div class="v152-growth-grid">' + attributeCards + '</div>' +
         '<div class="v152-growth-footer">' +
           '<p>Endurance also grants <strong>+3 maximum HP and +3 current HP</strong> for every point spent. Each level already grants +8 HP.</p>' +
-          '<button type="button" class="v152-growth-confirm" id="v152-growth-confirm" disabled>Apply Growth <span aria-hidden="true">→</span></button>' +
+          '<button type="button" class="v152-growth-confirm" id="v152-growth-confirm" disabled><span>Apply Growth</span> <span aria-hidden="true">→</span></button>' +
         '</div>' +
       '</section>';
 
     document.body.appendChild(overlay);
+    const background = [...document.body.children].filter(node => node !== overlay && !node.matches('script,style,link'));
+    const inertBefore = background.map(node => [node, node.inert]);
+    background.forEach(node => { node.inert = true; });
+    let released = false;
+    const restoreFocus = () => {
+      if (document.activeElement !== document.body && document.activeElement?.isConnected) return;
+      const target = previousFocus?.isConnected && !previousFocus.closest('[inert]') ? previousFocus
+        : document.querySelector('#root h1,#root h2');
+      if (target && target !== document.body) { if (!target.matches('button,a,input,select,textarea,[tabindex]')) target.tabIndex = -1; target.focus({preventScroll:true}); }
+    };
+    const removed = new MutationObserver(() => {
+      if (!overlay.isConnected) { releaseDialog?.(); return; }
+      // Startup or the reward handoff may create another background surface.
+      [...document.body.children].forEach(node => {
+        if (node === overlay || node.matches('script,style,link') || inertBefore.some(([known]) => known === node)) return;
+        inertBefore.push([node,node.inert]); node.inert = true;
+      });
+    });
+    releaseDialog = (restore = true) => {
+      if (released) return;
+      released = true; removed.disconnect();
+      inertBefore.forEach(([node, inert]) => { node.inert = inert; });
+      releaseDialog = null;
+      if (restore) restoreFocus();
+    };
+    removed.observe(document.body, {childList:true});
+    overlay.addEventListener('keydown', event => {
+      // This mandatory choice owns keyboard input while it is open.
+      event.stopPropagation();
+      if (event.key === 'Escape') { event.preventDefault(); return; }
+      if (event.key !== 'Tab') return;
+      const enabled = [...overlay.querySelectorAll('button:not(:disabled)')];
+      const first = enabled[0], last = enabled.at(-1);
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    });
     window.LegendRoadAudioV100?.playWorldFx?.('levelUp');
 
     const allocatedCount = () => Object.values(allocations).reduce((sum, value) => sum + value, 0);
     function refresh() {
+      const focused = document.activeElement;
       const spent = allocatedCount();
       const spentNode = overlay.querySelector('#v152-growth-spent');
       const fill = overlay.querySelector('#v152-growth-point-fill');
@@ -106,6 +147,10 @@
         if (minus) minus.disabled = allocations[key] < 1;
         if (plus) plus.disabled = spent >= points;
       });
+      if (overlay.contains(focused) && focused.disabled) {
+        const target = spent === points ? confirm : focused.closest('.v152-growth-card')?.querySelector('[data-attr-add]');
+        target?.focus();
+      }
     }
 
     overlay.querySelectorAll('[data-attr-add]').forEach(button => {
@@ -126,7 +171,7 @@
     });
 
     overlay.querySelector('#v152-growth-confirm')?.addEventListener('click', () => {
-      if (allocatedCount() !== points) return;
+      if (!overlay.isConnected || allocatedCount() !== points) return;
       Object.keys(ATTRIBUTES).forEach(key => { attributes[key] += allocations[key]; });
       const endurance = Number(allocations.endurance || 0);
       if (endurance > 0) {
@@ -135,14 +180,17 @@
       }
       player.pendingStatPointsV152 = Math.max(0, Number(player.pendingStatPointsV152 || 0) - points);
       window.LegendRuntimeV120?.savePlayer?.(player);
+      releaseDialog?.(false);
       overlay.remove();
       document.dispatchEvent(new CustomEvent('legend:level-growth-applied', {
         detail: { level: Number(player.level || 1), attributes: { ...attributes } }
       }));
+      restoreFocus();
     });
 
     refresh();
-    overlay.querySelector('#v152-growth-confirm')?.focus({ preventScroll: true });
+    // Confirmation starts disabled; focus a usable choice inside the dialog.
+    overlay.querySelector('[data-attr-add]:not(:disabled)')?.focus({ preventScroll: true });
     return true;
   }
 

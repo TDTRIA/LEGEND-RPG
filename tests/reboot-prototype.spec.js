@@ -111,7 +111,9 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     await page.locator('#dispatches').click();
     await expect(page.locator('.dispatches-v140')).toBeVisible();
     await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surface)).toBe('dispatches');
-    await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surfaceTransitionCount)).toBeGreaterThan(0);
+    // The shared curtain is the sole transition owner; RealmScene must not
+    // also run its old camera zoom / gold-streak transition.
+    await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surfaceTransitionCount)).toBe(0);
     await expect(page.getByRole('heading', { name: 'News & Roadmap' })).toBeVisible();
     await page.locator('#dispatchesBack').click();
     await expect(page.locator('.v120-title')).toBeVisible();
@@ -147,9 +149,9 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     await expect(page.locator('.opening-lore-v220')).toContainText('seal over the deep ways');
     await page.locator('#openingLoreContinue').click();
 
-    await expect(page.getByRole('heading', { name: 'The Kindness That Failed' })).toBeVisible();
-    await expect(page.locator('.opening-lore-v220')).toContainText('Last Mercy');
-    await expect(page.locator('.opening-lore-v220')).toContainText('the Veil');
+    await expect(page.getByRole('heading', { name: 'The Peace, Written Down' })).toBeVisible();
+    await expect(page.locator('.opening-lore-v220')).toContainText('III · THE PEACE KEPT');
+    await expect(page.locator('.opening-lore-v220')).not.toContainText(/Last Mercy|Veil|echo|wound|healer|Saint/i);
     await page.locator('#openingLoreContinue').click();
 
     await page.locator('#v094Name').fill('PhaserRoadQA');

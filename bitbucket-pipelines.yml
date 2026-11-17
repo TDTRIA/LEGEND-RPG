@@ -7,18 +7,39 @@ pipelines:
   branches:
     main:
       - step:
-          name: Publish Bitbucket main to GitHub main
+          name: Publish merged Bitbucket main to GitHub main
           script:
-            - bash scripts/maintenance/publish-bitbucket-refs-to-github.sh main
-    '**':
-      - step:
-          name: Mirror Bitbucket feature branch to GitHub
-          script:
-            - bash scripts/maintenance/publish-bitbucket-refs-to-github.sh "$BITBUCKET_BRANCH"
+            - |
+              set -eu
 
-  custom:
-    sync-all-branches-to-github:
-      - step:
-          name: Backfill Bitbucket branches to GitHub safely
-          script:
-            - bash scripts/maintenance/publish-bitbucket-refs-to-github.sh --all
+              if [ -z "${GITHUB_PUSH_TOKEN:-}" ]; then
+                echo "GITHUB_PUSH_TOKEN is not configured as a secured Bitbucket Pipelines repository variable."
+                exit 1
+              fi
+
+              git config user.name "Bitbucket Sync"
+              git config user.email "bitbucket-sync@users.noreply.github.com"
+
+              # Remove the one-time bootstrap workflow from both remotes on first publish.
+              if git ls-tree -r --name-only HEAD | grep -Fxq ".github/workflows/one-time-bitbucket-sync.yml"; then
+                git rm -f .github/workflows/one-time-bitbucket-sync.yml
+                git commit -m "[skip ci] Remove temporary Bitbucket bootstrap workflow"
+                git push origin HEAD:main
+              fi
+
+              AUTH_HEADER="$(printf 'x-access-token:%s' "$GITHUB_PUSH_TOKEN" | base64 | tr -d '\n')"
+
+              # Never force-push. Only publish when GitHub main is an ancestor of Bitbucket main.
+              git -c http.extraheader="AUTHORIZATION: basic $AUTH_HEADER" \
+                fetch https://github.com/TDTRIA/LEGEND-RPG.git main
+              GITHUB_MAIN="$(git rev-parse FETCH_HEAD)"
+
+              if ! git merge-base --is-ancestor "$GITHUB_MAIN" HEAD; then
+                echo "GitHub main is not an ancestor of Bitbucket main. Refusing to overwrite either history; reconcile the divergence first."
+                exit 1
+              fi
+
+              git -c http.extraheader="AUTHORIZATION: basic $AUTH_HEADER" \
+                push https://github.com/TDTRIA/LEGEND-RPG.git HEAD:main
+
+              unset AUTH_HEADER

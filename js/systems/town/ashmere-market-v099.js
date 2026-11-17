@@ -17,6 +17,12 @@
     } = context;
 
 function renderTrader(tab='buy'){
+    // Renders replace the console. Restore a keyboard user's real action target,
+    // or its mode tab when the sold-out/unaffordable item is no longer usable.
+    const active=document.activeElement;
+    const restoreFocus=active?.closest('.ash099-market-console') ? {
+      buy:active.dataset.buy, sell:active.dataset.sell, tab:active.dataset.marketTab, all:active.id==='sellAllLoot'
+    } : null;
     const pl=p();
     const greyfen=String(pl.currentRegion||'Ashmere')==='Greyfen';
     const goods=[['food','Rations',60,'A day’s food for the road.'],['potion','Healing Potion',120,'Restore your strength in a fight.'],['camp','Camp Supplies',90,'Prepare a safe stop beyond the gate.'],['clothScrap','Cloth Scrap',34,'Material for field medicine.'],['oil','Lamp Oil',70,'Fuel for lanterns and preparations.']];
@@ -30,17 +36,27 @@ function renderTrader(tab='buy'){
     const content=tab==='buy'
       ?goods.map(([k,n,cost,desc])=>itemCard(k,n,cost,desc,'buy',!canAfford(pl,cost),'You own '+owned(pl,k))).join('')
       :sellables.filter(([k])=>owned(pl,k)>0).map(([k,value])=>itemCard(k,itemName(k),salePrice(pl,value),'A road find, ready to trade.', 'sell',false,'You own '+owned(pl,k)+(pl.keepsake==='Bent Coin'?' · keepsake bonus applied':''))).join('');
-    const noLoot=tab==='sell'&&!sellables.some(([k])=>owned(pl,k)>0)?'<div class="ash099-empty-state">No road finds to sell yet.<small>Bring back herbs, hides, fangs, and fragments to stock the market.</small></div>':'';
+    const noLoot=tab==='sell'&&!sellables.some(([k])=>owned(pl,k)>0)?'<div class="ash099-empty-state"><span>No road finds to sell yet.</span><small>Bring back herbs, hides, fangs, and fragments to stock the market.</small></div>':'';
     screen(head('Market',greyfen?'Marsh Market':'Trading Post',greyfen?'Trade the marsh’s finds for what you need to cross the water.':'Buy what you need. Sell what the road has left behind.',locationInterior('market'),'trader'),
       '<section class="ash099-market-console">'+
         '<div class="ash099-market-wallet"><div><span>YOUR PURSE</span><strong>'+gold(pl.gold)+'</strong></div><div><span>ROAD LOOT VALUE</span><strong>'+gold(sellAllValue)+'</strong></div>'+(tab==='sell'?'<button class="ash099-btn primary" id="sellAllLoot" '+(sellAllValue>0?'':'disabled')+'>Sell all loot</button>':'<span class="ash099-market-note">Prices are per item</span>')+'</div>'+
         '<div class="ash099-market-tabs" role="tablist" aria-label="Market actions"><button class="'+(tab==='buy'?'active':'')+'" data-market-tab="buy" role="tab" aria-selected="'+(tab==='buy')+'">Buy supplies</button><button class="'+(tab==='sell'?'active':'')+'" data-market-tab="sell" role="tab" aria-selected="'+(tab==='sell')+'">Sell road loot <span>'+sellables.reduce((n,[k])=>n+owned(pl,k),0)+'</span></button></div>'+
-        '<div class="ash099-market-grid">'+content+noLoot+'</div><div id="ashNote" class="ash099-note" style="display:none"></div></section>');
+        '<div class="ash099-market-grid">'+content+noLoot+'</div><div id="ashNote" class="ash099-note" role="status" aria-live="polite" style="display:none"></div></section>');
     document.querySelectorAll('[data-market-tab]').forEach(b=>b.onclick=()=>renderTrader(b.dataset.marketTab));
     document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>buyItem(b.dataset.buy,Number(b.dataset.cost)));
     document.querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>sellItem(b.dataset.sell,Number(b.dataset.value)));
     const sellAll=document.getElementById('sellAllLoot');
     if(sellAll)sellAll.onclick=()=>sellAllLoot(sellables);
+    if(restoreFocus){
+      const candidates=[...document.querySelectorAll('.ash099-market-console button')];
+      const target=candidates.find(button=>!button.disabled && (
+        (restoreFocus.buy && button.dataset.buy===restoreFocus.buy) ||
+        (restoreFocus.sell && button.dataset.sell===restoreFocus.sell) ||
+        (restoreFocus.tab && button.dataset.marketTab===restoreFocus.tab) ||
+        (restoreFocus.all && button.id==='sellAllLoot')
+      ));
+      (target || candidates.find(button=>button.dataset.marketTab===tab))?.focus();
+    }
   }
   function buyItem(k,cost){const pl=p();if(Number(pl.gold||0)<cost)return note('Not enough gold.');pl.gold-=cost;pl.inventory[k]=Number(pl.inventory[k]||0)+1;save(pl);playWorldFx('trade');renderTrader('buy');}
   function sellItem(k,value){const pl=p();if(owned(pl,k)<=0)return note('Nothing to sell.');pl.inventory[k]-=1;pl.gold=Number(pl.gold||0)+value;save(pl);playWorldFx('trade');renderTrader('sell');}

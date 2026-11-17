@@ -1,11 +1,11 @@
 /* LEGEND v0.22.0 — slower branded transitions for the playable route.
  * Navigation stays owned by existing screens; this layer gives destinations one
- * loading curtain and waits for scene images to settle before revealing them.
+ * bounded presentation curtain before revealing them.
  */
 (() => {
   if (window.__legendSceneTransitionsV120) return;
   window.__legendSceneTransitionsV120 = true;
-  const reduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
+  const reduced = () => document.body.classList.contains('a11y-reduced-motion') || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
   let busy = false;
 
   function overlay() {
@@ -62,7 +62,7 @@
 
     // Keep the reveal bounded. A scene image that never fires load/error must
     // not strand a mobile player beneath the curtain or leave navigation locked.
-    const minimumCoverMs = Math.max(0, 1280 - (Date.now() - startedAt));
+    const minimumCoverMs = Math.max(0, 420 - (Date.now() - startedAt));
     window.setTimeout(() => {
       curtain.classList.remove('is-covering');
       curtain.classList.add('is-revealing');
@@ -71,26 +71,17 @@
         curtain.classList.remove('is-revealing');
         curtain.style.pointerEvents = 'none';
         busy = false;
-      }, 480);
+      }, 260);
     }, minimumCoverMs);  }
 
   document.addEventListener('click', event => {
     if (window.__legendSceneTransitionBypass || busy || event.defaultPrevented) return;
     const target = event.target?.closest?.('[data-legend-scene-transition],[data-ash-view],[data-travel],[data-unlock]');
     if (!target || target.disabled || reduced()) return;
-    if (target.dataset.legendTransitioning === '1') return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    transitionTo(destinationLabel(target), () => {
-      target.dataset.legendTransitioning = '1';
-      window.__legendSceneTransitionBypass = true;
-      try {
-        target.click();
-      } finally {
-        window.__legendSceneTransitionBypass = false;
-        delete target.dataset.legendTransitioning;
-      }
-    });
+    // Decorate the original event. Replaying click() here suppresses forwarded
+    // clicks because HTMLElement.click() ignores a reentrant call on itself.
+    // The existing target handlers still run synchronously, exactly once.
+    transitionTo(destinationLabel(target), () => {});
   }, true);
 
   // Other systems (notably combat outcomes) can use the same curtain when a
@@ -100,7 +91,11 @@
   const root = document.getElementById('root');
   if (root && 'MutationObserver' in window) {
     const observer = new MutationObserver(() => {
-      if (reduced()) return;
+      // Phaser's shared scene curtain owns screen transitions in production.
+      // A second DOM entrance animation on each #root replacement makes the
+      // canvas and page appear to fight while both systems animate the same
+      // destination. Keep the old entrance only for the non-Phaser fallback.
+      if (reduced() || document.body.classList.contains('legend-phaser-world-active')) return;
       const screen = root.firstElementChild;
       if (!screen || screen.classList.contains('legend-scene-arriving')) return;
       screen.classList.add('legend-scene-arriving');

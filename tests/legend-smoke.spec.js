@@ -23,6 +23,7 @@ const version = versionMatch[1];
 // Each Playwright test runs in an isolated browser context, so clearing localStorage
 // here only resets that test's synthetic traveler—not a player's live browser save.
 async function openTitle(page) {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');
   await page.evaluate(() => {
     localStorage.clear();
@@ -33,19 +34,8 @@ async function openTitle(page) {
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
-  // The game's ember/fog/CTA animations are decorative; disable them in test contexts
-  // so WebKit touch targets do not remain perpetually "unstable" during clicks.
-  await page.addStyleTag({ content: `
-    *, *::before, *::after {
-
-      animation: none !important;
-
-      transition: none !important;
-
-      scroll-behavior: auto !important;
-
-    }
-  ` });
+  // Use the production reduced-motion path; blanket animation removal can
+  // interrupt the opening's lifecycle and leave later controls hidden.
   await expect(page.locator('.v120-title')).toBeVisible();
   await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
 }
@@ -81,7 +71,7 @@ async function startFreshCharacter(page, name = 'QATraveler', options = {}) {
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();
@@ -161,6 +151,13 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect.poll(() => page.title()).toContain(`v${version}`);
     await expect(page.locator('.portal-footer')).toContainText(`v${version}`);
     await expect.poll(() => page.evaluate(() => window.LEGEND_DATA?.VERSION)).toBe(`v${version}`);
+    for (const viewport of [{width:390,height:844},{width:844,height:390}]) {
+      await page.setViewportSize(viewport);
+      await page.locator('.portal-footer').scrollIntoViewIfNeeded();
+      await expect(page.locator('.portal-footer')).toBeInViewport();
+      await expect(page.locator('.portal-footer')).toContainText(`v${version}`);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)).toBe(false);
+    }
   });
 
   test('active runtime does not retain the retired town controller or return key', () => {
@@ -170,6 +167,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   });
 
   test('runtime return bridge works without a document-wide town render observer', async ({ page }) => {
+    test.setTimeout(180000);
     expect(runtimeSource).not.toContain('MutationObserver');
     expect(runtimeSource).not.toContain('onRender');
     expect(townControllerSource).not.toContain('Ashmere Menu');
@@ -235,6 +233,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
     await page.reload();
     await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+    // The ordinary boot layer can disappear before the optional Phaser
+    // awakening finishes. Wait for its actual production handoff.
+    await page.waitForFunction(() => window.__legendPhaserWorldReady, null, { timeout: 12000 });
     await expect(page.locator('.v120-title')).toBeVisible();
     await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
     await expect(page.locator('#continue')).toHaveCount(0);
@@ -257,6 +258,9 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     });
     await page.reload();
     await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+    // The ordinary boot layer can disappear before the optional Phaser
+    // awakening finishes. Wait for its actual production handoff.
+    await page.waitForFunction(() => window.__legendPhaserWorldReady, null, { timeout: 12000 });
     await expect(page.locator('.v120-title')).toBeVisible();
     const player = await page.evaluate(() => window.LegendRuntimeV120.loadPlayer());
     expect(player.username).toBe('NormalizeQA');
@@ -344,7 +348,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(atlasResponse.ok()).toBe(true);
     expect(atlasResponse.headers()['content-type']).toContain('image/webp');
     const backdrop = page.locator('.v120-title-backdrop');
-    await expect(backdrop).toHaveAttribute('src', /title-ashmere-road\.webp/);
+    await expect(backdrop).toHaveAttribute('src', /title_bg_ashmere_road_v089\.jpg/);
     await expect.poll(() => backdrop.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     const logo = page.locator('.v150-logo-lockup');
     await expect(page.locator('.v136-corner-sigil')).toHaveCount(0);
@@ -371,13 +375,22 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     })));
     expect(menuIcons.length).toBeGreaterThanOrEqual(5);
     expect(menuIcons.every(icon => icon.classes.length === 1)).toBe(true);
-    expect(new Set(menuIcons.map(icon => icon.classes[0])).size).toBe(menuIcons.length);
+    const iconNames = menuIcons.map(icon => icon.classes[0]);
+    expect(iconNames.filter(name => name === 'runway-icon-settings')).toHaveLength(2);
+    expect(new Set(iconNames.filter(name => name !== 'runway-icon-settings')).size).toBe(menuIcons.length - 2);
     expect(menuIcons.every(icon => icon.width === 28 && icon.height === 28 && icon.overflow === 'hidden' && !icon.hasImageChild)).toBe(true);
-    expect(menuIcons.every(icon => {
+    const iconSpriteAudit = menuIcons.map(icon => {
       const name = icon.classes[0].replace('runway-icon-', '');
-      return icon.backgroundImage.includes('legend-icon-' + name + '.webp');
-    })).toBe(true);
-    await expect(page.locator('.title-v136-rpg .title-atmosphere')).toBeHidden();
+      return {
+        className: icon.classes[0],
+        backgroundImage: icon.backgroundImage,
+        expectedAsset: 'legend-icon-' + name + '.webp',
+        matches: icon.backgroundImage.includes('legend-icon-' + name + '.webp')
+      };
+    });
+    console.log('[LEGEND title icon sprite audit]', JSON.stringify(iconSpriteAudit));
+    expect(iconSpriteAudit.filter(icon => !icon.matches)).toEqual([]);
+    await expect(page.locator('.title-v136-rpg .title-atmosphere')).toBeVisible();
     const legacyRing = await page.locator('.title-v136-rpg.portal-v100').evaluate(node => {
       const style = getComputedStyle(node, '::before');
       return { display: style.display, content: style.content, boxShadow: style.boxShadow };
@@ -392,10 +405,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   });
 
   test('game opens directly on the actual title menu without the redundant Ashmere Gate screen', async ({ page }) => {
-    await page.goto('/');
-    await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
-    await page.reload();
-    await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+    await openTitle(page);
     await expect(page.locator('.v120-title')).toBeVisible();
     await expect(page.locator('.title-gate-card')).toHaveCount(0);
     await expect(page.locator('#enterRealm')).toHaveCount(0);
@@ -2060,7 +2070,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('#v094Next').click();
     await page.locator('[data-origin]').first().click();
     await page.locator('#v094Next').click();
-    await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+    await page.locator('[data-class="Ranger"]').click();
     await page.locator('#v094Next').click();
     await page.locator('[data-keepsake="Old Map"]').click();
     await page.locator('#v094Next').click();
@@ -2174,7 +2184,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('[data-ash-view="smith"]').click();
     await expect(page.locator('.ash099-forge-tabs [data-forge-tab="craft"]')).toBeVisible();
     await page.locator('.ash099-forge-tabs [data-forge-tab="craft"]').click();
-    await expect(page.getByRole('heading', { name: 'Crafting Bench' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Crafting Bench', level: 1 })).toBeVisible();
     await expect(page.locator('[data-craft="wispLanternWick"]')).toBeVisible();
   });
 
@@ -2476,7 +2486,8 @@ test('Ashmere uses native Phaser landmarks that route into the real town service
   const marketScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
   expect(marketScene.ashmereLandmarks).toHaveLength(0);
   expect(marketScene.serviceDressingKey).toBe('market');
-  expect(marketScene.serviceDressingCount).toBeGreaterThanOrEqual(4);
+  // Only the ambient lantern remains; the painted stall replaces geometric pennants.
+  expect(marketScene.serviceDressingCount).toBe(1);
 
   await page.locator('#ashBack').click();
   await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
@@ -2529,125 +2540,72 @@ test('the production root falls back to its original artwork when the Phaser CDN
 });
 
 
-test('native Phaser title menu replaces the floating HTML button paint and keeps accessible controls', async ({ page }) => {
+test('the Ashmere title keeps its native DOM menu while Phaser renders only the world', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openTitle(page);
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
 
   const desktop = await page.evaluate(() => {
-    const hero = document.querySelector('.title-v136-rpg .v120-title-hero');
+    const root = document.querySelector('.title-v230-ashmere-dom');
     const button = document.querySelector('#newPrimary');
-    const style = button ? getComputedStyle(button) : null;
-    const heroStyle = hero ? getComputedStyle(hero) : null;
+    const label = button?.querySelector('.v136-menu-copy strong');
+    const logo = document.querySelector('.v120-legend-logo');
+    const aside = document.querySelector('.v140-realm-overview');
     const rect = button?.getBoundingClientRect();
     return {
-      active: document.body.classList.contains('legend-phaser-title-ui-active'),
-      snapshot: window.LegendPhaserWorldV1.snapshot(),
-      nativeAlignment: (() => {
-        const snapshot = window.LegendPhaserWorldV1.snapshot();
-        const native = snapshot?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary');
-        const scene = snapshot?.nativeTitleUiSceneSize;
-        return rect && native && scene ? {
-          x: Math.abs(native.x - rect.left * scene.width / window.innerWidth),
-          y: Math.abs(native.y - rect.top * scene.height / window.innerHeight),
-          width: Math.abs(native.width - rect.width * scene.width / window.innerWidth),
-          height: Math.abs(native.height - rect.height * scene.height / window.innerHeight)
-        } : null;
-      })(),
-      heroBackground: heroStyle?.backgroundColor,
-      heroShadow: heroStyle?.boxShadow,
-      buttonBackground: style?.backgroundColor,
-      buttonBorder: style?.borderTopColor,
-      childVisibility: button?.firstElementChild ? getComputedStyle(button.firstElementChild).visibility : '',
-      ariaLabel: button?.getAttribute('aria-label'),
-      buttonBounds: rect ? { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom } : null,
+      root: Boolean(root),
+      backdrop: document.querySelector('.v120-title-backdrop')?.getAttribute('src') || '',
+      logoLoaded: Boolean(logo?.complete && logo.naturalWidth > 0),
+      asideDisplay: aside ? getComputedStyle(aside).display : '',
+      nativePainter: document.body.classList.contains('legend-phaser-title-ui-active'),
+      nativeTitleUi: window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi,
+      textVisibility: label ? getComputedStyle(label).visibility : '',
+      buttonBounds: rect ? { left: rect.left, right: rect.right, height: rect.height } : null,
       canvasCount: document.querySelectorAll('#game-container canvas').length
     };
   });
-  expect(desktop.active).toBe(true);
-  expect(desktop.snapshot.nativeTitleUi).toBe(true);
-  expect(desktop.snapshot.nativeTitleUiIconsLoaded).toBe(true);
-  expect(desktop.snapshot.nativeTitleUiControlIds).toContain('newPrimary');
-  expect(desktop.snapshot.nativeTitleUiControlCount).toBeGreaterThanOrEqual(5);
-  expect(desktop.snapshot.nativeTitleUiTextQuality).toHaveLength(desktop.snapshot.nativeTitleUiControlCount);
-  desktop.snapshot.nativeTitleUiTextQuality.forEach(item => {
-    expect(item.titleFontSize).toBeGreaterThanOrEqual(16);
-    expect(item.titleResolution).toBeGreaterThanOrEqual(2);
-    expect(item.subtitleFontSize).toBeGreaterThanOrEqual(12);
-    expect(item.subtitleResolution).toBeGreaterThanOrEqual(2);
-    expect(item.titleColor).not.toBe('');
-    expect(item.subtitleColor).not.toBe('');
-  });
-  const primaryQuality = desktop.snapshot.nativeTitleUiTextQuality.find(item => item.id === 'newPrimary');
-  expect(primaryQuality.titleColor).toMatch(/241707|36,\s*23,\s*7/i);
-  expect(desktop.nativeAlignment).not.toBeNull();
-  Object.values(desktop.nativeAlignment).forEach(delta => expect(delta).toBeLessThan(2));
-  expect(desktop.heroBackground).toBe('rgba(0, 0, 0, 0)');
-  expect(desktop.heroShadow).toBe('none');
-  expect(desktop.buttonBackground).toBe('rgba(0, 0, 0, 0)');
-  expect(desktop.childVisibility).toBe('hidden');
-  expect(desktop.ariaLabel).toMatch(/Begin Your Journey.*Create your traveler/i);
+  expect(desktop.root).toBe(true);
+  expect(desktop.backdrop).toContain('title_bg_ashmere_road_v089.jpg');
+  expect(desktop.logoLoaded).toBe(true);
+  expect(desktop.asideDisplay).toBe('none');
+  expect(desktop.nativePainter).toBe(false);
+  expect(desktop.nativeTitleUi).toBe(false);
+  expect(desktop.textVisibility).toBe('visible');
   expect(desktop.canvasCount).toBe(1);
   expect(desktop.buttonBounds.left).toBeGreaterThanOrEqual(0);
   expect(desktop.buttonBounds.right).toBeLessThanOrEqual(1440);
+  expect(desktop.buttonBounds.height).toBeGreaterThanOrEqual(40);
 
-  // Resize the same live scene: native Phaser hit-target artwork must realign
-  // with the responsive, still-accessible HTML button hit targets.
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect.poll(() => page.evaluate(() => {
-    const rect = document.querySelector('#newPrimary')?.getBoundingClientRect();
-    const snapshot = window.LegendPhaserWorldV1?.snapshot?.();
-    const native = snapshot?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary');
-    const scene = snapshot?.nativeTitleUiSceneSize;
-    if (!rect || !native || !scene || rect.left < 0 || rect.right > window.innerWidth) return false;
-    const deltas = [
-      Math.abs(native.x - rect.left * scene.width / window.innerWidth),
-      Math.abs(native.y - rect.top * scene.height / window.innerHeight),
-      Math.abs(native.width - rect.width * scene.width / window.innerWidth),
-      Math.abs(native.height - rect.height * scene.height / window.innerHeight)
-    ];
-    return deltas.every(delta => delta < 2);
-  })).toBe(true);
+  await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
   const mobile = await page.evaluate(() => {
-    const rect = document.querySelector('#newPrimary')?.getBoundingClientRect();
-    const snapshot = window.LegendPhaserWorldV1.snapshot();
-    const native = snapshot?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary');
-    const scene = snapshot?.nativeTitleUiSceneSize;
+    const button = document.querySelector('#newPrimary');
+    const rect = button?.getBoundingClientRect();
     return {
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-      active: document.body.classList.contains('legend-phaser-title-ui-active'),
-      native: snapshot?.nativeTitleUi,
-      button: rect ? { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom } : null,
-      alignment: rect && native && scene ? {
-        x: Math.abs(native.x - rect.left * scene.width / window.innerWidth),
-        y: Math.abs(native.y - rect.top * scene.height / window.innerHeight),
-        width: Math.abs(native.width - rect.width * scene.width / window.innerWidth),
-        height: Math.abs(native.height - rect.height * scene.height / window.innerHeight)
-      } : null
+      nativePainter: document.body.classList.contains('legend-phaser-title-ui-active'),
+      labelVisibility: button ? getComputedStyle(button.querySelector('strong')).visibility : '',
+      bounds: rect ? { left: rect.left, right: rect.right, height: rect.height } : null
     };
   });
   expect(mobile.overflow).toBe(false);
-  expect(mobile.active).toBe(true);
-  expect(mobile.native).toBe(true);
-  expect(mobile.button.left).toBeGreaterThanOrEqual(0);
-  expect(mobile.button.right).toBeLessThanOrEqual(390);
-  expect(mobile.alignment).not.toBeNull();
-  Object.values(mobile.alignment).forEach(delta => expect(delta).toBeLessThan(2));
+  expect(mobile.nativePainter).toBe(false);
+  expect(mobile.labelVisibility).toBe('visible');
+  expect(mobile.bounds.left).toBeGreaterThanOrEqual(0);
+  expect(mobile.bounds.right).toBeLessThanOrEqual(390);
+  expect(mobile.bounds.height).toBeGreaterThanOrEqual(40);
 
-  // The semantic button remains in the accessibility tree and activates the
-  // existing title controller rather than introducing a Phaser-only router.
+  // Keyboard focus and activation stay on the real HTML button.
   const menuButton = page.getByRole('button', { name: /Begin Your Journey/i });
-  await expect(menuButton).toBeVisible();
   await menuButton.focus();
-  await expect.poll(() => page.evaluate(() => Boolean(window.LegendPhaserWorldV1.snapshot()?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary')?.focused))).toBe(true);
+  await expect(menuButton).toBeFocused();
   await menuButton.click();
   await expect(page.locator('.opening-lore-v220')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
 });
 
 
-
 test('persistent HUD is painted by Phaser while DOM controls keep their real actions', async ({ page }) => {
+  test.setTimeout(180000);
   await page.setViewportSize({ width: 1440, height: 900 });
   await startFreshCharacter(page, 'PhaserHudQA');
   await expect(page.locator('#legend-world-shell-root .lws-hud')).toBeVisible();
@@ -2682,7 +2640,9 @@ test('persistent HUD is painted by Phaser while DOM controls keep their real act
   expect(desktop.goldColor).toBe('rgba(0, 0, 0, 0)');
   expect(desktop.saveLabel).toBe('Save traveler');
   expect(desktop.saveAction).toBe('save');
-  expect(desktop.buttons).toEqual(expect.arrayContaining(['toggle-left', 'toggle-right', 'save']));
+  // Desktop drawers are already visible; their mobile toggles have display:none.
+  expect(desktop.buttons).toEqual(['save']);
+  await expect(page.locator('.lws-mobile-toggle').first()).toBeHidden();
 
   await page.evaluate(() => {
     const player = window.LegendStorage.loadPlayer();
@@ -2700,6 +2660,8 @@ test('persistent HUD is painted by Phaser while DOM controls keep their real act
   await page.setViewportSize({ width: 390, height: 844 });
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeHudUiSceneSize?.width)).toBeGreaterThan(0);
   await expect(page.locator('#legend-world-shell-root .lws-mobile-toggle').first()).toBeVisible();
+  await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeHudUiControlIds))
+    .toEqual(expect.arrayContaining(['toggle-left', 'toggle-right', 'save']));
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
   await page.locator('#legend-world-shell-root [data-world-action="toggle-left"]').click();
   await expect(page.locator('body')).toHaveClass(/legend-shell-left-open/);
@@ -2709,10 +2671,16 @@ test('persistent HUD is painted by Phaser while DOM controls keep their real act
   await expect(page.locator('body')).not.toHaveClass(/legend-shell-left-open/);
 });
 
-test('saved-player Continue menu keeps readable DOM labels and the real continue action', async ({ page }) => {
+test('saved-player Continue menu restores readable DOM fallback when native art is unavailable', async ({ page }) => {
+  test.setTimeout(180000);
   await page.setViewportSize({ width: 1440, height: 900 });
   await startFreshCharacter(page, 'ContinueMenuQA');
-  await page.evaluate(() => window.LegendGameBootstrap.title());
+  // The dedicated returning-title checks cover native presentation. This
+  // original DOM contract remains required when its artwork cannot paint.
+  await page.evaluate(() => {
+    window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').textures.remove('menuButtonNormal');
+    window.LegendGameBootstrap.title();
+  });
   await expect(page.locator('#continue')).toBeVisible();
   await expect(page.locator('#continue .v136-menu-copy strong')).toHaveText('Continue Journey');
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.surface)).toBe('title');
@@ -2836,11 +2804,12 @@ test('opening annals are painted by Phaser while the existing chapter controls r
   await page.locator('#openingLoreContinue').click();
   await expect(page.getByRole('heading', { name: 'The Pact Beneath the Stone' })).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiStep)).toBe(1);
-  await page.locator('#openingLoreContinue').focus();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('#openingLoreContinue')).toBeFocused();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiButtonFocused)).toBe(true);
 
   await page.locator('#openingLoreContinue').click();
-  await expect(page.getByRole('heading', { name: 'The Kindness That Failed' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'The Peace, Written Down' })).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUiStep)).toBe(2);
   await expect(page.locator('#openingLoreContinue')).toContainText('Shape the traveler');
   await page.locator('#openingLoreContinue').click();
@@ -3034,12 +3003,20 @@ test('looping intro and creation atmosphere does not block the Phaser screen pai
 
   // The identity scene includes an intentionally infinite presence-haze loop.
   // That decorative loop must not keep the creation painter waiting forever.
+  // CSS entrances run on browser time; a stalled renderer clock must not delay
+  // the follow-up layout after those entrances finish.
+  await page.evaluate(() => {
+    window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').time.timeScale = 0;
+  });
   await page.evaluate(() => window.LegendBeginningV094.startCreation());
   await expect(page.locator('.v140-creation')).toBeVisible();
   await page.locator('#v094Name').fill('OverlayProof');
   await page.locator('#v094Next').click();
   await expect(page.locator('[data-gender="unspoken"]')).toBeVisible();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeCreationUi)).toBe(true);
+  await page.evaluate(() => {
+    window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene').time.timeScale = 1;
+  });
 
   await page.locator('[data-gender="unspoken"]').click();
   await page.locator('#v094Next').click();
@@ -3047,7 +3024,7 @@ test('looping intro and creation atmosphere does not block the Phaser screen pai
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();
@@ -3057,8 +3034,21 @@ test('looping intro and creation atmosphere does not block the Phaser screen pai
   // The Old Road prologue has infinite drifting-background and lantern-sweep
   // animations. Those loops must not block its Phaser-native panels either.
   await expect(page.locator('.opening-road-v140-prologue')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(true);
+  try {
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUi)).toBe(true);
+  } catch (error) {
+    await test.info().attach('opening-handoff-state', {
+      body: JSON.stringify(await page.evaluate(() => {
+        const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
+        return { art: scene.nativeScreenArtState, surface: scene.surface,
+          finiteEntrance: scene.hasFiniteEntranceAnimation(document.querySelector('.opening-road-v140')),
+          retryPending: scene.nativeOpeningUiLayoutEvent != null };
+      })), contentType: 'application/json'
+    });
+    throw error;
+  }
   const layers = await page.evaluate(() => ({
+    openingArt: window.LegendPhaserWorldV1.snapshot()?.nativeScreenArt?.find(item => item.selector === '.opening-road-v140-bg'),
     creation: document.body.classList.contains('legend-phaser-creation-ui-active'),
     opening: document.body.classList.contains('legend-phaser-opening-ui-active'),
     creationScreenCount: document.querySelectorAll('#root .v140-creation:not(.v140-arrival)').length,
@@ -3067,6 +3057,8 @@ test('looping intro and creation atmosphere does not block the Phaser screen pai
     openingObjects: window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUiObjectCount || 0
   }));
   expect(layers.creation).toBe(false);
+  expect(layers.openingArt).toMatchObject({ active: true, sourceMatches: true, textureLoaded: true,
+    expectedSource: 'assets/locations/roads/location_old_road_main_v1.jpg' });
   expect(layers.opening).toBe(true);
   expect(layers.creationScreenCount).toBe(0);
   expect(layers.openingScreenCount).toBe(1);

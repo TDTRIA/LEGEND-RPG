@@ -28,7 +28,7 @@ Keep the existing production controllers and systems authoritative. Phaser shoul
 
 ## Creative direction
 
-**Darkest Dungeon is now LEGEND's primary high-level creative reference**, replacing the earlier World of Warcraft / Diablo comparison. We are taking inspiration from expedition-led dark fantasy, stark illustrated atmosphere, strong character silhouettes, expressive dialogue, tactical clarity, and in-world field reports—not copying its art, characters, interface, writing, sounds, or mechanics. This direction shapes how the existing game is presented in Phaser; it does not pause or narrow the migration.
+**Darkest Dungeon is now LEGEND's primary high-level creative reference**, replacing the earlier World of Warcraft / Diablo comparison. We are taking inspiration from expedition-led dark fantasy, stark illustrated atmosphere, strong character silhouettes, expressive dialogue, tactical clarity, and in-world field reports—not copying its art, characters, interface, writing, or sounds. Mechanical inspiration (party formation, stress, torchlight) is governed by the approved systems in [the creative direction](docs/DARKEST_DUNGEON_DIRECTION.md). This direction shapes how the existing game is presented in Phaser; it does not pause or narrow the migration.
 
 Read [docs/DARKEST_DUNGEON_DIRECTION.md](docs/DARKEST_DUNGEON_DIRECTION.md) for the approved principles and boundaries.
 

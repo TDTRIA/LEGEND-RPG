@@ -37,7 +37,7 @@
       const signedIn = !!session?.user;
 
       host.innerHTML = `
-        <main class="account09x account09x-clean">
+        <main class="account09x account09x-clean" data-account-state="${signedIn ? 'profile' : String(authBox || '').includes('id="authForm"') ? 'auth' : 'offline'}" data-account-has-player="${!!player}">
           <div class="account09x-wrap">
             <header class="account09x-header">
               <div>
@@ -49,7 +49,7 @@
                 ${signedIn ? '<button class="account09x-btn danger" id="signOutBtn" type="button">Sign Out</button>' : ''}
               </div>
             </header>
-            ${message ? `<p class="account09x-success">${esc(message)}</p>` : ''}
+            ${message ? `<p class="account09x-success" role="status" aria-live="polite">${esc(message)}</p>` : ''}
 
             ${signedIn ? `
               <section class="account09x-panel account09x-profile-card">
@@ -91,6 +91,10 @@
             </section>
           </div>
         </main>`;
+
+      host.scrollTop=0;window.scrollTo(0,0);
+      const focusTarget=host.querySelector(message ? '.account09x-success' : 'h1');
+      if(focusTarget){focusTarget.tabIndex=-1;focusTarget.focus({preventScroll:true});}
 
       host.querySelector('#backTitle')?.addEventListener('click', () => onBackTitle?.());
       host.querySelector('#continueTraveler')?.addEventListener('click', () => onContinueTraveler?.());

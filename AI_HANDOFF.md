@@ -15,7 +15,7 @@ LEGEND is an in-development, desktop-first browser RPG with responsive mobile su
 
 ## Creative direction
 
-**Darkest Dungeon is now the primary high-level creative reference**, replacing the earlier World of Warcraft / Diablo comparison. Use its expedition-led dark-fantasy atmosphere, strong illustrated silhouettes, expressive character presentation, tactical readability, and field-report sensibility as inspiration only. Do not copy its assets, characters, interface, writing, sound, or mechanics. The authoritative guide is [docs/DARKEST_DUNGEON_DIRECTION.md](docs/DARKEST_DUNGEON_DIRECTION.md).
+**Darkest Dungeon is now the primary high-level creative reference**, replacing the earlier World of Warcraft / Diablo comparison. Use its expedition-led dark-fantasy atmosphere, strong illustrated silhouettes, expressive character presentation, tactical readability, and field-report sensibility as inspiration only. Do not copy its assets, characters, interface, writing, or sound. **Mechanical inspiration is approved within limits:** party formation, stress and torchlight are authorised systems. The authoritative guide is [docs/DARKEST_DUNGEON_DIRECTION.md](docs/DARKEST_DUNGEON_DIRECTION.md) — see "Approved gameplay systems" for the limits and for what still requires separate approval.
 
 ### In the production build
 
@@ -40,8 +40,9 @@ Current production state is hybrid:
 
 - Phaser 4.1 is loaded by `index.html`.
 - `js/engine/phaser-world-v1.js` is active in production for the persistent world scene, environments, atmosphere, transitions, Ashmere landmarks, new-player title, annals, traveler creation, and Oric's opening-road presentation.
-- The remaining production surfaces still need migration, including the returning-player title fallback, persistent HUD/navigation/drawers, Ashmere hub and services, Old Road/maps/journal, dialogue/events, combat, results/level-up, dungeons/regions, inventory, settings/account, and remaining overlays.
-- The current open [PR #111](https://github.com/TDTRIA/LEGEND-RPG/pull/111) advances the persistent HUD/navigation/drawers and Old Road journey/decision presentation. It is pending; do not count it as part of main or as deployed until the merge, final-head checks, and Pages deployment are confirmed.
+- Phaser also paints the persistent HUD and traveler vitals, the bottom action navigation, the left journal/quest drawer, the right contextual action/POI drawer, the Old Road map and field-journal modal, the road journey HUD and decision deck, the combat panels, and Ashmere's destination board. `js/ui/world-shell-v170.js` calls `refreshHud` / `refreshNavigation` / `refreshLeftDrawer` / `refreshRightDrawer` after every shell render. The semantic DOM controls remain the real accessible action targets, and the styled DOM presentation stays visible as the fallback whenever Phaser preflight fails.
+- The former open [PR #111](https://github.com/TDTRIA/LEGEND-RPG/pull/111) is no longer pending: the HUD, navigation and drawer work it described is present in `main`, as the shell refresh calls above show. Do not repeat the older note that this surface is unmigrated.
+- Still unmigrated as of 2026-11-16: the shell toast (`.lws-shell-toast`, DOM-only, no painter), the inventory and character-sheet modals (`js/ui/modals-v170.js` contains no reference to `LegendPhaserWorldV1`), Ashmere/Greyfen service interiors, results/level-up, dungeons/regions, settings/account, and the remaining overlays. Combat and the Ashmere destination board have painters and refresh hooks, but still lack dedicated desktop/mobile parity specs of their own.
 - Phaser should own the migrated scene presentation and interaction layer. The existing production modules remain authoritative for controllers, callbacks, game rules, combat calculations, enemy behavior, reward settlement, progression, quests, inventory, storage, account/cloud saves, and save schema.
 - The goal is to migrate **all existing gameplay screens and supporting systems' presentation**, not to rewrite the underlying systems or create a second implementation of their logic.
 

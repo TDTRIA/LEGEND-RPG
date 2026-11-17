@@ -4,6 +4,7 @@
  */
 (() => {
   const RUN_KEY = 'bellVaultV100';
+  let growthHandler = null;
 
   function runFor(player) {
     player.flags = player.flags || {};
@@ -128,6 +129,7 @@
       // the current room and skips a subtitle that would repeat the header.
       const detail = subtitle && subtitle !== PLACE_SUBTITLE ? '<p>' + esc(subtitle) + '</p>' : '';
       return '<div class="bell-vault-banner" style="--bell-vault-scene:url(\'' + art + '\')">' +
+        '<img class="bell-vault-scene" src="' + esc(art) + '" alt="">' +
         '<div class="bell-vault-overline">OLD BELL COMPLEX</div>' +
         '<h1>' + esc(title) + '</h1>' + detail + '</div>';
     }
@@ -279,6 +281,8 @@
     }
 
     function render() {
+      if (growthHandler) document.removeEventListener('legend:level-growth-applied', growthHandler);
+      growthHandler = null;
       const pl = getPlayer(); if (!pl) return;
       const run = runFor(pl);
       if (run.active && run.inBattle) { run.inBattle = false; save(pl); }
@@ -287,13 +291,15 @@
       const level = Number(status.level || 1);
       const isUnlocked = !!pl.flags?.firstRoadReturnSeen;
       let title = PLACE_TITLE, subtitle = PLACE_SUBTITLE;
-      let story = '', choices = '', roomLabel = 'A sealed stair', roomNumber = 'ENTRY', hint = '';
+      let viewState = '', story = '', choices = '', roomLabel = 'A sealed stair', roomNumber = 'ENTRY', hint = '';
       if (!isUnlocked) {
+        viewState = 'locked';
         title = 'A Sealed Stair';
         subtitle = 'The cellar will open after you complete and report your first full Old Road expedition.';
         story = '<p>Three iron bands hold the cellar door shut. The old bell-mark is worked into the stone, but the archive ledger has no entry for the stair.</p>';
         choices = '<button id="vaultReturn" type="button" class="bell-vault-secondary" data-legend-scene-transition="Returning to Ashmere">Return to the archive</button>';
       } else if (run.failed) {
+        viewState = 'failed';
         title = 'Driven from the Cellar';
         subtitle = 'You escape with your life, but the bell chamber remains below.';
         story = '<p>Your wounds have stopped you from pressing deeper. The cellar keeps its secrets; your level, equipment, and carried supplies remain yours.</p>' +
@@ -301,12 +307,14 @@
         choices = action('vaultRetry', 'Try again', 'Begin a fresh attempt. Your equipment and levels remain in effect.', 'Descending again', 'primary') +
           '<button id="vaultReturn" type="button" class="bell-vault-secondary" data-legend-scene-transition="Returning to Ashmere">Return to Ashmere</button>';
       } else if (run.completed && !run.active) {
+        viewState = 'complete';
         title = 'The Cellar Remembers';
         subtitle = 'The sentinel is quiet for now. Your first delve left a mark in the archive records.';
         story = '<p>' + esc(run.lastReport || 'Your report was recorded.') + '</p><div class="bell-vault-summary"><span>COMPLETED DELVES</span><strong>' + Number(run.clears || 0) + '</strong><span>LEVEL</span><strong>' + level + '</strong><span>XP</span><strong>' + Number(status.xp || 0) + ' / ' + Number(status.next || 100) + '</strong></div>';
         choices = action('vaultRetry', 'Descend again', 'The rooms have settled, but the keeper may wake once more.', 'Descending into the cellar', 'primary') +
           '<button id="vaultReturn" type="button" class="bell-vault-secondary" data-legend-scene-transition="Reporting back to Ashmere">Return to Ashmere</button>';
       } else if (!run.active) {
+        viewState = 'entry';
         title = 'The Sealed Stair';
         subtitle = 'A first dungeon for a world that keeps its dead and its questions close.';
         story = '<p>Below the archive, water beads on stone cut with the same worn bell-mark found along the Old Road. A few steps descend into dark, and the air below moves in slow, measured breaths.</p>' +
@@ -314,12 +322,14 @@
         choices = action('vaultBegin', 'Enter the cellar', 'Start a new delve. The door closes behind you, but you can retreat between rooms.', 'Descending beneath the bell', 'primary') +
           '<button id="vaultReturn" type="button" class="bell-vault-secondary" data-legend-scene-transition="Returning to Ashmere">Return to Ashmere</button>';
       } else if (Number(run.room) === 0) {
+        viewState = 'steps';
         title = 'The Silted Steps'; roomLabel = 'The stairs'; roomNumber = 'ROOM 1 / 4';
         story = '<p>The steps vanish below the waterline. A dead lantern hangs from a ceiling hook, and its glass has been blackened from the inside. The stair ends at a silent iron gate.</p>' +
           '<div class="bell-vault-clue"><span>FIELD NOTE</span><strong>The same bell-mark appears below the town.</strong><small>It is older than the archive’s current ledger.</small></div>';
         choices = action('vaultDescend', 'Descend to the silent gate', 'Follow the dry edge of the steps and take stock of the old markings.', 'Entering the silent gate', 'primary') +
           '<button id="vaultRetreat" type="button" class="bell-vault-secondary" data-legend-scene-transition="Returning to Ashmere">Retreat to Ashmere</button>';
       } else if (Number(run.room) === 1) {
+        viewState = 'gate';
         title = 'The Silent Bell Gate'; roomLabel = 'The sealed threshold'; roomNumber = 'ROOM 2 / 4';
         story = '<p>A gate of black iron bears a ring of shallow grooves. There are no hinges on this side. The marks might be instructions—or a warning.</p>' +
           '<div class="bell-vault-loadout"><div><span>LEVEL</span><strong>' + level + '</strong><small>' + Number(status.xp || 0) + ' / ' + Number(status.next || 100) + ' XP</small></div><div><span>WEAPON</span><strong>' + esc(weapon.name || 'Worn blade') + '</strong><small>Power ' + Number(weapon.max || 3) + '</small></div><div><span>ARMOR</span><strong>' + esc(armor.name || 'No armor') + '</strong><small>Defense ' + Number(armor.defense || 0) + '</small></div></div>' +
@@ -328,6 +338,7 @@
           action('vaultForceGate', 'Force the iron gate', 'Let your equipped weapon and armor carry the attempt. Strong gear opens it cleanly.', 'Forcing the silent gate', '') +
           '<button id="vaultRetreat" type="button" class="bell-vault-secondary" data-legend-scene-transition="Returning to Ashmere">Retreat to Ashmere</button>';
       } else if (Number(run.room) === 2 && !run.tookChoice) {
+        viewState = 'reliquary';
         title = 'The Drowned Reliquary'; roomLabel = 'The offering chamber'; roomNumber = 'ROOM 3 / 4';
         story = '<p>The chamber holds a small bell fragment in a cradle of pale stone. A string of runes runs from the cradle to the shape folded against the far wall. The armor there begins to stir.</p>' +
           '<div class="bell-vault-clue"><span>THE DECISION</span><strong>Take the fragment—or leave it and copy the runes.</strong><small>The fragment strengthens the sentinel, but brings an extra reward. The copied runes preserve evidence without disturbing the relic.</small></div>' +
@@ -336,6 +347,7 @@
           action('vaultCopyRunes', 'Copy the runes instead', 'Leave the fragment in its cradle and preserve the sequence for Mara.', 'Copying the reliquary runes', '') +
           '<button id="vaultRetreat" type="button" class="bell-vault-secondary" data-legend-scene-transition="Returning to Ashmere">Retreat to Ashmere</button>';
       } else if (Number(run.room) === 2 && run.tookChoice) {
+        viewState = 'keeper';
         title = 'The Drowned Reliquary'; roomLabel = 'The keeper stirs'; roomNumber = 'ROOM 3 / 4';
         story = '<p>' + esc(run.reliquaryNote || 'The sentinel begins to rise.') + '</p>' +
           '<div class="bell-vault-keeper-card"><img src="assets/generated/enemies/mirebound-sentinel.webp" alt="Mirebound Sentinel" loading="eager" decoding="async"><div><span>VAULT ENCOUNTER</span><h2>Mirebound Sentinel</h2><p>Read its intent. Your equipped weapon and armor directly affect the fight; level affects its health and damage.</p></div></div>' +
@@ -343,12 +355,13 @@
         choices = action('vaultFight', 'Confront the sentinel', 'Face the drowned keeper. Watch its wind-up, guard the heavy blows, and strike when it staggers.', 'Entering the bell chamber', 'primary') +
           '<button id="vaultRetreat" type="button" class="bell-vault-secondary" data-legend-scene-transition="Returning to Ashmere">Retreat to Ashmere</button>';
       } else if (Number(run.room) === 3 && run.battleWon) {
+        viewState = 'treasure';
         title = 'The Bell Chamber'; roomLabel = 'The reliquary'; roomNumber = 'ROOM 4 / 4';
         story = '<p>The sentinel collapses into waterlogged plates. The air is quiet, not empty; something in the old mechanism still seems to expect an answer.</p>' +
           '<div class="bell-vault-treasure"><span>RECOVERED</span><h2>' + esc(run.tookFragment ? 'Bell Fragment' : 'Reliquary Stores') + '</h2><p>' + esc(run.tookFragment ? 'You took the loose fragment. It is recorded among your spoils.' : 'The fragment stays in place. A locked supply drawer is left exposed by the sentinel’s fall.') + '</p><small>+' + (25 + level * 5) + ' bonus XP · Gold scales with level · ' + (Number(run.clears || 0) === 0 ? 'First clear: Reinforced Buckle · +6 Defense, automatically equipped' : 'Repeat clear: Road Herb') + '</small></div>';
         choices = action('vaultCollect', 'Claim the relics and return', 'Collect a persistent reward, record the discovery, and report back to Ashmere.', 'Leaving the bell chamber', 'primary');
       }
-      const body = '<section class="bell-vault-v100">' +
+      const body = '<section class="bell-vault-v100" data-vault-state="' + viewState + '">' +
         titleMarkup(pl, title, subtitle) +
         '<div class="bell-vault-body"><div class="bell-vault-room-heading"><span>' + esc(roomNumber) + '</span><strong>' + esc(roomLabel) + '</strong></div>' +
         story +
@@ -357,6 +370,19 @@
         '</div></section>';
       screen(head('ASHMERE · BELOW THE BELL', PLACE_TITLE, PLACE_SUBTITLE,
         typeof locationInterior === 'function' ? locationInterior('archive') : '', 'archive'), body);
+
+      if (document.getElementById('legendLevelUpOverlay')) {
+        const report = document.querySelector('.bell-vault-v100');
+        growthHandler = () => { if (report?.isConnected) render(); };
+        document.addEventListener('legend:level-growth-applied', growthHandler, {once:true});
+      }
+      // A room transition starts at its heading; preserve a mandatory growth dialog.
+      if (!document.getElementById('legendLevelUpOverlay')) {
+        const heading = document.querySelector('.bell-vault-banner h1');
+        if (heading) { heading.tabIndex = -1; heading.focus({preventScroll:true}); }
+        document.getElementById('root')?.scrollTo({top:0,left:0,behavior:'instant'});
+        window.scrollTo({top:0,left:0,behavior:'instant'});
+      }
 
       document.getElementById('vaultBegin')?.addEventListener('click', () => startRun(pl));
       document.getElementById('vaultRetry')?.addEventListener('click', () => startRun(pl));
