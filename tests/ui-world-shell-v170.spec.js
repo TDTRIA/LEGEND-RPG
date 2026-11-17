@@ -1151,6 +1151,9 @@ test.describe('LEGEND persistent world shell v170', () => {
   });
 
   test('persistent world-shell action frames use stone and sage states', async ({ page }) => {
+    // This test creates a traveler and enters Ashmere before checking the
+    // world shell. Give the full first-session flow enough time in CI.
+    test.setTimeout(120000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await enterAshmere(page, 'OptionFramePaletteQA');
     // Unlock the established landmark catalog so this test exercises the real
@@ -1179,10 +1182,8 @@ test.describe('LEGEND persistent world shell v170', () => {
     ]));
     expect(snapshot.nativeRightDrawerUiControlIds).not.toContain('visit-selected-place');
 
-    const leftToggle = page.locator('#legend-world-shell-root [data-world-action="toggle-left"]');
-    if (await page.locator('#lws-panel-left').getAttribute('aria-hidden') === 'true' || await page.locator('#lws-panel-left').isHidden()) {
-      await leftToggle.click();
-    }
+    // At desktop width the left journal drawer is already visible and painted.
+    // Assert its controls without toggling a second surface during the right-place click.
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeLeftDrawerUi)).toBe(true);
     await expect(page.locator('#lws-panel-left [data-world-action="journal"]')).toBeEnabled();
 
