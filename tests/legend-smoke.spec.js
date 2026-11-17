@@ -2818,26 +2818,3 @@ test('intro transitions keep DOM text and controls visible while Phaser continue
   await expect(page.locator('.opening-road-v140-prologue-lede')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
-null };
-      })), contentType: 'application/json'
-    });
-    throw error;
-  }
-  const layers = await page.evaluate(() => ({
-    openingArt: window.LegendPhaserWorldV1.snapshot()?.nativeScreenArt?.find(item => item.selector === '.opening-road-v140-bg'),
-    creation: document.body.classList.contains('legend-phaser-creation-ui-active'),
-    opening: document.body.classList.contains('legend-phaser-opening-ui-active'),
-    creationScreenCount: document.querySelectorAll('#root .v140-creation:not(.v140-arrival)').length,
-    openingScreenCount: document.querySelectorAll('#root .opening-road-v140').length,
-    creationObjects: window.LegendPhaserWorldV1.snapshot()?.nativeCreationUiObjectCount || 0,
-    openingObjects: window.LegendPhaserWorldV1.snapshot()?.nativeOpeningUiObjectCount || 0
-  }));
-  expect(layers.creation).toBe(false);
-  expect(layers.openingArt).toMatchObject({ active: true, sourceMatches: true, textureLoaded: true,
-    expectedSource: 'assets/locations/roads/location_old_road_main_v1.jpg' });
-  expect(layers.opening).toBe(true);
-  expect(layers.creationScreenCount).toBe(0);
-  expect(layers.openingScreenCount).toBe(1);
-  expect(layers.creationObjects).toBe(0);
-  expect(layers.openingObjects).toBeGreaterThan(10);
-});
