@@ -4,13 +4,8 @@
   const state = window.__legendBootSequenceV100;
   if (!screen || !state) return;
 
-  const wait = ms => new Promise(resolve => window.setTimeout(resolve, ms));
   const paint = typeof state.paintProgress === 'function' ? state.paintProgress : () => {};
   const mark = typeof state.markStep === 'function' ? state.markStep : () => {};
-  const text = (selector, value) => {
-    const element = document.querySelector(selector);
-    if (element) element.textContent = value;
-  };
   function reveal() {
     if (state.rendererLoading) { state.revealPending = true; return; }
     state.revealPending = false;
