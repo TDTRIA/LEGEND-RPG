@@ -306,6 +306,13 @@
       return;
     }
     const player = loadPlayer();
+    // Ashmere owns its full-scene navigation now, but it is still a town
+    // environment. Retire the shell without erasing shared region/scene context.
+    if (rootNode.querySelector('.ashmere-hub-v240')) {
+      hideShell();
+      syncSceneAtmosphere(player, { kind: 'town' });
+      return;
+    }
     const context = inferContext(player, rootNode);
     if (!context) {
       hideShell();
