@@ -108,15 +108,25 @@ test('screen transitions keep one owner while DOM creation choices retain native
     expect(unselected).toHaveLength(4);
     expect(unselected.every(item => !item.hovered && !item.focused)).toBe(true);
     const firstChoice = choices.first();
-    await firstChoice.focus();
+    const secondChoice = choices.nth(1);
+    await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
+    await page.keyboard.press('Tab');
     await expect(firstChoice).toBeFocused();
-    const focusedState = await firstChoice.evaluate(node => ({
-      active: node === document.activeElement,
-      outline: getComputedStyle(node).outlineStyle,
-      ariaPressed: node.getAttribute('aria-pressed')
-    }));
+    const focusedState = await page.evaluate(() => {
+      const focused = document.activeElement;
+      const idle = document.querySelectorAll('.v094-choice')[1];
+      return {
+        active: focused?.matches('.v094-choice'),
+        keyboardVisible: focused?.matches(':focus-visible'),
+        focusBorder: focused ? getComputedStyle(focused).borderTopColor : '',
+        idleBorder: idle ? getComputedStyle(idle).borderTopColor : '',
+        ariaPressed: focused?.getAttribute('aria-pressed')
+      };
+    });
     expect(focusedState.active).toBe(true);
-    expect(focusedState.outline).not.toBe('none');
+    expect(focusedState.keyboardVisible).toBe(true);
+    expect(focusedState.focusBorder).not.toBe(focusedState.idleBorder);
+    expect(focusedState.ariaPressed).toBe('false');
     await firstChoice.click();
     await expect(firstChoice).toHaveAttribute('aria-pressed', 'true');
     expect(errors).toEqual([]);
