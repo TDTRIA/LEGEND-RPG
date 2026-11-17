@@ -53,6 +53,7 @@ test('with the switch on the title returns to native DOM while Phaser keeps the 
       labelText: label?.textContent?.trim() || '',
       sceneArtActive: backdrop?.getAttribute('data-legend-phaser-scene-art-active'),
       backdropOpacity: backdrop ? getComputedStyle(backdrop).opacity : null,
+      backdropVisibility: backdrop ? getComputedStyle(backdrop).visibility : null,
       canvasWidth: canvas?.width || 0,
       canvasHeight: canvas?.height || 0
     };
@@ -69,12 +70,13 @@ test('with the switch on the title returns to native DOM while Phaser keeps the 
   expect(state.labelVisibility).toBe('visible');
   expect(state.labelText.length).toBeGreaterThan(0);
 
-  // Phaser still owns the world: the canvas is live and the scene art has not
-  // been hidden, so the environment plate behind the interface survives.
+  // Phaser still owns the world: the matching scene art is live on the canvas.
+  // The duplicate DOM image is intentionally hidden after the art handoff.
   expect(state.canvasWidth).toBeGreaterThan(0);
   expect(state.canvasHeight).toBeGreaterThan(0);
   expect(state.sceneArtActive).toBe('true');
-  expect(state.backdropOpacity).not.toBe('0');
+  expect(state.backdropOpacity).toBe('0');
+  expect(state.backdropVisibility).toBe('hidden');
 });
 
 test('the choice is remembered and the URL overrides the saved preference', async ({ page }) => {
