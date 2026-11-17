@@ -27,7 +27,7 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
   expect(titleBackdropFilter).toContain('brightness(1.1)');
-  await expect.poll(() => page.evaluate(() => {
+  const readTitleDiagnostics = () => page.evaluate(() => {
     const facade = window.LegendPhaserWorldV1;
     const scene = facade?.engine?.scene?.getScene?.('RealmScene');
     const hero = document.querySelector('.title-v136-rpg .v120-title-hero');
@@ -61,7 +61,10 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
       controlCount: scene?.nativeTitleUiControls?.length || 0,
       hasHero: Boolean(hero)
     };
-  })).toMatchObject({ active: true });
+  });
+  const initialTitleDiagnostics = await readTitleDiagnostics();
+  console.log('[LEGEND] Title handoff diagnostics:', JSON.stringify(initialTitleDiagnostics));
+  await expect.poll(readTitleDiagnostics).toMatchObject({ active: true });
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
   expectBackgroundAlphaAtMost(titleSceneOverlay, 0.3);
