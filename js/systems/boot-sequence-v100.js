@@ -65,9 +65,9 @@
     state.checks.artwork = artReady;
     mark('scene', artReady ? 'READY' : 'FALLBACK OK', true);
 
-    const minimumVisibleMs = state.reducedMotion?.() ? 700 : 4200;
+    // Startup checks remain, but the old branded loading screen is no longer shown.
     const elapsed = performance.now() - state.startedAt;
-    if (elapsed < minimumVisibleMs) await wait(minimumVisibleMs - elapsed);
+    // Never hold the player at a loading screen after the required checks finish.
 
     if (!systemsReady) {
       paint(100, 'Opening recovery view', 'One or more game systems need attention');
