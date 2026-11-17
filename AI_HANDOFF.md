@@ -52,9 +52,11 @@ The approved production architecture is hybrid: Phaser renders the world; semant
 6. Never claim a change is ready for `main` until pull-request checks finish. The full Playwright production suite must run on pull requests and on `main`; workflow concurrency must queue runs rather than cancelling the production gate on the next push.
 7. Keep the current production game playable during each step. The old isolated reboot prototype is not a substitute for production parity.
 
-### Future expedition systems
+### Approved gameplay-system expansion
 
-Party composition, an expedition stress system and a torch/illumination resource are planned design tracks. They are not implemented in this rendering stabilization. Design their rules, costs, effects, UI and save compatibility in dedicated approved work before adding data fields or changing the existing expedition loop.
+The owner approved **party formation, stress and torchlight** on 2026-11-17. The scope and restrictions are recorded in [docs/DARKEST_DUNGEON_DIRECTION.md](docs/DARKEST_DUNGEON_DIRECTION.md#approved-gameplay-systems); the first torch/stress implementation outline is [docs/STRESS_AND_TORCH_DESIGN.md](docs/STRESS_AND_TORCH_DESIGN.md).
+
+These systems are approved for future implementation but are not part of the rendering stabilization. Finish the hybrid presentation foundation first, then implement the approved systems incrementally, one at a time, preserving current solo play, existing reward contracts and player saves. Follow the design document's torch → stress order; party formation requires its own staged design/implementation gate.
 
 Relevant files: `index.html`, `js/engine/phaser-world-v1.js`, `js/game.js`, `js/systems/`, `js/ui/`, `docs/PHASER_HYBRID_RENDERING.md`, `docs/ARCHITECTURE.md` and `docs/SAVE_DATA_CONTRACT.md`.
 
