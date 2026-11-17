@@ -12,6 +12,7 @@
       labels = []; controls = []; clip = null;
     }
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const host = document.querySelector('#root .exp100:has(.exp150-world-page) .exp100-scene-live');
       const hud = document.querySelector('#legend-world-shell-root:not([hidden]) .lws-hud');
       if (host && hud) {

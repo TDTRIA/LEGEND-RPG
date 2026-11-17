@@ -17,6 +17,7 @@
       clipMask = null; clipBounds = null;
     }
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const header = document.querySelector('.ash099-head[data-ash-service="trader"]');
       const screen = header?.closest('.ash099-screen');
       const body = screen?.querySelector('.ash099-market-console');

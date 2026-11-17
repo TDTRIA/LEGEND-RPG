@@ -1494,6 +1494,7 @@
     }
 
     syncNativeTitleUi(surface = this.surface) {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeTitleUi(); return; }
       const hero = root()?.querySelector('.title-v136-rpg .v120-title-hero');
       // Returning saves use the same native menu painter as first-time players.
       // The DOM remains visible until every required action has a real Phaser
@@ -1852,6 +1853,7 @@
     }
 
     syncNativeAnnalsUi(surface = this.surface) {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeAnnalsUi(); return; }
       const screen = root()?.querySelector('.opening-lore-v220');
       if (String(surface || '') !== 'annals' || !screen) {
         if (this.nativeAnnalsUiActive || document.body?.classList.contains('legend-phaser-annals-ui-active')) {
@@ -2177,6 +2179,7 @@
     }
 
     syncNativeCreationUi(surface = this.surface) {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeCreationUi(); return; }
       const screen = root()?.querySelector('.v140-creation:not(.v140-arrival)');
       if (String(surface || '') !== 'creation' || !screen) {
         if (this.nativeCreationUiActive || document.body?.classList.contains('legend-phaser-creation-ui-active')) {
@@ -2612,6 +2615,7 @@
     }
 
     syncNativeOpeningUi(surface = this.surface) {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeOpeningUi(); return; }
       const screen = root()?.querySelector('.opening-road-v140');
       if (String(surface || '') !== 'awakening' || !screen) {
         if (this.nativeOpeningUiActive || document.body?.classList.contains('legend-phaser-opening-ui-active')) {
@@ -3023,6 +3027,7 @@
 
     /** Paints the shell toast message in Phaser while its DOM node keeps role="status" for assistive tech. */
     syncNativeToastUi() {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeToastUi(); return; }
       const shell = document.getElementById('legend-world-shell-root');
       const toast = shell?.querySelector('.lws-shell-toast');
       const message = toast?.textContent?.replace(/\s+/g, ' ').trim() || '';
@@ -3160,6 +3165,7 @@
     }
 
     syncNativeBottomBarUi() {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeBottomBarUi(); return; }
       const shell = document.getElementById('legend-world-shell-root');
       const bar = shell?.querySelector('.lws-bottom-bar');
       if (!bar || shell.hidden) {
@@ -3503,6 +3509,7 @@
     }
 
     syncNativeExpeditionActionsUi() {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeExpeditionActionsUi(); return; }
       const host = document.querySelector('.exp100:has(.exp150-world-page)');
       const page = host?.querySelector('.exp150-world-page');
       const regions = [
@@ -3799,6 +3806,7 @@
     }
 
     syncNativeExpeditionHudUi() {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeExpeditionHudUi(); return; }
       const host = document.querySelector('.exp100:has(.exp150-world-page)');
       const page = host?.querySelector('.exp150-world-page');
       const regions = [
@@ -4121,6 +4129,7 @@
     }
 
     syncNativeRoadMapUi() {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeRoadMapUi(); return; }
       // The DOM remains the semantic action layer. Phaser paints a duplicate
       // presentation only after all visible text, surfaces and controls are
       // measured; failed mask creation leaves the fully styled DOM modal up.
@@ -4644,6 +4653,7 @@
     }
 
     syncNativeRightDrawerUi() {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeRightDrawerUi(); return; }
       this.syncShellContentClip();
       const shell = document.getElementById('legend-world-shell-root');
       const panel = shell?.querySelector('#lws-panel-right');
@@ -4941,6 +4951,7 @@
     }
 
     syncNativeLeftDrawerUi() {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeLeftDrawerUi(); return; }
       this.syncShellContentClip();
       const shell = document.getElementById('legend-world-shell-root');
       const panel = shell?.querySelector('#lws-panel-left');
@@ -5235,6 +5246,7 @@
     }
 
     syncNativeHudUi() {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeHudUi(); return; }
       this.syncShellContentClip();
       const shell = document.getElementById('legend-world-shell-root');
       const hud = shell?.querySelector('.lws-hud');
@@ -5443,6 +5455,7 @@
 
     /** Paints the tactical combat panels and live labels in Phaser without taking ownership of any battle action. */
     syncNativeCombatUi(surface = this.surface) {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeCombatUi(); return; }
       const host = root();
       const battle = host?.querySelector('.rpg-battle');
       if (String(surface || '') !== 'combat' || !battle || !battle.getBoundingClientRect().width || battle.hidden) {
@@ -5724,6 +5737,7 @@
     }
 
     syncNativeGameplayUi(surface = this.surface) {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeGameplayUi(); return; }
       // The shared DOM-to-Phaser mirror is intentionally held behind a safe
       // production fallback. It reconstructs CSS panels/text approximately and
       // can omit nested copy while its CSS hides the source DOM. Keep the real
@@ -6012,6 +6026,7 @@
 
     /** Paints Ashmere's existing destination-card board in Phaser while its real DOM buttons retain navigation and accessibility. */
     syncNativeTownBoardUi(surface = this.surface) {
+      if (window.LegendDomUiRestore?.enabled) { this.clearNativeTownBoardUi(); return; }
       const host = root();
       const town = host?.querySelector('.ash100-town-ashmere');
       const section = town?.querySelector('.ash100-destination-section');

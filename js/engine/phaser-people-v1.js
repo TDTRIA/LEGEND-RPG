@@ -15,6 +15,7 @@
       clipMask = null; clipBounds = null;
     }
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const header = document.querySelector('.ash099-head:is([data-ash-service="people"],[data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"])');
       const screen = header?.closest('.ash099-screen');
       if (!screen || screen.closest('[hidden]')) { clear(); return; }

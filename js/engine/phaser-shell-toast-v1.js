@@ -8,6 +8,7 @@
       canvas?.remove(); canvas = null; signature = ''; copy = '';
     };
     const sync = () => {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       bindShell();
       const nextSource = document.querySelector('#legend-world-shell-root .lws-shell-toast');
       if (nextSource !== source) { clear(); source = nextSource; }

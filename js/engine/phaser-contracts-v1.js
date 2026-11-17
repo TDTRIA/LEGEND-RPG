@@ -17,6 +17,7 @@
       clipMask = null; clipBounds = null;
     }
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const board = document.querySelector('.ash099-daily-board');
       const screen = board?.closest('.ash099-screen');
       const header = screen?.querySelector('.ash099-head[data-ash-service="quest"]');

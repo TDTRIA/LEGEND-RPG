@@ -9,6 +9,7 @@
       host=null;objects=[];labels=[];tagged=[];signature='';clip=null;
     };
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const overlay=document.querySelector('.legend-credits-overlay'),source=overlay?.querySelector('.legend-credits-panel');
       if(!source){clear();return;}
       const texts=[...source.querySelectorAll('.legend-credits-kicker,h2,h3,p:not(:has(.legend-credits-line)),.legend-credits-line,button')];

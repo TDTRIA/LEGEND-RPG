@@ -6,6 +6,7 @@
     const selectors='.gfm160-kicker,header h2,button,.gfm160-map-places > p,.gfm160-map-node strong,.gfm160-map-node > div > span,.gfm160-map-node > em,.gfm160-journal-note > *,.gfm160-journal-empty,footer > span';
     function clear(){if(host)delete host.dataset.phaserMarshMap;tagged.forEach(n=>n.removeAttribute('data-marsh-map-copy'));frame?.destroy(true);body?.destroy(true);host=frame=body=null;tagged=[];labels=[];signature='';clip=null;}
     function sync(){
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const overlay=document.querySelector('body > #gfm160MapOverlay:not([hidden])'),panel=overlay?.querySelector('.gfm160-map-dialog');
       if(!panel){clear();return;}
       const visible=n=>!n.closest('[hidden]');

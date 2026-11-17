@@ -8,6 +8,7 @@
       objects.forEach(n=>n.destroy(true));host=null;objects=[];labels=[];tagged=[];signature='';clip=null;
     };
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const screen=document.querySelector('#root [data-recovery-screen]');
       const source=screen?.querySelector('.legend-recovery-panel');
       if(!source){clear();return;}

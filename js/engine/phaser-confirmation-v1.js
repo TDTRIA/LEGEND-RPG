@@ -9,6 +9,7 @@
       host=null;objects=[];labels=[];tagged=[];signature='';clip=null;
     }
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const source=document.querySelector('.legend-confirm-overlay .legend-confirm-panel');
       if(!source){clear();return;}
       const texts=[...source.querySelectorAll('h2,p,button')],buttons=[...source.querySelectorAll('button')];

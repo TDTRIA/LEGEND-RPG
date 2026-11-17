@@ -27,6 +27,7 @@
       host=container=null;signature='';labels=[];keys=[];tagged=[];clip=null;
     }
     function sync(){
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const source=document.querySelector('#root .gfm160-page[data-marsh-state]');
       if(!source||source.closest('[hidden]')){clear();return;}
       const hud=document.querySelector('#legend-world-shell-root:not([hidden]) .lws-hud');

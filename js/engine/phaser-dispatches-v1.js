@@ -5,6 +5,7 @@
     let host=null,objects=[],labels=[],tagged=[],signature='',pending=null,retry=null,failure='',art=null,controls=[],paintedTexture=null;
     function clear(){if(host)delete host.dataset.phaserDispatches;tagged.forEach(n=>n.removeAttribute('data-dispatch-copy'));objects.forEach(n=>n.destroy(true));host=null;objects=[];labels=[];tagged=[];signature='';art=null;controls=[];paintedTexture=null;}
     function sync(){
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const source=document.querySelector('#root .dispatches-v140');if(!source){clear();return;}
       const texts=[...source.querySelectorAll(copySelector)],buttons=[...source.querySelectorAll('button,a')],cards=[...source.querySelectorAll('.dispatches-v140-card')],sections=[...source.querySelectorAll('.dispatches-v140-section')];
       const image=source.querySelector('.dispatches-v140-feature-mark img');

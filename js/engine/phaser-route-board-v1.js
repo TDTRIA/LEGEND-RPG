@@ -25,6 +25,7 @@
       signature = '';
     };
     function sync() {
+      if (window.LegendDomUiRestore?.enabled) { clear(); return; }
       const ledger = document.querySelector('.reg100-screen');
       const header = ledger?.querySelector('.reg100-head') || document.querySelector('.ash099-head[data-ash-service="route"]');
       const screen = ledger || header?.closest('.ash099-screen');
