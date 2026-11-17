@@ -27,7 +27,41 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
   expect(titleBackdropFilter).toContain('brightness(1.1)');
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
+  await expect.poll(() => page.evaluate(() => {
+    const facade = window.LegendPhaserWorldV1;
+    const scene = facade?.engine?.scene?.getScene?.('RealmScene');
+    const hero = document.querySelector('.title-v136-rpg .v120-title-hero');
+    const transaction = scene?.nativeTitleUiTransaction;
+    return {
+      active: Boolean(scene?.nativeTitleUiActive),
+      failure: scene?.nativeTitleUiFailure || '',
+      surface: scene?.surface || '',
+      introActive: document.documentElement.classList.contains('engine-intro-active'),
+      sceneActive: Boolean(scene?.sys?.isActive?.()),
+      transaction: transaction ? {
+        framePending: transaction.frame !== null,
+        remaining: transaction.remaining,
+        attempted: Boolean(transaction.attempted),
+        committed: Boolean(transaction.committed),
+        staged: Boolean(transaction.staged),
+        building: Boolean(transaction.building),
+        hasSignature: Boolean(transaction.signature)
+      } : null,
+      fonts: {
+        status: document.fonts?.status || 'unavailable',
+        pending: [...(document.fonts || [])].filter(face => face.status !== 'loaded').map(face => ({ family: face.family, status: face.status }))
+      },
+      images: [...(hero?.querySelectorAll('img') || [])].map(img => ({
+        src: img.currentSrc || img.src,
+        complete: img.complete,
+        naturalWidth: img.naturalWidth,
+        visible: Boolean(img.getBoundingClientRect().width && img.getBoundingClientRect().height)
+      })),
+      objectCount: scene?.nativeTitleUiObjects?.filter(object => object?.active).length || 0,
+      controlCount: scene?.nativeTitleUiControls?.length || 0,
+      hasHero: Boolean(hero)
+    };
+  })).toMatchObject({ active: true });
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
   expectBackgroundAlphaAtMost(titleSceneOverlay, 0.3);
