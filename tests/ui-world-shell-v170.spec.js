@@ -145,6 +145,12 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(tools.getByRole('button',{name:/Settings/i})).toBeVisible();
     await expect(tools.getByRole('button',{name:/Save traveler/i})).toBeVisible();
 
+    await page.evaluate(()=>{
+      const player=window.LegendStorage.loadPlayer();
+      player.inventory=player.inventory||{};
+      player.inventory.potion=Math.max(1,Number(player.inventory.potion||0));
+      window.LegendStorage.savePlayer(player);
+    });
     const before=await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()));
     await tools.getByRole('button',{name:/Save traveler/i}).click();
     await expect(hub.locator('#ashmereHubUtilityStatus')).toHaveText('Traveler record saved locally.');
@@ -153,11 +159,13 @@ test.describe('LEGEND persistent world shell v170', () => {
     await tools.getByRole('button',{name:/Pack & inventory/i}).click();
     const inventory=page.getByRole('dialog',{name:'Inventory'});
     await expect(inventory).toBeVisible();
-    await expect(inventory).toContainText('Carried:');
+    await expect(inventory).toContainText('Healing Potion');
+    await expect(inventory).toContainText('Carried: 1');
     await inventory.getByRole('button',{name:/Return to the world/i}).click();
     await expect(inventory).toBeHidden();
     await expect(hub).toBeVisible();
     await expect(page.locator('#legend-world-shell-root')).toBeHidden();
+    expect(await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()))).toBe(before);
 
     await tools.getByRole('button',{name:/Settings/i}).click();
     const settings=page.getByRole('dialog',{name:'Settings'});
