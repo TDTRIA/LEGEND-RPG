@@ -155,6 +155,7 @@ test.describe('LEGEND persistent world shell v170', () => {
   test('Phaser contextual action drawer tracks Old Road actions and remains a real mobile drawer', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await enterAshmere(page, 'MobilePhaserContextQA');
+    await seedRoad(page, 1, 'ridge');
     const panel = page.locator('#lws-panel-right');
     await expect(panel).toHaveAttribute('aria-hidden', 'true');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeRightDrawerUi)).toBe(false);
@@ -182,6 +183,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     test.setTimeout(180000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await enterAshmere(page, 'PhaserJournalQA');
+    await seedRoad(page, 1, 'ridge');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeLeftDrawerUi)).toBe(true);
 
     const desktop = await page.evaluate(() => {
@@ -276,6 +278,7 @@ test.describe('LEGEND persistent world shell v170', () => {
   test('mobile journal drawer is DOM-backed while closed and Phaser-painted once opened', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await enterAshmere(page, 'MobilePhaserJournalQA');
+    await seedRoad(page, 1, 'ridge');
     const panel = page.locator('#lws-panel-left');
     await expect(panel).toHaveAttribute('aria-hidden', 'true');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeLeftDrawerUi)).toBe(false);
@@ -297,6 +300,7 @@ test.describe('LEGEND persistent world shell v170', () => {
 
   test('Phaser paints the persistent bottom navigation without replacing production action handlers', async ({ page }) => {
     await enterAshmere(page, 'PhaserBottomBarQA');
+    await seedRoad(page, 1, 'ridge');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeBottomBarUi)).toBe(true);
 
     const desktop = await page.evaluate(() => {
@@ -415,6 +419,7 @@ test.describe('LEGEND persistent world shell v170', () => {
 
   test('inventory overlay reads real saved quantities without changing inventory or leaving the world', async ({ page }) => {
     await enterAshmere(page, 'PackReader');
+    await seedRoad(page, 1, 'ridge');
     const before = await page.evaluate(() => {
       const player = window.LegendStorage.loadPlayer();
       player.inventory.roadHerb = 2;
@@ -618,6 +623,7 @@ test.describe('LEGEND persistent world shell v170', () => {
 
   test('settings persist through the existing store and combat stays unavailable until an encounter is active', async ({ page }) => {
     await enterAshmere(page, 'OverlayTraveler');
+    await seedRoad(page, 1, 'ridge');
     await page.locator('.lws-bottom-bar [data-world-action="settings"]').click();
     const dialog = page.getByRole('dialog', { name: 'Settings' });
     await expect(dialog).toBeVisible();
@@ -640,6 +646,7 @@ test.describe('LEGEND persistent world shell v170', () => {
 
   test('compact shell drawers and bottom actions fit a 390px touch viewport', async ({ page }) => {
     await enterAshmere(page, 'MobileShellTraveler');
+    await seedRoad(page, 1, 'ridge');
     await page.setViewportSize({ width: 390, height: 844 });
     const rightToggle = page.locator('.lws-mobile-toggle[data-world-action="toggle-right"]');
     const leftToggle = page.locator('.lws-mobile-toggle[data-world-action="toggle-left"]');
@@ -1008,6 +1015,7 @@ test.describe('LEGEND persistent world shell v170', () => {
 
   test('combat and world-notice overlays show different generated emblems', async ({ page }) => {
     await enterAshmere(page, 'ModalEmblemQA');
+    await seedRoad(page, 1, 'ridge');
     await page.setViewportSize({ width: 390, height: 844 });
 
     await page.evaluate(() => window.LegendWorldShellModalsV170.openCombat());
@@ -1093,6 +1101,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     test.setTimeout(120000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await enterAshmere(page, 'OptionFramePaletteQA');
+    await seedRoad(page, 1, 'ridge');
     // Unlock the established landmark catalog so this test exercises the real
     // place-selection and Visit action path, not the new-traveler welcome actions.
     await page.evaluate(() => {
