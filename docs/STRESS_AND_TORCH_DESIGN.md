@@ -94,7 +94,7 @@ player.affliction // string id, or null
 | Camp without watch | +5 |
 | Ally downed *(when party exists)* | +10 |
 | Secured return to Ashmere | −5 |
-| Inn rest | −15 *(existing service, no new UI)* |
+| Inn rest | −15 *(costs gold — see "Inn rest" below)* |
 
 ### Thresholds
 
@@ -103,7 +103,7 @@ player.affliction // string id, or null
 | 0–49 | **Steady** | none |
 | 50–74 | **Rattled** | +10% damage taken |
 | 75–99 | **Strained** | +20% damage taken, −1 to skill checks |
-| 100 | **Resolve check** | → Affliction (75%) or Virtue (25%), stress resets to 60 |
+| 100 | **Resolve check** | → Affliction (65%) or Virtue (35%), stress resets to 60 |
 
 All effects are **gated on stress > 0**, so a player at zero plays exactly the game that exists today. No formula changes at baseline.
 
@@ -126,8 +126,16 @@ Written from the world, not imported. Each is small, mechanical, and testable:
 ### Persistence
 
 - Afflictions persist for the **current expedition only** and clear on secured return.
-- Stress persists across expeditions until treated at the Inn.
+- Stress persists across expeditions **until treated**. It does not reset on return, so an untreated traveler carries it onto the next road.
 - Missing fields default to `stress = 0`, `affliction = null` in `player-normalizer-v120.js`.
+
+### Inn rest
+
+Recovery at the Ashmere Inn is the only way to reduce stress outside an expedition, and it **costs gold**: **15 gold per rest for −15 stress**.
+
+At 80 gold per completed expedition, one rest is roughly a fifth of a run's income — meaningful without being punishing, and it makes the Inn a real economic decision rather than a free reset button. This is a **tuning value**, not a design decision: adjust the fee or the relief amount once the road economy has been played.
+
+The Inn already exists in `js/systems/town/ashmere-inn-v099.js`; this adds a stress line to its existing rest transaction. No new screen.
 
 ### Files touched
 
@@ -162,10 +170,21 @@ Each step is one session. **No step begins until the previous one is green on `m
 
 ---
 
-## 4. Open decisions for the owner
+## 4. Decisions (approved 2026-11-17)
 
-1. **Torch drain rate** — −10/stretch is a proposal; tune after one playthrough.
-2. **Inn rest cost** — should −15 stress cost gold, or be free with a cooldown?
-3. **Affliction count** — five is a starting set; more can be added without schema change.
-4. **Does stress carry into the next expedition?** Proposal says yes, until treated. The alternative — reset on return — makes the Inn less meaningful.
-5. **Virtue frequency** — 25% is Darkest Dungeon's feel. 35% is gentler for a game with fewer party members.
+| Question | Decision |
+|---|---|
+| Torch drain rate | **−10 per travel stretch**, as proposed |
+| Inn rest cost | **Costs gold** — 15 gold for −15 stress |
+| Does stress carry between expeditions? | **Yes, until treated.** No reset on return. |
+| Virtue frequency | **35%** (Affliction 65%) |
+| Affliction count | **5** to start; more can be added later without a schema change |
+
+### Remaining tuning values
+
+These are balance numbers to adjust after playtesting, not open design questions:
+
+- The 15-gold Inn fee and −15 relief amount
+- Torch band boundaries (14/15, 39/40, 69/70)
+- Stress deltas per source
+- Loot tier gains at Dark and Black
