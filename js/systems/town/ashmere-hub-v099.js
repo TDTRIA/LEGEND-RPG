@@ -71,9 +71,15 @@
     const byView = new Map(allDestinations.map(destination => [String(destination.view), destination]));
     const primaryViews = ['inn', 'trader', 'smith', 'people'];
     const primary = primaryViews.map(view => byView.get(view)).filter(Boolean);
-    const secondary = allDestinations.filter(destination =>
-      !primaryViews.includes(String(destination.view)) && String(destination.view) !== 'road'
-    );
+    const secondary = [
+      ...allDestinations.filter(destination =>
+        !primaryViews.includes(String(destination.view)) && String(destination.view) !== 'road'
+      ),
+      { view: 'routes', title: 'Route Board', desc: 'Review known paths and the journeys that lead beyond Ashmere.', cta: 'View routes' },
+      { view: 'archive', title: 'Field Journal', desc: 'Review the records, clues and places your traveler has marked.', cta: 'Open journal' },
+      { view: 'profile', title: 'Profile & Account', desc: 'Traveler identity, account and saved journey details.', cta: 'Open profile' },
+      { view: 'sheet', title: 'Traveler Record', desc: 'Review attributes, equipment and the state of your traveler.', cta: 'View traveler' }
+    ];
     const condition = Math.max(0, Math.min(100,
       Math.round(Number(pl.hp || 0) / Math.max(1, Number(pl.maxHp || 1)) * 100)
     ));
