@@ -38,7 +38,11 @@ async function enterAshmere(page, name = 'ToastTraveler', viewport = { width: 14
     window.LegendAshmereV099.renderAshmere();
   });
   await expect(page.locator('.ash100-town')).toBeVisible();
+  await expect(page.locator('#legend-world-shell-root')).toBeHidden();
+  await page.evaluate(() => window.LegendAshmereV099.route('inn'));
+  await expect(page.locator('.ash099-screen')).toBeVisible();
   await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+  // Shell toast coverage lives on a town service; Ashmere itself no longer has the shell.
   // Wait for the Phaser scene and its HUD painter, so the toast painter has a live scene to paint into.
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeHudUi)).toBe(true);
