@@ -1589,8 +1589,11 @@
         try {
           const images = [...screen.querySelectorAll('img')].filter(img => img.getBoundingClientRect().width > 0);
           images.forEach(img => { if (img.loading !== 'eager') img.loading = 'eager'; });
-          const ready = (!document.fonts || (document.fonts.status === 'loaded' &&
-            ![...document.fonts].some(font => font.status === 'error'))) &&
+          const introGateActive = kind === 'Title' && !IS_PROTOTYPE &&
+            document.documentElement.classList.contains('engine-intro-active');
+          const ready = !introGateActive &&
+            (!document.fonts || (document.fonts.status === 'loaded' &&
+              ![...document.fonts].some(font => font.status === 'error'))) &&
             images.every(img => img.complete && img.naturalWidth > 0) &&
             !this.hasFiniteEntranceAnimation(screen);
           const signature = measure();
