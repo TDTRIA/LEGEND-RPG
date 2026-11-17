@@ -397,7 +397,8 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     await page.getByRole('button', { name: /Begin Your Journey/i }).click();
     await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
     await scene();
-    await expect(page.locator('#openingLoreTitle')).toHaveCSS('color', expect.not.stringMatching(/transparent|rgba\\(0, 0, 0, 0\\)/));
+    const headingColor = await page.locator('#openingLoreTitle').evaluate(node => getComputedStyle(node).color);
+    expect(headingColor).not.toMatch(/transparent|rgba\\(0, 0, 0, 0\\)/);
     await expect(page.locator('body')).not.toHaveClass(/legend-phaser-annals-ui-active/);
 
     await page.getByRole('button', { name: /^Continue$/ }).click();
