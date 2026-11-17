@@ -145,7 +145,6 @@ test.describe('LEGEND UI rollout v180 — Phase 2 screen families', () => {
     await inventoryDialog.getByRole('button', { name: /Return to the world/i }).click();
     await expect(inventoryDialog).toHaveCount(0);
 
-    await page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle').click();
     await page.locator('.ashmere-hub-v240-more-place[data-ash-view="dungeon"]').click();
     await expect(page.locator('.bell-vault-v100')).toBeVisible();
     await expect(page.locator('.bell-vault-banner')).toHaveCSS('border-radius', '3px');
