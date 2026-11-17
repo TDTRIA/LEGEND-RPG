@@ -24,8 +24,8 @@ for (const width of [1440, 390]) {
     const save = () => page.evaluate(() => localStorage.getItem('legend-roads-of-ashmere-v09'));
     const original = await save();
     const native = () => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTravelerSheet);
-    const toast = () => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeShellToast);
-    await page.locator('.lws-bottom-bar [data-world-action="inventory"]').tap();
+    await page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle').tap();
+    await page.locator('.ashmere-hub-v240-utilities [data-ash-hub-action="inventory"]').tap();
     await page.locator('#legend-world-shell-modal-root [data-world-action="traveler-sheet"]').tap();
     await expect.poll(async () => (await native()).active).toBe(true);
     expect((await native()).labels).toEqual(expect.arrayContaining([
@@ -50,21 +50,20 @@ for (const width of [1440, 390]) {
     await page.keyboard.press('Enter');
     await expect(page.locator('.ash100-town')).toBeVisible();
     await expect.poll(async () => (await native()).active).toBe(false);
-    // Actual shell save notification retains its live region and 3.2-second lifetime.
-    await page.evaluate(() => window.LegendWorldShellV170.saveCurrentPlayer());
-    await expect.poll(async () => (await toast()).text).toBe('Traveler record saved locally.');
-    await expect(page.locator('.lws-shell-toast')).toHaveAttribute('aria-live', 'polite');
-    await expect(page.locator('.lws-shell-toast > canvas[aria-hidden="true"]')).toBeVisible();
-    await expect.poll(async () => (await toast()).active, { timeout: 6000 }).toBe(false);
+    // Ashmere's compact Save action replaces the persistent shell toast on the hub.
+    await page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle').tap();
+    const saveAction=page.locator('.ashmere-hub-v240-utilities [data-ash-hub-action="save"]');
+    await saveAction.tap();
+    const status=page.locator('#ashmereHubUtilityStatus');
+    await expect(status).toHaveText('Traveler record saved locally.');
+    await expect(status).toHaveAttribute('role','status');
     await page.evaluate(() => {
-      const originalStorage = window.LegendStorage;
-      window.LegendStorage = { ...originalStorage, savePlayer: () => false };
-      window.LegendWorldShellV170.saveCurrentPlayer();
-      window.LegendStorage = originalStorage;
+      const originalStorage=window.LegendStorage;
+      window.LegendStorage={...originalStorage,savePlayer:()=>false};
+      document.querySelector('.ashmere-hub-v240-utilities [data-ash-hub-action="save"]').click();
+      window.LegendStorage=originalStorage;
     });
-    await expect.poll(async () => (await toast()).text).toContain('could not be saved permanently');
-    await page.locator('.lws-shell-toast').evaluate(node => { const child = document.createElement('strong'); child.textContent = node.textContent; node.replaceChildren(child); });
-    await expect.poll(async () => (await toast()).active).toBe(false);
+    await expect(status).toContainText('could not be saved');
     await expect(page.locator('.lws-shell-toast')).not.toHaveCSS('color', 'rgba(0, 0, 0, 0)');
     expect(await save()).toBe(original);
     await page.evaluate(() => {
