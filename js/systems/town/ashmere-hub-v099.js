@@ -92,7 +92,9 @@
         <span>${esc(destination.title)}</span><small>${esc(destination.desc)}</small><em>${esc(destination.cta)}</em>
       </button>`).join('');
 
-    context.shell(`
+    const host = document.getElementById('root');
+    if (!host) return;
+    host.innerHTML = `
       <section class="ashmere-hub-v240" aria-label="Ashmere settlement">
         <div class="ashmere-hub-v240-backdrop" aria-hidden="true">${img(bg(), '')}</div>
         <div class="ashmere-hub-v240-atmosphere" aria-hidden="true"></div>
@@ -138,7 +140,7 @@
             <div class="ashmere-hub-v240-more-list" id="ashmereHubMorePlaces" hidden>${moreButtons || '<p>There are no other postings to show just now.</p>'}</div>
           </div>
         </footer>
-      </section>`);
+      </section>`;
 
     const toggle = document.getElementById('ashmereHubMoreToggle');
     const more = document.getElementById('ashmereHubMorePlaces');
