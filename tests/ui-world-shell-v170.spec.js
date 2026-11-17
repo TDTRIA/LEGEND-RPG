@@ -133,6 +133,45 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('Ashmere traveler tools preserve inventory, settings and local save access without the shell', async ({ page }) => {
+    await page.setViewportSize({width:390,height:844});
+    await enterAshmere(page,'AshmereToolsQA');
+    const hub=page.locator('.ashmere-hub-v240');
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
+    await hub.locator('#ashmereHubMoreToggle').click();
+    const tools=hub.locator('.ashmere-hub-v240-utilities');
+    await expect(tools).toBeVisible();
+    await expect(tools.getByRole('button',{name:/Pack & inventory/i})).toBeVisible();
+    await expect(tools.getByRole('button',{name:/Settings/i})).toBeVisible();
+    await expect(tools.getByRole('button',{name:/Save traveler/i})).toBeVisible();
+
+    const before=await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()));
+    await tools.getByRole('button',{name:/Save traveler/i}).click();
+    await expect(hub.locator('#ashmereHubUtilityStatus')).toHaveText('Traveler record saved locally.');
+    expect(await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()))).toBe(before);
+
+    await tools.getByRole('button',{name:/Pack & inventory/i}).click();
+    const inventory=page.getByRole('dialog',{name:'Inventory'});
+    await expect(inventory).toBeVisible();
+    await expect(inventory).toContainText('Carried:');
+    await inventory.getByRole('button',{name:/Return to the world/i}).click();
+    await expect(inventory).toBeHidden();
+    await expect(hub).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
+
+    await tools.getByRole('button',{name:/Settings/i}).click();
+    const settings=page.getByRole('dialog',{name:'Settings'});
+    await expect(settings).toBeVisible();
+    const reduced=settings.locator('[data-world-setting="reducedMotion"]');
+    const original=await reduced.isChecked();
+    await reduced.setChecked(!original);
+    await expect.poll(()=>page.evaluate(()=>window.LegendStorage.loadSettings().reducedMotion)).toBe(!original);
+    await settings.getByRole('button',{name:/Return to the world/i}).click();
+    await expect(settings).toBeHidden();
+    await expect(hub).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('Ashmere place buttons use the real service routes without a contextual shell', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await enterAshmere(page, 'PhaserContextQA');
