@@ -16,8 +16,8 @@ async function openTitle(page) {
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
-  // The production intro may briefly keep the title hidden even with reduced motion.
-  // Let that sequence complete rather than clicking its transient skip control.
+  await page.waitForFunction(() => window.__legendPhaserWorldReady &&
+    !document.documentElement.classList.contains('engine-intro-active'), null, { timeout: 30000 });
   await expect(page.locator('.v120-title')).toBeVisible({ timeout: 30000 });
   await expect(page.locator('.v120-title-hero .v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
   await expect(page.locator('.v120-title-hero .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
