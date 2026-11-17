@@ -1,6 +1,6 @@
 # LEGEND: The Awakening — Darkest Dungeon Creative Direction
 
-**Approved direction:** 2026-11-08  
+**Approved direction:** 2026-11-08 · **Systems revision:** 2026-11-17 (party, stress and torchlight approved — see [Approved gameplay systems](#approved-gameplay-systems))  
 **Role:** Primary creative reference for atmosphere, visual storytelling, expedition presentation, and tactical readability.  
 **Related implementation plan:** [Phaser Production Migration](PHASER_MIGRATION.md)  
 **Related standards:** [Art Direction](ART-DIRECTION.md), [UI Design System](UI_DESIGN_SYSTEM.md), [Product Roadmap](ROADMAP.md)
@@ -11,7 +11,7 @@
 
 The fit is the expedition-led dark-fantasy structure: prepare, venture into danger, make costly decisions, meet readable tactical threats, record what happened, and return changed. Its grim illustrated atmosphere, strong character silhouettes, expressive portraits, restrained ornament, tense encounters, and field-report presentation are closer to the identity LEGEND is already developing.
 
-This is an inspiration reference, not a request to copy Darkest Dungeon. Do not reproduce its characters, monsters, names, art, logos, typography, exact interface layouts, animations, sound, or proprietary content. LEGEND keeps its own world, canon, characters, mechanics, assets, and identity.
+This is an inspiration reference, not a request to copy Darkest Dungeon. Do not reproduce its characters, monsters, names, art, logos, typography, exact interface layouts, animations, sound, or proprietary content. LEGEND keeps its own world, canon, characters, assets, and identity. Gameplay systems may be inspired by the reference where LEGEND's design calls for them; the systems approved for this project are listed under [Approved gameplay systems](#approved-gameplay-systems).
 
 ## Creative pillars
 
@@ -19,7 +19,7 @@ This is an inspiration reference, not a request to copy Darkest Dungeon. Do not 
 
 The Old Road and future region journeys should feel like dangerous excursions through a connected world, not a chain of unrelated pages. Preparation in town, route selection, discoveries, events, camps, encounters, supplies, pressure, rewards, and the return report should form one continuous journey.
 
-Keep the established LEGEND loop and its existing rules. A visual reference does not authorize new stress, party, inventory, loot, or combat mechanics.
+Keep the established LEGEND loop and its existing rules. New gameplay systems are governed by [Approved gameplay systems](#approved-gameplay-systems); atmosphere alone is not a reason to change a mechanic.
 
 ### 2. Grim atmosphere with clear information
 
@@ -78,18 +78,59 @@ This creative direction does **not** change the active technical priority: finis
 
 - Phaser becomes the presentation and interaction layer for the full production game: title, opening, HUD, navigation, journals, maps, Ashmere and its services, Old Road, dialogue/events, combat, results, progression, dungeons, regions, inventory, settings, and remaining overlays.
 - Existing production systems remain authoritative during this migration. Keep current controllers, callbacks, rules, combat calculations, enemy behavior, reward settlement, progression, quest state, storage, account/cloud saves, and save schema.
-- Do not build parallel gameplay systems or replace working mechanics to imitate a reference game.
+- Do not build a second implementation of an existing mechanic to imitate a reference game. Approved new systems are additive and must extend the existing owners rather than duplicate them.
 - Preserve accessible names, keyboard focus, text entry, scrolling, pointer/touch controls, responsive behavior, reduced motion, and live state updates.
 - Migrate one whole playable surface at a time. Keep the source UI visible until the Phaser version passes desktop/mobile visual, interaction, state, persistence, and focused Playwright checks.
 - The migration is complete only when the full production experience is genuinely Phaser-presented and the first-session and returning-player journeys pass. A Phaser background behind a DOM game is not completion.
 
 See [PHASER_MIGRATION.md](PHASER_MIGRATION.md) for the authoritative inventory and acceptance gates.
 
+## Approved gameplay systems
+
+**Approved by the owner on 2026-11-17.** This section supersedes the earlier restriction on mechanical inspiration. Party formation, stress, and torchlight are now in scope for LEGEND.
+
+The distinction this direction draws is between **presentation and property**, not between mechanics:
+
+- **Not authorized:** reproducing Darkest Dungeon's art, characters, names, writing, interface, animation, sound, logos, or exact compositions. That is another game's identity and is never to be copied.
+- **Authorized:** adopting mechanical *structures* — party formation, stress, torchlight — as genre conventions. Mechanics are not property, and LEGEND builds its own versions with its own vocabulary, numbers, and fiction.
+
+### Party formation
+
+The traveler may be accompanied by up to four characters on an expedition. The party is drawn from Ashmere's established people — **Mara Vell, Old Brenn, Captain Oric**, and future named residents — rather than invented strangers. Companions occupy ordered ranks that determine who can be reached and who can act.
+
+Party formation turns combat from a single actor into several. It must extend the existing combat owner (`js/systems/road/road-combat-v100.js`) rather than create a parallel system, and it must not alter damage formulas, reward odds, or progression for existing solo play without an approved balance change.
+
+**Companion outcome must be decided before the save schema is written.** LEGEND's approved default is **downed, not dead**: a broken companion is carried home, recovers through existing Ashmere services, and stress — not death — is the cost that takes a companion out of a fight. Permanent death requires a separate owner decision because it changes the save contract.
+
+### Stress and afflictions
+
+Characters accumulate stress during an expedition — from darkness, critical injuries, horror, and the condition of their companions. At the threshold, a resolve check produces an affliction or a virtue that changes how that character behaves.
+
+Afflictions are written in **LEGEND's own voice and vocabulary**. Use the world's canon, fears, and history to name and describe them. Do not import Darkest Dungeon's specific affliction names, flavour text, or presentation.
+
+### Torchlight
+
+Expeditions carry a torch level that drains as the party travels and is restored by consuming torches. Torch level trades safety against reward: bright light reduces danger and stress but lowers the quality of what is found; darkness raises both danger and reward.
+
+Torchlight is both a mechanic and the **presentation input** for the Phaser world layer. The world painter reads the torch value to drive its lighting and atmosphere rather than inventing a separate visual state.
+
+### Rules for adding these systems
+
+1. **One system at a time.** Each system ships complete — mechanic, save fields, normalizer default, view, and focused spec — before the next begins.
+2. **Extend the existing owners.** Combat stays with the combat module, expedition state with `js/systems/road/road-state-v100.js`, persistence with `LegendStorage`. No parallel copies.
+3. **Protect existing saves.** Every new field needs a default in `js/storage/player-normalizer-v120.js` so current player records load unchanged, plus an entry in `docs/SAVE_DATA_CONTRACT.md`.
+4. **Record the design.** Each system gets its own design document before implementation, including its numbers, thresholds, and failure states.
+5. **Do not pause the presentation work.** These systems are additive and live in the systems layer; they are not a reason to defer the hybrid migration.
+
+### Still requiring separate approval
+
+Corpses, hunger, quirks, diseases, permanent death, camping/rest mechanics, loot-rule overrides, and any change to existing combat formulas, balance, reward odds, or save data remain unauthorized until approved individually.
+
 ## What this direction does not authorize
 
 - Copying Darkest Dungeon's art, characters, writing, UI, animation, sound, logos, or exact compositions.
-- Adding stress, torchlight, party formation, afflictions, corpses, loot rules, or other mechanics merely because they exist in the reference.
-- Changing LEGEND canon, story reveals, region names, combat formulas, balance, reward odds, or save data.
-- Pausing or narrowing the Phaser production migration to a palette-only or title-screen redesign.
+- Treating an atmosphere reference as permission to change existing combat formulas, balance, reward odds, or save data. New systems are governed by [Approved gameplay systems](#approved-gameplay-systems).
+- Changing LEGEND canon, story reveals, or region names.
+- Pausing or narrowing the hybrid presentation work to a palette-only or title-screen redesign.
 
-New mechanics and story/canon changes still require separate owner approval and must be recorded in the relevant design or canon document.
+Story and canon changes still require separate owner approval and must be recorded in `docs/CANON.md` or the relevant design document.

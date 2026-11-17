@@ -15,7 +15,7 @@ LEGEND is an in-development, desktop-first browser RPG with responsive mobile su
 
 ## Creative direction
 
-**Darkest Dungeon is now the primary high-level creative reference**, replacing the earlier World of Warcraft / Diablo comparison. Use its expedition-led dark-fantasy atmosphere, strong illustrated silhouettes, expressive character presentation, tactical readability, and field-report sensibility as inspiration only. Do not copy its assets, characters, interface, writing, sound, or mechanics. The authoritative guide is [docs/DARKEST_DUNGEON_DIRECTION.md](docs/DARKEST_DUNGEON_DIRECTION.md).
+**Darkest Dungeon is now the primary high-level creative reference**, replacing the earlier World of Warcraft / Diablo comparison. Use its expedition-led dark-fantasy atmosphere, strong illustrated silhouettes, expressive character presentation, tactical readability, and field-report sensibility as inspiration only. Do not copy its assets, characters, interface, writing, or sound. **Mechanical inspiration is approved within limits:** party formation, stress and torchlight are authorised systems. The authoritative guide is [docs/DARKEST_DUNGEON_DIRECTION.md](docs/DARKEST_DUNGEON_DIRECTION.md) — see "Approved gameplay systems" for the limits and for what still requires separate approval.
 
 ### In the production build
 
