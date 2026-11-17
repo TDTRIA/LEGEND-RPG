@@ -1175,8 +1175,9 @@ test.describe('LEGEND persistent world shell v170', () => {
     });
     expect(snapshot.nativeRightDrawerUi).toBe(true);
     expect(snapshot.nativeRightDrawerUiControlIds).toEqual(expect.arrayContaining([
-      'inn', 'market', 'forge', 'road', 'visit-selected-place'
+      'inn', 'market', 'forge', 'road'
     ]));
+    expect(snapshot.nativeRightDrawerUiControlIds).not.toContain('visit-selected-place');
 
     const leftToggle = page.locator('#legend-world-shell-root [data-world-action="toggle-left"]');
     if (await page.locator('#lws-panel-left').getAttribute('aria-hidden') === 'true' || await page.locator('#lws-panel-left').isHidden()) {
@@ -1190,6 +1191,9 @@ test.describe('LEGEND persistent world shell v170', () => {
     await page.locator('#lws-panel-right [data-world-place="market"]').click();
     await expect(page.locator('#lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
     await expect(page.locator('#lws-panel-right .lws-selected-place h3')).toHaveText('Market');
+    await expect.poll(() => page.evaluate(() =>
+      window.LegendPhaserWorldV1.snapshot().nativeRightDrawerUiControlIds
+    )).toEqual(expect.arrayContaining(['market', 'visit-selected-place']));
     await page.locator('#lws-panel-right [data-world-action="visit-selected-place"]').click();
     await expect(page.locator('.ash099-screen')).toBeVisible();
   });
