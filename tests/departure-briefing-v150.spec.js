@@ -38,8 +38,9 @@ async function createTravelerInAshmere(page) {
 }
 
 async function openDeparture(page) {
-  await page.getByRole('navigation', { name: 'Ashmere terminal navigation' })
-    .getByRole('button', { name: /Routes/i }).click();
+  const hub=page.locator('.ashmere-hub-v240');
+  await hub.locator('#ashmereHubMoreToggle').click();
+  await hub.locator('.ashmere-hub-v240-more-place[data-ash-view="routes"]').click();
   await page.getByRole('button', { name: /The Old Road/i }).click();
   await expect(page.locator('.ash100-departure')).toBeVisible();
 }
