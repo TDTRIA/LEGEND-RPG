@@ -134,7 +134,7 @@
   });
 
   const ASSETS = {
-    title: 'assets/generated/title/title-ashmere-road.webp',
+    title: 'assets/title/title_bg_ashmere_road_v089.jpg',
     ashmere: 'assets/generated/locations/ashmere-town.webp',
     road: 'assets/generated/locations/old-road-south-fork.webp',
     blackroot: 'assets/locations/roads/location_old_road_main_v1.jpg',
@@ -1494,7 +1494,8 @@
     }
 
     syncNativeTitleUi(surface = this.surface) {
-      if (window.LegendDomUiRestore?.enabled) { this.clearNativeTitleUi(); return; }
+      // The Ashmere v230 title uses the original semantic DOM controls; Phaser owns only the world plate and atmosphere.
+      if (window.LegendDomUiRestore?.enabled || root()?.querySelector('.title-v230-ashmere-dom')) { this.clearNativeTitleUi(); return; }
       const hero = root()?.querySelector('.title-v136-rpg .v120-title-hero');
       // Returning saves use the same native menu painter as first-time players.
       // The DOM remains visible until every required action has a real Phaser
