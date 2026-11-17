@@ -64,6 +64,8 @@ test('Ashmere title uses the existing moonlit scene and crisp DOM menu at deskto
       const style = node ? getComputedStyle(node, pseudo) : null;
       return style ? {
         content: style.content, display: style.display, position: style.position,
+        top: style.top, right: style.right, bottom: style.bottom, left: style.left,
+        width: style.width, height: style.height, inset: style.inset,
         background: style.background, backgroundImage: style.backgroundImage,
         opacity: style.opacity, zIndex: style.zIndex, boxShadow: style.boxShadow
       } : null;
@@ -92,6 +94,7 @@ test('Ashmere title uses the existing moonlit scene and crisp DOM menu at deskto
     return {
       viewport: { width: innerWidth, height: innerHeight },
       bodyClass: body.className,
+      body: bounds('body'),
       container: bounds('#game-container'),
       canvas: bounds('#game-container canvas'),
       root: bounds('#root'),
@@ -113,6 +116,11 @@ test('Ashmere title uses the existing moonlit scene and crisp DOM menu at deskto
       sceneObjects
     };
   });
+  expect(geometry.bodyBefore.display).toBe('none');
+  expect(geometry.bodyAfter.display).toBe('none');
+  expect(geometry.bodyBefore.content).toBe('none');
+  expect(geometry.bodyAfter.content).toBe('none');
+  expect(geometry.exactOverlayCandidates).toHaveLength(0);
   console.log('[LEGEND title world geometry]', JSON.stringify(geometry));
   await test.info().attach('ashmere-title-desktop', {
     body: await page.screenshot({ animations: 'disabled' }),
