@@ -2418,91 +2418,55 @@ test('the production Phaser world follows all six Old Road scene stages and the 
 });
 
 
-test('Ashmere uses native Phaser landmarks that route into the real town services', async ({ page }) => {
+test('Ashmere uses scene-led DOM places instead of floating Phaser landmarks', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await startFreshCharacter(page, 'PhaserAshmereQA');
-  await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
+  const hub=page.locator('.ashmere-hub-v240');
+  await expect(hub).toBeVisible();
+  await expect(page.locator('#legend-world-shell-root')).toBeHidden();
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.surface)).toBe('town');
 
-  const landmarks = await page.evaluate(() => {
-    const snapshot = window.LegendPhaserWorldV1?.snapshot?.();
+  const presentation=await page.evaluate(() => {
+    const snapshot=window.LegendPhaserWorldV1?.snapshot?.();
     return {
-      environment: snapshot?.environment,
-      surface: snapshot?.surface,
-      landmarks: snapshot?.ashmereLandmarks || [],
-      landmarkIconsLoaded: snapshot?.landmarkIconsLoaded,
-      pointLightCount: snapshot?.pointLightCount ?? 0,
-      rendererType: snapshot?.rendererType ?? null,
-      productionStorage: typeof window.LegendStorage?.loadPlayer === 'function' &&
-        typeof window.LegendStorage?.savePlayer === 'function'
+      environment:snapshot?.environment,
+      surface:snapshot?.surface,
+      landmarks:snapshot?.ashmereLandmarks||[],
+      townBoardPainter:Boolean(snapshot?.nativeTownBoardUi),
+      shellActive:document.body.classList.contains('legend-world-shell-active'),
+      productionStorage:typeof window.LegendStorage?.loadPlayer==='function'&&typeof window.LegendStorage?.savePlayer==='function',
+      places:Array.from(document.querySelectorAll('.ashmere-hub-v240-place')).map(node=>node.dataset.ashView)
     };
   });
-  expect(landmarks.environment).toBe('ashmere');
-  expect(landmarks.surface).toBe('town');
-  expect(landmarks.landmarks.map(item => item.id)).toEqual(['inn', 'market', 'forge', 'road']);
-  expect(landmarks.landmarks.map(item => item.iconKey)).toEqual([
-    'serviceInnIcon', 'serviceMarketIcon', 'serviceForgeIcon', 'serviceRoadIcon'
-  ]);
-  expect(landmarks.landmarkIconsLoaded).toBe(true);
-  // PointLights are WebGL-only; Canvas uses the retained native halo fallback.
-  expect(landmarks.pointLightCount).toBeGreaterThanOrEqual(0);
-  expect(landmarks.pointLightCount).toBeLessThanOrEqual(4);
-  expect(landmarks.productionStorage).toBe(true);
+  expect(presentation.environment).toBe('ashmere');
+  expect(presentation.surface).toBe('town');
+  expect(presentation.landmarks).toHaveLength(0);
+  expect(presentation.townBoardPainter).toBe(false);
+  expect(presentation.shellActive).toBe(false);
+  expect(presentation.productionStorage).toBe(true);
+  expect(presentation.places).toEqual(['inn','trader','smith','people']);
 
-  // A map-space pointer-up hits the Phaser landmark's screen-space bounds.
-  // The engine selects the matching production POI; the existing shell action
-  // then enters the real market controller and its real buy/sell state.
-  const market = landmarks.landmarks.find(item => item.id === 'market');
-  expect(market).toBeTruthy();
-  await page.evaluate(({ x, y }) => {
-    document.dispatchEvent(new PointerEvent('pointerup', {
-      bubbles: true, cancelable: true, button: 0, clientX: x, clientY: y
-    }));
-  }, { x: market.clientX, y: market.clientY });
-
-  await expect(page.locator('#legend-world-shell-root .lws-selected-place h3')).toHaveText('Market');
-  await expect(page.locator('#legend-world-shell-root [data-world-action="visit-selected-place"]')).toBeEnabled();
-  await page.locator('#legend-world-shell-root [data-world-action="visit-selected-place"]').click();
+  const before=await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()));
+  await hub.locator('.ashmere-hub-v240-place[data-ash-view="trader"]').click();
   await expect(page.locator('.ash099-market-console')).toBeVisible();
-  await expect(page.locator('[data-market-tab="buy"]')).toHaveAttribute('aria-selected', 'true');
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('market');
-  const marketScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
-  expect(marketScene.ashmereLandmarks).toHaveLength(0);
-  expect(marketScene.serviceDressingKey).toBe('market');
-  // Only the ambient lantern remains; the painted stall replaces geometric pennants.
-  expect(marketScene.serviceDressingCount).toBe(1);
-
+  await expect(page.locator('[data-market-tab="buy"]')).toHaveAttribute('aria-selected','true');
+  expect(await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()))).toBe(before);
+  await expect.poll(()=>page.evaluate(()=>window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('market');
+  const market=await page.evaluate(()=>window.LegendPhaserWorldV1.snapshot());
+  expect(market.ashmereLandmarks).toHaveLength(0);
+  expect(market.serviceDressingKey).toBe('market');
   await page.locator('#ashBack').click();
-  await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.ashmereLandmarks?.length)).toBe(4);
-  const townAfterMarket = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
-  expect(townAfterMarket.serviceDressingCount).toBe(0);
-  expect(townAfterMarket.serviceDressingKey).toBe('');
+  await expect(page.locator('.ashmere-hub-v240')).toBeVisible();
+  await expect(page.locator('#legend-world-shell-root')).toBeHidden();
 
-  // Forge and Inn interiors are classified by the explicit town-service key,
-  // not brittle visible-text matching, and get their own native Phaser dressing.
-  const shellRight = page.locator('#legend-world-shell-root #lws-panel-right');
-  await shellRight.locator('[data-world-place="forge"]').click();
-  await expect(shellRight.locator('.lws-selected-place h3')).toHaveText('Forge & Workshop');
-  await shellRight.locator('[data-world-action="visit-selected-place"]').click();
+  await hub.locator('.ashmere-hub-v240-place[data-ash-view="smith"]').click();
   await expect(page.locator('.ash099-forge-console')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('forge');
-  const forgeScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
-  expect(forgeScene.serviceDressingKey).toBe('forge');
-  expect(forgeScene.serviceDressingCount).toBeGreaterThanOrEqual(8);
-
-  await page.locator('#ashBack').click();
-  await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.serviceDressingCount)).toBe(0);
-  await shellRight.locator('[data-world-place="inn"]').click();
-  await expect(shellRight.locator('.lws-selected-place h3')).toHaveText('Ashmere Inn');
-  await shellRight.locator('[data-world-action="visit-selected-place"]').click();
-  await expect(page.locator('.ash099-service-dashboard')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('inn');
-  const innScene = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
-  expect(innScene.serviceDressingKey).toBe('inn');
-  expect(innScene.serviceDressingCount).toBeGreaterThanOrEqual(3);
+  await expect.poll(()=>page.evaluate(()=>window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('forge');
+  const forge=await page.evaluate(()=>window.LegendPhaserWorldV1.snapshot());
+  expect(forge.ashmereLandmarks).toHaveLength(0);
+  expect(forge.serviceDressingKey).toBe('forge');
+  expect(forge.serviceDressingCount).toBeGreaterThanOrEqual(8);
 });
 
 test('the production root falls back to its original artwork when the Phaser CDN is unavailable', async ({ page }) => {
