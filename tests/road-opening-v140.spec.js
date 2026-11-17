@@ -16,9 +16,9 @@ async function openTitle(page) {
   });
   await page.reload();
   await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
-  const skipAwakening = page.getByRole('button', { name: /Skip the world awakening/i });
-  if (await skipAwakening.isVisible().catch(() => false)) await skipAwakening.click();
-  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 10000 });
+  // The production intro may briefly keep the title hidden even with reduced motion.
+  // Let that sequence complete rather than clicking its transient skip control.
+  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 30000 });
   await expect(page.locator('.v120-title-hero .v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
   await expect(page.locator('.v120-title-hero .v150-logo-lockup')).toHaveAttribute('aria-label', 'LEGEND: The Awakening');
   await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
