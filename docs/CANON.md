@@ -1,7 +1,7 @@
 # LEGEND — Canon
 
 Story decisions made by the project owner. **If any other document disagrees with a LOCKED item here, this file wins.**
-Last updated: 2026-11-08.
+Last updated: 2026-11-16.
 
 ## How every AI assistant uses this file
 
@@ -139,6 +139,21 @@ The player first meets the Hollow Saint around the middle of the game. She recog
 
 - **Hidden knowledge:** none of this is stated or implied in player-facing text before the midpoint scene (L4).
 - **Still open:** her personality; where the midpoint meeting happens; whether she is tied to one place or the exception to L5's place-bound rule; how an echo manipulates the Veil; when she is named.
+
+### L16 — Tavin's return and earned place in Ashmere (locked 2026-11-16)
+
+Tavin's reunion with Oric and his return to a settled life in Ashmere are now locked story canon.
+
+- **Arrival:** Tavin reaches Ashmere alone while traveling through. He has no idea Oric is there; seeing him is a complete shock. He is not arriving with companions or seeking his former commander.
+- **Recognition and reunion:** Tavin recognizes Oric by the prominent scar he received protecting him. His first reaction is instinctive military discipline: he straightens and stands at attention, addressing Oric as “Commander?” Oric recognizes Tavin by his voice and says his name. They embrace immediately. Tavin returns the embrace at once; the emotion of the years they believed each other lost comes through without either man holding back.
+- **Public moment:** The reunion happens in front of Ashmere's townspeople. Oric introduces Tavin immediately afterward as the man who once served beside him as his second-in-command. Oric keeps his usual reserved, commanding public manner; his pride and affection show through the respect he gives Tavin, not through a grand emotional speech. Tavin accepts the introduction with his old discipline and respect rather than minimizing his former rank.
+- **A changed relationship:** Tavin initially continues calling Oric “Commander” from habit and respect. Oric gently tells him he no longer needs the title because they are no longer soldiers. Tavin makes a conscious effort to call him “Oric” immediately rather than waiting for the habit to fade.
+- **Finding a home:** Although Tavin first arrives only in passing, he settles into Ashmere fairly quickly. He comes to care for the town and its people in their own right, not merely because Oric is there.
+- **Earning his place:** Oric does not immediately appoint Tavin to a position. Tavin first helps improve Ashmere's overall defenses and trains its inexperienced guards. He earns the town's trust through that work and grows naturally into the role of Oric's second-in-command, helping oversee the defenses when Oric is away.
+- **How he teaches:** Tavin is patient, approachable, and encouraging with inexperienced guards. He teaches through practical guidance and example rather than intimidation. He still expects discipline and effort, but remembers what it was like to be a young, uncertain soldier himself.
+- **A younger guard:** Tavin eventually takes one particular young guard under his wing. What he recognizes first is the same stubborn courage Oric once recognized in him: the young guard keeps going even when afraid. The connection is not simply that the guard is reckless or uncertain, and the guard need not repeat Tavin's exact history. The guard knows they are afraid but tries to hide that fear from everyone else. They continue showing up and doing the work despite it. Tavin first notices the truth during ordinary training, by paying attention to the guard in moments when they believe no one is watching; it is not exposed by a public breakdown or battlefield crisis. Tavin sees the courage beneath the effort; the guard's identity, background, and personal arc remain open.
+
+These are story decisions, not claims that the reunion, guard training, or second-in-command role are already implemented in the game.
 
 ## Approved direction (approved by the owner 2026-10-15, as recorded in `AI_HANDOFF.md`)
 
