@@ -45,7 +45,8 @@ test.describe('LEGEND v0.22.0 boot and realm presentation', () => {
     expect(result.manifest).toBe(true);
     expect(result.systemsReady).toBe(true);
     expect(result.artworkChecked).toBe(true);
-    await expect(page.locator('.v140-realm-overview')).toBeVisible();
+    await expect(page.locator('.v140-realm-overview')).toBeHidden();
+    await expect(page.locator('.v136-rpg-menu')).toBeVisible();
   });
 
   test('keeps a readable scene curtain on screen long enough to register the destination', async ({ page }) => {

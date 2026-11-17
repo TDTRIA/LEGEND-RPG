@@ -348,7 +348,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(atlasResponse.ok()).toBe(true);
     expect(atlasResponse.headers()['content-type']).toContain('image/webp');
     const backdrop = page.locator('.v120-title-backdrop');
-    await expect(backdrop).toHaveAttribute('src', /title-ashmere-road\.webp/);
+    await expect(backdrop).toHaveAttribute('src', /title_bg_ashmere_road_v089\.jpg/);
     await expect.poll(() => backdrop.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     const logo = page.locator('.v150-logo-lockup');
     await expect(page.locator('.v136-corner-sigil')).toHaveCount(0);
@@ -375,13 +375,22 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     })));
     expect(menuIcons.length).toBeGreaterThanOrEqual(5);
     expect(menuIcons.every(icon => icon.classes.length === 1)).toBe(true);
-    expect(new Set(menuIcons.map(icon => icon.classes[0])).size).toBe(menuIcons.length);
+    const iconNames = menuIcons.map(icon => icon.classes[0]);
+    expect(iconNames.filter(name => name === 'runway-icon-settings')).toHaveLength(2);
+    expect(new Set(iconNames.filter(name => name !== 'runway-icon-settings')).size).toBe(menuIcons.length - 2);
     expect(menuIcons.every(icon => icon.width === 28 && icon.height === 28 && icon.overflow === 'hidden' && !icon.hasImageChild)).toBe(true);
-    expect(menuIcons.every(icon => {
+    const iconSpriteAudit = menuIcons.map(icon => {
       const name = icon.classes[0].replace('runway-icon-', '');
-      return icon.backgroundImage.includes('legend-icon-' + name + '.webp');
-    })).toBe(true);
-    await expect(page.locator('.title-v136-rpg .title-atmosphere')).toBeHidden();
+      return {
+        className: icon.classes[0],
+        backgroundImage: icon.backgroundImage,
+        expectedAsset: 'legend-icon-' + name + '.webp',
+        matches: icon.backgroundImage.includes('legend-icon-' + name + '.webp')
+      };
+    });
+    console.log('[LEGEND title icon sprite audit]', JSON.stringify(iconSpriteAudit));
+    expect(iconSpriteAudit.filter(icon => !icon.matches)).toEqual([]);
+    await expect(page.locator('.title-v136-rpg .title-atmosphere')).toBeVisible();
     const legacyRing = await page.locator('.title-v136-rpg.portal-v100').evaluate(node => {
       const style = getComputedStyle(node, '::before');
       return { display: style.display, content: style.content, boxShadow: style.boxShadow };
@@ -396,10 +405,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
   });
 
   test('game opens directly on the actual title menu without the redundant Ashmere Gate screen', async ({ page }) => {
-    await page.goto('/');
-    await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
-    await page.reload();
-    await expect(page.locator('#legend-boot-screen')).toBeHidden({ timeout: 10000 });
+    await openTitle(page);
     await expect(page.locator('.v120-title')).toBeVisible();
     await expect(page.locator('.title-gate-card')).toHaveCount(0);
     await expect(page.locator('#enterRealm')).toHaveCount(0);
@@ -2534,130 +2540,68 @@ test('the production root falls back to its original artwork when the Phaser CDN
 });
 
 
-test('native Phaser title menu replaces the floating HTML button paint and keeps accessible controls', async ({ page }) => {
+test('the Ashmere title keeps its native DOM menu while Phaser renders only the world', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openTitle(page);
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.ready)).toBe(true);
 
   const desktop = await page.evaluate(() => {
-    const hero = document.querySelector('.title-v136-rpg .v120-title-hero');
+    const root = document.querySelector('.title-v230-ashmere-dom');
     const button = document.querySelector('#newPrimary');
-    const style = button ? getComputedStyle(button) : null;
-    const heroStyle = hero ? getComputedStyle(hero) : null;
+    const label = button?.querySelector('.v136-menu-copy strong');
+    const logo = document.querySelector('.v120-legend-logo');
+    const aside = document.querySelector('.v140-realm-overview');
     const rect = button?.getBoundingClientRect();
     return {
-      active: document.body.classList.contains('legend-phaser-title-ui-active'),
-      snapshot: window.LegendPhaserWorldV1.snapshot(),
-      nativeAlignment: (() => {
-        const snapshot = window.LegendPhaserWorldV1.snapshot();
-        const native = snapshot?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary');
-        const scene = snapshot?.nativeTitleUiSceneSize;
-        return rect && native && scene ? {
-          x: Math.abs(native.x - rect.left * scene.width / window.innerWidth),
-          y: Math.abs(native.y - rect.top * scene.height / window.innerHeight),
-          width: Math.abs(native.width - rect.width * scene.width / window.innerWidth),
-          height: Math.abs(native.height - rect.height * scene.height / window.innerHeight)
-        } : null;
-      })(),
-      heroBackground: heroStyle?.backgroundColor,
-      heroShadow: heroStyle?.boxShadow,
-      buttonBackground: style?.backgroundColor,
-      buttonBorder: style?.borderTopColor,
-      childVisibility: button?.firstElementChild ? getComputedStyle(button.firstElementChild).visibility : '',
-      ariaLabel: button?.getAttribute('aria-label'),
-      buttonBounds: rect ? { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom } : null,
+      root: Boolean(root),
+      backdrop: document.querySelector('.v120-title-backdrop')?.getAttribute('src') || '',
+      logoLoaded: Boolean(logo?.complete && logo.naturalWidth > 0),
+      asideDisplay: aside ? getComputedStyle(aside).display : '',
+      nativePainter: document.body.classList.contains('legend-phaser-title-ui-active'),
+      nativeTitleUi: window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi,
+      textVisibility: label ? getComputedStyle(label).visibility : '',
+      buttonBounds: rect ? { left: rect.left, right: rect.right, height: rect.height } : null,
       canvasCount: document.querySelectorAll('#game-container canvas').length
     };
   });
-  expect(desktop.active).toBe(true);
-  expect(desktop.snapshot.nativeTitleUi).toBe(true);
-  expect(desktop.snapshot.nativeTitleUiIconsLoaded).toBe(true);
-  expect(desktop.snapshot.nativeTitleUiControlIds).toContain('newPrimary');
-  expect(desktop.snapshot.nativeTitleUiControlIds).toEqual(['newPrimary','account','settings','dispatches','titleSound','credits']);
-  expect(desktop.snapshot.nativeTitleUiLabels.map(item => [item.title,item.subtitle])).toEqual(
-    await page.locator('.v136-menu-btn').evaluateAll(buttons => buttons.map(button => [
-      button.querySelector('.v136-menu-copy strong').textContent.trim(),
-      button.querySelector('.v136-menu-copy small').textContent.trim()
-    ]))
-  );
-  expect(desktop.snapshot.nativeTitleUiTextQuality).toHaveLength(desktop.snapshot.nativeTitleUiControlCount);
-  desktop.snapshot.nativeTitleUiTextQuality.forEach(item => {
-    // origin/main already uses the responsive 13–17px / 10–12px title
-    // metrics. Preserve that contract and the independent returning-title gate.
-    expect(item.titleFontSize).toBeGreaterThanOrEqual(13);
-    expect(item.titleResolution).toBeGreaterThanOrEqual(2);
-    expect(item.subtitleFontSize).toBeGreaterThanOrEqual(10);
-    expect(item.subtitleResolution).toBeGreaterThanOrEqual(2);
-    expect(item.titleColor).not.toBe('');
-    expect(item.subtitleColor).not.toBe('');
-  });
-  const primaryQuality = desktop.snapshot.nativeTitleUiTextQuality.find(item => item.id === 'newPrimary');
-  expect(primaryQuality.titleColor).toBe('#f5ead5');
-  expect(desktop.nativeAlignment).not.toBeNull();
-  Object.values(desktop.nativeAlignment).forEach(delta => expect(delta).toBeLessThan(2));
-  expect(desktop.heroBackground).toBe('rgba(0, 0, 0, 0)');
-  expect(desktop.heroShadow).toBe('none');
-  expect(desktop.buttonBackground).toBe('rgba(0, 0, 0, 0)');
-  expect(desktop.childVisibility).toBe('hidden');
-  expect(desktop.ariaLabel).toMatch(/Begin Your Journey.*Create your traveler/i);
+  expect(desktop.root).toBe(true);
+  expect(desktop.backdrop).toContain('title_bg_ashmere_road_v089.jpg');
+  expect(desktop.logoLoaded).toBe(true);
+  expect(desktop.asideDisplay).toBe('none');
+  expect(desktop.nativePainter).toBe(false);
+  expect(desktop.nativeTitleUi).toBe(false);
+  expect(desktop.textVisibility).toBe('visible');
   expect(desktop.canvasCount).toBe(1);
   expect(desktop.buttonBounds.left).toBeGreaterThanOrEqual(0);
   expect(desktop.buttonBounds.right).toBeLessThanOrEqual(1440);
+  expect(desktop.buttonBounds.height).toBeGreaterThanOrEqual(40);
 
-  // Resize the same live scene: native Phaser hit-target artwork must realign
-  // with the responsive, still-accessible HTML button hit targets.
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect.poll(() => page.evaluate(() => {
-    const rect = document.querySelector('#newPrimary')?.getBoundingClientRect();
-    const snapshot = window.LegendPhaserWorldV1?.snapshot?.();
-    const native = snapshot?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary');
-    const scene = snapshot?.nativeTitleUiSceneSize;
-    if (!rect || !native || !scene || rect.left < 0 || rect.right > window.innerWidth) return false;
-    const deltas = [
-      Math.abs(native.x - rect.left * scene.width / window.innerWidth),
-      Math.abs(native.y - rect.top * scene.height / window.innerHeight),
-      Math.abs(native.width - rect.width * scene.width / window.innerWidth),
-      Math.abs(native.height - rect.height * scene.height / window.innerHeight)
-    ];
-    return deltas.every(delta => delta < 2);
-  })).toBe(true);
+  await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
   const mobile = await page.evaluate(() => {
-    const rect = document.querySelector('#newPrimary')?.getBoundingClientRect();
-    const snapshot = window.LegendPhaserWorldV1.snapshot();
-    const native = snapshot?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary');
-    const scene = snapshot?.nativeTitleUiSceneSize;
+    const button = document.querySelector('#newPrimary');
+    const rect = button?.getBoundingClientRect();
     return {
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
-      active: document.body.classList.contains('legend-phaser-title-ui-active'),
-      native: snapshot?.nativeTitleUi,
-      button: rect ? { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom } : null,
-      alignment: rect && native && scene ? {
-        x: Math.abs(native.x - rect.left * scene.width / window.innerWidth),
-        y: Math.abs(native.y - rect.top * scene.height / window.innerHeight),
-        width: Math.abs(native.width - rect.width * scene.width / window.innerWidth),
-        height: Math.abs(native.height - rect.height * scene.height / window.innerHeight)
-      } : null
+      nativePainter: document.body.classList.contains('legend-phaser-title-ui-active'),
+      labelVisibility: button ? getComputedStyle(button.querySelector('strong')).visibility : '',
+      bounds: rect ? { left: rect.left, right: rect.right, height: rect.height } : null
     };
   });
   expect(mobile.overflow).toBe(false);
-  expect(mobile.active).toBe(true);
-  expect(mobile.native).toBe(true);
-  expect(mobile.button.left).toBeGreaterThanOrEqual(0);
-  expect(mobile.button.right).toBeLessThanOrEqual(390);
-  expect(mobile.alignment).not.toBeNull();
-  Object.values(mobile.alignment).forEach(delta => expect(delta).toBeLessThan(2));
+  expect(mobile.nativePainter).toBe(false);
+  expect(mobile.labelVisibility).toBe('visible');
+  expect(mobile.bounds.left).toBeGreaterThanOrEqual(0);
+  expect(mobile.bounds.right).toBeLessThanOrEqual(390);
+  expect(mobile.bounds.height).toBeGreaterThanOrEqual(40);
 
-  // The semantic button remains in the accessibility tree and activates the
-  // existing title controller rather than introducing a Phaser-only router.
+  // Keyboard focus and activation stay on the real HTML button.
   const menuButton = page.getByRole('button', { name: /Begin Your Journey/i });
-  await expect(menuButton).toBeVisible();
   await menuButton.focus();
-  await expect.poll(() => page.evaluate(() => Boolean(window.LegendPhaserWorldV1.snapshot()?.nativeTitleUiControlBounds?.find(item => item.id === 'newPrimary')?.focused))).toBe(true);
+  await expect(menuButton).toBeFocused();
   await menuButton.click();
   await expect(page.locator('.opening-lore-v220')).toBeVisible();
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
 });
-
 
 
 test('persistent HUD is painted by Phaser while DOM controls keep their real actions', async ({ page }) => {

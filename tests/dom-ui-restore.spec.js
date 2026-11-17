@@ -2,9 +2,9 @@ const { test, expect } = require('@playwright/test');
 
 /* DOM interface restore switch.
 
-   The switch must be inert by default (today's production painter path keeps
-   owning the interface) and, when asked for, hand every painted surface back
-   to the authored DOM while Phaser keeps the world plate and scene art.
+   The switch is inert by default. The title menu itself now always uses semantic
+   DOM controls; the switch still governs the other native presentation layers
+   while Phaser keeps the world plate and scene art.
 
    These specs stay on the title/annals surface on purpose: that is where the
    painter gate has the most machinery, and it keeps the run fast and stable
@@ -19,7 +19,7 @@ const OPEN_TITLE = async (page, search = '') => {
   await expect(page.locator('#newPrimary')).toBeVisible({ timeout: 15_000 });
 };
 
-test('the switch is off by default and the native painter still owns the title', async ({ page }) => {
+test('the switch is off by default while the Ashmere title keeps its native DOM controls', async ({ page }) => {
   await OPEN_TITLE(page);
 
   const state = await page.evaluate(() => ({
@@ -32,7 +32,7 @@ test('the switch is off by default and the native painter still owns the title',
   expect(state.flag).toBe(false);
   expect(state.paints).toBe(true);
   expect(state.bodyRestore).toBe(false);
-  expect(state.bodyPainter).toBe(true);
+  expect(state.bodyPainter).toBe(false);
 });
 
 test('with the switch on the title returns to native DOM while Phaser keeps the world plate', async ({ page }) => {
@@ -53,6 +53,7 @@ test('with the switch on the title returns to native DOM while Phaser keeps the 
       labelText: label?.textContent?.trim() || '',
       sceneArtActive: backdrop?.getAttribute('data-legend-phaser-scene-art-active'),
       backdropOpacity: backdrop ? getComputedStyle(backdrop).opacity : null,
+      backdropVisibility: backdrop ? getComputedStyle(backdrop).visibility : null,
       canvasWidth: canvas?.width || 0,
       canvasHeight: canvas?.height || 0
     };
@@ -69,12 +70,13 @@ test('with the switch on the title returns to native DOM while Phaser keeps the 
   expect(state.labelVisibility).toBe('visible');
   expect(state.labelText.length).toBeGreaterThan(0);
 
-  // Phaser still owns the world: the canvas is live and the scene art has not
-  // been hidden, so the environment plate behind the interface survives.
+  // Phaser still owns the world: the matching scene art is live on the canvas.
+  // The duplicate DOM image is intentionally hidden after the art handoff.
   expect(state.canvasWidth).toBeGreaterThan(0);
   expect(state.canvasHeight).toBeGreaterThan(0);
   expect(state.sceneArtActive).toBe('true');
-  expect(state.backdropOpacity).not.toBe('0');
+  expect(state.backdropOpacity).toBe('0');
+  expect(state.backdropVisibility).toBe('hidden');
 });
 
 test('the choice is remembered and the URL overrides the saved preference', async ({ page }) => {
@@ -98,7 +100,7 @@ test('the choice is remembered and the URL overrides the saved preference', asyn
     .toBe(false);
   await expect
     .poll(() => page.evaluate(() => document.body.classList.contains('legend-phaser-title-ui-active')))
-    .toBe(true);
+    .toBe(false);
 });
 
 test('the switch never writes into the player save or the settings contract', async ({ page }) => {

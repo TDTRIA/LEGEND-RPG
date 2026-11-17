@@ -73,15 +73,15 @@ test.describe('LEGEND UI cascade contract v190', () => {
         shellHeight: shell?.getBoundingClientRect().height || 0,
         pageHeight: document.documentElement.scrollHeight,
         mainPosition: main ? getComputedStyle(main).position : '',
-        realmPosition: realm ? getComputedStyle(realm).position : '',
+        realmDisplay: realm ? getComputedStyle(realm).display : '',
         footerPosition: footer ? getComputedStyle(footer).position : '',
         portalRing: shell ? getComputedStyle(shell, '::before').display : ''
       };
     });
     expect(Math.abs(desktop.shellHeight - desktop.viewport)).toBeLessThanOrEqual(2);
     expect(desktop.pageHeight).toBeLessThanOrEqual(desktop.viewport + 2);
-    expect(desktop.mainPosition).toBe('absolute');
-    expect(desktop.realmPosition).toBe('absolute');
+    expect(desktop.mainPosition).toBe('relative');
+    expect(desktop.realmDisplay).toBe('none');
     expect(desktop.footerPosition).toBe('absolute');
     expect(desktop.portalRing).toBe('none');
 
@@ -95,13 +95,13 @@ test.describe('LEGEND UI cascade contract v190', () => {
         return {
           viewport: window.innerHeight,
           shellHeight: shell?.getBoundingClientRect().height || 0,
-          realmPosition: realm ? getComputedStyle(realm).position : '',
+          realmDisplay: realm ? getComputedStyle(realm).display : '',
           footerPosition: footer ? getComputedStyle(footer).position : ''
         };
       });
       expect(responsive.shellHeight).toBeGreaterThan(responsive.viewport - 2);
-      expect(responsive.realmPosition).toBe('relative');
-      expect(responsive.footerPosition).toBe('relative');
+      expect(responsive.realmDisplay).toBe('none');
+      expect(responsive.footerPosition).toBe('absolute');
     }
   });
 
@@ -121,7 +121,7 @@ test.describe('LEGEND UI cascade contract v190', () => {
       logoSrc: element.querySelector('.v120-legend-logo')?.getAttribute('src') || '',
       title: element.querySelector('h1')?.textContent || ''
     }));
-    expect(titleComputed.radius).toBe('2px');
+    expect(titleComputed.radius).toBe('0px');
     expect(titleComputed.logoSrc).toMatch(/\.png(?:\?.*)?$/);
     expect(titleComputed.title).toMatch(/LEGEND/i);
     await expectNoHorizontalOverflow(page);

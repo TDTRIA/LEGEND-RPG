@@ -46,7 +46,8 @@ The original 25-image production set is already committed locally (see the impor
 
 | Asset | Runway task ID | Intended stable path | Used for |
 |---|---|---|---|
-| Title / Ashmere road panorama | `9c1b471b-3f5c-49bd-891c-a8cd1ba46df4` | `assets/generated/title/title-ashmere-road.webp` | Cinematic title background |
+| Moonlit Ashmere / Old Road title scene | Existing committed production art | `assets/title/title_bg_ashmere_road_v089.jpg` | Active cinematic game title background |
+| Ashmere approach panorama | `9c1b471b-3f5c-49bd-891c-a8cd1ba46df4` | `assets/generated/title/title-ashmere-road.webp` | Alternate panorama for region and transition scenes |
 | Ashmere town | `002a1265-9d17-4953-9e90-b6ecffebe596` | `assets/generated/locations/ashmere-town.webp` | Ashmere hub |
 | Old Road / South Fork | `4cfd673e-4847-4240-8e0d-50bc62f142e1` | `assets/generated/locations/old-road-south-fork.webp` | Opening expedition scene |
 | Roadside camp | `aa182f8a-cbed-47ac-83b2-7a83d92e0124` | `assets/generated/locations/roadside-camp.webp` | Wayfarer's Camp scene |

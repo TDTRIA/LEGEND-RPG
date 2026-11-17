@@ -134,7 +134,7 @@
   });
 
   const ASSETS = {
-    title: 'assets/generated/title/title-ashmere-road.webp',
+    title: 'assets/title/title_bg_ashmere_road_v089.jpg',
     ashmere: 'assets/generated/locations/ashmere-town.webp',
     road: 'assets/generated/locations/old-road-south-fork.webp',
     blackroot: 'assets/locations/roads/location_old_road_main_v1.jpg',
@@ -1494,7 +1494,8 @@
     }
 
     syncNativeTitleUi(surface = this.surface) {
-      if (window.LegendDomUiRestore?.enabled) { this.clearNativeTitleUi(); return; }
+      // The Ashmere v230 title uses the original semantic DOM controls; Phaser owns only the world plate and atmosphere.
+      if (window.LegendDomUiRestore?.enabled || root()?.querySelector('.title-v230-ashmere-dom')) { this.clearNativeTitleUi(); return; }
       const hero = root()?.querySelector('.title-v136-rpg .v120-title-hero');
       // Returning saves use the same native menu painter as first-time players.
       // The DOM remains visible until every required action has a real Phaser
@@ -6485,17 +6486,20 @@
       this.clearAtmosphere();
       const size = this.dimensions();
       const key = String(environment || 'title').toLowerCase();
+      const isTitle = key === 'title';
       const isBog = key === 'marsh' || key === 'reeds' || key.includes('greyfen');
       const isWet = key === 'marsh' || key === 'reeds';
       const isFire = key === 'camp' || key.includes('forge') || key.includes('inn');
       const isArcane = key.includes('archive') || key === 'cellar';
-      const palette = isBog
-        ? { haze: 0x8eaaa0, mote: 0xc6e8d0, glow: 0xa8e4cb, rain: 0x9bc9ce }
-        : isFire
-          ? { haze: 0xb77a4a, mote: 0xffd29b, glow: 0xffa957, rain: 0xffbf7a }
-          : isArcane
-            ? { haze: 0x7d91b5, mote: 0xd0dcff, glow: 0x9fc8e5, rain: 0xb3c8f0 }
-            : { haze: 0xaeb9a3, mote: 0xe5d5ae, glow: 0xe3b969, rain: 0xd3c79f };
+      const palette = isTitle
+        ? { haze: 0x71838c, mote: 0xb4c2c6, glow: 0x9aa69d, rain: 0x9aaeb8 }
+        : isBog
+          ? { haze: 0x8eaaa0, mote: 0xc6e8d0, glow: 0xa8e4cb, rain: 0x9bc9ce }
+          : isFire
+            ? { haze: 0xb77a4a, mote: 0xffd29b, glow: 0xffa957, rain: 0xffbf7a }
+            : isArcane
+              ? { haze: 0x7d91b5, mote: 0xd0dcff, glow: 0x9fc8e5, rain: 0xb3c8f0 }
+              : { haze: 0xaeb9a3, mote: 0xe5d5ae, glow: 0xe3b969, rain: 0xd3c79f };
       const animate = !reducedMotion();
 
       // Broad, low-opacity haze adds depth without darkening the readable HTML layer.
@@ -6508,7 +6512,7 @@
           size.width * Phaser.Math.FloatBetween(0.28, 0.48),
           size.height * Phaser.Math.FloatBetween(0.045, 0.085),
           palette.haze,
-          isBog ? 0.025 : 0.018
+          isBog ? 0.025 : isTitle ? 0.012 : 0.018
         );
         this.addAtmosphereObject(haze, u, v, -1);
         if (animate) {
@@ -6516,7 +6520,7 @@
             targets: haze,
             x: haze.x + Phaser.Math.Between(-size.width * 0.11, size.width * 0.11),
             y: haze.y + Phaser.Math.Between(-12, 12),
-            alpha: isBog ? 0.042 : 0.03,
+            alpha: isBog ? 0.042 : isTitle ? 0.019 : 0.03,
             scaleX: Phaser.Math.FloatBetween(1.12, 1.35),
             duration: Phaser.Math.Between(11500, 19000),
             yoyo: true,
@@ -6528,21 +6532,22 @@
       }
 
       // Soft local light pools make the painted locations feel less flat.
-      for (let i = 0; i < 5; i++) {
-        const u = 0.12 + i * 0.18;
-        const v = 0.48 + (i % 2) * 0.2;
+      const glowCount = isTitle ? 2 : 5;
+      for (let i = 0; i < glowCount; i++) {
+        const u = isTitle ? (i === 0 ? 0.35 : 0.64) : 0.12 + i * 0.18;
+        const v = isTitle ? (i === 0 ? 0.62 : 0.48) : 0.48 + (i % 2) * 0.2;
         const glow = this.add.circle(
           size.width * u,
           size.height * v,
           Phaser.Math.Between(34, isBog ? 82 : 68),
           palette.glow,
-          isBog ? 0.035 : 0.026
+          isBog ? 0.035 : isTitle ? 0.009 : 0.026
         );
         this.addAtmosphereObject(glow, u, v, 0);
         if (animate) {
           this.tweens.add({
             targets: glow,
-            alpha: isBog ? 0.075 : 0.056,
+            alpha: isBog ? 0.075 : isTitle ? 0.018 : 0.056,
             scale: Phaser.Math.FloatBetween(1.18, 1.48),
             duration: Phaser.Math.Between(2600, 4600),
             yoyo: true,
@@ -6554,7 +6559,7 @@
       }
 
       // Dust, fireflies and embers are intentionally lightweight Phaser game objects.
-      const moteCount = isFire ? 16 : isBog ? 24 : 27;
+      const moteCount = isTitle ? 12 : isFire ? 16 : isBog ? 24 : 27;
       for (let i = 0; i < moteCount; i++) {
         const u = Phaser.Math.FloatBetween(0.025, 0.975);
         const v = Phaser.Math.FloatBetween(0.12, 0.91);
@@ -6564,16 +6569,16 @@
           size.height * v,
           radius,
           palette.mote,
-          isBog ? Phaser.Math.FloatBetween(0.09, 0.22) : Phaser.Math.FloatBetween(0.07, 0.18)
+          isBog ? Phaser.Math.FloatBetween(0.09, 0.22) : isTitle ? Phaser.Math.FloatBetween(0.035, 0.085) : Phaser.Math.FloatBetween(0.07, 0.18)
         );
         this.addAtmosphereObject(mote, u, v, isFire ? 3 : 2);
         if (animate) {
-          const rise = isFire ? Phaser.Math.Between(50, 145) : Phaser.Math.Between(22, 92);
+          const rise = isFire ? Phaser.Math.Between(50, 145) : isTitle ? Phaser.Math.Between(12, 42) : Phaser.Math.Between(22, 92);
           this.tweens.add({
             targets: mote,
             x: mote.x + Phaser.Math.Between(-55, 55),
             y: mote.y - rise,
-            alpha: Phaser.Math.FloatBetween(0.015, isBog ? 0.17 : 0.13),
+            alpha: Phaser.Math.FloatBetween(0.01, isBog ? 0.17 : isTitle ? 0.075 : 0.13),
             scale: Phaser.Math.FloatBetween(0.55, 1.5),
             duration: Phaser.Math.Between(isFire ? 2600 : 5200, isFire ? 6200 : 12500),
             yoyo: true,

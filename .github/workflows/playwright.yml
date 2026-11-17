@@ -104,6 +104,26 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:option-frames
 
+      - name: Run Ashmere title DOM, audio, and accessibility regression
+        if: github.event_name == 'pull_request'
+        run: |
+          npx playwright test \
+            tests/phaser-title-states.spec.js \
+            tests/phaser-title-audio.spec.js \
+            tests/dom-ui-restore.spec.js \
+            --project="Desktop Chrome" --workers=1
+
+      - name: Run title menu, save, and mobile compatibility regression
+        if: github.event_name == 'pull_request'
+        run: |
+          npx playwright test \
+            tests/legend-smoke.spec.js \
+            tests/ui-system-v160.spec.js \
+            tests/ui-cascade-contract-v190.spec.js \
+            --grep "(title background and raster wordmark|game opens directly on the actual title menu|title screen presents the Awakening direction|the Ashmere title keeps its native DOM menu|saved-player Continue menu restores readable DOM fallback|title uses the existing moonlit Ashmere artwork|returning-player title keeps every current DOM action|returning-player DOM menu remains readable and tappable|title, town and expedition stay within a 390px touch viewport|saved Reduced Motion preference suppresses new decorative transitions|title realm fills desktop as a game menu|production title stays readable and within desktop and 390px touch viewports)" \
+            --project="Desktop Chrome" --workers=1
+
+
       - name: Run focused Phaser Old Road map and journal modal regression
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:road-map

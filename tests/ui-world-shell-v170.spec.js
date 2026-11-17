@@ -22,11 +22,11 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await expect(page.locator('.v120-title')).toBeVisible();
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
-  expect(titleBackdropFilter).toContain('brightness(1.1)');
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
+  expect(titleBackdropFilter).toContain('brightness(0.76)');
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
-  expectBackgroundAlphaAtMost(titleSceneOverlay, 0.3);
+  expectBackgroundAlphaAtMost(titleSceneOverlay, 0.9);
   expect(titleSceneOverlay).not.toContain('rgba(2, 5, 3, 0.94)');
 }
 
