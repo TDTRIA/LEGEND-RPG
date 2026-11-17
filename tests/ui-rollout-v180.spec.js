@@ -121,7 +121,8 @@ test.describe('LEGEND UI rollout v180 — Phase 2 screen families', () => {
         inventory: { ...player.inventory }
       };
     });
-    await page.locator('.lws-bottom-bar [data-world-action="inventory"]').click();
+    await page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle').click();
+    await page.locator('.ashmere-hub-v240-utilities [data-ash-hub-action="inventory"]').click();
     const inventoryDialog = page.getByRole('dialog', { name: 'Inventory' });
     await expect(inventoryDialog).toBeVisible();
     await expect(inventoryDialog).toContainText('Road Herb');
@@ -144,7 +145,8 @@ test.describe('LEGEND UI rollout v180 — Phase 2 screen families', () => {
     await inventoryDialog.getByRole('button', { name: /Return to the world/i }).click();
     await expect(inventoryDialog).toHaveCount(0);
 
-    await page.getByRole('button', { name: /The Bell Cellar/i }).click();
+    await page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle').click();
+    await page.locator('.ashmere-hub-v240-more-place[data-ash-view="dungeon"]').click();
     await expect(page.locator('.bell-vault-v100')).toBeVisible();
     await expect(page.locator('.bell-vault-banner')).toHaveCSS('border-radius', '3px');
     await page.locator('#vaultBegin').click();
