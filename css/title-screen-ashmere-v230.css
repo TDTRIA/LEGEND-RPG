@@ -357,6 +357,13 @@
 .title-v230-ashmere-dom .v136-menu-credits {
   border-bottom-color: transparent !important;
 }
+.title-v230-ashmere-dom .v136-menu-btn[aria-pressed="true"] {
+  border-left-color: rgba(205, 180, 125, .72) !important;
+  background: linear-gradient(90deg, rgba(171, 139, 83, .13), rgba(9, 15, 16, .06) 64%, transparent) !important;
+}
+.title-v230-ashmere-dom .v136-menu-btn[aria-pressed="true"] .v136-menu-copy strong {
+  color: #e4d2a7 !important;
+}
 .title-v230-ashmere-dom button:disabled {
   cursor: not-allowed !important;
   opacity: .46 !important;
@@ -458,7 +465,7 @@
     padding: 7px 0 !important;
   }
   .title-v230-ashmere-dom .v136-menu-btn {
-    min-height: 41px !important;
+    min-height: 44px !important;
     padding: 5px 6px !important;
   }
   .title-v230-ashmere-dom .v136-menu-primary {
@@ -497,7 +504,7 @@
     padding: 6px 0 !important;
   }
   .title-v230-ashmere-dom .v136-menu-btn {
-    min-height: 38px !important;
+    min-height: 44px !important;
     padding-top: 4px !important;
     padding-bottom: 4px !important;
   }
