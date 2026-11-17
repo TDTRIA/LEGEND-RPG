@@ -1427,10 +1427,14 @@
       if (typeof node?.getAnimations !== 'function') return false;
       return node.getAnimations({ subtree: true }).some(animation => {
         if (!['running', 'pending'].includes(animation.playState)) return false;
+        // Hover, focus, and selection effects are CSS transitions, not screen
+        // entrance animations. Treating them as entrances tears down the Phaser
+        // surface for 700ms after ordinary interactions, causing DOM/canvas flicker.
+        if (typeof animation.transitionProperty === 'string' && animation.transitionProperty) return false;
         const timing = animation.effect?.getComputedTiming?.();
         // Ambient haze, drifting backdrops and rune loops intentionally run
         // forever. They must never block the native UI painter. Wait only for
-        // finite entrance/transition animations whose final layout is pending.
+        // finite keyframe entrance animations whose final layout is still pending.
         return Boolean(timing && timing.iterations !== Infinity && Number.isFinite(timing.endTime));
       });
     }
@@ -1894,7 +1898,7 @@
       // Each lore page is rebuilt by the existing prologue controller. Phaser
       // mirrors the resulting text and controls; the controller remains in charge
       // of chapter order and the hand-off into traveler creation.
-      this.clearNativeAnnalsUi();
+      this.clearNativeAnnalsUi(false);
       try {
 
       if (!this.nativeAnnalsUiScrollTarget) {
@@ -2245,7 +2249,7 @@
       ]);
       if (this.nativeCreationUiActive && signature === this.nativeCreationUiSignature) return;
 
-      this.clearNativeCreationUi();
+      this.clearNativeCreationUi(false);
       try {
 
       if (!this.nativeCreationUiScrollTarget) {
@@ -2396,8 +2400,8 @@
           drawPanel(node, {
             fill: primary ? 0x233226 : 0x111b13,
             alpha: 0.98,
-            stroke: primary ? 0xe8c77e : 0xa89262,
-            strokeAlpha: primary ? 0.92 : 0.55,
+            stroke: primary ? 0x9dab88 : 0x718071,
+            strokeAlpha: primary ? 0.72 : 0.48,
             lineWidth: primary ? 1.4 : 1,
             inset: false
           });
@@ -2654,7 +2658,7 @@
       ]);
       if (this.nativeOpeningUiActive && signature === this.nativeOpeningUiSignature) return;
 
-      this.clearNativeOpeningUi();
+      this.clearNativeOpeningUi(false);
       try {
 
       if (!this.nativeOpeningUiScrollTarget) {
@@ -2690,17 +2694,17 @@
         }
         add(graphics, 12);
       };
-      cards.forEach(node => drawPanel(node, { fill: 0x0b120d, alpha: 0.96, stroke: 0xd7b66e, strokeAlpha: 0.82, lineWidth: 1.4 }));
-      sceneNotes.forEach(node => drawPanel(node, { fill: 0x282319, alpha: 0.78, stroke: 0xc9a55e, strokeAlpha: 0.74, inset: false }));
-      quotes.forEach(node => drawPanel(node, { fill: 0x090f0b, alpha: 0.62, stroke: 0x9b8352, strokeAlpha: 0.54, inset: false }));
+      cards.forEach(node => drawPanel(node, { fill: 0x0b120d, alpha: 0.96, stroke: 0x87937d, strokeAlpha: 0.62, lineWidth: 1.2 }));
+      sceneNotes.forEach(node => drawPanel(node, { fill: 0x282319, alpha: 0.78, stroke: 0x77836f, strokeAlpha: 0.54, inset: false }));
+      quotes.forEach(node => drawPanel(node, { fill: 0x090f0b, alpha: 0.62, stroke: 0x6f7c70, strokeAlpha: 0.42, inset: false }));
       buttons.forEach(node => {
         const choice = node.classList.contains('opening-road-v140-choice');
         const primary = node.classList.contains('opening-road-v140-primary');
         drawPanel(node, {
           fill: primary ? 0x233226 : choice ? 0x152319 : 0x111a13,
           alpha: 0.98,
-          stroke: primary ? 0xe8c878 : 0xc6a666,
-          strokeAlpha: primary ? 0.94 : 0.68,
+          stroke: primary ? 0x9dab88 : 0x6f7d70,
+          strokeAlpha: primary ? 0.72 : 0.48,
           lineWidth: primary ? 1.4 : 1,
           inset: false
         });
@@ -3316,12 +3320,12 @@
         const focused = button === document.activeElement || button.matches(':focus-visible');
         const hovered = button.matches(':hover');
         const fill = primary ? 0x49391e : hovered || focused ? 0x38432b : 0x142016;
-        const line = focused ? 0xb5d99a : hovered ? 0xe7c982 : 0xa98d55;
+        const line = focused ? 0xb5d99a : hovered ? 0x9eae8e : 0x72816f;
         graphics.fillStyle(fill, disabled ? 0.30 : primary ? 0.98 : 0.92);
         graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
         graphics.lineStyle(focused ? Math.max(2, 2 * Math.min(sx, sy)) : Math.max(1, sx), line, disabled ? 0.26 : focused ? 0.98 : 0.68);
         graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
-        graphics.fillStyle(primary ? 0xffd98b : 0xbfa064, primary ? 0.92 : 0.58);
+        graphics.fillStyle(primary ? 0xc8a96e : 0x83947d, primary ? 0.84 : 0.52);
         graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
 
         const iconNode = button.querySelector('.lws-btn-icon');
@@ -3672,7 +3676,7 @@
             disabled ? 0.32 : 0.97);
           graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 4*sx);
           graphics.lineStyle(focused ? 2*Math.min(sx,sy) : Math.max(1,sx),
-            focused ? 0xb5d99a : primary ? 0xd7b86a : 0x829078, disabled ? 0.30 : 0.62);
+            focused ? 0xb5d99a : primary ? 0x9e956f : 0x788775, disabled ? 0.30 : 0.62);
           graphics.strokeRoundedRect(rect.x + sx/2, rect.y + sy/2,
             Math.max(1,rect.width-sx), Math.max(1,rect.height-sy), 4*sx);
           graphics.fillStyle(primary ? 0xe7c982 : 0x91a080, disabled ? 0.26 : 0.66);
@@ -4356,7 +4360,7 @@
           graphics.fillStyle(focused || hovered ? 0x4a4328 : 0x292f22, 0.98);
           graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, 3 * sx);
           graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
-            focused ? 0xb5d99a : hovered ? 0xe7c982 : 0xbfa064, 0.72);
+            focused ? 0xb5d99a : hovered ? 0x9eae8e : 0x72816f, 0.72);
           graphics.strokeRoundedRect(rect.x + sx / 2, rect.y + sy / 2,
             Math.max(1, rect.width - sx), Math.max(1, rect.height - sy), 3 * sx);
         } else if (classes.contains('exp150-map-discovery')) {
@@ -4859,7 +4863,7 @@
             disabled ? 0.3 : pressed ? 0.98 : 0.93);
           graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
           graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
-            focused ? 0xb5d99a : pressed || hovered ? 0xe7c982 : 0xbfa064, disabled ? 0.28 : 0.60);
+            focused ? 0xb5d99a : pressed || hovered ? 0x9eae8e : 0x72816f, disabled ? 0.28 : 0.60);
           graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
           graphics.fillStyle(0xe7c982, pressed ? 0.92 : 0.56);
           graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
@@ -6165,7 +6169,7 @@
         const featured = item.button.classList.contains('featured') || item.button.classList.contains('lws-poi-active');
         const rect = item.rect;
         const fill = featured ? 0x34291a : disabled ? 0x191b17 : hovered || focused ? 0x24291f : 0x151c16;
-        const border = focused ? 0xffe5a0 : hovered || featured ? 0xd6b66f : 0x8b7952;
+        const border = focused ? 0xb5d99a : hovered || featured ? 0x9e956f : 0x718071;
         graphics.fillStyle(fill, disabled ? 0.62 : 0.96);
         graphics.fillRoundedRect(rect.x, rect.y, rect.width, rect.height, Math.max(3, 6 * sx));
         graphics.lineStyle(focused ? Math.max(2, 2 * sx) : Math.max(1, sx), border, disabled ? 0.34 : focused ? 1 : 0.62);
