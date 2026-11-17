@@ -1,18 +1,34 @@
-# LEGEND — Phaser production migration
+# LEGEND — Production presentation and Phaser world plan
 
-<!-- coderabbit-ai-generated:v1 -->
+Updated: 2026-11-17
 
-<!-- coderabbit-ai-generated-section:v1:f9bdada3b7b915d2fe0ac719b816e207c03361ae71f8ea3f6f62e43a861f3991 -->
+## Architecture decision — supersedes the earlier full-Phaser-UI target
 
-Updated: 2026-11-13
+The production target is now a deliberate **hybrid rendering architecture**, defined in [PHASER_HYBRID_RENDERING.md](PHASER_HYBRID_RENDERING.md) and [ARCHITECTURE.md](ARCHITECTURE.md). The previous objective to move all interface controls, text and panels into Phaser is retired.
 
-<!-- /coderabbit-ai-generated:v1 -->
+- **Phaser owns the world layer:** scene backgrounds, environment art, parallax, atmosphere, fog/weather, lighting/torch glow, particles, animated world actors, camera movement and scene transitions.
+- **HTML/CSS owns the interface:** all text, buttons, panels, menus, forms, dialogue, HUD, journals, maps, expedition decisions, combat commands, reports, modals and responsive controls.
+- **Existing production systems own behavior:** navigation, combat calculations, enemies, quests, progression, rewards, expedition state, economy, inventory and persistence remain in their current controllers/services.
+
+The first stabilization slice returns the title, mandatory annals, traveler creation and Oric's opening dialogue to visible DOM ownership. The legacy Phaser interface painters for these four surfaces are disabled in production; their Phaser world scenes, backgrounds, atmosphere and transitions remain active. This is an intentional architectural correction, not a rollback of the Phaser world renderer.
 
 ## Objective
 
-Move the entire production game presentation into Phaser 4.1 while retaining the real production systems. This is not a separate prototype and not a rewrite of combat, quests, rewards, player storage, account/cloud saves or progression logic.
+Make the production game cohesive and immersive by using Phaser for the parts it does best—the rendered world, environmental effects, actors and transitions—while keeping the complete interface semantic, responsive and accessible in HTML/CSS. Migrate or remove legacy native interface painters one complete surface at a time, without replacing the existing game systems or rewriting their behavior.
 
-The existing modules remain the source of truth. Phaser owns scene presentation, camera, transitions, visual state, controls and UI rendering as each surface is migrated. Existing controller functions are invoked from Phaser-backed controls until a deliberate later refactor changes those APIs.
+The original production modules remain the source of truth. Do not introduce parallel rules, handlers or saves. Keep the active save key and `LegendStorage` facade unchanged. Preserve every menu option, action callback, accessibility feature, keyboard/touch path and first-session/returning-player flow.
+
+## Acceptance standard
+
+A surface is stable only when:
+1. All interface copy is readable DOM text; no DOM copy is hidden or made transparent to mirror it in canvas.
+2. Real DOM controls remain the only action targets and retain their existing callbacks.
+3. Phaser world art and transitions still render correctly behind the interface.
+4. Desktop, mobile portrait and landscape layouts work without clipped text or horizontal overflow.
+5. Keyboard focus, touch targets, reduced motion, zoom, scrolling and save preservation are verified.
+6. The focused checks and complete production Playwright suite pass on the PR before merge.
+
+This file's historical checkpoints below document earlier native-painter experiments and test results. They are not permission to restore canvas-rendered UI or contradict the current hybrid contract.
 
 <!-- coderabbit-ai-generated:v1 -->
 
