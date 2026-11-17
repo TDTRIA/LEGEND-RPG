@@ -4,7 +4,7 @@
  */
 (() => {
   function create(scene) {
-    let painted = null, signature = '', pending = null, failure = '';
+    let painted = null, signature = '', pending = null, failure = '', paintedOddsOpen = false;
     let objects = [], tagged = [], labels = [], clipMask = null, clipBounds = null;
     const artKey = 'legend-native-contracts-header';
     function clear() {
@@ -13,7 +13,7 @@
       objects.forEach(object => object.destroy(true));
       clipMask?.destroy();
       if (scene.textures.exists(artKey)) scene.textures.remove(artKey);
-      painted = null; signature = ''; tagged = []; objects = []; labels = [];
+      painted = null; paintedOddsOpen = false; signature = ''; tagged = []; objects = []; labels = [];
       clipMask = null; clipBounds = null;
     }
     function sync() {
@@ -132,7 +132,7 @@
           if (!label) throw new Error('Contracts copy cannot fit: ' + node.tagName + ' ' + node.textContent.trim());
           add(label); labels.push(label.text);
         });
-        painted = screen; signature = next; tagged = texts; failure = '';
+        painted = screen; paintedOddsOpen = odds.open; signature = next; tagged = texts; failure = '';
         tagged.forEach(node => node.setAttribute('data-phaser-contracts-copy', 'true'));
         screen.classList.add('legend-phaser-contracts');
       } catch (error) { failure = error.message; clear(); }
@@ -157,7 +157,7 @@
     scene.events.once('shutdown', destroy); schedule();
     return { sync, destroy, snapshot: () => ({ active: Boolean(painted), labels: [...labels], failure, clipBounds,
       focused: painted?.querySelector(':focus')?.dataset.dailyClaim || painted?.querySelector(':focus')?.dataset.contractAccept || painted?.querySelector(':focus')?.dataset.contractTurnin || painted?.querySelector(':focus')?.id || '',
-      oddsOpen: Boolean(painted?.querySelector('.ash099-cache-odds')?.open), art: painted?.querySelector('.ash099-head > img')?.getAttribute('src') || '' }) };
+      oddsOpen: Boolean(painted && paintedOddsOpen), art: painted?.querySelector('.ash099-head > img')?.getAttribute('src') || '' }) };
   }
   window.LegendPhaserContractsV1 = Object.freeze({ create });
 })();
