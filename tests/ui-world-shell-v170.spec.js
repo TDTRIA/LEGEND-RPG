@@ -680,278 +680,65 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(leftPanel).not.toBeInViewport();
   });
 
-  test('Ashmere destination board is Phaser-painted while real town actions and fallback remain usable', async ({ page }) => {
-    test.setTimeout(180000);
+  test('Ashmere refuge keeps the destination catalog reachable without a town painter or shell', async ({ page }) => {
     await enterAshmere(page, 'AshmereBoardQA');
+    const hub=page.locator('.ashmere-hub-v240');
+    await expect(hub).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
     await expect.poll(() => page.evaluate(() =>
       window.LegendPhaserWorldV1?.snapshot?.()?.nativeTownBoardUi
-    )).toBe(true);
+    )).toBe(false);
+    await expect(page.locator('body')).not.toHaveClass(/legend-phaser-town-board-ui-active/);
+    await expect(hub.locator('.ashmere-hub-v240-place')).toHaveCount(4);
+    const places=await hub.locator('.ashmere-hub-v240-place').evaluateAll(nodes=>nodes.map(node=>node.dataset.ashView));
+    expect(places).toEqual(['inn','trader','smith','people']);
 
-    const initial = await page.evaluate(() => {
-      const snapshot = window.LegendPhaserWorldV1.snapshot();
-      const section = document.querySelector('.ash100-destination-section');
-      return {
-        active: snapshot.nativeTownBoardUi,
-        textCount: snapshot.nativeTownBoardUiTextCount,
-        text: snapshot.nativeTownBoardUiTextValues || [],
-        ids: snapshot.nativeTownBoardUiControlIds || [],
-        cards: snapshot.nativeTownBoardUiCards || [],
-        heading: section?.querySelector('h2')?.textContent || '',
-        iconCount: section?.querySelectorAll('.ash100-destination-icon').length || 0
-      };
-    });
-    expect(initial.active).toBe(true);
-    expect(initial.textCount).toBeGreaterThanOrEqual(26);
-    expect(initial.text).toEqual(expect.arrayContaining([
-      'ASHMERE', 'Where next?', 'Ashmere Inn', 'Market', 'Forge & Workshop',
-      'Town Square', 'Work Board', 'Daily Field Board', 'Old Road Gate', 'Road Network'
-    ]));
-    expect(initial.ids).toEqual(['inn','trader','smith','people','work','quests','road','regions']);
-    expect(initial.cards).toHaveLength(8);
-    expect(initial.iconCount).toBe(8);
-    expect(initial.cards.every(card => card.width > 0 && card.height > 0 && card.title && card.action)).toBe(true);
-    await page.locator('.ash100-destination[data-ash-view="inn"]').hover();
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.find(card => card.id === 'inn')?.hovered
-    )).toBe(true);
-    expect(await page.locator('.ash100-destination-copy strong').first().evaluate(node =>
-      getComputedStyle(node).color
-    )).toBe('rgba(0, 0, 0, 0)');
+    await hub.locator('#ashmereHubMoreToggle').click();
+    const more=hub.locator('.ashmere-hub-v240-more-place');
+    await expect(more).toContainText('Work Board');
+    await expect(more).toContainText('Daily Field Board');
+    await expect(more).toContainText('Road Network');
+    await expect(more).toContainText('Route Board');
+    await expect(more).toContainText('Field Journal');
+    await expect(more).toContainText('Profile & Account');
+    await expect(more).toContainText('Traveler Record');
 
-    // A missing destination forces the full styled DOM board back on-screen.
-    const fallback = await page.evaluate(() => {
-      const section = document.querySelector('.ash100-destination-section');
-      const button = section.querySelector('[data-ash-view="regions"]');
-      const parent = button.parentNode;
-      const next = button.nextSibling;
-      button.remove();
-      window.LegendPhaserWorldV1.refreshTownBoard();
-      const result = {
-        active: window.LegendPhaserWorldV1.snapshot().nativeTownBoardUi,
-        titleColor: getComputedStyle(section.querySelector('.ash100-destination-copy strong')).color
-      };
-      parent.insertBefore(button, next);
-      window.LegendPhaserWorldV1.refreshTownBoard();
-      return result;
-    });
-    expect(fallback.active).toBe(false);
-    expect(fallback.titleColor).not.toBe('rgba(0, 0, 0, 0)');
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
-    )).toBe(true);
-
-    // The Bell Cellar appears only after the existing progression flag is set.
     await page.evaluate(() => {
-      const player = window.LegendRuntimeV120.loadPlayer();
-      player.flags = player.flags || {};
-      player.flags.firstRoadReturnSeen = true;
+      const player=window.LegendStorage.loadPlayer();
+      player.flags=player.flags||{};
+      player.flags.firstRoadReturnSeen=true;
       window.LegendStorage.savePlayer(player);
       window.LegendAshmereV099.renderAshmere();
     });
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.length
-    )).toBe(9);
-    const unlocked = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTownBoardUiCards);
-    expect(unlocked.map(card => card.id)).toContain('dungeon');
-    expect(unlocked.find(card => card.id === 'dungeon')?.title).toBe('The Bell Cellar');
-    expect(await page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiExpectedIds
-    )).toEqual(['inn','trader','smith','people','work','dungeon','quests','road','regions']);
+    await hub.locator('#ashmereHubMoreToggle').click();
+    await expect(hub.locator('.ashmere-hub-v240-more-place[data-ash-view="dungeon"]')).toContainText('The Bell Cellar');
 
-    // The unlocked board must fall back if its progression-only Bell Cellar card is missing.
-    const unlockedFallback = await page.evaluate(() => {
-      const section = document.querySelector('.ash100-destination-section');
-      const cellar = section.querySelector('[data-ash-view="dungeon"]');
-      const parent = cellar.parentNode;
-      const next = cellar.nextSibling;
-      cellar.remove();
-      window.LegendPhaserWorldV1.refreshTownBoard();
-      const result = {
-        active: window.LegendPhaserWorldV1.snapshot().nativeTownBoardUi,
-        titleColor: getComputedStyle(section.querySelector('.ash100-destination-copy strong')).color
-      };
-      parent.insertBefore(cellar, next);
-      window.LegendPhaserWorldV1.refreshTownBoard();
-      return result;
-    });
-    expect(unlockedFallback.active).toBe(false);
-    expect(unlockedFallback.titleColor).not.toBe('rgba(0, 0, 0, 0)');
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
-    )).toBe(true);
-
-    // The live destination buttons still call the original market and work-board routes.
-    await page.locator('.ash100-destination[data-ash-view="trader"]').click();
+    const before=await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()));
+    await hub.locator('.ashmere-hub-v240-place[data-ash-view="trader"]').click();
     await expect(page.locator('.ash099-market-console')).toBeVisible();
-    await expect(page.locator('#root').getByRole('heading', { name: 'Trading Post', exact:true })).toBeVisible();
+    expect(await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()))).toBe(before);
     await page.locator('#ashBack').click();
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
-    )).toBe(true);
-    await page.locator('.ash100-destination[data-ash-view="work"]').click();
+    await expect(page.locator('.ashmere-hub-v240')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
+
+    await page.locator('#ashmereHubMoreToggle').click();
+    await page.locator('.ashmere-hub-v240-more-place[data-ash-view="work"]').click();
     await expect(page.locator('.ash099-job-board')).toBeVisible();
     await expect(page.locator('#openDailyFieldBoard')).toBeVisible();
-    await page.locator('#ashBack').click();
-    await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
+  });
 
-    // A forced Phaser text-construction error must restore the entire DOM board.
-    const paintError = await page.evaluate(() => {
-      const Factory = window.Phaser?.GameObjects?.GameObjectFactory;
-      const prototype = Factory?.prototype;
-      const originalText = prototype?.text;
-      if (typeof originalText !== 'function') return { supported: false };
-      const section = document.querySelector('.ash100-destination-section');
-      const description = section.querySelector('.ash100-destination-copy small');
-      const originalDescription = description.textContent;
-      prototype.text = function () { throw new Error('Forced Ashmere painter failure test'); };
-      let result;
-      try {
-        description.textContent = originalDescription + ' · test repaint';
-        window.LegendPhaserWorldV1.refreshTownBoard();
-        result = {
-          active: window.LegendPhaserWorldV1.snapshot().nativeTownBoardUi,
-          titleColor: getComputedStyle(section.querySelector('.ash100-destination-copy strong')).color
-        };
-      } finally {
-        prototype.text = originalText;
-        description.textContent = originalDescription;
-        window.LegendPhaserWorldV1.refreshTownBoard();
-      }
-      return { supported: true, ...result };
-    });
-    expect(paintError.supported).toBe(true);
-    expect(paintError.active).toBe(false);
-    expect(paintError.titleColor).not.toBe('rgba(0, 0, 0, 0)');
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUi
-    )).toBe(true);
-
-    // Under a continuous scroll burst, Phaser updates each frame rather than
-    // waiting for scrolling to stop; its label bounds must track real buttons.
-    const scrollAlignment = await page.evaluate(async () => {
-      // The production shell scrolls its world root beneath the fixed HUD.
-      const scroller = document.getElementById('root');
-      const maxScroll = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
-      if (maxScroll < 32) return { scrollable: false };
-      for (let step = 1; step <= 12; step += 1) {
-        scroller.scrollTop = maxScroll * step / 12;
-        scroller.dispatchEvent(new Event('scroll'));
-      }
-      await new Promise(resolve => requestAnimationFrame(resolve));
-      const snapshot = window.LegendPhaserWorldV1.snapshot();
-      const button = document.querySelector('.ash100-destination[data-ash-view="inn"]');
-      const dom = button.getBoundingClientRect();
-      const painted = snapshot.nativeTownBoardUiCards.find(card => card.id === 'inn');
-      const sx = snapshot.nativeTownBoardUiSceneSize.width / window.innerWidth;
-      const sy = snapshot.nativeTownBoardUiSceneSize.height / window.innerHeight;
-      return {
-        scrollable: true,
-        xDelta: Math.abs(painted.x - dom.left * sx),
-        yDelta: Math.abs(painted.y - dom.top * sy)
-      };
-    });
-    expect(scrollAlignment.scrollable).toBe(true);
-    expect(scrollAlignment.xDelta).toBeLessThan(2);
-    expect(scrollAlignment.yDelta).toBeLessThan(2);
-
-    // Focus remains on the real DOM button while its visible focus state is painted in Phaser.
+  test('Ashmere place selection stays keyboard reachable and fits a narrow screen', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    const inn = page.locator('.ash100-destination[data-ash-view="inn"]');
-    await inn.focus();
-    // Enter keyboard modality after the preceding pointer actions and return
-    // to Inn through the real tab order so :focus-visible is exercised.
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Shift+Tab');
-    await expect(inn).toBeFocused();
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.find(card => card.id === 'inn')?.focused
-    )).toBe(true);
-    const townFocusStyle = await inn.evaluate(node => ({
-      outlineColor: getComputedStyle(node).outlineColor,
-      outlineStyle: getComputedStyle(node).outlineStyle
-    }));
-    expect(townFocusStyle).toEqual({ outlineColor: 'rgb(181, 217, 154)', outlineStyle: 'solid' });
-    await expectNoHorizontalOverflow(page);
-    const mobile = await page.evaluate(() => ({
-      width: document.documentElement.clientWidth,
-      board: document.querySelector('.ash100-destination-section')?.getBoundingClientRect().width || 0,
-      cardCount: window.LegendPhaserWorldV1.snapshot()?.nativeTownBoardUiCards.length || 0
-    }));
-    expect(mobile.board).toBeGreaterThan(0);
-    expect(mobile.cardCount).toBe(9);
-  });
-
-  test('Ashmere POI selection updates the contextual scene without changing saved gameplay state', async ({ page }) => {
-    await enterAshmere(page, 'AshmerePOITraveler');
-    const before = await page.evaluate(() => {
-      const player = window.LegendStorage.loadPlayer();
-      return JSON.stringify({
-        username: player.username,
-        hp: player.hp,
-        gold: player.gold,
-        inventory: player.inventory,
-        flags: player.flags,
-        quests: player.questLog
-      });
-    });
-
-    await expect(page.locator('.lws-panel-right [data-world-place]')).toHaveCount(4);
-    const placeIcons = await page.locator('.lws-panel-right .lws-place-option-icon').evaluateAll(nodes => nodes.map(node => ({
-      classes: Array.from(node.classList).filter(name => name.startsWith('runway-icon-')),
-      size: Math.max(node.getBoundingClientRect().width, node.getBoundingClientRect().height),
-      backgroundImage: getComputedStyle(node).backgroundImage
-    })));
-    expect(placeIcons).toHaveLength(4);
-    expect(new Set(placeIcons.map(icon => icon.classes[0])).size).toBe(4);
-    expect(placeIcons.every(icon => {
-      const name = icon.classes[0].replace('runway-icon-', '');
-      return icon.size <= 32 && icon.backgroundImage.includes('legend-icon-' + name + '.webp');
-    })).toBe(true);
-    await page.locator('.lws-panel-right [data-world-place="market"]').click();
-    await expect(page.locator('.lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('.lws-selected-place h3')).toHaveText('Market');
-    await expect(page.locator('.lws-selected-place')).toContainText('Trade for provisions and sell what you have brought back from the road.');
-    await expect(page.locator('.lws-poi-scene-note')).toContainText('Market');
-    await expect(page.locator('.lws-poi-scene-note')).toContainText('TRADE & SUPPLIES');
-    await expect(page.locator('.ash100-town-ashmere .ash100-destination[data-ash-view="trader"]')).toHaveClass(/lws-poi-active/);
-    await expect(page.locator('.ash100-town')).toBeVisible();
-
-    const afterSelect = await page.evaluate(() => {
-      const player = window.LegendStorage.loadPlayer();
-      return JSON.stringify({
-        username: player.username,
-        hp: player.hp,
-        gold: player.gold,
-        inventory: player.inventory,
-        flags: player.flags,
-        quests: player.questLog
-      });
-    });
-    expect(afterSelect).toBe(before);
-
-    await page.locator('.lws-panel-right [data-world-action="visit-selected-place"]').click();
-    await expect(page.locator('.ash099-screen')).toBeVisible();
-    await expect(page.locator('#legend-world-shell-root')).toHaveAttribute('data-context', 'service');
-    await page.locator('.lws-bottom-bar [data-world-action="world"]').click();
-    await expect(page.locator('.ash100-town')).toBeVisible();
-    await expect(page.locator('.lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('.lws-poi-scene-note')).toContainText('Market');
-  });
-
-  test('Ashmere POI selection remains keyboard reachable and fits a narrow screen', async ({ page }) => {
     await enterAshmere(page, 'AshmerePOIMobile');
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.locator('.lws-mobile-toggle[data-world-action="toggle-right"]').click();
-    const inn = page.locator('.lws-panel-right [data-world-place="inn"]');
-    await expect(inn).toBeVisible();
+    const hub=page.locator('.ashmere-hub-v240');
+    await expect(hub).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
+    const inn=hub.locator('.ashmere-hub-v240-place[data-ash-view="inn"]');
     await inn.focus();
+    await expect(inn).toBeFocused();
+    await expect(inn).toHaveCSS('outline-style','solid');
     await page.keyboard.press('Enter');
-    await expect(inn).toHaveAttribute('aria-pressed', 'true');
-    await expect(page.locator('.lws-poi-scene-note')).toContainText('Ashmere Inn');
-    await expectNoHorizontalOverflow(page);
-    await page.locator('.lws-panel-right [data-world-action="visit-selected-place"]').focus();
-    await page.keyboard.press('Enter');
-    await expect(page.locator('.ash099-screen')).toBeVisible();
+    await expect(page.locator('#rest')).toBeVisible();
     await expectNoHorizontalOverflow(page);
   });
 
