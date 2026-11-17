@@ -122,6 +122,17 @@
     window.__legendPhaserProductionSaveKey = SAVE_KEY;
   }
 
+  // Consistent option-frame palette for persistent world-shell actions.
+  // Selection stays warm, while ordinary actions use quiet stone and sage.
+  const NATIVE_OPTION_FRAME_PALETTE = Object.freeze({
+    neutral: 0x72816f,
+    hover: 0x9eae8e,
+    focus: 0xb5d99a,
+    normalAccent: 0x83947d,
+    selectedAccent: 0xc8a96e,
+    brandAccent: 0xe7c982
+  });
+
   const ASSETS = {
     title: 'assets/generated/title/title-ashmere-road.webp',
     ashmere: 'assets/generated/locations/ashmere-town.webp',
@@ -959,6 +970,7 @@
           nativeHudLabels: this.shellLabelSnapshot(this.nativeHudUiObjects),
           nativeLeftDrawerLabels: this.shellLabelSnapshot(this.nativeLeftDrawerUiObjects),
           nativeRightDrawerLabels: this.shellLabelSnapshot(this.nativeRightDrawerUiObjects),
+          nativeShellOptionFramePalette: NATIVE_OPTION_FRAME_PALETTE,
           nativeHudUi: this.nativeHudUiActive,
           nativeHudUiObjectCount: this.nativeHudUiObjects.filter(item => item?.active).length,
           nativeHudUiTextCount: this.nativeHudUiTextNodes.filter(node => node?.isConnected).length,
@@ -4865,7 +4877,10 @@
           graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
             focused ? 0xb5d99a : pressed || hovered ? 0x9eae8e : 0x72816f, disabled ? 0.28 : 0.60);
           graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
-          graphics.fillStyle(0xe7c982, pressed ? 0.92 : 0.56);
+          graphics.fillStyle(
+            pressed ? NATIVE_OPTION_FRAME_PALETTE.selectedAccent : NATIVE_OPTION_FRAME_PALETTE.normalAccent,
+            pressed ? 0.78 : 0.42
+          );
           graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
         }
       });
@@ -5158,7 +5173,10 @@
           draw.fillStyle(focused || hovered ? 0x39412a : 0x172116, disabled ? 0.34 : 0.95);
           draw.fillRect(rect.x, rect.y, rect.width, rect.height);
           draw.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx),
-            focused ? 0xb5d99a : hovered ? 0xe7c982 : 0xbfa064, disabled ? 0.30 : 0.62);
+            focused ? NATIVE_OPTION_FRAME_PALETTE.focus
+              : hovered ? NATIVE_OPTION_FRAME_PALETTE.hover
+                : NATIVE_OPTION_FRAME_PALETTE.neutral,
+            disabled ? 0.30 : 0.62);
           draw.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
         }
       });
@@ -5345,12 +5363,16 @@
         const hovered = isButton && node.matches(':hover');
         const disabled = isButton && node.disabled;
         const fill = isBrand ? 0x182116 : isVital ? 0x111a11 : (hovered || focused) ? 0x39412a : 0x172116;
-        const stroke = focused ? 0xb5d99a : hovered ? 0xe7c982 : 0xbfa064;
+        const stroke = focused ? NATIVE_OPTION_FRAME_PALETTE.focus
+          : hovered ? NATIVE_OPTION_FRAME_PALETTE.hover : NATIVE_OPTION_FRAME_PALETTE.neutral;
         graphics.fillStyle(fill, disabled ? 0.42 : isBrand ? 0.92 : 0.96);
         graphics.fillRect(rect.x, rect.y, rect.width, rect.height);
         graphics.lineStyle(focused ? 2 * Math.min(sx, sy) : Math.max(1, sx), stroke, disabled ? 0.34 : focused ? 0.98 : 0.54);
         graphics.strokeRect(rect.x + 0.5, rect.y + 0.5, Math.max(1, rect.width - 1), Math.max(1, rect.height - 1));
-        graphics.fillStyle(0xe7c982, isBrand ? 0.76 : 0.52);
+        const accent = isBrand ? NATIVE_OPTION_FRAME_PALETTE.brandAccent
+          : focused ? NATIVE_OPTION_FRAME_PALETTE.focus
+            : hovered ? NATIVE_OPTION_FRAME_PALETTE.hover : NATIVE_OPTION_FRAME_PALETTE.normalAccent;
+        graphics.fillStyle(accent, isBrand ? 0.76 : 0.42);
         graphics.fillRect(rect.x, rect.y, Math.max(2 * sx, 2), rect.height);
       });
       this.nativeHudUiObjects.push(graphics);
