@@ -819,8 +819,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       rt.savePlayer(pl);
     });
 
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' })
-      .getByRole('button', { name: /Routes/i }).click();
+    await clickAshmereView(page, 'routes');
     await enterOldRoadFromDeparture(page);
     await page.locator('#push').click();
     await expect(page.locator('.exp100-combat')).toBeVisible();
@@ -945,7 +944,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await startFreshCharacter(page, 'AshmereQA');
     await expect(page.locator('.ash100-town')).toContainText('Ashmere');
     await expect(page.locator('.ash100-town')).toContainText('AshmereQA');
-    await expect(page.getByRole('navigation', { name: 'Ashmere terminal navigation' })).toBeVisible();
+    await expect(page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle')).toBeVisible();
   });
 
   test('Ashmere has its own in-world controls and the old persistent shell is retired from this surface', async ({ page }) => {
@@ -1455,7 +1454,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
 
   test('Forge shows material-specific sword illustrations and tactical passive descriptions', async ({ page }) => {
     await startFreshCharacter(page, 'WeaponTraitsQA');
-    await page.locator('.ash100-destinations').getByRole('button', { name: /Forge & Workshop/i }).click();
+    await clickAshmereView(page, 'smith');
     await expect(page.locator('[data-gear="woodenSword"] .ash099-weapon-art-woodenSword')).toBeVisible();
     await expect(page.locator('[data-gear="stoneSword"]')).toContainText(/Heavy Strike deals 25% more damage/i);
     await expect(page.locator('[data-gear="steelSword"]')).toContainText(/20% critical chance/i);
@@ -2010,25 +2009,19 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.exp100-head')).toContainText(/something followed you out/i);
   });
 
-  test('Ashmere hub destinations use the dedicated local service icon artwork', async ({ page }) => {
+  test('Ashmere uses distinct local scene art for its real places and Old Road Gate', async ({ page }) => {
     await startFreshCharacter(page, 'IconArtQA');
-    const destinationIcons = page.locator('.ash100-destinations .ash100-destination-icon');
-    await expect(destinationIcons).toHaveCount(8);
-    const iconImages = page.locator('.ash100-destinations .ash100-destination-icon .ash099-asset-icon img');
-    await expect(iconImages).toHaveCount(8);
-    const iconSources = await iconImages.evaluateAll(nodes => nodes.map(node => node.getAttribute('src') || ''));
-    expect(iconSources.every(src => src.startsWith('assets/generated/') && /\.(?:webp|png)(?:\?.*)?$/i.test(src))).toBe(true);
-    await expect(page.locator('.ash100-destinations .ash100-destination-icon .ash099-icon svg')).toHaveCount(0);
-    await expect(page.locator('.ash100-destinations .ash100-destination-icon .ash099-region-shop-icon img')).toHaveCount(0);
-    const iconBounds = await iconImages.evaluateAll(nodes => nodes.map(img => {
-      const icon = img.closest('.ash100-destination-icon');
-      const a = icon.getBoundingClientRect();
-      const b = img.getBoundingClientRect();
-      return { within: b.width <= a.width + 1 && b.height <= a.height + 1, iconWidth: a.width, imageWidth: b.width };
-    }));
-    expect(iconBounds.every(item => item.within)).toBe(true);
-    const navImmediatelyAfterHero = await page.locator('.ash100-hero').evaluate(hero => hero.nextElementSibling?.classList.contains('ash099-topnav'));
-    expect(navImmediatelyAfterHero).toBe(true);
+    const sources=await page.locator('.ashmere-hub-v240-place-art img').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('src')||''));
+    expect(sources).toEqual(expect.arrayContaining([
+      expect.stringContaining('ashmere-inn.webp'),
+      expect.stringContaining('ashmere-market.webp'),
+      expect.stringContaining('ashmere-forge.webp'),
+      expect.stringContaining('captain-oric.webp')
+    ]));
+    await expect.poll(()=>page.locator('.ashmere-hub-v240-place-art img').evaluateAll(nodes=>nodes.length===4&&nodes.every(img=>img.complete&&img.naturalWidth>0))).toBe(true);
+    const gate=page.locator('.ashmere-hub-v240-gate-art img');
+    await expect(gate).toHaveAttribute('src',/old-road-south-fork\.webp/);
+    await expect.poll(()=>gate.evaluate(img=>img.complete&&img.naturalWidth>0)).toBe(true);
   });
 
   test('traveler creation shapes a soul with an unnamed presence and raster LEGEND wordmark', async ({ page }) => {
@@ -2285,21 +2278,24 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.ash099-stats')).toHaveCount(0);
   });
 
-  test('mobile town has no horizontal overflow and navigation remains tappable', async ({ page }) => {
+  test('mobile Ashmere keeps the refuge readable and town destinations tappable without horizontal overflow', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await startFreshCharacter(page, 'MobileQA');
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2);
-    expect(overflow).toBe(false);
-    const navOrder = await page.evaluate(() => {
-      const nav = document.querySelector('.ash099-topnav');
-      const destinations = document.querySelector('.ash100-destinations');
-      return !!nav && !!destinations && !!(nav.compareDocumentPosition(destinations) & Node.DOCUMENT_POSITION_FOLLOWING);
-    });
-    expect(navOrder).toBe(true);
-    const routes = page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i });
-    const box = await routes.boundingBox();
-    expect(box).not.toBeNull();
-    expect(box.height).toBeGreaterThanOrEqual(40);
+    const hub=page.locator('.ashmere-hub-v240');
+    await expect(hub).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+    for(const view of ['inn','trader','smith','people','road']){
+      const control=hub.locator(`[data-ash-view="${view}"]`).first();
+      const box=await control.boundingBox();
+      expect(box,view).not.toBeNull();
+      expect(box.height,view).toBeGreaterThanOrEqual(40);
+      expect(box.x,view).toBeGreaterThanOrEqual(0);
+      expect(box.x+box.width,view).toBeLessThanOrEqual(390);
+    }
+    await openAshmereMore(page);
+    await expect(hub.locator('.ashmere-hub-v240-more-place[data-ash-view="routes"]')).toBeVisible();
+    await expect(hub.locator('.ashmere-hub-v240-more-place[data-ash-view="profile"]')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
   });
 
   test('cinematic title layer and road transition controller load', async ({ page }) => {
