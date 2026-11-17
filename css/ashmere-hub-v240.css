@@ -408,3 +408,16 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
 .a11y-reduced-motion .ashmere-hub-v240-place,
 .a11y-reduced-motion .ashmere-hub-v240-gate,
 .a11y-reduced-motion .ashmere-hub-v240-order-action span { transition:none!important; }
+
+
+/* Retain legacy region markers for service/tests without retaining the old layout. */
+.ash100-town.ashmere-hub-v240 {
+  max-width:none!important;
+  min-height:100svh!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
