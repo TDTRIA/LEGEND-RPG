@@ -272,7 +272,8 @@ test.describe('LEGEND persistent world shell v170', () => {
 
     // The native visual leaves the original production journal action intact.
     await page.locator('#lws-panel-left [data-world-action="journal"]').click();
-    await expect(page.locator('.ash099-screen, [data-legend-game-screen]')).toBeVisible();
+    await expect(page.locator('#exp150Modal')).toBeVisible();
+    await expect(page.locator('#exp150Modal').getByRole('dialog')).toBeVisible();
   });
 
   test('mobile journal drawer is DOM-backed while closed and Phaser-painted once opened', async ({ page }) => {
