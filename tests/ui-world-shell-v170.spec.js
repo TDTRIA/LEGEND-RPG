@@ -1150,4 +1150,38 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('persistent world-shell action frames use stone and sage states', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await enterAshmere(page, 'OptionFramePaletteQA');
+
+    const snapshot = await page.evaluate(() => window.LegendPhaserWorldV1.snapshot());
+    expect(snapshot.nativeShellOptionFramePalette).toEqual({
+      neutral: 0x72816f,
+      hover: 0x9eae8e,
+      focus: 0xb5d99a,
+      normalAccent: 0x83947d,
+      selectedAccent: 0xc8a96e,
+      brandAccent: 0xe7c982
+    });
+    expect(snapshot.nativeRightDrawerUi).toBe(true);
+    expect(snapshot.nativeRightDrawerUiControlIds).toEqual(expect.arrayContaining([
+      'inn', 'market', 'forge', 'road', 'visit-selected-place'
+    ]));
+
+    const leftToggle = page.locator('#legend-world-shell-root [data-world-action="toggle-left"]');
+    if (await page.locator('#lws-panel-left').getAttribute('aria-hidden') === 'true') {
+      await leftToggle.click();
+    }
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeLeftDrawerUi)).toBe(true);
+    await expect(page.locator('#lws-panel-left [data-world-action="journal"]')).toBeEnabled();
+
+    // Selection still uses the production place handler, and the warm accent
+    // is reserved for an actually selected action rather than every idle option.
+    await page.locator('#lws-panel-right [data-world-place="market"]').click();
+    await expect(page.locator('#lws-panel-right [data-world-place="market"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('#lws-panel-right .lws-selected-place h3')).toHaveText('Market');
+    await page.locator('#lws-panel-right [data-world-action="visit-selected-place"]').click();
+    await expect(page.locator('.ash099-screen')).toBeVisible();
+  });
+
 });
