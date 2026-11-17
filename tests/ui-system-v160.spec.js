@@ -1,22 +1,5 @@
 const { test, expect } = require('@playwright/test');
 
-async function expectTravelerDetailFits(page) {
-  const detail = await page.evaluate(() => {
-    const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
-    const item = scene.nativeTitleUiDecorations.find(item => item.id === 'traveler-detail');
-    const label = item?.object;
-    return label ? { text: label.text, source: item.node.textContent.trim(),
-      width: label.displayWidth, height: label.displayHeight,
-      bounds: label.getData('shellLabel')?.sourceBounds, resolution: label.style.resolution } : null;
-  });
-  expect(detail).not.toBeNull();
-  expect(detail.text).toBe(detail.source);
-  expect(detail.bounds).toBeTruthy();
-  expect(detail.width).toBeLessThanOrEqual(detail.bounds.width + 1);
-  expect(detail.height).toBeLessThanOrEqual(detail.bounds.height + 1);
-  expect(detail.resolution).toBe(2);
-}
-
 async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await page.setViewportSize(viewport);
   // Use the browser's supported accessibility preference so the game itself
@@ -131,63 +114,29 @@ async function expectNoHorizontalOverflow(page) {
 }
 
 test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
-  test('title and realm entrance load the shared styles, keep the raster wordmark/actions, and show realm art', async ({ page }) => {
+  test('title and realm entrance keep the raster wordmark, DOM actions and world art', async ({ page }) => {
     await openTitle(page);
     await expect(page.locator('link[href*="legend-ui-system-v160.css"]')).toHaveCount(1);
-    await expect(page.locator('.v120-title-hero .v120-legend-logo')).toHaveAttribute('src', /\.png(?:\?.*)?$/);
-    await expect(page.getByRole('button', { name: /Begin Your Journey/i })).toBeVisible();
-    await expect(page.getByRole('button', { name: /News & Roadmap/i })).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
-    const freshMenu = await page.evaluate(() => {
-      const snapshot = window.LegendPhaserWorldV1.snapshot();
-      return {
-        assetsLoaded: snapshot.nativeTitleUiAssetsLoaded,
-        logoPainted: snapshot.nativeTitleUiLogoPainted,
-        dividerPainted: snapshot.nativeTitleUiDividerPainted,
-        decorationLabels: snapshot.nativeTitleUiDecorationLabels || [],
-        decorationTextCount: snapshot.nativeTitleUiDecorationTextCount || 0,
-        ids: snapshot.nativeTitleUiControlIds,
-        labels: snapshot.nativeTitleUiLabels || []
-      };
-    });
-    expect(freshMenu.assetsLoaded).toBe(true);
-    expect(freshMenu.logoPainted).toBe(true);
-    expect(freshMenu.dividerPainted).toBe(true);
-    expect(freshMenu.decorationTextCount).toBe(7);
-    expect(freshMenu.decorationLabels.map(item => item.id)).toEqual([
-      'kicker','intro','traveler-label','traveler-name','traveler-detail','menu-heading','divider-caption'
-    ]);
-    expect(freshMenu.decorationLabels.every(item => item.text)).toBe(true);
-    expect(freshMenu.ids).toEqual(['newPrimary','account','settings','dispatches','titleSound','credits']);
-
-    // If any required title copy disappears, Phaser must reveal the complete
-    // accessible DOM title instead of leaving a partially painted blank panel.
-    const fallback = await page.evaluate(() => {
-      const name = document.querySelector('.v120-traveler-line strong');
-      const original = name.textContent;
-      name.textContent = '';
-      window.LegendPhaserWorldV1.refresh();
-      const visibleFallback = {
-        active: window.LegendPhaserWorldV1.snapshot().nativeTitleUi,
-        logoVisibility: getComputedStyle(document.querySelector('.v150-logo-lockup .v120-legend-logo')).visibility,
-        menuTextColor: getComputedStyle(document.querySelector('.v136-menu-btn .v136-menu-copy strong')).color
-      };
-      name.textContent = original;
-      window.LegendPhaserWorldV1.refresh();
-      return visibleFallback;
-    });
-    expect(fallback.active).toBe(false);
-    expect(fallback.logoVisibility).toBe('visible');
-    expect(fallback.menuTextColor).not.toBe('rgba(0, 0, 0, 0)');
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeTitleUi
-    )).toBe(true);
-    expect(freshMenu.labels.map(item => item.title)).toEqual([
-      'Begin Your Journey','Profile','Settings','News & Roadmap','Sound: On','Credits'
-    ]);
+    await expect(page.locator('.v120-title-hero .v120-legend-logo')).toHaveAttribute('src', /\\.png(?:\\?.*)?$/);
+    for (const id of ['newPrimary','account','settings','dispatches','titleSound','credits']) {
+      await expect(page.locator('#' + id)).toBeVisible();
+      await expect(page.locator('#' + id + ' strong')).toBeVisible();
+    }
+    const domState = await page.evaluate(() => ({
+      titlePainter: document.body.classList.contains('legend-phaser-title-ui-active'),
+      logoVisibility: getComputedStyle(document.querySelector('.v150-logo-lockup .v120-legend-logo')).visibility,
+      headingColor: getComputedStyle(document.querySelector('.v120-title-hero > p')).color,
+      buttonColor: getComputedStyle(document.querySelector('#newPrimary strong')).color,
+      labelsVisible: [...document.querySelectorAll('.v136-menu-btn strong,.v136-menu-btn small')].every(node =>
+        getComputedStyle(node).visibility === 'visible' && getComputedStyle(node).color !== 'rgba(0, 0, 0, 0)')
+    }));
+    expect(domState.titlePainter).toBe(false);
+    expect(domState.logoVisibility).toBe('visible');
+    expect(domState.headingColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(domState.buttonColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(domState.labelsVisible).toBe(true);
     await expect(page.locator('.v140-realm-overview.v151-realm-art')).toBeVisible();
     await expect(page.locator('.v151-realm-feature img')).toHaveAttribute('src', 'assets/generated/locations/ashmere-town.webp');
-
     const computed = await page.locator('.v120-title-hero').evaluate(element => ({
       amber: getComputedStyle(document.documentElement).getPropertyValue('--legend-ui-amber').trim(),
       radius: getComputedStyle(element).borderRadius
@@ -198,175 +147,62 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await attachProof(page, 'phase1-title-desktop.png');
   });
 
-  test('returning-player save paints every existing title action in Phaser without changing the save', async ({ page }) => {
+  test('returning-player title preserves every menu action and does not mutate the saved traveler', async ({ page }) => {
     test.setTimeout(180000);
     await enterAshmere(page, 'ReturnMenuParity');
     const saveBefore = await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()));
     await page.evaluate(() => window.LegendGameBootstrap.title());
     await expect(page.locator('.v120-title')).toBeVisible();
-    await expect(page.locator('#continue')).toBeVisible();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
-
-    const menu = await page.evaluate(() => {
-      const snapshot = window.LegendPhaserWorldV1.snapshot();
-      const buttons = Array.from(document.querySelectorAll('.v120-title-hero .v136-menu-btn'));
-      return {
-        saveKey: window.LEGEND_DATA?.SAVE_KEY,
-        assetsLoaded: snapshot.nativeTitleUiAssetsLoaded,
-        ids: snapshot.nativeTitleUiControlIds,
-        labels: snapshot.nativeTitleUiLabels || [],
-        textQuality: snapshot.nativeTitleUiTextQuality || [],
-        logoPainted: snapshot.nativeTitleUiLogoPainted,
-        dividerPainted: snapshot.nativeTitleUiDividerPainted,
-        decorationLabels: snapshot.nativeTitleUiDecorationLabels || [],
-        decorationTextCount: snapshot.nativeTitleUiDecorationTextCount || 0,
-        buttons: buttons.map(button => ({
-          id: button.id,
-          tag: button.tagName,
-          type: button.type,
-          accessibleName: button.getAttribute('aria-label'),
-          handler: typeof button.onclick
-        }))
-      };
-    });
-    await expect(page.locator('#continue')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    await expect(page.locator('#continue')).toHaveCSS('background-image', 'none');
-    expect(menu.saveKey).toBe('legend-roads-of-ashmere-v09');
-    expect(menu.assetsLoaded).toBe(true);
-    expect(menu.logoPainted).toBe(true);
-    expect(menu.dividerPainted).toBe(true);
-    expect(menu.decorationTextCount).toBe(7);
-    expect(menu.decorationLabels.map(item => item.id)).toEqual([
-      'kicker','intro','traveler-label','traveler-name','traveler-detail','menu-heading','divider-caption'
-    ]);
-    expect(menu.decorationLabels.find(item => item.id === 'traveler-name')?.text).toBe('ReturnMenuParity');
-    expect(menu.ids).toEqual(['continue','new','account','settings','dispatches','titleSound','credits']);
-    expect(menu.labels.map(item => item.title)).toEqual([
-      'Continue Journey','New Traveler','Profile','Settings','News & Roadmap','Sound: On','Credits'
-    ]);
-    expect(menu.labels.every(item => item.title && item.subtitle)).toBe(true);
-    expect(menu.buttons).toHaveLength(7);
-    expect(menu.buttons.every(button => button.tag === 'BUTTON' && button.type === 'button' &&
-      button.accessibleName && button.handler === 'function')).toBe(true);
-    expect(menu.textQuality).toHaveLength(7);
-    expect(menu.textQuality.every(item => item.titleFontSize >= 13 && item.titleResolution === 2 &&
-      item.subtitleFontSize >= 10 && item.subtitleResolution === 2)).toBe(true);
-    const saveAfterPaint = await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()));
-    expect(saveAfterPaint).toBe(saveBefore);
-
-    await page.locator('#settings').focus();
-    await expect.poll(() => page.evaluate(() =>
-      window.LegendPhaserWorldV1.snapshot().nativeTitleUiControlBounds.find(item => item.id === 'settings')?.focused
-    )).toBe(true);
-    const settingsTexture = () => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()
-      .nativeTitleUiControlBounds.find(item => item.id === 'settings')?.texture);
-    await expect.poll(settingsTexture).toBe('menuButtonSelected');
-    await page.locator('#continue').focus();
-    await page.mouse.move(0, 0);
-    await expect.poll(settingsTexture).toBe('menuButtonNormal');
-    for (const attribute of ['disabled', 'aria-disabled']) {
-      await page.locator('#settings').evaluate((button, name) => button.setAttribute(name, 'true'), attribute);
-      await expect.poll(settingsTexture).toBe('menuButtonDisabled');
-      await page.locator('#settings').hover();
-      await expect.poll(settingsTexture).toBe('menuButtonDisabled');
-      await page.locator('#settings').evaluate((button, name) => button.removeAttribute(name), attribute);
-      await page.mouse.move(0, 0);
-      await expect.poll(settingsTexture).toBe('menuButtonNormal');
-    }
-    await page.locator('#settings').focus();
-    await expect.poll(settingsTexture).toBe('menuButtonSelected');
+    for (const id of ['continue','new','account','settings','dispatches','titleSound','credits']) await expect(page.locator('#' + id)).toBeVisible();
+    await expect(page.locator('body')).not.toHaveClass(/legend-phaser-title-ui-active/);
     expect(await page.evaluate(() => JSON.stringify(window.LegendRuntimeV120.loadPlayer()))).toBe(saveBefore);
     await expectNoHorizontalOverflow(page);
-    await expectTravelerDetailFits(page);
-    await attachProof(page, 'phase1-returning-title-desktop.png');
 
-    // Exercise the original production callbacks behind every remaining menu
-    // option. Re-rendering via the production bootstrap does not seed or alter
-    // a save; it simply returns to the same title menu between view checks.
     await page.locator('#account').click();
     await expect(page.locator('.account09x')).toBeVisible();
     await page.locator('#backTitle').click();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTitleUi)).toBe(true);
-
+    await expect(page.locator('.v120-title')).toBeVisible();
     await page.locator('#settings').click();
     await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
     await page.locator('#backTitle').click();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTitleUi)).toBe(true);
-
+    await expect(page.locator('.v120-title')).toBeVisible();
     await page.locator('#dispatches').click();
     await expect(page.getByRole('heading', { name: 'News & Roadmap', exact: true })).toBeVisible();
     await page.locator('#dispatchesBack').click();
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTitleUi)).toBe(true);
-
+    await expect(page.locator('.v120-title')).toBeVisible();
     await page.locator('#credits').click();
     await expect(page.getByRole('dialog', { name: 'LEGEND' })).toBeVisible();
     await page.locator('[data-credits-close]').click();
     await expect(page.locator('.v120-title')).toBeVisible();
-
     await page.locator('#new').click();
     await expect(page.locator('.opening-lore-v220')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'When the World Went to War' })).toBeVisible();
-
-    // Return to the existing title without touching the saved traveler, then
-    // exercise Continue through its real production handler.
     await page.evaluate(() => window.LegendGameBootstrap.title());
-    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeTitleUi)).toBe(true);
+    await expect(page.locator('#continue')).toBeVisible();
     await page.locator('#continue').click();
     await expect(page.locator('.ash100-town')).toBeVisible();
     await expect.poll(() => page.evaluate(() => window.LegendRuntimeV120.loadPlayer()?.username)).toBe('ReturnMenuParity');
   });
 
-  test('returning-player Phaser title stays readable and tappable at 390px mobile width', async ({ browser }) => {
+  test('returning-player title remains readable and tappable at 390px mobile width', async ({ browser }) => {
     test.setTimeout(180000);
     const context = await browser.newContext({
-      viewport: { width: 390, height: 844 },
-      deviceScaleFactor: 1,
-      isMobile: true,
-      hasTouch: true,
+      viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true,
       reducedMotion: 'reduce'
     });
-    const mobilePage = await context.newPage();
+    const page = await context.newPage();
     try {
-      await enterAshmere(mobilePage, 'MobileReturnParity', { width: 390, height: 844 });
-      await mobilePage.evaluate(() => window.LegendGameBootstrap.title());
-      await expect(mobilePage.locator('#continue')).toBeVisible();
-      await expect.poll(() => mobilePage.evaluate(() =>
-        window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi
-      )).toBe(true);
-      const layout = await mobilePage.evaluate(() => {
-        const snapshot = window.LegendPhaserWorldV1.snapshot();
-        const size = snapshot.nativeTitleUiSceneSize;
-        return {
-          size,
-          ids: snapshot.nativeTitleUiControlIds,
-          labels: snapshot.nativeTitleUiLabels || [],
-          logoPainted: snapshot.nativeTitleUiLogoPainted,
-          dividerPainted: snapshot.nativeTitleUiDividerPainted,
-          decorationTextCount: snapshot.nativeTitleUiDecorationTextCount || 0,
-          bounds: snapshot.nativeTitleUiControlBounds || []
-        };
-      });
-      expect(layout.ids).toEqual(['continue','new','account','settings','dispatches','titleSound','credits']);
-      expect(layout.labels.every(item => item.title && item.subtitle)).toBe(true);
-      expect(layout.logoPainted).toBe(true);
-      expect(layout.dividerPainted).toBe(true);
-      expect(layout.decorationTextCount).toBe(7);
-      expect(layout.bounds).toHaveLength(7);
-      expect(layout.bounds.every(item => item.x >= 0 && item.width > 0 && item.x + item.width <= layout.size.width + 1)).toBe(true);
-      await expectNoHorizontalOverflow(mobilePage);
-      await expectTravelerDetailFits(mobilePage);
-      await attachProof(mobilePage, 'phase1-returning-title-mobile-390.png');
-
-      await mobilePage.locator('#settings').tap();
-      await expect(mobilePage.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
-      await mobilePage.locator('#backTitle').tap();
-      await expect(mobilePage.locator('#continue')).toBeVisible();
-      await expect.poll(() => mobilePage.evaluate(() =>
-        window.LegendPhaserWorldV1.snapshot().nativeTitleUi
-      )).toBe(true);
-    } finally {
-      await context.close();
-    }
+      await enterAshmere(page, 'MobileReturnParity', { width: 390, height: 844 });
+      await page.evaluate(() => window.LegendGameBootstrap.title());
+      await expect(page.locator('#continue')).toBeVisible();
+      await expect(page.locator('#continue strong')).toBeVisible();
+      await expect(page.locator('body')).not.toHaveClass(/legend-phaser-title-ui-active/);
+      await expectNoHorizontalOverflow(page);
+      await attachProof(page, 'phase1-returning-title-mobile-390.png');
+      await page.locator('#settings').tap();
+      await expect(page.getByRole('heading', { name: 'Settings', exact: true })).toBeVisible();
+      await page.locator('#backTitle').tap();
+      await expect(page.locator('#continue')).toBeVisible();
+    } finally { await context.close(); }
   });
 
   test('Ashmere hub and Work Board service share the new frame while retaining current destinations/actions', async ({ page }) => {

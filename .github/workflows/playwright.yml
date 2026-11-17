@@ -19,11 +19,18 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Superseded PR commits may cancel; main runs must always finish.
+  # Main pushes share one concurrency group, so never cancel that production gate.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
-    timeout-minutes: 25
+    name: Playwright Tests (shard ${{ matrix.shard }}/6)
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6]
+    timeout-minutes: 45
     runs-on: ubuntu-latest
 
     steps:
@@ -80,49 +87,49 @@ jobs:
           for (const file of testSpecs) checkSyntax(file);
           console.log('Syntax-checked ' + productionScripts.length + ' active local production scripts and ' + testSpecs.length + ' Playwright spec files.');
           NODE
+
       - name: Run focused official-site regression tests
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && matrix.shard == 1
         run: npm run test:e2e:website
 
       - name: Run focused save-safety and runtime regression tests
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && matrix.shard == 1
         run: npm run test:e2e:storage
 
       - name: Run focused Phaser Old Road scene-art parity
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && matrix.shard == 1
         run: npm run test:e2e:road-scene
 
       - name: Run focused Phaser traveler-creation interaction regression
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && matrix.shard == 1
         run: npm run test:e2e:creation
 
       - name: Run Phaser native overlay failure and recovery regression
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && matrix.shard == 1
         run: npm run test:e2e:overlay-fallback
 
       - name: Run persistent world-shell option frame palette regression
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && matrix.shard == 1
         run: npm run test:e2e:option-frames
 
       - name: Run focused Phaser Old Road map and journal modal regression
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && matrix.shard == 1
         run: npm run test:e2e:road-map
 
       - name: Run shared Old Road UI contract with native modal painter enabled
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && matrix.shard == 1
         run: npm run test:e2e:road-map-ui-contract
 
-      - name: Run full production regression suite
-        if: github.event_name != 'pull_request'
+      - name: Run full production regression suite (shard ${{ matrix.shard }}/6)
         env:
           FULL_BROWSER_MATRIX: ${{ inputs.full_browser_matrix && '1' || '0' }}
-        run: npm run test:e2e
+        run: npx playwright test --shard=${{ matrix.shard }}/6
 
       - name: Smoke-test the deployed GitHub Pages build
         # The live URL must not be compared to an unmerged PR's asset URLs.
         # On pull_request runs, test the branch locally; smoke-test deployment only
         # when testing main (push or manual workflow_dispatch).
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && matrix.shard == 1
         env:
           RUN_LIVE_SMOKE: '1'
         run: npx playwright test tests/live-deployment.spec.js --project="Desktop Chrome"
@@ -131,7 +138,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: playwright-report
+          name: playwright-report-shard-${{ matrix.shard }}
           path: playwright-report/
           retention-days: 30
-

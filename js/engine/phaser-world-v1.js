@@ -1494,6 +1494,9 @@
     }
 
     syncNativeTitleUi(surface = this.surface) {
+      // Production title typography, panels and controls stay in semantic DOM.
+      // The isolated reboot preview may still exercise the legacy canvas painter.
+      if (!IS_PROTOTYPE) { this.clearNativeTitleUi(); return; }
       const hero = root()?.querySelector('.title-v136-rpg .v120-title-hero');
       // Returning saves use the same native menu painter as first-time players.
       // The DOM remains visible until every required action has a real Phaser
@@ -1852,6 +1855,8 @@
     }
 
     syncNativeAnnalsUi(surface = this.surface) {
+      // Annals copy and chapter controls are browser UI; Phaser supplies the scene.
+      if (!IS_PROTOTYPE) { this.clearNativeAnnalsUi(); return; }
       const screen = root()?.querySelector('.opening-lore-v220');
       if (String(surface || '') !== 'annals' || !screen) {
         if (this.nativeAnnalsUiActive || document.body?.classList.contains('legend-phaser-annals-ui-active')) {
@@ -2177,6 +2182,8 @@
     }
 
     syncNativeCreationUi(surface = this.surface) {
+      // Creation choices, live text and inputs remain real DOM elements in production.
+      if (!IS_PROTOTYPE) { this.clearNativeCreationUi(); return; }
       const screen = root()?.querySelector('.v140-creation:not(.v140-arrival)');
       if (String(surface || '') !== 'creation' || !screen) {
         if (this.nativeCreationUiActive || document.body?.classList.contains('legend-phaser-creation-ui-active')) {
@@ -2612,6 +2619,8 @@
     }
 
     syncNativeOpeningUi(surface = this.surface) {
+      // Oric's dialogue and response controls remain semantic DOM in production.
+      if (!IS_PROTOTYPE) { this.clearNativeOpeningUi(); return; }
       const screen = root()?.querySelector('.opening-road-v140');
       if (String(surface || '') !== 'awakening' || !screen) {
         if (this.nativeOpeningUiActive || document.body?.classList.contains('legend-phaser-opening-ui-active')) {

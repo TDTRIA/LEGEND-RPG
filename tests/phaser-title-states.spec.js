@@ -1,45 +1,37 @@
 const { test, expect } = require('@playwright/test');
 
-test('title repaint follows scroll and resize, and missing art restores the semantic fallback', async ({ page }) => {
+test('title interface remains sharp, readable and actionable as DOM at mobile and desktop sizes', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.addInitScript(() => sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready'));
   await page.goto('/');
-  await page.waitForFunction(() => window.LegendPhaserWorldV1?.snapshot()?.nativeTitleUi, null, { timeout: 20000 });
-  const checkAlignment = async () => {
-    await expect.poll(() => page.evaluate(() => {
-      const snapshot = window.LegendPhaserWorldV1.snapshot();
-      return snapshot.nativeTitleUiControlBounds.every(control => {
-        const rect = document.getElementById(control.id).getBoundingClientRect();
-        const sx = snapshot.nativeTitleUiSceneSize.width / innerWidth;
-        const sy = snapshot.nativeTitleUiSceneSize.height / innerHeight;
-        return Math.abs(control.x - rect.left * sx) < 2 && Math.abs(control.y - rect.top * sy) < 2
-          && Math.abs(control.width - rect.width * sx) < 2;
-      });
-    })).toBe(true);
-  };
-  await checkAlignment();
-  await page.evaluate(() => scrollTo(0, 180));
-  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(0);
-  await checkAlignment();
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await checkAlignment();
-  await expect(page.locator('#newPrimary')).toHaveCSS('background-image', 'none');
-  const vectorSize = await page.evaluate(() => {
-    const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
-    const image = scene.textures.get('menuButtonNormal').getSourceImage();
-    return [image.naturalWidth, image.naturalHeight];
-  });
-  expect(vectorSize).toEqual([800, 224]);
   await page.evaluate(() => {
-    const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
-    scene.textures.remove('menuTitleLogo');
-    // Trigger a real observed title-label update, invalidating the preflight.
-    document.querySelector('#newPrimary strong').textContent = 'Begin a new journey';
+    localStorage.clear();
+    sessionStorage.clear();
+    sessionStorage.setItem('legend-phaser-production-engine-awakened-v1', 'ready');
   });
-  await expect(page.locator('body')).not.toHaveClass(/legend-phaser-title-ui-active/);
+  await page.reload();
+  await expect(page.locator('.v120-title')).toBeVisible({ timeout: 20000 });
+  await expect(page.locator('#newPrimary')).toBeVisible();
   await expect(page.locator('#newPrimary strong')).toBeVisible();
-  await expect(page.locator('#newPrimary')).not.toHaveCSS('background-image', 'none');
+  await expect(page.locator('.v150-logo-lockup .v120-legend-logo')).toHaveCSS('visibility', 'visible');
+  const mobile = await page.evaluate(() => ({
+    active: document.body.classList.contains('legend-phaser-title-ui-active'),
+    headingColor: getComputedStyle(document.querySelector('.v120-title-hero > p')).color,
+    buttonColor: getComputedStyle(document.querySelector('#newPrimary strong')).color,
+    buttonBg: getComputedStyle(document.querySelector('#newPrimary')).backgroundColor,
+    overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
+  }));
+  expect(mobile.active).toBe(false);
+  expect(mobile.headingColor).not.toBe('rgba(0, 0, 0, 0)');
+  expect(mobile.buttonColor).not.toBe('rgba(0, 0, 0, 0)');
+  expect(mobile.buttonBg).not.toBe('rgba(0, 0, 0, 0)');
+  expect(mobile.overflow).toBe(false);
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(page.locator('#newPrimary')).toBeVisible();
+  await page.locator('#newPrimary').focus();
+  await expect(page.locator('#newPrimary')).toBeFocused();
   await page.locator('#newPrimary').click();
   await expect(page.locator('.opening-lore-v220')).toBeVisible();
+  await expect(page.locator('body')).not.toHaveClass(/legend-phaser-title-ui-active/);
 });

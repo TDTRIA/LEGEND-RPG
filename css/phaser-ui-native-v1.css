@@ -1762,3 +1762,18 @@ body.a11y-high-contrast:not(.legend-phaser-title-ui-active) #root .title-v136-rp
 body.legend-phaser-world-active #root .legend-phaser-region-ledger .reg100-btn,
 body.legend-phaser-world-active #root .legend-phaser-route-board .ash099-card,
 body.legend-phaser-world-active #root .legend-phaser-route-board #ashBack { transition:none!important; }
+
+
+/* DOM-owned intro controls retain a strong keyboard-visible focus indicator.
+   This final rule is intentionally independent of any Phaser paint-mode class. */
+#root .title-v136-rpg .v136-menu-btn:focus-visible,
+#root .opening-lore-v220 .opening-lore-v220-continue:focus-visible,
+#root .v140-creation .v094-choice:focus-visible,
+#root .v140-creation .v094-actions .v094-btn:focus-visible,
+#root .opening-road-v140 .opening-road-v140-choice:focus-visible,
+#root .opening-road-v140 .opening-road-v140-primary:focus-visible,
+#root .opening-road-v140 .opening-road-v140-secondary:focus-visible {
+  outline: 2px solid var(--legend-ui-focus, #e7c982) !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 3px rgba(231,201,130,.24), 0 0 16px rgba(231,201,130,.18) !important;
+}

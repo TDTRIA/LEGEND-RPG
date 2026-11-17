@@ -32,29 +32,33 @@ LEGEND is an in-development, desktop-first browser RPG with responsive mobile su
 
 Use [`README.md`](README.md), [`CHANGELOG.md`](CHANGELOG.md), and [`docs/ROADMAP.md`](docs/ROADMAP.md) for the current product-facing and development status.
 
-## Production engine migration — active top technical priority
+## Hybrid production architecture — active top technical priority
 
-The owner approved moving the **entire existing production game's presentation and interactive surfaces into Phaser 4.1** on 2026-11-03. This is the main technical track; do not narrow it to the world backdrop or treat a Phaser shell around DOM screens as completion.
+The approved production architecture is hybrid: Phaser renders the world; semantic HTML/CSS renders the complete interface; existing feature modules own rules, callbacks and persistence. See [docs/PHASER_HYBRID_RENDERING.md](docs/PHASER_HYBRID_RENDERING.md) for the implementation contract.
 
-Current production state is hybrid:
+- Phaser owns world backgrounds, environment art, parallax, lighting, fog/weather, particles, world-space characters/enemies, camera movement and scene transitions.
+- DOM/CSS owns all text, headings, values, buttons, panels, cards, forms, HUD, journals, inventory, map, route/camp choices, combat commands, dialogue, reports, modals, focus and accessibility.
+- Existing production modules remain authoritative for navigation, combat formulas, enemies, quests, dialogue, progression, economy, inventory, crafting, rewards, expedition state, player records, saves and account/cloud behavior.
+- The title, mandatory annals, traveler creation and Oric's opening dialogue are the first stabilization slice. Their Phaser text/panel painters are disabled in production; their HTML/CSS interfaces are visible and actionable again. Phaser world art, atmosphere and transitions remain active.
+- Other native interface painters are not a mandate to build duplicate UI. Move each remaining surface to DOM ownership incrementally, retaining its existing controller and verifying its complete journey before deleting obsolete painting code.
 
-- Phaser 4.1 is loaded by `index.html`.
-- `js/engine/phaser-world-v1.js` is active in production for the persistent world scene, environments, atmosphere, transitions, Ashmere landmarks, new-player title, annals, traveler creation, and Oric's opening-road presentation.
-- Phaser also paints the persistent HUD and traveler vitals, the bottom action navigation, the left journal/quest drawer, the right contextual action/POI drawer, the Old Road map and field-journal modal, the road journey HUD and decision deck, the combat panels, and Ashmere's destination board. `js/ui/world-shell-v170.js` calls `refreshHud` / `refreshNavigation` / `refreshLeftDrawer` / `refreshRightDrawer` after every shell render. The semantic DOM controls remain the real accessible action targets, and the styled DOM presentation stays visible as the fallback whenever Phaser preflight fails.
-- The former open [PR #111](https://github.com/TDTRIA/LEGEND-RPG/pull/111) is no longer pending: the HUD, navigation and drawer work it described is present in `main`, as the shell refresh calls above show. Do not repeat the older note that this surface is unmigrated.
-- Still unmigrated as of 2026-11-16: the shell toast (`.lws-shell-toast`, DOM-only, no painter), the inventory and character-sheet modals (`js/ui/modals-v170.js` contains no reference to `LegendPhaserWorldV1`), Ashmere/Greyfen service interiors, results/level-up, dungeons/regions, settings/account, and the remaining overlays. Combat and the Ashmere destination board have painters and refresh hooks, but still lack dedicated desktop/mobile parity specs of their own.
-- Phaser should own the migrated scene presentation and interaction layer. The existing production modules remain authoritative for controllers, callbacks, game rules, combat calculations, enemy behavior, reward settlement, progression, quests, inventory, storage, account/cloud saves, and save schema.
-- The goal is to migrate **all existing gameplay screens and supporting systems' presentation**, not to rewrite the underlying systems or create a second implementation of their logic.
+### Migration guardrails
 
-Migration guardrails:
-1. Do not introduce a second save system, rename the active save key, clear saves, or silently migrate player records.
-2. Preserve quest flags, inventory, regions, currency, progression, combat formulas, enemy behavior, reward odds, account/cloud-save behavior, and accessibility.
-3. Keep keyboard, pointer, touch, responsive layout, reduced-motion, readable text, text entry, scrolling, and back/continue paths.
-4. Replace one complete playable surface at a time. Do not remove a working HTML screen until the Phaser replacement passes visual, interaction, state, accessibility, persistence, and focused Playwright checks at desktop and mobile sizes.
-5. Keep the current production game playable throughout the transition; the old isolated reboot prototype is not a substitute for production parity.
-6. Continue until every existing production surface listed in [docs/PHASER_MIGRATION.md](docs/PHASER_MIGRATION.md) has native Phaser presentation and the complete first-session and returning-player flows pass.
+1. Do not introduce a second save system, rename the active save key, clear saves or silently migrate player records.
+2. Preserve quest flags, inventory, regions, currency, progression, combat formulas, enemy behavior, reward odds, account/cloud-save behavior and save schema.
+3. Preserve every menu option, callback, keyboard/touch action, focus state, responsive layout, reduced-motion behavior, text entry and scrolling path.
+4. Keep the Phaser canvas behind the DOM controls and non-interactive. A DOM control must never become transparent simply because canvas text or button artwork exists.
+5. Replace one complete playable surface at a time. Keep world art and navigation working while converting its UI.
+6. Never claim a change is ready for `main` until pull-request checks finish. The full Playwright production suite must run on pull requests and on `main`; workflow concurrency must queue runs rather than cancelling the production gate on the next push.
+7. Keep the current production game playable during each step. The old isolated reboot prototype is not a substitute for production parity.
 
-Relevant files: `index.html`, `js/engine/phaser-world-v1.js`, `js/game.js`, `js/systems/`, `js/ui/`, `docs/PHASER_MIGRATION.md`, `docs/ARCHITECTURE.md`, and `docs/SAVE_DATA_CONTRACT.md`.
+### Approved gameplay-system expansion
+
+The owner approved **party formation, stress and torchlight** on 2026-11-17. The scope and restrictions are recorded in [docs/DARKEST_DUNGEON_DIRECTION.md](docs/DARKEST_DUNGEON_DIRECTION.md#approved-gameplay-systems); the first torch/stress implementation outline is [docs/STRESS_AND_TORCH_DESIGN.md](docs/STRESS_AND_TORCH_DESIGN.md).
+
+These systems are approved for future implementation but are not part of the rendering stabilization. Finish the hybrid presentation foundation first, then implement the approved systems incrementally, one at a time, preserving current solo play, existing reward contracts and player saves. Follow the design document's torch → stress order; party formation requires its own staged design/implementation gate.
+
+Relevant files: `index.html`, `js/engine/phaser-world-v1.js`, `js/game.js`, `js/systems/`, `js/ui/`, `docs/PHASER_HYBRID_RENDERING.md`, `docs/ARCHITECTURE.md` and `docs/SAVE_DATA_CONTRACT.md`.
 
 ## Audio identity — integrated, final listening pending
 

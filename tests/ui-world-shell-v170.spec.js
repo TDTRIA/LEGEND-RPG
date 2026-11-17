@@ -23,7 +23,8 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
   expect(titleBackdropFilter).toContain('brightness(1.1)');
-  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(true);
+  await expect(page.locator('body')).not.toHaveClass(/legend-phaser-title-ui-active/);
+  await expect(page.locator('.v120-title-hero .v136-menu-btn strong').first()).toBeVisible();
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
   expectBackgroundAlphaAtMost(titleSceneOverlay, 0.3);
