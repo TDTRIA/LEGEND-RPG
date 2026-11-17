@@ -16,7 +16,7 @@
     // The Phaser canvas is a fixed, non-interactive world layer behind the HTML
     // game controls. The production CSS intentionally scopes that contract to
     // BODY, while the intro visibility gate is scoped to HTML.
-    document.documentElement.classList.add('legend-phaser-world-active', 'engine-intro-active', 'legend-phaser-preloading');
+    document.documentElement.classList.add('legend-phaser-world-active', 'legend-phaser-preloading');
     document.body?.classList.add('legend-phaser-world-active');
     if (window.__legendBootSequenceV100) window.__legendBootSequenceV100.rendererLoading = true;
   }
