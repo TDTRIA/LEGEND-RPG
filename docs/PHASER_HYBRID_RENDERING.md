@@ -63,14 +63,11 @@ Phaser still owns their world backgrounds, atmosphere, world transitions and the
 
 Remaining dedicated native interface painters elsewhere in the production renderer are migration work, not a reason to reverse this contract. Inventory, HUD/drawers, Old Road map and expedition decisions, combat panels, results, town boards and service interiors should be migrated surface-by-surface while retaining their existing systems and actions.
 
-## Planned game-system expansion (not implemented yet)
+## Approved game-system expansion (staged after this foundation)
 
-The owner has identified three future design tracks inspired by expedition-focused dark fantasy:
-- **Party system:** a group of travelers with distinct roles and a meaningful expedition composition.
-- **Stress system:** an expedition pressure mechanic that can affect characters and decisions over a journey.
-- **Torch/illumination system:** light as a managed expedition resource, with visibility and atmosphere consequences.
+The owner approved **party formation, stress and torchlight** on 2026-11-17. See [Approved gameplay systems](DARKEST_DUNGEON_DIRECTION.md#approved-gameplay-systems) and the [Stress & Torchlight design outline](STRESS_AND_TORCH_DESIGN.md).
 
-These are design targets only. Their rules, scope, balance, UI and save representation must be designed separately before implementation. Do not add placeholder fields or change existing saves as part of the rendering foundation.
+They are approved for future implementation, but are deliberately outside this rendering stabilization. Complete and merge the presentation foundation first. Then implement incrementally, one system at a time, using the approved order and rules, extending the existing combat/expedition/persistence owners and preserving existing saves and baseline solo play. Do not add placeholder fields or change saves in the rendering PR.
 
 ## Visual direction guardrail
 
