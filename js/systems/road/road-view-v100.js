@@ -103,14 +103,25 @@ function handleHotspotAction(btn){
   const hotspot=liveScene.querySelector('.exp100-hotspot');
   const reveal=liveScene.querySelector('.exp100-discovery-beat');
   const leave=reveal?.querySelector('#poiLeave');
-  if(leave)leave.addEventListener('click',()=>{
+  if(leave)leave.addEventListener('click',event=>{
+   event.preventDefault();
+   event.stopPropagation();
    roadDiscovery.hide();
    reveal.remove();
    hotspot?.focus({preventScroll:true});
   });
   const inspect=reveal?.querySelector('#poiInspect');
   if(inspect){
-   inspect.addEventListener('click',roadDiscovery.inspectPointOfInterest);
+   inspect.addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopPropagation();
+    roadDiscovery.inspectPointOfInterest();
+    const nextHeading=root()?.querySelector('.exp150-title-group h1');
+    if(nextHeading){
+     nextHeading.setAttribute('tabindex','-1');
+     nextHeading.focus({preventScroll:true});
+    }
+   });
    inspect.focus({preventScroll:true});
   }
   return;
