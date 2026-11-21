@@ -1274,11 +1274,11 @@ body.legend-world-shell-active #root .ash099-terminal:has(.ash099-head:is([data-
   padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px)) !important;
 }
 body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) {
-  display: grid !important; grid-template-columns: 180px minmax(0, 1fr) !important; gap: 20px !important;
+  display: grid !important; grid-template-columns: 160px minmax(0, 1fr) !important; gap: 14px !important;
 }
 body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) > img {
-  width: 180px !important; height: 220px !important; max-width: 100% !important;
-  object-fit: cover !important; object-position: 50% 18% !important;
+  width: 160px !important; height: 220px !important; max-width: 160px !important;
+  object-fit: cover !important; object-position: 50% 16% !important;
 }
 @media (max-width: 760px) {
   body.legend-world-shell-active #root .ash099-screen .ash099-head.has-art:is([data-ash-service="mara"],[data-ash-service="brenn"],[data-ash-service="oric"]) {
