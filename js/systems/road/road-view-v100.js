@@ -91,7 +91,6 @@ function handleHotspotAction(btn){
  if(action==='poi'){
   const pl=p();if(!pl)return;
   const s=ensure(pl),stage=Number(s.stage||0),wrap=root()?.querySelector('.exp100-wrap');
-  const s=ensure(pl),stage=Number(s.stage||0),wrap=root()?.querySelector('.exp100-wrap');
   const liveScene=wrap?.querySelector('.exp100-scene-live');
   if(!wrap||!liveScene||liveScene.querySelector('.exp100-discovery-beat'))return;
   // Reveal the clue in the scene where it was noticed, not as another panel
