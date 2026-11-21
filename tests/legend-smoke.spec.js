@@ -1090,7 +1090,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await page.locator('[data-ash-view="oric"]').click();
     await expect(page.locator('.ash099-head').getByRole('heading', { name: 'Captain Oric' })).toBeVisible();
     const oricDialoguePortrait = page.locator('.ash099-head img');
-    await expect(oricDialoguePortrait).toHaveAttribute('src', /assets\/generated\/npcs\/captain-oric\.webp$/);
+    await expect(oricDialoguePortrait).toHaveAttribute('src', /assets\\/npcs\\/ashmere\\/npc_oric_portrait_v1\\.png$/);
     await expect.poll(() => oricDialoguePortrait.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     const dialoguePortraitLayout = await oricDialoguePortrait.evaluate(img => {
       const style = getComputedStyle(img);
