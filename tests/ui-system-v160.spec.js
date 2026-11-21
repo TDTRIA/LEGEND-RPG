@@ -485,8 +485,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         nativeHudText: snapshot.nativeExpeditionHudUiTextValues || [],
         nativeHudControlIds: snapshot.nativeExpeditionHudUiControlIds || [],
         expeditionHudClass: document.body.classList.contains('legend-phaser-expedition-hud-ui-active'),
-        asideHeadingColor: getComputedStyle(document.querySelector('.exp150-journey-aside .exp150-next-stop h2')).color,
-        asideParagraphColor: getComputedStyle(document.querySelector('.exp150-journey-aside .exp150-next-stop p')).color,
+        asideHidden: document.querySelector('.exp150-journey-aside')?.hidden === true,
+        asideDisplay: document.querySelector('.exp150-journey-aside') ? getComputedStyle(document.querySelector('.exp150-journey-aside')).display : 'missing',
+        asideText: document.querySelector('.exp150-journey-aside')?.textContent?.trim() || '',
         mapPainter: snapshot.nativeRoadMapUi,
         mapControl: Boolean(mapButton && !mapButton.disabled),
         mapText: mapButton?.textContent?.trim() || '',
@@ -499,12 +500,14 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(roadDom.painterClass).toBe(false);
     expect(roadDom.nativeHudActive).toBe(true);
     expect(roadDom.nativeHudText).toEqual(expect.arrayContaining([
-      'OLD ROAD · EXPEDITION', 'South Fork', 'YOUR JOURNEY', 'ROAD PRESSURE', 'FIELD SUPPLIES'
+      'OLD ROAD · EXPEDITION', 'South Fork', 'YOUR JOURNEY', 'Road Pressure'
     ]));
-    expect(roadDom.nativeHudControlIds).toEqual(expect.arrayContaining(['exp150OpenMap','exp150OpenJournal','exp150OpenJournalAside']));
+    expect(roadDom.nativeHudControlIds).toEqual(expect.arrayContaining(['exp150OpenMap','exp150OpenJournal']));
+    expect(roadDom.nativeHudControlIds).not.toContain('exp150OpenJournalAside');
     expect(roadDom.expeditionHudClass).toBe(true);
-    expect(roadDom.asideHeadingColor).toBe('rgba(0, 0, 0, 0)');
-    expect(roadDom.asideParagraphColor).toBe('rgba(0, 0, 0, 0)');
+    expect(roadDom.asideHidden).toBe(true);
+    expect(roadDom.asideDisplay).toBe('none');
+    expect(roadDom.asideText).toBe('');
     expect(roadDom.mapPainter).toBe(false);
     expect(roadDom.mapControl).toBe(true);
     expect(roadDom.mapText.length).toBeGreaterThan(0);
@@ -512,6 +515,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(roadDom.mapIconColor).toBe('rgba(0, 0, 0, 0)');
     expect(roadDom.mapVisibility).toBe('visible');
     await expect(page.locator('.exp150-expedition-head')).toBeVisible();
+    await expect(page.locator('.exp150-main-grid')).toHaveCSS('grid-template-columns', /\d+(\.\d+)?px/);
+    await expect(page.locator('.exp150-journey-aside')).toBeHidden();
+    await expect(page.locator('.exp150-interactions .exp100-discovery-beat')).toHaveCount(0);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionHudUi)).toBe(true);
     await expect(page.locator('.exp150-title-group h1')).toHaveCSS('color','rgba(0, 0, 0, 0)');
     await expect(page.locator('.exp150-vitals')).toBeVisible();
