@@ -61,7 +61,10 @@ test('Ashmere scene art remains full-bleed without the retired town shell', asyn
     return {
       shellHidden: !shell || shell.hidden,
       shellActive: document.body.classList.contains('legend-world-shell-active'),
-      fullBleed: hub && hub.getBoundingClientRect().width >= innerWidth - 1,
+      fullBleed: (() => {
+        const backdrop=hub?.querySelector('.ashmere-hub-v240-backdrop')?.getBoundingClientRect();
+        return Boolean(backdrop && backdrop.left<=0 && backdrop.right>=innerWidth-1 && backdrop.width>=innerWidth-1);
+      })(),
       imageSrc: image?.currentSrc || '',
       imageOpacity: image ? getComputedStyle(image).opacity : '',
       atmosphere: hub ? getComputedStyle(hub.querySelector('.ashmere-hub-v240-atmosphere')).backgroundImage : ''
