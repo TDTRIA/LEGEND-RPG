@@ -1079,7 +1079,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
         height: rect.height,
         objectFit: style.objectFit,
         objectPosition: style.objectPosition,
-        cardBackground: cardStyle.backgroundImage
+        cardBackground: cardStyle.backgroundColor
       };
     });
     expect(portraitLayout.width).toBeLessThanOrEqual(100);
@@ -1114,7 +1114,8 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('#root').getByRole('heading', { name: 'Work Board', exact: true })).toBeVisible();
     await page.locator('[data-job-open="wood"]').click();
     await page.locator('#jobStrike').click();
-    await expect(page.locator('#jobResult')).toBeVisible();
+    await expect(page.locator('#jobResult')).toHaveAttribute('aria-live', 'polite');
+    await expect(page.locator('#jobResult')).toHaveAttribute('data-phaser-workboard-copy', 'true');
     await expect(page.locator('#jobResult')).toContainText(/Earned \d+g/);
     await expect(page.locator('#jobResult')).toContainText(/XP \+\d+/);
     await expect(page.locator('#jobResult')).toContainText(/Level up! You are now level 2\./);
