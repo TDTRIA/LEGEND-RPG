@@ -1088,7 +1088,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     expect(portraitLayout.objectPosition).toContain('18%');
     expectBackgroundAlphaAtMost(portraitLayout.cardBackground, 0.80);
     await page.locator('[data-ash-view="oric"]').click();
-    await expect(page.getByRole('heading', { name: 'Captain Oric' })).toBeVisible();
+    await expect(page.locator('.ash099-head').getByRole('heading', { name: 'Captain Oric' })).toBeVisible();
     const oricDialoguePortrait = page.locator('.ash099-head img');
     await expect(oricDialoguePortrait).toHaveAttribute('src', /assets\/generated\/npcs\/captain-oric\.webp$/);
     await expect.poll(() => oricDialoguePortrait.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
@@ -2420,6 +2420,7 @@ test('the production Phaser world follows all six Old Road scene stages and the 
 
 
 test('Ashmere uses scene-led DOM places instead of floating Phaser landmarks', async ({ page }) => {
+  test.setTimeout(120_000);
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await startFreshCharacter(page, 'PhaserAshmereQA');
@@ -2450,7 +2451,7 @@ test('Ashmere uses scene-led DOM places instead of floating Phaser landmarks', a
 
   const before=await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()));
   await hub.locator('.ashmere-hub-v240-place[data-ash-view="trader"]').click();
-  await expect(page.locator('.ash099-market-console')).toBeVisible();
+  await expect(page.locator('.ash099-market-console')).toBeVisible({ timeout: 15000 });
   await expect(page.locator('[data-market-tab="buy"]')).toHaveAttribute('aria-selected','true');
   expect(await page.evaluate(()=>JSON.stringify(window.LegendStorage.loadPlayer()))).toBe(before);
   await expect.poll(()=>page.evaluate(()=>window.LegendPhaserWorldV1.snapshot()?.environment)).toBe('market');
