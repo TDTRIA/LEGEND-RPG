@@ -608,3 +608,160 @@ html body #root .ash100-town .ash100-destination {
   transition: none !important;
   transform: none !important;
 }
+
+
+/* Old Road refresh: let the landscape and meaningful actions carry the page,
+   rather than repeating the same health, pressure, supplies and journal data
+   in a permanent right-hand dashboard. */
+.exp100:has(.exp150-world-page) .exp150-main-grid {
+  grid-template-columns:minmax(0,1fr) !important;
+}
+.exp100:has(.exp150-world-page) .exp150-journey-aside,
+.exp100:has(.exp150-world-page) .exp150-journey-aside[hidden] {
+  display:none !important;
+}
+.exp100:has(.exp150-world-page) .exp150-route-tracker {
+  padding:9px 0 13px !important;
+}
+.exp100:has(.exp150-world-page) .exp150-tracker-label {
+  margin-bottom:7px !important;
+  padding:5px 0 8px !important;
+}
+.exp100:has(.exp150-world-page) .exp150-route-tracker li {
+  gap:5px !important;
+}
+.exp100:has(.exp150-world-page) .exp150-stop-marker {
+  width:25px !important;
+  height:25px !important;
+}
+.exp100:has(.exp150-world-page) .exp150-route-tracker li:before {
+  top:12px !important;
+  left:12px !important;
+}
+.exp100:has(.exp150-world-page) .exp150-stop-name {
+  font-size:.64rem !important;
+  line-height:1.2 !important;
+}
+.exp100:has(.exp150-world-page) .exp150-road-clock {
+  display:grid !important;
+  grid-template-columns:27px minmax(0,1fr) minmax(0,1fr) !important;
+  gap:3px 9px !important;
+  align-items:center !important;
+  margin:7px clamp(12px,2.2vw,30px) !important;
+  padding:7px 10px !important;
+  border-width:0 0 1px !important;
+  background:linear-gradient(90deg,rgba(19,29,21,.56),rgba(7,12,8,.12)) !important;
+  box-shadow:none !important;
+}
+.exp100:has(.exp150-world-page) .exp150-clock-symbol {
+  grid-row:1 / span 2 !important;
+  width:25px !important;
+  height:25px !important;
+}
+.exp100:has(.exp150-world-page) .exp150-clock-main {
+  gap:3px 8px !important;
+}
+.exp100:has(.exp150-world-page) .exp150-road-clock > p {
+  grid-column:3 !important;
+  grid-row:1 / span 2 !important;
+  text-align:right !important;
+  font-size:.66rem !important;
+  line-height:1.3 !important;
+}
+.exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live .exp100-discovery-beat {
+  position:absolute !important;
+  z-index:8 !important;
+  right:14px !important;
+  bottom:43px !important;
+  width:min(440px,calc(100% - 28px)) !important;
+  max-height:65% !important;
+  overflow:auto !important;
+  margin:0 !important;
+  padding:10px 12px !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  gap:10px !important;
+  border:1px solid rgba(224,194,125,.66) !important;
+  border-left:3px solid #d8bb78 !important;
+  border-radius:2px !important;
+  background:linear-gradient(140deg,rgba(18,24,18,.97),rgba(5,9,7,.97)) !important;
+  box-shadow:0 14px 36px rgba(0,0,0,.58),inset 0 1px rgba(255,246,211,.08) !important;
+  backdrop-filter:none !important;
+}
+.exp100:has(.exp150-world-page) .exp100-discovery-beat .exp100-poi-icon {
+  flex:0 0 30px !important;
+  width:30px !important;
+  height:30px !important;
+  border-radius:2px !important;
+  font-size:1rem !important;
+}
+.exp100:has(.exp150-world-page) .exp100-discovery-beat .exp100-poi-copy {
+  min-width:0 !important;
+  flex:1 1 auto !important;
+}
+.exp100:has(.exp150-world-page) .exp100-discovery-beat .exp100-poi-copy > span {
+  font-size:.56rem !important;
+  letter-spacing:.14em !important;
+}
+.exp100:has(.exp150-world-page) .exp100-discovery-beat .exp100-poi-copy > strong {
+  display:block !important;
+  margin:3px 0 !important;
+  font-size:1rem !important;
+  line-height:1.15 !important;
+}
+.exp100:has(.exp150-world-page) .exp100-discovery-beat .exp100-poi-copy > p {
+  margin:3px 0 7px !important;
+  font-size:.74rem !important;
+  line-height:1.38 !important;
+}
+.exp100:has(.exp150-world-page) .exp100-discovery-beat .exp100-poi-action,
+.exp100:has(.exp150-world-page) .exp100-discovery-beat .exp100-poi-dismiss {
+  min-height:34px !important;
+  margin:3px 6px 0 0 !important;
+  padding:7px 10px !important;
+  border:1px solid rgba(215,184,106,.42) !important;
+  border-radius:2px !important;
+  background:rgba(42,46,32,.92) !important;
+  color:#f0e5c9 !important;
+  font-size:.68rem !important;
+}
+@media (max-width:720px) {
+  .exp100:has(.exp150-world-page) .exp150-road-clock {
+    grid-template-columns:25px minmax(0,1fr) !important;
+    margin:6px 8px !important;
+    padding:6px 9px !important;
+  }
+  .exp100:has(.exp150-world-page) .exp150-road-clock > p {
+    grid-column:2 !important;
+    grid-row:auto !important;
+    text-align:left !important;
+    font-size:.62rem !important;
+  }
+  .exp100:has(.exp150-world-page) .exp150-tracker-label {
+    padding:4px 0 7px !important;
+  }
+  .exp100:has(.exp150-world-page) .exp150-route-tracker ol {
+    gap:2px !important;
+  }
+  .exp100:has(.exp150-world-page) .exp150-route-tracker li {
+    padding-right:2px !important;
+  }
+  .exp100:has(.exp150-world-page) .exp150-stop-name {
+    font-size:.56rem !important;
+    overflow-wrap:anywhere !important;
+  }
+  .exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live .exp100-discovery-beat {
+    right:8px !important;
+    bottom:38px !important;
+    width:calc(100% - 16px) !important;
+    max-height:70% !important;
+    padding:9px 10px !important;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  .exp100:has(.exp150-world-page) .exp100-discovery-beat,
+  .exp100:has(.exp150-world-page) .exp100-discovery-beat::before {
+    animation:none !important;
+    transition:none !important;
+  }
+}
