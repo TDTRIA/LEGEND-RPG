@@ -70,7 +70,7 @@ test.describe('LEGEND public site shell v2.3', () => {
         current: document.querySelectorAll('.site-nav-links a[aria-current="page"]').length
       }));
 
-      const expectedCurrentNavLinks = path === 'playtest.html' ? 0 : 1;
+      const expectedCurrentNavLinks = ['playtest.html', 'privacy.html'].includes(path) ? 0 : 1;
       expect(shell.current, path + ' should mark the current primary-nav link when this page has one').toBe(expectedCurrentNavLinks);
       expect(shell.play, path + ' should offer the play button').toBe('index.html');
       if (reference === null) {
