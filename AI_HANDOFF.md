@@ -1,7 +1,7 @@
 # AI Handoff — LEGEND: The Awakening
 
 **Last updated:** 2026-11-21
-**Authoritative branch:** `main` (`ef93b9c`)
+**Authoritative branch:** `main` (`75bed7f`, verified 2026-11-21)
 **Current production version:** `v0.30.5`
 **Current product name:** **LEGEND: The Awakening**
 
@@ -37,6 +37,12 @@ LEGEND is an in-development, desktop-first browser RPG with responsive mobile su
 4. Specify and add approved party formation, stress/resolve and torchlight as separate systems, one complete and tested feature at a time. Existing solo play, save compatibility, reward odds and progression remain unchanged unless the owner explicitly approves a balance change.
 
 The durable design and acceptance checklist lives in [docs/DARKEST_DUNGEON_REBUILD_PLAN.md](docs/DARKEST_DUNGEON_REBUILD_PLAN.md); the creative guardrails live in [docs/DARKEST_DUNGEON_DIRECTION.md](docs/DARKEST_DUNGEON_DIRECTION.md).
+
+### Current implementation notes — 2026-11-21
+
+- The Ashmere refuge is implemented in PR #148 but is not yet in production. It replaces the Ashmere World Shell only; Greyfen and service interiors remain on their established surfaces.
+- The first Old Road decluttering pass now collapses the journey clock/route history and optional detours into native disclosures. Search and Read the Road remain available, but their visual weight is reduced beneath the primary Travel On decision. This is presentation-only: route, pressure, event, reward and save rules remain unchanged.
+- The branch's latest Playwright run must be checked against the current PR head before treating these changes as validated. A cancelled run is not a pass.
 
 ### Engineering boundary for this rebuild
 
@@ -80,23 +86,14 @@ That produced two renderers with two sources of truth over the same surface: inp
 - **#144 (chore/housekeeping-dead-code-20261117)** — removes 52 dead files (39 JS, 13 CSS, 14 art, 13.7 MB). Deletions are limited to files proven unreachable from every HTML entry point plus art whose basename appears in no code, doc or manifest. Notable: `phaser-shell-toast-v1.js` was added by #131 but **never wired into `index.html`** — the live toast painter is `syncNativeToastUi`. Kept deliberately: `assets/title`, `assets/audio`, `assets/generated`, `assets/ui`, `assets/tilesets`, `assets/locations`, because those packs are still being wired incrementally.
 - **`feat/ashmere-title-screen-v230`** — the new moonlit-Ashmere title screen, 12+ commits: DOM menu text and controls, Phaser-owned scene composition, `css/title-screen-ashmere-v230.css`, and it adapts `tests/dom-ui-restore.spec.js`. This is the DOM-first title direction in practice. Its CI was red as of the last check — verify before believing it is mergeable.
 
-## Branches: active versus abandoned
+## Branch state
 
-Nothing below is merged. Verify current state with the GitHub API rather than trusting this table.
+Use the live GitHub state rather than historical branch names below.
 
-| Branch | Status |
-|---|---|
-| `main` | Authoritative. Production. |
-| `feat/ashmere-title-screen-v230` | **Active** — in-flight title screen, DOM-first |
-| `fix/hybrid-rendering-foundation-20261117` | **Active** — owner's hybrid-render work; long-failing CI |
-| `fix/phaser-transactional-presentation-20261117` | **Likely redundant** — overlaps hybrid-rendering; probably superseded |
-| `fix/phaser-overlay-transactional-fallback-20261116` | **Abandoned** — superseded by the transactional-presentation branch |
-| `base44/rescue/improve-website-layout-e366f3a` | **Abandoned** — 1 commit, ~69 behind |
-| `feat/public-site-shell` | **Abandoned** — 1 commit, ~69 behind |
-| `portal-v2-redesign` | **Abandoned** — 1 commit, ~92 behind |
-| `ci/let-main-runs-complete` | **Disposable** — throwaway CI experiment |
-| `doc/ai-handoff-refresh-20261117` | This document |
-| `chore/housekeeping-dead-code-20261117` | #144, if still open |
+- `main` is authoritative production. As of 2026-11-21 its head is `75bed7f`, package version `0.30.5`.
+- PR [#148 — Ashmere / Dark Fantasy rebuild](https://github.com/TDTRIA/LEGEND-RPG/pull/148) is the active feature branch: `feat/ashmere-hub-dark-fantasy-v240`. It is still open and is the only intended path for the current hub and expedition presentation work. It has been reconciled with `main`; do not merge until the latest Playwright run passes and desktop/mobile acceptance is complete.
+- PR [#142 — hybrid rendering foundation](https://github.com/TDTRIA/LEGEND-RPG/pull/142) remains an older draft. Do not merge it separately or resume its earlier Phaser-painter direction without re-auditing it against the DOM-first architecture and PR #148.
+- Treat other feature/fix branches as historical unless a currently open pull request proves otherwise. Never infer active work from a branch name alone.
 
 ## Priorities
 
