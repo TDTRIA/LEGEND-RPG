@@ -182,7 +182,7 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
   display:inline-flex;
   align-items:center;
   gap:12px;
-  min-height:38px;
+  min-height:44px !important;
   margin-top:16px;
   padding:8px 0;
   border:0;
@@ -216,7 +216,7 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
 }
 .ashmere-hub-v240-place {
   position:relative;
-  border-radius:2px;
+  border-radius:2px !important;
   font:inherit;
   display:grid;
   grid-template-columns:94px minmax(0,1fr) 16px;
