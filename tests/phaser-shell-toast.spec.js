@@ -63,6 +63,8 @@ async function triggerShellToast(page) {
   const toast = page.locator('.lws-shell-toast');
   await expect(toast).toBeVisible();
   await expect(toast).not.toBeEmpty();
+  await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeToastUi)).toBe(true);
+  await expect(toast).toHaveAttribute('data-legend-phaser-toast-text', 'true');
 }
 
 async function readToastBox(page) {
