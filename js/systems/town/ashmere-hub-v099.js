@@ -175,7 +175,7 @@
         const action = String(button.dataset.ashHubAction || '');
         if (action === 'inventory') {
           if (typeof window.LegendWorldShellModalsV170?.openInventory === 'function') {
-            window.LegendWorldShellModalsV170.openInventory(getPlayer());
+            window.LegendWorldShellModalsV170.openInventory(pl);
           } else announceUtility('The traveler pack is unavailable right now.');
           return;
         }
@@ -188,7 +188,7 @@
         if (action === 'save') {
           try {
             const storage = window.LegendStorage;
-            const player = getPlayer();
+            const player = pl;
             if (!player || typeof storage?.savePlayer !== 'function') {
               announceUtility('The traveler record could not be saved. Storage is unavailable.');
               return;
