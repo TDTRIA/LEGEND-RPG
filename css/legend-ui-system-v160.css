@@ -668,7 +668,7 @@ html body #root .ash100-town .ash100-destination {
   font-size:.66rem !important;
   line-height:1.3 !important;
 }
-.exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live .exp100-discovery-beat {
+.exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live .exp100-scene-discovery {
   position:absolute !important;
   z-index:8 !important;
   right:14px !important;
@@ -750,7 +750,7 @@ html body #root .ash100-town .ash100-destination {
     font-size:.56rem !important;
     overflow-wrap:anywhere !important;
   }
-  .exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live .exp100-discovery-beat {
+  .exp100:has(.exp150-world-page) > .exp100-wrap > .exp100-scene-live .exp100-scene-discovery {
     right:8px !important;
     bottom:38px !important;
     width:calc(100% - 16px) !important;
