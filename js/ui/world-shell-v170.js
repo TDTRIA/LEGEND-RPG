@@ -345,11 +345,14 @@
     toast.hidden = !message;
     if (toastTimer) window.clearTimeout(toastTimer);
     if (message) {
+      // Refresh immediately and once the unhidden toast has measurable layout bounds.
+      window.LegendPhaserWorldV1?.refreshToast?.();
+      const schedule = window.requestAnimationFrame || (callback => window.setTimeout(callback, 16));
+      schedule(() => window.LegendPhaserWorldV1?.refreshToast?.());
       toastTimer = window.setTimeout(() => {
         toast.hidden = true;
         window.LegendPhaserWorldV1?.clearToast?.();
-      }, 3200);
-      window.LegendPhaserWorldV1?.refreshToast?.();
+      }, 6500);
     } else {
       window.LegendPhaserWorldV1?.clearToast?.();
     }
