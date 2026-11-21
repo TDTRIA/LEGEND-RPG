@@ -242,6 +242,20 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await expect(reveal).toContainText(/Ridgeway Cairn/i);
     await expect(page.locator('.exp150-interactions .exp100-discovery-beat')).toHaveCount(0);
     await expect(reveal).toHaveAttribute('role','status');
+    const revealVisual=await reveal.evaluate(node=>{
+      const style=getComputedStyle(node);
+      return {
+        position:style.position,
+        backgroundImage:style.backgroundImage,
+        borderLeftColor:style.borderLeftColor,
+        width:node.getBoundingClientRect().width,
+        sceneWidth:node.parentElement.getBoundingClientRect().width
+      };
+    });
+    expect(revealVisual.position).toBe('absolute');
+    expect(revealVisual.backgroundImage).toContain('linear-gradient');
+    expect(revealVisual.borderLeftColor).not.toBe('rgba(0, 0, 0, 0)');
+    expect(revealVisual.width).toBeLessThanOrEqual(revealVisual.sceneWidth);
     await tap(page, reveal.locator('#poiInspect'));
     await expect(page.locator('.exp100-head')).toContainText(/Road Pressure falls by 3/i);
     await expectNoHorizontalOverflow(page);
