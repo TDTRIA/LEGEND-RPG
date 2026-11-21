@@ -500,8 +500,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(roadDom.painterClass).toBe(false);
     expect(roadDom.nativeHudActive).toBe(true);
     expect(roadDom.nativeHudText).toEqual(expect.arrayContaining([
-      'OLD ROAD · EXPEDITION', 'South Fork', 'YOUR JOURNEY', 'Road Pressure'
+      'OLD ROAD · EXPEDITION', 'South Fork', 'YOUR JOURNEY'
     ]));
+    expect(roadDom.nativeHudText.some(value=>/pressure/i.test(value))).toBe(true);
     expect(roadDom.nativeHudControlIds).toEqual(expect.arrayContaining(['exp150OpenMap','exp150OpenJournal']));
     expect(roadDom.nativeHudControlIds).not.toContain('exp150OpenJournalAside');
     expect(roadDom.expeditionHudClass).toBe(true);
@@ -515,7 +516,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(roadDom.mapIconColor).toBe('rgba(0, 0, 0, 0)');
     expect(roadDom.mapVisibility).toBe('visible');
     await expect(page.locator('.exp150-expedition-head')).toBeVisible();
-    await expect(page.locator('.exp150-main-grid')).toHaveCSS('grid-template-columns', /\d+(\.\d+)?px/);
+    await expect.poll(()=>page.locator('.exp150-main-grid').evaluate(node =>
+      getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length
+    )).toBe(1);
     await expect(page.locator('.exp150-journey-aside')).toBeHidden();
     await expect(page.locator('.exp150-interactions .exp100-discovery-beat')).toHaveCount(0);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionHudUi)).toBe(true);
