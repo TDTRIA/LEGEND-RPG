@@ -3057,7 +3057,12 @@
         Math.round(rect.width), Math.round(rect.height),
         Math.round(window.innerWidth), Math.round(window.innerHeight)
       ]);
-      if (this.nativeToastUiActive && signature === this.nativeToastUiSignature) return;
+      if (this.nativeToastUiActive && signature === this.nativeToastUiSignature) {
+        // A shell refresh can reconcile body classes while this toast remains visible.
+        // Restore the paint-state class without rebuilding the existing Phaser objects.
+        document.body?.classList.add('legend-phaser-toast-ui-active');
+        return;
+      }
 
       this.clearNativeToastUi(false);
       this.nativeToastUiActive = true;
