@@ -479,3 +479,19 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
   background:transparent!important;
   box-shadow:none!important;
 }
+ 
+/* Outrank the legacy global button treatment for the new refuge destinations. */
+#root button.ashmere-hub-v240-place {
+  border-radius:2px !important;
+}
+
+/* Town dialogue portraits keep a compact character-led frame on desktop. */
+@media (min-width:981px) {
+  #root .ash099-head {
+    grid-template-columns:minmax(0,160px) minmax(0,1fr) !important;
+  }
+  #root .ash099-head > img {
+    height:220px !important;
+    object-position:center 16% !important;
+  }
+}
