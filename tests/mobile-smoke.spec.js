@@ -94,7 +94,7 @@ async function startFreshCharacter(page, name) {
   await tap(page, page.locator('#v094Next'));
   await tap(page, page.locator('[data-origin]').first());
   await tap(page, page.locator('#v094Next'));
-  await tap(page, page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }));
+  await tap(page, page.locator('[data-class="Ranger"]'));
   await tap(page, page.locator('#v094Next'));
   await tap(page, page.locator('[data-keepsake="Old Map"]'));
   await tap(page, page.locator('#v094Next'));
