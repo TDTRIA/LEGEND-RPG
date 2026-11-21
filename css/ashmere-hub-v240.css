@@ -485,12 +485,14 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
   border-radius:2px !important;
 }
 
-/* Town dialogue portraits keep a compact character-led frame on desktop. */
+/* Match the shared service-header selector so the town UI system cannot widen the portrait. */
 @media (min-width:981px) {
-  #root .ash099-head {
+  .ash099-screen .ash099-head.has-art {
     grid-template-columns:minmax(0,160px) minmax(0,1fr) !important;
   }
-  #root .ash099-head > img {
+  .ash099-screen .ash099-head.has-art > img {
+    width:160px !important;
+    max-width:160px !important;
     height:220px !important;
     object-position:center 16% !important;
   }
