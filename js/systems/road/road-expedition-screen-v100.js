@@ -138,6 +138,12 @@
     const copy=id==='windbreak'?'A shallow lee offers a place to observe the tracks and visible traffic below.':'A partly submerged cart holds a possible scrap of salvage and worn cargo marks.';
     return '<section class="exp160-optional-detour" aria-label="Optional road detour"><span class="exp150-kicker">OFF THE MARKED ROUTE</span><h3>'+title+' <small>OPTIONAL</small></h3><p>'+copy+' Visiting is never required to complete the expedition.</p><button type="button" class="exp100-choice" id="exp160VisitOptional" data-node="'+id+'"><strong>Visit '+title+'</strong><span>Make a short detour, then return to the route or continue to camp.</span><em>Optional · costs and rewards are shown at the location</em></button></section>';
   }
+  function optionalDetourDisclosure(pl,s,stage){
+    const detour=optionalDetourCard(pl,s,stage);
+    if(!detour)return '';
+    const title=s.routeChoice==='ridge'?'Windbreak':'Sunken Cart';
+    return '<details class="exp160-extra-lead"><summary><span class="exp160-extra-lead-label">OPTIONAL DETOUR</span><strong>'+esc(title)+'</strong><small>Open to inspect the route and cost</small><i aria-hidden="true">+</i></summary><div class="exp160-extra-lead-content">'+detour+'</div></details>';
+  }
   function blackrootSurveyMarkup(pl,s,stage){
     if(stage!==3||s.activeSideTripV160)return '';
     const contract=pl.flags?.sideContracts?.blackrootTrailSurvey;
@@ -380,6 +386,10 @@
     const nextArea=areaForStage(Math.min(5,stage+1));
     const clock=roadTimeOfDay(s.roadClockHour,s.pressure);
     const clockMarkup='<aside class="exp150-road-clock '+clock.period+'" aria-label="Expedition time and road conditions"><span class="exp150-clock-symbol" aria-hidden="true">'+(clock.period==='deep-night'||clock.period==='night'?'☾':clock.period==='dusk'||clock.period==='golden-hour'?'◐':'☼')+'</span><div class="exp150-clock-main"><strong>Day '+Number(pl.day||1)+' · '+esc(clock.timeLabel)+'</strong><span>'+esc(clock.label)+' on the Old Road</span></div><p>'+esc(clock.light)+' '+esc(clock.tension)+'</p></aside>';
+    const routeSummary=s.routeChoice==='ridge'?'High Ridge':s.routeChoice==='reeds'?'Reed Cut':'Route not chosen';
+    const timeSummary=String(clock.timeLabel||clock.label||'Time unknown');
+    const journeySummary='Day '+Number(pl.day||1)+' · '+timeSummary+' · '+routeSummary+' · Stop '+(stage+1)+' of 6';
+    const journeyRecordMarkup='<details class="exp160-journey-details"><summary><span class="exp160-journey-label">JOURNEY RECORD</span><strong>'+esc(journeySummary)+'</strong><i aria-hidden="true">+</i></summary><div class="exp160-journey-details-content">'+clockMarkup+trackerMarkup(pl,s,stage)+'</div></details>';
     const roadMood=s.pressure>=65?'The mist closes around the road. Something has found your trail.':s.pressure>=40?'The birds have gone quiet. Footsteps pace you somewhere beyond the reeds.':'Rain beads on the old stones. A lantern flickers far beyond the bend.';
     const sceneText=(stage===2&&s.routeChoice&&note)?note+' '+area.text:(note||area.text||roadMood);
     const sceneMarkup=typeof scene==='function'?scene(stage,true):header(pl,s,'OLD ROAD EXPEDITION',area.name,sceneText);
@@ -390,11 +400,10 @@
       : '<button class="exp150-action primary" id="push" data-legend-scene-transition="Onward along the Old Road" '+(travelLocked?'disabled aria-disabled="true"':'')+'><span class="exp150-action-symbol">➜</span><span><strong>'+(travelLocked?'Complete the first road lesson':'Travel On')+'</strong><small>'+(travelLocked?esc(travelGate.message):'Continue toward '+esc(nextArea.name))+'</small></span><b>→</b></button><button class="exp150-action" id="search" '+(searchDone||searchLocked?'disabled aria-disabled="true"':'')+'><span class="exp150-action-symbol">⌕</span><span><strong>'+(searchDone?'Nothing left to search':searchLocked?(!s.routeChoice?'Choose your route first':'Inspect the marker first'):'Search the roadside')+'</strong><small>'+(searchDone?'You have searched this stretch':searchLocked?(!s.routeChoice?'Pick the High Ridge or the Reed Cut at the fork, then look closer at the marker.':'Use “Look closer” in the scene to find a clue.'):'Look for supplies and useful traces')+'</small></span><b>+</b></button><button class="exp150-action" id="careful"><span class="exp150-action-symbol">◉</span><span><strong>Read the Road</strong><small>Study the ground and lower Road Pressure.</small></span><b>↗</b></button>';
     const status=Number(pl.hp||0)/maxHpSafe(pl);
     const markup=sceneMarkup+
-      '<header class="exp150-expedition-head exp100-head"><div class="exp150-title-group"><span class="exp150-kicker">OLD ROAD · EXPEDITION</span><h1>'+esc(area.name)+'</h1><p class="'+(note?'has-result':'')+'">'+esc(sceneText)+'</p></div><div class="exp150-vitals">'+statusMetric('Health',Number(pl.hp||0)+' / '+Number(pl.maxHp||0),status*100,'health')+statusMetric('Road Pressure',Number(s.pressure||0)+'%',s.pressure,'pressure')+'</div><div class="exp150-utility-actions"><button type="button" id="exp150OpenMap"><span>⌖</span>Road Map</button><button type="button" id="exp150OpenJournal"><span>✧</span>Field Journal <i>'+discoveryCount+'</i></button></div></header>'+clockMarkup+'<div class="exp150-world-page">'+
-      trackerMarkup(pl,s,stage)+
+      '<header class="exp150-expedition-head exp100-head"><div class="exp150-title-group"><span class="exp150-kicker">OLD ROAD · EXPEDITION</span><h1>'+esc(area.name)+'</h1><p class="'+(note?'has-result':'')+'">'+esc(sceneText)+'</p></div><div class="exp150-vitals">'+statusMetric('Health',Number(pl.hp||0)+' / '+Number(pl.maxHp||0),status*100,'health')+statusMetric('Road Pressure',Number(s.pressure||0)+'%',s.pressure,'pressure')+'</div><div class="exp150-utility-actions"><button type="button" id="exp150OpenMap"><span>⌖</span>Road Map</button><button type="button" id="exp150OpenJournal"><span>✧</span>Field Journal <i>'+discoveryCount+'</i></button></div></header>'+journeyRecordMarkup+'<div class="exp150-world-page">'+
       '<div class="exp150-main-grid"><section class="exp150-scene-column">'+
       (guide?'<div class="exp150-guide">'+guide+'</div>':'')+
-      '<div class="exp150-interactions">'+(sideNode?optionalSiteMarkup(pl,s,sideNode):roadDiscovery.routeChoicePanel(s,stage)+roadDiscovery.movedCairnDecisionPanel(pl,s,stage)+optionalDetourCard(pl,s,stage)+blackrootSurveyMarkup(pl,s,stage))+'</div>'+
+      '<div class="exp150-interactions">'+(sideNode?optionalSiteMarkup(pl,s,sideNode):roadDiscovery.routeChoicePanel(s,stage)+roadDiscovery.movedCairnDecisionPanel(pl,s,stage)+optionalDetourDisclosure(pl,s,stage)+blackrootSurveyMarkup(pl,s,stage))+'</div>'+
       (atCamp?campActions(pl,s,area):'')+
       '<section class="exp150-action-dock"><div class="exp150-section-heading"><div><span class="exp150-kicker">YOUR NEXT MOVE</span><h2>How will you proceed?</h2></div><span class="exp150-current-mark">STOP '+(stage+1)+' / 6</span></div><div class="exp150-action-list">'+choices+'</div>'+earlyReturnMarkup+'</section></section>'+
       '<aside class="exp150-journey-aside" aria-hidden="true" hidden></aside></div>'+

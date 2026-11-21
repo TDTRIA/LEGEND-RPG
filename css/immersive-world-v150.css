@@ -955,3 +955,95 @@
   background: none !important;
   pointer-events: none !important;
 }
+
+
+/* v0.30.6 — keep non-urgent journey context out of the active road decision. */
+.exp100:has(.exp150-world-page) .exp160-journey-details,
+.exp100:has(.exp150-world-page) .exp160-extra-lead{
+  position:relative;
+  margin:8px clamp(10px,2.2vw,30px);
+  border:1px solid rgba(205,178,111,.24);
+  border-left:2px solid rgba(205,178,111,.48);
+  border-radius:3px;
+  background:linear-gradient(105deg,rgba(23,29,22,.92),rgba(6,10,8,.88));
+  color:#e7dfc7;
+}
+.exp100:has(.exp150-world-page) .exp160-journey-details>summary,
+.exp100:has(.exp150-world-page) .exp160-extra-lead>summary{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px 12px;
+  min-height:42px;
+  padding:9px 12px;
+  list-style:none;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+.exp100:has(.exp150-world-page) .exp160-journey-details>summary::-webkit-details-marker,
+.exp100:has(.exp150-world-page) .exp160-extra-lead>summary::-webkit-details-marker{display:none}
+.exp100:has(.exp150-world-page) .exp160-journey-label,
+.exp100:has(.exp150-world-page) .exp160-extra-lead-label{
+  color:#c9ad6d;
+  font-size:.58rem;
+  font-weight:900;
+  letter-spacing:.17em;
+}
+.exp100:has(.exp150-world-page) .exp160-journey-details>summary strong,
+.exp100:has(.exp150-world-page) .exp160-extra-lead>summary strong{
+  min-width:0;
+  color:#e9e1ce;
+  font:500 .88rem/1.3 Georgia,"Times New Roman",serif;
+}
+.exp100:has(.exp150-world-page) .exp160-journey-details>summary i,
+.exp100:has(.exp150-world-page) .exp160-extra-lead>summary i{
+  display:grid;
+  place-items:center;
+  width:22px;
+  height:22px;
+  margin-left:auto;
+  border:1px solid rgba(205,178,111,.28);
+  color:#d8c18b;
+  font-style:normal;
+  transition:transform .16s ease;
+}
+.exp100:has(.exp150-world-page) .exp160-journey-details[open]>summary i,
+.exp100:has(.exp150-world-page) .exp160-extra-lead[open]>summary i{transform:rotate(45deg)}
+.exp100:has(.exp150-world-page) .exp160-journey-details>summary:hover,
+.exp100:has(.exp150-world-page) .exp160-extra-lead>summary:hover,
+.exp100:has(.exp150-world-page) .exp160-journey-details>summary:focus-visible,
+.exp100:has(.exp150-world-page) .exp160-extra-lead>summary:focus-visible{
+  outline:2px solid rgba(226,199,128,.72);
+  outline-offset:2px;
+  background:rgba(129,105,59,.12);
+}
+.exp100:has(.exp150-world-page) .exp160-journey-details-content,
+.exp100:has(.exp150-world-page) .exp160-extra-lead-content{
+  padding:0 12px 12px;
+}
+.exp100:has(.exp150-world-page) .exp160-journey-details-content .exp150-road-clock{
+  margin:4px 0 10px;
+}
+.exp100:has(.exp150-world-page) .exp160-journey-details-content .exp150-route-tracker{
+  margin:0;
+  padding:0 0 4px;
+}
+.exp100:has(.exp150-world-page) .exp160-extra-lead>summary small{
+  color:#9eaa99;
+  font-size:.68rem;
+}
+.exp100:has(.exp150-world-page) .exp160-extra-lead .exp160-optional-detour{
+  margin:0;
+}
+@media(max-width:560px){
+  .exp100:has(.exp150-world-page) .exp160-journey-details,
+  .exp100:has(.exp150-world-page) .exp160-extra-lead{margin:7px 8px}
+  .exp100:has(.exp150-world-page) .exp160-journey-details>summary,
+  .exp100:has(.exp150-world-page) .exp160-extra-lead>summary{gap:5px 8px;padding:9px}
+  .exp100:has(.exp150-world-page) .exp160-journey-details>summary strong,
+  .exp100:has(.exp150-world-page) .exp160-extra-lead>summary strong{font-size:.79rem}
+}
+@media(prefers-reduced-motion:reduce){
+  .exp100:has(.exp150-world-page) .exp160-journey-details>summary i,
+  .exp100:has(.exp150-world-page) .exp160-extra-lead>summary i{transition:none}
+}

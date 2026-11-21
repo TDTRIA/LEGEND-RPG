@@ -207,3 +207,30 @@ test('Sunken Cart salvage discloses cost and records the recovered material with
   });
   expect(after).toEqual({ stage: 2, node: 'wayfarers-camp' });
 });
+
+
+test('journey history and optional detours stay tucked away until the traveler opens them', async ({ page }) => {
+  test.setTimeout(120000);
+  await startFreshTraveler(page, 'FocusedRoadQA');
+  await seedRoadStage(page, 1, 'ridge');
+
+  const journey = page.locator('.exp160-journey-details');
+  await expect(journey).toBeVisible();
+  await expect(journey).not.toHaveAttribute('open', '');
+  await expect(journey).toContainText('High Ridge');
+  await expect(journey.locator('.exp150-road-clock')).toBeHidden();
+  await expect(journey.locator('.exp150-route-tracker')).toBeHidden();
+
+  await journey.locator('summary').click();
+  await expect(journey.locator('.exp150-road-clock')).toBeVisible();
+  await expect(journey.locator('.exp150-route-tracker')).toBeVisible();
+  await expect(journey).toContainText('YOUR JOURNEY');
+
+  const detour = page.locator('.exp160-extra-lead');
+  await expect(detour).toBeVisible();
+  await expect(detour).not.toHaveAttribute('open', '');
+  await expect(detour.locator('#exp160VisitOptional')).toBeHidden();
+  await detour.locator('summary').click();
+  await expect(detour.locator('#exp160VisitOptional')).toBeVisible();
+  await expect(detour.locator('#exp160VisitOptional')).toContainText('Visit Windbreak');
+});
