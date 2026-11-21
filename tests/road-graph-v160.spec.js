@@ -234,3 +234,31 @@ test('journey history and optional detours stay tucked away until the traveler o
   await expect(detour.locator('#exp160VisitOptional')).toBeVisible();
   await expect(detour.locator('#exp160VisitOptional')).toContainText('Visit Windbreak');
 });
+
+
+test('primary road decision visually leads secondary actions while keeping secondary actions comfortably reachable', async ({ page }) => {
+  test.setTimeout(120000);
+  await startFreshTraveler(page, 'ActionHierarchyQA');
+  await seedRoadStage(page, 1, 'ridge');
+
+  const inspectActions = () => page.evaluate(() => {
+    const primary = document.querySelector('#push');
+    const secondary = Array.from(document.querySelectorAll('#search,#careful'));
+    const metrics = element => ({
+      height: element.getBoundingClientRect().height,
+      minHeight: getComputedStyle(element).minHeight
+    });
+    return { primary: metrics(primary), secondary: secondary.map(metrics) };
+  });
+
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    const actions = await inspectActions();
+    expect(actions.primary.minHeight).toBe('77px');
+    expect(actions.primary.height).toBeGreaterThan(Math.max(...actions.secondary.map(item => item.height)));
+    for (const action of actions.secondary) {
+      expect(action.minHeight).toBe('52px');
+      expect(action.height).toBeGreaterThanOrEqual(44);
+    }
+  }
+});
