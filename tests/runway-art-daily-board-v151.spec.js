@@ -64,6 +64,7 @@ test('title realm entrance uses local Runway raster menu art rather than SVG men
 });
 
 test('Ashmere refuge uses local scene art and exposes the daily board through town services', async ({ page }) => {
+  test.setTimeout(120000);
   await enterAshmere(page, 'HubRasterQA');
   const hub=page.locator('.ashmere-hub-v240');
   await expect(hub).toBeVisible();
@@ -72,7 +73,7 @@ test('Ashmere refuge uses local scene art and exposes the daily board through to
     expect.stringContaining('ashmere-inn.webp'),
     expect.stringContaining('ashmere-market.webp'),
     expect.stringContaining('ashmere-forge.webp'),
-    expect.stringContaining('captain-oric.webp')
+    expect.stringContaining('npc_oric_portrait_v1.png')
   ]));
   await expect.poll(()=>hub.locator('.ashmere-hub-v240-place-art img').evaluateAll(imgs=>imgs.length===4&&imgs.every(img=>img.complete&&img.naturalWidth>0))).toBe(true);
   await expect(hub.locator('.ashmere-hub-v240-gate-art img')).toHaveAttribute('src',/old-road-south-fork\.webp/);

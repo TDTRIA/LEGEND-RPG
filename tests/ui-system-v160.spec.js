@@ -347,6 +347,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
   });
 
   test('Ashmere refuge and Work Board retain their real destinations and actions', async ({ page }) => {
+    test.setTimeout(120000);
     await enterAshmere(page, 'TownUIPreview');
     const hub=page.locator('.ashmere-hub-v240');
     await expect(hub).toBeVisible();

@@ -1068,7 +1068,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(page.locator('.ash099-screen').getByRole('heading', { name: 'People of Ashmere' })).toBeVisible();
     const oricCard = page.locator('.ash099-npc-card[data-ash-view="oric"] img');
     await expect(oricCard).toBeVisible();
-    await expect(oricCard).toHaveAttribute('src', /assets\/generated\/npcs\/captain-oric\.webp$/);
+    await expect(oricCard).toHaveAttribute('src', /assets\/npcs\/ashmere\/npc_oric_portrait_v1\.png$/);
     await expect.poll(() => oricCard.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
     const portraitLayout = await oricCard.evaluate(img => {
       const style = getComputedStyle(img);
@@ -2017,7 +2017,7 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
       expect.stringContaining('ashmere-inn.webp'),
       expect.stringContaining('ashmere-market.webp'),
       expect.stringContaining('ashmere-forge.webp'),
-      expect.stringContaining('captain-oric.webp')
+      expect.stringContaining('npc_oric_portrait_v1.png')
     ]));
     await expect.poll(()=>page.locator('.ashmere-hub-v240-place-art img').evaluateAll(nodes=>nodes.length===4&&nodes.every(img=>img.complete&&img.naturalWidth>0))).toBe(true);
     const gate=page.locator('.ashmere-hub-v240-gate-art img');

@@ -6,6 +6,27 @@
 **Save authority:** [SAVE_DATA_CONTRACT.md](SAVE_DATA_CONTRACT.md)  
 **Runtime authority:** [PHASER_MIGRATION.md](PHASER_MIGRATION.md)
 
+## Current implementation checkpoint — 2026-11-21
+
+The active implementation is PR [#148 — Rebuild Ashmere as a scene-led dark fantasy refuge](https://github.com/TDTRIA/LEGEND-RPG/pull/148), branch `feat/ashmere-hub-dark-fantasy-v240`. Do not merge until the focused Ashmere/Old Road Playwright suite passes and the branch is reconciled with the latest `main`.
+
+The scene-led Ashmere hub is implemented on this branch. It uses the existing Ashmere street, Inn, Market, Forge, Oric and Old Road artwork; shows compact traveler condition and the active field order; gives the Inn, Market, Forge and Town Square/People four clear destinations; prioritizes the Old Road Gate; and puts secondary town destinations behind the `Other places in Ashmere` disclosure. It routes through the existing Ashmere controller and service catalogue. The hub itself opts out of the World Shell; this first slice does not yet retire the shell from service screens or the Old Road.
+
+The 2026-11-21 CI run found 25 passing / 6 failing checks. The failures were traced to:
+- stale tests expecting the old generated Oric portrait instead of the existing local `assets/npcs/ashmere/npc_oric_portrait_v1.png`;
+- a stale title backdrop expectation of brightness `0.76`, while the active title style is `0.66`;
+- Ashmere/Work Board end-to-end tests using the default 30-second timeout even though the full new-traveler intro and creation flow consumes that budget in CI before the route assertions run.
+
+These are test expectation/budget corrections only; they do not change save data, story, services, gameplay rules, rewards or progression. The Work Board still opens the existing Daily Field Board through the production Ashmere route. Once this correction commit is pushed, rerun the focused suite and inspect the actual Daily Board result rather than treating the earlier timeout as a click-handler failure.
+
+### Next steps
+
+1. Run the Ashmere hub and Daily Field Board Playwright tests after the expectation/timeout corrections.
+2. Reconcile the PR branch with the four commits currently ahead of `main`; resolve conflicts without dropping either mainline fixes or this hub work, then rerun the regression suite.
+3. Complete and visually inspect the first hub on desktop, portrait mobile, landscape mobile and keyboard/touch flows.
+4. Move to **Surface 2 — Expeditions** in this document: reduce the Old Road to one active event/decision at a time, keep only route/stage/condition context visible, make Journal/Map deliberate tools, and preserve all existing routes, camps, clues, detours, pressure, encounters, reports, rewards and partially completed saves.
+5. Only after the road presentation is stable, proceed to combat presentation and separately specified party/stress/resolve/torchlight systems. Keep current combat formulas and the existing production controllers authoritative.
+
 ## The purpose
 
 Rebuild the playable experience so it feels like one dark-fantasy RPG rather than a legacy web game surrounded by a persistent interface shell. The Ashmere refuge, expeditions, combat, quests, character relationships, and story discoveries must share one visual language and one coherent rhythm.
