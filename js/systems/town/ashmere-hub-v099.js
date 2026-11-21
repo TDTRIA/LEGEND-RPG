@@ -110,7 +110,7 @@
     if (!host) return;
     host.innerHTML = `
       <section class="ashmere-hub-v240 ash100-town ash100-town-ashmere" aria-label="Ashmere settlement">
-        <div class="ashmere-hub-v240-backdrop" aria-hidden="true">${img(bg(), '')}</div>
+        <div class="ashmere-hub-v240-backdrop" aria-hidden="true">${img('assets/locations/ashmere/location_ashmere_mainstreet_v1.jpg', '')}</div>
         <div class="ashmere-hub-v240-atmosphere" aria-hidden="true"></div>
 
         <header class="ashmere-hub-v240-header">
