@@ -72,18 +72,18 @@ Ashmere should be a warm, lived-in contrast to the road: practical, human, imper
 
 Follow the asset, watermark, export, accessibility, and performance requirements in [Art Direction](ART-DIRECTION.md). Keep all important labels and values as real UI text rather than text baked into art.
 
-## Phaser migration relationship
+## Presentation-engine relationship
 
-This creative direction does **not** change the active technical priority: finish moving the existing production game's presentation and interactive screens into Phaser, one complete surface at a time.
+This creative direction does **not** override the current engineering direction in [AI_HANDOFF.md](../AI_HANDOFF.md): DOM owns readable interface content and controls; Phaser owns the continuous world and scene presentation.
 
-- Phaser becomes the presentation and interaction layer for the full production game: title, opening, HUD, navigation, journals, maps, Ashmere and its services, Old Road, dialogue/events, combat, results, progression, dungeons, regions, inventory, settings, and remaining overlays.
-- Existing production systems remain authoritative during this migration. Keep current controllers, callbacks, rules, combat calculations, enemy behavior, reward settlement, progression, quest state, storage, account/cloud saves, and save schema.
-- Do not build a second implementation of an existing mechanic to imitate a reference game. Approved new systems are additive and must extend the existing owners rather than duplicate them.
-- Preserve accessible names, keyboard focus, text entry, scrolling, pointer/touch controls, responsive behavior, reduced motion, and live state updates.
-- Migrate one whole playable surface at a time. Keep the source UI visible until the Phaser version passes desktop/mobile visual, interaction, state, persistence, and focused Playwright checks.
-- The migration is complete only when the full production experience is genuinely Phaser-presented and the first-session and returning-player journeys pass. A Phaser background behind a DOM game is not completion.
+- Keep menus, HUD, navigation, journals, maps, services, dialogs, combat controls, results, progression choices, text entry and other interactive surfaces as real DOM UI with semantic controls. Do not build a pixel-copy Phaser painter for a DOM screen.
+- Use Phaser for world backdrops, environment art, parallax, atmosphere, lighting, particles, camera movement and transitions. Its scene presentation should support the interface, not cover, duplicate or replace its controls.
+- Existing production controllers remain the sole authority for travel, discoveries, combat, enemies, damage, rewards, progression, quest state, inventory, persistence, account/cloud saves and save schema.
+- Remove or retire a shell/painter only when that complete surface has a tested replacement. The new Ashmere refuge is the first surface to opt out of the persistent World Shell; service interiors and the Old Road retain their current behavior until their own acceptance checks pass.
+- Preserve accessible names, keyboard focus, text entry, scrolling, pointer/touch controls, responsive behavior, reduced motion, readable text and live state updates.
+- Do not build a second implementation of a gameplay system to imitate a reference game. Approved additions are governed by [Approved gameplay systems](#approved-gameplay-systems) and must extend existing owners.
 
-See [PHASER_MIGRATION.md](PHASER_MIGRATION.md) for the authoritative inventory and acceptance gates.
+See [AI_HANDOFF.md](../AI_HANDOFF.md) for the current engineering decision and [PHASER_MIGRATION.md](PHASER_MIGRATION.md) for the historical surface inventory and remaining migration notes.
 
 ## Approved gameplay systems
 

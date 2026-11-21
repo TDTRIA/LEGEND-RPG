@@ -73,7 +73,7 @@ test('Ashmere refuge uses local scene art and exposes the daily board through to
     expect.stringContaining('ashmere-inn.webp'),
     expect.stringContaining('ashmere-market.webp'),
     expect.stringContaining('ashmere-forge.webp'),
-    expect.stringContaining('npc_oric_portrait_v1.png')
+    expect.stringContaining('captain-oric.webp')
   ]));
   await expect.poll(()=>hub.locator('.ashmere-hub-v240-place-art img').evaluateAll(imgs=>imgs.length===4&&imgs.every(img=>img.complete&&img.naturalWidth>0))).toBe(true);
   await expect(hub.locator('.ashmere-hub-v240-gate-art img')).toHaveAttribute('src',/old-road-south-fork\.webp/);

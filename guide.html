@@ -1,78 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090b09">
+  <meta name="description" content="How to begin in LEGEND: The Awakening — a quick guide to the current fantasy RPG loop, from the opening annals to Ashmere and the Old Road.">
   <title>LEGEND: The Awakening — Player Guide</title>
   <link rel="icon" type="image/webp" href="assets/generated/ui/icons/service-milestone.webp">
-  <style>
-    :root{--bg:#060807;--soft:#0d1813;--panel:rgba(10,18,15,.94);--panel2:rgba(5,10,8,.58);--border:rgba(132,255,178,.24);--border2:rgba(132,255,178,.14);--text:#eaffef;--muted:#93b7a3;--accent:#7dffad;--gold:#ffd369;--red:#ff6b6b;--shadow:rgba(0,0,0,.42)}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--text);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(125,255,173,.12),transparent 28%),radial-gradient(circle at 85% 20%,rgba(255,211,105,.08),transparent 24%),linear-gradient(180deg,var(--soft),var(--bg));padding:24px}.shell{width:min(1050px,100%);margin:0 auto}header,.card{border:1px solid var(--border);background:linear-gradient(180deg,rgba(16,30,24,.96),rgba(6,10,9,.94));box-shadow:0 18px 50px var(--shadow);border-radius:18px;padding:clamp(20px,4vw,38px);margin-bottom:16px}.kicker{margin:0 0 10px;color:var(--gold);text-transform:uppercase;letter-spacing:.22em;font-size:.78rem}h1{margin:0;color:var(--accent);font-size:clamp(2.35rem,9vw,6rem);letter-spacing:.1em;line-height:.88;text-shadow:0 0 22px rgba(125,255,173,.34),0 6px 0 rgba(0,0,0,.25)}h2{margin:0 0 12px;color:var(--accent);font-size:1.5rem}h3{margin:0 0 8px;color:var(--gold);font-size:1.18rem}p,li{color:var(--text);line-height:1.65}.muted{color:var(--muted)}strong{color:var(--gold)}nav,.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:10px 14px;border:1px solid rgba(132,255,178,.28);border-radius:12px;color:var(--text);background:linear-gradient(180deg,rgba(31,54,44,.96),rgba(10,18,15,.96));text-decoration:none}.btn.primary{border-color:rgba(255,211,105,.46);color:#241803;background:linear-gradient(180deg,#ffe29a,#d69f32);font-weight:900}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.step,.note{border:1px solid var(--border2);background:var(--panel2);border-radius:16px;padding:16px}.step-number{display:inline-flex;width:32px;height:32px;border-radius:999px;background:linear-gradient(180deg,#ffe29a,#d69f32);color:#241803;align-items:center;justify-content:center;font-weight:900;margin-bottom:10px}.tag{display:inline-block;border:1px solid rgba(132,255,178,.22);border-radius:999px;padding:4px 9px;color:var(--accent);font-size:.82rem;margin:4px 4px 0 0}.callout{border-left:3px solid var(--gold);background:rgba(255,211,105,.07);border-radius:10px;padding:14px 16px;margin-top:14px}.callout p{margin:0;color:#fff0c2}.danger{border-left-color:var(--red);background:rgba(255,107,107,.08)}footer{color:var(--muted);text-align:center;padding:10px 0 24px;font-size:.95rem}@media(max-width:820px){.grid{grid-template-columns:1fr}}@media(max-width:720px){body{padding:12px}nav,.actions{flex-direction:column}.btn{width:100%}}
-  </style>
-  <link rel="stylesheet" href="css/chronicle-v140.css?v=20261103-chronicle-v140">
+  <link rel="stylesheet" href="css/legend-site-v230.css?v=20261116-site-shell">
 </head>
-<body class="chronicle-page chronicle-article">
-  <nav class="chronicle-nav" aria-label="Site navigation">
-    <div class="chronicle-nav-inner">
-      <a class="chronicle-brand" href="index.html" aria-label="LEGEND: The Awakening — return to the game">
-        <img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening" decoding="async">
-        <span class="chronicle-brand-copy"><strong>Realm Records</strong><span>LEGEND: The Awakening</span></span>
+<body class="legend-site">
+  <a class="site-skip" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <nav class="site-nav" aria-label="Main navigation">
+      <a class="site-brand" href="portal.html" aria-label="LEGEND: The Awakening home">
+        <img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening">
+        <span class="site-brand-divider" aria-hidden="true"></span>
+        <span class="site-brand-label">Official Game Site</span>
       </a>
-      <div class="chronicle-nav-links">
-        <a class="chronicle-hub-link" href="portal.html">Official Game Site</a>
-        
-        <a href="index.html" class="chronicle-play">Enter the World</a>
+      <div class="site-nav-links">
+        <a href="portal.html">Home</a>
         <a href="blog.html">Chronicle</a>
         <a href="updates.html">Dispatch</a>
-        <a href="guide.html">Field Guide</a>
+        <a href="guide.html" aria-current="page">Field Guide</a>
         <a href="save.html">Save Vault</a>
         <a href="feedback.html">Feedback</a>
       </div>
-    </div>
-  </nav>
+      <a class="site-nav-play" href="index.html">Play the Game <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
 
-  <div class="shell">
-    <header>
-      <p class="kicker">LEGEND: THE AWAKENING · v0.30.5</p>
-      <h1>HOW TO BEGIN</h1>
-      <p>A quick guide to the current fantasy RPG loop in <strong>LEGEND: The Awakening</strong>. Create a traveler, make a home in Ashmere, prepare for the Old Road, and bring something back that changes your next decision.</p>
+  <main id="main-content" class="shell">
+    <header class="page-head">
+      <p class="kicker">LEGEND: The Awakening · v0.30.5</p>
+      <h1>How to <em>Begin</em></h1>
+      <p class="intro-copy">A quick guide to the current fantasy RPG loop in <strong>LEGEND: The Awakening</strong>. Create a traveler, make a home in Ashmere, prepare for the Old Road, and bring something back that changes your next decision.</p>
       <div class="actions"><a class="btn primary" href="index.html">Play LEGEND</a><a class="btn" href="feedback.html">Submit Feedback</a><a class="btn" href="playtest.html">QA Runner</a><a class="btn" href="save.html">Save Vault</a><a class="btn" href="blog.html">Devlog</a></div>
     </header>
 
-    <main>
-      <section class="card">
-        <h2>Your First Journey</h2>
-        <p class="muted">The opening is a guided story journey. Let it teach you the real game before you settle into town.</p>
-        <div class="grid">
-          <div class="step"><span class="step-number">1</span><h3>Read the opening annals</h3><p>The three chapters establish the old monster war and the danger returning to the realm. They are mandatory and cannot be skipped on a new journey.</p></div>
-          <div class="step"><span class="step-number">2</span><h3>Shape your traveler</h3><p>Choose a name, identity, personality, origin, calling, and keepsake. These choices shape your starting traveler; the mysterious presence remains ???.</p></div>
-          <div class="step"><span class="step-number">3</span><h3>Wake beneath the dead lantern</h3><p>You begin on the Old Road, not in the Ashmere hub. Meet Captain Oric, learn what he knows, and face the Blackroot Wolf in the real turn-based combat system.</p></div>
-          <div class="step"><span class="step-number">4</span><h3>Follow Oric onto the Old Road</h3><p>Choose between High Ridge and Reed Cut, inspect discoveries, manage supplies and Road Pressure, make camp decisions, and prepare for encounters. A careful route is not a danger-free route.</p></div>
-          <div class="step"><span class="step-number">5</span><h3>Return to Ashmere</h3><p>After the guided first expedition, return with your field report, loot, gold, XP, and discoveries. Your journal records places and important choices.</p></div>
-          <div class="step"><span class="step-number">6</span><h3>Prepare for the next trip</h3><p>Use the Inn, Market, Forge/Workshop, Work Board, people, records, and crafting to recover, take local work, improve gear, and choose what to pursue next.</p></div>
-        </div>
-        <div class="actions"><a class="btn primary" href="index.html">Start the Route</a><a class="btn" href="feedback.html">Send Feedback</a></div>
-      </section>
+    <section class="card">
+      <h2>Your First Journey</h2>
+      <p class="muted">The opening is a guided story journey. Let it teach you the real game before you settle into town.</p>
+      <div class="grid">
+        <div class="step"><span class="step-number">1</span><h3>Read the opening annals</h3><p>The three chapters establish the old monster war and the danger returning to the realm. They are mandatory and cannot be skipped on a new journey.</p></div>
+        <div class="step"><span class="step-number">2</span><h3>Shape your traveler</h3><p>Choose a name, identity, personality, origin, calling, and keepsake. These choices shape your starting traveler; the mysterious presence remains ???.</p></div>
+        <div class="step"><span class="step-number">3</span><h3>Wake beneath the dead lantern</h3><p>You begin on the Old Road, not in the Ashmere hub. Meet Captain Oric, learn what he knows, and face the Blackroot Wolf in the real turn-based combat system.</p></div>
+        <div class="step"><span class="step-number">4</span><h3>Follow Oric onto the Old Road</h3><p>Choose between High Ridge and Reed Cut, inspect discoveries, manage supplies and Road Pressure, make camp decisions, and prepare for encounters. A careful route is not a danger-free route.</p></div>
+        <div class="step"><span class="step-number">5</span><h3>Return to Ashmere</h3><p>After the guided first expedition, return with your field report, loot, gold, XP, and discoveries. Your journal records places and important choices.</p></div>
+        <div class="step"><span class="step-number">6</span><h3>Prepare for the next trip</h3><p>Use the Inn, Market, Forge/Workshop, Work Board, people, records, and crafting to recover, take local work, improve gear, and choose what to pursue next.</p></div>
+      </div>
+      <div class="actions"><a class="btn primary" href="index.html">Start the Route</a><a class="btn" href="feedback.html">Send Feedback</a></div>
+    </section>
 
-      <section class="card">
-        <h2>What We Actually Need To Know</h2>
-        <div class="note"><span class="tag">Confusion</span><span class="tag">Readability</span><span class="tag">Pacing</span><span class="tag">Unlocks</span><span class="tag">Bugs</span></div>
-        <ul>
-          <li>Did you know what to do first?</li>
-          <li>Did the locked menu options make sense?</li>
-          <li>Did the town feel less overwhelming than a giant menu?</li>
-          <li>Did accessibility settings help?</li>
-          <li>Did anything fail to click, save, load, or respond?</li>
-          <li>Did The First Road make you want to keep playing?</li>
-        </ul>
-        <div class="callout"><p>One clear complaint is more useful than ten vague compliments. “I got confused after talking to Mara” is great feedback.</p></div>
-      </section>
+    <section class="card">
+      <h2>What We Actually Need To Know</h2>
+      <div class="note"><span class="tag">Confusion</span><span class="tag">Readability</span><span class="tag">Pacing</span><span class="tag">Unlocks</span><span class="tag">Bugs</span></div>
+      <ul class="question-list">
+        <li>Did you know what to do first?</li>
+        <li>Did the locked menu options make sense?</li>
+        <li>Did the town feel less overwhelming than a giant menu?</li>
+        <li>Did accessibility settings help?</li>
+        <li>Did anything fail to click, save, load, or respond?</li>
+        <li>Did The First Road make you want to keep playing?</li>
+      </ul>
+      <div class="callout"><p>One clear complaint is more useful than ten vague compliments. “I got confused after talking to Mara” is great feedback.</p></div>
+    </section>
 
-      <section class="card">
-        <h2>Current build notes</h2>
-         <div class="callout"><p>The current production build is <strong>v0.30.5</strong>. Ashmere and the Old Road form the main playable foundation. Greyfen has several playable activities, but its complete town, services, story, economy, and progression loop are still being finished. Ironpass is future content. Phaser 4.1 is active in production, and the full migration of existing game screens and interactive surfaces is still in progress; the underlying gameplay systems and saves remain unchanged during that work.</p></div></section>
-    </main>
-    <footer>LEGEND: The Awakening / Player Guide</footer>
-  </div>
+    <section class="card">
+      <h2>Current build notes</h2>
+      <div class="callout"><p>The current production build is <strong>v0.30.5</strong>. Ashmere and the Old Road form the main playable foundation. Greyfen has several playable activities, but its complete town, services, story, economy, and progression loop are still being finished. Ironpass is future content. Phaser 4.1 is active in production, and the full migration of existing game screens and interactive surfaces is still in progress; the underlying gameplay systems and saves remain unchanged during that work.</p></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="site-footer-brand" href="portal.html"><img src="assets/ui/logos/logo_legend_awakening_wordmark.png" alt="LEGEND: The Awakening"></a>
+    <div class="site-footer-links">
+      <a href="index.html">Play</a>
+      <a href="portal.html">Home</a>
+      <a href="blog.html">Chronicle</a>
+      <a href="updates.html">Dispatch</a>
+      <a href="guide.html">Field Guide</a>
+      <a href="save.html">Save Vault</a>
+      <a href="feedback.html">Feedback</a>
+      <a href="playtest.html">Playtest Runner</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="https://github.com/TDTRIA/LEGEND-RPG" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <p>LEGEND: The Awakening · An independent dark-fantasy browser RPG in active development.</p>
+  </footer>
 </body>
 </html>
