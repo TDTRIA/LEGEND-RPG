@@ -357,7 +357,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await expect(hub.locator('.ashmere-hub-v240-gate')).toBeVisible();
     await expect(page.locator('#legend-world-shell-root')).toBeHidden();
     const radius=await hub.locator('.ashmere-hub-v240-place').first().evaluate(el=>getComputedStyle(el).borderRadius);
-    expect(radius).toBe('0px');
+    expect(radius).toBe('2px');
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-ashmere-hub-desktop.png');
 
