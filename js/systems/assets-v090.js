@@ -82,7 +82,7 @@
     npcs: {
       mara: 'assets/generated/classes/class-skiller.webp',
       brenn: 'assets/generated/classes/class-warrior.webp',
-      oric: 'assets/generated/npcs/captain-oric.webp',
+      oric: 'assets/npcs/ashmere/npc_oric_portrait_v1.png',
       innkeeper: 'assets/generated/classes/class-adventurer.webp',
       blacksmith: 'assets/generated/ui/icons/legend-icon-forge.webp',
       trader: 'assets/generated/classes/class-thief.webp'
