@@ -23,7 +23,7 @@ The Ashmere hub is implemented as a full-scene refuge, not a dashboard surrounde
 
 1. Verify the post-sync Ashmere hub, Daily Field Board, Old Road, save-preservation and regression Playwright run.
 2. Visually inspect the hub at desktop, portrait mobile and landscape mobile, plus keyboard/touch navigation and reduced motion.
-3. Complete **Surface 2 — Expeditions**: the first information-hierarchy pass now places the full journey clock/route history and optional detours behind native, keyboard-accessible disclosures. The next pass should refine the active event/decision composition and compact status display while keeping Map/Journal deliberate tools. Preserve every route, camp, detour, clue, hazard, contract, combat, return path, reward and partially completed save.
+3. Complete **Surface 2 — Expeditions**: the first information-hierarchy pass now places the full journey clock/route history and optional detours behind native, keyboard-accessible disclosures. A second visual pass makes Travel On the dominant action while keeping Search and Read the Road visible as quieter, touch-sized field actions. The next pass should refine the active event/decision composition and compact status display while keeping Map/Journal deliberate tools. Preserve every route, camp, detour, clue, hazard, contract, combat, return path, reward and partially completed save.
 4. After the road presentation is stable, redesign tactical combat presentation while keeping the existing combat engine authoritative.
 5. Specify and implement party, stress/resolve and torchlight one at a time with save defaults, explicit balancing, accessibility and dedicated tests. Do not import Darkest Dungeon's names, art or text.
 
