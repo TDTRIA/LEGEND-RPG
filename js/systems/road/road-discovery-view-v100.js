@@ -13,7 +13,7 @@
       const point = pointOfInterest(stage);
       if (state.poiUsed && state.poiUsed[point.key]) return '';
       if (visibleStage !== Number(stage)) return '';
-      return '<section class="exp100-poi exp100-discovery-beat" role="status" aria-live="polite" aria-label="Roadside discovery"><div class="exp100-poi-icon">' +
+      return '<section class="exp100-scene-discovery exp100-discovery-beat" role="status" aria-live="polite" aria-label="Roadside discovery"><div class="exp100-poi-icon">' +
         esc(point.icon) + '</div><div class="exp100-poi-copy"><span>YOU NOTICE SOMETHING · ' +
         esc(point.kind) + '</span><strong>' + esc(point.name) + '</strong><p>' + esc(point.text) +
         '</p><button class="exp100-poi-action" id="poiInspect">' + esc(point.action) +
