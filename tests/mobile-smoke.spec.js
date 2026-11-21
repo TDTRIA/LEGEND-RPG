@@ -238,8 +238,11 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await tap(page, page.locator('#push'));
     await expect(page.locator('.exp100-head')).toContainText(/arrive at Ridgeway Cairn/i);
     await tap(page, page.locator('.exp100-hotspot-find'));
-    await expect(page.locator('.exp100-discovery-beat')).toContainText(/Ridgeway Cairn/i);
-    await tap(page, page.locator('#poiInspect'));
+    const reveal=page.locator('.exp100-scene-live .exp100-discovery-beat');
+    await expect(reveal).toContainText(/Ridgeway Cairn/i);
+    await expect(page.locator('.exp150-interactions .exp100-discovery-beat')).toHaveCount(0);
+    await expect(reveal).toHaveAttribute('role','status');
+    await tap(page, reveal.locator('#poiInspect'));
     await expect(page.locator('.exp100-head')).toContainText(/Road Pressure falls by 3/i);
     await expectNoHorizontalOverflow(page);
   });
