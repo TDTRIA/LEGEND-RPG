@@ -151,7 +151,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await tap(page, page.locator('#v094Next'));
     await tap(page, page.locator('[data-origin]').first());
     await tap(page, page.locator('#v094Next'));
-    const rangerChoice = page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i });
+    const rangerChoice = page.locator('[data-class="Ranger"]');
     await expect(rangerChoice).toBeVisible();
     await expect.poll(() => rangerChoice.evaluate(el => getComputedStyle(el).transform)).toBe('none');
     await tap(page, rangerChoice);
@@ -341,7 +341,7 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await tap(page, page.locator('#v094Next'));
     await tap(page, page.locator('[data-origin]').first());
     await tap(page, page.locator('#v094Next'));
-    await tap(page, page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }));
+    await tap(page, page.locator('[data-class="Ranger"]'));
     await tap(page, page.locator('#v094Next'));
     await tap(page, page.locator('[data-keepsake="Old Map"]'));
     await tap(page, page.locator('#v094Next'));
