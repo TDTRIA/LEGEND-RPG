@@ -473,11 +473,14 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
   max-width:none!important;
   min-height:100svh!important;
   margin:0!important;
-  padding:0!important;
+  padding:clamp(18px,3vw,42px) clamp(18px,4.2vw,64px) clamp(18px,2.5vw,34px)!important;
   border:0!important;
   border-radius:0!important;
   background:transparent!important;
   box-shadow:none!important;
+}
+@media(max-width:620px) {
+  .ash100-town.ashmere-hub-v240 { padding:16px 14px 18px!important; }
 }
  
 /* Outrank the legacy global button treatment for the new refuge destinations. */

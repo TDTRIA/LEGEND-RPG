@@ -624,6 +624,7 @@
       this.nativeExpeditionHudUiBoundHost = null;
       this.nativeExpeditionHudUiInteractionHandler = null;
       this.nativeExpeditionHudUiScrollHandler = null;
+      this.nativeExpeditionHudUiToggleHandler = null;
       this.nativeExpeditionHudUiLayoutEvent = null;
       this.nativeRoadMapUiActive = false;
       this.nativeRoadMapUiKind = '';
@@ -3776,9 +3777,13 @@
           document.removeEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, true);
           window.removeEventListener('scroll', this.nativeExpeditionHudUiScrollHandler);
         }
+        if (this.nativeExpeditionHudUiBoundHost && this.nativeExpeditionHudUiToggleHandler) {
+          this.nativeExpeditionHudUiBoundHost.removeEventListener('toggle', this.nativeExpeditionHudUiToggleHandler, true);
+        }
         this.nativeExpeditionHudUiBoundHost = null;
         this.nativeExpeditionHudUiInteractionHandler = null;
         this.nativeExpeditionHudUiScrollHandler = null;
+        this.nativeExpeditionHudUiToggleHandler = null;
       }
       this.nativeExpeditionHudUiObjects.forEach(object => {
         if (!object?.active) return;
@@ -3846,9 +3851,15 @@
           });
         };
         this.nativeExpeditionHudUiScrollHandler = () => this.nativeExpeditionHudUiInteractionHandler?.();
+        this.nativeExpeditionHudUiToggleHandler = event => {
+          if (event.target?.matches?.('.exp160-journey-details')) {
+            this.nativeExpeditionHudUiInteractionHandler?.();
+          }
+        };
         ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
           host.addEventListener(type, this.nativeExpeditionHudUiInteractionHandler)
         );
+        host.addEventListener('toggle', this.nativeExpeditionHudUiToggleHandler, true);
         document.addEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, true);
         window.addEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, { passive: true });
       }

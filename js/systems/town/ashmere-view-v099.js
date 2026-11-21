@@ -77,7 +77,7 @@
       if (typeof bindNavigation === 'function') bindNavigation();
     }
 
-    return Object.freeze({ shell, back, head, screen });
+    return Object.freeze({ shell, back, head, screen, bindUiAudio });
   }
 
   window.LegendAshmereViewV099 = Object.freeze({ create });

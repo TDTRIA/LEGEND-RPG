@@ -110,15 +110,23 @@ async function startFreshCharacter(page, name) {
   await expect(page.locator('.ash100-town')).toBeVisible();
 }
 async function openAshmereMore(page) {
-  const toggle=page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle');
-  if(await toggle.count() && await toggle.getAttribute('aria-expanded')!=='true') await toggle.click();
+  const hub=page.locator('.ashmere-hub-v240');
+  await expect(hub).toBeVisible();
+  const toggle=hub.locator('#ashmereHubMoreToggle');
+  await expect(toggle).toBeVisible();
+  if(await toggle.getAttribute('aria-expanded')!=='true') await tap(page,toggle);
 }
 async function clickAshmereView(page, view) {
   const hub=page.locator('.ashmere-hub-v240');
   const primary=hub.locator(`.ashmere-hub-v240-place[data-ash-view="${view}"]`);
-  if(await primary.count()) return primary.click();
+  const toggle=hub.locator('#ashmereHubMoreToggle');
+  await expect(hub).toBeVisible();
+  await expect(primary.or(toggle).first()).toBeVisible();
+  if(await primary.isVisible()) return tap(page,primary);
   await openAshmereMore(page);
-  return hub.locator(`.ashmere-hub-v240-more-place[data-ash-view="${view}"]`).click();
+  const secondary=hub.locator(`.ashmere-hub-v240-more-place[data-ash-view="${view}"]`);
+  await expect(secondary).toBeVisible();
+  return tap(page,secondary);
 }
 async function expectNoHorizontalOverflow(page) {
   const widths = await page.evaluate(() => ({
@@ -190,6 +198,8 @@ test.describe('LEGEND mobile compatibility smoke tests', () => {
     await startFreshCharacter(page,'MobilePhaserHubQA');
     const hub=page.locator('.ashmere-hub-v240');
     await expect(hub).toBeVisible();
+    const refugePadding=await hub.evaluate(node=>({top:getComputedStyle(node).paddingTop,left:getComputedStyle(node).paddingLeft}));
+    expect(refugePadding).toEqual({top:'16px',left:'14px'});
     await expect(page.locator('#legend-world-shell-root')).toBeHidden();
     await expect(hub.locator('.ashmere-hub-v240-place')).toHaveCount(4);
     await expect(hub.locator('.ashmere-hub-v240-gate')).toBeVisible();

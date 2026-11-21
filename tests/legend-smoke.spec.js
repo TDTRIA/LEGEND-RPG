@@ -459,6 +459,11 @@ test.describe(`LEGEND v${version} browser regression tests`, () => {
     await expect(hub.locator('.ashmere-hub-v240-field-order')).toBeVisible();
     await expect(hub.locator('.ashmere-hub-v240-place')).toHaveCount(4);
     await expect(hub.locator('.ashmere-hub-v240-gate')).toContainText('Old Road Gate');
+    await expect(hub.locator('.ashmere-hub-v240-place').first()).toHaveAttribute('data-legend-audio-bound','1');
+    await expect(hub.locator('.ashmere-hub-v240-gate')).toHaveAttribute('data-legend-audio-bound','1');
+    const rootPadding=await hub.evaluate(node=>({top:getComputedStyle(node).paddingTop,left:getComputedStyle(node).paddingLeft}));
+    expect(parseFloat(rootPadding.top)).toBeGreaterThan(0);
+    expect(parseFloat(rootPadding.left)).toBeGreaterThan(0);
     await expect(hub.locator('#ashmereHubMoreToggle')).toBeVisible();
     await expect(hub.locator('.ashmere-hub-v240-more-list')).toBeHidden();
     await expect(page.getByRole('heading', { name: 'Your Camp', exact: true })).toHaveCount(0);

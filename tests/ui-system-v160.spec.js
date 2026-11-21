@@ -418,8 +418,48 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
 
     await seedRoad(page, 1, 'ridge');
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionActionsUi)).toBe(true);
-    await expect(page.locator('.exp150-interactions .exp160-optional-detour')).toBeVisible();
-    const optionalVisit = page.locator('#exp160VisitOptional');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionHudUi)).toBe(true);
+
+    const supplies=page.locator('.exp150-supplies-strip');
+    await expect(supplies).toContainText('RATIONS');
+    await expect(supplies).toContainText('CAMP SUPPLIES');
+    await expect(supplies).toContainText('ROAD HERBS');
+    await expect(supplies).toContainText('HEALING POTIONS');
+
+    const journey=page.locator('.exp160-journey-details');
+    const journeySummary=journey.locator('summary');
+    const clockText=(await journey.locator('.exp150-clock-main > strong').textContent()).trim();
+    await journeySummary.focus();
+    await page.keyboard.press('Enter');
+    await expect(journey).toHaveAttribute('open','');
+    await expect.poll(() => page.evaluate(value =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionHudUiTextValues?.includes(value) || false, clockText
+    )).toBe(true);
+    await page.keyboard.press('Space');
+    await expect(journey).not.toHaveAttribute('open','');
+    await expect.poll(() => page.evaluate(value =>
+      window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionHudUiTextValues?.includes(value) || false, clockText
+    )).toBe(false);
+
+    const discoveryBackground=await page.evaluate(() => {
+      const scene=document.querySelector('.exp100:has(.exp150-world-page) .exp100-scene-live');
+      if(!scene) throw new Error('Old Road scene was not mounted for discovery styling.');
+      const preview=document.createElement('div');
+      preview.className='exp100-discovery-beat';
+      scene.appendChild(preview);
+      const background=getComputedStyle(preview).backgroundImage;
+      preview.remove();
+      return background;
+    });
+    expect(discoveryBackground).toContain('rgba(18, 24, 18, 0.97)');
+    expect(discoveryBackground).toContain('rgba(5, 9, 7, 0.97)');
+
+    const detourDisclosure=page.locator('.exp150-interactions .exp160-extra-lead');
+    await expect(detourDisclosure).toBeVisible();
+    await expect(detourDisclosure).not.toHaveAttribute('open','');
+    await detourDisclosure.locator('summary').click();
+    await expect(detourDisclosure.locator('.exp160-optional-detour')).toBeVisible();
+    const optionalVisit = detourDisclosure.locator('#exp160VisitOptional');
     await expect(optionalVisit).toHaveCSS('color','rgba(0, 0, 0, 0)');
     // The legacy theme requests smooth document scrolling. Scroll instantly,
     // then wait for the element's measured bounds to settle before a normal

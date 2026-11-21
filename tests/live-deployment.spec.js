@@ -10,10 +10,14 @@ const liveUrl = 'https://tdtria.github.io/LEGEND-RPG/';
 async function clickAshmereView(page, view) {
   const hub=page.locator('.ashmere-hub-v240');
   const primary=hub.locator(`.ashmere-hub-v240-place[data-ash-view="${view}"]`);
-  if(await primary.count()) return primary.click();
   const toggle=hub.locator('#ashmereHubMoreToggle');
+  await expect(hub).toBeVisible();
+  await expect(primary.or(toggle).first()).toBeVisible();
+  if(await primary.isVisible()) return primary.click();
   if(await toggle.getAttribute('aria-expanded')!=='true') await toggle.click();
-  return hub.locator(`.ashmere-hub-v240-more-place[data-ash-view="${view}"]`).click();
+  const secondary=hub.locator(`.ashmere-hub-v240-more-place[data-ash-view="${view}"]`);
+  await expect(secondary).toBeVisible();
+  return secondary.click();
 }
 
 function expectedAsset(regex, label) {

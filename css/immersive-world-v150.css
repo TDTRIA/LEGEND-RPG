@@ -154,6 +154,22 @@
 }
 .exp150-title-group p{max-width:680px;margin:0;color:#b6c0b2;font-size:.94rem;line-height:1.52}
 .exp150-vitals{display:grid;grid-template-columns:1fr 1fr;gap:14px;min-width:0}
+.exp150-supplies-strip {
+  grid-column:1/-1;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:5px 13px;
+  min-width:0;
+  padding-top:5px;
+  border-top:1px solid rgba(169,186,164,.12);
+  color:#adb8a8;
+  font-size:.62rem;
+  line-height:1.35;
+  letter-spacing:.08em;
+}
+.exp150-supplies-strip span { display:inline-flex; align-items:baseline; gap:5px; white-space:nowrap; }
+.exp150-supplies-strip strong { color:#eee5ce; font-size:.75rem; font-variant-numeric:tabular-nums; letter-spacing:0; }
 .exp150-meter{min-width:0}
 .exp150-meter>div{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
 .exp150-meter span{color:#99a898;font-size:.65rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}

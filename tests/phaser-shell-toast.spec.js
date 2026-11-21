@@ -160,4 +160,27 @@ test.describe('LEGEND shell toast in Phaser', () => {
     expect(await page.evaluate(() => window.LegendPhaserWorldV1.snapshot().nativeToastUi)).toBe(false);
     await expect(page.locator('.lws-shell-toast')).toHaveAttribute('role', 'status');
   });
+
+  test('service-screen shell Save reports success and storage failure through the live toast', async ({ page }) => {
+    await enterAshmere(page, 'ShellSaveQA');
+    const saveButton=page.locator('#legend-world-shell-root [data-world-action="save"]');
+    await expect(saveButton).toBeVisible();
+    const toast=page.locator('.lws-shell-toast');
+
+    await saveButton.click();
+    await expect(toast).toHaveText('Traveler record saved locally.');
+    await expect(toast).toHaveAttribute('role','status');
+    await expect(toast).toHaveAttribute('aria-live','polite');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeToastUi)).toBe(true);
+
+    await page.evaluate(() => {
+      const storage=window.LegendStorage;
+      window.LegendStorage={...storage,savePlayer:()=>false};
+    });
+    await saveButton.click();
+    await expect(toast).toContainText('could not be saved permanently');
+    await expect(toast).toHaveAttribute('role','status');
+    await expect(toast).toHaveAttribute('aria-live','polite');
+    await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeToastUi)).toBe(true);
+  });
 });

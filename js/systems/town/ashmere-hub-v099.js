@@ -166,6 +166,7 @@
       if (marker) marker.textContent = opening ? '−' : '＋';
     });
     bind();
+    context.bindUiAudio?.();
     const utilityStatus = document.getElementById('ashmereHubUtilityStatus');
     const announceUtility = message => {
       if (utilityStatus) utilityStatus.textContent = String(message || '');
