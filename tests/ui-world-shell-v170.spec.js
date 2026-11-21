@@ -22,7 +22,7 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await expect(page.locator('.v120-title')).toBeVisible();
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
-  expect(titleBackdropFilter).toContain('brightness(0.66)');
+  expect(titleBackdropFilter).toContain('brightness(0.76)');
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
@@ -783,6 +783,9 @@ test.describe('LEGEND persistent world shell v170', () => {
     await expect(page.locator('#legend-world-shell-root')).toBeHidden();
     const inn=hub.locator('.ashmere-hub-v240-place[data-ash-view="inn"]');
     await inn.focus();
+    await expect(inn).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
     await expect(inn).toBeFocused();
     await expect(inn).toHaveCSS('outline-style','solid');
     await page.keyboard.press('Enter');
