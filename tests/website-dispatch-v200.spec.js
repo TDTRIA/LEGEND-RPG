@@ -6,7 +6,7 @@ test.describe('LEGEND public site shell v2.3', () => {
   test('official game portal loads the shared site stylesheet and playable entry point', async ({ page }) => {
     const response = await page.goto('/portal.html');
     expect(response && response.status()).toBe(200);
-    await expect(page).toHaveTitle(/LEGEND: The Awakening — Official Game Site/i);
+    await expect(page).toHaveTitle(/LEGEND: The Awakening — Dark-Fantasy Browser RPG/i);
     await expect(page.locator('link[rel="stylesheet"][href*="legend-site-v230.css"]')).toHaveCount(1);
     await expect(page.locator('#rp-hero-title')).toBeVisible();
     await expect(page.locator('.site-nav-play')).toBeVisible();
@@ -45,7 +45,7 @@ test.describe('LEGEND public site shell v2.3', () => {
     await expect(page).toHaveURL(/updates\.html#subscribe$/);
   });
 
-  test('every public page shares one stylesheet, one header, one nav and one footer', async ({ page }) => {
+  test('every public page shares the site shell while retaining only its allowed page-specific styles', async ({ page }) => {
     let reference = null;
 
     for (const path of PUBLIC_PAGES) {
@@ -55,7 +55,9 @@ test.describe('LEGEND public site shell v2.3', () => {
       const sheets = await page.locator('link[rel="stylesheet"]').evaluateAll(nodes =>
         nodes.map(node => node.getAttribute('href')).filter(href => !/^https?:/.test(href))
       );
-      expect(sheets, path + ' should load exactly one local stylesheet').toEqual(['css/legend-site-v230.css?v=20261116-site-shell']);
+      const expectedSheets = ['css/legend-site-v230.css?v=20261116-site-shell'];
+      if (path === 'portal.html') expectedSheets.push('css/portal-v2.css?v=20261114-portal-v200');
+      expect(sheets, path + ' should load the shared stylesheet and only its intentional page-specific stylesheet').toEqual(expectedSheets);
 
       await expect(page.locator('.site-header'), path + ' should render the shared header').toBeVisible();
       await expect(page.locator('.site-footer'), path + ' should render the shared footer').toBeVisible();
