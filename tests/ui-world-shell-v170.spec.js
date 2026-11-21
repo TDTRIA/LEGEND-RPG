@@ -22,7 +22,7 @@ async function openTitle(page, viewport = { width: 1440, height: 900 }) {
   await expect(page.locator('.v120-title')).toBeVisible();
   const titleBackdropFilter = await page.locator('.title-v136-rpg .v120-title-backdrop')
     .evaluate(element => getComputedStyle(element).filter);
-  expect(titleBackdropFilter).toContain('brightness(0.76)');
+  expect(titleBackdropFilter).toContain('brightness(0.66)');
   await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeTitleUi)).toBe(false);
   const titleSceneOverlay = await page.locator('.title-v136-rpg')
     .evaluate(element => getComputedStyle(element, '::after').backgroundImage);
@@ -742,7 +742,7 @@ test.describe('LEGEND persistent world shell v170', () => {
     expect(places).toEqual(['inn','trader','smith','people']);
 
     await hub.locator('#ashmereHubMoreToggle').click();
-    const more=hub.locator('.ashmere-hub-v240-more-place');
+    const more=hub.locator('.ashmere-hub-v240-more-list');
     await expect(more).toContainText('Work Board');
     await expect(more).toContainText('Daily Field Board');
     await expect(more).toContainText('Road Network');
