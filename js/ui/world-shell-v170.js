@@ -490,7 +490,7 @@
           actionButton.focus({preventScroll:true});
           clickExisting('#gfm160OpenJournal');
         } else if (lastContext?.kind === 'road') {
-          if (!clickExisting('#exp150OpenJournal') && !clickExisting('#exp150OpenJournalAside')) showToast('The field journal is not available on this screen.');
+          if (!clickExisting('#exp150OpenJournal')) showToast('The field journal is not available on this screen.');
         } else {
           routeTo('archive');
         }
