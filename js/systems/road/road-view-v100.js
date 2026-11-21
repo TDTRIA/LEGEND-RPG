@@ -49,6 +49,9 @@ function shell(body){
    const nextHotspots=nextScene.querySelector('.exp100-hotspots');
    const liveHotspots=liveScene.querySelector('.exp100-hotspots');
    const nextImage=nextScene.querySelector('img'),liveImage=liveScene.querySelector('img');
+   // A discovery reveal is a moment in the current location. Clear it on any new
+   // expedition state so it cannot float over the next stop, camp or encounter.
+   liveScene.querySelectorAll('.exp100-discovery-beat').forEach(node=>node.remove());
    if(nextHotspots&&liveHotspots)liveHotspots.innerHTML=nextHotspots.innerHTML;
    if(nextImage&&liveImage)liveImage.replaceWith(nextImage);
    liveScene.className=nextScene.className;
@@ -88,32 +91,39 @@ function handleHotspotAction(btn){
  if(action==='poi'){
   const pl=p();if(!pl)return;
   const s=ensure(pl),stage=Number(s.stage||0),wrap=root()?.querySelector('.exp100-wrap');
-  // Revealing a clue is a local scene action, not a full expedition rerender.
-  // The scene shell intentionally preserves its existing image node between renders;
-  // inserting the panel beside the current scene avoids the preserved-DOM redraw path.
-  roadDiscovery.reveal(stage);
   const liveScene=wrap?.querySelector('.exp100-scene-live');
-  if(liveScene){liveScene.classList.remove('exp160-discovery-reveal');void liveScene.offsetWidth;liveScene.classList.add('exp160-discovery-reveal');}
-  if(!wrap||wrap.querySelector('.exp100-discovery-beat'))return;
+  if(!wrap||!liveScene||liveScene.querySelector('.exp100-discovery-beat'))return;
+  // Reveal the clue in the scene where it was noticed, not as another panel
+  // beneath the artwork competing with route and travel choices.
+  roadDiscovery.reveal(stage);
+  liveScene.classList.remove('exp160-discovery-reveal');void liveScene.offsetWidth;liveScene.classList.add('exp160-discovery-reveal');
   const markup=roadDiscovery.pointOfInterestPanel(pl,s,stage);
   if(!markup)return;
-  const interactions=wrap.querySelector('.exp150-interactions');
-  if(interactions){
-   const anchor=interactions.querySelector('.exp100-route-choice, .exp100-poi-done, .exp100-moved-cairn');
-   if(anchor)anchor.insertAdjacentHTML('afterend',markup);
-   else interactions.insertAdjacentHTML('afterbegin',markup);
-  }else{
-   const anchor=wrap.querySelector('.exp100-route-choice, .exp100-poi-done')||wrap.querySelector('.exp100-head');
-   if(!anchor)return;
-   anchor.insertAdjacentHTML('afterend',markup);
-  }
-  const leave=wrap.querySelector('#poiLeave');
-  if(leave)leave.addEventListener('click',()=>{
+  liveScene.insertAdjacentHTML('beforeend',markup);
+  const hotspot=liveScene.querySelector('.exp100-hotspot');
+  const reveal=liveScene.querySelector('.exp100-discovery-beat');
+  const leave=reveal?.querySelector('#poiLeave');
+  if(leave)leave.addEventListener('click',event=>{
+   event.preventDefault();
+   event.stopPropagation();
    roadDiscovery.hide();
-   leave.closest('.exp100-discovery-beat')?.remove();
+   reveal.remove();
+   hotspot?.focus({preventScroll:true});
   });
-  const inspect=wrap.querySelector('#poiInspect');
-  if(inspect)inspect.addEventListener('click',roadDiscovery.inspectPointOfInterest);
+  const inspect=reveal?.querySelector('#poiInspect');
+  if(inspect){
+   inspect.addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopPropagation();
+    roadDiscovery.inspectPointOfInterest();
+    const nextHeading=root()?.querySelector('.exp150-title-group h1');
+    if(nextHeading){
+     nextHeading.setAttribute('tabindex','-1');
+     nextHeading.focus({preventScroll:true});
+    }
+   });
+   inspect.focus({preventScroll:true});
+  }
   return;
  }
  roadDiscovery.hide();

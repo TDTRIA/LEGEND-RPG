@@ -7,6 +7,15 @@ if (!versionMatch) throw new Error('Could not read LEGEND_DATA.VERSION from js/d
 const expectedVersion = 'v' + versionMatch[1];
 const liveUrl = 'https://tdtria.github.io/LEGEND-RPG/';
 
+async function clickAshmereView(page, view) {
+  const hub=page.locator('.ashmere-hub-v240');
+  const primary=hub.locator(`.ashmere-hub-v240-place[data-ash-view="${view}"]`);
+  if(await primary.count()) return primary.click();
+  const toggle=hub.locator('#ashmereHubMoreToggle');
+  if(await toggle.getAttribute('aria-expanded')!=='true') await toggle.click();
+  return hub.locator(`.ashmere-hub-v240-more-place[data-ash-view="${view}"]`).click();
+}
+
 function expectedAsset(regex, label) {
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   const match = html.match(regex);
@@ -146,7 +155,7 @@ test.describe('LEGEND live GitHub Pages smoke test', () => {
     await expect(page.locator('.ash100-town')).toBeVisible();
 
     // Different jobs must render genuinely different controls.
-    await page.locator('.ash100-destinations').getByRole('button', { name: /Work Board/i }).click();
+    await clickAshmereView(page,'work');
     await expect(page.locator('[data-job-open="wood"]')).toContainText(/Timing challenge/i);
     await expect(page.locator('[data-job-open="gate"]')).toContainText(/Read the signal/i);
     await expect(page.locator('[data-job-open="records"]')).toContainText(/Solve the clue/i);
@@ -174,7 +183,7 @@ test.describe('LEGEND live GitHub Pages smoke test', () => {
 
     // Forge illustrations, meaningful passives, and the Crafting Bench entry must render.
     await page.locator('#ashBack').click();
-    await page.locator('.ash100-destinations').getByRole('button', { name: /Forge & Workshop/i }).click();
+    await clickAshmereView(page,'smith');
     await expect(page.locator('[data-gear="woodenSword"] .ash099-weapon-art-woodenSword')).toBeVisible();
     await expect(page.locator('[data-gear="stoneSword"]')).toContainText(/Heavy Strike deals 25% more damage/i);
     await expect(page.locator('[data-gear="steelSword"]')).toContainText(/20% critical chance/i);
@@ -183,13 +192,13 @@ test.describe('LEGEND live GitHub Pages smoke test', () => {
 
     // Side-contract postings should be accessible and persist once accepted.
     await page.locator('#ashBack').click();
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await clickAshmereView(page,'routes');
     await page.getByRole('button', { name: /Side Stories & Contracts/i }).click();
     await expect(page.locator('.ash099-contract-card')).toHaveCount(4);
     await page.locator('[data-contract-accept="watchlightSurvey"]').click();
     await expect(page.locator('.ash099-contract-in-progress')).toBeVisible();
     await page.locator('#ashBack').click();
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' }).getByRole('button', { name: /Routes/i }).click();
+    await clickAshmereView(page,'routes');
     await page.getByRole('button', { name: /Side Stories & Contracts/i }).click();
     await expect(page.locator('.ash099-contract-in-progress')).toBeVisible();
     await expect(page.locator('[data-contract-accept="watchlightSurvey"]')).toHaveCount(0);
@@ -198,7 +207,7 @@ test.describe('LEGEND live GitHub Pages smoke test', () => {
     // both the People card and the individual dialogue screen.
     await page.locator('#ashBack').click();
     await expect(page.locator('.ash100-town')).toBeVisible();
-    await page.locator('.ash100-destinations .ash100-destination[data-ash-view="people"]').click();
+    await clickAshmereView(page,'people');
     await expect(page.getByRole('heading', { name: 'People of Ashmere' })).toBeVisible();
     const oricCard = page.locator('.ash099-npc-card[data-ash-view="oric"] img');
     await expect(oricCard).toHaveAttribute('src', /assets\/generated\/npcs\/captain-oric\.webp$/);

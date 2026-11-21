@@ -99,8 +99,9 @@ test('first secured field report can be handed directly to Mara to advance the n
 
 
 async function enterDeparture(page) {
-  await page.getByRole('navigation', { name: 'Ashmere terminal navigation' })
-    .getByRole('button', { name: /Routes/i }).click();
+  const hub=page.locator('.ashmere-hub-v240');
+  await hub.locator('#ashmereHubMoreToggle').click();
+  await hub.locator('.ashmere-hub-v240-more-place[data-ash-view="routes"]').click();
   await page.getByRole('button', { name: /The Old Road/i }).click();
   await expect(page.locator('.ash100-departure')).toBeVisible();
 }
@@ -152,7 +153,8 @@ test('Ashmere departure briefing links preparation to the road and warns without
   await expect(page.locator('#departureBegin')).toBeEnabled();
 
   await beginRoadExpedition(page);
-  await expect(page.locator('.exp150-world-page')).toContainText('FIELD SUPPLIES');
+  await expect(page.locator('.exp150-world-page')).toContainText('YOUR NEXT MOVE');
+  await expect(page.locator('.exp150-journey-aside')).toBeHidden();
 });
 
 

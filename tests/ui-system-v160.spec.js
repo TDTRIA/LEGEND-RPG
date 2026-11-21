@@ -93,6 +93,19 @@ async function enterAshmere(page, name = 'UIProofQA', viewport = { width: 1440, 
   await expect(page.locator('.ash100-town')).toBeVisible();
 }
 
+async function openAshmereMore(page) {
+  const toggle=page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle');
+  if(await toggle.count() && await toggle.getAttribute('aria-expanded')!=='true') await toggle.click();
+}
+
+async function clickAshmereView(page, view) {
+  const hub=page.locator('.ashmere-hub-v240');
+  const primary=hub.locator(`.ashmere-hub-v240-place[data-ash-view="${view}"]`);
+  if(await primary.count()) return primary.click();
+  await openAshmereMore(page);
+  return hub.locator(`.ashmere-hub-v240-more-place[data-ash-view="${view}"]`).click();
+}
+
 async function seedRoad(page, stage = 0, route = null) {
   await page.evaluate(({ stage, route }) => {
     const player = window.LegendRuntimeV120.loadPlayer();
@@ -333,19 +346,22 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     }
   });
 
-  test('Ashmere hub and Work Board service share the new frame while retaining current destinations/actions', async ({ page }) => {
+  test('Ashmere refuge and Work Board retain their real destinations and actions', async ({ page }) => {
     await enterAshmere(page, 'TownUIPreview');
-    await expect(page.locator('.ash100-hero > img')).toHaveAttribute('src', 'assets/generated/locations/ashmere-town.webp');
-    await expect(page.getByRole('navigation', { name: 'Ashmere terminal navigation' })).toBeVisible();
-    await expect(page.locator('.ash100-route-strip')).toBeVisible();
-    await expect(page.locator('.ash100-status-health')).toBeVisible();
-    await expect(page.locator('.ash100-destination[data-ash-view="work"]')).toBeVisible();
-    const radius = await page.locator('.ash100-destination').first().evaluate(el => getComputedStyle(el).borderRadius);
+    const hub=page.locator('.ashmere-hub-v240');
+    await expect(hub).toBeVisible();
+    await expect(hub.locator('.ashmere-hub-v240-backdrop img')).toHaveAttribute('src', /location_ashmere_mainstreet_v1\.jpg/);
+    await expect(hub.locator('.ashmere-hub-v240-traveler')).toContainText('TownUIPreview');
+    await expect(hub.locator('.ashmere-hub-v240-health')).toBeVisible();
+    await expect(hub.locator('.ashmere-hub-v240-place')).toHaveCount(4);
+    await expect(hub.locator('.ashmere-hub-v240-gate')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
+    const radius=await hub.locator('.ashmere-hub-v240-place').first().evaluate(el=>getComputedStyle(el).borderRadius);
     expect(radius).toBe('2px');
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-ashmere-hub-desktop.png');
 
-    await page.locator('.ash100-destination[data-ash-view="work"]').click();
+    await clickAshmereView(page,'work');
     await expect(page.locator('.ash099-screen')).toBeVisible();
     await expect(page.locator('#openDailyFieldBoard')).toBeVisible();
     await attachProof(page, 'phase1-work-board-service.png');
@@ -469,8 +485,9 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
         nativeHudText: snapshot.nativeExpeditionHudUiTextValues || [],
         nativeHudControlIds: snapshot.nativeExpeditionHudUiControlIds || [],
         expeditionHudClass: document.body.classList.contains('legend-phaser-expedition-hud-ui-active'),
-        asideHeadingColor: getComputedStyle(document.querySelector('.exp150-journey-aside .exp150-next-stop h2')).color,
-        asideParagraphColor: getComputedStyle(document.querySelector('.exp150-journey-aside .exp150-next-stop p')).color,
+        asideHidden: document.querySelector('.exp150-journey-aside')?.hidden === true,
+        asideDisplay: document.querySelector('.exp150-journey-aside') ? getComputedStyle(document.querySelector('.exp150-journey-aside')).display : 'missing',
+        asideText: document.querySelector('.exp150-journey-aside')?.textContent?.trim() || '',
         mapPainter: snapshot.nativeRoadMapUi,
         mapControl: Boolean(mapButton && !mapButton.disabled),
         mapText: mapButton?.textContent?.trim() || '',
@@ -483,12 +500,15 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(roadDom.painterClass).toBe(false);
     expect(roadDom.nativeHudActive).toBe(true);
     expect(roadDom.nativeHudText).toEqual(expect.arrayContaining([
-      'OLD ROAD · EXPEDITION', 'South Fork', 'YOUR JOURNEY', 'ROAD PRESSURE', 'FIELD SUPPLIES'
+      'OLD ROAD · EXPEDITION', 'South Fork', 'YOUR JOURNEY'
     ]));
-    expect(roadDom.nativeHudControlIds).toEqual(expect.arrayContaining(['exp150OpenMap','exp150OpenJournal','exp150OpenJournalAside']));
+    expect(roadDom.nativeHudText.some(value=>/pressure/i.test(value))).toBe(true);
+    expect(roadDom.nativeHudControlIds).toEqual(expect.arrayContaining(['exp150OpenMap','exp150OpenJournal']));
+    expect(roadDom.nativeHudControlIds).not.toContain('exp150OpenJournalAside');
     expect(roadDom.expeditionHudClass).toBe(true);
-    expect(roadDom.asideHeadingColor).toBe('rgba(0, 0, 0, 0)');
-    expect(roadDom.asideParagraphColor).toBe('rgba(0, 0, 0, 0)');
+    expect(roadDom.asideHidden).toBe(true);
+    expect(roadDom.asideDisplay).toBe('none');
+    expect(roadDom.asideText).toBe('');
     expect(roadDom.mapPainter).toBe(false);
     expect(roadDom.mapControl).toBe(true);
     expect(roadDom.mapText.length).toBeGreaterThan(0);
@@ -496,6 +516,11 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     expect(roadDom.mapIconColor).toBe('rgba(0, 0, 0, 0)');
     expect(roadDom.mapVisibility).toBe('visible');
     await expect(page.locator('.exp150-expedition-head')).toBeVisible();
+    await expect.poll(()=>page.locator('.exp150-main-grid').evaluate(node =>
+      getComputedStyle(node).gridTemplateColumns.trim().split(/\s+/).length
+    )).toBe(1);
+    await expect(page.locator('.exp150-journey-aside')).toBeHidden();
+    await expect(page.locator('.exp150-interactions .exp100-discovery-beat')).toHaveCount(0);
     await expect.poll(() => page.evaluate(() => window.LegendPhaserWorldV1?.snapshot?.()?.nativeExpeditionHudUi)).toBe(true);
     await expect(page.locator('.exp150-title-group h1')).toHaveCSS('color','rgba(0, 0, 0, 0)');
     await expect(page.locator('.exp150-vitals')).toBeVisible();
@@ -538,8 +563,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
       rt.savePlayer(player);
     });
 
-    await page.getByRole('navigation', { name: 'Ashmere terminal navigation' })
-      .getByRole('button', { name: /Routes/i }).click();
+    await clickAshmereView(page,'routes');
     await page.getByRole('button', { name: /The Old Road/i }).click();
     await expect(page.locator('.ash100-departure')).toBeVisible();
     await page.locator('#departureBegin').click();
@@ -691,7 +715,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
 
     await enterAshmere(page, 'MobileUIPreview', { width: 390, height: 844 });
     expect(page.viewportSize()).toEqual({ width: 390, height: 844 });
-    await expect(page.getByRole('navigation', { name: 'Ashmere terminal navigation' })).toBeVisible();
+    await expect(page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle')).toBeVisible();
     await expectNoHorizontalOverflow(page);
     await attachProof(page, 'phase1-ashmere-mobile-390.png');
 
@@ -718,7 +742,7 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
 
     await enterAshmere(page, 'MotionUIPreview');
     await page.evaluate(() => document.body.classList.add('a11y-reduced-motion'));
-    const destination = page.locator('.ash100-destination').first();
+    const destination = page.locator('.ashmere-hub-v240-place').first();
     await destination.hover();
     const cardMotion = await destination.evaluate(el => {
       const style = getComputedStyle(el);

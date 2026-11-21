@@ -23,7 +23,7 @@ async function enterAshmere(page, name = 'RasterQA') {
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();
@@ -63,14 +63,22 @@ test('title realm entrance uses local Runway raster menu art rather than SVG men
   expect(sceneArt.every(src => src && src.startsWith('assets/generated/locations/') && src.endsWith('.webp'))).toBe(true);
 });
 
-test('Ashmere hub uses transparent-blended raster icons and exposes the daily board', async ({ page }) => {
+test('Ashmere refuge uses local scene art and exposes the daily board through town services', async ({ page }) => {
   await enterAshmere(page, 'HubRasterQA');
-  await expect(page.locator('.ash099-icon svg')).toHaveCount(0);
-  const iconPaths = await page.locator('.ash099-icon img').evaluateAll(imgs => imgs.map(img => img.getAttribute('src')));
-  expect(iconPaths.length).toBeGreaterThan(4);
-  expect(iconPaths.every(src => src && src.endsWith('.webp') && !src.endsWith('.svg'))).toBe(true);
-  await expect(page.getByRole('button', { name: /Daily Board & Caches/i })).toHaveCount(0);
-  await page.locator('.ash100-destination[data-ash-view="work"]').click();
+  const hub=page.locator('.ashmere-hub-v240');
+  await expect(hub).toBeVisible();
+  const artPaths=await hub.locator('.ashmere-hub-v240-place-art img').evaluateAll(imgs=>imgs.map(img=>img.getAttribute('src')));
+  expect(artPaths).toEqual(expect.arrayContaining([
+    expect.stringContaining('ashmere-inn.webp'),
+    expect.stringContaining('ashmere-market.webp'),
+    expect.stringContaining('ashmere-forge.webp'),
+    expect.stringContaining('captain-oric.webp')
+  ]));
+  await expect.poll(()=>hub.locator('.ashmere-hub-v240-place-art img').evaluateAll(imgs=>imgs.length===4&&imgs.every(img=>img.complete&&img.naturalWidth>0))).toBe(true);
+  await expect(hub.locator('.ashmere-hub-v240-gate-art img')).toHaveAttribute('src',/old-road-south-fork\.webp/);
+  await hub.locator('#ashmereHubMoreToggle').click();
+  await expect(hub.locator('.ashmere-hub-v240-more-place[data-ash-view="quests"]')).toContainText('Daily Field Board');
+  await hub.locator('.ashmere-hub-v240-more-place[data-ash-view="work"]').click();
   await expect(page.locator('#openDailyFieldBoard')).toBeVisible();
   await page.locator('#openDailyFieldBoard').click();
   await expect(page.locator('.ash099-daily-board')).toBeVisible();

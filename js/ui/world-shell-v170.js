@@ -51,6 +51,7 @@
     if (!rootNode) return true;
     return !!rootNode.querySelector([
       '.v120-title',
+      '.ashmere-hub-v240',
       '[data-recovery-screen]',
       '.title-v100',
       '.v094-creation',
@@ -305,6 +306,13 @@
       return;
     }
     const player = loadPlayer();
+    // Ashmere owns its full-scene navigation now, but it is still a town
+    // environment. Retire the shell without erasing shared region/scene context.
+    if (rootNode.querySelector('.ashmere-hub-v240')) {
+      hideShell();
+      syncSceneAtmosphere(player, { kind: 'town' });
+      return;
+    }
     const context = inferContext(player, rootNode);
     if (!context) {
       hideShell();
@@ -482,7 +490,7 @@
           actionButton.focus({preventScroll:true});
           clickExisting('#gfm160OpenJournal');
         } else if (lastContext?.kind === 'road') {
-          if (!clickExisting('#exp150OpenJournal') && !clickExisting('#exp150OpenJournalAside')) showToast('The field journal is not available on this screen.');
+          if (!clickExisting('#exp150OpenJournal')) showToast('The field journal is not available on this screen.');
         } else {
           routeTo('archive');
         }

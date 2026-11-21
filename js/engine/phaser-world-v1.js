@@ -232,7 +232,7 @@
     else if (host.querySelector('.gfm160-page')) environment = 'marsh';
     else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'cellar';
     else if (host.querySelector('.ash100-town-greyfen')) environment = 'greyfen';
-    else if (host.querySelector('.ash100-town-ashmere')) environment = 'ashmere';
+    else if (host.querySelector('.ashmere-hub-v240, .ash100-town-ashmere')) environment = 'ashmere';
     else if (host.querySelector('.exp100-scene')) {
       const state = player?.flags?.roadExpeditionV100 || {};
       const stage = Number(state.stage || 0);
@@ -294,7 +294,7 @@
     else if (host.querySelector('.exp150-world-page, .exp100-scene')) surface = 'expedition';
     else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) surface = 'dungeon';
     else if (host.querySelector('.gss170-page, .gfm160-page')) surface = 'field-site';
-    else if (host.querySelector('.ash100-town')) surface = 'town';
+    else if (host.querySelector('.ashmere-hub-v240, .ash100-town')) surface = 'town';
     else if (host.querySelector('.ash099, .reg100')) surface = 'town-service';
     else if (host.querySelector('.v120-title')) surface = 'title';
     window.LegendRoadAudioV100?.setSurface?.(surface);
@@ -3057,7 +3057,12 @@
         Math.round(rect.width), Math.round(rect.height),
         Math.round(window.innerWidth), Math.round(window.innerHeight)
       ]);
-      if (this.nativeToastUiActive && signature === this.nativeToastUiSignature) return;
+      if (this.nativeToastUiActive && signature === this.nativeToastUiSignature) {
+        // A shell refresh can reconcile body classes while this toast remains visible.
+        // Restore the paint-state class without rebuilding the existing Phaser objects.
+        document.body?.classList.add('legend-phaser-toast-ui-active');
+        return;
+      }
 
       this.clearNativeToastUi(false);
       this.nativeToastUiActive = true;
@@ -6244,7 +6249,8 @@
     syncAshmereLandmarks() {
       const active = this.environment === 'ashmere' &&
         this.surface === 'town' &&
-        Boolean(root()?.querySelector('.ash100-town-ashmere'));
+        Boolean(root()?.querySelector('.ash100-town-ashmere')) &&
+        !Boolean(root()?.querySelector('.ashmere-hub-v240'));
       if (!active) {
         this.clearAshmereLandmarks();
         return;

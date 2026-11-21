@@ -44,37 +44,37 @@ async function enterAshmere(page) {
     window.LegendAshmereV099.renderAshmere();
   });
   await expect(page.locator('.ash100-town')).toBeVisible();
-  await expect(page.locator('#legend-world-shell-root')).toBeVisible();
+  await expect(page.locator('#legend-world-shell-root')).toBeHidden();
   await expect(page.locator('body')).toHaveClass(/legend-world-scene-town/);
   await expect(page.locator('body')).toHaveClass(/legend-world-region-ashmere/);
 }
 
-test('Ashmere town artwork remains visible under the persistent shell', async ({ page }) => {
+test('Ashmere scene art remains full-bleed without the retired town shell', async ({ page }) => {
   await enterAshmere(page);
 
-  await expect.poll(() => page.locator('.ash100-hero > img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+  await expect.poll(() => page.locator('.ashmere-hub-v240-backdrop img').evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
 
   const visual = await page.evaluate(() => {
     const shell = document.getElementById('legend-world-shell-root');
-    const hero = document.querySelector('.ash100-town .ash100-hero');
+    const hub = document.querySelector('.ashmere-hub-v240');
+    const image = hub?.querySelector('.ashmere-hub-v240-backdrop img');
     return {
-      townImage: getComputedStyle(document.body, '::before').backgroundImage,
-      worldBrightness: getComputedStyle(document.body, '::before').filter,
-      vignette: getComputedStyle(document.body, '::after').boxShadow,
-      shellCanvas: getComputedStyle(shell).backgroundImage,
-      shellCanvasColor: getComputedStyle(shell).backgroundColor,
-      shellShade: getComputedStyle(shell, '::before').backgroundImage,
-      townHeroOverlay: getComputedStyle(hero, '::after').backgroundImage,
-      imageSrc: document.querySelector('.ash100-hero > img').currentSrc
+      shellHidden: !shell || shell.hidden,
+      shellActive: document.body.classList.contains('legend-world-shell-active'),
+      fullBleed: (() => {
+        const backdrop=hub?.querySelector('.ashmere-hub-v240-backdrop')?.getBoundingClientRect();
+        return Boolean(backdrop && backdrop.left<=0 && backdrop.right>=innerWidth-1 && backdrop.width>=innerWidth-1);
+      })(),
+      imageSrc: image?.currentSrc || '',
+      imageOpacity: image ? getComputedStyle(image).opacity : '',
+      atmosphere: hub ? getComputedStyle(hub.querySelector('.ashmere-hub-v240-atmosphere')).backgroundImage : ''
     };
   });
 
-  expect(visual.townImage).toContain('ashmere-town.webp');
-  expect(visual.worldBrightness).toContain('brightness(1.24)');
-  expect(visual.vignette).toContain('0.035');
-  expectBackgroundAlphaAtMost(visual.shellCanvas, 0.08);
-  expect(visual.shellCanvasColor).toBe('rgba(0, 0, 0, 0)');
-  expectBackgroundAlphaAtMost(visual.shellShade, 0.04);
-  expect(visual.townHeroOverlay).toContain('0.24');
-  expect(visual.imageSrc).toContain('ashmere-town.webp');
+  expect(visual.shellHidden).toBe(true);
+  expect(visual.shellActive).toBe(false);
+  expect(visual.fullBleed).toBe(true);
+  expect(visual.imageSrc).toContain('location_ashmere_mainstreet_v1.jpg');
+  expect(visual.imageOpacity).toBe('0.3');
+  expect(visual.atmosphere).toContain('linear-gradient');
 });

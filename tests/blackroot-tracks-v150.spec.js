@@ -34,7 +34,10 @@ async function startTraveler(page) {
 }
 
 async function acceptBlackrootPosting(page) {
-  await page.locator('.ash100-destinations').getByRole('button', { name:/Work Board/i }).click();
+  const hub=page.locator('.ashmere-hub-v240');
+  const toggle=hub.locator('#ashmereHubMoreToggle');
+  if(await toggle.getAttribute('aria-expanded')!=='true') await toggle.click();
+  await hub.locator('.ashmere-hub-v240-more-place[data-ash-view="work"]').click();
   await expect(page.locator('#openAshmereFieldContracts')).toBeVisible();
   await page.locator('#openAshmereFieldContracts').click();
   const card=page.locator('.ash099-contract-card').filter({ hasText:'A Trail Worth Keeping' });
