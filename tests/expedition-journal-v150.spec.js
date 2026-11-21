@@ -153,7 +153,8 @@ test('Ashmere departure briefing links preparation to the road and warns without
   await expect(page.locator('#departureBegin')).toBeEnabled();
 
   await beginRoadExpedition(page);
-  await expect(page.locator('.exp150-world-page')).toContainText('FIELD SUPPLIES');
+  await expect(page.locator('.exp150-world-page')).toContainText('YOUR NEXT MOVE');
+  await expect(page.locator('.exp150-journey-aside')).toBeHidden();
 });
 
 
