@@ -8,7 +8,7 @@ test.describe('LEGEND public site shell v2.3', () => {
     expect(response && response.status()).toBe(200);
     await expect(page).toHaveTitle(/LEGEND: The Awakening — Dark-Fantasy Browser RPG/i);
     await expect(page.locator('link[rel="stylesheet"][href*="legend-site-v230.css"]')).toHaveCount(1);
-    await expect(page.locator('#rp-hero-title')).toBeVisible();
+    await expect(page.locator('#portal-hero-title')).toBeVisible();
     await expect(page.locator('.site-nav-play')).toBeVisible();
   });
 
@@ -70,7 +70,8 @@ test.describe('LEGEND public site shell v2.3', () => {
         current: document.querySelectorAll('.site-nav-links a[aria-current="page"]').length
       }));
 
-      expect(shell.current, path + ' should mark exactly one current nav link').toBe(1);
+      const expectedCurrentNavLinks = path === 'playtest.html' ? 0 : 1;
+      expect(shell.current, path + ' should mark the current primary-nav link when this page has one').toBe(expectedCurrentNavLinks);
       expect(shell.play, path + ' should offer the play button').toBe('index.html');
       if (reference === null) {
         reference = { nav: shell.nav, footer: shell.footer };
