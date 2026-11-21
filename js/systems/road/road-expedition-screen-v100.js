@@ -394,7 +394,7 @@
       trackerMarkup(pl,s,stage)+
       '<div class="exp150-main-grid"><section class="exp150-scene-column">'+
       (guide?'<div class="exp150-guide">'+guide+'</div>':'')+
-      '<div class="exp150-interactions">'+(sideNode?optionalSiteMarkup(pl,s,sideNode):roadDiscovery.routeChoicePanel(s,stage)+roadDiscovery.pointOfInterestPanel(pl,s,stage)+roadDiscovery.movedCairnDecisionPanel(pl,s,stage)+optionalDetourCard(pl,s,stage)+blackrootSurveyMarkup(pl,s,stage))+'</div>'+
+      '<div class="exp150-interactions">'+(sideNode?optionalSiteMarkup(pl,s,sideNode):roadDiscovery.routeChoicePanel(s,stage)+roadDiscovery.movedCairnDecisionPanel(pl,s,stage)+optionalDetourCard(pl,s,stage)+blackrootSurveyMarkup(pl,s,stage))+'</div>'+
       (atCamp?campActions(pl,s,area):'')+
       '<section class="exp150-action-dock"><div class="exp150-section-heading"><div><span class="exp150-kicker">YOUR NEXT MOVE</span><h2>How will you proceed?</h2></div><span class="exp150-current-mark">STOP '+(stage+1)+' / 6</span></div><div class="exp150-action-list">'+choices+'</div>'+earlyReturnMarkup+'</section></section>'+
       '<aside class="exp150-journey-aside" aria-hidden="true" hidden></aside></div>'+
@@ -407,8 +407,6 @@
     bindHotspotDelegation();
     window.LegendPhaserWorldV1?.refreshExpedition?.();
     window.LegendPhaserWorldV1?.refreshExpeditionActions?.();
-    document.getElementById('poiLeave')?.addEventListener('click',()=>{const player=p();if(!player)return;const state=ensure(player);state.discoveryOpen=false;state.discoveryStage=null;roadDiscovery.hide();save(player);document.querySelector('.exp150-interactions .exp100-discovery-beat')?.remove();});
-    document.getElementById('poiInspect')?.addEventListener('click',roadDiscovery.inspectPointOfInterest);
     document.getElementById('exp160VisitOptional')?.addEventListener('click',button=>beginOptionalSite(button.currentTarget.dataset.node));
     document.querySelectorAll('[data-blackroot-survey]').forEach(button=>button.addEventListener('click',()=>completeBlackrootSurvey(button.dataset.blackrootSurvey)));
     document.getElementById('exp160ReturnToRoute')?.addEventListener('click',leaveOptionalSite);
