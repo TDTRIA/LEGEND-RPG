@@ -117,6 +117,8 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
     expect(visibleCopy.buttonBackground).not.toBe('rgba(0, 0, 0, 0)');
     await annalsButton.focus();
     await expect(annalsButton).toBeFocused();
+    const annalsFocusStyle = await annalsButton.evaluate(node => getComputedStyle(node).outlineStyle);
+    expect(annalsFocusStyle).toBe('solid');
     await page.keyboard.press('Enter');
     await expect(page.getByRole('heading', { name: 'The Pact Beneath the Stone' })).toBeVisible();
     await expect(page.locator('.opening-lore-v220')).toContainText('seal over the deep ways');
@@ -384,6 +386,7 @@ test.describe('LEGEND v' + version + ' road-born opening', () => {
       const current = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
       window.__introLegacyGraphics = current.add.graphics;
       current.add.graphics = function () { throw new Error('legacy UI painter must not be invoked'); };
+      current.syncNativeTitleUi();
       current.syncNativeAnnalsUi();
       current.syncNativeCreationUi();
       current.syncNativeOpeningUi();
