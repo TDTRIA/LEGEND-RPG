@@ -461,9 +461,9 @@ body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
   .ashmere-hub-v240-more-list { grid-template-columns:minmax(0,1fr); }
 }
 @media(prefers-reduced-motion:reduce) {
-  .ashmere-hub-v240-place,
-  .ashmere-hub-v240-gate,
-  .ashmere-hub-v240-order-action span {
+  .ashmere-hub-v240 .ashmere-hub-v240-place,
+  .ashmere-hub-v240 .ashmere-hub-v240-gate,
+  .ashmere-hub-v240 .ashmere-hub-v240-order-action span {
     transition:none!important;
     transform:none!important;
   }
