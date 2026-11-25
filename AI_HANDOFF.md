@@ -7,7 +7,7 @@
 
 This file is the active handoff. Historical checkpoints are archived in [`docs/archive/AI_HANDOFF_2026-11-02.md`](docs/archive/AI_HANDOFF_2026-11-02.md); do not treat those old PR numbers, versions, or next steps as current.
 
-> **Read this first if you are an AI assistant.** The single most important thing about this repository right now: the Phaser migration over-reached, and the project is deliberately moving *back* toward a DOM interface with Phaser owning only the world and scene art. Do not "continue the migration" by painting more DOM surfaces in Phaser. See [Engine state](#engine-state) before touching anything in `js/engine/`.
+> **Read this first if you are an AI assistant.** The single most important thing about this repository right now: the Phaser migration over-reached, and the project is deliberately moving *back* toward a DOM interface with Phaser owning only the world and scene art. Do not "continue the migration" by painting more DOM surfaces in Phaser. Production title, Annals, traveler creation and Oric dialogue are DOM-owned; see [the hybrid rendering contract](docs/PHASER_HYBRID_RENDERING.md). See [Engine state](#engine-state) before touching anything in `js/engine/`.
 
 ## Current product state
 
