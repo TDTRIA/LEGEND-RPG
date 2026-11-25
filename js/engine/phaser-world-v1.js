@@ -232,7 +232,7 @@
     else if (host.querySelector('.gfm160-page')) environment = 'marsh';
     else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) environment = 'cellar';
     else if (host.querySelector('.ash100-town-greyfen')) environment = 'greyfen';
-    else if (host.querySelector('.ash100-town-ashmere')) environment = 'ashmere';
+    else if (host.querySelector('.ashmere-hub-v240, .ash100-town-ashmere')) environment = 'ashmere';
     else if (host.querySelector('.exp100-scene')) {
       const state = player?.flags?.roadExpeditionV100 || {};
       const stage = Number(state.stage || 0);
@@ -294,7 +294,7 @@
     else if (host.querySelector('.exp150-world-page, .exp100-scene')) surface = 'expedition';
     else if (host.querySelector('.bell-vault-banner, .bell-vault-room-card, .bell-vault-keeper-card')) surface = 'dungeon';
     else if (host.querySelector('.gss170-page, .gfm160-page')) surface = 'field-site';
-    else if (host.querySelector('.ash100-town')) surface = 'town';
+    else if (host.querySelector('.ashmere-hub-v240, .ash100-town')) surface = 'town';
     else if (host.querySelector('.ash099, .reg100')) surface = 'town-service';
     else if (host.querySelector('.v120-title')) surface = 'title';
     window.LegendRoadAudioV100?.setSurface?.(surface);
@@ -624,6 +624,7 @@
       this.nativeExpeditionHudUiBoundHost = null;
       this.nativeExpeditionHudUiInteractionHandler = null;
       this.nativeExpeditionHudUiScrollHandler = null;
+      this.nativeExpeditionHudUiToggleHandler = null;
       this.nativeExpeditionHudUiLayoutEvent = null;
       this.nativeRoadMapUiActive = false;
       this.nativeRoadMapUiKind = '';
@@ -3057,7 +3058,12 @@
         Math.round(rect.width), Math.round(rect.height),
         Math.round(window.innerWidth), Math.round(window.innerHeight)
       ]);
-      if (this.nativeToastUiActive && signature === this.nativeToastUiSignature) return;
+      if (this.nativeToastUiActive && signature === this.nativeToastUiSignature) {
+        // A shell refresh can reconcile body classes while this toast remains visible.
+        // Restore the paint-state class without rebuilding the existing Phaser objects.
+        document.body?.classList.add('legend-phaser-toast-ui-active');
+        return;
+      }
 
       this.clearNativeToastUi(false);
       this.nativeToastUiActive = true;
@@ -3771,9 +3777,15 @@
           document.removeEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, true);
           window.removeEventListener('scroll', this.nativeExpeditionHudUiScrollHandler);
         }
+        if (this.nativeExpeditionHudUiBoundHost && this.nativeExpeditionHudUiToggleHandler) {
+          this.nativeExpeditionHudUiBoundHost.removeEventListener('toggle', this.nativeExpeditionHudUiToggleHandler, true);
+        }
         this.nativeExpeditionHudUiBoundHost = null;
         this.nativeExpeditionHudUiInteractionHandler = null;
         this.nativeExpeditionHudUiScrollHandler = null;
+        this.nativeExpeditionHudUiToggleHandler = null;
+        this.nativeExpeditionHudUiDisclosureObserver?.disconnect();
+        this.nativeExpeditionHudUiDisclosureObserver = null;
       }
       this.nativeExpeditionHudUiObjects.forEach(object => {
         if (!object?.active) return;
@@ -3841,9 +3853,27 @@
           });
         };
         this.nativeExpeditionHudUiScrollHandler = () => this.nativeExpeditionHudUiInteractionHandler?.();
+        this.nativeExpeditionHudUiToggleHandler = event => {
+          if (event.target?.matches?.('.exp160-journey-details')) {
+            this.nativeExpeditionHudUiInteractionHandler?.();
+          }
+        };
         ['focusin', 'focusout', 'pointerover', 'pointerout'].forEach(type =>
           host.addEventListener(type, this.nativeExpeditionHudUiInteractionHandler)
         );
+        host.addEventListener('toggle', this.nativeExpeditionHudUiToggleHandler, true);
+        const journeyDetails = host.querySelector('.exp160-journey-details');
+        if (journeyDetails && typeof window.MutationObserver === 'function') {
+          this.nativeExpeditionHudUiDisclosureObserver = new window.MutationObserver(records => {
+            if (records.some(record => record.type === 'attributes' && record.attributeName === 'open')) {
+              this.nativeExpeditionHudUiInteractionHandler?.();
+            }
+          });
+          this.nativeExpeditionHudUiDisclosureObserver.observe(journeyDetails, {
+            attributes: true,
+            attributeFilter: ['open']
+          });
+        }
         document.addEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, true);
         window.addEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, { passive: true });
       }
@@ -3864,6 +3894,8 @@
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
       const readRect = node => {
         if (!node || !node.isConnected) return null;
+        const collapsedDetails = node.closest('details:not([open])');
+        if (collapsedDetails && !node.closest('summary')) return null;
         const rect = node.getBoundingClientRect();
         const style = window.getComputedStyle(node);
         if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
@@ -3927,6 +3959,7 @@
       const signature = JSON.stringify([clip,
         Math.round(window.innerWidth), Math.round(window.innerHeight),
         Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
+        Boolean(host.querySelector('.exp160-journey-details')?.open),
         ...regions.map(node => {
           const rect = readRect(node);
           return [node.className, rect && Math.round(rect.x), rect && Math.round(rect.y),
@@ -6244,7 +6277,8 @@
     syncAshmereLandmarks() {
       const active = this.environment === 'ashmere' &&
         this.surface === 'town' &&
-        Boolean(root()?.querySelector('.ash100-town-ashmere'));
+        Boolean(root()?.querySelector('.ash100-town-ashmere')) &&
+        !Boolean(root()?.querySelector('.ashmere-hub-v240'));
       if (!active) {
         this.clearAshmereLandmarks();
         return;

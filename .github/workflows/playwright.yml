@@ -80,6 +80,10 @@ jobs:
           for (const file of testSpecs) checkSyntax(file);
           console.log('Syntax-checked ' + productionScripts.length + ' active local production scripts and ' + testSpecs.length + ' Playwright spec files.');
           NODE
+      - name: Run the Ashmere refuge and town-service regression suite
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:ashmere-hub
+
       - name: Run focused official-site regression tests
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:website

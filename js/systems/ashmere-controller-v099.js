@@ -72,9 +72,11 @@
         imageMarkup: img,
         regionShopArt,
         serviceArt,
+        npcArt: npc,
         icon,
         shell,
-        bind
+        bind,
+        bindUiAudio: townView?.bindUiAudio
       });
     }
     const host = root();

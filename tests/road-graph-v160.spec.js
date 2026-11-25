@@ -23,7 +23,7 @@ async function startFreshTraveler(page, name = 'RoadGraphQA') {
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();
@@ -206,4 +206,59 @@ test('Sunken Cart salvage discloses cost and records the recovered material with
     return { stage: state.stage, node: state.currentNodeIdV160 };
   });
   expect(after).toEqual({ stage: 2, node: 'wayfarers-camp' });
+});
+
+
+test('journey history and optional detours stay tucked away until the traveler opens them', async ({ page }) => {
+  test.setTimeout(120000);
+  await startFreshTraveler(page, 'FocusedRoadQA');
+  await seedRoadStage(page, 1, 'ridge');
+
+  const journey = page.locator('.exp160-journey-details');
+  await expect(journey).toBeVisible();
+  await expect(journey).not.toHaveAttribute('open', '');
+  await expect(journey).toContainText('High Ridge');
+  await expect(journey.locator('.exp150-road-clock')).toBeHidden();
+  await expect(journey.locator('.exp150-route-tracker')).toBeHidden();
+
+  await journey.locator('summary').click();
+  await expect(journey.locator('.exp150-road-clock')).toBeVisible();
+  await expect(journey.locator('.exp150-route-tracker')).toBeVisible();
+  await expect(journey).toContainText('YOUR JOURNEY');
+
+  const detour = page.locator('.exp160-extra-lead');
+  await expect(detour).toBeVisible();
+  await expect(detour).not.toHaveAttribute('open', '');
+  await expect(detour.locator('#exp160VisitOptional')).toBeHidden();
+  await detour.locator('summary').click();
+  await expect(detour.locator('#exp160VisitOptional')).toBeVisible();
+  await expect(detour.locator('#exp160VisitOptional')).toContainText('Visit Windbreak');
+});
+
+
+test('primary road decision visually leads secondary actions while keeping secondary actions comfortably reachable', async ({ page }) => {
+  test.setTimeout(120000);
+  await startFreshTraveler(page, 'ActionHierarchyQA');
+  await seedRoadStage(page, 1, 'ridge');
+
+  const inspectActions = () => page.evaluate(() => {
+    const primary = document.querySelector('#push');
+    const secondary = Array.from(document.querySelectorAll('#search,#careful'));
+    const metrics = element => ({
+      height: element.getBoundingClientRect().height,
+      minHeight: getComputedStyle(element).minHeight
+    });
+    return { primary: metrics(primary), secondary: secondary.map(metrics) };
+  });
+
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    await page.setViewportSize(viewport);
+    const actions = await inspectActions();
+    expect(actions.primary.minHeight).toBe('77px');
+    expect(actions.primary.height).toBeGreaterThan(Math.max(...actions.secondary.map(item => item.height)));
+    for (const action of actions.secondary) {
+      expect(action.minHeight).toBe('52px');
+      expect(action.height).toBeGreaterThanOrEqual(44);
+    }
+  }
 });

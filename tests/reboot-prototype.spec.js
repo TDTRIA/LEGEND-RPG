@@ -174,7 +174,7 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     await page.locator('#v094Next').click();
     await page.locator('[data-origin]').first().click();
     await page.locator('#v094Next').click();
-    await page.getByRole('button', { name: /Ranger Better road sense, scouting, and fleeing/i }).click();
+    await page.locator('[data-class="Ranger"]').click();
     await page.locator('#v094Next').click();
     await page.locator('[data-keepsake="Old Map"]').click();
     await page.locator('#v094Next').click();
@@ -262,13 +262,15 @@ test.describe('LEGEND Phaser reboot prototype', () => {
     expect(town.menuViews).toContain('work');
     expect(town.menuViews).toContain('quests');
     expect(town.menuViews).toContain('regions');
-    await expect(page.locator('.ash100-town-ashmere')).toBeVisible();
-    await expect(page.locator('#legend-world-shell-root')).toBeVisible();
-    await page.locator('#legend-world-shell-root [data-world-action="inventory"]').click();
-    await expect(page.locator('#legend-world-shell-modal-root')).toBeVisible();
+    await expect(page.locator('.ashmere-hub-v240')).toBeVisible();
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
+    await page.locator('.ashmere-hub-v240 #ashmereHubMoreToggle').click();
+    await page.locator('.ashmere-hub-v240-utilities [data-ash-hub-action="inventory"]').click();
+    await expect(page.getByRole('dialog',{name:'Inventory'})).toBeVisible();
     await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surface)).toBe('modal');
     await page.locator('#legend-world-shell-modal-root [data-shell-modal-close]').click();
     await expect.poll(async () => page.evaluate(() => window.__legendRebootBridge.snapshot().surface)).toBe('town');
+    await expect(page.locator('#legend-world-shell-root')).toBeHidden();
     expect(pageErrors).toEqual([]);
   });
 

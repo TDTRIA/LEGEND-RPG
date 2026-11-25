@@ -1,7 +1,7 @@
 # AI Handoff — LEGEND: The Awakening
 
-**Last updated:** 2026-11-17
-**Authoritative branch:** `main` (`ef93b9c`)
+**Last updated:** 2026-11-21
+**Authoritative branch:** `main` (`75bed7f`, verified 2026-11-21)
 **Current production version:** `v0.30.5`
 **Current product name:** **LEGEND: The Awakening**
 
@@ -24,6 +24,31 @@ LEGEND is an in-development, desktop-first browser RPG with responsive mobile su
 - Level-ups preserve saved attribute-allocation choices. Expedition reports show discoveries, settlement, token outcome, and level progress.
 - Greyfen is a partial frontier with playable pieces: Patch the Ferry Nets, Marsh Path, local materials/progression, optional Silted Storehouse detour. It is **not** a complete town/story loop.
 - Ironpass is future content, not a playable town.
+
+## Owner-directed visual rebuild — current work (2026-11-21)
+
+**The immediate product direction is the scene-led dark-fantasy rebuild in PR [#148](https://github.com/TDTRIA/LEGEND-RPG/pull/148), followed by the Old Road presentation redesign.** The owner wants LEGEND to feel like one cohesive RPG inspired at a high level by Darkest Dungeon, not a website dashboard surrounded by a persistent World Shell. Darkest Dungeon is inspiration only: do not copy its art, characters, names, writing, sounds, logos or exact interface.
+
+### Active work and sequence
+
+1. Finish and validate the new Ashmere refuge on `feat/ashmere-hub-dark-fantasy-v240` (PR #148). The hub replaces the Ashmere dashboard/shell with the existing full-scene art, compact traveler condition, one current field order, four principal town destinations, a clear Old Road Gate and a compact disclosure for secondary services.
+2. Rework the Old Road expedition information hierarchy. The player should see the current place, route/stage, immediate condition and one meaningful event/decision—not every journal/map/status panel at once. Make Map and Field Journal deliberate controls, preserve the existing event/route graph, High Ridge and Reed Cut, camps, detours, discoveries, field contracts, pressure, combat, return and partial-save behavior.
+3. Redesign combat presentation for tactical clarity while preserving the existing combat owner and formulas.
+4. Specify and add approved party formation, stress/resolve and torchlight as separate systems, one complete and tested feature at a time. Existing solo play, save compatibility, reward odds and progression remain unchanged unless the owner explicitly approves a balance change.
+
+The durable design and acceptance checklist lives in [docs/DARKEST_DUNGEON_REBUILD_PLAN.md](docs/DARKEST_DUNGEON_REBUILD_PLAN.md); the creative guardrails live in [docs/DARKEST_DUNGEON_DIRECTION.md](docs/DARKEST_DUNGEON_DIRECTION.md).
+
+### Current implementation notes — 2026-11-21
+
+- The Ashmere refuge is implemented in PR #148 but is not yet in production. It replaces the Ashmere World Shell only; Greyfen and service interiors remain on their established surfaces.
+- The first Old Road decluttering pass now collapses the journey clock/route history and optional detours into native disclosures. Search and Read the Road remain available, but their visual weight is reduced beneath the primary Travel On decision. This is presentation-only: route, pressure, event, reward and save rules remain unchanged.
+- The branch's latest Playwright run must be checked against the current PR head before treating these changes as validated. A cancelled run is not a pass.
+
+### Engineering boundary for this rebuild
+
+The current DOM-first direction below is authoritative. DOM owns readable text, menus, buttons, dialogs, HUD, services and other controls. Phaser owns world/scene art, environment, atmosphere, lighting, particles, camera movement and transitions. Do not add new Phaser pixel copies of DOM interfaces or revive the persistent shell on a rebuilt surface. Keep existing production controllers as the single source of truth.
+
+Protect the active save key `legend-roads-of-ashmere-v09`, `LegendStorage`, normalization and unknown player fields. Preserve all current story canon, writing, routes, services, quest evidence, combat behavior, formulas, reward probabilities, inventory, progression, accessibility and partially completed expeditions. Rebuild presentation one complete surface at a time.
 
 ## Engine state
 
@@ -61,33 +86,25 @@ That produced two renderers with two sources of truth over the same surface: inp
 - **#144 (chore/housekeeping-dead-code-20261117)** — removes 52 dead files (39 JS, 13 CSS, 14 art, 13.7 MB). Deletions are limited to files proven unreachable from every HTML entry point plus art whose basename appears in no code, doc or manifest. Notable: `phaser-shell-toast-v1.js` was added by #131 but **never wired into `index.html`** — the live toast painter is `syncNativeToastUi`. Kept deliberately: `assets/title`, `assets/audio`, `assets/generated`, `assets/ui`, `assets/tilesets`, `assets/locations`, because those packs are still being wired incrementally.
 - **`feat/ashmere-title-screen-v230`** — the new moonlit-Ashmere title screen, 12+ commits: DOM menu text and controls, Phaser-owned scene composition, `css/title-screen-ashmere-v230.css`, and it adapts `tests/dom-ui-restore.spec.js`. This is the DOM-first title direction in practice. Its CI was red as of the last check — verify before believing it is mergeable.
 
-## Branches: active versus abandoned
+## Branch state
 
-Nothing below is merged. Verify current state with the GitHub API rather than trusting this table.
+Use the live GitHub state rather than historical branch names below.
 
-| Branch | Status |
-|---|---|
-| `main` | Authoritative. Production. |
-| `feat/ashmere-title-screen-v230` | **Active** — in-flight title screen, DOM-first |
-| `fix/hybrid-rendering-foundation-20261117` | **Active** — owner's hybrid-render work; long-failing CI |
-| `fix/phaser-transactional-presentation-20261117` | **Likely redundant** — overlaps hybrid-rendering; probably superseded |
-| `fix/phaser-overlay-transactional-fallback-20261116` | **Abandoned** — superseded by the transactional-presentation branch |
-| `base44/rescue/improve-website-layout-e366f3a` | **Abandoned** — 1 commit, ~69 behind |
-| `feat/public-site-shell` | **Abandoned** — 1 commit, ~69 behind |
-| `portal-v2-redesign` | **Abandoned** — 1 commit, ~92 behind |
-| `ci/let-main-runs-complete` | **Disposable** — throwaway CI experiment |
-| `doc/ai-handoff-refresh-20261117` | This document |
-| `chore/housekeeping-dead-code-20261117` | #144, if still open |
+- `main` is authoritative production. As of 2026-11-21 its head is `75bed7f`, package version `0.30.5`.
+- PR [#148 — Ashmere / Dark Fantasy rebuild](https://github.com/TDTRIA/LEGEND-RPG/pull/148) is the active feature branch: `feat/ashmere-hub-dark-fantasy-v240`. It is still open and is the only intended path for the current hub and expedition presentation work. It has been reconciled with `main`; do not merge until the latest Playwright run passes and desktop/mobile acceptance is complete.
+- PR [#142 — hybrid rendering foundation](https://github.com/TDTRIA/LEGEND-RPG/pull/142) remains an older draft. Do not merge it separately or resume its earlier Phaser-painter direction without re-auditing it against the DOM-first architecture and PR #148.
+- Treat other feature/fix branches as historical unless a currently open pull request proves otherwise. Never infer active work from a branch name alone.
 
 ## Priorities
 
-1. **Finish the DOM-first interface.** Let the owner judge remaining surfaces from the `?dom-ui=1` build, then delete the painters that lose. Keep Phaser for world/scene art and transitions.
-2. **Land the new title screen** (`feat/ashmere-title-screen-v230`), and retire the old title painters rather than leaving two title implementations.
-3. **Split `phaser-world-v1.js`** into world-scene modules once UI painters are gone.
-4. **Audio QA and remaining event hooks** — see below.
-5. **Finish Greyfen as a coherent region** before treating it as done.
-6. **Keep public information truthful** — blog, updates, README, guide, store copy, roadmap and changelog must distinguish shipped from in-progress. Several docs under `docs/` now contradict reality (`LEGEND_GAME_REBOOT_PLAN`, `REFACTOR_PLAN`, `v0.6-refactor-plan`, parts of `PHASER_MIGRATION.md`). Trust `CANON.md` for story, this file for engineering state.
-7. **Triage the open issue backlog.** Multiple issues appear shipped in code and specs but remain open (for example the Silted Storehouse and Ashmere POI selection), so the visible backlog currently misrepresents the real work.
+1. **Complete the owner-directed rebuild in sequence.** Finish and test the Ashmere refuge (#148), then reduce Old Road screen clutter and present one active event/decision at a time, then redesign combat presentation. The durable plan and acceptance gates are in `docs/DARKEST_DUNGEON_REBUILD_PLAN.md`.
+2. **Keep the interface DOM-first.** Let the owner judge remaining surfaces from the `?dom-ui=1` build, then retire redundant painters. Keep Phaser for world/scene art, atmosphere and transitions; do not add duplicate DOM-parity UI painters.
+3. **Land the new title screen** (`feat/ashmere-title-screen-v230`) when it is validated against the current interface direction, and retire old title painters rather than leaving two title implementations.
+4. **Split `phaser-world-v1.js`** into world-scene modules once UI painters are gone.
+5. **Audio QA and remaining event hooks** — see below.
+6. **Finish Greyfen as a coherent region** before treating it as done.
+7. **Keep public information truthful** — blog, updates, README, guide, store copy, roadmap and changelog must distinguish shipped from in-progress. Several docs under `docs/` now contradict reality (`LEGEND_GAME_REBOOT_PLAN`, `REFACTOR_PLAN`, `v0.6-refactor-plan`, parts of `PHASER_MIGRATION.md`). Trust `CANON.md` for story, this file for engineering state.
+8. **Triage the open issue backlog.** Multiple issues appear shipped in code and specs but remain open (for example the Silted Storehouse and Ashmere POI selection), so the visible backlog currently misrepresents the real work.
 
 ## Story and world guardrails
 

@@ -22,7 +22,7 @@ async function startFreshCharacter(page, name='RealmBoardQA') {
   await page.locator('#v094Next').click();
   await page.locator('[data-origin]').first().click();
   await page.locator('#v094Next').click();
-  await page.getByRole('button', { name:/Ranger Better road sense, scouting, and fleeing/i }).click();
+  await page.locator('[data-class="Ranger"]').click();
   await page.locator('#v094Next').click();
   await page.locator('[data-keepsake="Old Map"]').click();
   await page.locator('#v094Next').click();
@@ -50,30 +50,37 @@ test.describe('Title realm dispatch and town service access v0.29.1', () => {
     await expect(dispatch.getByRole('link', { name:/Read the latest field notes/i })).toHaveAttribute('href','updates.html');
   });
 
-  test('Ashmere hub presents a crisp service icon and opens the Daily Field Board directly', async ({ page }) => {
+  test('Ashmere opens as a scene-led refuge and keeps the Daily Field Board reachable', async ({ page }) => {
     await startFreshCharacter(page);
-    const tile=page.locator('.ash100-destination[data-ash-view="quests"]');
+    const hub=page.locator('.ashmere-hub-v240');
+    await expect(hub).toBeVisible();
+    await expect(hub.locator('h1')).toHaveText('Ashmere');
+    await expect(hub.locator('.ashmere-hub-v240-field-order')).toBeVisible();
+    await expect(hub.locator('.ashmere-hub-v240-place')).toHaveCount(4);
+    await expect(hub.locator('.ashmere-hub-v240-gate')).toContainText('Old Road Gate');
+
+    const shellState=await page.evaluate(()=>({
+      active:document.body.classList.contains('legend-world-shell-active'),
+      visible:!!document.querySelector('#legend-world-shell-root')&&!document.querySelector('#legend-world-shell-root').hidden,
+      hasHubAsRoot:document.querySelector('#root > .ashmere-hub-v240')!==null
+    }));
+    expect(shellState).toEqual({active:false,visible:false,hasHubAsRoot:true});
+
+    const destinationCoverage=await page.evaluate(()=>{
+      const player=window.LegendRuntimeV120.loadPlayer();
+      const expected=window.LegendAshmereDestinationCatalogV099.forRegion('Ashmere','',player.flags||[]).map(item=>item.view);
+      const available=Array.from(document.querySelectorAll('#root [data-ash-view]')).map(item=>item.dataset.ashView);
+      return {expected,available};
+    });
+    for(const view of destinationCoverage.expected) expect(destinationCoverage.available).toContain(view);
+
+    await hub.locator('#ashmereHubMoreToggle').click();
+    await expect(hub.locator('#ashmereHubMoreToggle')).toHaveAttribute('aria-expanded','true');
+    const tile=hub.locator('.ashmere-hub-v240-more-place[data-ash-view="quests"]');
     await expect(tile).toBeVisible();
     await expect(tile).toContainText('Daily Field Board');
-    await expect.poll(() => tile.locator('.ash100-destination-icon img').evaluate(img=>img.complete&&img.naturalWidth>0&&img.naturalHeight>0)).toBe(true);
-    const geometry=await tile.locator('.ash100-destination-icon').evaluate(icon=>{
-      const box=icon.getBoundingClientRect();
-      const img=icon.querySelector('img');
-      return {
-        width:box.width,
-        height:box.height,
-        imageWidth:img?.naturalWidth||0,
-        imageHeight:img?.naturalHeight||0,
-        source:img?.getAttribute('src')||''
-      };
-    });
-    expect(geometry.width).toBeGreaterThanOrEqual(52);
-    expect(geometry.height).toBeGreaterThanOrEqual(52);
-    expect(geometry.imageWidth).toBeGreaterThan(0);
-    expect(geometry.imageHeight).toBeGreaterThan(0);
-    expect(geometry.source).toContain('service-job-board.webp');
-
     await tile.click();
+
     const daily=page.locator('.ash099-daily-board');
     await expect(daily).toBeVisible({ timeout:10000 });
     await expect(daily).toContainText('Three reasons to take the road today');

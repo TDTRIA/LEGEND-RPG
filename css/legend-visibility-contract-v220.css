@@ -1198,3 +1198,8 @@ body.legend-world-shell-active #root .ash100-town .ash099-topnav .ash099-icon sv
     height: 34px;
   }
 }
+
+/* The Old Road discovery beat must remain legible over the live scene art. */
+body.legend-world-shell-active #root .exp100:has(.exp150-world-page) .exp100-discovery-beat {
+  background:linear-gradient(140deg,rgba(18,24,18,.97),rgba(5,9,7,.97)) !important;
+}

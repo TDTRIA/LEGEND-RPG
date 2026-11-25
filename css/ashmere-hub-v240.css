@@ -1,0 +1,510 @@
+/* LEGEND v2.40 — Ashmere as a lived-in frontier refuge. */
+.ashmere-hub-v240,
+.ashmere-hub-v240 * { box-sizing:border-box; }
+
+.ashmere-hub-v240 {
+  --ashmere-ink:#e7e1d2;
+  --ashmere-muted:#b9b7a9;
+  --ashmere-gold:#c5a86f;
+  --ashmere-line:rgba(211,192,147,.28);
+  position:relative;
+  isolation:isolate;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  gap:clamp(22px,3vh,38px);
+  width:100%;
+  min-height:100svh;
+  margin:0;
+  padding:clamp(18px,3vw,42px) clamp(18px,4.2vw,64px) clamp(18px,2.5vw,34px);
+  overflow:visible;
+  color:var(--ashmere-ink);
+  background:transparent;
+  font-family:Georgia,"Times New Roman",serif;
+}
+
+.ashmere-hub-v240-backdrop {
+  position:fixed;
+  z-index:-3;
+  inset:0;
+  overflow:hidden;
+  background:#080b0a;
+}
+.ashmere-hub-v240-backdrop img {
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center 54%;
+  filter:saturate(.72) contrast(1.08) brightness(.72);
+  opacity:.92;
+}
+body.legend-phaser-world-active .ashmere-hub-v240-backdrop img { opacity:.30; }
+.ashmere-hub-v240-atmosphere {
+  position:fixed;
+  z-index:-2;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(3,6,7,.84) 0%,rgba(4,7,8,.60) 34%,rgba(4,7,8,.22) 68%,rgba(3,6,7,.52) 100%),
+    linear-gradient(180deg,rgba(3,6,7,.56),transparent 25%,rgba(3,6,7,.08) 56%,rgba(3,6,7,.76) 100%),
+    radial-gradient(ellipse at 48% 42%,transparent 14%,rgba(0,0,0,.35) 100%);
+}
+
+.ashmere-hub-v240-header {
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:24px;
+  min-width:0;
+}
+.ashmere-hub-v240-identity { min-width:0; padding-top:3px; }
+.ashmere-hub-v240-kicker {
+  display:block;
+  color:#c6ae7b;
+  font-family:"Trebuchet MS","Segoe UI",sans-serif;
+  font-size:.57rem;
+  font-weight:800;
+  letter-spacing:.2em;
+  line-height:1.5;
+  text-shadow:0 2px 10px #000;
+}
+.ashmere-hub-v240-identity h1 {
+  margin:5px 0 3px;
+  color:#eee7d6;
+  font-size:clamp(2.4rem,5.2vw,4.7rem);
+  font-weight:500;
+  line-height:.94;
+  letter-spacing:.015em;
+  text-shadow:0 4px 24px rgba(0,0,0,.88);
+}
+.ashmere-hub-v240-identity p {
+  margin:9px 0 0;
+  color:#d0cfc3;
+  font-size:clamp(.87rem,1.1vw,1rem);
+  line-height:1.5;
+  text-shadow:0 2px 10px #000;
+}
+
+.ashmere-hub-v240-traveler {
+  display:flex;
+  align-items:center;
+  gap:clamp(12px,2vw,24px);
+  min-width:0;
+  padding:9px 0 10px 16px;
+  border-left:1px solid rgba(203,181,135,.34);
+  border-bottom:1px solid rgba(203,181,135,.19);
+  background:linear-gradient(90deg,rgba(4,8,8,.30),transparent);
+  font-family:"Trebuchet MS","Segoe UI",sans-serif;
+}
+.ashmere-hub-v240-traveler-name,
+.ashmere-hub-v240-health,
+.ashmere-hub-v240-purse,
+.ashmere-hub-v240-tokens { display:grid; gap:2px; min-width:0; }
+.ashmere-hub-v240-traveler-name>span,
+.ashmere-hub-v240-health>div>span,
+.ashmere-hub-v240-purse>span,
+.ashmere-hub-v240-tokens>span {
+  color:#bca979;
+  font-size:.52rem;
+  font-weight:800;
+  letter-spacing:.13em;
+  white-space:nowrap;
+}
+.ashmere-hub-v240-traveler-name strong {
+  overflow:hidden;
+  color:#f0eadc;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:.95rem;
+  font-weight:600;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.ashmere-hub-v240-traveler-name small { color:#b6b8ae; font-size:.62rem; white-space:nowrap; }
+.ashmere-hub-v240-health { width:clamp(92px,10vw,138px); }
+.ashmere-hub-v240-health>div { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.ashmere-hub-v240-health>div strong,
+.ashmere-hub-v240-purse strong,
+.ashmere-hub-v240-tokens strong {
+  color:#e8e0d0;
+  font-size:.76rem;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.ashmere-hub-v240-health>i {
+  display:block;
+  height:4px;
+  margin-top:5px;
+  overflow:hidden;
+  background:rgba(226,219,196,.19);
+}
+.ashmere-hub-v240-health>i b {
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,#71846a,#c1a56f);
+}
+.ashmere-hub-v240-purse,
+.ashmere-hub-v240-tokens { padding-left:12px; border-left:1px solid rgba(203,181,135,.2); }
+
+.ashmere-hub-v240-main {
+  display:grid;
+  grid-template-columns:minmax(270px,.78fr) minmax(420px,1.22fr);
+  align-items:center;
+  gap:clamp(24px,5vw,82px);
+  width:100%;
+  max-width:1480px;
+  margin:auto;
+}
+.ashmere-hub-v240-field-order {
+  position:relative;
+  max-width:480px;
+  padding:11px 0 13px 20px;
+  border-left:2px solid rgba(196,165,104,.68);
+  background:linear-gradient(90deg,rgba(3,7,8,.44),rgba(3,7,8,.08) 78%,transparent);
+  text-shadow:0 2px 12px #000;
+}
+.ashmere-hub-v240-field-order h2 {
+  margin:7px 0 8px;
+  color:#ede6d5;
+  font-size:clamp(1.45rem,2.6vw,2.25rem);
+  font-weight:500;
+  line-height:1.06;
+}
+.ashmere-hub-v240-field-order p {
+  max-width:430px;
+  margin:0;
+  color:#d0d0c4;
+  font-family:"Trebuchet MS","Segoe UI",sans-serif;
+  font-size:.82rem;
+  line-height:1.58;
+}
+.ashmere-hub-v240-order-action {
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  min-height:44px !important;
+  margin-top:16px;
+  padding:8px 0;
+  border:0;
+  border-bottom:1px solid rgba(207,177,116,.57);
+  color:#e6d2a7;
+  background:transparent;
+  font-family:"Trebuchet MS","Segoe UI",sans-serif;
+  font-size:.68rem;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  text-align:left;
+  cursor:pointer;
+}
+.ashmere-hub-v240-order-action span { color:#c9ad77; font-size:1rem; transition:transform .16s ease; }
+.ashmere-hub-v240-order-action:hover span { transform:translateX(4px); }
+
+.ashmere-hub-v240-landmarks { min-width:0; }
+.ashmere-hub-v240-section-heading { margin:0 0 11px 2px; text-shadow:0 2px 10px #000; }
+.ashmere-hub-v240-section-heading h2 {
+  margin:2px 0 0;
+  color:#e9e3d4;
+  font-size:clamp(1.1rem,1.7vw,1.45rem);
+  font-weight:500;
+  line-height:1.2;
+}
+.ashmere-hub-v240-place-list {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+}
+.ashmere-hub-v240-place {
+  position:relative;
+  border-radius:2px !important;
+  font:inherit;
+  display:grid;
+  grid-template-columns:94px minmax(0,1fr) 16px;
+  align-items:stretch;
+  min-width:0;
+  min-height:105px;
+  padding:0;
+  overflow:hidden;
+  border:1px solid rgba(203,186,145,.23);
+  color:#eee8d8;
+  background:linear-gradient(110deg,rgba(11,16,16,.92),rgba(7,11,11,.83));
+  box-shadow:0 10px 28px rgba(0,0,0,.18);
+  text-align:left;
+  cursor:pointer;
+  transition:border-color .16s ease,transform .16s ease,background .16s ease;
+}
+.ashmere-hub-v240-place:hover,
+.ashmere-hub-v240-place:focus-visible {
+  border-color:rgba(222,192,133,.72);
+  background:linear-gradient(110deg,rgba(43,42,31,.93),rgba(11,15,14,.91));
+  transform:translateY(-2px);
+}
+.ashmere-hub-v240-place:focus-visible,
+.ashmere-hub-v240-gate:focus-visible,
+.ashmere-hub-v240-more-toggle:focus-visible,
+.ashmere-hub-v240-more-place:focus-visible {
+  outline:2px solid #d8c18c;
+  outline-offset:3px;
+}
+.ashmere-hub-v240-place-art { position:relative; display:block; min-width:0; min-height:100%; overflow:hidden; background:#131a17; }
+.ashmere-hub-v240-place-art:after {
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(90deg,transparent 48%,rgba(8,12,12,.5));
+}
+.ashmere-hub-v240-place-art img { display:block; width:100%; height:100%; min-height:105px; object-fit:cover; filter:saturate(.70) contrast(1.08) brightness(.79); }
+.ashmere-hub-v240-place-copy {
+  display:flex;
+  min-width:0;
+  flex-direction:column;
+  justify-content:center;
+  gap:5px;
+  padding:10px 6px 10px 12px;
+}
+.ashmere-hub-v240-place-copy strong {
+  color:#ece5d5;
+  font-size:.91rem;
+  font-weight:500;
+  line-height:1.14;
+}
+.ashmere-hub-v240-place-copy small {
+  display:-webkit-box;
+  overflow:hidden;
+  color:#b7b8ad;
+  font-family:"Trebuchet MS","Segoe UI",sans-serif;
+  font-size:.62rem;
+  line-height:1.35;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+}
+.ashmere-hub-v240-place-arrow { align-self:center; padding-right:9px; color:#c7aa72; font-size:.9rem; opacity:.75; }
+.ashmere-hub-v240-no-art { display:grid; height:100%; place-items:center; color:#c6a96e; }
+
+.ashmere-hub-v240-footer {
+  display:grid;
+  grid-template-columns:minmax(340px,1.1fr) minmax(250px,.9fr);
+  align-items:end;
+  gap:14px;
+  width:100%;
+  max-width:1480px;
+  margin:0 auto;
+}
+.ashmere-hub-v240-gate {
+  position:relative;
+  border-radius:2px;
+  font:inherit;
+  display:grid;
+  grid-template-columns:104px minmax(0,1fr) 22px;
+  align-items:center;
+  min-height:82px;
+  padding:0;
+  overflow:hidden;
+  border:1px solid rgba(211,183,126,.41);
+  color:#eee7d8;
+  background:linear-gradient(90deg,rgba(9,14,14,.97),rgba(8,12,12,.80));
+  text-align:left;
+  cursor:pointer;
+  transition:border-color .16s ease,transform .16s ease;
+}
+.ashmere-hub-v240-gate:hover { border-color:rgba(235,204,147,.84); transform:translateY(-1px); }
+.ashmere-hub-v240-gate-art { height:100%; min-height:82px; overflow:hidden; }
+.ashmere-hub-v240-gate-art img { display:block; width:100%; height:100%; min-height:82px; object-fit:cover; object-position:center; filter:saturate(.62) contrast(1.12) brightness(.70); }
+.ashmere-hub-v240-gate-copy { display:grid; gap:3px; min-width:0; padding:10px 13px; }
+.ashmere-hub-v240-gate-copy small { color:#c8ad7a; font-family:"Trebuchet MS","Segoe UI",sans-serif; font-size:.52rem; font-weight:800; letter-spacing:.16em; }
+.ashmere-hub-v240-gate-copy strong { color:#eee5d3; font-size:1.05rem; font-weight:500; line-height:1.1; }
+.ashmere-hub-v240-gate-copy em { color:#afb2a7; font-family:"Trebuchet MS","Segoe UI",sans-serif; font-size:.62rem; font-style:normal; line-height:1.35; }
+.ashmere-hub-v240-gate-arrow { color:#d2b37b; font-size:1.2rem; }
+.ashmere-hub-v240-more { min-width:0; border-top:1px solid rgba(206,187,145,.28); border-bottom:1px solid rgba(206,187,145,.18); }
+.ashmere-hub-v240-more-toggle {
+  display:grid;
+  font:inherit;
+  grid-template-columns:minmax(0,1fr) 19px;
+  align-items:center;
+  width:100%;
+  min-height:62px;
+  padding:8px 4px;
+  border:0;
+  color:#e3ddcf;
+  background:transparent;
+  text-align:left;
+  cursor:pointer;
+}
+.ashmere-hub-v240-more-toggle span { display:block; color:#d9d1bf; font-size:.88rem; }
+.ashmere-hub-v240-more-toggle small {
+  grid-column:1;
+  margin-top:2px;
+  color:#a7aba1;
+  font-family:"Trebuchet MS","Segoe UI",sans-serif;
+  font-size:.6rem;
+  line-height:1.3;
+}
+.ashmere-hub-v240-more-toggle em { grid-column:2; grid-row:1/3; color:#c8ae78; font-size:1rem; font-style:normal; text-align:right; }
+.ashmere-hub-v240-more-list {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:4px 12px;
+  padding:0 0 10px;
+}
+.ashmere-hub-v240-more-list[hidden] { display:none; }
+.ashmere-hub-v240-more-list>p { grid-column:1/-1; margin:0; color:#bbb; font-size:.7rem; }
+.ashmere-hub-v240-more-place {
+  display:grid;
+  font:inherit;
+  gap:2px;
+  min-width:0;
+  padding:8px 2px;
+  border:0;
+  border-top:1px solid rgba(209,191,150,.16);
+  color:#ded7c9;
+  background:transparent;
+  text-align:left;
+  cursor:pointer;
+}
+.ashmere-hub-v240-more-place span { font-size:.78rem; }
+.ashmere-hub-v240-more-place small { color:#aeb1a7; font-family:"Trebuchet MS","Segoe UI",sans-serif; font-size:.58rem; line-height:1.3; }
+.ashmere-hub-v240-more-place em { color:#c3a66f; font-family:"Trebuchet MS","Segoe UI",sans-serif; font-size:.52rem; font-style:normal; font-weight:800; letter-spacing:.07em; text-transform:uppercase; }
+
+.ashmere-hub-v240-utilities {
+  grid-column:1/-1;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:7px;
+  margin-top:6px;
+  padding-top:10px;
+  border-top:1px solid rgba(209,191,150,.20);
+}
+.ashmere-hub-v240-utilities-label {
+  flex:1 0 100%;
+  color:#bca979;
+  font-family:"Trebuchet MS","Segoe UI",sans-serif;
+  font-size:.52rem;
+  font-weight:800;
+  letter-spacing:.15em;
+}
+.ashmere-hub-v240-utilities button {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-height:38px;
+  padding:7px 10px;
+  border:1px solid rgba(209,191,150,.24);
+  border-radius:2px;
+  color:#ded7c9;
+  background:rgba(9,13,12,.72);
+  font-family:"Trebuchet MS","Segoe UI",sans-serif;
+  font-size:.64rem;
+  cursor:pointer;
+}
+.ashmere-hub-v240-utilities button:hover,
+.ashmere-hub-v240-utilities button:focus-visible {
+  border-color:rgba(222,192,133,.72);
+  color:#f0e6d1;
+  outline:2px solid #d8c18c;
+  outline-offset:2px;
+}
+.ashmere-hub-v240-utilities button span { color:#c8ae78; font-size:.9rem; }
+.ashmere-hub-v240-utility-status {
+  grid-column:1/-1;
+  min-height:0;
+  margin:0;
+  color:#c8c2b4;
+  font-family:"Trebuchet MS","Segoe UI",sans-serif;
+  font-size:.62rem;
+  line-height:1.4;
+}
+.ashmere-hub-v240-utility-status:empty { display:none; }
+
+
+@media(max-width:1050px) {
+  .ashmere-hub-v240 { gap:24px; }
+  .ashmere-hub-v240-header { flex-direction:column; gap:16px; }
+  .ashmere-hub-v240-traveler { align-self:stretch; justify-content:flex-start; }
+  .ashmere-hub-v240-main { grid-template-columns:minmax(0,1fr); gap:24px; }
+  .ashmere-hub-v240-field-order { max-width:640px; }
+  .ashmere-hub-v240-footer { grid-template-columns:1fr; }
+}
+@media(max-width:620px) {
+  .ashmere-hub-v240 { gap:24px; padding:16px 14px 18px; }
+  .ashmere-hub-v240-atmosphere {
+    background:linear-gradient(180deg,rgba(3,6,7,.58),rgba(3,6,7,.22) 23%,rgba(3,6,7,.36) 53%,rgba(3,6,7,.84)),
+      linear-gradient(90deg,rgba(3,6,7,.46),rgba(3,6,7,.10));
+  }
+  .ashmere-hub-v240-header { gap:14px; }
+  .ashmere-hub-v240-identity h1 { font-size:2.8rem; }
+  .ashmere-hub-v240-traveler { flex-wrap:wrap; gap:10px 14px; padding:8px 0 10px 10px; }
+  .ashmere-hub-v240-traveler-name { flex:1 1 130px; }
+  .ashmere-hub-v240-health { width:110px; }
+  .ashmere-hub-v240-purse,.ashmere-hub-v240-tokens { padding-left:9px; }
+  .ashmere-hub-v240-main { gap:22px; }
+  .ashmere-hub-v240-field-order { padding-left:13px; }
+  .ashmere-hub-v240-field-order h2 { font-size:1.55rem; }
+  .ashmere-hub-v240-field-order p { font-size:.78rem; }
+  .ashmere-hub-v240-place-list { gap:7px; }
+  .ashmere-hub-v240-place { grid-template-columns:78px minmax(0,1fr) 13px; min-height:94px; }
+  .ashmere-hub-v240-place-art img { min-height:94px; }
+  .ashmere-hub-v240-place-copy { padding:8px 4px 8px 8px; gap:4px; }
+  .ashmere-hub-v240-place-copy strong { font-size:.78rem; }
+  .ashmere-hub-v240-place-copy small { font-size:.55rem; }
+  .ashmere-hub-v240-place-arrow { padding-right:5px; font-size:.7rem; }
+  .ashmere-hub-v240-footer { gap:13px; }
+  .ashmere-hub-v240-gate { grid-template-columns:85px minmax(0,1fr) 18px; min-height:76px; }
+  .ashmere-hub-v240-gate-art,.ashmere-hub-v240-gate-art img { min-height:76px; }
+  .ashmere-hub-v240-gate-copy { padding:9px; }
+  .ashmere-hub-v240-gate-copy strong { font-size:.96rem; }
+}
+@media(max-width:380px) {
+  .ashmere-hub-v240-place-list { grid-template-columns:minmax(0,1fr); }
+  .ashmere-hub-v240-place { grid-template-columns:94px minmax(0,1fr) 16px; min-height:88px; }
+  .ashmere-hub-v240-place-art img { min-height:88px; }
+  .ashmere-hub-v240-more-list { grid-template-columns:minmax(0,1fr); }
+}
+@media(prefers-reduced-motion:reduce) {
+  .ashmere-hub-v240 .ashmere-hub-v240-place,
+  .ashmere-hub-v240 .ashmere-hub-v240-gate,
+  .ashmere-hub-v240 .ashmere-hub-v240-order-action span {
+    transition:none!important;
+    transform:none!important;
+  }
+}
+.a11y-reduced-motion .ashmere-hub-v240-place,
+.a11y-reduced-motion .ashmere-hub-v240-gate,
+.a11y-reduced-motion .ashmere-hub-v240-order-action span {
+  transition:none!important;
+  transform:none!important;
+}
+
+
+/* Retain legacy region markers for service/tests without retaining the old layout. */
+.ash100-town.ashmere-hub-v240 {
+  max-width:none!important;
+  min-height:100svh!important;
+  margin:0!important;
+  padding:clamp(18px,3vw,42px) clamp(18px,4.2vw,64px) clamp(18px,2.5vw,34px)!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+@media(max-width:620px) {
+  .ash100-town.ashmere-hub-v240 { padding:16px 14px 18px!important; }
+}
+ 
+/* Outrank the legacy global button treatment for the new refuge destinations. */
+#root button.ashmere-hub-v240-place {
+  border-radius:2px !important;
+}
+
+/* Match the shared service-header selector so the town UI system cannot widen the portrait. */
+@media (min-width:981px) {
+  .ash099-screen .ash099-head.has-art {
+    grid-template-columns:minmax(0,160px) minmax(0,1fr) !important;
+  }
+  .ash099-screen .ash099-head.has-art > img {
+    width:160px !important;
+    max-width:160px !important;
+    height:220px !important;
+    object-position:center 16% !important;
+  }
+}
