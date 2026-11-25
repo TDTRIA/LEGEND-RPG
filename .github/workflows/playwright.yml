@@ -104,6 +104,10 @@ jobs:
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:overlay-fallback
 
+      - name: Run production DOM-owned intro interface regression
+        if: github.event_name == 'pull_request'
+        run: npm run test:e2e:intro-dom
+
       - name: Run persistent world-shell option frame palette regression
         if: github.event_name == 'pull_request'
         run: npm run test:e2e:option-frames
