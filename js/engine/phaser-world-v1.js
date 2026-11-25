@@ -1496,6 +1496,8 @@
     }
 
     syncNativeTitleUi(surface = this.surface) {
+      // Production title menus stay semantic DOM; the isolated reboot preview may test the legacy painter.
+      if (!IS_PROTOTYPE) { this.clearNativeTitleUi(); return; }
       // The Ashmere v230 title uses the original semantic DOM controls; Phaser owns only the world plate and atmosphere.
       if (window.LegendDomUiRestore?.enabled || root()?.querySelector('.title-v230-ashmere-dom')) { this.clearNativeTitleUi(); return; }
       const hero = root()?.querySelector('.title-v136-rpg .v120-title-hero');
@@ -1856,6 +1858,8 @@
     }
 
     syncNativeAnnalsUi(surface = this.surface) {
+      // Annals copy and chapter controls are browser UI; Phaser supplies the world.
+      if (!IS_PROTOTYPE) { this.clearNativeAnnalsUi(); return; }
       if (window.LegendDomUiRestore?.enabled) { this.clearNativeAnnalsUi(); return; }
       const screen = root()?.querySelector('.opening-lore-v220');
       if (String(surface || '') !== 'annals' || !screen) {
@@ -2182,6 +2186,8 @@
     }
 
     syncNativeCreationUi(surface = this.surface) {
+      // Creation choices, live text and inputs remain real DOM elements in production.
+      if (!IS_PROTOTYPE) { this.clearNativeCreationUi(); return; }
       if (window.LegendDomUiRestore?.enabled) { this.clearNativeCreationUi(); return; }
       const screen = root()?.querySelector('.v140-creation:not(.v140-arrival)');
       if (String(surface || '') !== 'creation' || !screen) {
@@ -2618,6 +2624,8 @@
     }
 
     syncNativeOpeningUi(surface = this.surface) {
+      // Oric's dialogue and response controls remain semantic DOM in production.
+      if (!IS_PROTOTYPE) { this.clearNativeOpeningUi(); return; }
       if (window.LegendDomUiRestore?.enabled) { this.clearNativeOpeningUi(); return; }
       const screen = root()?.querySelector('.opening-road-v140');
       if (String(surface || '') !== 'awakening' || !screen) {
