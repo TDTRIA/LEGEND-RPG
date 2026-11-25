@@ -3784,6 +3784,8 @@
         this.nativeExpeditionHudUiInteractionHandler = null;
         this.nativeExpeditionHudUiScrollHandler = null;
         this.nativeExpeditionHudUiToggleHandler = null;
+        this.nativeExpeditionHudUiDisclosureObserver?.disconnect();
+        this.nativeExpeditionHudUiDisclosureObserver = null;
       }
       this.nativeExpeditionHudUiObjects.forEach(object => {
         if (!object?.active) return;
@@ -3860,6 +3862,18 @@
           host.addEventListener(type, this.nativeExpeditionHudUiInteractionHandler)
         );
         host.addEventListener('toggle', this.nativeExpeditionHudUiToggleHandler, true);
+        const journeyDetails = host.querySelector('.exp160-journey-details');
+        if (journeyDetails && typeof window.MutationObserver === 'function') {
+          this.nativeExpeditionHudUiDisclosureObserver = new window.MutationObserver(records => {
+            if (records.some(record => record.type === 'attributes' && record.attributeName === 'open')) {
+              this.nativeExpeditionHudUiInteractionHandler?.();
+            }
+          });
+          this.nativeExpeditionHudUiDisclosureObserver.observe(journeyDetails, {
+            attributes: true,
+            attributeFilter: ['open']
+          });
+        }
         document.addEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, true);
         window.addEventListener('scroll', this.nativeExpeditionHudUiScrollHandler, { passive: true });
       }
@@ -3880,6 +3894,8 @@
       const sy = size.height / Math.max(1, window.innerHeight || size.height);
       const readRect = node => {
         if (!node || !node.isConnected) return null;
+        const collapsedDetails = node.closest('details:not([open])');
+        if (collapsedDetails && !node.closest('summary')) return null;
         const rect = node.getBoundingClientRect();
         const style = window.getComputedStyle(node);
         if (!rect.width || !rect.height || style.display === 'none' || style.visibility === 'hidden') return null;
@@ -3943,6 +3959,7 @@
       const signature = JSON.stringify([clip,
         Math.round(window.innerWidth), Math.round(window.innerHeight),
         Math.round(window.scrollX || 0), Math.round(window.scrollY || 0),
+        Boolean(host.querySelector('.exp160-journey-details')?.open),
         ...regions.map(node => {
           const rect = readRect(node);
           return [node.className, rect && Math.round(rect.x), rect && Math.round(rect.y),
