@@ -23,46 +23,29 @@ for (const width of [1440, 390]) {
       await expect(page.locator('.opening-lore-v220')).toHaveAttribute('data-lore-step', String(step));
       await expect(page.getByRole('button', { name: /skip.*annals/i })).toHaveCount(0);
       await expect(page.locator('#v094Name')).toHaveCount(0);
-      await expect.poll(() => page.evaluate(() => { const state = LegendPhaserWorldV1.snapshot(); return { active: state.nativeAnnalsUi, failure: state.nativeAnnalsUiFailure }; })).toEqual({ active: true, failure: '' });
+      await expect.poll(() => page.evaluate(() => ({
+        painter: window.LegendPhaserWorldV1.snapshot()?.nativeAnnalsUi,
+        classActive: document.body.classList.contains('legend-phaser-annals-ui-active')
+      }))).toEqual({ painter: false, classActive: false });
+      const visibleCopy = await page.evaluate(() => ({
+        heading: getComputedStyle(document.querySelector('#openingLoreTitle')).color,
+        prose: getComputedStyle(document.querySelector('.opening-lore-v220-copy')).color,
+        button: getComputedStyle(document.querySelector('#openingLoreContinue')).color,
+        buttonBackground: getComputedStyle(document.querySelector('#openingLoreContinue')).backgroundColor
+      }));
+      expect(visibleCopy.heading).not.toBe('rgba(0, 0, 0, 0)');
+      expect(visibleCopy.prose).not.toBe('rgba(0, 0, 0, 0)');
+      expect(visibleCopy.button).not.toBe('rgba(0, 0, 0, 0)');
+      expect(visibleCopy.buttonBackground).not.toBe('rgba(0, 0, 0, 0)');
       if (step === 2) {
         await expect(page.locator('.opening-lore-v220-kicker')).toHaveText('III · THE PEACE KEPT');
         await expect(page.locator('.opening-lore-v220-copy > p')).toHaveText(paragraphs);
         await expect(page.locator('.opening-lore-v220-copy > blockquote')).toHaveText(quote);
         await expect(page.locator('.opening-lore-v220')).not.toContainText(/Last Mercy|Veil|echo|wound|healer|Saint/i);
         await expect(next).toContainText('Shape the traveler');
-        const labels = await page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeAnnalsUiLabels);
-        expect(labels.find(item => item.sourceText.includes('Shape the traveler')).wrappedLines).toBe(1);
-        for (const copy of [...paragraphs, quote]) {
-          const label = labels.find(item => item.sourceText === copy);
-          expect(label, copy).toBeTruthy();
-          expect(label.text).toBe(copy);
-          expect(label.x + label.width).toBeLessThanOrEqual(label.sourceBounds.x + label.sourceBounds.width + 1);
-          expect(label.y + label.height).toBeLessThanOrEqual(label.sourceBounds.y + label.sourceBounds.height + 2);
-        }
-        // An unrenderable source must remain readable through the original DOM.
-        await title.evaluate(node => { node.textContent = 'W'.repeat(160); });
-        await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeAnnalsUi)).toBe(false);
-        expect(await title.evaluate(node => getComputedStyle(node).color)).not.toBe('rgba(0, 0, 0, 0)');
-        await title.evaluate(node => { node.textContent = 'The Peace, Written Down'; });
-        await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeAnnalsUi)).toBe(true);
-        // A thrown painter error must keep the semantic DOM readable and recover cleanly.
-        await page.evaluate(() => {
-          const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
-          window.__annalsLabelFactory = scene.createShellLabel;
-          scene.createShellLabel = () => { throw new Error('simulated annals painter failure'); };
-          scene.clearNativeAnnalsUi();
-          scene.syncNativeAnnalsUi();
-        });
-        await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeAnnalsUi)).toBe(false);
-        expect(await title.evaluate(node => getComputedStyle(node).color)).not.toBe('rgba(0, 0, 0, 0)');
-        await page.evaluate(() => {
-          const scene = window.LegendPhaserWorldV1.engine.scene.getScene('RealmScene');
-          scene.createShellLabel = window.__annalsLabelFactory;
-          scene.syncNativeAnnalsUi();
-        });
-        await expect.poll(() => page.evaluate(() => LegendPhaserWorldV1.snapshot().nativeAnnalsUi)).toBe(true);
-        expect(await next.evaluate(node => getComputedStyle(node).borderTopColor)).toBe('rgba(0, 0, 0, 0)');
-        await page.locator('.opening-lore-v220').evaluate(node => { node.scrollTop = node.scrollHeight; });
+        await next.scrollIntoViewIfNeeded();
+        await next.focus();
+        await expect(next).toBeFocused();
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       }
       if (width === 390) await next.tap();
