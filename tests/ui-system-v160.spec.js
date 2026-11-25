@@ -433,12 +433,12 @@ test.describe('LEGEND shared UI system v160 — phase 1 proof', () => {
     await page.keyboard.press('Enter');
     await expect(journey).toHaveAttribute('open','');
     await expect.poll(() => page.evaluate(value =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionHudUiTextValues?.some(node => node?.textContent?.trim() === value) || false, clockText
+      window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionHudUiTextValues?.includes(value) || false, clockText
     )).toBe(true);
     await page.keyboard.press('Space');
     await expect(journey).not.toHaveAttribute('open','');
     await expect.poll(() => page.evaluate(value =>
-      window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionHudUiTextValues?.some(node => node?.textContent?.trim() === value) || false, clockText
+      window.LegendPhaserWorldV1.snapshot()?.nativeExpeditionHudUiTextValues?.includes(value) || false, clockText
     )).toBe(false);
 
     const discoveryBackground=await page.evaluate(() => {
